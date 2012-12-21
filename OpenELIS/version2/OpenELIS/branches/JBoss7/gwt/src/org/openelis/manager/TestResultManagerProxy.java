@@ -29,20 +29,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.domain.TestResultViewDO;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.test.client.TestService;
 
 public class TestResultManagerProxy {
 
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service;
 
     public TestResultManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchTestResultByTestId", testId);
+        return TestService.get().fetchTestResultByTestId(testId);
     }
 
     public TestResultManagerProxy() {
-        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
-    }
+     }
 
     public TestResultManager add(TestResultManager man, HashMap<Integer, Integer> idMap)
                                                                                         throws Exception {

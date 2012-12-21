@@ -25,18 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.shipping.client.ShippingService;
 
 public class ShippingItemManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.shipping.server.ShippingService";
-    protected ScreenService       service;
     
     public ShippingItemManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public ShippingItemManager fetchByShippingId(Integer id) throws Exception {
-        return service.call("fetchItemByShippingId", id);
+        return ShippingService.get().fetchItemByShippingId(id);
     }
     
     public ShippingItemManager add(ShippingItemManager man) throws Exception {

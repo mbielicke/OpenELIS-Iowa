@@ -31,10 +31,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.AnalysisViewVO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -43,7 +42,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
@@ -66,7 +64,6 @@ public class ReleasedTab extends Screen {
     public ReleasedTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
-        service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");        
         initialize();        
         initializeDropdowns();
     }
@@ -122,7 +119,7 @@ public class ReleasedTab extends Screen {
             table.load(model);
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getReleased", new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+            ToDoService.get().getReleased(new AsyncCallback<ArrayList<AnalysisViewVO>>() {
                 public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     

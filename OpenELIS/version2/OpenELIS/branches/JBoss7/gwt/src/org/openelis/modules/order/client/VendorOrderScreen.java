@@ -74,6 +74,7 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.organization.client.OrganizationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -112,16 +113,12 @@ public class VendorOrderScreen extends Screen {
     private TabPanel          tabPanel;
     private Integer           status_pending;
 
-    protected ScreenService   organizationService;
-
     private enum Tabs {
         ITEM, FILL, SHIP_NOTE
     };
 
     public VendorOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(VendorOrderDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         userPermission = UserCache.getPermission().getModule("vendororder");
         if (userPermission == null)
@@ -407,7 +404,7 @@ public class VendorOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -689,7 +686,7 @@ public class VendorOrderScreen extends Screen {
                 query.setFields(field);
 
                 query.setRowsPerPage(22);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                OrderService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -953,7 +950,7 @@ public class VendorOrderScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
             
-            manager = service.call("duplicate", manager.getOrder().getId());
+            manager = OrderService.get().duplicate(manager.getOrder().getId());
 
             itemTab.setManager(manager);
             shipNoteTab.setManager(manager);

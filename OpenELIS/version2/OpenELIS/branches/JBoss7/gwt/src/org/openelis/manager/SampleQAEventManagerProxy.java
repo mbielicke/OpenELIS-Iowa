@@ -27,18 +27,15 @@ package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.sample.client.SampleService;
 
 public class SampleQAEventManagerProxy {
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService service;
     
     public SampleQAEventManagerProxy(){
-        service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
     }
     
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
-        return service.call("fetchBySampleId", sampleId);
+        return SampleService.get().fetchBySampleId(sampleId);
     }
     
     public SampleQaEventManager add(SampleQaEventManager man) throws Exception {

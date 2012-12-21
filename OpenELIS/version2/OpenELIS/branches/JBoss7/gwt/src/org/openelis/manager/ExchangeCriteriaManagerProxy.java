@@ -25,51 +25,47 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionService;
 
 public class ExchangeCriteriaManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.exchangeDataSelection.server.ExchangeDataSelectionService";
-    protected ScreenService       service;
-
     public ExchangeCriteriaManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public ExchangeCriteriaManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return ExchangeDataSelectionService.get().fetchById(id);
     }
     
     public ExchangeCriteriaManager fetchByName(String name) throws Exception {
-        return service.call("fetchByName", name);
+        return ExchangeDataSelectionService.get().fetchByName(name);
     }
 
     public ExchangeCriteriaManager fetchWithProfiles(Integer id) throws Exception {
-        return service.call("fetchWithProfiles", id);
+        return ExchangeDataSelectionService.get().fetchWithProfiles(id);
     }
     
     public ExchangeCriteriaManager fetchWithProfilesByName(String name) throws Exception {
-        return service.call("fetchWithProfilesByName", name);
+        return ExchangeDataSelectionService.get().fetchWithProfilesByName(name);
     }
 
     public ExchangeCriteriaManager add(ExchangeCriteriaManager man) throws Exception {
-        return service.call("add", man);
+        return ExchangeDataSelectionService.get().add(man);
     }
 
     public ExchangeCriteriaManager update(ExchangeCriteriaManager man) throws Exception {
-        return service.call("update", man);
+        return ExchangeDataSelectionService.get().update(man);
     }
     
     public void delete(ExchangeCriteriaManager man) throws Exception {
-        service.call("delete", man);
+        ExchangeDataSelectionService.get().delete(man);
     }
 
     public ExchangeCriteriaManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return ExchangeDataSelectionService.get().fetchForUpdate(id);
     }
 
     public ExchangeCriteriaManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return ExchangeDataSelectionService.get().abortUpdate(id);
     }
 
     public void validate(ExchangeCriteriaManager man) throws Exception {

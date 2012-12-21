@@ -40,6 +40,8 @@ UIRF Software License are applicable instead of those above.
     <inherits name="com.google.gwt.visualization.Visualization"/>
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
+    <inherits name="org.openelis.modules.analysis.Analysis"/>
+    <inherits name="org.openelis.modules.analysisUser.AnalysisUser"/>
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
     <inherits name="org.openelis.modules.auxData.AuxData"/>
     <inherits name="org.openelis.modules.auxiliary.Auxiliary"/>
@@ -49,6 +51,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.completeRelease.CompleteRelease"/>
     <inherits name="org.openelis.modules.cron.Cron"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
+    <inherits name="org.openelis.modules.eventLog.EventLog"/>
     <inherits name="org.openelis.modules.exchangeVocabularyMap.ExchangeVocabularyMap"/>
     <inherits name="org.openelis.modules.exchangeDataSelection.ExchangeDataSelection"/>
     <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
@@ -76,6 +79,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
     <inherits name="org.openelis.modules.qc.QC"/>
     <inherits name="org.openelis.modules.quickEntry.QuickEntry"/>
+    <inherits name="org.openelis.modules.result.Result"/>
     <inherits name="org.openelis.modules.sample.Sample"/>
     <inherits name="org.openelis.modules.SDWISSampleLogin.SDWISSampleLogin"/>
     <inherits name="org.openelis.modules.section.Section"/>

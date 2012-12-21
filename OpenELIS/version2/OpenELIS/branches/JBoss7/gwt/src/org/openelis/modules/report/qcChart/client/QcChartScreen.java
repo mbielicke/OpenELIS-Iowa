@@ -38,6 +38,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -61,6 +62,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.meta.QcListMeta;
+import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.report.qcChart.client.QcChartReportScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -88,14 +90,11 @@ public class QcChartScreen extends Screen {
                                  selectAllButton, unselectAllButton, unselectButton;
     private TableWidget          plotDataTable;
     private QcChartReportViewVO  results;
-    private ScreenService        qcService;
     private QcChartReportScreen  qcChartReportScreen;
     private Integer              typeDynamicId, typeQcSpike, typeQcBlank, typeQcDuplicate;
 
     public QcChartScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcChartDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.qcChart.server.QcChartReportService");
-        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -165,8 +164,7 @@ public class QcChartScreen extends Screen {
                 map = new TreeMap<String, Integer>();
                 window.setBusy();
                 try {
-                    list = qcService.callList("fetchByName",
-                                              QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = QcService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (QcDO item : list)
                         map.put(item.getName(), item.getTypeId());
                     model = new ArrayList<TableDataRow>();
@@ -535,7 +533,7 @@ public class QcChartScreen extends Screen {
 
         window.setBusy();
         if ( ( (fromDate != null) && (toDate != null)) || numInstance != null) {
-            service.call("fetchForQcChart", query, new AsyncCallback<QcChartReportViewVO>() {
+            QcChartReportService.get().fetchForQcChart(query, new AsyncCallback<QcChartReportViewVO>() {
                 public void onSuccess(QcChartReportViewVO result) {
                     setResults(result);
                     recomputeButton.enable(true);
@@ -564,7 +562,7 @@ public class QcChartScreen extends Screen {
     protected void reCompute() {
         window.setBusy();
 
-        service.call("recompute", results, new AsyncCallback<QcChartReportViewVO>() {
+        QcChartReportService.get().recompute(results, new AsyncCallback<QcChartReportViewVO>() {
             public void onSuccess(QcChartReportViewVO result) {
                 setResults(result);
                 window.setDone(consts.get("done"));
@@ -606,7 +604,20 @@ public class QcChartScreen extends Screen {
                 qcChartReportScreen.setWindow(window);
 
             results.setQcName(data.getName());
-            qcChartReportScreen.runReport(results);
+            qcChartReportScreen.runReport(results, new AsyncCallback<ReportStatus>() {
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    // TODO Auto-generated method stub
+                    
+                }
+
+                @Override
+                public void onSuccess(ReportStatus result) {
+                    // TODO Auto-generated method stub
+                    
+                }
+            });
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

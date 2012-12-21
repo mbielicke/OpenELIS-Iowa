@@ -25,43 +25,41 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.storageLocation.client.StorageLocationService;
 
 public class StorageLocationManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.storageLocation.server.StorageLocationService";
-    protected ScreenService       service;
-
     public StorageLocationManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public StorageLocationManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return StorageLocationService.get().fetchById(id);
     }
 
     public StorageLocationManager fetchWithChildren(Integer id) throws Exception {
-        return service.call("fetchWithChildren", id);
+        return StorageLocationService.get().fetchWithChildren(id);
     }
 
     public StorageLocationManager add(StorageLocationManager man) throws Exception {
-        return service.call("add", man);
+        return StorageLocationService.get().add(man);
     }
 
     public StorageLocationManager update(StorageLocationManager man) throws Exception {
-        return service.call("update", man);
+        return StorageLocationService.get().update(man);
     }
     
+    /*
     public StorageLocationManager delete(StorageLocationManager man) throws Exception {
-        return service.call("delete", man);
+        return StorageLocationService.get().delete(man);
     }
+    */
 
     public StorageLocationManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return StorageLocationService.get().fetchForUpdate(id);
     }
 
     public StorageLocationManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return StorageLocationService.get().abortUpdate(id);
     }
 
     public void validate(StorageLocationManager man) throws Exception {

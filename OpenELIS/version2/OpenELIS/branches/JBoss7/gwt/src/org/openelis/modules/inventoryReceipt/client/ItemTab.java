@@ -60,6 +60,7 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryReceiptMeta;
+import org.openelis.modules.storage.client.StorageService;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -78,17 +79,12 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
     private CheckBox                              addToExisting;
     private int                                   index;
     private boolean                               loaded;
-    
-    private ScreenService                         inventoryLocationService, storageService;
-    
+        
     public enum Action {
         STORAGE_LOCATION_CHANGED, LOT_NUMBER_CHANGED 
     }
     
     public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");                      
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
-        storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         
         setDefinition(def);
         setWindow(window);
@@ -393,7 +389,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         fields.add(field);
 
                         query.setFields(fields);
-                        invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
+                        invLocList = InventoryLocationService.get().fetchByLocationNameInventoryItemId(query);
                         for (i = 0; i < invLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             invLoc = invLocList.get(i);
@@ -412,7 +408,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                             model.add(row);
                         }
                     } else {
-                        storLocList = storageService.callList("fetchAvailableByName", param);
+                        storLocList = StorageService.get().fetchAvailableByName(param);
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);

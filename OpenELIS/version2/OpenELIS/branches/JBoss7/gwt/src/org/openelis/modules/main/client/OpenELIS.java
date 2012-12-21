@@ -138,9 +138,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         OpenELISRPC rpc;
         VerticalPanel vp;
 
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.main.server.OpenELISScreenService");
-        rpc = service.call("initialData");
+        rpc = OpenELISService.get().initialData();
 
         consts = rpc.appConstants;
 
@@ -1713,8 +1711,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
      * ping the server so we session does not expire
      */
     private void restServerTimeout() {
-        service.call("keepAlive", new AsyncCallback<RPC>() {
-            public void onSuccess(RPC result) {
+        OpenELISService.get().keepAlive(new AsyncCallback<Void>() {
+            public void onSuccess(Void result) {
             }
 
             public void onFailure(Throwable caught) {
@@ -1745,8 +1743,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         //
         closeHandler.removeHandler();
 
-        service.call("logout", new SyncCallback<RPC>() {
-            public void onSuccess(RPC result) {
+        OpenELISService.get().logout(new SyncCallback<Void>() {
+            public void onSuccess(Void result) {
             }
 
             public void onFailure(Throwable caught) {

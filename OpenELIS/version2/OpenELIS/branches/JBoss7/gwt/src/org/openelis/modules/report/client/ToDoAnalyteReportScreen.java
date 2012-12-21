@@ -28,11 +28,15 @@ package org.openelis.modules.report.client;
 import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Dropdown;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ToDoAnalyteReportScreen extends ReportScreen {
     private ArrayList<Object> selections;
@@ -42,7 +46,6 @@ public class ToDoAnalyteReportScreen extends ReportScreen {
         
         drawScreen(new ScreenDef());
         setName(consts.get("toDoAnalyteReport"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.ToDoAnalyteReportService");
         
         selections = new ArrayList<Object>();
         /* 
@@ -75,5 +78,15 @@ public class ToDoAnalyteReportScreen extends ReportScreen {
         super.initialize();
         status = (Dropdown)def.getWidget("STATUS");
         status.setSelectionKeys(selections);
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return ToDoAnalyteReportService.get().getPrompts();
+    }
+
+    @Override
+    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
+        ToDoAnalyteReportService.get().runReport((Query)query, callback);
     } 
 }

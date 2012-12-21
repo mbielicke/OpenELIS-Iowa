@@ -60,7 +60,6 @@ import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -81,8 +80,10 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
+import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.modules.inventoryReceipt.client.ItemTab.Action;
 import org.openelis.modules.order.client.ShipNoteTab;
+import org.openelis.modules.organization.client.OrganizationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -119,18 +120,13 @@ public class InventoryReceiptScreen extends Screen {
     private Query                                     query; 
     private String                                    upcQuery;
     private int                                       newManagerIndex;              
-    
-    private ScreenService                             inventoryItemService, organizationService;        
-    
+        
     private enum Tabs {
         ITEM, VENDOR_ADDRESS, SHIP_NOTE
     };
     
     public InventoryReceiptScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryReceiptDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");
-        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         userPermission = UserCache.getPermission().getModule("inventoryreceipt");
         if (userPermission == null)
@@ -476,7 +472,7 @@ public class InventoryReceiptScreen extends Screen {
                     model.add(row);
                     
                     if(upcQuery == null || (!(match.indexOf(upcQuery) == 0))) {
-                        list = service.callList("fetchByUpc", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                        list = InventoryReceiptService.get().fetchByUpc(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                         for (int i = 0; i < list.size(); i++ ) {
                             data = list.get(i);
                             row = new TableDataRow(data.getId(), data.getName(), data.getDescription());                  
@@ -507,7 +503,7 @@ public class InventoryReceiptScreen extends Screen {
                 DictionaryDO store, units;
 
                 try {
-                    list = inventoryItemService.callList("fetchActiveByName", event.getMatch());
+                    list = InventoryItemService.get().fetchActiveByName(event.getMatch());
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -536,7 +532,7 @@ public class InventoryReceiptScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -955,7 +951,7 @@ public class InventoryReceiptScreen extends Screen {
     private void executeQuery(Query query) {
         window.setBusy(consts.get("querying"));
 
-        service.callList("query", query, new SyncCallback<ArrayList<InventoryReceiptManager>>() {
+        InventoryReceiptService.get().query(query, new SyncCallback<ArrayList<InventoryReceiptManager>>() {
             public void onSuccess(ArrayList<InventoryReceiptManager> result) {
                 int i, j, k, count;
                 TableDataRow row;

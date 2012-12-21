@@ -43,8 +43,8 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -80,8 +80,10 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
+import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.TestPrepUtility;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -113,14 +115,12 @@ public class QuickEntryScreen extends Screen {
     private Integer                sampleNotVerifiedId, testSectionDefaultId;
     private Datetime               todaysDate;
     private AccessionNumberUtility accNumUtil;
-    private ScreenService          calendarService, panelService;
+    private ScreenService          calendarService;
     private ModulePermission       userPermission;
     private HashMap<Integer, Item> managers;
 
     public QuickEntryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         calendarService = new ScreenService("controller?service=org.openelis.gwt.server.CalendarService");
 
         userPermission = UserCache.getPermission().getModule("quickentry");
@@ -280,7 +280,7 @@ public class QuickEntryScreen extends Screen {
                 } else {
                     panelSections = new HashMap<Integer,TestSectionViewDO>();
                     try {
-                        testIds = panelService.callList("fetchTestIdsByPanelId", typeDO.getPanelId());
+                        testIds = PanelService.get().fetchTestIdsByPanelId(typeDO.getPanelId());
                         for (i = 0; i < testIds.size(); i++) {
                             testVO = testIds.get(i);
                             tm = TestManager.fetchById(testVO.getId());
@@ -912,7 +912,7 @@ public class QuickEntryScreen extends Screen {
             testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
             todaysDate = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             
-            testPanelList = service.callList("fetchTestMethodSampleTypeList");
+            testPanelList = TestService.get().fetchTestMethodSampleTypeList();
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
 

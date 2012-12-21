@@ -39,7 +39,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -49,6 +48,8 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.modules.analysis.client.AnalysisService;
+import org.openelis.modules.qc.client.QcService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,7 +61,6 @@ import com.google.gwt.user.client.Window;
 public class WorksheetAnalysisSelectionScreen extends Screen implements HasActionHandlers<WorksheetAnalysisSelectionScreen.Action> {
 
     private AppButton          okButton, cancelButton;
-    private ScreenService      analysisService, qcService;
     private TableWidget        worksheetAnalysisTable;
     
     protected Integer          worksheetId;
@@ -72,9 +72,6 @@ public class WorksheetAnalysisSelectionScreen extends Screen implements HasActio
     
     public WorksheetAnalysisSelectionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetAnalysisSelectionDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
-        analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
-        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
         // Setup link between Screen and widget Handlers
         initialize();
@@ -182,11 +179,11 @@ public class WorksheetAnalysisSelectionScreen extends Screen implements HasActio
                         row.cells.get(0).value = wiDO.getPosition();
                         row.cells.get(1).value = waDO.getAccessionNumber();
                         if (waDO.getAnalysisId() != null) {
-                            aVDO = analysisService.call("fetchById", waDO.getAnalysisId());
+                            aVDO = AnalysisService.get().fetchById(waDO.getAnalysisId());
                             row.cells.get(3).value = aVDO.getTestName();
                             row.cells.get(4).value = aVDO.getMethodName();
                         } else if (waDO.getQcLotId() != null) {
-                            qcLotVDO = qcService.call("fetchLotById", waDO.getQcLotId());
+                            qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
                             row.cells.get(2).value = qcLotVDO.getQcName();
                         }
                         row.data = waDO;
@@ -210,7 +207,7 @@ public class WorksheetAnalysisSelectionScreen extends Screen implements HasActio
     
     public void draw() {
         try{
-            manager = service.call("fetchWithItems", worksheetId);
+            manager = WorksheetService.get().fetchWithItems(worksheetId);
             
             DataChangeEvent.fire(this);
         }catch (Throwable e) {

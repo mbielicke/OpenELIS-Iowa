@@ -27,16 +27,12 @@ package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.services.ScreenService;
 
 
 public class TestSectionManagerProxy {
     
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService service;
-    
     public TestSectionManagerProxy() {
-        service = new ScreenService("controller?service="+TEST_MANAGER_SERVICE_URL);
+    
     }
     
     public TestSectionManager add(TestSectionManager man) throws Exception {

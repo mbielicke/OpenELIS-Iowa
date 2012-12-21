@@ -25,18 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.instrument.client.InstrumentService;
 
 public class InstrumentLogManagerProxy {
-    protected static final String INSTRUMENT_MANAGER_SERVICE_URL = "org.openelis.modules.instrument.server.InstrumentService";
-    protected ScreenService       service;
     
     public InstrumentLogManagerProxy() {
-        service = new ScreenService("controller?service=" + INSTRUMENT_MANAGER_SERVICE_URL);
     }
     
     public InstrumentLogManager fetchByInstrumentId(Integer id) throws Exception {
-        return service.call("fetchLogByInstrumentId", id);
+        return InstrumentService.get().fetchLogByInstrumentId(id);
     }
     
     public InstrumentLogManager add(InstrumentLogManager man) throws Exception {

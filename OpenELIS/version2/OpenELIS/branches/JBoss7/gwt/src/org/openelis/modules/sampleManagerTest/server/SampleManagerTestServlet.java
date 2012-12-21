@@ -15,31 +15,36 @@ package org.openelis.modules.sampleManagerTest.server;
 
 import java.util.ArrayList;
 
+import javax.ejb.EJB;
+
+import org.openelis.bean.SampleManager1Bean;
 import org.openelis.gwt.server.AppServlet;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
-import org.openelis.server.EJBFactory;
 
 public class SampleManagerTestServlet extends AppServlet {//implements SampleManagerTestServiceInt {
 
     private static final long serialVersionUID = 1L;
+    
+    @EJB
+    SampleManager1Bean sampleManager1;
 
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
                                                 SampleManager1.Load ...elements) throws Exception {
-        return EJBFactory.getSampleManager1().fetchByIds(sampleIds, elements);
+        return sampleManager1.fetchByIds(sampleIds, elements);
     }
     
     public ArrayList<SampleManager> fetchByIds(ArrayList<Integer> sampleIds) throws Exception {
-        return EJBFactory.getSampleManager1().fetchByIds(sampleIds);               
+        return sampleManager1.fetchByIds(sampleIds);               
     }
     
     public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
-        return EJBFactory.getSampleManager1().fetchForUpdate(sampleIds, elements);
+        return sampleManager1.fetchForUpdate(sampleIds, elements);
     }
     
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
-        return EJBFactory.getSampleManager1().fetchByAnalyses(analysisIds, elements);
+        return sampleManager1.fetchByAnalyses(analysisIds, elements);
     }
 }

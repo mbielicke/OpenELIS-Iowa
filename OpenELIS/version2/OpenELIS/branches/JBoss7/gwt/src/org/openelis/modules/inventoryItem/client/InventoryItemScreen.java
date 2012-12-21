@@ -122,7 +122,6 @@ public class InventoryItemScreen extends Screen {
 
     public InventoryItemScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryItemDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         userPermission = UserCache.getPermission().getModule("inventoryitem");
         if (userPermission == null)
@@ -638,7 +637,7 @@ public class InventoryItemScreen extends Screen {
                 DictionaryDO store, units;
 
                 try {
-                    list = service.callList("fetchActiveByName", event.getMatch());
+                    list = InventoryItemService.get().fetchActiveByName(event.getMatch());
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -794,7 +793,7 @@ public class InventoryItemScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(23);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameStoreVO>>() {
+                InventoryItemService.get().query(query, new AsyncCallback<ArrayList<IdNameStoreVO>>() {
                     public void onSuccess(ArrayList<IdNameStoreVO> result) {
                         setQueryResult(result);
                     }

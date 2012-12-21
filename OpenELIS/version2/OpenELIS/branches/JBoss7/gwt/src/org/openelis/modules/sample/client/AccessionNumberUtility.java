@@ -28,21 +28,16 @@ package org.openelis.modules.sample.client;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.SampleManager;
 
 public class AccessionNumberUtility {
-    
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService service;
-    
+        
     public AccessionNumberUtility(){
-        service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
     }
     
     public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {
         if(sampleDO.getAccessionNumber() != null)
-            return service.call("validateAccessionNumber", sampleDO);
+            return SampleService.get().validateAccessionNumber(sampleDO);
        
         return null;
     }
@@ -51,7 +46,7 @@ public class AccessionNumberUtility {
         Integer newNum;
         ValidationErrorsList erList;
         
-        newNum = service.callInteger("getNewAccessionNumber");
+        newNum = SampleService.get().getNewAccessionNumber();
         
         if(newNum != null)
             return newNum;

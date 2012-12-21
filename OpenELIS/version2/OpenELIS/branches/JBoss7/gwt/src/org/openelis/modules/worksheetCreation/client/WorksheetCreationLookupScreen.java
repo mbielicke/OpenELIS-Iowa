@@ -27,17 +27,6 @@ package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
@@ -63,7 +52,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -79,13 +67,24 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCreationMeta;
+import org.openelis.modules.test.client.TestService;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
 
     private Integer                 statusErrorInPrep, statusInPrep, statusReleased,
                                     statusCancelled;
-    private ScreenService           testService;
     private ModulePermission        userPermission;
 
     protected AppButton             searchButton, addButton, selectAllButton;
@@ -102,8 +101,6 @@ public class WorksheetCreationLookupScreen extends Screen
 
     public WorksheetCreationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationLookupDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
@@ -171,7 +168,7 @@ public class WorksheetCreationLookupScreen extends Screen
 
                 try {
                     model = new ArrayList<TableDataRow>();
-                    matches = testService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    matches = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (int i = 0; i < matches.size(); i++) {
                         tmVO = (TestMethodVO)matches.get(i);
                         
@@ -418,7 +415,7 @@ public class WorksheetCreationLookupScreen extends Screen
             window.setBusy(consts.get("querying"));
     
             query.setRowsPerPage(500);
-            service.callList("query", query, new AsyncCallback<ArrayList<WorksheetCreationVO>>() {
+            WorksheetCreationService.get().query(query, new AsyncCallback<ArrayList<WorksheetCreationVO>>() {
                 public void onSuccess(ArrayList<WorksheetCreationVO> list) {
                     setQueryResult(list);
                 }

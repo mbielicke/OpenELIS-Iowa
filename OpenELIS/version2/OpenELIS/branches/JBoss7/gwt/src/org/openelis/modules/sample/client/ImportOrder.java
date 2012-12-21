@@ -73,6 +73,8 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.TestManager;
+import org.openelis.modules.auxData.client.AuxDataService;
+import org.openelis.modules.test.client.TestService;
 
 public abstract class ImportOrder {
     protected OrderManager         orderMan;
@@ -83,17 +85,10 @@ public abstract class ImportOrder {
     
     protected Integer              reportToId, billToId, secondReportToId, supplementalId;
     
-    protected static final String  AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService",
-                                   PROJECT_SERVICE_URL = "org.openelis.modules.project.server.ProjectService",
-                                   TEST_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    
-    protected ScreenService        auxDataService, projectService, testService;
-    
-    protected ImportOrder() throws Exception {
-        auxDataService = new ScreenService("controller?service=" + AUX_DATA_SERVICE_URL);
-        projectService = new ScreenService("controller?service=" + PROJECT_SERVICE_URL);
-        testService = new ScreenService("controller?service=" + TEST_SERVICE_URL);
+    protected static final String  AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
         
+    protected ImportOrder() throws Exception {
+            
         reportToId = DictionaryCache.getIdBySystemName("org_report_to");
         billToId = DictionaryCache.getIdBySystemName("org_bill_to");
         secondReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");
@@ -116,13 +111,12 @@ public abstract class ImportOrder {
 
         orderMan = null;
         auxFieldGroupMan = null;
-        auxDataList = auxDataService.callList("fetchByRefId", auxData);
+        auxDataList = AuxDataService.get().fetchByRefId(auxData);
 
         // we don't want to use a hard-coded reference to aux group (language).
         // Use one level indirect by looking up system variable that points to
         // the aux group
-        auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable",
-                                                sysVariableKey)).getId();
+        auxGroupId = ((IdVO)AuxDataService.get().getAuxGroupIdFromSystemVariable(sysVariableKey)).getId();
         
         errors = new ValidationErrorsList();
 
@@ -270,7 +264,7 @@ public abstract class ImportOrder {
                 methodField.query = orderTest.getMethodName();
 
                 try {
-                    test = testService.call("fetchActiveByNameMethodName", query);
+                    test = TestService.get().fetchActiveByNameMethodName(query);
                     orderTest.setTestId(test.getId());
                     orderTest.setDescription(test.getDescription());
                 } catch (NotFoundException nfE) {

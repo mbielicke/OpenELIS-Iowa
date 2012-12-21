@@ -30,7 +30,6 @@ import java.util.HashMap;
 
 import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.services.ScreenService;
 
 import com.google.gwt.user.client.Window;
 
@@ -43,13 +42,9 @@ import com.google.gwt.user.client.Window;
 
 public class CategoryCache {    
     protected static HashMap<String, CategoryCacheVO> cache;
-    protected static final String                     SERVICE_URL;
-    protected static ScreenService                    service;
     
     static {
         cache = new HashMap<String, CategoryCacheVO>();
-        SERVICE_URL = "org.openelis.server.CategoryCacheService";
-        service = new ScreenService("controller?service=" + SERVICE_URL);
     }
 
     public static ArrayList<CategoryCacheVO> getBySystemNames(String... systemNames) throws Exception {
@@ -72,7 +67,7 @@ public class CategoryCache {
         }
         try {
             if (j > 0) {
-                partial = service.callList("getBySystemNames", partialNames);
+                partial = CategoryCacheService.get().getBySystemNames(partialNames);
 
                 for (CategoryCacheVO cat : partial) {
                     full.add(cat);
@@ -94,7 +89,7 @@ public class CategoryCache {
         cat = cache.get(systemName);
         if (cat == null) {
             try {
-                cat = service.call("getBySystemName", systemName);
+                cat = CategoryCacheService.get().getBySystemName(systemName);
                 cache.put(systemName, cat);
                 for (DictionaryDO entry : cat.getDictionaryList())
                     DictionaryCache.add(entry);

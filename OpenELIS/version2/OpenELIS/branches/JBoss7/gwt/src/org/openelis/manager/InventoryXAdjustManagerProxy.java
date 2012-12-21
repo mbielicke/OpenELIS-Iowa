@@ -25,19 +25,16 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentService;
 
 public class InventoryXAdjustManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService";
-    protected ScreenService       service;
 
     public InventoryXAdjustManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public InventoryXAdjustManager fetchByInventoryAdjustmentId(Integer id) throws Exception {
-        return service.call("fetchAdjustmentByInventoryAdjustmentId", id);
+        return InventoryAdjustmentService.get().fetchAdjustmentByInventoryAdjustmentId(id);
     }
 
     public InventoryXAdjustManager add(InventoryXAdjustManager man) throws Exception {

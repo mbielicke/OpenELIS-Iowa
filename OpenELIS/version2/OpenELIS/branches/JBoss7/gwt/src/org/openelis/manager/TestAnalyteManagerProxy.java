@@ -27,19 +27,15 @@ package org.openelis.manager;
 
 import java.util.HashMap;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.test.client.TestService;
 
 public class TestAnalyteManagerProxy {
 
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service;
-
     public TestAnalyteManagerProxy() {
-        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestAnalyteManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchTestAnalyteByTestId", testId);
+        return TestService.get().fetchTestAnalyteByTestId(testId);
     }
 
     public TestAnalyteManager add(TestAnalyteManager man, HashMap<Integer, Integer> idMap)

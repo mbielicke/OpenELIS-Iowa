@@ -28,18 +28,15 @@ package org.openelis.manager;
 import java.util.HashMap;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.worksheet.client.WorksheetService;
 
 public class WorksheetAnalysisManagerProxy {
-    protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
-    protected ScreenService service;
     
     public WorksheetAnalysisManagerProxy(){
-        service = new ScreenService("controller?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
 
     public WorksheetAnalysisManager fetchByWorksheetItemId(Integer worksheetItemId) throws Exception {
-        return service.call("fetchWorksheetAnalysisByWorksheetItemId", worksheetItemId);
+        return WorksheetService.get().fetchWorksheetAnalysisByWorksheetItemId(worksheetItemId);
     }
 
     public int add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {

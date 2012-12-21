@@ -40,7 +40,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
@@ -51,8 +50,6 @@ import org.openelis.meta.CategoryMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -74,7 +71,6 @@ public class DictionaryLookupScreen extends Screen implements
 
     public DictionaryLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryLookupDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");        
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -203,7 +199,7 @@ public class DictionaryLookupScreen extends Screen implements
 
         model = null;
         try {
-            list = service.callList("fetchByCategoryName","%");
+            list = DictionaryService.get().fetchByCategoryName("%");
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
             for (IdNameVO data : list) {
@@ -259,7 +255,7 @@ public class DictionaryLookupScreen extends Screen implements
         
         window.setBusy(consts.get("querying"));
         
-        service.callList("fetchByEntry", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+        DictionaryService.get().fetchByEntry(query, new AsyncCallback<ArrayList<IdNameVO>>() {
             public void onSuccess(ArrayList<IdNameVO> result) {
                 setQueryResult(result);
             }

@@ -85,7 +85,6 @@ public class AuxDataTab extends Screen {
     protected AuxDataManager        manager;
 
     public AuxDataTab(ScreenDefInt def, ScreenWindowInt window) {
-        service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         setDefinition(def);
         setWindow(window);
 

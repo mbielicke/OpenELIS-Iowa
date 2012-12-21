@@ -25,43 +25,39 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.shipping.client.ShippingService;
 
 public class ShippingManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.shipping.server.ShippingService";
-    protected ScreenService       service;
     
     public ShippingManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public ShippingManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return ShippingService.get().fetchById(id);
     }
     
     public ShippingManager fetchWithItemsAndTrackings(Integer id) throws Exception {
-        return service.call("fetchWithItemsAndTrackings", id);
+        return ShippingService.get().fetchWithItemsAndTrackings(id);
     }
     
     public ShippingManager fetchWithNotes(Integer id) throws Exception {
-        return service.call("fetchWithNotes", id);
+        return ShippingService.get().fetchWithNotes(id);
     }
     
     public ShippingManager add(ShippingManager man) throws Exception {
-        return service.call("add", man);
+        return ShippingService.get().add(man);
     }
     
     public ShippingManager update(ShippingManager man) throws Exception {
-        return service.call("update", man);
+        return ShippingService.get().update(man);
     }
     
     public ShippingManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return ShippingService.get().fetchForUpdate(id);
     }
     
     public ShippingManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return ShippingService.get().abortUpdate(id);
     }
     
     public void validate(ShippingManager man) throws Exception {

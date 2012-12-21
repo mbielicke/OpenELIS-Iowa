@@ -25,29 +25,46 @@
 */
 package org.openelis.modules.report.client;
 
+import java.util.ArrayList;
+
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.order.client.OrderService;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OrderRecurrenceReportScreen extends ReportScreen {
     
     public OrderRecurrenceReportScreen() throws Exception { 
         drawScreen(new ScreenDef());      
-        setRunReportInterface("recurOrders");   
         setName(consts.get("orderRecurrence"));
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
     }
     
     protected void runReport() {
         window.setBusy(consts.get("genReportMessage"));
         try {
-            service.call(runReportInterface);
+            OrderService.get().recurOrders();
             window.setDone(consts.get("recurredOrders"));
         } catch (Exception e) {
             window.setError("Failed");
             Window.alert(e.getMessage());
         }
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void runReport(RPC rpc, AsyncCallback<ReportStatus> callback) {
+        // TODO Auto-generated method stub
+        
     }
 }
 

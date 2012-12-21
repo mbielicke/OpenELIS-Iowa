@@ -85,6 +85,7 @@ import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -113,12 +114,9 @@ public class InventoryAdjustmentScreen extends Screen {
                                        removeRowButton;
     protected MenuItem                 inventoryAdjustmentHistory, inventoryAdjustmentLocationHistory;
     private TableWidget                adjustmentTable;
-    private ScreenService              inventoryLocationService;
     
     public InventoryAdjustmentScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryAdjustmentDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService");
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");        
 
         userPermission = UserCache.getPermission().getModule("inventoryadjustment");
         if (userPermission == null)
@@ -460,7 +458,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 }
                 
                 try {
-                    data = inventoryLocationService.call("fetchById", id);
+                    data = InventoryLocationService.get().fetchById(id);
                     
                     row = new TableDataRow(7);
                     row.key = data.getId();  
@@ -528,8 +526,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 query.setFields(field);
                 
                 try {
-                    list = inventoryLocationService.callList("fetchByInventoryItemNameStoreId",
-                                                             query);
+                    list = InventoryLocationService.get().fetchByInventoryItemNameStoreId(query);
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -597,7 +594,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(19);
-                service.callList("query", query, new AsyncCallback<ArrayList<InventoryAdjustmentDO>>() {
+                InventoryAdjustmentService.get().query(query, new AsyncCallback<ArrayList<InventoryAdjustmentDO>>() {
                     public void onSuccess(ArrayList<InventoryAdjustmentDO> result) {
                         setQueryResult(result);
                     }

@@ -25,18 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.order.client.OrderService;
 
 public class OrderTestManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.order.server.OrderService";
-    protected ScreenService       service;
     
     public OrderTestManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public OrderTestManager fetchByOrderId(Integer orderId) throws Exception {
-        return service.call("fetchTestByOrderId", orderId);
+        return OrderService.get().fetchTestByOrderId(orderId);
     }
 
     public OrderTestManager add(OrderTestManager man) throws Exception {

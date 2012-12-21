@@ -98,7 +98,9 @@ import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleMergeUtility;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
+import org.openelis.modules.sample.client.SampleService;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.standardnote.client.StandardNoteService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -163,7 +165,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     private SampleEnvironmentalImportOrder envOrderImport;
     private StandardNoteDO                 autoNote;     
-    private ScreenService                  standardNoteService;
     
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -172,8 +173,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     public EnvironmentalSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
-        standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
         userPermission = UserCache.getPermission().getModule("sampleenvironmental");
         if (userPermission == null)
@@ -1009,7 +1008,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(5);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
+                SampleService.get().query(query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
                     public void onSuccess(ArrayList<IdAccessionVO> result) {
                         setQueryResult(result);
                     }
@@ -1406,7 +1405,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         
         try {
             sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-            autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_environmental");
+            autoNote = StandardNoteService.get().fetchBySystemVariableName("auto_comment_environmental");
         } catch (NotFoundException nfE) {
             // ignore not found exception, as this domain may not have a default note
         } catch (Exception e) {

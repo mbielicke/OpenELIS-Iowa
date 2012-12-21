@@ -49,6 +49,7 @@ import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -89,10 +90,12 @@ import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.report.orderRequestForm.client.OrderRequestFormReportScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.shipping.client.ShippingScreen;
+import org.openelis.modules.shipping.client.ShippingService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -157,8 +160,6 @@ public class SendoutOrderScreen extends Screen {
                                                   
     private String                                 descQuery;
     
-    protected ScreenService                        organizationService, shippingService, panelService;
-
     private enum Tabs {
         ORGANIZATION, AUX_DATA,TEST, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE,
         INTERNAL_NOTE, SAMPLE_NOTE, RECURRENCE, FILL 
@@ -178,10 +179,6 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void SendoutOrderScreenImpl() throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
-        panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         
         userPermission = UserCache.getPermission();
         userModulePermission = userPermission.getModule("sendoutorder");
@@ -566,7 +563,7 @@ public class SendoutOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -882,7 +879,7 @@ public class SendoutOrderScreen extends Screen {
                     model.add(row);
 
                     if (descQuery == null || ( ! (match.indexOf(descQuery) == 0))) {
-                        dataList = service.callList("fetchByDescription", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                        dataList = OrderService.get().fetchByDescription(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                         matchList = new ArrayList<String>();
                         for (int i = 0; i < dataList.size(); i++ ) {
                             data = dataList.get(i);
@@ -1113,7 +1110,7 @@ public class SendoutOrderScreen extends Screen {
                 query.setFields(field);
 
                 query.setRowsPerPage(23);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                OrderService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -1607,7 +1604,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
             
-            manager = service.call("duplicate", manager.getOrder().getId());
+            manager = OrderService.get().duplicate(manager.getOrder().getId());
 
             organizationTab.setManager(manager);
             auxDataTab.setManager(manager);
@@ -1641,7 +1638,7 @@ public class SendoutOrderScreen extends Screen {
         try {           
             window.setBusy(consts.get("fetching"));
 
-            shippingService.call("fetchByOrderId", manager.getOrder().getId(),
+            ShippingService.get().fetchByOrderId(manager.getOrder().getId(),
                                  new SyncCallback<ShippingViewDO>() {
                                      public void onSuccess(ShippingViewDO result) {
                                          try {
@@ -1700,7 +1697,20 @@ public class SendoutOrderScreen extends Screen {
             else
                 requestformReportScreen.setWindow(window);
             
-            requestformReportScreen.runReport(query);
+            requestformReportScreen.runReport(query, new AsyncCallback<ReportStatus>() {
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    // TODO Auto-generated method stub
+                    
+                }
+
+                @Override
+                public void onSuccess(ReportStatus result) {
+                    // TODO Auto-generated method stub
+                    
+                }
+            });
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

@@ -26,18 +26,15 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.worksheet.client.WorksheetService;
 
 public class WorksheetItemManagerProxy {
-    protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
-    protected ScreenService service;
     
     public WorksheetItemManagerProxy(){
-        service = new ScreenService("controller?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
 
     public WorksheetItemManager fetchByWorksheetId(Integer worksheetId) throws Exception {
-        return service.call("fetchWorksheetItemByWorksheetId", worksheetId);
+        return WorksheetService.get().fetchWorksheetItemByWorksheetId(worksheetId);
     }
     public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
         assert false : "not supported";

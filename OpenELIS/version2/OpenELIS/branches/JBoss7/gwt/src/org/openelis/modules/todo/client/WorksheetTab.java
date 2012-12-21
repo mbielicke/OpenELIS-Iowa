@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -38,7 +37,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -60,7 +58,6 @@ public class WorksheetTab extends Screen {
     public WorksheetTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
-        service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");        
         initialize();        
     }
     
@@ -94,7 +91,7 @@ public class WorksheetTab extends Screen {
             table.load(model);
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getWorksheet", new AsyncCallback<ArrayList<ToDoWorksheetVO>>() {
+            ToDoService.get().getWorksheet(new AsyncCallback<ArrayList<ToDoWorksheetVO>>() {
                 public void onSuccess(ArrayList<ToDoWorksheetVO> result) {
                     ArrayList<TableDataRow> model;         
                     

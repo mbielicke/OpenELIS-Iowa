@@ -62,7 +62,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -85,7 +84,12 @@ import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.modules.analyte.client.AnalyteService;
+import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.method.client.MethodService;
+import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -110,17 +114,9 @@ public class ExchangeVocabularyMapScreen extends Screen {
     private AutoComplete<Integer>       referenceName; 
     private Dropdown<Integer>           referenceTableId;   
     private TableWidget                 atozTable, termMappingTable;
-    private ScreenService               analyteService, dictionaryService, methodService,
-                                        organizationService, testService;
 
     public ExchangeVocabularyMapScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeVocabularyMapDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.exchangeVocabularyMap.server.ExchangeVocabularyMapService");
-        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
-        methodService = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         userPermission = UserCache.getPermission().getModule("exchangevocabularymap");
         if (userPermission == null)
@@ -501,7 +497,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<ExchangeLocalTermViewDO>>() {
+                ExchangeVocabularyMapService.get().query(query, new AsyncCallback<ArrayList<ExchangeLocalTermViewDO>>() {
                     public void onSuccess(ArrayList<ExchangeLocalTermViewDO> result) {
                         setQueryResult(result);
                     }
@@ -845,7 +841,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = analyteService.callList("fetchByName", search);
+            list = AnalyteService.get().fetchByName(search);
             model = new ArrayList<TableDataRow>();
             for (AnalyteDO data : list)
                 model.add(new TableDataRow(data.getId(), data.getName()));
@@ -880,7 +876,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         
         model = new ArrayList<TableDataRow>();
         try {
-            list = dictionaryService.callList("fetchByEntry", query);
+            list = DictionaryService.get().fetchByEntry(query);
             for (IdNameVO data : list) {
                 row = new TableDataRow(1);
                 row.key = data.getId();    
@@ -903,7 +899,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = methodService.callList("fetchByName", search);
+            list = MethodService.get().fetchByName(search);
             
             for (MethodDO data : list)
                 model.add(new TableDataRow(data.getId(), data.getName()));                    
@@ -925,7 +921,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         list = null;
         try {
-            orgs = organizationService.callList("fetchByIdOrName", search);
+            orgs = OrganizationService.get().fetchByIdOrName(search);
             for (OrganizationDO org : orgs) {
                 addr = org.getAddress();
                 if (list == null)
@@ -957,7 +953,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         
         model = new ArrayList<TableDataRow>();
         try {
-            list  = testService.callList("fetchByName", search);
+            list  = TestService.get().fetchByName(search);
             for (TestMethodVO data: list) {
                 row = new TableDataRow(1);
                 row.key = data.getTestId();    

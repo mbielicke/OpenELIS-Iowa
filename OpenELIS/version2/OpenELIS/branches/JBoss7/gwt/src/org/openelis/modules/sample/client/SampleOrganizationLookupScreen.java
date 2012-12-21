@@ -63,6 +63,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.modules.organization.client.OrganizationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -81,7 +82,6 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     protected AppButton               organizationRemoveButton;
     private boolean                   canAddReportTo, canAddBillTo, canAddSecondReportTo;
     private Integer                   reportToId, billToId, secondReportToId;
-    protected ScreenService           orgService;
     
     public enum Action {
         OK
@@ -91,9 +91,6 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     
     public SampleOrganizationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleOrganizationLookupDef.class));
-        
-        service = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
         setCanAddReportTo(true);
         setCanAddBillTo(true);
@@ -234,7 +231,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
 
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

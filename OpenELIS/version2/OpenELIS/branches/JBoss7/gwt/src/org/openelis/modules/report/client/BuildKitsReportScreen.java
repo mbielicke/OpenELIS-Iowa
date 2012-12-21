@@ -25,8 +25,15 @@
  */
 package org.openelis.modules.report.client;
 
+import java.util.ArrayList;
+
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't
@@ -37,6 +44,15 @@ public class BuildKitsReportScreen extends ReportScreen {
     public BuildKitsReportScreen() throws Exception {
         drawScreen(new ScreenDef());
         setName(consts.get("print"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.BuildKitsReportService");
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return BuildKitsReportService.get().getPrompts();
+    }
+
+    @Override
+    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
+        BuildKitsReportService.get().runReport((Query)query, callback);
     }    
 }

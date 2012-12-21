@@ -28,54 +28,52 @@ package org.openelis.manager;
 import org.openelis.cache.UserCache;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.test.client.TestService;
 
 public class TestManagerProxy {
 
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service;
 
     public TestManagerProxy() {
-        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestManager fetchById(Integer testId) throws Exception {
-        return service.call("fetchById", testId);
+        return TestService.get().fetchById(testId);
     }
 
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
-        return service.call("fetchWithSampleTypes", testId);
+        return TestService.get().fetchWithSampleTypes(testId);
     }
 
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
-        return service.call("fetchWithAnalytesAndResults", testId);
+        return TestService.get().fetchWithAnalytesAndResults(testId);
     }
 
     public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
-        return service.call("fetchWithPrepTestsSampleTypes", testId);
+        return TestService.get().fetchWithPrepTestsSampleTypes(testId);
     }
 
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
-        return service.call("fetchWithPrepTestsAndReflexTests", testId);
+        return TestService.get().fetchWithPrepTestsAndReflexTests(testId);
     }
 
     public TestManager fetchWithWorksheet(Integer testId) throws Exception {
-        return service.call("fetchWithWorksheet", testId);
+        return TestService.get().fetchWithWorksheet(testId);
     }
 
     public TestManager add(TestManager man) throws Exception {
-        return service.call("add", man);
+        return TestService.get().add(man);
     }
 
     public TestManager update(TestManager man) throws Exception {
-        return service.call("update", man);
+        return TestService.get().update(man);
     }
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
-        return service.call("fetchForUpdate", testId);
+        return TestService.get().fetchForUpdate(testId);
     }
 
     public TestManager abortUpdate(Integer testId) throws Exception {
-        return service.call("abortUpdate", testId);
+        return TestService.get().abortUpdate(testId);
     }
 
     public void validate(TestManager man) throws Exception {

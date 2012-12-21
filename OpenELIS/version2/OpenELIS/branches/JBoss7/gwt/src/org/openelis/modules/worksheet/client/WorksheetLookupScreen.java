@@ -49,7 +49,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -93,7 +92,6 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
 
     public WorksheetLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetLookupDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -322,7 +320,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
             window.setBusy(consts.get("querying"));
     
             query.setRowsPerPage(50);
-            service.callList("query", query, new AsyncCallback<ArrayList<WorksheetViewDO>>() {
+            WorksheetService.get().query(query, new AsyncCallback<ArrayList<WorksheetViewDO>>() {
                 public void onSuccess(ArrayList<WorksheetViewDO> list) {
                     setQueryResult(list);
                 }

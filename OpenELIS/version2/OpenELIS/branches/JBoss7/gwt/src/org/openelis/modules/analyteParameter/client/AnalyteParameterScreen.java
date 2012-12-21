@@ -86,6 +86,8 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.AnalyteParameterMeta;
+import org.openelis.modules.qc.client.QcService;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -112,7 +114,6 @@ public class AnalyteParameterScreen extends Screen {
     private TreeWidget              parameterTree;
     private TableWidget             atozTable;    
     
-    private ScreenService           testService, qcService;  
     private ArrayList<TableDataRow> sampleTypeModel;
     private boolean                 warningShown;   
     private static final String    LATEST_LEAF = "latest", PREVIOUS_LEAF = "previous"; 
@@ -121,8 +122,6 @@ public class AnalyteParameterScreen extends Screen {
         super((ScreenDefInt)GWT.create(AnalyteParameterDef.class));
         
         service = new ScreenService("controller?service=org.openelis.modules.analyteParameter.server.AnalyteParameterService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
         userPermission =  UserCache.getPermission().getModule("analyteparameter");
         if (userPermission == null)
@@ -888,7 +887,7 @@ public class AnalyteParameterScreen extends Screen {
         
         model = new ArrayList<TableDataRow>();
         try {
-            list  = testService.callList("fetchByName", search);
+            list  = TestService.get().fetchByName(search);
             for (TestMethodVO data: list) 
                 model.add(new TableDataRow(data.getTestId(), data.getTestName(), data.getMethodName()));            
         } catch (Exception e) {
@@ -905,7 +904,7 @@ public class AnalyteParameterScreen extends Screen {
         
         model = new ArrayList<TableDataRow>();
         try {
-            list  = qcService.callList("fetchActiveByName", search);
+            list  = QcService.get().fetchActiveByName(search);
             for (QcLotViewDO data: list) {
                 row = new TableDataRow(2);
                 row.key = data.getQcId();

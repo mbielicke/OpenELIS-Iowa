@@ -111,7 +111,6 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
 
     public PWSScreen(String pwsNumber0) throws Exception {
         super((ScreenDefInt)GWT.create(PWSDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.pws.server.PWSService");
 
         userPermission = UserCache.getPermission().getModule("pws");
         if (userPermission == null)
@@ -218,7 +217,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
         parse = (MenuItem)def.getWidget("parse");
         addScreenHandler(parse, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                parse();
+                //parse();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -530,7 +529,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                PWSService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -717,14 +716,16 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
         }
     }
     
+    /*
     private void parse() {
         try {
-            service.call("parse");
+            PWSService.get().parse();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
     }
+    */
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());

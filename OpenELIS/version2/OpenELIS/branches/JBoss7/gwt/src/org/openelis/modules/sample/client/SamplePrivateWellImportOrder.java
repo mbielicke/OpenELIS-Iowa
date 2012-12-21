@@ -46,6 +46,7 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.modules.project.client.ProjectService;
 
 public class SamplePrivateWellImportOrder extends ImportOrder {
 
@@ -118,7 +119,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                 } else if ("well_number".equals(analyteId)) {
                     well.setWellNumber(new Integer(data.getValue()));
                 } else if ("project_name".equals(analyteId) && data.getValue() != null) {
-                    proj = projectService.call("fetchSingleByName", data.getValue());
+                    proj = ProjectService.get().fetchSingleByName(data.getValue());
                     if (proj != null) {
                         sampleProj = new SampleProjectViewDO();
                         sampleProj.setIsPermanent("Y");

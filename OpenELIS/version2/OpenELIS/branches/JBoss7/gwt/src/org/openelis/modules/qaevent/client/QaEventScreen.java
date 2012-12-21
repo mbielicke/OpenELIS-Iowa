@@ -37,10 +37,10 @@ import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -54,8 +54,8 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
@@ -65,10 +65,10 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -94,12 +94,8 @@ public class QaEventScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
     
-    private ScreenService         testService;
-
     public QaEventScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QaEventDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.qaevent.server.QaEventService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         userPermission = UserCache.getPermission().getModule("qaevent");
         if (userPermission == null)
@@ -336,7 +332,7 @@ public class QaEventScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = testService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
@@ -422,8 +418,8 @@ public class QaEventScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(14);
-                service.callList("query", query, new AsyncCallback<ArrayList<QaEventViewDO>>() {
-                    public void onSuccess(ArrayList<QaEventViewDO> result) {
+                QaEventService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
 
@@ -551,7 +547,7 @@ public class QaEventScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = QaEventService.get().fetchForUpdate(data.getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -579,7 +575,7 @@ public class QaEventScreen extends Screen {
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
-                data = service.call("add", data);
+                data = QaEventService.get().add(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -620,7 +616,7 @@ public class QaEventScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = QaEventService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -635,7 +631,7 @@ public class QaEventScreen extends Screen {
     
     protected void duplicate() {
         try {
-            data = service.call("fetchById", data.getId());
+            data = QaEventService.get().fetchById(data.getId());
             data.setId(null);
             setState(State.ADD);
             DataChangeEvent.fire(this);
@@ -658,7 +654,7 @@ public class QaEventScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                data = service.call("fetchById", id);
+                data = QaEventService.get().fetchById(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);

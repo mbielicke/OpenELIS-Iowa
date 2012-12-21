@@ -27,10 +27,10 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.OptionListItem;
-import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.Util;
@@ -74,24 +74,23 @@ import com.google.gwt.user.client.ui.Widget;
  * should extend this class and specify the report servlet service to get report
  * prompts and run the report.
  */
-public class ReportScreen extends Screen {
+public abstract class ReportScreen extends Screen {
 
     protected ArrayList<Prompt> reportParameters;
 
     protected AppButton         runReportButton, resetButton;
 
-    protected String            name, attachmentName, runReportInterface,
-                                promptsInterface;
+    protected String            name, attachmentName;
 
     protected Preferences       preferences;
     
     protected boolean           isScreenInitialized;
+    
 
 	protected ReportScreen() throws Exception {
 		name = null;
 		attachmentName = null;
-		runReportInterface = "runReport";
-		promptsInterface = "getPrompts";
+
 		reportParameters = new ArrayList<Prompt>();
 		
 		DeferredCommand.addCommand(new Command() {
@@ -135,28 +134,6 @@ public class ReportScreen extends Screen {
 	public void setAttachmentName(String name) {
 		this.attachmentName = name;
 	}
-
-	/*
-	 * Gets/sets the report's getPrompt interface method name
-	 */
-	public String getPromptsInterface() {
-		return promptsInterface;
-	}
-
-	public void setPromptsInterface(String promptsInterface) {
-		this.promptsInterface = promptsInterface;
-	}
-
-	/*
-	 * Gets/sets the run report interface method name
-	 */
-	public String getRunReportInterface() {
-		return runReportInterface;
-	}
-
-	public void setRunReportInterface(String runReportInterface) {
-		this.runReportInterface = runReportInterface;
-	}
 	
 	public void setFieldValue(String key, Object value) {
 	    Widget w;
@@ -187,7 +164,7 @@ public class ReportScreen extends Screen {
 		window.setBusy(consts.get("gettingReportParam"));
 
 		try {
-		    reportParameters = service.callList(promptsInterface);
+		    reportParameters = getPrompts();
 		    createReportWindow();
             window.setDone(consts.get("loadCompleteMessage"));
 		} catch (Exception e) {
@@ -195,6 +172,9 @@ public class ReportScreen extends Screen {
             Window.alert("Failed to get parameters for " + name);
         }		
 	}
+	
+	
+	protected abstract ArrayList<Prompt> getPrompts() throws Exception;
 
 	/**
 	 * Draws the prompts and fields in the report window
@@ -331,10 +311,12 @@ public class ReportScreen extends Screen {
      * Provides a more generic interface to run reports so that screens not 
      * implementing ReportScreen can utilize this functionality too
      */
-    public void runReport(RPC rpc) {
+    public abstract void runReport(RPC rpc, AsyncCallback<ReportStatus> callback);
+    
+    protected void runReport(Query query) {
         window.setBusy(consts.get("genReportMessage"));
 
-        service.call(runReportInterface, rpc, new AsyncCallback<ReportStatus>() {
+        runReport((Query)query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
                 String url;
 

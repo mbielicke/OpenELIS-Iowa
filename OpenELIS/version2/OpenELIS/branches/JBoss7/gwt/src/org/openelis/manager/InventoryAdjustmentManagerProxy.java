@@ -25,39 +25,36 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentService;
 
 public class InventoryAdjustmentManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService";
-    protected ScreenService       service;
-
     public InventoryAdjustmentManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public InventoryAdjustmentManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        assert false : "not supported";
+        return null;
     }
-
+    
     public InventoryAdjustmentManager fetchWithAdjustments(Integer id) throws Exception {
-        return service.call("fetchWithAdjustments", id);
+        return InventoryAdjustmentService.get().fetchWithAdjustments(id);
     }
 
     public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {
-        return service.call("add", man);
+        return InventoryAdjustmentService.get().add(man);
     }
 
     public InventoryAdjustmentManager update(InventoryAdjustmentManager man) throws Exception {
-        return service.call("update", man);
+        return InventoryAdjustmentService.get().update(man);
     }
 
     public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return InventoryAdjustmentService.get().fetchForUpdate(id);
     }
 
     public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return InventoryAdjustmentService.get().abortUpdate(id);
     }
 
     public void validate(InventoryAdjustmentManager man) throws Exception {

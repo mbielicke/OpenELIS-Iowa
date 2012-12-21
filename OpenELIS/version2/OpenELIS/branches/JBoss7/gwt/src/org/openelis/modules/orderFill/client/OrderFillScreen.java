@@ -91,10 +91,12 @@ import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.order.client.CustomerNoteTab;
+import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.order.client.ShipNoteTab;
 import org.openelis.modules.report.client.ShippingReportScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingScreen.Action;
+import org.openelis.modules.shipping.client.ShippingService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -132,7 +134,6 @@ public class OrderFillScreen extends Screen {
     private HashMap<TableDataRow, OrderViewDO> orderMap;
     private HashMap<Integer, OrderManager>     combinedMap;
 
-    private ScreenService                      shippingService;
     private String                             defaultPrinter, defaultBarcodePrinter;
 
     private enum Tabs {
@@ -141,8 +142,6 @@ public class OrderFillScreen extends Screen {
 
     public OrderFillScreen() throws Exception {
         super((ScreenDefInt)GWT.create(OrderFillDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
 
         userPermission = UserCache.getPermission().getModule("fillorder");
         if (userPermission == null)
@@ -723,7 +722,7 @@ public class OrderFillScreen extends Screen {
 
             window.setBusy(consts.get("fetching"));
 
-            shippingService.call("fetchByOrderId", data.getId(),
+            ShippingService.get().fetchByOrderId(data.getId(),
                                  new SyncCallback<ShippingViewDO>() {
                                      public void onSuccess(ShippingViewDO result) {
                                          try {
@@ -873,7 +872,7 @@ public class OrderFillScreen extends Screen {
     private void executeQuery(Query query) {
         window.setBusy(consts.get("querying"));
 
-        service.callList("queryOrderFill", query, new AsyncCallback<ArrayList<OrderViewDO>>() {
+        OrderService.get().queryOrderFill(query, new AsyncCallback<ArrayList<OrderViewDO>>() {
             public void onSuccess(ArrayList<OrderViewDO> result) {
                 ArrayList<TableDataRow> model;
                 Datetime now;

@@ -69,6 +69,9 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.modules.inventoryItem.client.InventoryItemService;
+import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
+import org.openelis.modules.storage.client.StorageService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -94,8 +97,6 @@ public class InventoryTransferScreen extends Screen {
     private AppButton                             addButton, commitButton, abortButton,
                                                   addReceiptButton, removeReceiptButton;
     private TableWidget                           receiptTable;
-    private ScreenService                         inventoryItemService, inventoryLocationService, 
-                                                  storageService;    
     
     public InventoryTransferScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryTransferDef.class));
@@ -111,10 +112,6 @@ public class InventoryTransferScreen extends Screen {
     }
     
     private void InventoryTransferScreenImpl(boolean fromMenu) throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryTransfer.server.InventoryTransferService");
-        storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
-        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");        
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
 
         userPermission = UserCache.getPermission().getModule("inventorytransfer");
         if (userPermission == null)
@@ -221,7 +218,7 @@ public class InventoryTransferScreen extends Screen {
                 DictionaryDO store;
 
                 try {
-                    list = inventoryLocationService.callList("fetchByInventoryItemName", event.getMatch());
+                    list = InventoryLocationService.get().fetchByInventoryItemName(event.getMatch());
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -281,7 +278,7 @@ public class InventoryTransferScreen extends Screen {
                 field.query = id.toString();           
                 query.setFields(field);
                 try {
-                    list = inventoryItemService.callList("fetchActiveByNameStoreAndParentInventoryItem", query);
+                    list = InventoryItemService.get().fetchActiveByNameStoreAndParentInventoryItem(query);
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -344,7 +341,7 @@ public class InventoryTransferScreen extends Screen {
                         fields.add(field);
 
                         query.setFields(fields);
-                        invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
+                        invLocList = InventoryLocationService.get().fetchByLocationNameInventoryItemId(query);
                         for (i = 0; i < invLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             invLoc = invLocList.get(i);
@@ -362,7 +359,7 @@ public class InventoryTransferScreen extends Screen {
                             model.add(row);
                         }
                     } else {
-                        storLocList = storageService.callList("fetchAvailableByName", param);
+                        storLocList = StorageService.get().fetchAvailableByName(param);
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);

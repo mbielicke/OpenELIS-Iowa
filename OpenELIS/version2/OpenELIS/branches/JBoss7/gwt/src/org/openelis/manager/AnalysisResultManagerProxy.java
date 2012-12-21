@@ -41,14 +41,13 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.result.client.ResultService;
 
 public class AnalysisResultManagerProxy {
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.result.server.ResultService";
-    protected ScreenService       service;
+
     protected static Integer      dictTypeId;
 
     public AnalysisResultManagerProxy() {
-        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
         try {
             dictTypeId = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
         } catch (Exception e) {
@@ -57,11 +56,11 @@ public class AnalysisResultManagerProxy {
     }
 
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
-        return service.call("fetchByAnalysisIdForDisplay", analysisId);
+        return ResultService.get().fetchByAnalysisIdForDisplay(analysisId);
     }
 
     public AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return service.call("fetchByAnalysisId", analysisId);
+        return ResultService.get().fetchByAnalysisId(analysisId);
     }
 
     public AnalysisResultManager fetchByTestId(Integer testId, Integer unitId) throws Exception {
@@ -71,7 +70,7 @@ public class AnalysisResultManagerProxy {
         data.setTestId(testId);
         data.setUnitOfMeasureId(unitId);
 
-        return service.call("fetchByTestId", data);
+        return ResultService.get().fetchByTestId(data);
     }
     
     public AnalysisResultManager fetchByTestIdForOrderImport(Integer testId, Integer unitId) throws Exception {
@@ -81,7 +80,7 @@ public class AnalysisResultManagerProxy {
         data.setTestId(testId);
         data.setUnitOfMeasureId(unitId);
 
-        return service.call("fetchByTestIdForOrderImport", data);
+        return ResultService.get().fetchByTestIdForOrderImport(data);
     }
 
     public AnalysisResultManager add(AnalysisResultManager man) throws Exception {
@@ -95,7 +94,7 @@ public class AnalysisResultManagerProxy {
     }
 
     public AnalysisResultManager merge(AnalysisResultManager oldMan) throws Exception {
-        return service.call("merge", oldMan);
+        return ResultService.get().merge(oldMan);
     }
 
     public ArrayList<AnalyteDO> getAliasList(ArrayList<TestAnalyteViewDO> analytes)
@@ -114,7 +113,7 @@ public class AnalysisResultManagerProxy {
         }
 
         query.setFields(fields);
-        return service.callList("getAliasList", query);
+        return ResultService.get().getAliasList(query);
     }
 
     public void validate(AnalysisResultManager man,

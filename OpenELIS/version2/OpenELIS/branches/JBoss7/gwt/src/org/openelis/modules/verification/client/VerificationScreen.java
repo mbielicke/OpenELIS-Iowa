@@ -39,9 +39,9 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
+import org.openelis.modules.sample.client.SampleService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -56,12 +56,10 @@ public class VerificationScreen extends Screen {
     private ModulePermission userPermission;
     
     protected Integer       notVerifiedId, loggedInId;
-    protected ScreenService sampleService;
     protected TextBox       barcode;
     
     public VerificationScreen() throws Exception {
        super((ScreenDefInt)GWT.create(VerificationDef.class));
-       sampleService = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
 
        userPermission = UserCache.getPermission().getModule("verification");
        if (userPermission == null)
@@ -141,7 +139,7 @@ public class VerificationScreen extends Screen {
             try {
                 window.setBusy(consts.get("updating"));
                 
-                manager = sampleService.call("fetchByAccessionNumber", new Integer(code));
+                manager = SampleService.get().fetchByAccessionNumber(new Integer(code));
                 if (!notVerifiedId.equals(manager.getSample().getStatusId())) {
                     window.setError(consts.get("wrongStatusForVerifying"));
                     return;

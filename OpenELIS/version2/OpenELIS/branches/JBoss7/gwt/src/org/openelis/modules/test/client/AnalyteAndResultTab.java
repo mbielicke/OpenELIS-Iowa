@@ -55,7 +55,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CheckBox;
@@ -85,7 +84,10 @@ import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.TestMeta;
+import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.dictionary.client.DictionaryService;
+import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
@@ -134,21 +136,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                                          headerAddedInTheMiddle, canAddRemoveColumn;
 
     private int                                          anaSelCol, tempId;
-    private ScreenService                                scriptletService, analyteService,
-                                                         dictionaryService;
 
     private ResultRangeNumeric                           rangeNumeric;
     private ResultRangeTiter                             rangeTiter;
 
-    public AnalyteAndResultTab(ScreenDefInt def, ScreenWindowInt window, ScreenService service,
-                               ScreenService scriptletService, ScreenService analyteService,
-                               ScreenService dictionaryService) {
+    public AnalyteAndResultTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
-        this.service = service;
-        this.scriptletService = scriptletService;
-        this.analyteService = analyteService;
-        this.dictionaryService = dictionaryService;
 
         initialize();
         initializeDropdowns();
@@ -902,7 +896,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 ArrayList<IdNameVO> list;
 
                 try {
-                    list = scriptletService.callList("fetchByName", event.getMatch() + "%");
+                    list = ScriptletService.get().fetchByName(event.getMatch() + "%");
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list)
                         model.add(new TableDataRow(data.getId(), data.getName()));
@@ -1307,7 +1301,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             auto = ((AutoComplete)event.getSource());
             
             if (isAnalyteQuery()) {
-                list = analyteService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                list = AnalyteService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                 model = new ArrayList<TableDataRow>();
                 for (AnalyteDO data : list)
                     model.add(new TableDataRow(data.getId(), data.getName()));
@@ -1526,7 +1520,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         query.setFields(fields);
 
         try {
-            list = dictionaryService.callList("fetchByEntry", query);
+            list = DictionaryService.get().fetchByEntry(query);
             if (list.size() == 1)
                 return list.get(0);
             else if (list.size() > 1)

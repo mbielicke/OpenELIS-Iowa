@@ -30,18 +30,15 @@ import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.sample.client.SampleService;
 
 import com.google.gwt.user.client.Window;
 
 public class SampleOrganizationManagerProxy {
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService       service;
     protected static Integer      orgBillToId, orgReportToId, orgSecondaryReportToId;
     
     public SampleOrganizationManagerProxy(){
-        service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
         
         if (orgBillToId == null) {
             try {
@@ -65,7 +62,7 @@ public class SampleOrganizationManagerProxy {
     }
     
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
-        return service.call("fetchSampleOrganizationsBySampleId", sampleId);
+        return SampleService.get().fetchSampleOrganizationsBySampleId(sampleId);
     }
     
     

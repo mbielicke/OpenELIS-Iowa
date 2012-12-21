@@ -53,8 +53,8 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
@@ -62,10 +62,10 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.LabelMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.scriptlet.client.ScriptletService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -88,12 +88,8 @@ public class LabelScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
     
-    private ScreenService         scriptletService;
-
     public LabelScreen() throws Exception {
         super((ScreenDefInt)GWT.create(LabelDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.label.server.LabelService");
-        scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
         
         userPermission = UserCache.getPermission().getModule("label");
         if (userPermission == null)
@@ -317,7 +313,7 @@ public class LabelScreen extends Screen {
                 ArrayList<IdNameVO> list;
 
                 try {
-                    list = scriptletService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ScriptletService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list) {                       
                         model.add(new TableDataRow(data.getId(),data.getName()));
@@ -338,7 +334,7 @@ public class LabelScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(10);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                LabelService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -465,7 +461,7 @@ public class LabelScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = LabelService.get().fetchForUpdate(data.getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -480,7 +476,7 @@ public class LabelScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = LabelService.get().fetchForUpdate(data.getId());
 
             setState(State.DELETE);
             DataChangeEvent.fire(this);
@@ -507,7 +503,7 @@ public class LabelScreen extends Screen {
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
-                data = service.call("add", data);
+                data = LabelService.get().add(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -521,7 +517,7 @@ public class LabelScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                data = service.call("update", data);
+                data = LabelService.get().update(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -535,7 +531,7 @@ public class LabelScreen extends Screen {
         } else if (state == State.DELETE) {
             window.setBusy(consts.get("deleting"));
             try {
-                service.call("delete", data);
+                LabelService.get().delete(data);
 
                 fetchById(null);
                 window.setDone(consts.get("deleteComplete"));
@@ -561,7 +557,7 @@ public class LabelScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = LabelService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -571,7 +567,7 @@ public class LabelScreen extends Screen {
             window.setDone(consts.get("updateAborted"));
         } else if (state == State.DELETE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = LabelService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -598,7 +594,7 @@ public class LabelScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                data = service.call("fetchById", id);
+                data = LabelService.get().fetchById(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);

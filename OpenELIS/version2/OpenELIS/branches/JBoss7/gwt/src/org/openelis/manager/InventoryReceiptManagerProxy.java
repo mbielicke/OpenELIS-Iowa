@@ -25,31 +25,27 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.inventoryReceipt.client.InventoryReceiptService;
 
 public class InventoryReceiptManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.inventoryReceipt.server.InventoryReceiptService";
-    protected ScreenService       service;
     
     public InventoryReceiptManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }   
     
     public InventoryReceiptManager add(InventoryReceiptManager man) throws Exception {
-        return service.call("add", man);
+        return InventoryReceiptService.get().add(man);
     }
     
     public InventoryReceiptManager update(InventoryReceiptManager man) throws Exception {
-        return service.call("update", man);
+        return InventoryReceiptService.get().update(man);
     }
     
     public InventoryReceiptManager fetchForUpdate(InventoryReceiptManager man) throws Exception {
-        return service.call("fetchForUpdate", man);
+        return InventoryReceiptService.get().fetchForUpdate(man);
     }
     
     public InventoryReceiptManager abortUpdate(InventoryReceiptManager man) throws Exception {
-        return service.call("abortUpdate", man);
+        return InventoryReceiptService.get().abortUpdate(man);
     }
     
     public void validate(InventoryReceiptManager man) throws Exception {

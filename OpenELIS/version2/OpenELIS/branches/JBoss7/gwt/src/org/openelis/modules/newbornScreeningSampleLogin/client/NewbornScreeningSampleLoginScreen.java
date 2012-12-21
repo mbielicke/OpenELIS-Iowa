@@ -28,7 +28,6 @@ package org.openelis.modules.newbornScreeningSampleLogin.client;
 
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.services.ScreenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -39,7 +38,6 @@ public class NewbornScreeningSampleLoginScreen extends Screen {
     
     public NewbornScreeningSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(NewbornScreeningSampleLoginDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
 
         //userPermission = UserCache.getPermission().getModule("sampleenvironmental");
         //if (userPermission == null)

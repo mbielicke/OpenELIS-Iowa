@@ -26,26 +26,23 @@
 package org.openelis.manager;
 
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.order.client.OrderService;
 
 public class OrderTestAnalyteManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.order.server.OrderService";
-    protected ScreenService       service;
 
     public OrderTestAnalyteManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public OrderTestAnalyteManager fetchByOrderTestId(Integer id) throws Exception {
-        return service.call("fetchTestAnalyteByOrderTestId", id);
+        return OrderService.get().fetchTestAnalyteByOrderTestId(id);
     }
     
     public OrderTestAnalyteManager fetchMergedByOrderTestId(Integer id) throws Exception {
-        return service.call("fetchMergedTestAnalyteByOrderTestId", id);
+        return OrderService.get().fetchMergedTestAnalyteByOrderTestId(id);
     }
     
     public OrderTestAnalyteManager fetchByTestId(Integer id) throws Exception {
-        return service.call("fetchTestAnalyteByTestId", id);
+        return OrderService.get().fetchTestAnalyteByTestId(id);
     }
 
     public OrderTestAnalyteManager add(OrderTestAnalyteManager man) throws Exception {

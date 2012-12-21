@@ -25,38 +25,35 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.dictionary.client.DictionaryService;
 
 public class CategoryManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.dictionary.server.DictionaryService";
-    protected ScreenService service;
     
     public CategoryManagerProxy() {
-        service = new ScreenService("controller?service="+MANAGER_SERVICE_URL);
     }
     
     public CategoryManager fetchById(Integer id)throws Exception {
-        return service.call("fetchById", id);
+        return DictionaryService.get().fetchById(id);
     }
     
     public CategoryManager fetchWithEntries(Integer id)throws Exception {
-        return service.call("fetchWithEntries", id);
+        return DictionaryService.get().fetchWithEntries(id);
     }
     
     public CategoryManager add(CategoryManager man) throws Exception {
-        return service.call("add",man);
+        return DictionaryService.get().add(man);
     }
     
     public CategoryManager update(CategoryManager man) throws Exception {
-        return service.call("update",man);
+        return DictionaryService.get().update(man);
     }    
     
     public CategoryManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate",id);
+        return DictionaryService.get().fetchForUpdate(id);
     }
     
     public CategoryManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return DictionaryService.get().abortUpdate(id);
     }
     
     public void validate(CategoryManager man) throws Exception {        

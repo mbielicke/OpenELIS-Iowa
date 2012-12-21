@@ -81,8 +81,11 @@ import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.modules.inventoryItem.client.InventoryItemService;
+import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.report.client.BuildKitsReportScreen;
+import org.openelis.modules.storage.client.StorageService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -107,15 +110,9 @@ public class BuildKitsScreen extends Screen {
     private TableWidget                           componentTable;
     private Dropdown<Integer>                     dispensedUnitsId;
     private BuildKitsReportScreen                 buildKitsReportScreen; 
-    private ScreenService                         inventoryItemService, inventoryLocationService,
-                                                  storageService;
     
     public BuildKitsScreen() throws Exception {
         super((ScreenDefInt)GWT.create(BuildKitsDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.buildKits.server.BuildKitsService");
-        inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");       
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
-        storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         
         userPermission = UserCache.getPermission().getModule("buildkits");
         if (userPermission == null)
@@ -232,7 +229,7 @@ public class BuildKitsScreen extends Screen {
                 DictionaryDO store, units;
 
                 try {
-                    list = inventoryItemService.callList("fetchActiveByName", event.getMatch());
+                    list = InventoryItemService.get().fetchActiveByName(event.getMatch());
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -424,7 +421,7 @@ public class BuildKitsScreen extends Screen {
 
                         query.setFields(fields);
                         window.setBusy();
-                        invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
+                        invLocList = InventoryLocationService.get().fetchByLocationNameInventoryItemId(query);
                         for (i = 0; i < invLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             invLoc = invLocList.get(i);
@@ -444,7 +441,7 @@ public class BuildKitsScreen extends Screen {
                         }
                     } else {
                         window.setBusy();
-                        storLocList = storageService.callList("fetchAvailableByName", param);
+                        storLocList = StorageService.get().fetchAvailableByName(param);
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);
@@ -608,7 +605,7 @@ public class BuildKitsScreen extends Screen {
                     fields.add(field);
 
                     query.setFields(fields);
-                    invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemIdStoreId", query);
+                    invLocList = InventoryLocationService.get().fetchByLocationNameInventoryItemIdStoreId(query);
                     for (i = 0; i < invLocList.size(); i++ ) {
                         autoRow = new TableDataRow(4);
                         invLoc = invLocList.get(i);

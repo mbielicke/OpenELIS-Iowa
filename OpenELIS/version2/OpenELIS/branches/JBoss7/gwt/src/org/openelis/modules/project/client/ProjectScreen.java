@@ -81,6 +81,7 @@ import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.scriptlet.client.ScriptletService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -106,12 +107,8 @@ public class ProjectScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    private ScreenService        scriptletService;
-    
     public ProjectScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ProjectDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");       
-        scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
 
         userPermission = UserCache.getPermission().getModule("project");
         if (userPermission == null)
@@ -416,7 +413,7 @@ public class ProjectScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = scriptletService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ScriptletService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (IdNameVO data : list)
@@ -557,7 +554,7 @@ public class ProjectScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(18);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                ProjectService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }

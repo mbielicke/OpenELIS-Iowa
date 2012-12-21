@@ -51,7 +51,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -66,6 +65,8 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.project.client.ProjectService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -95,8 +96,6 @@ public class PrivateWellTab extends Screen {
     private SampleProjectLookupScreen      projectScreen;
     private SampleOrganizationLookupScreen organizationScreen;
 
-    protected ScreenService                projectService, orgService;
-
     private SampleManager                  manager, previousManager;
     private SamplePrivateWellManager       wellManager, previousWellManager;
 
@@ -115,9 +114,6 @@ public class PrivateWellTab extends Screen {
             setDefinition(def);
 
         setWindow(window);
-
-        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         initialize();
         initializeDropdowns();
@@ -267,7 +263,7 @@ public class PrivateWellTab extends Screen {
 
                 window.setBusy();
                 try {
-                    list = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     model.add(new TableDataRow(event.getMatch(), event.getMatch(),
                                                null, null, null));
@@ -1118,7 +1114,7 @@ public class PrivateWellTab extends Screen {
 
                 window.setBusy();
                 try {
-                    list = projectService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ProjectService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -1343,7 +1339,7 @@ public class PrivateWellTab extends Screen {
 
         window.setBusy();
         try {
-            list = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(match));
+            list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<TableDataRow>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new TableDataRow(4);

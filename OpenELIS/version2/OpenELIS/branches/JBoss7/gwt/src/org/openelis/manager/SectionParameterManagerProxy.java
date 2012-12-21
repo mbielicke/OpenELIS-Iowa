@@ -25,18 +25,15 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.section.client.SectionService;
 
 public class SectionParameterManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.section.server.SectionService";
-    protected ScreenService       service;
 
     public SectionParameterManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public SectionParameterManager fetchBySectionId(Integer id) throws Exception {
-        return service.call("fetchParameterBySectionId", id);
+        return SectionService.get().fetchParameterBySectionId(id);
     }
 
     public SectionParameterManager add(SectionParameterManager man) throws Exception {

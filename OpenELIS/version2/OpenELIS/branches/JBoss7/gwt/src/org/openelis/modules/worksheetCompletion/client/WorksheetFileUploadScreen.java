@@ -25,12 +25,6 @@
 */
 package org.openelis.modules.worksheetCompletion.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
@@ -38,9 +32,14 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.FileUploadWidget;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 
 public class WorksheetFileUploadScreen extends Screen implements HasActionHandlers<WorksheetFileUploadScreen.Action> {
 
@@ -53,7 +52,6 @@ public class WorksheetFileUploadScreen extends Screen implements HasActionHandle
 
     public WorksheetFileUploadScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetFileUploadDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {

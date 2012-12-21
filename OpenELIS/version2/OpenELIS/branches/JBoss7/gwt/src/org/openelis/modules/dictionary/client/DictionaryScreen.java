@@ -57,7 +57,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -117,7 +116,6 @@ public class DictionaryScreen extends Screen {
 
     public DictionaryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         
         userPermission = UserCache.getPermission().getModule("dictionary");
         if (userPermission == null)
@@ -570,7 +568,7 @@ public class DictionaryScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                DictionaryService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -864,7 +862,7 @@ public class DictionaryScreen extends Screen {
     private void validateForDelete(DictionaryViewDO data) throws Exception {
         if (data.getId() == null)
             return;
-        service.call("validateForDelete", data);
+        DictionaryService.get().validateForDelete(data);
     }
 
     //

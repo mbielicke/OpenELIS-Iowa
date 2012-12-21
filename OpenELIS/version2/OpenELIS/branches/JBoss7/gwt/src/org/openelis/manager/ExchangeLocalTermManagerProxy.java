@@ -26,38 +26,35 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapService;
 
 public class ExchangeLocalTermManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.exchangeVocabularyMap.server.ExchangeVocabularyMapService";
-    protected ScreenService       service;
     
     public ExchangeLocalTermManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public ExchangeLocalTermManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return ExchangeVocabularyMapService.get().fetchById(id);
     }
 
     public ExchangeLocalTermManager fetchWithExternalTerms(Integer id) throws Exception {
-        return service.call("fetchWithExternalTerms", id);
+        return ExchangeVocabularyMapService.get().fetchWithExternalTerms(id);
     }
     
     public ExchangeLocalTermManager add(ExchangeLocalTermManager man) throws Exception {
-        return service.call("add", man);
+        return ExchangeVocabularyMapService.get().add(man);
     }
     
     public ExchangeLocalTermManager update(ExchangeLocalTermManager man) throws Exception {
-        return service.call("update", man);
+        return ExchangeVocabularyMapService.get().update(man);
     }
     
     public ExchangeLocalTermManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return ExchangeVocabularyMapService.get().fetchForUpdate(id);
     }
     
     public ExchangeLocalTermManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return ExchangeVocabularyMapService.get().abortUpdate(id);
     }
     
     public void validate(ExchangeLocalTermManager man) throws Exception {

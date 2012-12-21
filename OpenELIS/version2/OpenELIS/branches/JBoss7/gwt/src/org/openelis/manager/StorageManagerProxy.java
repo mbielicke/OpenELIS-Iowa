@@ -34,13 +34,11 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.StorageMeta;
+import org.openelis.modules.storage.client.StorageService;
 
 public class StorageManagerProxy {
-    protected static final String STORAGE_SERVICE_URL = "org.openelis.modules.storage.server.StorageService";
-    protected ScreenService service;
     
     public StorageManagerProxy(){
-        service = new ScreenService("controller?service="+STORAGE_SERVICE_URL);
     }
     
     public StorageManager fetchById(Integer tableId, Integer id) throws Exception {
@@ -61,11 +59,11 @@ public class StorageManagerProxy {
 
         query.setFields(fields);
 
-        return service.call("fetchById", query);
+        return StorageService.get().fetchById(query);
     }
     
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {         
-        return service.call("fetchCurrentByLocationId", id);
+        return StorageService.get().fetchCurrentByLocationId(id);
     }
     
     public StorageManager fetchHistoryByLocationId(Integer id, int first, int max) throws Exception {
@@ -82,7 +80,7 @@ public class StorageManagerProxy {
                      
         query.setRowsPerPage(max);
         query.setPage(first * max);  
-        return service.call("fetchHistoryByLocationId", query);
+        return StorageService.get().fetchHistoryByLocationId(query);
     }
     
     public StorageManager add(StorageManager man) throws Exception {
@@ -91,7 +89,7 @@ public class StorageManagerProxy {
     }
 
     public StorageManager update(StorageManager man) throws Exception {
-        return service.call("update", man);
+        return StorageService.get().update(man);
     }
 
     public void validate(StorageManager man, ValidationErrorsList errorsList) throws Exception {

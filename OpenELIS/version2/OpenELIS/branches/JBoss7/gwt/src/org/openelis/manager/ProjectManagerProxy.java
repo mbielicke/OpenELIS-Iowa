@@ -1,38 +1,34 @@
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.project.client.ProjectService;
 
 public class ProjectManagerProxy {
     
-	protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.project.server.ProjectService";
-    protected ScreenService       service;
-
     public ProjectManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public ProjectManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return ProjectService.get().fetchById(id);
     }
 
     public ProjectManager fetchWithParameters(Integer id) throws Exception {
-        return service.call("fetchWithParameters", id);
+        return ProjectService.get().fetchWithParameters(id);
     }
 
     public ProjectManager add(ProjectManager man) throws Exception {
-        return service.call("add", man);
+        return ProjectService.get().add(man);
     }
 
     public ProjectManager update(ProjectManager man) throws Exception {
-        return service.call("update", man);
+        return ProjectService.get().update(man);
     }
 
     public ProjectManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return ProjectService.get().fetchForUpdate(id);
     }
 
     public ProjectManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return ProjectService.get().abortUpdate(id);
     }
 
     @SuppressWarnings("unused")

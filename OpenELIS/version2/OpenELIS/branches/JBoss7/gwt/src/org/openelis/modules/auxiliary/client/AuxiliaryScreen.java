@@ -68,7 +68,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -100,8 +99,12 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.meta.CategoryMeta;
+import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.method.client.MethodService;
+import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.utilcommon.ResultRangeNumeric;
 
 import com.google.gwt.core.client.GWT;
@@ -134,18 +137,12 @@ public class AuxiliaryScreen extends Screen {
     private Integer                            typeDict, typeNumeric, typeDefault, prevSelFieldRow;
     private DictionaryLookupScreen             dictLookup;
     
-    private ScreenService                      methodService,scriptletService,analyteService,dictionaryService;
     private ResultRangeNumeric                 rangeNumeric;   
     
     private ArrayList<GridFieldErrorException> valueErrorList;
 
     public AuxiliaryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AuxiliaryDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
-        scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
-        methodService = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService"); 
-        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         
         userPermission =  UserCache.getPermission().getModule("auxiliary");
         if (userPermission == null)
@@ -568,7 +565,7 @@ public class AuxiliaryScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = analyteService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = AnalyteService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -588,7 +585,7 @@ public class AuxiliaryScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = methodService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = MethodService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     
                     for (MethodDO data : list)
@@ -607,7 +604,7 @@ public class AuxiliaryScreen extends Screen {
                 ArrayList<IdNameVO> list;
 
                 try {
-                    list = scriptletService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ScriptletService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list) {                       
                         model.add(new TableDataRow(data.getId(),data.getName()));
@@ -887,7 +884,7 @@ public class AuxiliaryScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(26);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                AuxiliaryService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -1360,7 +1357,7 @@ public class AuxiliaryScreen extends Screen {
         query.setFields(field); 
         
         try {
-            list = dictionaryService.callList("fetchByEntry", query);
+            list = DictionaryService.get().fetchByEntry(query);
             if (list.size() == 1)
                 return list.get(0);
             else if (list.size() > 1)                
