@@ -64,6 +64,10 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
                         "d.systemName,d.isActive,  d.code, d.entry)"
                       + " from  Dictionary d where d.systemName = :name "),
+    @NamedQuery( name = "Dictionary.FetchBySystemNames",
+                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
+                        "d.systemName,d.isActive,  d.code, d.entry)"
+                     + " from  Dictionary d where d.systemName in (:names) "),
     @NamedQuery( name = "Dictionary.FetchById",
                 query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
                         "d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
