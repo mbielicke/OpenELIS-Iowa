@@ -26,26 +26,23 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
 
 public class AuxFieldManagerProxy {
-    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxiliary.server.AuxiliaryService";
-    protected ScreenService service;
     
     public AuxFieldManagerProxy(){
-        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxFieldManager fetchById(Integer id) throws Exception {
-        return service.call("fetchFieldById", id);
+        return AuxiliaryService.get().fetchFieldById(id);
     }
     
     public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
-        return service.call("fetchFieldByGroupId", auxFieldGroupId);
+        return AuxiliaryService.get().fetchFieldByGroupId(auxFieldGroupId);
     }
     
     public AuxFieldManager fetchByGroupIdWithValues(Integer id) throws Exception {
-        return service.call("fetchFieldByGroupIdWithValues", id);
+        return AuxiliaryService.get().fetchFieldByGroupIdWithValues(id);
     }
     
     public AuxFieldManager add(AuxFieldManager man) throws Exception {

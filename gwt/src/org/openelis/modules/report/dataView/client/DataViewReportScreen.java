@@ -25,10 +25,19 @@
 */
 package org.openelis.modules.report.dataView.client;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.DataViewVO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't 
@@ -36,10 +45,8 @@ import org.openelis.modules.report.client.ReportScreen;
  */
 public class DataViewReportScreen extends ReportScreen {
 
-    public DataViewReportScreen(String runReportInterface, ScreenWindowInt window, String attachment) throws Exception {
-        setRunReportInterface(runReportInterface);
+    public DataViewReportScreen(ScreenWindowInt window, String attachment) throws Exception {
         this.window = window;
-        this.service = new ScreenService("controller?service=org.openelis.modules.report.dataView.server.DataViewReportService");
         if (!DataBaseUtil.isEmpty(attachment))
             setAttachmentName(attachment);
     }
@@ -50,5 +57,20 @@ public class DataViewReportScreen extends ReportScreen {
      * this class won't get prompts   
      */
     protected void getReportParameters() {       
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return null;
+    }
+
+    @Override
+    public void runReport(RPC rpc, AsyncCallback<ReportStatus> callback) {
+        runReport((DataViewVO)rpc,callback);
+        
+    }
+    
+    public void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback) {
+        DataViewReportService.get().runReport(data, callback);
     }
 }

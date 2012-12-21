@@ -63,6 +63,7 @@ import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.EditNoteScreen.Action;
+import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -144,7 +145,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                                      historyStorage, historySampleQA, historyAnalysisQA,
                                      historyAuxData;
 
-    private ScreenService            finalReportService;
     private Integer                  analysisOnHoldId, lastAccession;
 
 
@@ -155,8 +155,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
     public CompleteReleaseScreen() throws Exception {
         super((ScreenDefInt)GWT.create(CompleteReleaseDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
-        finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
         userPermission = UserCache.getPermission().getModule("samplecompleterelease");
         if (userPermission == null)
@@ -1223,7 +1221,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
         window.setBusy(consts.get("genReportMessage"));
 
-        finalReportService.call("runReportForPreview", query, new AsyncCallback<ReportStatus>() {
+        FinalReportService.get().runReportForPreview(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
                 String url;
 
@@ -1383,7 +1381,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         window.setBusy(consts.get("querying"));
 
         query.setRowsPerPage(500);
-        service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
+        CompleteReleaseService.get().query(query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
             public void onSuccess(ArrayList<SampleDataBundle> result) {
                 manager = null;
                 if (result.size() > 0)

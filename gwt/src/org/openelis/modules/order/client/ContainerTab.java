@@ -36,13 +36,10 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
 import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
@@ -61,12 +58,10 @@ import org.openelis.gwt.widget.table.event.RowMovedEvent;
 import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
-import org.openelis.modules.order.client.TestTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class ContainerTab extends Screen {
@@ -78,13 +73,8 @@ public class ContainerTab extends Screen {
     private ContainerTab            screen;
     private boolean                 loaded;
     private TestContainerPopoutUtil popoutUtil;
-
-    protected ScreenService         analysisService, testService;
     
     public ContainerTab(ScreenDefInt def, ScreenWindowInt window, TestContainerPopoutUtil popoutUtil) {
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
-        testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         this.popoutUtil = popoutUtil;
         setDefinition(def);

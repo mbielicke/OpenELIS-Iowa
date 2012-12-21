@@ -28,17 +28,15 @@ package org.openelis.manager;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.analysis.client.AnalysisService;
 
 public class AnalysisQAEventManagerProxy {
-    protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
-    protected ScreenService service;
     
     public AnalysisQAEventManagerProxy(){
-        service = new ScreenService("controller?service="+ANALYSIS_SERVICE_URL);
     }
     
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return service.call("fetchQaByAnalysisId", analysisId);
+        return AnalysisService.get().fetchQaByAnalysisId(analysisId);
     }
     
     public AnalysisQaEventManager add(AnalysisQaEventManager man) throws Exception {

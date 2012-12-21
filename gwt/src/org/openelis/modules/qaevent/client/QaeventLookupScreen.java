@@ -74,7 +74,6 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
 	public QaeventLookupScreen() throws Exception {
 	
 		super((ScreenDefInt) GWT.create(QaeventLookupDef.class));
-		service = new ScreenService("controller?service=org.openelis.modules.qaevent.server.QaEventService");
 
 		// Setup link between Screen and widget Handlers
 		initialize();
@@ -94,9 +93,9 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
 
 		try {
 			if (type == Type.ANALYSIS && testId != null)
-				list = service.callList("fetchByTestId", testId);
+				list = QaEventService.get().fetchByTestId(testId);
 			else
-				list = service.callList("fetchByCommon");
+				list = QaEventService.get().fetchByCommon();
 
 			/*
 			 * load the model

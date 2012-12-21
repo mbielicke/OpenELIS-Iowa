@@ -94,7 +94,9 @@ import org.openelis.modules.sample.client.SampleMergeUtility;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.SamplePrivateWellImportOrder;
+import org.openelis.modules.sample.client.SampleService;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.standardnote.client.StandardNoteService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -154,7 +156,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     private ModulePermission                  userPermission;
     private SendoutOrderScreen                sendoutOrderScreen;
     private StandardNoteDO                    autoNote;
-    private ScreenService                     standardNoteService;
 
     protected SamplePrivateWellImportOrder    wellOrderImport;
 
@@ -165,8 +166,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
     public PrivateWellWaterSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
-        standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
         userPermission = UserCache.getPermission().getModule("sampleprivatewell");
         if (userPermission == null)
@@ -984,7 +983,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(5);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
+                SampleService.get().query(query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
                     public void onSuccess(ArrayList<IdAccessionVO> result) {
                         setQueryResult(result);
                     }
@@ -1397,7 +1396,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         try {
             sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-            autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_private_well");
+            autoNote = StandardNoteService.get().fetchBySystemVariableName("auto_comment_private_well");
         } catch (NotFoundException nfE) {
             // ignore not found exceptions since this domain may not have a
             // default note

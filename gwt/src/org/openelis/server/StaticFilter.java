@@ -29,19 +29,19 @@ import java.util.Properties;
 
 import javax.naming.InitialContext;
 
+import org.openelis.bean.UserCacheBean;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.remote.UserCacheRemote;
 
 public class StaticFilter extends org.openelis.gwt.server.StaticFilter {
 
     protected void login(Properties props) throws Exception {
         InitialContext remotectx;
-        UserCacheRemote remote;
+        UserCacheBean remote;
         SystemUserPermission perm;
 
         remotectx = new InitialContext(props);
-        remote = (UserCacheRemote)remotectx.lookup("openelis/openelis.jar/UserCacheBean!org.openelis.remote.UserCacheRemote");
+        remote = (UserCacheBean)remotectx.lookup("java:app/openelis.jar/UserCacheBean");
         perm = remote.login();
 
         //

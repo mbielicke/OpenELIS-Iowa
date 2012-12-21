@@ -69,6 +69,8 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.meta.TestMeta;
+import org.openelis.modules.qc.client.QcService;
+import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -91,15 +93,10 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                                              addWSAnalyteButton, removeWSAnalyteButton;
     private TextBox<Integer>                 subsetCapacity, totalCapacity;
     private AutoComplete                     scriptlet, qcname;
-    private ScreenService                    scriptletService, qcService;
 
-    public WorksheetLayoutTab(ScreenDefInt def, ScreenWindowInt window, ScreenService service,
-                              ScreenService scriptletService, ScreenService qcService) {
+    public WorksheetLayoutTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
-        this.service = service;
-        this.scriptletService = scriptletService;
-        this.qcService = qcService;
         
         initialize();
         initializeDropdowns();            
@@ -221,7 +218,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 ArrayList<IdNameVO> list;
 
                 try {
-                    list = scriptletService.callList("fetchByName", event.getMatch() + "%");
+                    list = ScriptletService.get().fetchByName(event.getMatch() + "%");
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list) {
                         model.add(new TableDataRow(data.getId(), data.getName()));
@@ -254,7 +251,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 ArrayList<QcDO> list;
 
                 try {
-                    list = qcService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = QcService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (QcDO data : list) 
                         model.add(new TableDataRow(data.getName(), data.getName()));                    

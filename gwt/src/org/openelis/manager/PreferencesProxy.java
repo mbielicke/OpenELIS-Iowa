@@ -1,7 +1,6 @@
 package org.openelis.manager;
 
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.preferences.client.PreferencesService;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -15,10 +14,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class PreferencesProxy {
 
-    /**
-     * Service for calling persistence methods for preferences
-     */
-    ScreenService service = new ScreenService("controller?service=org.openelis.server.PreferencesService");
 
     /**
      * Cached instances for client
@@ -33,7 +28,7 @@ public class PreferencesProxy {
      */
     public Preferences userRoot() throws Exception {
         if (user == null)
-            user = service.call("userRoot");
+            user = PreferencesService.get().userRoot();
         return user;
     }
 
@@ -45,7 +40,7 @@ public class PreferencesProxy {
      */
     public Preferences systemRoot() throws Exception {
         if (system == null)
-            system = service.call("systemRoot");
+            system = PreferencesService.get().systemRoot();
         return system;
     }
 
@@ -57,8 +52,8 @@ public class PreferencesProxy {
      */
     public void flush(Preferences prefs) throws Exception {
 
-        service.call("flush", prefs, new AsyncCallback<RPC>() {
-            public void onSuccess(RPC result) {
+        PreferencesService.get().flush(prefs, new AsyncCallback<Void>() {
+            public void onSuccess(Void result) {
             }
             public void onFailure(Throwable caught) {
                 Window.alert("Persistence of Preference failed : " + caught.getMessage());

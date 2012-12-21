@@ -53,7 +53,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -68,7 +67,10 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.pws.client.PWSScreen;
+import org.openelis.modules.pws.client.PWSService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -94,8 +96,6 @@ public class SDWISTab extends Screen {
     private SampleProjectLookupScreen      projectScreen;
     private SampleOrganizationLookupScreen organizationScreen;
 
-    protected ScreenService                projectService, orgService, pwsService;
-
     private SampleManager                  manager, previousManager;
     private SampleSDWISManager             sdwisManager, previousSDWISManager;
 
@@ -114,11 +114,7 @@ public class SDWISTab extends Screen {
             setDefinition(def);
         
         setWindow(window);
-        
-        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        pwsService = new ScreenService("controller?service=org.openelis.modules.pws.server.PWSService");
-        
+                
         initialize();
         initializeDropdowns();
     }
@@ -139,7 +135,7 @@ public class SDWISTab extends Screen {
                 clearValue = false;
                 if (!DataBaseUtil.isEmpty(event.getValue())) { 
                     try {
-                        data = pwsService.call("fetchPwsByNumber0", event.getValue());
+                        data = PWSService.get().fetchPwsByNumber0(event.getValue());
                         getSDWISManager().getSDWIS().setPwsId(data.getId());
                         getSDWISManager().getSDWIS().setPwsName(data.getName());
                         getSDWISManager().getSDWIS().setPwsNumber0(data.getNumber0());
@@ -535,7 +531,7 @@ public class SDWISTab extends Screen {
 
                 window.setBusy();
                 try {
-                    list = projectService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ProjectService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -915,7 +911,7 @@ public class SDWISTab extends Screen {
 
         window.setBusy();
         try {
-            list = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(match));
+            list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<TableDataRow>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new TableDataRow(4);

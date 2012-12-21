@@ -82,7 +82,6 @@ public class CronScreen extends Screen {
 	
 	public CronScreen() throws Exception {
 		super((ScreenDefInt)GWT.create(CronDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.cron.server.CronService");
        
         userPermission = UserCache.getPermission().getModule("cron");
         if (userPermission == null)
@@ -314,7 +313,7 @@ public class CronScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(9);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                CronService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -421,7 +420,7 @@ public class CronScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = CronService.get().fetchForUpdate(data.getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -449,7 +448,7 @@ public class CronScreen extends Screen {
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
-                data = service.call("add", data);
+                data = CronService.get().add(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -463,7 +462,7 @@ public class CronScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                data = service.call("update", data);
+                data = CronService.get().update(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -490,7 +489,7 @@ public class CronScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = CronService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -517,7 +516,7 @@ public class CronScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                data = service.call("fetchById", id);
+                data = CronService.get().fetchById(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);

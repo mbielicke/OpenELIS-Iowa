@@ -45,6 +45,7 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.modules.storage.client.StorageService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -64,7 +65,6 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
 
     public StorageLocationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(StorageLocationLookupDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
 
         // Setup link between Screen and widget Handlers
         initialize();
@@ -85,7 +85,7 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
                 window.setBusy();
 
                 try {
-                    list = service.callList("fetchAvailableByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = StorageService.get().fetchAvailableByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);                        

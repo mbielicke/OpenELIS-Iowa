@@ -25,19 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapService;
 
 public class ExchangeExternalTermManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.exchangeVocabularyMap.server.ExchangeVocabularyMapService";
-    protected ScreenService       service;
     
     public ExchangeExternalTermManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public ExchangeExternalTermManager fetchByExchangeLocalTermId(Integer localTermId) throws Exception {
-        return service.call("fetchExternalTermByExchangeLocalTermId", localTermId);
+        return ExchangeVocabularyMapService.get().fetchExternalTermByExchangeLocalTermId(localTermId);
     }
     
     public ExchangeExternalTermManager add(ExchangeExternalTermManager man) throws Exception {

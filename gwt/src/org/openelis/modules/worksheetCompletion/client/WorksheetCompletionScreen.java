@@ -30,17 +30,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.TabPanel;
-
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
@@ -65,7 +54,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-//import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -80,8 +68,8 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Confirm;
@@ -90,14 +78,12 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleEnvironmentalManager;
@@ -110,17 +96,31 @@ import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.sample.client.TestPrepUtility;
 import org.openelis.modules.sample.client.TestReflexUtility;
+import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
+import org.openelis.modules.worksheet.client.WorksheetService;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TabPanel;
 
 public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup, successfulLoad, tableLoaded;//, commitDone;
     private Integer              statusWorking, statusFailedRun, origStatus;
-    private ScreenService        instrumentService, qcService, sysVarService, worksheetService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
@@ -166,11 +166,6 @@ public class WorksheetCompletionScreen extends Screen {
 
         isPopup           = false;
         successfulLoad    = false;
-        service           = new ScreenService("controller?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
-        instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
-        qcService         = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        sysVarService     = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
-        worksheetService  = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
         
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
@@ -201,13 +196,13 @@ public class WorksheetCompletionScreen extends Screen {
                                                          "test_worksheet_format",
                                                          "worksheet_status");
             
-            list = sysVarService.callList("fetchByName", "worksheet_display_directory");
+            list = SystemVariableService.get().fetchByName("worksheet_display_directory");
             if (list.size() == 0)
                 throw new Exception(consts.get("worksheetDisplayDirectoryLookupException"));
             else
                 displayFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
             
-            list = sysVarService.callList("fetchByName", "worksheet_template_directory");
+            list = SystemVariableService.get().fetchByName("worksheet_template_directory");
             if (list.size() == 0)
                 throw new Exception(consts.get("worksheetTemplateDirectoryLookupException"));
             else
@@ -374,7 +369,7 @@ public class WorksheetCompletionScreen extends Screen {
 
                 try {
                     model = new ArrayList<TableDataRow>();
-                    matches = instrumentService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    matches = InstrumentService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (int i = 0; i < matches.size(); i++) {
                         iVDO = (InstrumentViewDO)matches.get(i);
                         
@@ -565,7 +560,7 @@ public class WorksheetCompletionScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             final WorksheetCompletionScreen wcs = this;
 //            worksheetService.call("fetchWithItemsAndNotes", id, new AsyncCallback<WorksheetManager>() {
-            worksheetService.call("fetchWithAllData", id, new AsyncCallback<WorksheetManager>() {
+            WorksheetService.get().fetchWithAllData(id, new AsyncCallback<WorksheetManager>() {
                 public void onSuccess(WorksheetManager newMan) {
                     manager = newMan;
                     setState(State.DISPLAY);
@@ -639,7 +634,7 @@ public class WorksheetCompletionScreen extends Screen {
     protected void update() {
         window.setBusy(consts.get("lockForUpdate"));
         final WorksheetCompletionScreen wcs = this;
-        worksheetService.call("fetchForUpdate", manager.getWorksheet().getId(), new AsyncCallback<WorksheetManager>() {
+        WorksheetService.get().fetchForUpdate(manager.getWorksheet().getId(), new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager newMan) {
                 manager = newMan;
                 origStatus = manager.getWorksheet().getStatusId();
@@ -669,7 +664,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         window.setBusy(consts.get("updating"));
         final WorksheetCompletionScreen wcs = this;
-        worksheetService.call("update", manager, new AsyncCallback<WorksheetManager>() {
+        WorksheetService.get().update(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager newMan) {
                 manager = newMan;
                 setState(State.DISPLAY);
@@ -720,7 +715,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         if (state == State.UPDATE) {
             final WorksheetCompletionScreen wcs = this;
-            worksheetService.call("abortUpdate", manager.getWorksheet().getId(), new AsyncCallback<WorksheetManager>() {
+            WorksheetService.get().abortUpdate(manager.getWorksheet().getId(), new AsyncCallback<WorksheetManager>() {
                 public void onSuccess(WorksheetManager newMan) {
                     manager = newMan;
                     setState(State.DISPLAY);
@@ -751,7 +746,7 @@ public class WorksheetCompletionScreen extends Screen {
     
     protected void editWorksheet() {
         window.setBusy("Saving worksheet for editing");
-        service.call("saveForEdit", manager, new AsyncCallback<WorksheetManager>() {
+        WorkSheetCompletionService.get().saveForEdit(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager wMan) {
                 SystemUserVO userVO;
                 
@@ -783,7 +778,7 @@ public class WorksheetCompletionScreen extends Screen {
         final WorksheetCompletionScreen wcs = this;
         
         window.setBusy("Loading worksheet from edited file");
-        service.call("loadFromEdit", manager, new AsyncCallback<WorksheetManager>() {
+        WorkSheetCompletionService.get().loadFromEdit(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager newMan) {
                 int                          i;
                 ArrayList<Object>            tempBundle;
@@ -1026,7 +1021,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         headers = new ArrayList<IdNameVO>();
         try {
-            headers = service.callList("getHeaderLabelsForScreen", manager);
+            headers = WorkSheetCompletionService.get().getHeaderLabelsForScreen(manager);
         } catch (Exception anyE) {
             Window.alert("Error loading headers for format; "+anyE.getMessage());
             anyE.printStackTrace();
@@ -1137,7 +1132,7 @@ public class WorksheetCompletionScreen extends Screen {
                             model.add((TableDataRow)row.clone());
                         }
                     } else if (waDO.getQcLotId() != null) {
-                        qcLotVDO = qcService.call("fetchLotById", waDO.getQcLotId());
+                        qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
                         
                         row.cells.get(2).value = qcLotVDO.getQcName();
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();

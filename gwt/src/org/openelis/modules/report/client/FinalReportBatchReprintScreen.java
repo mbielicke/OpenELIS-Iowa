@@ -25,16 +25,31 @@
 */
 package org.openelis.modules.report.client;
 
+import java.util.ArrayList;
+
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FinalReportBatchReprintScreen extends ReportScreen {
 
     public FinalReportBatchReprintScreen() throws Exception {         
         drawScreen(new ScreenDef());        
-        setPromptsInterface("getPromptsForBatchReprint");
-        setRunReportInterface("runReportForBatchReprint");   
         setName(consts.get("finalReportBatchReprint"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");       
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return FinalReportService.get().getPromptsForBatchReprint();
+    }
+
+    @Override
+    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
+        FinalReportService.get().runReportForBatchReprint((Query)query,callback);
+        
     } 
 }

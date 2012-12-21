@@ -84,6 +84,7 @@ import org.openelis.manager.SectionManager;
 import org.openelis.manager.SectionParameterManager;
 import org.openelis.meta.SectionMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.organization.client.OrganizationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -106,12 +107,9 @@ public class SectionScreen extends Screen {
     protected MenuItem            sectionHistory, sectionParameterHistory;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
-    private ScreenService         organizationService;
 
     public SectionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SectionDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.section.server.SectionService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         userPermission = UserCache.getPermission().getModule("section");
         if (userPermission == null)
@@ -348,7 +346,7 @@ public class SectionScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = SectionService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
@@ -372,7 +370,7 @@ public class SectionScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -503,7 +501,7 @@ public class SectionScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(13);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                SectionService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }

@@ -28,63 +28,78 @@ package org.openelis.modules.auxiliary.server;
 
 import java.util.ArrayList;
 
+import javax.ejb.EJB;
+import javax.servlet.annotation.WebServlet;
+
+import org.openelis.bean.AuxFieldGroupBean;
+import org.openelis.bean.AuxFieldGroupManagerBean;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.server.AppServlet;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
-import org.openelis.server.EJBFactory;
+import org.openelis.modules.auxiliary.client.AuxiliaryServiceInt;
 
-public class AuxiliaryService {
+@WebServlet("/openelis/auxiliary")
+public class AuxiliaryService extends AppServlet implements AuxiliaryServiceInt {
 
+    private static final long serialVersionUID = 1L;
+    
+    @EJB
+    AuxFieldGroupBean auxFieldGroup;
+    
+    @EJB
+    AuxFieldGroupManagerBean auxFieldGroupManager;
+    
     public ArrayList<AuxFieldGroupDO> fetchActive() throws Exception {
-        return EJBFactory.getAuxFieldGroup().fetchActive();
+        return auxFieldGroup.fetchActive();
     }
 
     // manager methods
     public AuxFieldGroupManager fetchGroupById(Integer id) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().fetchById(id);
+        return auxFieldGroupManager.fetchById(id);
     }
 
     public AuxFieldGroupManager fetchGroupByIdWithFields(Integer id) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().fetchByIdWithFields(id);
+        return auxFieldGroupManager.fetchByIdWithFields(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return EJBFactory.getAuxFieldGroup().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return auxFieldGroup.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().add(man);
+        return auxFieldGroupManager.add(man);
     }
 
     public AuxFieldGroupManager update(AuxFieldGroupManager man) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().update(man);
+        return auxFieldGroupManager.update(man);
     }
 
     public AuxFieldGroupManager fetchForUpdate(Integer id) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().fetchForUpdate(id);
+        return auxFieldGroupManager.fetchForUpdate(id);
     }
 
     public AuxFieldGroupManager abortUpdate(Integer id) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().abortUpdate(id);
+        return auxFieldGroupManager.abortUpdate(id);
     }
 
     // other managers
     public AuxFieldManager fetchFieldById(Integer id) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().fetchFieldById(id);
+        return auxFieldGroupManager.fetchFieldById(id);
     }
 
     public AuxFieldManager fetchFieldByGroupId(Integer groupId) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().fetchFieldByGroupId(groupId);
+        return auxFieldGroupManager.fetchFieldByGroupId(groupId);
     }
 
     public AuxFieldManager fetchFieldByGroupIdWithValues(Integer groupId) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().fetchFieldByGroupIdWithValues(groupId);
+        return auxFieldGroupManager.fetchFieldByGroupIdWithValues(groupId);
     }
     
     public AuxFieldValueManager fetchFieldValueByFieldId(Integer fieldId) throws Exception {
-        return EJBFactory.getAuxFieldGroupManager().fetchFieldValueByFieldId(fieldId);
+        return auxFieldGroupManager.fetchFieldValueByFieldId(fieldId);
     }
 }

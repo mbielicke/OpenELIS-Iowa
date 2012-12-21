@@ -43,13 +43,9 @@ import com.google.gwt.user.client.Window;
 public class SectionCache {
     protected static HashMap<Integer, SectionViewDO>  cache;
     protected static ArrayList<SectionViewDO>         list;    
-    protected static final String                     SERVICE_URL;
-    protected static ScreenService                    service;
 
     static {
         cache = new HashMap<Integer, SectionViewDO>();
-        SERVICE_URL = "org.openelis.server.SectionCacheService";
-        service = new ScreenService("controller?service=" + SERVICE_URL);
     }
     
     public static SectionViewDO getById(Integer id) throws Exception {
@@ -84,7 +80,7 @@ public class SectionCache {
     protected static ArrayList<SectionViewDO> refreshList() throws Exception {
         ArrayList<SectionViewDO> list;
         
-        list = service.callList("getList", "");
+        list = SectionCacheService.get().getList("");
                     
         for (SectionViewDO data: list) 
             cache.put(data.getId(), data);                            

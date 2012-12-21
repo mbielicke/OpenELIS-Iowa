@@ -107,7 +107,6 @@ public class InternalOrderScreen extends Screen {
 
     public InternalOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InternalOrderDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
 
         userPermission = UserCache.getPermission().getModule("internalorder");
         if (userPermission == null)
@@ -435,7 +434,7 @@ public class InternalOrderScreen extends Screen {
                 query.setFields(field);
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                OrderService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -701,7 +700,7 @@ public class InternalOrderScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
             
-            manager = service.call("duplicate", manager.getOrder().getId());
+            manager = OrderService.get().duplicate(manager.getOrder().getId());
 
             itemTab.setManager(manager);
             shipNoteTab.setManager(manager);

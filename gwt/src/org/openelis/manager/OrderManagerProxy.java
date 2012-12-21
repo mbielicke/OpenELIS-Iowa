@@ -36,68 +36,64 @@ import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.order.client.OrderService;
+import org.openelis.modules.test.client.TestService;
 
 public class OrderManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.order.server.OrderService",
-                                  TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service, testService;
-
     public OrderManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
-        testService = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public OrderManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return OrderService.get().fetchById(id);
     }
     
     public OrderManager fetchWithOrganizations(Integer id) throws Exception {
-        return service.call("fetchWithOrganizations", id);
+        return OrderService.get().fetchWithOrganizations(id);
     }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
-        return service.call("fetchWithItems", id);
+        return OrderService.get().fetchWithItems(id);
     }
 
     public OrderManager fetchWithFills(Integer id) throws Exception {
-        return service.call("fetchWithFills", id);
+        return OrderService.get().fetchWithFills(id);
     }
 
     public OrderManager fetchWithNotes(Integer id) throws Exception {
-        return service.call("fetchWithNotes", id);
+        return OrderService.get().fetchWithNotes(id);
     }
     
     public OrderManager fetchWithTests(Integer id) throws Exception {
-        return service.call("fetchWithTests", id);
+        return OrderService.get().fetchWithTests(id);
     }
     
     public OrderManager fetchWithContainers(Integer id) throws Exception {
-        return service.call("fetchWithContainers", id);
+        return OrderService.get().fetchWithContainers(id);
     }
     
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
-        return service.call("fetchWithRecurring", id);
+        return OrderService.get().fetchWithRecurring(id);
     }
     
     public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
-        return service.call("fetchRecurrenceByOrderId", id);
+        return OrderService.get().fetchRecurrenceByOrderId(id);
     }
 
     public OrderManager add(OrderManager man) throws Exception {
-        return service.call("add", man);
+        return OrderService.get().add(man);
     }
 
     public OrderManager update(OrderManager man) throws Exception {
-        return service.call("update", man);
+        return OrderService.get().update(man);
     }
 
     public OrderManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return OrderService.get().fetchForUpdate(id);
     }
 
     public OrderManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return OrderService.get().abortUpdate(id);
     }
 
     public void validate(OrderManager man) throws Exception {
@@ -147,7 +143,7 @@ public class OrderManagerProxy {
                  */
                 if (testHasSamType == null) {
                     try {
-                        samTypeMan = testService.call("fetchSampleTypeByTestId", testId);
+                        samTypeMan = TestService.get().fetchSampleTypeByTestId(testId);
                         testHasSamType = testHasSampleType(testId, cont.getTypeOfSampleId(), samTypeMan);
                     } catch (NotFoundException e) {
                         testHasSamType = Boolean.FALSE;

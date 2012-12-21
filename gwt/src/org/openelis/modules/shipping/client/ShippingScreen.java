@@ -77,6 +77,7 @@ import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.report.client.ShippingReportScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -120,9 +121,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
     private ProcessShippingScreen          processShippingScreen;
     private ShippingReportScreen           shippingReportScreen;
     private boolean                        openedFromMenu;
-    
-    protected ScreenService                organizationService;    
-        
+            
     private enum Tabs {
         ITEM, SHIP_NOTE
     };    
@@ -145,8 +144,6 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
     }
     
     private void ShippingScreenImpl(boolean fromMenu) throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");        
         
         userPermission = UserCache.getPermission().getModule("shipping");
         if (userPermission == null)
@@ -515,7 +512,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -749,7 +746,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(12);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                ShippingService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }

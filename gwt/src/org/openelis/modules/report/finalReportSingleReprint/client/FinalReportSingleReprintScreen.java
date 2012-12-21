@@ -30,7 +30,6 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.OptionListItem;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.SampleDO;
@@ -38,6 +37,8 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -45,7 +46,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
@@ -58,6 +58,7 @@ import org.openelis.manager.Preferences;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.modules.preferences.client.PrinterService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -65,6 +66,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FinalReportSingleReprintScreen extends Screen {
 
@@ -81,11 +83,9 @@ public class FinalReportSingleReprintScreen extends Screen {
     private FinalReportSingleReprintReportScreen finalReportScreen;
     private Integer                              billToTypeId, finalRepFaxTypeId;
     private String                               VIEW_PDF_KEY = "-view-";
-    private ScreenService                        preferencesService;
 
     public FinalReportSingleReprintScreen() throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportSingleReprintDef.class));
-        preferencesService = new ScreenService("controller?service=org.openelis.modules.preferences.server.PreferencesService");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -388,7 +388,7 @@ public class FinalReportSingleReprintScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            options = preferencesService.callList("getPrinters", "pdf");
+            options = PrinterService.get().getPrinters("pdf");
             model.add(new TableDataRow(VIEW_PDF_KEY, consts.get("viewInPDF")));
             for (OptionListItem item : options)
                 model.add(new TableDataRow(item.getKey(), item.getLabel()));
@@ -483,7 +483,20 @@ public class FinalReportSingleReprintScreen extends Screen {
             else
                 finalReportScreen.setWindow(window);
             
-            finalReportScreen.runReport(query);
+            finalReportScreen.runReport(query, new AsyncCallback<ReportStatus>() {
+                
+                @Override
+                public void onSuccess(ReportStatus result) {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public void onFailure(Throwable caught) {
+                    // TODO Auto-generated method stub
+                    
+                }
+            });
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

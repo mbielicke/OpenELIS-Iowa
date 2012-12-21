@@ -27,18 +27,15 @@ package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
 
 public class AuxFieldValueManagerProxy {
-    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxiliary.server.AuxiliaryService";
-    protected ScreenService service;
     
     public AuxFieldValueManagerProxy(){
-        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxFieldValueManager fetchByFieldId(Integer auxFieldId) throws Exception {
-        return service.call("fetchFieldValueByFieldId", auxFieldId);
+        return AuxiliaryService.get().fetchFieldValueByFieldId(auxFieldId);
     }
     
     public AuxFieldValueManager add(AuxFieldValueManager man) throws Exception {

@@ -75,7 +75,6 @@ public class LotTab extends Screen {
     private boolean                     loaded;
     
     public LotTab(ScreenDefInt def, ScreenWindowInt window) {   
-        service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");        
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -357,6 +356,6 @@ public class LotTab extends Screen {
     private void validateForDelete(QcLotViewDO data) throws Exception {
         if (data.getId() == null)
             return;
-        service.call("validateForDelete", data);
+        QcService.get().validateForDelete(data);
     }
 }

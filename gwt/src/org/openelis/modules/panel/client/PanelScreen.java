@@ -68,7 +68,9 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.meta.PanelMeta;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -92,13 +94,9 @@ public class PanelScreen extends Screen {
                              moveUpButton, moveDownButton, refreshButton;
     protected MenuItem       panelHistory, panelItemHistory;
     private TableWidget      panelItemTable, allTestAuxTable;
-    private ScreenService    testService, auxiliaryService;
 
     public PanelScreen() throws Exception {
         super((ScreenDefInt)GWT.create(PanelDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        auxiliaryService = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
 
         userPermission = UserCache.getPermission().getModule("panel");
         if (userPermission == null)
@@ -469,7 +467,7 @@ public class PanelScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(14);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                PanelService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -550,7 +548,7 @@ public class PanelScreen extends Screen {
         TableDataRow row;
 
         try {
-            testList = testService.callList("fetchNameMethodSectionByName", "");
+            testList = TestService.get().fetchNameMethodSectionByName("");
             model = new ArrayList<TableDataRow>();
             for (PanelVO data : testList) {
                 row = new TableDataRow(data.getId(), data.getName(), data.getMethodName(),
@@ -559,7 +557,7 @@ public class PanelScreen extends Screen {
                 model.add(row);
             }
             
-            auxList = auxiliaryService.callList("fetchActive");
+            auxList = AuxiliaryService.get().fetchActive();
             for (AuxFieldGroupDO data : auxList) {
                 row = new TableDataRow(data.getId(), data.getName(), null, null);
                 row.data = "A";

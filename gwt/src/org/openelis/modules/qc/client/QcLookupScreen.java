@@ -78,7 +78,6 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
 
     public QcLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcLookupDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");        
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -276,7 +275,7 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
 
         window.setBusy(consts.get("querying"));
 
-        service.callList("fetchActiveByName", query, new AsyncCallback<ArrayList<QcLotViewDO>>() {
+        QcService.get().fetchActiveByName(query, new AsyncCallback<ArrayList<QcLotViewDO>>() {
             public void onSuccess(ArrayList<QcLotViewDO> result) {
                 setQueryResult(result);
             }

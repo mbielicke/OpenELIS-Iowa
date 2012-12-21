@@ -42,14 +42,12 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleSDWISManager;
+import org.openelis.modules.project.client.ProjectService;
+import org.openelis.modules.pws.client.PWSService;
 
 public class SampleSDWISImportOrder extends ImportOrder {
-    protected static final String PWS_SERVICE_URL      = "org.openelis.modules.pws.server.PWSService";
-    
-    protected ScreenService       pwsService;
     
     public SampleSDWISImportOrder() throws Exception {
-        pwsService = new ScreenService("controller?service=" + PWS_SERVICE_URL);
     }
 
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
@@ -97,7 +95,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
                 } else if ("pws_id".equals(analyteId)) {
                     if (data.getValue() != null) {
                         try {
-                            pws = pwsService.call("fetchPwsByNumber0", data.getValue());
+                            pws = PWSService.get().fetchPwsByNumber0(data.getValue());
                             sdwis.setPwsId(pws.getId());
                             sdwis.setPwsName(pws.getName());
                             sdwis.setPwsNumber0(pws.getNumber0());
@@ -136,7 +134,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
                 } else if ("collector".equals(analyteId)) {
                     sdwis.setCollector(data.getValue());
                 } else if ("project_name".equals(analyteId) && data.getValue() != null) {
-                    proj = projectService.call("fetchSingleByName", data.getValue());
+                    proj = ProjectService.get().fetchSingleByName(data.getValue());
                     if (proj != null) {
                         smplProj = new SampleProjectViewDO();
                         smplProj.setIsPermanent("Y");

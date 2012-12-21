@@ -59,6 +59,7 @@ import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.manager.StorageViewManager;
 import org.openelis.meta.StorageMeta;
+import org.openelis.modules.storageLocation.client.StorageLocationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -87,7 +88,6 @@ public class StorageScreen extends Screen {
     private Tabs                   tab;
     private TabPanel               tabPanel;
     
-    private ScreenService          storageLocationService;             
 
     private enum Tabs {
         CURRENT, HISTORY
@@ -95,8 +95,6 @@ public class StorageScreen extends Screen {
     
     public StorageScreen() throws Exception {
         super((ScreenDefInt)GWT.create(StorageDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
-        storageLocationService = new ScreenService("controller?service=org.openelis.modules.storageLocation.server.StorageLocationService");
     
         userPermission = UserCache.getPermission().getModule("storage");
         if (userPermission == null)
@@ -334,7 +332,7 @@ public class StorageScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                storageLocationService.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                StorageLocationService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }

@@ -25,10 +25,18 @@
 */
 package org.openelis.modules.report.orderRequestForm.client;
 
+import java.util.ArrayList;
+
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
+import org.openelis.modules.report.client.RequestFormReportService;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't 
@@ -39,7 +47,6 @@ public class OrderRequestFormReportScreen extends ReportScreen {
     public OrderRequestFormReportScreen(ScreenWindowInt window) throws Exception { 
         drawScreen(new ScreenDef());        
         this.window = window;
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.RequestformReportService");
     }
     
     /**
@@ -48,5 +55,15 @@ public class OrderRequestFormReportScreen extends ReportScreen {
      * this class won't get prompts   
      */
     protected void getReportParameters() {       
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return null;
+    }
+
+    @Override
+    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
+        RequestFormReportService.get().runReport((Query)query, callback);        
     }
 }

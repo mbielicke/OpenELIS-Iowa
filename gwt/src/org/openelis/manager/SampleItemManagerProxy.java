@@ -28,22 +28,18 @@ package org.openelis.manager;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.screen.Calendar;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
+import org.openelis.modules.sample.client.SampleService;
 
 public class SampleItemManagerProxy {
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService service;
     
     public SampleItemManagerProxy(){
-        service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
     }
     
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
-        return service.call("fetchSampleItemsBySampleId", sampleId);
+        return SampleService.get().fetchSampleItemsBySampleId(sampleId);
     }
     
     public SampleItemManager add(SampleItemManager man) throws Exception {

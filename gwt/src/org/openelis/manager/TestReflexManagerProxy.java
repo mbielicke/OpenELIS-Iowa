@@ -29,19 +29,16 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.domain.TestResultViewDO;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.test.client.TestService;
 
 public class TestReflexManagerProxy {
 
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service;
 
     public TestReflexManagerProxy() {
-        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestReflexManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchReflexiveTestByTestId", testId);
+        return TestService.get().fetchReflexiveTestByTestId(testId);
     }
 
     public TestReflexManager add(TestReflexManager man,

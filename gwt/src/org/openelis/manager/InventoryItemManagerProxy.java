@@ -26,50 +26,47 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.inventoryItem.client.InventoryItemService;
 
 public class InventoryItemManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.inventoryItem.server.InventoryItemService";
-    protected ScreenService       service;
-
     public InventoryItemManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public InventoryItemManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return InventoryItemService.get().fetchById(id);
     }
 
     public InventoryItemManager fetchWithComponents(Integer id) throws Exception {
-        return service.call("fetchWithComponents", id);
+        return InventoryItemService.get().fetchWithComponents(id);
     }
 
     public InventoryItemManager fetchWithLocations(Integer id) throws Exception {
-        return service.call("fetchWithLocations", id);
+        return InventoryItemService.get().fetchWithLocations(id);
     }
 
     public InventoryItemManager fetchWithManufacturing(Integer id) throws Exception {
-        return service.call("fetchWithManufacturing", id);
+        return InventoryItemService.get().fetchWithManufacturing(id);
     }
 
     public InventoryItemManager fetchWithNotes(Integer id) throws Exception {
-        return service.call("fetchWithNotes", id);
+        return InventoryItemService.get().fetchWithNotes(id);
     }
 
     public InventoryItemManager add(InventoryItemManager man) throws Exception {
-        return service.call("add", man);
+        return InventoryItemService.get().add(man);
     }
 
     public InventoryItemManager update(InventoryItemManager man) throws Exception {
-        return service.call("update", man);
+        return InventoryItemService.get().update(man);
     }
 
     public InventoryItemManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return InventoryItemService.get().fetchForUpdate(id);
     }
 
     public InventoryItemManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return InventoryItemService.get().abortUpdate(id);
     }
 
     public void validate(InventoryItemManager man) throws Exception {

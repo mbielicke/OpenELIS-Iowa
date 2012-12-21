@@ -38,6 +38,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -57,6 +58,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.modules.project.client.ProjectService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -66,6 +68,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -92,7 +95,6 @@ public class DataViewScreen extends Screen {
     private AppButton            saveQueryButton, executeQueryButton;
     private TabPanel             tabPanel;
     private DataViewReportScreen reportScreen;
-    private ScreenService        projectService;         
     private int                  pairsFilled;    
     
     private enum Tabs {
@@ -101,8 +103,6 @@ public class DataViewScreen extends Screen {
     
     public DataViewScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DataViewDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.dataView.server.DataViewReportService");
-        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
         
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -595,7 +595,7 @@ public class DataViewScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         try {
-            projects = projectService.callList("fetchList");
+            projects = ProjectService.get().fetchList();
             map = new HashMap<Integer, Integer>();
             for (IdNameVO d : projects) {
                 id = d.getId();
@@ -796,6 +796,7 @@ public class DataViewScreen extends Screen {
         return fields;
     }
 
+    //TODO REWRITE
     protected void saveQuery() {
         try {
             window.clearStatus();
@@ -808,9 +809,8 @@ public class DataViewScreen extends Screen {
             }
             
             if (reportScreen == null) {
-                reportScreen = new DataViewReportScreen("saveQuery", window, "DataView.xml");                
+                reportScreen = new DataViewReportScreen(window, "DataView.xml");                
             } else {
-                reportScreen.setRunReportInterface("saveQuery");
                 reportScreen.setWindow(window);
                 reportScreen.setAttachmentName("DataView.xml");
             }
@@ -821,7 +821,21 @@ public class DataViewScreen extends Screen {
             data.setAnalytes(null);
             data.setAuxFields(null);
             
-            reportScreen.runReport(data);
+            reportScreen.runReport(data, new AsyncCallback<ReportStatus>() {
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    // TODO Auto-generated method stub
+                    
+                }
+
+                @Override
+                public void onSuccess(ReportStatus result) {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+            });
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -830,7 +844,7 @@ public class DataViewScreen extends Screen {
     
     protected void openQuery() {
         try {
-            data = (DataViewVO)service.call("openQuery");                    
+            data = (DataViewVO)DataViewReportService.get().openQuery();                    
         } catch (Exception e) {
             Window.alert("There was an error with loading the query: "+ e.getMessage());
             data = createData();
@@ -922,16 +936,29 @@ public class DataViewScreen extends Screen {
         try {
             if (excludeResults && excludeAuxData) {
                 if (reportScreen == null) {
-                    reportScreen = new DataViewReportScreen("runReport", window, null);
+                    reportScreen = new DataViewReportScreen(window, null);
                 } else {
-                    reportScreen.setRunReportInterface("runReport");
                     reportScreen.setWindow(window);
                     reportScreen.setAttachmentName(null);
                 }
                         
-                reportScreen.runReport(data);                
+                reportScreen.runReport(data,new AsyncCallback<ReportStatus>() {
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        // TODO Auto-generated method stub
+                        
+                    }
+
+                    @Override
+                    public void onSuccess(ReportStatus result) {
+                        // TODO Auto-generated method stub
+                        
+                    }
+                    
+                });                
             } else {
-                ldata = service.call("fetchAnalyteAndAuxField", data);
+                ldata = DataViewReportService.get().fetchAnalyteAndAuxField(data);
                 data.setAnalytes(ldata.getTestAnalytes());
                 data.setAuxFields(ldata.getAuxFields());
                 showFilter(data);

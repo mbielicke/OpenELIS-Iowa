@@ -73,6 +73,7 @@ import org.openelis.manager.QcManager;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.inventoryItem.client.InventoryItemService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -104,16 +105,12 @@ public class QcScreen extends Screen {
     private CheckBox              isActive;
     private TabPanel              tabPanel;
 
-    private ScreenService         inventoryService;
-
     private enum Tabs {
         ANALYTE, LOT
     };
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         userPermission = UserCache.getPermission().getModule("qc");
         if (userPermission == null)
@@ -386,8 +383,7 @@ public class QcScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = inventoryService.callList("fetchActiveByName",
-                                                     QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = InventoryItemService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (InventoryItemDO data : list) {
@@ -483,7 +479,7 @@ public class QcScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                QcService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -708,7 +704,7 @@ public class QcScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
 
-            manager = service.call("duplicate", manager.getQc().getId());
+            manager = QcService.get().duplicate(manager.getQc().getId());
 
             analyteTab.setManager(manager);
             lotTab.setManager(manager);

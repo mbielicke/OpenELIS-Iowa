@@ -34,7 +34,6 @@ public class FillTab extends Screen {
     private int          numColumns;
 
     public FillTab(ScreenDefInt def, ScreenWindowInt window) {
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
 
         setDefinition(def);
         setWindow(window);

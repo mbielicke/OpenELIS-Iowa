@@ -33,7 +33,6 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
@@ -44,6 +43,8 @@ import org.openelis.domain.TurnAroundReportViewVO.Value;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -68,6 +69,9 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.preferences.client.PrinterService;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -95,7 +99,6 @@ public class TurnaroundStatisticScreen extends Screen {
                                       unselectAllPlotDataButton, selectAllAnalysisButton, unselectAllAnalysisButton;
     private TableWidget               plotDataTable, analysisTable;
     private TurnAroundReportViewVO    plotData;
-    private ScreenService             preferenceService, testService, orgService;
     private CheckBox                  showAnalysis, excludePTSample;
     private AutoComplete<Integer>     organization;
     private TurnaroundStatisticScreen screen;
@@ -105,10 +108,6 @@ public class TurnaroundStatisticScreen extends Screen {
 
     public TurnaroundStatisticScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TurnaroundStatisticDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.turnaroundStatistic.server.TurnaroundStatisticReportService");
-        preferenceService = new ScreenService("controller?service=org.openelis.modules.preferences.server.PreferencesService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -503,7 +502,7 @@ public class TurnaroundStatisticScreen extends Screen {
             section.setModel(model);
 
             model = new ArrayList<TableDataRow>();
-            tests = testService.callList("fetchByName", "%");
+            tests = TestService.get().fetchByName("%");
             model.add(new TableDataRow(null, ""));
             for (TestMethodVO item : tests)
                 model.add(new TableDataRow(item.getTestId(), item.getTestName() + ", " + item.getMethodName()));
@@ -511,7 +510,7 @@ public class TurnaroundStatisticScreen extends Screen {
 
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow("-view-", "View in PDF"));
-            options = preferenceService.callList("getPrinters", "pdf");
+            options = PrinterService.get().getPrinters("pdf");
 
             for (OptionListItem item : options)
                 model.add(new TableDataRow(item.getKey(), item.getLabel()));
@@ -644,7 +643,7 @@ public class TurnaroundStatisticScreen extends Screen {
         query.setFields(fields);
 
         window.setBusy(consts.get("fetching"));
-        service.call("fetchForTurnaroundStatistic", query, new AsyncCallback<TurnAroundReportViewVO>() {
+        TurnaroundStatisticReportService.get().fetchForTurnaroundStatistic(query, new AsyncCallback<TurnAroundReportViewVO>() {
             public void onSuccess(TurnAroundReportViewVO result) {
                 setPlotData(result);
                 plotDataButton.enable(true);
@@ -694,7 +693,20 @@ public class TurnaroundStatisticScreen extends Screen {
             plotData.setToDate(data.getReleasedDateTo().getDate());
             plotData.setIntervalId(data.getPlotIntervalId());
             plotData.setPrinter(data.getPrinter());
-            turnaroundReportScreen.runReport(plotData);
+            turnaroundReportScreen.runReport(plotData, new AsyncCallback<ReportStatus>() {
+
+                @Override
+                public void onFailure(Throwable caught) {
+                    // TODO Auto-generated method stub
+                    
+                }
+
+                @Override
+                public void onSuccess(ReportStatus result) {
+                    // TODO Auto-generated method stub
+                    
+                }
+            });
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -819,7 +831,7 @@ public class TurnaroundStatisticScreen extends Screen {
 
         window.setBusy();
         try {
-            orgs = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(match));
+            orgs = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<TableDataRow>();
             for (OrganizationDO data : orgs ) {
                 row = new TableDataRow(4);

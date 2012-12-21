@@ -25,18 +25,15 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.organization.client.OrganizationService;
 
 public class OrganizationParameterManagerProxy {
-    protected static final String ORG_MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
-    protected ScreenService       service;
 
     public OrganizationParameterManagerProxy() {
-        service = new ScreenService("controller?service=" + ORG_MANAGER_SERVICE_URL);
     }
 
     public OrganizationParameterManager fetchByOrganizationId(Integer orgId) throws Exception {
-        return service.call("fetchParameterByOrganizationId", orgId);
+        return OrganizationService.get().fetchParameterByOrganizationId(orgId);
     }
 
     public OrganizationParameterManager add(OrganizationParameterManager man) throws Exception {

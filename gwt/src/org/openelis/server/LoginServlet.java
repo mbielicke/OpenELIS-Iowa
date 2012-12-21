@@ -40,7 +40,6 @@ import org.openelis.bean.UserCacheBean;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.remote.UserCacheRemote;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
@@ -62,7 +61,7 @@ public class LoginServlet extends HttpServlet {
                              LOGIN_TRY_NM_CNT = 4; // max # of bad name counts before being locked out
 
     @EJB
-    private UserCacheRemote     userCache;
+    private UserCacheBean     userCache;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,

@@ -27,30 +27,36 @@ package org.openelis.modules.report.server;
 
 import java.util.ArrayList;
 
+import javax.ejb.EJB;
+import javax.servlet.annotation.WebServlet;
+
+import org.openelis.bean.BuildKitsReportBean;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.remote.BuildKitsReportRemote;
-import org.openelis.domain.Prompt;
-import org.openelis.server.EJBFactory;
+import org.openelis.gwt.server.AppServlet;
+import org.openelis.modules.report.client.BuildKitsReportServiceInt;
 import org.openelis.util.SessionManager;
 
-public class BuildKitsReportService {
+@WebServlet("/openelis/buildKitsReport")
+public class BuildKitsReportService extends AppServlet implements BuildKitsReportServiceInt {
+    
+    private static final long serialVersionUID = 1L;
+
+    @EJB
+    BuildKitsReportBean buildKitsReport;
 
     public ArrayList<Prompt> getPrompts() throws Exception {
-        return remote().getPrompts();
+        return buildKitsReport.getPrompts();
     }      
     
     public ReportStatus runReport(Query query) throws Exception {
         ReportStatus st;
         
-        st = remote().runReport(query.getFields());
+        st = buildKitsReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
         return st;
-    }
-    
-    private BuildKitsReportRemote remote() {
-        return EJBFactory.getBuildKitsReport();
     }
 }

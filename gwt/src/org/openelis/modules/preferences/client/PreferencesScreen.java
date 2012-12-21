@@ -5,7 +5,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
+import org.openelis.gwt.common.OptionListItem;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
@@ -14,12 +14,10 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.Preferences;
 import org.openelis.meta.PreferencesMeta;
@@ -40,7 +38,6 @@ public class PreferencesScreen extends Screen {
 	
 	public PreferencesScreen() throws Exception {
 		super((ScreenDefInt)GWT.create(PreferencesDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.preferences.server.PreferencesService");
         
         DeferredCommand.addCommand(new Command() {			
 			@Override
@@ -156,7 +153,7 @@ public class PreferencesScreen extends Screen {
 		
 		model = new ArrayList<TableDataRow>();
 		try {
-			options = service.callList("getPrinters","pdf");
+			options = PrinterService.get().getPrinters("pdf");
 			
 			for(OptionListItem item : options)
 				model.add(new TableDataRow(item.getKey(),item.getLabel()));
@@ -169,7 +166,7 @@ public class PreferencesScreen extends Screen {
 		
 		model = new ArrayList<TableDataRow>();
 		try {
-			options = service.callList("getPrinters","zpl");
+			options = PrinterService.get().getPrinters("zpl");
 		
 			for(OptionListItem item : options)
 				model.add(new TableDataRow(item.getKey(),item.getLabel()));

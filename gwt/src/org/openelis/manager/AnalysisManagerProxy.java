@@ -40,17 +40,16 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
+import org.openelis.modules.analysis.client.AnalysisService;
 
 public class AnalysisManagerProxy {
-    protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
-    protected ScreenService       service;
+
     protected static Integer      anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
                                   anInPrepId, anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId,
                                   anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,
                                   sampleNotVerifiedId, sampleReleasedId;
 
     public AnalysisManagerProxy() {
-        service = new ScreenService("controller?service=" + ANALYSIS_SERVICE_URL);
 
         if (anLoggedInId == null) {
             try {
@@ -76,7 +75,7 @@ public class AnalysisManagerProxy {
     }
 
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
-        return service.call("fetchBySampleItemId", sampleItemId);
+        return AnalysisService.get().fetchBySampleItemId(sampleItemId);
     }
 
     public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {

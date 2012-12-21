@@ -80,7 +80,6 @@ public class SystemVariableScreen extends Screen {
 
     public SystemVariableScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SystemVariableDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
 
         userPermission = UserCache.getPermission().getModule("systemvariable");
         if (userPermission == null)
@@ -273,7 +272,7 @@ public class SystemVariableScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(9);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                SystemVariableService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -382,7 +381,7 @@ public class SystemVariableScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = SystemVariableService.get().fetchForUpdate(data.getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -397,7 +396,7 @@ public class SystemVariableScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = SystemVariableService.get().fetchForUpdate(data.getId());
 
             setState(State.DELETE);
             DataChangeEvent.fire(this);
@@ -424,7 +423,7 @@ public class SystemVariableScreen extends Screen {
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
-                data = service.call("add", data);
+                data = SystemVariableService.get().add(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -438,7 +437,7 @@ public class SystemVariableScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                data = service.call("update", data);
+                data = SystemVariableService.get().update(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -452,7 +451,7 @@ public class SystemVariableScreen extends Screen {
         } else if (state == State.DELETE) {
             window.setBusy(consts.get("deleting"));
             try {
-                service.call("delete", data);
+                SystemVariableService.get().delete(data);
 
                 fetchById(null);
                 window.setDone(consts.get("deleteComplete"));
@@ -478,7 +477,7 @@ public class SystemVariableScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = SystemVariableService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -488,7 +487,7 @@ public class SystemVariableScreen extends Screen {
             window.setDone(consts.get("updateAborted"));
         } else if (state == State.DELETE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = SystemVariableService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -515,7 +514,7 @@ public class SystemVariableScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                data = service.call("fetchById", id);
+                data = SystemVariableService.get().fetchById(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);

@@ -27,51 +27,49 @@ package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.worksheet.client.WorksheetService;
 
 
 public class WorksheetManagerProxy {
 
-    protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
-    protected ScreenService service;
     
     public WorksheetManagerProxy(){
-        service = new ScreenService("controller?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
     
     public WorksheetManager fetchById(Integer worksheetId) throws Exception {
-        return service.call("fetchById", worksheetId);
+        return WorksheetService.get().fetchById(worksheetId);
     }
     
     public WorksheetManager fetchWithItems(Integer worksheetId) throws Exception {
-        return service.call("fetchWithItems", worksheetId);
+        return WorksheetService.get().fetchWithItems(worksheetId);
     }
     
     public WorksheetManager fetchWithNotes(Integer worksheetId) throws Exception {
-        return service.call("fetchWithNotes", worksheetId);
+        return WorksheetService.get().fetchWithNotes(worksheetId);
     }
     
     public WorksheetManager fetchWithItemsAndNotes(Integer worksheetId) throws Exception {
-        return service.call("fetchWithItemsAndNotes", worksheetId);
+        return WorksheetService.get().fetchWithItemsAndNotes(worksheetId);
     }
     
     public WorksheetManager fetchWithAllData(Integer worksheetId) throws Exception {
-        return service.call("fetchWithAllData", worksheetId);
+        return WorksheetService.get().fetchWithAllData(worksheetId);
     }
     
     public WorksheetManager add(WorksheetManager man) throws Exception {
-        return service.call("add",man);
+        return WorksheetService.get().add(man);
     }
 
     public WorksheetManager update(WorksheetManager man) throws Exception {
-        return service.call("update", man);
+        return WorksheetService.get().update(man);
     }
 
     public WorksheetManager fetchForUpdate(Integer worksheetId) throws Exception {
-        return service.call("fetchForUpdate", worksheetId);
+        return WorksheetService.get().fetchForUpdate(worksheetId);
     }
     
     public WorksheetManager abortUpdate(Integer worksheetId) throws Exception {
-        return service.call("abortUpdate", worksheetId);
+        return WorksheetService.get().abortUpdate(worksheetId);
     }
     
     public void validate(WorksheetManager man, ValidationErrorsList errorList) throws Exception {

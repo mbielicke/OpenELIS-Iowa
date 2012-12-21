@@ -25,19 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.storageLocation.client.StorageLocationService;
 
 public class StorageLocationChildManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.storageLocation.server.StorageLocationService";
-    protected ScreenService       service;
     
     public StorageLocationChildManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);   
     }
     
     public StorageLocationChildManager fetchByParentStorageLocationId(Integer id) throws Exception {
-        return service.call("fetchChildByParentStorageLocationId", id);
+        return StorageLocationService.get().fetchChildByParentStorageLocationId(id);
     }
     
     public StorageLocationChildManager add(StorageLocationChildManager man) throws Exception {

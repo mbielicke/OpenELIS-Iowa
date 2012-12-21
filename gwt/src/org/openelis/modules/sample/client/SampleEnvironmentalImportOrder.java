@@ -40,6 +40,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.modules.project.client.ProjectService;
 
 public class SampleEnvironmentalImportOrder extends ImportOrder {
     
@@ -124,7 +125,7 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
                 } else if ("description".equals(analyteId)) {
                     env.setDescription(data.getValue());
                 } else if ("project_name".equals(analyteId) && data.getValue() != null) {
-                    proj = projectService.call("fetchSingleByName", data.getValue());
+                    proj = ProjectService.get().fetchSingleByName(data.getValue());
                     if (proj != null) {
                         smplProj = new SampleProjectViewDO();
                         smplProj.setIsPermanent("Y");

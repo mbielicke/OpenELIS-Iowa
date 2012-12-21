@@ -29,18 +29,17 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.analysisUser.client.AnalysisUserService;
 
 public class AnalysisUserManagerProxy {
-    protected static final String ANALYSIS_USER_SERVICE_URL = "org.openelis.modules.analysisUser.server.AnalysisUserService";
-    protected ScreenService       service;
-
+    
+   
     public AnalysisUserManagerProxy() {
-        service = new ScreenService("controller?service=" + ANALYSIS_USER_SERVICE_URL);
+
     }
 
     public AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return service.call("fetchByAnalysisId", analysisId);
+        return AnalysisUserService.get().fetchByAnalysisId(analysisId);
     }
 
     public AnalysisUserManager add(AnalysisUserManager man) throws Exception {

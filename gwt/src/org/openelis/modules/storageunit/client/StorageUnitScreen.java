@@ -88,7 +88,6 @@ public class StorageUnitScreen extends Screen {
 
     public StorageUnitScreen() throws Exception {
         super((ScreenDefInt)GWT.create(StorageUnitDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.storageunit.server.StorageUnitService");
 
         userPermission = UserCache.getPermission().getModule("storageunit");
         if (userPermission == null)
@@ -291,7 +290,7 @@ public class StorageUnitScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(9);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                StorageUnitService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -421,7 +420,7 @@ public class StorageUnitScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = StorageUnitService.get().fetchForUpdate(data.getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -465,7 +464,7 @@ public class StorageUnitScreen extends Screen {
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
-                data = service.call("add", data);
+                data = StorageUnitService.get().add(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -479,7 +478,7 @@ public class StorageUnitScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                data = service.call("update", data);
+                data = StorageUnitService.get().update(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -493,7 +492,7 @@ public class StorageUnitScreen extends Screen {
         } else if (state == State.DELETE) {
             window.setBusy(consts.get("deleting"));
             try {
-                service.call("delete", data);
+                StorageUnitService.get().delete(data);
 
                 fetchById(null);
                 window.setDone(consts.get("deleteComplete"));
@@ -520,7 +519,7 @@ public class StorageUnitScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = StorageUnitService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -530,7 +529,7 @@ public class StorageUnitScreen extends Screen {
             window.setDone(consts.get("updateAborted"));
         } else if (state == State.DELETE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = StorageUnitService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -558,7 +557,7 @@ public class StorageUnitScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                data = service.call("fetchById", id);
+                data = StorageUnitService.get().fetchById(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);

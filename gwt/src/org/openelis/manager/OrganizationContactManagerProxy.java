@@ -25,18 +25,16 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.organization.client.OrganizationService;
 
 public class OrganizationContactManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
-    protected ScreenService       service;
+
 
     public OrganizationContactManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public OrganizationContactManager fetchByOrganizationId(Integer orgId) throws Exception {
-        return service.call("fetchContactByOrganizationId", orgId);
+        return OrganizationService.get().fetchContactByOrganizationId(orgId);
     }
 
     public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
