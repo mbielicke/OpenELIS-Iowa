@@ -37,28 +37,23 @@ import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.OrderManagerLocal;
-import org.openelis.local.OrderRecurrenceLocal;
-import org.openelis.local.OrderRecurrenceReportLocal;
-import org.openelis.remote.OrderRecurrenceReportRemote;
+import org.openelis.gwt.common.Prompt;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, OrderRecurrenceReportRemote {
+public class OrderRecurrenceReportBean {
     
     @EJB
-    private DictionaryLocal      dictionary;
+    private DictionaryBean       dictionary;
 
     @EJB
-    private OrderRecurrenceLocal orderRecurrence;
+    private OrderRecurrenceBean  orderRecurrence;
 
     @EJB
-    private OrderManagerLocal    orderManager;
+    private OrderManagerBean     orderManager;
 
     private static Integer      daysId, monthsId, yearsId;
 

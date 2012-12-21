@@ -52,23 +52,22 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.CronLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.meta.CronMeta;
-import org.openelis.remote.CronRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.FixedPeriodCron;
 
 @Stateless
 @SecurityDomain("openelis")
-public class CronBean implements CronRemote, CronLocal {
+public class CronBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager         manager;
 
     @EJB
-    private LockLocal             lock;
+    private LockBean             lock;
+    
+    @EJB
+    private UserCacheBean         userCache;
 
     @Resource
     SessionContext                ctx;
@@ -285,6 +284,6 @@ public class CronBean implements CronRemote, CronLocal {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("cron", flag);
+        userCache.applyPermission("cron", flag);
     }
 }

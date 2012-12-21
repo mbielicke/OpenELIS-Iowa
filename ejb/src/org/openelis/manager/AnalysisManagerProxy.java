@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -36,7 +37,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.utils.EJBFactory;
 
@@ -47,7 +47,7 @@ public class AnalysisManagerProxy {
                              anErrorCompletedId, sampleNotVerifiedId, sampleReleasedId;
 
     public AnalysisManagerProxy() {
-        DictionaryLocal l;
+        DictionaryBean l;
 
         if (anLoggedInId == null) {
             l = EJBFactory.getDictionary();

@@ -48,22 +48,19 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.OrderLocal;
-import org.openelis.local.OrganizationLocal;
 import org.openelis.meta.OrderMeta;
-import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderBean implements OrderRemote, OrderLocal {
+public class OrderBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
     @EJB
-    private  OrganizationLocal       organization;
+    private  OrganizationBean       organization;
 
     private static final OrderMeta meta = new OrderMeta();
     

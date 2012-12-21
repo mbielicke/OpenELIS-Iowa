@@ -36,24 +36,24 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
-import org.openelis.remote.InventoryItemManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class InventoryItemManagerBean implements InventoryItemManagerRemote {
+public class InventoryItemManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
 
     public InventoryItemManager fetchById(Integer id) throws Exception {
         return InventoryItemManager.fetchById(id);
@@ -149,6 +149,6 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("inventoryitem", flag);
+        userCache.applyPermission("inventoryitem", flag);
     }
 }

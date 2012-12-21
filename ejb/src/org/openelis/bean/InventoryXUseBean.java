@@ -44,12 +44,11 @@ import org.openelis.entity.InventoryXUse;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.InventoryXUseLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryXUseBean implements InventoryXUseLocal {
+public class InventoryXUseBean {
 
     @PersistenceContext(unitName = "openelis")
     EntityManager          manager;

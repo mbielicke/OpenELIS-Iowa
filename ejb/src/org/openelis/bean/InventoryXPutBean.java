@@ -39,19 +39,17 @@ import org.openelis.domain.InventoryXPutDO;
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.InventoryXPutLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryXPutBean implements InventoryXPutLocal {
+public class InventoryXPutBean  {
 
     @PersistenceContext(unitName = "openelis")
     EntityManager          manager;
 
     @EJB
-    InventoryLocationLocal inventoryLocation;
+    InventoryLocationBean inventoryLocation;
 
     public ArrayList<InventoryXPutViewDO> fetchByInventoryReceiptId(Integer id) throws Exception {
         Query query;

@@ -57,8 +57,6 @@ import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
-import org.openelis.domain.Prompt;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SDWISUnloadReportVO;
@@ -68,61 +66,48 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.ResultLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SampleSDWISLocal;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.sdwisunload.StatusDataSource;
 import org.openelis.utils.Counter;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 
-public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
+public class SDWISUnloadReportBean {
 
     @EJB
-    private SessionCacheLocal session;    
+    private SessionCacheBean session;    
 
     @EJB
-    private PrinterCacheLocal printers;
+    private PrinterCacheBean  printers;
     
     @EJB
-    AnalysisLocal        analysis;
+    AnalysisBean         analysis;
     @EJB
-    AnalysisQAEventLocal analysisQA;
+    AnalysisQAEventBean  analysisQA;
     @EJB
-    AnalyteLocal         analyte;
+    AnalyteBean          analyte;
     @EJB
-    AuxDataLocal         auxData;
+    AuxDataBean          auxData;
     @EJB
-    DictionaryCacheLocal dictionaryCache;
+    DictionaryCacheBean dictionaryCache;
     @EJB
-    ResultLocal          result;
+    ResultBean           result;
     @EJB
-    SampleLocal          sample;
+    SampleBean          sample;
     @EJB
-    SampleQAEventLocal   sampleQA;
+    SampleQAEventBean   sampleQA;
     @EJB
-    SampleSDWISLocal     sampleSdwis;
+    SampleSDWISBean     sampleSdwis;
     @EJB
-    SectionCacheLocal    sectionCache;
+    SectionCacheBean    sectionCache;
     @EJB
-    UserCacheLocal       userCache;
+    UserCacheBean        userCache;
 
     private static Integer releasedStatusId, sdwisBacterialId, typeDictionaryId;
     private static HashMap<String, String> methodCodes, contaminantIds;
@@ -374,7 +359,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
              * Print the status report
              */
             jparam = new HashMap<String, Object>();
-            jparam.put("LOGIN_NAME", EJBFactory.getUserCache().getName());
+            jparam.put("LOGIN_NAME", userCache.getName());
             jparam.put("BEGIN_RELEASED", ReportUtil.toString(beginReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("END_RELEASED", ReportUtil.toString(endReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("SAMPLE_COUNTS", sampleCounts);

@@ -37,22 +37,22 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.AnalyteParameterLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.AnalyteParameterManager;
-import org.openelis.remote.AnalyteParameterManagerRemote;
 import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemote {   
+public class AnalyteParameterManagerBean {//implements AnalyteParameterManagerRemote {   
     
     @Resource
     private SessionContext        ctx;
 
     @EJB
-    private LockLocal             lock;
+    private LockBean              lock;
+    
+    @EJB
+    private UserCacheBean         userCache;
     
     public AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Integer refId,
                                                                       Integer refTableId) throws Exception {        
@@ -114,7 +114,7 @@ public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemot
     public AnalyteParameterManager fetchForUpdate(AnalyteParameterManager man) throws Exception {
         UserTransaction ut;
         AnalyteParameterViewDO data;
-        AnalyteParameterLocal pl;
+        AnalyteParameterBean pl;
 
         pl = EJBFactory.getAnalyteParameter();
         ut = ctx.getUserTransaction();
@@ -136,7 +136,7 @@ public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemot
     
     public AnalyteParameterManager abortUpdate(AnalyteParameterManager man) throws Exception {
         AnalyteParameterViewDO data;
-        AnalyteParameterLocal pl;
+        AnalyteParameterBean pl;
         
         pl = EJBFactory.getAnalyteParameter();
         for (int i = 0; i < man.count(); i++) {
@@ -148,6 +148,6 @@ public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemot
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("analyteparameter", flag);
+        userCache.applyPermission("analyteparameter", flag);
     }
 }

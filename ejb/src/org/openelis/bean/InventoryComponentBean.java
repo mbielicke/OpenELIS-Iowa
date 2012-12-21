@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -43,18 +44,18 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryComponentLocal;
-import org.openelis.local.InventoryItemCacheLocal;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryComponentBean implements InventoryComponentLocal {
+public class InventoryComponentBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
+    
+    @EJB
+    InventoryItemCacheBean inventoryCache;
 
     @SuppressWarnings("unchecked")
     public ArrayList<InventoryComponentViewDO> fetchByInventoryItemId(Integer id) throws Exception {
@@ -117,9 +118,7 @@ public class InventoryComponentBean implements InventoryComponentLocal {
         Integer compId;
         ValidationErrorsList list;       
         InventoryItemDO item;
-        InventoryItemCacheLocal icl;
 
-        icl = EJBFactory.getInventoryItemCache();
         list = new ValidationErrorsList();
         compId = data.getComponentId();
 
@@ -131,7 +130,7 @@ public class InventoryComponentBean implements InventoryComponentLocal {
                                              InventoryItemMeta.getComponentQuantity()));
         
         if (inventoryItemStoreId != null) {
-            item = icl.getById(compId);
+            item = inventoryCache.getById(compId);
             if (!inventoryItemStoreId.equals(item.getStoreId())) {
                 list.add(new FieldErrorException("compStoreNotSameAsKitStoreException",
                                                  InventoryItemMeta.getComponentName()));

@@ -47,8 +47,6 @@ import org.openelis.domain.TestResultDO;
 import org.openelis.entity.Result;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.RoundingMethod;
@@ -57,13 +55,13 @@ import org.openelis.utilcommon.ResultValidator.Type;
 @Stateless
 @SecurityDomain("openelis")
 
-public class ResultBean implements ResultLocal {
+public class ResultBean { //implements ResultLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager   manager;
 
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryBean  dictionary;
 
     private static Integer supplementalTypeId, roundSigFigId, roundSigFigNOEId,
                            roundIntId, roundIntSigFigId, roundIntSigFigNOEId, qaEventOverrideId;

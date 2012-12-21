@@ -50,23 +50,16 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.IdAccessionVO;
-import org.openelis.domain.Prompt;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DataExchangeReportLocal;
-import org.openelis.local.DataExchangeXMLMapperLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.EventLogLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.remote.DataExchangeReportRemote;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
 import org.openelis.utils.EJBFactory;
@@ -76,22 +69,25 @@ import org.w3c.dom.Document;
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class DataExchangeReportBean implements DataExchangeReportLocal, DataExchangeReportRemote {
+public class DataExchangeReportBean {
 
     @EJB
-    private SessionCacheLocal          session;
+    private SessionCacheBean          session;
     
     @EJB
-    private SampleLocal                sample;
+    private SampleBean                 sample;
 
     @EJB
-    private EventLogLocal              eventLog;
+    private EventLogBean               eventLog;
 
     @EJB
-    private DictionaryLocal            dictionary;
+    private DictionaryBean             dictionary;
 
     @EJB
-    private DataExchangeXMLMapperLocal dataExchangeXMLMapper;
+    private DataExchangeXMLMapperBean dataExchangeXMLMapper;
+    
+    @EJB
+    private UserCacheBean              userCache;
 
     private static Integer             dataTransLogTypeId, infoLogLevelId, errorLogLevelId;
 
@@ -116,7 +112,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
         try {
             if (resource == null) {
                 try {
-                    locale = EJBFactory.getUserCache().getLocale();
+                    locale = userCache.getLocale();
                 } catch (Exception e) {
                     locale = "en";
                 }

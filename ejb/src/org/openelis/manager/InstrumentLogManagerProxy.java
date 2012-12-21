@@ -28,13 +28,11 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openelis.bean.InstrumentLogBean;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InstrumentLogLocal;
-import org.openelis.meta.InstrumentMeta;
 import org.openelis.utils.EJBFactory;
 
 public class InstrumentLogManagerProxy {
@@ -52,7 +50,7 @@ public class InstrumentLogManagerProxy {
     }
     
     public InstrumentLogManager add(InstrumentLogManager man) throws Exception {
-        InstrumentLogLocal il;
+        InstrumentLogBean il;
         InstrumentLogDO data;
         
         il = EJBFactory.getInstrumentLog();
@@ -67,7 +65,7 @@ public class InstrumentLogManagerProxy {
     
     public InstrumentLogManager update(InstrumentLogManager man) throws Exception {
         int i;
-        InstrumentLogLocal il;
+        InstrumentLogBean il;
         InstrumentLogDO data;
         
         il = EJBFactory.getInstrumentLog();
@@ -101,7 +99,7 @@ public class InstrumentLogManagerProxy {
     
     private void validateLog(ValidationErrorsList list, InstrumentLogManager man) {
         int i;
-        InstrumentLogLocal il;
+        InstrumentLogBean il;
         InstrumentLogDO data;
 //        TableFieldErrorException exc;
 //        Datetime eb,ee;

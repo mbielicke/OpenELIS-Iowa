@@ -28,11 +28,11 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openelis.bean.TestPrepBean;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestPrepLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -50,7 +50,7 @@ public class TestPrepManagerProxy {
     }
     
     public TestPrepManager add(TestPrepManager man) throws Exception {        
-        TestPrepLocal tl;
+        TestPrepBean tl;
         TestPrepViewDO prepTest;
         
         tl = EJBFactory.getTestPrep();         
@@ -66,7 +66,7 @@ public class TestPrepManagerProxy {
     }
     
     public TestPrepManager update(TestPrepManager man) throws Exception {        
-        TestPrepLocal tl;
+        TestPrepBean tl;
         TestPrepViewDO prepTest;
         
         tl = EJBFactory.getTestPrep(); 
@@ -95,7 +95,7 @@ public class TestPrepManagerProxy {
         TableFieldErrorException exc;
         TestPrepViewDO prepDO;
         Integer prepId;        
-        TestPrepLocal pl;
+        TestPrepBean pl;
 
         testPrepIdList = new ArrayList<Integer>();
         numReq = 0;

@@ -59,64 +59,50 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.AnalysisReportFlagsLocal;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.BillingReportLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.ResultLocal;
-import org.openelis.local.SampleEnvironmentalLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.local.SamplePrivateWellLocal;
-import org.openelis.local.SampleProjectLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SampleSDWISLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class BillingReportBean implements BillingReportLocal {
+public class BillingReportBean {
 
     @EJB
-    private SampleLocal              sample;
+    private SampleBean               sample;
 
     @EJB
-    private SystemVariableLocal      systemVariable;
+    private SystemVariableBean      systemVariable;
 
     @EJB
-    private SampleOrganizationLocal  sampleOrganization;
+    private SampleOrganizationBean  sampleOrganization;
 
     @EJB
-    private SamplePrivateWellLocal   samplePrivateWell;
+    private SamplePrivateWellBean   samplePrivateWell;
 
     @EJB
-    private SampleEnvironmentalLocal sampleEnvironmental;
+    private SampleEnvironmentalBean sampleEnvironmental;
 
     @EJB
-    private SampleSDWISLocal         sampleSDWIS;
+    private SampleSDWISBean         sampleSDWIS;
 
     @EJB
-    private SampleProjectLocal       sampleProject;
+    private SampleProjectBean       sampleProject;
 
     @EJB
-    private SampleQAEventLocal       sampleQaevent;
+    private SampleQAEventBean       sampleQaevent;
 
     @EJB
-    private AnalysisQAEventLocal     analysisQaevent;
+    private AnalysisQAEventBean      analysisQaevent;
     
     @EJB
-    private ResultLocal              result;          
+    private ResultBean               result;          
     
     @EJB
-    private AuxDataLocal             auxData;
+    private AuxDataBean              auxData;
     
     @EJB
-    private AnalysisReportFlagsLocal analysisReportFlags; 
+    private AnalysisReportFlagsBean analysisReportFlags; 
     
     @EJB
-    private DictionaryLocal          dictionary;
+    private DictionaryBean           dictionary;
     
     private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
                                      MISC_BILLING = "billing misc charges by no method",

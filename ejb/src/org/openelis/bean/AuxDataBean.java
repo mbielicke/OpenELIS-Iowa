@@ -50,24 +50,20 @@ import org.openelis.entity.AuxData;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.remote.AuxDataRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
+public class AuxDataBean { //implements AuxDataLocal, AuxDataRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager        manager;
 
     @EJB
-    private DictionaryLocal      dictionary;
+    private DictionaryBean      dictionary;
 
     @EJB
-    private DictionaryCacheLocal dictionaryCache;
+    private DictionaryCacheBean dictionaryCache;
     
     private static Integer       dictionaryTypeId;
     

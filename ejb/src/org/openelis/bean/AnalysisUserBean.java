@@ -43,19 +43,17 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.local.AnalysisUserLocal;
-import org.openelis.local.UserCacheLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class AnalysisUserBean implements AnalysisUserLocal {
+public class AnalysisUserBean  { //implements AnalysisUserLocal {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     @EJB
-    private UserCacheLocal userCache;
+    private UserCacheBean userCache;
     
     public AnalysisUserViewDO fetchById(Integer id) throws Exception {
         Query query;

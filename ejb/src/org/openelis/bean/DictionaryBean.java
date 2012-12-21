@@ -49,22 +49,19 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.meta.CategoryMeta;
-import org.openelis.remote.DictionaryRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
+public class DictionaryBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager        manager;
 
     @EJB
-    private DictionaryCacheLocal dictCache;        
+    private DictionaryCacheBean dictCache;        
 
     private static CategoryMeta  meta = new CategoryMeta();
 

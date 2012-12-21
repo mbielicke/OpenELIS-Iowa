@@ -46,21 +46,18 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.remote.InventoryLocationRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryLocationBean implements InventoryLocationLocal, InventoryLocationRemote {
+public class InventoryLocationBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     
     @EJB
-    private LockLocal                        lockBean;
+    private LockBean                        lockBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemId(Integer id) throws Exception {

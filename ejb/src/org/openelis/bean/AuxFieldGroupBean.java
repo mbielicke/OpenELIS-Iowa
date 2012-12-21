@@ -46,14 +46,12 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AuxFieldGroupLocal;
 import org.openelis.meta.AuxFieldGroupMeta;
-import org.openelis.remote.AuxFieldGroupRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxFieldGroupBean implements AuxFieldGroupRemote, AuxFieldGroupLocal {
+public class AuxFieldGroupBean { //implements AuxFieldGroupRemote, AuxFieldGroupLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;

@@ -36,7 +36,6 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.local.SessionCacheLocal;
 
 /**
  * This class provides application level cache handling for sessions
@@ -45,7 +44,7 @@ import org.openelis.local.SessionCacheLocal;
 @SecurityDomain("openelis")
 @Singleton
 
-public class SessionCacheBean implements SessionCacheLocal {
+public class SessionCacheBean {
 
     @Resource
     private SessionContext ctx;

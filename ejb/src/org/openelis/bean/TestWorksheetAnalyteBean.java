@@ -41,13 +41,12 @@ import org.openelis.entity.TestWorksheetAnalyte;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
+public class TestWorksheetAnalyteBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;

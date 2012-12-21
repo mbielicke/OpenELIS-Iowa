@@ -37,33 +37,29 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalyteParameterLocal;
-import org.openelis.local.CategoryCacheLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
-import org.openelis.remote.QcChartReportRemote;
 import org.openelis.report.qcchart.QcChartDataSource;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class QcChartReportBean implements QcChartReportRemote {
+public class QcChartReportBean {
     @EJB
-    private SessionCacheLocal      session;
+    private SessionCacheBean      session;
 
     @EJB
-    private WorksheetAnalysisLocal worksheetAnalysis;
+    private WorksheetAnalysisBean worksheetAnalysis;
 
     @EJB
-    private DictionaryLocal        dictionary;
+    private DictionaryBean         dictionary;
 
     @EJB
-    private CategoryCacheLocal     categoryCache;
+    private CategoryCacheBean      categoryCache;
 
     @EJB
-    private AnalyteParameterLocal  analyteParameter;
+    private AnalyteParameterBean   analyteParameter;
+    
+    @EJB
+    private UserCacheBean          userCache;
 
     private static final Logger    log = Logger.getLogger(QcChartReportBean.class);
 
@@ -291,7 +287,7 @@ public class QcChartReportBean implements QcChartReportRemote {
 
             tempFile = File.createTempFile("qcreport", ".pdf", new File("/tmp"));
             jparam = new HashMap<String, Object>();
-            jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
+            jparam.put("LOGNAME", userCache.getName());
             jparam.put("QCNAME", qcName);
 
             status.setMessage("Loading report");

@@ -32,12 +32,11 @@ import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
-import org.openelis.remote.PWSManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class PWSManagerBean implements PWSManagerRemote {
+public class PWSManagerBean {
 
     public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {        
         return PWSManager.fetchByTinwsysIsNumber(tinwsysIsNumber);

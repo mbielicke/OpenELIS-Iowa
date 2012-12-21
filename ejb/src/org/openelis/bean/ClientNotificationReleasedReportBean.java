@@ -46,24 +46,20 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.local.AnalysisReportFlagsLocal;
-import org.openelis.local.ClientNotificationReleasedReportLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class ClientNotificationReleasedReportBean implements ClientNotificationReleasedReportLocal {
+public class ClientNotificationReleasedReportBean {
     @EJB
-    private SampleLocal              sample;
+    private SampleBean              sample;
 
     @EJB
-    private SystemVariableLocal      systemVariable;
+    private SystemVariableBean      systemVariable;
 
     @EJB
-    private AnalysisReportFlagsLocal analysisReportFlags;
+    private AnalysisReportFlagsBean analysisReportFlags;
 
     private static final Logger      log = Logger.getLogger(ClientNotificationReleasedReportBean.class);
 

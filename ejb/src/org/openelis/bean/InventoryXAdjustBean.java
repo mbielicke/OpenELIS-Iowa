@@ -43,13 +43,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryXAdjustBean implements InventoryXAdjustLocal {
+public class InventoryXAdjustBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

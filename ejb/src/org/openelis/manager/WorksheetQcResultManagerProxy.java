@@ -28,11 +28,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.WorksheetQcResultBean;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.WorksheetQcResultLocal;
-import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetQcResultManagerProxy {
@@ -53,7 +52,7 @@ public class WorksheetQcResultManagerProxy {
     
     public WorksheetQcResultManager add(WorksheetQcResultManager manager) throws Exception {
         int                    i;
-        WorksheetQcResultLocal local;
+        WorksheetQcResultBean local;
         WorksheetQcResultViewDO    qcResult;
         
         local = EJBFactory.getWorksheetQcResult();
@@ -68,7 +67,7 @@ public class WorksheetQcResultManagerProxy {
 
     public WorksheetQcResultManager update(WorksheetQcResultManager manager) throws Exception {
         int                    i, j;
-        WorksheetQcResultLocal local;
+        WorksheetQcResultBean local;
         WorksheetQcResultViewDO    qcResult;
         
         local = EJBFactory.getWorksheetQcResult();
@@ -91,7 +90,7 @@ public class WorksheetQcResultManagerProxy {
 
     public void validate(WorksheetQcResultManager manager, ValidationErrorsList errorList) {
         int                    i;
-        WorksheetQcResultLocal local;
+        WorksheetQcResultBean local;
 
         local = EJBFactory.getWorksheetQcResult();
         for (i = 0; i < manager.count(); i++) {

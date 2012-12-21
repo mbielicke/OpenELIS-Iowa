@@ -40,12 +40,11 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.entity.SampleQaevent;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.SampleQAEventLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleQAEventBean implements SampleQAEventLocal {
+public class SampleQAEventBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

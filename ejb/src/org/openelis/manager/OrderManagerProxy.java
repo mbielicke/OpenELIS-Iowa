@@ -25,12 +25,12 @@
  */
 package org.openelis.manager;
 
+import org.openelis.bean.OrderRecurrenceBean;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderRecurrenceLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderManagerProxy {
@@ -116,7 +116,7 @@ public class OrderManagerProxy {
         Integer id;
         OrderViewDO data;
         OrderRecurrenceDO ord;
-        OrderRecurrenceLocal orl;
+        OrderRecurrenceBean orl;
                 
         data = man.getOrder();
         EJBFactory.getOrder().add(data);

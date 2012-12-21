@@ -38,25 +38,25 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
-import org.openelis.remote.OrganizationManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class OrganizationManagerBean implements OrganizationManagerRemote {
+public class OrganizationManagerBean { //implements OrganizationManagerRemote {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
 
     public OrganizationManager fetchById(Integer id) throws Exception {
         return OrganizationManager.fetchById(id);
@@ -180,10 +180,10 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("organization", flag);
+        userCache.applyPermission("organization", flag);
     }
 
     private void checkSecurityForNotify(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("w_notify", flag);
+        userCache.applyPermission("w_notify", flag);
     }
 }

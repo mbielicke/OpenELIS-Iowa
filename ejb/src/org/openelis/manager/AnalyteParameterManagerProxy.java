@@ -27,8 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
+import org.openelis.bean.AnalyteParameterBean;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -38,9 +37,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalyteParameterLocal;
-import org.openelis.local.QcLocal;
-import org.openelis.local.TestLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AnalyteParameterManagerProxy {
@@ -77,7 +73,7 @@ public class AnalyteParameterManagerProxy {
     
     public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception {
         int i;
-        AnalyteParameterLocal pl;
+        AnalyteParameterBean pl;
         AnalyteParameterViewDO data;
         ArrayList<AnalyteParameterViewDO> params;
         ArrayList<Integer> idList;
@@ -110,7 +106,7 @@ public class AnalyteParameterManagerProxy {
     }
 
     public AnalyteParameterManager update(AnalyteParameterManager man) throws Exception {
-        AnalyteParameterLocal pl;
+        AnalyteParameterBean pl;
         AnalyteParameterViewDO data, nextData, prevData;        
         ArrayList<AnalyteParameterViewDO> params;
         ArrayList<Integer> idList;
@@ -196,7 +192,7 @@ public class AnalyteParameterManagerProxy {
         ArrayList<AnalyteParameterViewDO> params;        
         AnalyteParameterViewDO prev, data, next;
         ValidationErrorsList errors;  
-        AnalyteParameterLocal pl;        
+        AnalyteParameterBean pl;        
         
         params = man.getParameters(); 
         errors = new ValidationErrorsList();
@@ -287,7 +283,7 @@ public class AnalyteParameterManagerProxy {
             throw errors;
     }
     
-    private void fetchPreviousAndValidate(AnalyteParameterViewDO data, AnalyteParameterLocal pl,
+    private void fetchPreviousAndValidate(AnalyteParameterViewDO data, AnalyteParameterBean pl,
                                           ValidationErrorsList errors) throws Exception {
         ArrayList<AnalyteParameterViewDO> results;        
         try {
@@ -345,7 +341,7 @@ public class AnalyteParameterManagerProxy {
                         !DataBaseUtil.isEmpty(data.getP1()));
     }
     
-    private void updatePreviousActive(AnalyteParameterViewDO data, AnalyteParameterLocal pl,
+    private void updatePreviousActive(AnalyteParameterViewDO data, AnalyteParameterBean pl,
                                       ArrayList<Integer> idList) throws Exception {
         Integer id;
         AnalyteParameterViewDO result;
@@ -368,7 +364,7 @@ public class AnalyteParameterManagerProxy {
         }
     }
     
-    private void updateLatestInactive(AnalyteParameterViewDO data, AnalyteParameterLocal pl) throws Exception {
+    private void updateLatestInactive(AnalyteParameterViewDO data, AnalyteParameterBean pl) throws Exception {
         AnalyteParameterViewDO result;
         ArrayList<AnalyteParameterViewDO> results;
         Datetime ab, ae;

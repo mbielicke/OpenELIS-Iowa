@@ -39,12 +39,11 @@ import org.openelis.domain.PWSFacilityDO;
 import org.openelis.entity.PWSFacility;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.PWSFacilityLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class PWSFacilityBean implements PWSFacilityLocal {
+public class PWSFacilityBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;

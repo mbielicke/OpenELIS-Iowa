@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.InventoryLocationBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
@@ -36,7 +37,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryLocationLocal;
 import org.openelis.utils.EJBFactory;
 
 public class InventoryTransferManagerProxy {
@@ -67,7 +67,7 @@ public class InventoryTransferManagerProxy {
         OrderItemViewDO orderItem;
         ArrayList<OrderItemViewDO> orderItems;
         ArrayList<Integer> locationIdList;
-        InventoryLocationLocal ll;
+        InventoryLocationBean ll;
         Datetime date;
 
         date = Datetime.getInstance(Datetime.YEAR, Datetime.MONTH);

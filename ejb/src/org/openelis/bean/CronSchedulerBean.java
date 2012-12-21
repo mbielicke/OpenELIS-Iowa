@@ -39,7 +39,6 @@ import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.entity.Cron;
-import org.openelis.local.CronLocal;
 import org.openelis.utils.FixedPeriodCron;
 
 @Stateless
@@ -50,7 +49,7 @@ public class CronSchedulerBean {
     private SessionContext ctx;
 
     @EJB
-    private CronLocal      cron;
+    private CronBean      cron;
 
     private static final Logger log = Logger.getLogger(CronSchedulerBean.class);
 

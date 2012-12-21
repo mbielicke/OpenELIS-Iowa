@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.ShippingTrackingBean;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ShippingTrackingLocal;
 import org.openelis.utils.EJBFactory;
 
 public class ShippingTrackingManagerProxy {
@@ -48,7 +48,7 @@ public class ShippingTrackingManagerProxy {
     }
     
     public ShippingTrackingManager add(ShippingTrackingManager man) throws Exception {
-        ShippingTrackingLocal tl; 
+        ShippingTrackingBean tl; 
         ShippingTrackingDO data;
     
         tl = EJBFactory.getShippingTracking();
@@ -63,7 +63,7 @@ public class ShippingTrackingManagerProxy {
     }
     
     public ShippingTrackingManager update(ShippingTrackingManager man) throws Exception {
-        ShippingTrackingLocal tl; 
+        ShippingTrackingBean tl; 
         ShippingTrackingDO data;
     
         tl = EJBFactory.getShippingTracking();
@@ -87,7 +87,7 @@ public class ShippingTrackingManagerProxy {
     
     public void validate(ShippingTrackingManager man) throws Exception {
         ValidationErrorsList list;
-        ShippingTrackingLocal tl;
+        ShippingTrackingBean tl;
         
         tl = EJBFactory.getShippingTracking();
         list = new ValidationErrorsList();

@@ -47,19 +47,17 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxFieldValueLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.meta.AuxFieldGroupMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxFieldValueBean implements AuxFieldValueLocal {
+public class AuxFieldValueBean {//implements AuxFieldValueLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     
     @EJB
-    private DictionaryLocal                  dictionary;
+    private DictionaryBean                   dictionary;
 
     private static int                       typeDict, typeNumeric, typeDateTime,
                                              typeDate, typeTime, typeAlphaLower,

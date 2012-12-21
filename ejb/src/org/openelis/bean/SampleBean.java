@@ -55,23 +55,20 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.SampleLocal;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.remote.SampleRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleBean implements SampleLocal, SampleRemote {
+public class SampleBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
     
     @EJB
-    private DictionaryLocal                dictionary;
+    private DictionaryBean                 dictionary;
 
     private static final SampleMeta        meta = new SampleMeta();
     

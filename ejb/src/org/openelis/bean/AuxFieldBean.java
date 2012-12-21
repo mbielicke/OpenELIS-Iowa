@@ -43,12 +43,11 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxFieldLocal;
 import org.openelis.meta.AuxFieldGroupMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxFieldBean implements AuxFieldLocal {
+public class AuxFieldBean { //implements AuxFieldLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;

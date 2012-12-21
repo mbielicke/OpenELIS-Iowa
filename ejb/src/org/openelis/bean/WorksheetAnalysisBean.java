@@ -49,21 +49,18 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.meta.WorksheetCompletionMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
+public class WorksheetAnalysisBean {
 
     @EJB
-    private DictionaryLocal      dictionary;
+    private DictionaryBean       dictionary;
 
     @EJB
-    private UserCacheLocal       userCache;
-
+    private UserCacheBean        userCache;
+    
     private static Integer       workingId;
 
     @PostConstruct

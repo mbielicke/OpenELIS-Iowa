@@ -12,49 +12,41 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
-import org.openelis.domain.Prompt;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.CategoryCacheLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.LabelReportLocal;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.SystemVariableLocal;
-import org.openelis.remote.SampleLoginLabelReportRemote;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote {
+public class SampleLoginLabelReportBean {
 
     @EJB
-    private CategoryCacheLocal   category;
+    private CategoryCacheBean    category;
 
     @EJB
-    private DictionaryCacheLocal dictionary;
+    private DictionaryCacheBean dictionary;
 
     @EJB
-    private SessionCacheLocal    session;
+    private SessionCacheBean    session;
 
     @EJB
-    private SystemVariableLocal  sysvar;
+    private SystemVariableBean   sysvar;
 
     @EJB
-    private SampleLocal          sample;
+    private SampleBean           sample;
 
     @EJB
-    private PrinterCacheLocal    printer;
+    private PrinterCacheBean     printer;
 
     @EJB
-    private LabelReportLocal     labelReport;
+    private LabelReportBean     labelReport;
 
     private static final Logger  log = Logger.getLogger(SampleLoginLabelReportBean.class);
 

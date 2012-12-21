@@ -46,31 +46,26 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.SampleItemLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.StorageLocal;
-import org.openelis.local.UserCacheLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class StorageBean implements StorageLocal {
+public class StorageBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager   manager;
 
     @EJB
-    private SampleItemLocal sampleItem;
+    private SampleItemBean sampleItem;
 
     @EJB
-    private AnalysisLocal   analysis;
+    private AnalysisBean    analysis;
 
     @EJB
-    private SampleLocal     sample;
+    private SampleBean     sample;
     
     @EJB
-    private UserCacheLocal   userCache; 
+    private UserCacheBean   userCache; 
         
 
     public ArrayList<StorageViewDO> fetchById(Integer referenceId, Integer refTableId) throws Exception {

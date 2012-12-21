@@ -29,12 +29,11 @@ import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.manager.NoteManager;
-import org.openelis.remote.NoteManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class NoteManagerBean implements NoteManagerRemote {
+public class NoteManagerBean {
 
     public NoteManager fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception {
         return NoteManager.fetchByRefTableRefIdIsExt(refTableId, refId, "Y".equals(isExternal));

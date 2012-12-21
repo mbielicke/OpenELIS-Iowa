@@ -36,23 +36,23 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
-import org.openelis.remote.AuxFieldGroupManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
+public class AuxFieldGroupManagerBean {
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean     lockBean;
+    
+    @EJB
+    UserCacheBean          userCache;
 
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
         return AuxFieldGroupManager.fetchById(id);
@@ -143,6 +143,6 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("auxiliary", flag);
+        userCache.applyPermission("auxiliary", flag);
     }    
 }

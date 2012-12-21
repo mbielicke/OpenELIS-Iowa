@@ -42,20 +42,17 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.local.NoteLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class NoteBean implements NoteLocal {
+public class NoteBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager          manager;
     
     @EJB
-    private UserCacheLocal         userCache; 
+    private UserCacheBean          userCache; 
     
     public ArrayList<NoteViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
@@ -161,7 +158,7 @@ public class NoteBean implements NoteLocal {
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setSubject(data.getSubject());
-        entity.setSystemUserId(EJBFactory.getUserCache().getId());
+        entity.setSystemUserId(userCache.getId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
 
@@ -184,7 +181,7 @@ public class NoteBean implements NoteLocal {
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setSubject(data.getSubject());
-        entity.setSystemUserId(EJBFactory.getUserCache().getId());
+        entity.setSystemUserId(userCache.getId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
 

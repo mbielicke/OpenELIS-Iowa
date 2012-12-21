@@ -31,13 +31,12 @@ import javax.ejb.TransactionManagementType;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.manager.StorageManager;
-import org.openelis.remote.StorageManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class StorageManagerBean implements StorageManagerRemote {
+public class StorageManagerBean {
     
     public StorageManager fetchById(Integer referenceTableId, Integer referenceId) throws Exception {
         return StorageManager.fetchByRefTableRefId(referenceTableId, referenceId);

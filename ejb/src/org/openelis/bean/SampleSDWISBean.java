@@ -44,20 +44,18 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.PWSLocal;
-import org.openelis.local.SampleSDWISLocal;
 import org.openelis.meta.SampleMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleSDWISBean implements SampleSDWISLocal {
+public class SampleSDWISBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     @EJB
-    private PWSLocal pws;
+    private PWSBean pws;
     
     public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;

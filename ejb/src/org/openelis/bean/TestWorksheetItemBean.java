@@ -45,20 +45,18 @@ import org.openelis.entity.TestWorksheetItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.TestWorksheetItemLocal;
 import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestWorksheetItemBean implements TestWorksheetItemLocal {
+public class TestWorksheetItemBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
     @EJB
-    private DictionaryLocal          dictionary;
+    private DictionaryBean           dictionary;
     
     private static int               typeDupl, typeFixed, typeFixedAlways; 
     

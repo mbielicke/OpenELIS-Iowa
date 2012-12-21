@@ -45,21 +45,19 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.OrganizationParameterLocal;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.utils.EmailUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrganizationParameterBean implements OrganizationParameterLocal {
+public class OrganizationParameterBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
     
     @EJB
-    private DictionaryLocal            dictionary;
+    private DictionaryBean             dictionary;
     
     private static final Logger log = Logger.getLogger(OrganizationParameterBean.class);
     

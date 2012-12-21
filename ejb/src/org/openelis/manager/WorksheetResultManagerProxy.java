@@ -28,11 +28,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.WorksheetResultBean;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.WorksheetResultLocal;
-import org.openelis.manager.WorksheetResultManager;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetResultManagerProxy {
@@ -53,7 +52,7 @@ public class WorksheetResultManagerProxy {
     
     public WorksheetResultManager add(WorksheetResultManager manager) throws Exception {
         int                    i;
-        WorksheetResultLocal local;
+        WorksheetResultBean local;
         WorksheetResultViewDO    result;
         
         local = EJBFactory.getWorksheetResult();
@@ -68,7 +67,7 @@ public class WorksheetResultManagerProxy {
 
     public WorksheetResultManager update(WorksheetResultManager manager) throws Exception {
         int                    i, j;
-        WorksheetResultLocal local;
+        WorksheetResultBean local;
         WorksheetResultViewDO    result;
         
         local = EJBFactory.getWorksheetResult();
@@ -91,7 +90,7 @@ public class WorksheetResultManagerProxy {
 
     public void validate(WorksheetResultManager manager, ValidationErrorsList errorList) {
         int                  i;
-        WorksheetResultLocal local;
+        WorksheetResultBean local;
 
         local = EJBFactory.getWorksheetResult();
         for (i = 0; i < manager.count(); i++) {

@@ -29,6 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.TestWorksheetAnalyteBean;
+import org.openelis.bean.TestWorksheetBean;
+import org.openelis.bean.TestWorksheetItemBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
@@ -36,10 +40,6 @@ import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.TestWorksheetAnalyteLocal;
-import org.openelis.local.TestWorksheetItemLocal;
-import org.openelis.local.TestWorksheetLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -49,7 +49,7 @@ public class TestWorksheetManagerProxy {
 
     public TestWorksheetManagerProxy() {
         DictionaryDO data;
-        DictionaryLocal dl;
+        DictionaryBean dl;
 
         dl = EJBFactory.getDictionary();
 
@@ -85,9 +85,9 @@ public class TestWorksheetManagerProxy {
     }
 
     public TestWorksheetManager fetchByTestId(Integer testId) throws Exception {
-        TestWorksheetLocal wl;
-        TestWorksheetItemLocal il;
-        TestWorksheetAnalyteLocal al;
+        TestWorksheetBean wl;
+        TestWorksheetItemBean il;
+        TestWorksheetAnalyteBean al;
         TestWorksheetManager twm;
         TestWorksheetViewDO data;
         ArrayList<TestWorksheetItemDO> items;
@@ -120,9 +120,9 @@ public class TestWorksheetManagerProxy {
 
     public TestWorksheetManager add(TestWorksheetManager man, HashMap<Integer, Integer> anaIdMap)
                                                                                                  throws Exception {
-        TestWorksheetLocal wl;
-        TestWorksheetItemLocal il;
-        TestWorksheetAnalyteLocal al;
+        TestWorksheetBean wl;
+        TestWorksheetItemBean il;
+        TestWorksheetAnalyteBean al;
         TestWorksheetViewDO worksheet;
         TestWorksheetItemDO item;
         TestWorksheetAnalyteViewDO analyte;
@@ -175,9 +175,9 @@ public class TestWorksheetManagerProxy {
 
     public TestWorksheetManager update(TestWorksheetManager man, HashMap<Integer, Integer> anaIdMap)
                                                                                                     throws Exception {
-        TestWorksheetLocal wl;
-        TestWorksheetItemLocal il;
-        TestWorksheetAnalyteLocal al;
+        TestWorksheetBean wl;
+        TestWorksheetItemBean il;
+        TestWorksheetAnalyteBean al;
         TestWorksheetViewDO data;
         TestWorksheetItemDO item;
         TestWorksheetAnalyteViewDO analyte;
@@ -246,7 +246,7 @@ public class TestWorksheetManagerProxy {
     public void validate(TestWorksheetManager man) throws Exception {
         ValidationErrorsList list;
         TestWorksheetViewDO data;
-        TestWorksheetLocal wl;
+        TestWorksheetBean wl;
 
         data = man.getWorksheet();
         wl = EJBFactory.getTestWorksheet();
@@ -283,7 +283,7 @@ public class TestWorksheetManagerProxy {
         Integer bc, tc, position;
         ArrayList<Integer> posList;        
         TestWorksheetItemDO currDO, prevDO;
-        TestWorksheetItemLocal il;
+        TestWorksheetItemBean il;
 
         if (items == null)
             return;        
@@ -357,7 +357,7 @@ public class TestWorksheetManagerProxy {
         TestWorksheetAnalyteViewDO data;
         Integer anaId;
         ArrayList<Integer> idlist;
-        TestWorksheetAnalyteLocal al;
+        TestWorksheetAnalyteBean al;
 
         if (analytes == null)
             return;

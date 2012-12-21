@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.AnalysisQAEventBean;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisQAEventManagerProxy {
@@ -48,7 +48,7 @@ public class AnalysisQAEventManagerProxy {
     
     public AnalysisQaEventManager add(AnalysisQaEventManager man) throws Exception {
         AnalysisQaEventViewDO data;
-        AnalysisQAEventLocal l;
+        AnalysisQAEventBean l;
         
         l = EJBFactory.getAnalysisQAEvent();
         for(int i=0; i<man.count(); i++){
@@ -64,7 +64,7 @@ public class AnalysisQAEventManagerProxy {
     public AnalysisQaEventManager update(AnalysisQaEventManager man) throws Exception {
         int i;
         AnalysisQaEventViewDO data;
-        AnalysisQAEventLocal l;
+        AnalysisQAEventBean l;
         
         l = EJBFactory.getAnalysisQAEvent();
         for(i=0; i<man.deleteCount(); i++)

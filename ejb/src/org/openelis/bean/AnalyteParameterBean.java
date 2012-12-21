@@ -53,29 +53,24 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalyteParameterLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.local.QcAnalyteLocal;
-import org.openelis.local.TestAnalyteLocal;
 import org.openelis.meta.AnalyteParameterMeta;
-import org.openelis.remote.AnalyteParameterRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AnalyteParameterBean implements AnalyteParameterRemote, AnalyteParameterLocal {
+public class AnalyteParameterBean {//implements AnalyteParameterRemote, AnalyteParameterLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                     manager;
 
     @EJB
-    private LockLocal                         lock;   
+    private LockBean                        lock;   
     
     @EJB
-    private TestAnalyteLocal                  testAnalyte; 
+    private TestAnalyteBean                  testAnalyte; 
     
     @EJB
-    private QcAnalyteLocal                    qcAnalyte;  
+    private QcAnalyteBean                   qcAnalyte;  
     
     private static final AnalyteParameterMeta meta = new AnalyteParameterMeta();
     

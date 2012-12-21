@@ -44,13 +44,12 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.QcAnalyteLocal;
 import org.openelis.meta.QcMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class QcAnalyteBean implements QcAnalyteLocal {
+public class QcAnalyteBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;

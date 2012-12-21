@@ -53,30 +53,25 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.meta.WorksheetCreationMeta;
-import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class WorksheetCreationBean implements WorksheetCreationRemote {
+public class WorksheetCreationBean {
 
     @EJB
-    DictionaryLocal dictionary;
+    DictionaryBean dictionary;
     @EJB
-    OrganizationLocal organization;
+    OrganizationBean organization;
     @EJB
-    SampleOrganizationLocal sampleOrganization;
+    SampleOrganizationBean sampleOrganization;
     @EJB
-    SystemVariableLocal systemVariable;
+    SystemVariableBean systemVariable;
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

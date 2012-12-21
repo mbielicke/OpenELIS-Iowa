@@ -47,20 +47,6 @@ import org.openelis.domain.TestViewDO;
 import org.openelis.entity.History;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.HistoryLocal;
-import org.openelis.local.InventoryItemCacheLocal;
-import org.openelis.local.MethodLocal;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.QaeventLocal;
-import org.openelis.local.SampleItemLocal;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.TestLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.remote.HistoryRemote;
 import org.openelis.util.XMLUtil;
 import org.openelis.utilcommon.AuditActivity;
 import org.w3c.dom.Document;
@@ -71,46 +57,46 @@ import org.w3c.dom.NodeList;
 @Stateless
 @SecurityDomain("openelis")
 
-public class HistoryBean implements HistoryRemote, HistoryLocal {
+public class HistoryBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
 
     @EJB
-    private AnalysisLocal           analysis;
+    private AnalysisBean            analysis;
     
     @EJB
-    private AnalyteLocal            analyte;
+    private AnalyteBean             analyte;
 
     @EJB
-    private DictionaryCacheLocal    dictionaryCache;
+    private DictionaryCacheBean    dictionaryCache;
 
     @EJB
-    private InventoryItemCacheLocal inventoryItemCache;
+    private InventoryItemCacheBean inventoryItemCache;
 
     @EJB
-    private MethodLocal             method;
+    private MethodBean              method;
     
     @EJB
-    private OrganizationLocal       organization; 
+    private OrganizationBean        organization; 
     
     @EJB
-    private ProjectLocal            project;  
+    private ProjectBean             project;  
 
     @EJB
-    private QaeventLocal            qaevent;
+    private QaEventBean            qaevent;
 
     @EJB
-    private SampleItemLocal         sampleItem;
+    private SampleItemBean         sampleItem;
 
     @EJB
-    private SectionCacheLocal       sectionCache;
+    private SectionCacheBean       sectionCache;
 
     @EJB
-    private TestLocal               test;
+    private TestBean               test;
 
     @EJB
-    private UserCacheLocal          userCache;
+    private UserCacheBean          userCache;
     
     private static final Logger     log = Logger.getLogger(HistoryBean.class);
     

@@ -31,7 +31,6 @@ import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.local.LabelReportLocal;
 
 /**
  * 
@@ -40,7 +39,7 @@ import org.openelis.local.LabelReportLocal;
  */
 @Stateless
 @SecurityDomain("openelis")
-public class LabelReportBean implements LabelReportLocal {
+public class LabelReportBean {
 
     /*
      * Prints a barcode label for sample login

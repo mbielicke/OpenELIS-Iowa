@@ -27,6 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.InventoryItemBean;
+import org.openelis.bean.InventoryLocationBean;
+import org.openelis.bean.InventoryReceiptBean;
+import org.openelis.bean.InventoryXPutBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -41,12 +45,7 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryItemLocal;
-import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.InventoryReceiptLocal;
-import org.openelis.local.InventoryXPutLocal;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.utils.EJBFactory;
 
 public class BuildKitManagerProxy {
@@ -76,10 +75,10 @@ public class BuildKitManagerProxy {
         InventoryItemViewDO invItem;
         InventoryComponentViewDO component;
         ArrayList<InventoryXPutViewDO> xputList;
-        InventoryReceiptLocal rl;
-        InventoryXPutLocal xl;
-        InventoryLocationLocal ll;
-        InventoryItemLocal il;
+        InventoryReceiptBean rl;
+        InventoryXPutBean xl;
+        InventoryLocationBean ll;
+        InventoryItemBean il;
         OrderManager orderMan;
         OrderViewDO order;
         OrderItemViewDO orderItem;
@@ -186,7 +185,7 @@ public class BuildKitManagerProxy {
         InventoryComponentViewDO component;
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
-        InventoryItemLocal il;
+        InventoryItemBean il;
         ValidationErrorsList list;
 
         item = null;

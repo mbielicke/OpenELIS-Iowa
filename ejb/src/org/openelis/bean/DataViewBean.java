@@ -91,97 +91,78 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.AnalysisUserLocal;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.CategoryCacheLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.PWSLocal;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.ResultLocal;
-import org.openelis.local.SampleEnvironmentalLocal;
-import org.openelis.local.SampleItemLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.local.SamplePrivateWellLocal;
-import org.openelis.local.SampleProjectLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SampleSDWISLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.remote.DataViewRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.util.UTFResource;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class DataViewBean implements DataViewRemote {
+public class DataViewBean {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                   manager;
 
     @EJB
-    private SessionCacheLocal               session;
+    private SessionCacheBean               session;
 
     @EJB
-    private ProjectLocal                    project;
+    private ProjectBean                     project;
     
     @EJB
-    private SampleProjectLocal              sampleProject;
+    private SampleProjectBean              sampleProject;
 
     @EJB
-    private SampleQAEventLocal              sampleQaEvent;
+    private SampleQAEventBean              sampleQaEvent;
 
     @EJB
-    private AnalysisQAEventLocal            analysisQaEvent;
+    private AnalysisQAEventBean             analysisQaEvent;
 
     @EJB
-    private ResultLocal                     result;
+    private ResultBean                      result;
 
     @EJB
-    private AuxDataLocal                    auxData;
+    private AuxDataBean                     auxData;
 
     @EJB
-    private DictionaryLocal                 dictionary;
+    private DictionaryBean                  dictionary;
 
     @EJB
-    private SampleLocal                     sample;
+    private SampleBean                     sample;
     
     @EJB
-    private SampleOrganizationLocal         sampleOrganization;
+    private SampleOrganizationBean         sampleOrganization;
     
     @EJB
-    private SampleItemLocal                 sampleItem; 
+    private SampleItemBean                 sampleItem; 
     
     @EJB
-    private AnalysisLocal                   analysis;
+    private AnalysisBean                    analysis;
     
     @EJB
-    private AnalysisUserLocal               analysisUser;
+    private AnalysisUserBean                analysisUser;
     
     @EJB
-    private SampleEnvironmentalLocal        sampleEnvironmental;  
+    private SampleEnvironmentalBean        sampleEnvironmental;  
     
     @EJB
-    private SamplePrivateWellLocal          samplePrivateWell;  
+    private SamplePrivateWellBean          samplePrivateWell;  
     
     @EJB
-    private SampleSDWISLocal                sampleSDWIS;
+    private SampleSDWISBean                sampleSDWIS;
     
     @EJB
-    private PWSLocal                        pws;
+    private PWSBean                         pws;
     
     @EJB
-    private DictionaryCacheLocal            dictionaryCache; 
+    private DictionaryCacheBean            dictionaryCache; 
     
     @EJB
-    private UserCacheLocal                  userCache; 
+    private UserCacheBean                   userCache; 
+    
+    @EJB
+    private CategoryCacheBean               categoryCache;
     
     private static Integer                  organizationReportToId, sampleInErrorId, 
                                             resultDictId, auxFieldValueDictId, 
@@ -202,10 +183,9 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<DictionaryDO> list;
         CategoryCacheVO cat;
         String locale;      
-        CategoryCacheLocal ccl;
         
         if (resultDictId == null) {
-            ccl = EJBFactory.getCategoryCache();
+
             try {
                 resultDictId = dictionary.fetchBySystemName("test_res_type_dictionary").getId();
                 auxFieldValueDictId = dictionary.fetchBySystemName("aux_dictionary").getId();
@@ -217,7 +197,7 @@ public class DataViewBean implements DataViewRemote {
                 
                 dictEntryMap = new HashMap<Integer, String>();
                 
-                cat = ccl.getBySystemName("sample_status");
+                cat = categoryCache.getBySystemName("sample_status");
                 list = cat.getDictionaryList();
                 for (DictionaryDO data : list) {
                     if ("sample_error".equals(data.getSystemName()))
@@ -225,7 +205,7 @@ public class DataViewBean implements DataViewRemote {
                     dictEntryMap.put(data.getId(), data.getEntry());
                 }
                 
-                cat = ccl.getBySystemName("analysis_status");
+                cat = categoryCache.getBySystemName("analysis_status");
                 list = cat.getDictionaryList();
                 for (DictionaryDO data : list) {
                     if ("analysis_released".equals(data.getSystemName()))
@@ -233,12 +213,12 @@ public class DataViewBean implements DataViewRemote {
                     dictEntryMap.put(data.getId(), data.getEntry());
                 }
                 
-                cat = ccl.getBySystemName("sdwis_sample_type");
+                cat = categoryCache.getBySystemName("sdwis_sample_type");
                 list = cat.getDictionaryList();
                 for (DictionaryDO data : list) 
                     dictEntryMap.put(data.getId(), data.getEntry()); 
                 
-                cat = ccl.getBySystemName("sdwis_sample_category");
+                cat = categoryCache.getBySystemName("sdwis_sample_category");
                 list = cat.getDictionaryList();
                 for (DictionaryDO data : list) 
                     dictEntryMap.put(data.getId(), data.getEntry());
@@ -251,7 +231,7 @@ public class DataViewBean implements DataViewRemote {
         try {
             if (resource == null) {
                 try {
-                    locale = EJBFactory.getUserCache().getLocale();
+                    locale = userCache.getLocale();
                 } catch (Exception e) {
                     locale = "en";
                 }
@@ -267,10 +247,9 @@ public class DataViewBean implements DataViewRemote {
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
         String clause;
 
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_dataview_environmental")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_dataview_environmental")
+                          .getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not. We only return the
@@ -1582,7 +1561,6 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<ResultDataViewVO> resddList;
         HashMap<Integer, TestAnalyteDataViewVO> anaMap;     
         HashMap<String, String> resMap; 
-        DictionaryCacheLocal dcl;
         
         if (resList == null)
             return null;
@@ -1592,7 +1570,6 @@ public class DataViewBean implements DataViewRemote {
         anaddList = new ArrayList<TestAnalyteDataViewVO>();
         anaMap = new HashMap<Integer, TestAnalyteDataViewVO>();
         resMap = null;
-        dcl = EJBFactory.getDictionaryCache();
         /*
          * a TestAnalyteDataViewVO is created for an analyte only once, no matter
          * how many times it appears in the list of ResultViewDOs
@@ -1618,7 +1595,7 @@ public class DataViewBean implements DataViewRemote {
             value = res.getValue();
             if (resultDictId.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(value);
-                value = dcl.getById(dictId).getEntry();
+                value = dictionaryCache.getById(dictId).getEntry();
             }
             
             /*
@@ -1646,7 +1623,6 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<AuxDataDataViewVO> resddList;
         HashMap<Integer, AuxFieldDataViewVO> anaMap;  
         HashMap<String, String> resMap; 
-        DictionaryCacheLocal dcl;
         
         if (valList == null)
             return null;
@@ -1656,7 +1632,7 @@ public class DataViewBean implements DataViewRemote {
         anaddList = new ArrayList<AuxFieldDataViewVO>();
         anaMap = new HashMap<Integer, AuxFieldDataViewVO>();
         resMap = null;
-        dcl = EJBFactory.getDictionaryCache();
+
         /*
          * an AuxFieldDataViewVO is created for an analyte only once, no matter
          * how many times it appears in the list of AuxDataViewDOs
@@ -1683,7 +1659,7 @@ public class DataViewBean implements DataViewRemote {
             
             if (auxFieldValueDictId.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(value);
-                value = dcl.getById(dictId).getEntry();
+                value = dictionaryCache.getById(dictId).getEntry();
             }
             
             /*

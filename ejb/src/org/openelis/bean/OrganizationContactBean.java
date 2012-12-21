@@ -42,20 +42,18 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.OrganizationContactLocal;
 import org.openelis.meta.OrganizationMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrganizationContactBean implements OrganizationContactLocal {
+public class OrganizationContactBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
 
     @EJB
-    private AddressLocal                     addressBean;
+    private AddressBean                     addressBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrganizationContactDO> fetchByOrganizationId(Integer id) throws Exception {

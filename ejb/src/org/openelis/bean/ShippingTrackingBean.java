@@ -41,13 +41,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ShippingTrackingLocal;
 import org.openelis.meta.ShippingMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ShippingTrackingBean implements ShippingTrackingLocal {
+public class ShippingTrackingBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

@@ -28,14 +28,14 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.bean.SampleItemBean;
+import org.openelis.bean.StorageBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SampleItemLocal;
-import org.openelis.local.StorageLocal;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
 import org.openelis.utils.EJBFactory;
 
@@ -57,7 +57,7 @@ public class SampleItemManagerProxy {
         Integer sampleItemRefTableId;
         SampleItemViewDO data;
         SampleItemListItem item;
-        SampleItemLocal l;
+        SampleItemBean l;
 
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
 
@@ -88,8 +88,8 @@ public class SampleItemManagerProxy {
     public SampleItemManager update(SampleItemManager man) throws Exception {
         int i, j;
         Integer sampleItemRefTableId;
-        SampleItemLocal l;
-        StorageLocal sl;        
+        SampleItemBean l;
+        StorageBean sl;        
         SampleItemViewDO data;
         SampleItemListItem item;
 

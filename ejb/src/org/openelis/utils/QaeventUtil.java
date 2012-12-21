@@ -27,18 +27,16 @@ package org.openelis.utils;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
+import org.openelis.bean.QaEventBean;
 import org.openelis.domain.QaEventDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.local.QaeventLocal;
 
 public class QaeventUtil {
 
     public static String getAnalysisQaeventText(Integer analysisId, Boolean notInternal) {        
         StringBuffer text;
         ArrayList<QaEventDO> list;
-        QaeventLocal ql;
+        QaEventBean ql;
    
         try {
             ql = EJBFactory.getQaevent();
@@ -61,7 +59,7 @@ public class QaeventUtil {
     public static String getSampleQaeventText(Integer sampleId, Boolean notInternal) {                   
         StringBuffer text;
         ArrayList<QaEventDO> list;
-        QaeventLocal ql;
+        QaEventBean ql;
         
         try {
             ql = EJBFactory.getQaevent();

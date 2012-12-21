@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -35,18 +36,19 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.InventoryTransferManager;
-import org.openelis.remote.InventoryTransferManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class InventoryTransferManagerBean implements InventoryTransferManagerRemote {
+public class InventoryTransferManagerBean {
 
     @Resource
     private SessionContext ctx;
+    
+    @EJB
+    private UserCacheBean  userCache;
     
     public InventoryTransferManager add(InventoryTransferManager man) throws Exception {
         UserTransaction ut;
@@ -69,7 +71,7 @@ public class InventoryTransferManagerBean implements InventoryTransferManagerRem
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("inventorytransfer", flag);
+        userCache.applyPermission("inventorytransfer", flag);
     }
 
 }

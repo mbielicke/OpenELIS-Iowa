@@ -27,11 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.AnalysisUserBean;
+import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalysisUserLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisUserManagerProxy {
@@ -56,7 +56,7 @@ public class AnalysisUserManagerProxy {
 
     public AnalysisUserManager add(AnalysisUserManager man) throws Exception {
         AnalysisUserViewDO data;
-        AnalysisUserLocal l;
+        AnalysisUserBean l;
 
         l = EJBFactory.getAnalysisUser();
         for (int i = 0; i < man.count(); i++ ) {
@@ -72,7 +72,7 @@ public class AnalysisUserManagerProxy {
     public AnalysisUserManager update(AnalysisUserManager man) throws Exception {
         int i;
         AnalysisUserViewDO data;
-        AnalysisUserLocal l;
+        AnalysisUserBean l;
 
         l = EJBFactory.getAnalysisUser();
         for (i = 0; i < man.deleteCount(); i++ ) {
@@ -105,7 +105,7 @@ public class AnalysisUserManagerProxy {
     }
 
     protected void loadDictionaryEntries(AnalysisUserManager m) throws Exception {
-        DictionaryLocal l;
+        DictionaryBean l;
 
         if (m.actionCompletedId == null) {
             l = EJBFactory.getDictionary();

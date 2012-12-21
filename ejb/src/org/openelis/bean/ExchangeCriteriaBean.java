@@ -51,16 +51,14 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.ExchangeCriteriaLocal;
 import org.openelis.meta.ExchangeCriteriaMeta;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.ExchangeCriteriaRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ExchangeCriteriaBean implements ExchangeCriteriaLocal, ExchangeCriteriaRemote {
+public class ExchangeCriteriaBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                     manager;

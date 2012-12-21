@@ -54,38 +54,31 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.ExchangeLocalTermLocal;
-import org.openelis.local.MethodLocal;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.TestLocal;
 import org.openelis.meta.ExchangeLocalTermMeta;
-import org.openelis.remote.ExchangeLocalTermRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ExchangeLocalTermBean implements  ExchangeLocalTermRemote, ExchangeLocalTermLocal {
+public class ExchangeLocalTermBean {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                      manager;
 
     @EJB
-    private AnalyteLocal                       analyte;
+    private AnalyteBean                        analyte;
 
     @EJB
-    private DictionaryLocal                    dictionary;
+    private DictionaryBean                     dictionary;
 
     @EJB
-    private MethodLocal                        method;
+    private MethodBean                         method;
 
     @EJB
-    private OrganizationLocal                  organization;
+    private OrganizationBean                  organization;
 
     @EJB
-    private TestLocal                          test;
+    private TestBean                          test;
 
     private static final ExchangeLocalTermMeta meta = new ExchangeLocalTermMeta();   
     

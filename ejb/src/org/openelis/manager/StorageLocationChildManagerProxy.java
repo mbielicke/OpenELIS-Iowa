@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.StorageLocationBean;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.StorageLocationLocal;
 import org.openelis.utils.EJBFactory;
 
 public class StorageLocationChildManagerProxy {
@@ -48,7 +48,7 @@ public class StorageLocationChildManagerProxy {
     }
     
     public StorageLocationChildManager add(StorageLocationChildManager man) throws Exception {
-        StorageLocationLocal sl;
+        StorageLocationBean sl;
         StorageLocationViewDO data;
         
         sl = EJBFactory.getStorageLocation();
@@ -64,7 +64,7 @@ public class StorageLocationChildManagerProxy {
     }
     
     public StorageLocationChildManager update(StorageLocationChildManager man) throws Exception {
-        StorageLocationLocal sl;
+        StorageLocationBean sl;
         StorageLocationViewDO data;
         
         sl = EJBFactory.getStorageLocation();
@@ -90,7 +90,7 @@ public class StorageLocationChildManagerProxy {
     public void validate(StorageLocationChildManager man) throws Exception {
         int i;
         ValidationErrorsList list;
-        StorageLocationLocal sl;        
+        StorageLocationBean sl;        
         StorageLocationViewDO data;
         
         sl = EJBFactory.getStorageLocation();

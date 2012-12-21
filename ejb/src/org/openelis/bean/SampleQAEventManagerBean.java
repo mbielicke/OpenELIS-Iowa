@@ -29,12 +29,11 @@ import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.manager.SampleQaEventManager;
-import org.openelis.remote.SampleQAEventManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleQAEventManagerBean implements SampleQAEventManagerRemote {
+public class SampleQAEventManagerBean {
 
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
         SampleQaEventManager man = SampleQaEventManager.fetchBySampleId(sampleId);   

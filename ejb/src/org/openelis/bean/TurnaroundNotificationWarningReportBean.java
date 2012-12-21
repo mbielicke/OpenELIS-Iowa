@@ -18,25 +18,20 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SectionParameterLocal;
-import org.openelis.local.TurnaroundNotificationWarningReportLocal;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class TurnaroundNotificationWarningReportBean implements
-                                                    TurnaroundNotificationWarningReportLocal {
+public class TurnaroundNotificationWarningReportBean {
     @EJB
-    private SampleLocal           sample;
+    private SampleBean           sample;
 
     @EJB
-    DictionaryCacheLocal          dictionaryCache;
+    DictionaryCacheBean          dictionaryCache;
 
     @EJB
-    private SectionParameterLocal sectParamBean;
+    private SectionParameterBean sectParamBean;
 
     private static final Logger   log = Logger.getLogger(TurnaroundNotificationWarningReportBean.class);
 

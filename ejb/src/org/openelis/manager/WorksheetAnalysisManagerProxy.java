@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.WorksheetAnalysisBean;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
@@ -46,9 +48,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
-import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
 import org.openelis.utils.EJBFactory;
 
@@ -58,7 +57,7 @@ public class WorksheetAnalysisManagerProxy {
                              anErrorInitiatedId, wsFailedRunId, wsVoidId;
 
     public WorksheetAnalysisManagerProxy() {
-        DictionaryLocal l;
+        DictionaryBean l;
 
         if (anLoggedInId == null) {
             l = EJBFactory.getDictionary();
@@ -164,7 +163,7 @@ public class WorksheetAnalysisManagerProxy {
         SampleItemManager         siManager;
         SampleManager             sManager;
         WorksheetAnalysisListItem listItem;
-        WorksheetAnalysisLocal    local;
+        WorksheetAnalysisBean     local;
         WorksheetQcResultManager  wqrManager;
         WorksheetResultManager    wrManager;
 
@@ -276,7 +275,7 @@ public class WorksheetAnalysisManagerProxy {
         SampleManager             sManager;
         WorksheetAnalysisDO       analysis;
         WorksheetAnalysisListItem listItem;
-        WorksheetAnalysisLocal    local;
+        WorksheetAnalysisBean     local;
         
         local = EJBFactory.getWorksheetAnalysis();
         for (i = 0; i < manager.count(); i++) {
@@ -381,7 +380,7 @@ public class WorksheetAnalysisManagerProxy {
         int                       i;
         WorksheetAnalysisDO       waDO;
         WorksheetAnalysisListItem listItem;
-        WorksheetAnalysisLocal    local;
+        WorksheetAnalysisBean    local;
 
         local = EJBFactory.getWorksheetAnalysis();
         for (i = 0; i < manager.count(); i++) {

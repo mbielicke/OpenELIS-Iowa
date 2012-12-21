@@ -90,82 +90,64 @@ import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.AnalysisUserLocal;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.local.NoteLocal;
-import org.openelis.local.ResultLocal;
-import org.openelis.local.SampleEnvironmentalLocal;
-import org.openelis.local.SampleItemLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.local.SamplePrivateWellLocal;
-import org.openelis.local.SampleProjectLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SampleSDWISLocal;
-import org.openelis.local.StorageLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.SampleManager1Remote;
 
 @Stateless
 @SecurityDomain("openelis")
-public class SampleManager1Bean implements SampleManager1Remote {
+public class SampleManager1Bean {
 
     @EJB
-    private LockLocal                lock;
+    private LockBean                lock;
 
     @EJB
-    private SampleLocal              sample;
+    private SampleBean               sample;
 
     @EJB
-    private SampleEnvironmentalLocal sampleEnvironmental;
+    private SampleEnvironmentalBean sampleEnvironmental;
 
     @EJB
-    private SampleSDWISLocal         sampleSDWIS;
+    private SampleSDWISBean         sampleSDWIS;
 
     @EJB
-    private SamplePrivateWellLocal   samplePrivate;
+    private SamplePrivateWellBean   samplePrivate;
 
     @EJB
-    private SampleOrganizationLocal  sampleOrganization;
+    private SampleOrganizationBean  sampleOrganization;
 
     @EJB
-    private SampleProjectLocal       sampleProject;
+    private SampleProjectBean       sampleProject;
 
     @EJB
-    private SampleQAEventLocal       sampleQA;
+    private SampleQAEventBean       sampleQA;
 
     @EJB
-    private AuxDataLocal             auxdata;
+    private AuxDataBean              auxdata;
 
     @EJB
-    private NoteLocal                note;
+    private NoteBean                note;
 
     @EJB
-    private SampleItemLocal          item;
+    private SampleItemBean          item;
 
     @EJB
-    private StorageLocal             storage;
+    private StorageBean              storage;
 
     @EJB
-    private AnalysisLocal            analysis;
+    private AnalysisBean             analysis;
 
     @EJB
-    private AnalysisQAEventLocal     analysisQA;
+    private AnalysisQAEventBean      analysisQA;
 
     @EJB
-    private AnalysisUserLocal        user;
+    private AnalysisUserBean         user;
 
     @EJB
-    private ResultLocal              result;
+    private ResultBean               result;
 
     @EJB
-    private SystemVariableLocal      systemVariable;
+    private SystemVariableBean      systemVariable;
 
     /**
      * Returns a sample manager for specified primary id and requested load

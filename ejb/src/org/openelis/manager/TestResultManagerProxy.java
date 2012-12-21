@@ -31,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.TestResultBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -40,8 +42,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.TestResultLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
@@ -54,7 +54,7 @@ public class TestResultManagerProxy {
 
     public TestResultManagerProxy() {
         DictionaryDO data;
-        DictionaryLocal dl;
+        DictionaryBean dl;
 
         dl = EJBFactory.getDictionary();
 
@@ -144,7 +144,7 @@ public class TestResultManagerProxy {
     public TestResultManager add(TestResultManager man, HashMap<Integer, Integer> idMap)
                                                                                         throws Exception {
         int i, j, size, negId;
-        TestResultLocal rl;
+        TestResultBean rl;
         TestResultViewDO data;        
 
         rl = EJBFactory.getTestResult();
@@ -168,7 +168,7 @@ public class TestResultManagerProxy {
     public TestResultManager update(TestResultManager man, HashMap<Integer, Integer> idMap)
                                                                                            throws Exception {
         int i, j, size, negId;
-        TestResultLocal rl;
+        TestResultBean rl;
         TestResultViewDO data;
 
         rl = EJBFactory.getTestResult();
@@ -211,8 +211,8 @@ public class TestResultManagerProxy {
         HashMap<Integer, List<TestResultViewDO>> unitTypeMap;
         List<Integer> dictList;
         List<TestResultViewDO> resDataList, typeDataList;
-        DictionaryLocal dl;
-        TestResultLocal rl;
+        DictionaryBean dl;
+        TestResultBean rl;
         Set<Integer> set;
         Iterator<Integer> iter;
 
