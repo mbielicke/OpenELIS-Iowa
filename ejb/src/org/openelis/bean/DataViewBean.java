@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -49,7 +51,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -102,7 +103,7 @@ import org.openelis.utils.ReportUtil;
 public class DataViewBean {
     
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                   manager;
+    private EntityManager                  manager;
 
     @EJB
     private SessionCacheBean               session;
@@ -164,15 +165,15 @@ public class DataViewBean {
     @EJB
     private CategoryCacheBean               categoryCache;
     
-    private static Integer                  organizationReportToId, sampleInErrorId, 
+    private static Integer                organizationReportToId, sampleInErrorId, 
                                             resultDictId, auxFieldValueDictId, 
                                             completedActionId, releasedActionId, 
                                             releasedStatusId, qaResultOverrideTypeId,
                                             qaInternalTypeId;   
 
-    private static final SampleWebMeta      meta = new SampleWebMeta();
+    private static final SampleWebMeta    meta = new SampleWebMeta();
 
-    private static final Logger             log  = Logger.getLogger(DataViewBean.class);
+    private static final Logger           log = Logger.getLogger("openelis");
 
     private static UTFResource              resource;
 
@@ -224,7 +225,7 @@ public class DataViewBean {
                     dictEntryMap.put(data.getId(), data.getEntry());
                                 
             } catch (Throwable e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
         
@@ -239,7 +240,7 @@ public class DataViewBean {
                                                  new Locale(locale));
             }
         } catch (Throwable e) {
-            log.error("Failed to initialize resource bundle", e);
+            log.log(Level.SEVERE, "Failed to initialize resource bundle", e);
         }
     }   
     
@@ -2043,7 +2044,7 @@ public class DataViewBean {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }            
@@ -2057,7 +2058,7 @@ public class DataViewBean {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }
@@ -2077,7 +2078,7 @@ public class DataViewBean {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }
@@ -2140,7 +2141,7 @@ public class DataViewBean {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }
@@ -2367,7 +2368,7 @@ public class DataViewBean {
                     }
                     cell.setCellValue(pwsDO.getNumber0());
                 } catch (Exception e) {
-                    log.error("Failed to lookup pws for id: " + id, e);
+                    log.log(Level.SEVERE, "Failed to lookup pws for id: " + id, e);
                 }
             }
         } 

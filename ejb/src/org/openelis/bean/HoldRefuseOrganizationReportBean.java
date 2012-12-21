@@ -68,6 +68,9 @@ public class HoldRefuseOrganizationReportBean {
     @EJB
     private PrinterCacheBean printers;
 
+    @EJB
+    private UserCacheBean    userCache;
+
     /*
      * Returns the prompt for a single re-print
      */
@@ -105,7 +108,7 @@ public class HoldRefuseOrganizationReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String printer, dir, printstat;
+        String printer, dir, printstat, userName;
 
         /*
          * push status into session so we can query it while the report is
@@ -118,8 +121,8 @@ public class HoldRefuseOrganizationReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        userName = userCache.getName();
 
         /*
          * start the report
@@ -136,6 +139,7 @@ public class HoldRefuseOrganizationReportBean {
 
             jparam = new HashMap<String, Object>();
             jparam.put("SUBREPORT_DIR", dir);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

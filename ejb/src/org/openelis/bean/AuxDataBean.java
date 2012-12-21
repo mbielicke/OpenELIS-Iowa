@@ -28,6 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -38,7 +40,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -67,7 +68,7 @@ public class AuxDataBean { //implements AuxDataLocal, AuxDataRemote {
     
     private static Integer       dictionaryTypeId;
     
-    private static final Logger  log  = Logger.getLogger(AuxDataBean.class);
+    private static final Logger log = Logger.getLogger("openelis");
     
     @PostConstruct
     public void init() {
@@ -75,7 +76,7 @@ public class AuxDataBean { //implements AuxDataLocal, AuxDataRemote {
             try {
                 dictionaryTypeId = dictionary.fetchBySystemName("aux_dictionary").getId(); 
             } catch (Throwable e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
     }
@@ -142,7 +143,7 @@ public class AuxDataBean { //implements AuxDataLocal, AuxDataRemote {
                         dictMap.put(value, dict);
                         data.setDictionary(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup dictionary entry with id: " + dictId, e);
+                        log.log(Level.SEVERE, "Failed to lookup dictionary entry with id: " + dictId, e);
                     }
                 } else {
                     data.setDictionary(dict.getEntry());

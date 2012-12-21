@@ -180,7 +180,7 @@ public class SampleInhouseReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, aStatus, project, orgId, loginName, orderBy, printer, printstat;
+        String fromDate, toDate, section, test, aStatus, project, orgId, userName, orderBy, printer, printstat;
 
         /*
          * push status into session so we can query it while the report is
@@ -239,7 +239,7 @@ public class SampleInhouseReportBean {
         else
             orgId = "";
 
-        loginName = userCache.getName();
+        userName = userCache.getName();
         /*
          * start the report
          */
@@ -261,7 +261,7 @@ public class SampleInhouseReportBean {
             jparam.put("PROJECT", project);
             jparam.put("ORG_ID", orgId);
             jparam.put("ORDER_BY", orderBy);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

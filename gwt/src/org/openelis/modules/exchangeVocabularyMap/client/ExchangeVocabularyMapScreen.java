@@ -113,7 +113,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
     private MenuItem                    localTermHistory, externalTermHistory;
     private AutoComplete<Integer>       referenceName; 
     private Dropdown<Integer>           referenceTableId;   
-    private TableWidget                 atozTable, termMappingTable;
+    private TableWidget                 termMappingTable;
 
     public ExchangeVocabularyMapScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeVocabularyMapDef.class));
@@ -487,8 +487,6 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
         });
 
-        atozTable = (TableWidget)def.getWidget("atozTable");
-        
         //
         // left hand navigation panel
         //
@@ -586,8 +584,6 @@ public class ExchangeVocabularyMapScreen extends Screen {
         }
 
         referenceTableId.setModel(model);
-        
-        //((Dropdown)atozTable.getColumnWidget(ExchangeLocalTermMeta.getReferenceTableId())).setModel(model);
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));

@@ -27,6 +27,8 @@ package org.openelis.bean;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -35,7 +37,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.Timer;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.entity.Cron;
@@ -46,12 +47,12 @@ import org.openelis.utils.FixedPeriodCron;
 public class CronSchedulerBean {
 
     @Resource
-    private SessionContext ctx;
+    private SessionContext       ctx;
 
     @EJB
     private CronBean      cron;
 
-    private static final Logger log = Logger.getLogger(CronSchedulerBean.class);
+    private static final Logger log = Logger.getLogger("openelis");
 
     /**
      * This method will be scheduled as a timer that goes off a the top of every
@@ -76,12 +77,12 @@ public class CronSchedulerBean {
             dayOfWeek = now.get(Calendar.DAY_OF_WEEK) - 1;
             
             cronTabs = cron.fetchActive();
-            log.debug("Evaluating "+ cronTabs.size()+ " entries");
+            log.finest("Evaluating "+ cronTabs.size()+ " entries");
 
             for (Cron cronTab : cronTabs)
                 checkForRun(cronTab, month, day, hour, minute, dayOfWeek);
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, "Could not execute cron job(s)", e);
         }
     }
 
@@ -134,7 +135,7 @@ public class CronSchedulerBean {
         try {
             beanInst.getClass().getMethod(cronTab.getMethod(), classes).invoke(beanInst, params);
         } catch (Exception e) {
-            log.error("Job: "+ cronTab.getName(), e);
+            log.log(Level.SEVERE, "Job: "+ cronTab.getName(), e);
         }
     }
 }

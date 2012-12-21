@@ -109,7 +109,7 @@ public class VerificationReportBean {
         JasperPrint jprint;
         JRExporter jexport;
         String /*beginEntered, endEntered,*/ userIds, userWhere, userNames, printer,
-               dir, printstat, loginName, token;
+               dir, printstat, userName, token;
         StringTokenizer tokenizer;
         SystemUserVO  sysUserVO;
 
@@ -124,7 +124,7 @@ public class VerificationReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        loginName = userCache.getName();
+        userName = userCache.getName();
         
 //        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
 //        if (beginEntered != null && beginEntered.length() > 0)
@@ -164,7 +164,7 @@ public class VerificationReportBean {
             }
             userWhere = " and h.system_user_id " + userWhere;
         } else {
-            userNames = loginName;
+            userNames = userName;
             userWhere = " and h.system_user_id = " + userCache.getId();
         }
         
@@ -186,7 +186,7 @@ public class VerificationReportBean {
 //            jparam.put("END_ENTERED", endEntered);
             jparam.put("USER_WHERE", userWhere);
             jparam.put("USER_NAMES", userNames);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
             jparam.put("SUBREPORT_DIR", dir);
 
             status.setMessage("Loading report");

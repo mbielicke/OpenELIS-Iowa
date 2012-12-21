@@ -7,12 +7,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
@@ -27,6 +28,7 @@ import org.openelis.utils.ReportUtil;
 @Stateless
 @SecurityDomain("openelis")
 public class ClientNotificationReceivedReportBean {
+    
     @EJB
     private SampleBean               sample;
 
@@ -36,7 +38,7 @@ public class ClientNotificationReceivedReportBean {
     @EJB
     private AnalysisReportFlagsBean analysisReportFlags;
 
-    private static final Logger      log = Logger.getLogger(ClientNotificationReceivedReportBean.class);
+    private static final Logger    log = Logger.getLogger("openelis");
 
     /*
      * Execute the report and email its output to specified addresses
@@ -53,7 +55,6 @@ public class ClientNotificationReceivedReportBean {
 
         try {
             runBackDays = systemVariable.fetchByName("receivable_report_back_days");
-            log.debug("receivable_report_back_days = " + runBackDays);
 
             /*
              * subtracting runBackDays from the current time for start date
@@ -61,22 +62,19 @@ public class ClientNotificationReceivedReportBean {
             df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             cal = Calendar.getInstance();
             currentRunDate = cal.getTime();
-            log.info("Receivable Notification End Date: " + df.format(currentRunDate));
             cal.add(Calendar.DAY_OF_MONTH, -Integer.valueOf(runBackDays.getValue()));
             lastRunDate = cal.getTime();
-            log.info("Receivable Notification Start Date: " + df.format(lastRunDate));
 
-            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");            
-            if (from == null) 
+            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");
+            if (from == null)
                 throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
 
             resultList = sample.fetchForClientEmailReceivedReport(lastRunDate, currentRunDate);
-            log.debug("Considering " + resultList.size() + " cases to run");
+            log.fine("Considering " + resultList.size() + " cases to run");
             if (resultList.size() > 0)
                 generateEmail(resultList, from);
         } catch (Exception e) {
-            log.error(e);
-            return;
+            log.log(Level.SEVERE, "Could not generate email(s) ", e);
         }
     }
 
@@ -155,14 +153,10 @@ public class ClientNotificationReceivedReportBean {
             printFooter(contents);
             
             try {
-                ReportUtil.sendEmail(from,
-                                     to,
-                                     "Samples Received by the State Hygienic Laboratory",
-                                     contents.toString());
+                ReportUtil.sendEmail(from, to, "Samples Received by the State Hygienic Laboratory", contents.toString());
             } catch (Exception e) {
-                log.error(e);
+                log.log(Level.SEVERE, "Could not send email to "+ to, e);
             }
-            
         }
         
         /*
@@ -178,9 +172,9 @@ public class ClientNotificationReceivedReportBean {
                 anaData.setNotifiedReceived("Y");
                 analysisReportFlags.update(anaData);
             } catch (EntityLockedException e) {
-                log.error("Could not lock analysis report flag for id " + anaData.getAnalysisId());
+                log.severe("Could not lock analysis report flag for id " + anaData.getAnalysisId());
             } catch (Exception e) {
-                log.error("Error occurred while updating report flags " + e);
+                log.log(Level.SEVERE, "Error occurred while updating report flags", e);
             }
         }
     }

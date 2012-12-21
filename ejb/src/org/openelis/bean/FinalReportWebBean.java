@@ -3,6 +3,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -12,7 +14,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
@@ -48,8 +49,8 @@ public class FinalReportWebBean {
     private static Integer             organizationReportToId, sampleInErrorId, analysisReleasedId;
 
     private static final SampleWebMeta meta = new SampleWebMeta();
-    
-    private static final Logger log = Logger.getLogger(FinalReportWebBean.class);
+
+    private static final Logger        log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -58,7 +59,7 @@ public class FinalReportWebBean {
             sampleInErrorId = dictionary.fetchBySystemName("sample_error").getId();
             analysisReleasedId = dictionary.fetchBySystemName("analysis_released").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }     
 

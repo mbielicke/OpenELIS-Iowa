@@ -27,13 +27,14 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OrderRecurrenceDO;
@@ -55,24 +56,9 @@ public class OrderRecurrenceReportBean {
     @EJB
     private OrderManagerBean     orderManager;
 
-    private static Integer      daysId, monthsId, yearsId;
+    private static Integer       daysId, monthsId, yearsId;
 
-    private static final Logger log = Logger.getLogger(OrderRecurrenceReportBean.class);
-    
-    public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<Prompt> p;
-
-        try {
-            p = new ArrayList<Prompt>();
-
-            p.add(new Prompt("PRESS_BUTTON", Prompt.Type.STRING).setPrompt("Press the button:")
-                                                          .setWidth(200));
-            return p;
-        } catch (Exception e) {
-            log.error(e);
-            throw e;
-        }
-    }
+    private static final Logger log = Logger.getLogger("openelis");
     
     @PostConstruct
     public void init() {
@@ -82,10 +68,18 @@ public class OrderRecurrenceReportBean {
                 monthsId = dictionary.fetchBySystemName("order_recurrence_unit_months").getId();
                 yearsId = dictionary.fetchBySystemName("order_recurrence_unit_years").getId();
             } catch (Throwable e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
     }   
+    
+    public ArrayList<Prompt> getPrompts() throws Exception {
+        ArrayList<Prompt> p;
+
+       p = new ArrayList<Prompt>();
+       p.add(new Prompt("PRESS_BUTTON", Prompt.Type.STRING).setPrompt("Press the button:").setWidth(200));
+       return p;
+    }
 
     /**
      * Creates new orders from the orders that are to be recurred today 
@@ -104,10 +98,10 @@ public class OrderRecurrenceReportBean {
         try {
             list = orderRecurrence.fetchActiveList();
         } catch (NotFoundException e) {
-            log.debug("No recurring orders found", e);
+            log.fine("No recurring orders found");
             return;
         } catch (Exception e) {
-            log.error("Failed to fetch orders", e);
+            log.log(Level.SEVERE, "Failed to fetch orders", e);
             return;
         }        
 
@@ -120,7 +114,7 @@ public class OrderRecurrenceReportBean {
                 if (recurs(cal, data)) 
                     orderManager.recur(data.getOrderId());                
             } catch (Exception e) {                
-                log.error("Failed to recur order: "+ data.getOrderId().toString(), e);
+                log.log(Level.SEVERE, "Failed to recur order: "+ data.getOrderId().toString(), e);
             }
         }
     }

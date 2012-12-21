@@ -89,18 +89,16 @@ public class FinalReportBean {
     @Resource
     private SessionContext             ctx;
 
-    private static Integer             finalReportFaxNumTypeId, noFinalReportTypeId,
-                    primaryReportToTypeId;
+    private static Integer            finalReportFaxNumTypeId, noFinalReportTypeId,
+                                        primaryReportToTypeId;
 
-    private static final Logger        log = Logger.getLogger("openelis");
+    private static final Logger      log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
         try {
-            finalReportFaxNumTypeId = dictionary.fetchBySystemName("org_finalrep_fax_number")
-                                                .getId();
-            noFinalReportTypeId = dictionary.fetchBySystemName("org_no_finalreport")
-                                            .getId();
+            finalReportFaxNumTypeId = dictionary.fetchBySystemName("org_finalrep_fax_number").getId();
+            noFinalReportTypeId = dictionary.fetchBySystemName("org_no_finalreport").getId();
             primaryReportToTypeId = dictionary.fetchBySystemName("org_report_to").getId();
         } catch (Throwable e) {
             log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
@@ -359,7 +357,7 @@ public class FinalReportBean {
         try {
             printer = ReportUtil.getSystemVariableValue("final_report_env_printer");
         } catch (Exception e) {
-            log.log(Level.SEVERE, "No 'final_report_env_printer' system variable defined");
+            log.severe("No 'final_report_env_printer' system variable defined");
             return;
         }
 
@@ -752,7 +750,6 @@ public class FinalReportBean {
     private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
                        boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i;
-        Integer zero;
         URL url;
         File tempFile;
         Connection con;
@@ -761,12 +758,11 @@ public class FinalReportBean {
         JasperPrint print, faxPrint;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
-        JasperPrint master, stats;
+        JasperPrint stats;
         OrganizationPrintDataSource ds;
         ArrayList<OrganizationPrint> orgFaxList;
 
         con = null;
-        zero = new Integer(0);
         try {
             con = ReportUtil.getConnection(ctx);
 
@@ -882,7 +878,7 @@ public class FinalReportBean {
                 if (con != null)
                     con.close();
             } catch (Exception e1) {
-                log.severe("Can not close connection");
+                log.severe("Could not close connection");
             }
         }
     }

@@ -359,7 +359,7 @@ public class SDWISUnloadReportBean {
              * Print the status report
              */
             jparam = new HashMap<String, Object>();
-            jparam.put("LOGIN_NAME", userCache.getName());
+            jparam.put("USER_NAME", userCache.getName());
             jparam.put("BEGIN_RELEASED", ReportUtil.toString(beginReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("END_RELEASED", ReportUtil.toString(endReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("SAMPLE_COUNTS", sampleCounts);

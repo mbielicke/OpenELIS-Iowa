@@ -38,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultDO;
@@ -46,25 +47,28 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.entity.Result;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
+import org.openelis.manager.TestManager;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.RoundingMethod;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class ResultBean { //implements ResultLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager   manager;
+    private EntityManager                 manager;
 
     @EJB
     private DictionaryBean  dictionary;
 
-    private static Integer supplementalTypeId, roundSigFigId, roundSigFigNOEId,
-                           roundIntId, roundIntSigFigId, roundIntSigFigNOEId, qaEventOverrideId;
+    private static Integer                supplementalTypeId, roundSigFigId,
+                    roundSigFigNOEId, roundIntId, roundIntSigFigId, roundIntSigFigNOEId,
+                    qaEventOverrideId;
     private static HashMap<Integer, Type> types;
 
     @PostConstruct
@@ -72,31 +76,47 @@ public class ResultBean { //implements ResultLocal {
         if (types == null) {
             types = new HashMap<Integer, Type>();
             try {
-                types.put(dictionary.fetchBySystemName("test_res_type_dictionary").getId(), Type.DICTIONARY);
-                types.put(dictionary.fetchBySystemName("test_res_type_numeric").getId(), Type.NUMERIC);
-                types.put(dictionary.fetchBySystemName("test_res_type_titer").getId(), Type.TITER);
-                types.put(dictionary.fetchBySystemName("test_res_type_date").getId(), Type.DATE);
-                types.put(dictionary.fetchBySystemName("test_res_type_date_time").getId(), Type.DATE_TIME);
-                types.put(dictionary.fetchBySystemName("test_res_type_time").getId(), Type.TIME);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_lower").getId(), Type.ALPHA_LOWER);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_upper").getId(), Type.ALPHA_UPPER);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_mixed").getId(), Type.ALPHA_MIXED);
-                types.put(dictionary.fetchBySystemName("test_res_type_default").getId(), Type.DEFAULT);
+                types.put(dictionary.fetchBySystemName("test_res_type_dictionary")
+                                    .getId(), Type.DICTIONARY);
+                types.put(dictionary.fetchBySystemName("test_res_type_numeric").getId(),
+                          Type.NUMERIC);
+                types.put(dictionary.fetchBySystemName("test_res_type_titer").getId(),
+                          Type.TITER);
+                types.put(dictionary.fetchBySystemName("test_res_type_date").getId(),
+                          Type.DATE);
+                types.put(dictionary.fetchBySystemName("test_res_type_date_time").getId(),
+                          Type.DATE_TIME);
+                types.put(dictionary.fetchBySystemName("test_res_type_time").getId(),
+                          Type.TIME);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_lower")
+                                    .getId(), Type.ALPHA_LOWER);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_upper")
+                                    .getId(), Type.ALPHA_UPPER);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_mixed")
+                                    .getId(), Type.ALPHA_MIXED);
+                types.put(dictionary.fetchBySystemName("test_res_type_default").getId(),
+                          Type.DEFAULT);
 
-                supplementalTypeId = dictionary.fetchBySystemName("test_analyte_suplmtl").getId();
-                qaEventOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
+                supplementalTypeId = dictionary.fetchBySystemName("test_analyte_suplmtl")
+                                               .getId();
+                qaEventOverrideId = dictionary.fetchBySystemName("qaevent_override")
+                                              .getId();
                 roundSigFigId = dictionary.fetchBySystemName("round_sig_fig").getId();
-                roundSigFigNOEId = dictionary.fetchBySystemName("round_sig_fig_noe").getId();
+                roundSigFigNOEId = dictionary.fetchBySystemName("round_sig_fig_noe")
+                                             .getId();
                 roundIntId = dictionary.fetchBySystemName("round_int").getId();
-                roundIntSigFigId = dictionary.fetchBySystemName("round_int_sig_fig").getId();
-                roundIntSigFigNOEId = dictionary.fetchBySystemName("round_int_sig_fig_noe").getId();
+                roundIntSigFigId = dictionary.fetchBySystemName("round_int_sig_fig")
+                                             .getId();
+                roundIntSigFigNOEId = dictionary.fetchBySystemName("round_int_sig_fig_noe")
+                                                .getId();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void fetchByTestIdNoResults(Integer testId, Integer unitId,
+    public void fetchByTestIdNoResults(Integer testId,
+                                       Integer unitId,
                                        ArrayList<ArrayList<ResultViewDO>> results,
                                        HashMap<Integer, TestResultDO> testResultList,
                                        HashMap<Integer, AnalyteDO> analyteList,
@@ -138,12 +158,12 @@ public class ResultBean { //implements ResultLocal {
             analyte = analytes.get(k);
             analyteList.put(analyte.getId(), analyte);
         }
-        
+
         rowGroup = -1;
         tmpList = null;
         for (k = 0; k < testAnalytes.size(); k++ ) {
             data = testAnalytes.get(k);
-            if(!rowGroup.equals(data.getRowGroup())){
+            if ( !rowGroup.equals(data.getRowGroup())) {
                 rowGroup = data.getRowGroup();
                 taLI = new TestAnalyteListItem();
                 tmpList = new ArrayList<TestAnalyteViewDO>();
@@ -151,7 +171,7 @@ public class ResultBean { //implements ResultLocal {
                 taLI.testAnalytes = tmpList;
                 testAnalyteList.put(rowGroup, taLI);
             }
-            
+
             tmpList.add(data);
         }
 
@@ -180,9 +200,9 @@ public class ResultBean { //implements ResultLocal {
                 suppRow = false;
 
             //
-            //we are assuming there will be at least 1 non supplemental
-            //if there are only supplementals in a row group it will not
-            //show a header so the user wont be able to add any analytes
+            // we are assuming there will be at least 1 non supplemental
+            // if there are only supplementals in a row group it will not
+            // show a header so the user wont be able to add any analytes
             //
             if ( !suppRow && !DataBaseUtil.isSame(supplementalTypeId, data.getTypeId())) {
                 // create a new resultDO
@@ -194,14 +214,15 @@ public class ResultBean { //implements ResultLocal {
                 resultDO.setAnalyteId(data.getAnalyteId());
                 resultDO.setAnalyte(data.getAnalyteName());
                 resultDO.setResultGroup(data.getResultGroup());
-                
+
                 rg = data.getRowGroup();
                 resultDO.setRowGroup(rg);
-                
-                //we need to set the default
-                resultDO.setValue(resultValidators.get(resultDO.getResultGroup() - 1).getDefault(unitId));
-                
-                if (!DataBaseUtil.isSame(j,rg)) {
+
+                // we need to set the default
+                resultDO.setValue(resultValidators.get(resultDO.getResultGroup() - 1)
+                                                  .getDefault(unitId));
+
+                if ( !DataBaseUtil.isSame(j, rg)) {
                     ar = new ArrayList<ResultViewDO>(1);
                     ar.add(resultDO);
                     results.add(ar);
@@ -221,8 +242,9 @@ public class ResultBean { //implements ResultLocal {
                 suppRow = true;
         }
     }
-    
-    public void fetchByTestIdNoResultsForOrderImport(Integer testId, Integer unitId,
+
+    public void fetchByTestIdNoResultsForOrderImport(Integer testId,
+                                                     Integer unitId,
                                                      ArrayList<ArrayList<ResultViewDO>> results,
                                                      HashMap<Integer, TestResultDO> testResultList,
                                                      HashMap<Integer, AnalyteDO> analyteList,
@@ -301,10 +323,10 @@ public class ResultBean { //implements ResultLocal {
             data = testAnalytes.get(i);
 
             /*
-             * Supplemental analytes could be shown if the test is imported from 
-             * an order. That is why they are added to the grid so that the decision
-             * as to whether to show them or not can be made based on the order's 
-             * data.
+             * Supplemental analytes could be shown if the test is imported from
+             * an order. That is why they are added to the grid so that the
+             * decision as to whether to show them or not can be made based on
+             * the order's data.
              */
             ResultViewDO resultDO = new ResultViewDO();
             resultDO.setTestAnalyteId(data.getId());
@@ -341,7 +363,8 @@ public class ResultBean { //implements ResultLocal {
         }
     }
 
-    public void fetchByAnalysisIdForDisplay(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
+    public void fetchByAnalysisIdForDisplay(Integer analysisId,
+                                            ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
         int i;
         Integer j, rg;
         ResultViewDO data;
@@ -364,13 +387,13 @@ public class ResultBean { //implements ResultLocal {
 
         for (i = 0; i < list.size(); i++ ) {
             data = list.get(i);
-            
+
             rg = data.getRowGroup();
 
-            if (!DataBaseUtil.isSame(j,rg)) {
+            if ( !DataBaseUtil.isSame(j, rg)) {
                 ar = new ArrayList<ResultViewDO>(1);
                 ar.add(data);
-                results.add(ar);  
+                results.add(ar);
                 if (rg != null)
                     j = rg;
                 continue;
@@ -385,13 +408,13 @@ public class ResultBean { //implements ResultLocal {
             ar.add(data);
         }
     }
-    
+
     public ArrayList<ResultViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
         Query query;
-        
+
         query = manager.createNamedQuery("Result.FetchByAnalysisIds");
         query.setParameter("ids", analysisIds);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
@@ -401,8 +424,6 @@ public class ResultBean { //implements ResultLocal {
                                   HashMap<Integer, AnalyteDO> analyteList,
                                   HashMap<Integer, TestAnalyteListItem> testAnalyteList,
                                   ArrayList<ResultValidator> resultValidators) throws Exception {
-
-        
         int i;
         Integer j, rg;
         ResultViewDO rdo;
@@ -444,12 +465,12 @@ public class ResultBean { //implements ResultLocal {
             analyteDO = analytes.get(k);
             analyteList.put(analyteDO.getId(), analyteDO);
         }
-        
+
         rowGroup = -1;
         tmpList = null;
         for (int k = 0; k < testAnalytes.size(); k++ ) {
             data = testAnalytes.get(k);
-            if(!rowGroup.equals(data.getRowGroup())){
+            if ( !rowGroup.equals(data.getRowGroup())) {
                 rowGroup = data.getRowGroup();
                 taLI = new TestAnalyteListItem();
                 tmpList = new ArrayList<TestAnalyteViewDO>();
@@ -457,7 +478,7 @@ public class ResultBean { //implements ResultLocal {
                 taLI.testAnalytes = tmpList;
                 testAnalyteList.put(rowGroup, taLI);
             }
-            
+
             tmpList.add(data);
         }
 
@@ -468,13 +489,13 @@ public class ResultBean { //implements ResultLocal {
         }
 
         createTestResultHash(testResults, resultValidators);
-        
+
         j = -1;
         ar = null;
         results.clear();
-     
+
         // build the grid
-        
+
         if (rslts == null || rslts.size() == 0)
             throw new NotFoundException();
 
@@ -482,7 +503,7 @@ public class ResultBean { //implements ResultLocal {
             rdo = rslts.get(i);
             rg = rdo.getRowGroup();
 
-            if (!DataBaseUtil.isSame(j,rg)) {
+            if ( !DataBaseUtil.isSame(j, rg)) {
                 ar = new ArrayList<ResultViewDO>(1);
                 ar.add(rdo);
                 results.add(ar);
@@ -499,12 +520,13 @@ public class ResultBean { //implements ResultLocal {
             ar.add(rdo);
         }
     }
-    
+
     /**
-     * Fetches results for analysis that are reportable and do not have sample or analysis level
-     * QA event override.
+     * Fetches results for analysis that are reportable and do not have sample
+     * or analysis level QA event override.
      */
-    public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId, Integer analysisId) throws Exception {
+    public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId,
+                                                                          Integer analysisId) throws Exception {
         int i;
         ResultViewDO data;
         ArrayList<ResultViewDO> ar;
@@ -525,81 +547,82 @@ public class ResultBean { //implements ResultLocal {
         // build the grid
         results = new ArrayList<ArrayList<ResultViewDO>>();
         i = 0;
-        ar = null;        
+        ar = null;
         while (i < list.size()) {
             data = list.get(i);
-            
+
             if ("N".equals(data.getIsColumn())) {
                 if ("N".equals(data.getIsReportable())) {
                     do {
-                        i++;
-                    } while (i < list.size() && "Y".equals(list.get(i).getIsColumn())) ;
+                        i++ ;
+                    } while (i < list.size() && "Y".equals(list.get(i).getIsColumn()));
                     continue;
                 }
-                
+
                 ar = new ArrayList<ResultViewDO>(1);
-                results.add(ar);  
+                results.add(ar);
             } else {
                 if ("N".equals(data.getIsReportable())) {
-                    i++;
+                    i++ ;
                     continue;
                 }
             }
-                    
+
             ar.add(data);
-            i++;
+            i++ ;
         }
-        
+
         return results;
     }
-    
+
     public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> ids) throws Exception {
-        List<ResultViewDO> results;        
+        List<ResultViewDO> results;
         Query query;
 
         if (ids.size() == 0)
             throw new NotFoundException();
-        
+
         query = manager.createNamedQuery("Result.FetchForDataViewByAnalysisIds");
         query.setParameter("ids", ids);
-   
+
         results = query.getResultList();
         if (results.isEmpty())
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(results);
     }
-    
-    public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId, Integer rowGroup) throws Exception {
-        List<ResultViewDO> list;        
+
+    public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId,
+                                                                           Integer rowGroup) throws Exception {
+        List<ResultViewDO> list;
         Query query;
-        
+
         query = manager.createNamedQuery("Result.FetchForDataViewByAnalysisIdAndRowGroup");
         query.setParameter("id", analysisId);
         query.setParameter("rowGroup", rowGroup);
-   
+
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        
-        return DataBaseUtil.toArrayList(list);
-    }
-    
-    public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception {
-        List<ResultDO> list;        
-        Query query;
-        
-        query = manager.createNamedQuery("Result.FetchForBillingByAnalysisId");
-        query.setParameter("id", analysisId);
-   
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ResultDO add(ResultDO data) {
+    public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception {
+        List<ResultDO> list;
+        Query query;
+
+        query = manager.createNamedQuery("Result.FetchForBillingByAnalysisId");
+        query.setParameter("id", analysisId);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
+    public ResultDO add(ResultDO data) throws Exception {
         Result entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -621,7 +644,7 @@ public class ResultBean { //implements ResultLocal {
         return data;
     }
 
-    public ResultDO update(ResultDO data) {
+    public ResultDO update(ResultDO data) throws Exception {
         Result entity;
 
         if ( !data.isChanged())
@@ -643,7 +666,7 @@ public class ResultBean { //implements ResultLocal {
         return data;
     }
 
-    public void delete(ResultDO data) {
+    public void delete(ResultDO data) throws Exception {
         Result entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -651,6 +674,46 @@ public class ResultBean { //implements ResultLocal {
         entity = manager.find(Result.class, data.getId());
         if (entity != null)
             manager.remove(entity);
+    }
+
+    public void validate(ResultDO data, TestManager tm, Integer accession,
+                         AnalysisDO analysis, boolean ignoreWarning) throws Exception {
+        String test, method;
+        ValidationErrorsList e;
+
+        e = new ValidationErrorsList();
+
+        if (!DataBaseUtil.isEmpty(data.getValue())) {
+            if (tm != null) {
+                test = tm.getTest().getName();
+                method = tm.getTest().getMethodName();
+                e.add(new FormErrorException("oneOrMoreResultValuesInvalid"));
+            }
+        }
+        
+        if (e.size() > 0)
+            throw e;
+
+//                if (!DataBaseUtil.isEmpty(result.getValue())) {
+//                    testResultId = man.validateResultValue(result.getResultGroup(),
+//                                                           data.getUnitOfMeasureId(),
+//                                                           result.getValue());
+//                    testResult = man.getTestResultList().get(testResultId);
+//
+//                    result.setTypeId(testResult.getTypeId());
+//                    result.setTestResultId(testResult.getId());
+//                    /*
+//                         * If the tab for results on the screen was never opened
+//                         * after an analysis was either added or its test was changed
+//                         * then the code on the screen wouldn't have had the chance
+//                         * to put the dictionary entry's id as the value for the
+//                         * results of the type dictionary. This code makes sure
+//                         * that the correct value gets set. For the results of the
+//                         * other types, the value doesn't need to be changed.   
+//                         */
+//                        if (testResult.getTypeId().equals(dictTypeId))
+//                            result.setValue(testResult.getValue());                     
+//                    }
     }
 
     private void createTestResultHash(List<TestResultDO> testResultList,
@@ -661,12 +724,11 @@ public class ResultBean { //implements ResultLocal {
         Type type;
         RoundingMethod method;
         DictionaryDO dict;
-        
-        
+
         rg = null;
         rv = null;
         try {
-            for (TestResultDO data: testResultList) {
+            for (TestResultDO data : testResultList) {
                 dictEntry = null;
                 method = null;
 
@@ -675,8 +737,7 @@ public class ResultBean { //implements ResultLocal {
                     rg = data.getResultGroup();
                     resultValidators.add(rv);
                 }
-                
-                
+
                 if (DataBaseUtil.isSame(roundSigFigId, data.getRoundingMethodId()))
                     method = RoundingMethod.SIG_FIG;
                 else if (DataBaseUtil.isSame(roundSigFigNOEId, data.getRoundingMethodId()))
@@ -685,15 +746,16 @@ public class ResultBean { //implements ResultLocal {
                     method = RoundingMethod.INT;
                 else if (DataBaseUtil.isSame(roundIntSigFigId, data.getRoundingMethodId()))
                     method = RoundingMethod.INT_SIG_FIG;
-                else if (DataBaseUtil.isSame(roundIntSigFigNOEId, data.getRoundingMethodId()))
+                else if (DataBaseUtil.isSame(roundIntSigFigNOEId,
+                                             data.getRoundingMethodId()))
                     method = RoundingMethod.INT_SIG_FIG_NOE;
-                
+
                 type = types.get(data.getTypeId());
                 if (type == Type.DICTIONARY) {
                     dict = dictionary.fetchById(new Integer(data.getValue()));
                     dictEntry = dict.getEntry();
                 }
-                rv.addResult(data.getId(), data.getUnitOfMeasureId(), type, method, 
+                rv.addResult(data.getId(), data.getUnitOfMeasureId(), type, method,
                              data.getSignificantDigits(), data.getValue(), dictEntry);
             }
         } catch (Exception e) {

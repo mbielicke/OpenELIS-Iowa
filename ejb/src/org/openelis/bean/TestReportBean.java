@@ -53,6 +53,9 @@ public class TestReportBean {
     @EJB
     private PrinterCacheBean printers;
 
+    @EJB
+    private UserCacheBean   userCache;
+
     /*
      * Returns the prompt for a single re-print
      */
@@ -111,7 +114,7 @@ public class TestReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String detail, test, section, printer, dir, printstat;
+        String detail, test, section, printer, dir, printstat, userName;
 
         /*
          * push status into session so we can query it while the report is
@@ -155,11 +158,14 @@ public class TestReportBean {
 
             tempFile = File.createTempFile("test", ".pdf", new File("/tmp"));
 
+            userName = userCache.getName();
+            
             jparam = new HashMap<String, Object>();
             jparam.put("DETAIL", detail);
             jparam.put("SECTION", section);
             jparam.put("TEST", test);
             jparam.put("SUBREPORT_DIR", dir);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

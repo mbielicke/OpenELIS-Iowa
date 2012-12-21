@@ -419,28 +419,28 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        /*
-        addClickHandler("testSampleManager", "sampleprivatewell", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new SampleManagerTestScreen(),
-                                              "Test Sample Manager");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
+        
+//        addClickHandler("testSampleManager", "sampleprivatewell", new ClickHandler() {
+//            public void onClick(ClickEvent event) {
+//                GWT.runAsync(new RunAsyncCallback() {
+//                    public void onSuccess() {
+//                        try {
+//                            browser.addScreen(new SampleManagerTestScreen(),
+//                                              "Test Sample Manager");
+//                        } catch (Throwable e) {
+//                            e.printStackTrace();
+//                            Window.alert(e.getMessage());
+//                        }
+//                    }
+//
+//                    public void onFailure(Throwable caught) {
+//                        caught.printStackTrace();
+//                        Window.alert(caught.getMessage());
+//                    }
+//                });
+//            }
+//        });
 
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-        */
         addClickHandler("project", "project", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1510,12 +1510,12 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("QAByOrganization", "sampletracking", new ClickHandler() {
+        addClickHandler("QASummaryReport", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new QASummaryReportScreen(), "QAByOrganization");
+                            browser.addScreen(new QASummaryReportScreen(), "QASummaryReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

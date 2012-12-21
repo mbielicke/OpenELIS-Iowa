@@ -5,8 +5,8 @@
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Tue Sep 21 15:30:40 CDT 2010"/>
 	<import value="org.openelis.utils.Counter"/>
-	<parameter name="LOGIN_NAME" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="BEGIN_RELEASED" class="java.lang.String"/>
 	<parameter name="END_RELEASED" class="java.lang.String"/>
@@ -61,7 +61,7 @@
 				<textElement textAlignment="Right">
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
 				<reportElement x="554" y="0" width="22" height="12"/>

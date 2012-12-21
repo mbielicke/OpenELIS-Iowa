@@ -179,7 +179,7 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="volumeReport" label="{resource:getString($constants,'volumeReport')}" />
                       <menuItem description="" enable="false" icon="" key="toDoAnalyteReport" label="{resource:getString($constants,'toDoAnalyteReport')}" />
                       <menuItem description="" enable="false" icon="" key="sampleDataExport" label="{resource:getString($constants,'sampleDataExport')}" />
-                      <menuItem description="" enable="false" icon="" key="QAByOrganization" label="{resource:getString($constants,'QAByOrganization')}" />
+                      <menuItem description="" enable="false" icon="" key="QASummaryReport" label="{resource:getString($constants,'QASummaryReport')}" />
                       <menuItem description="" enable="false" icon="" key="testCountByFacility" label="{resource:getString($constants,'testCountByFacility')}" />
                       <menuItem description="" enable="false" icon="" key="turnaround" label="{resource:getString($constants,'turnaround')}" />
                       <menuItem description="" enable="false" icon="" key="turnAroundStatisticReport" label="{resource:getString($constants,'turnAroundStatisticReport')}" />

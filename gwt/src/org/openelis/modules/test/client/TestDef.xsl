@@ -184,7 +184,7 @@ UIRF Software License are applicable instead of those above.
                     <HorizontalPanel>
                       <VerticalPanel style="subform">
                         <text style="FormTitle">
-                          <xsl:value-of select='resource:getString($constants,"turnAround")' />
+                          <xsl:value-of select='resource:getString($constants,"turnaround")' />
                         </text>
                         <TablePanel style="Form">
                           <row>

@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -36,7 +38,6 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
@@ -143,7 +144,7 @@ public class DataExchangeXMLMapperBean  {
     
     private static final String       VERSION = "2.1.8", MESSAGE_TYPE = "result-out";
     
-    private static final Logger       log = Logger.getLogger(DataExchangeXMLMapperBean.class);
+    private static final Logger      log = Logger.getLogger("openelis");
     
     @PostConstruct
     public void init() {
@@ -153,11 +154,12 @@ public class DataExchangeXMLMapperBean  {
                 auxDictTypeId = EJBFactory.getDictionary().fetchBySystemName("aux_dictionary").getId();
                 cancelledStatusId = EJBFactory.getDictionary().fetchBySystemName("analysis_cancelled").getId();
                 releasedStatusId = EJBFactory.getDictionary().fetchBySystemName("analysis_released").getId();
-                dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                timeFormat = new SimpleDateFormat("HH:mm:ss");
             } catch (Exception e) {
-                log.error("Could not fetch dictionary with system name "+ "test_res_type_dictionary", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
+            
+            dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            timeFormat = new SimpleDateFormat("HH:mm:ss");
         }
     }
     
@@ -237,7 +239,7 @@ public class DataExchangeXMLMapperBean  {
                             try {
                                 critTestIds.add(Integer.valueOf(tq));
                             } catch (NumberFormatException e) {
-                                log.error("Invalid test id: " + tq, e);
+                                log.log(Level.SEVERE, "Invalid test id: " + tq, e);
                             }
                         }
                         break;
@@ -491,7 +493,7 @@ public class DataExchangeXMLMapperBean  {
                     dictIds.add(qa.getTypeId());
                 }
             } catch (Exception e) {
-                log.error("Could not fetch qa events", e);
+                log.log(Level.SEVERE, "Could not fetch qa events", e);
             }
         }
         
@@ -522,7 +524,7 @@ public class DataExchangeXMLMapperBean  {
                 dict = dictionaryCache.getById(id);
                 root.appendChild(getDictionary(doc, dict));
             } catch (Exception e) {
-                log.error("Could not fetch dictionary with id: "+ id, e);
+                log.log(Level.SEVERE, "Could not fetch dictionary with id: "+ id, e);
             }
         }          
         
@@ -532,7 +534,7 @@ public class DataExchangeXMLMapperBean  {
                 for (MethodDO mtd : methodList)
                     root.appendChild(getMethod(doc, mtd));
             } catch (Exception e) {
-                log.error("Could not fetch methods", e);
+                log.log(Level.SEVERE, "Could not fetch methods", e);
             }
         }
         
@@ -542,7 +544,7 @@ public class DataExchangeXMLMapperBean  {
                 for (TestTrailerDO trailer : trailerList)
                     root.appendChild(getTestTrailer(doc, trailer));
             } catch (Exception e) {
-                log.error("Could not fetch test trailers", e);
+                log.log(Level.SEVERE, "Could not fetch test trailers", e);
             }
         }
         
@@ -553,7 +555,7 @@ public class DataExchangeXMLMapperBean  {
                 if (sect.getOrganizationId() != null)
                     orgIds.add(sect.getOrganizationId());
             } catch (Exception e) {
-                log.error("Could not fetch section with id: "+ id, e);
+                log.log(Level.SEVERE, "Could not fetch section with id: "+ id, e);
             }
         }
         
@@ -563,7 +565,7 @@ public class DataExchangeXMLMapperBean  {
                 for (AnalyteViewDO ana : analyteList)
                     root.appendChild(getAnalyte(doc, ana));
             } catch (Exception e) {
-                log.error("Could not fetch analytes", e);
+                log.log(Level.SEVERE, "Could not fetch analytes", e);
             }
         }
         
@@ -575,7 +577,7 @@ public class DataExchangeXMLMapperBean  {
                     userIds.add(proj.getOwnerId());
                 }
             } catch (Exception e) {
-                log.error("Could not fetch projects", e);
+                log.log(Level.SEVERE, "Could not fetch projects", e);
             }
         }
         
@@ -584,7 +586,7 @@ public class DataExchangeXMLMapperBean  {
                 user = systemUserCache.getSystemUser(id);
                 root.appendChild(getSystemUser(doc, user));
             } catch (Exception e) {
-                log.error("Could not fetch system user with id: "+ id, e);
+                log.log(Level.SEVERE, "Could not fetch system user with id: "+ id, e);
             }
         }
         
@@ -596,7 +598,7 @@ public class DataExchangeXMLMapperBean  {
                     root.appendChild(getAddress(doc, org.getAddress()));
                 }
             } catch (Exception e) {
-                log.error("Could not fetch organizations", e);
+                log.log(Level.SEVERE, "Could not fetch organizations", e);
             }
         }        
                   
@@ -635,7 +637,7 @@ public class DataExchangeXMLMapperBean  {
             
             return parent;
         } catch (Exception e) {
-            log.error("Could not fetch dictionary with id: "+ exchangeProfile.getProfileId(), e);           
+            log.log(Level.SEVERE, "Could not fetch dictionary with id: "+ exchangeProfile.getProfileId(), e);           
         }
         
         return null;
@@ -1547,7 +1549,7 @@ public class DataExchangeXMLMapperBean  {
             child.setTextContent(dict.getEntry());
             parent.appendChild(child);
         } catch (Exception e) {
-            log.error("Could not fetch dictionary with id: "+ externalTerm.getProfileId(), e);
+            log.log(Level.SEVERE, "Could not fetch dictionary with id: "+ externalTerm.getProfileId(), e);
         }
         
         child = document.createElement("code");
@@ -1620,7 +1622,7 @@ public class DataExchangeXMLMapperBean  {
             child.setTextContent(dict.getEntry());
             parent.appendChild(child);
         } catch (Exception e) {
-            log.error("Could not fetch dictionary with id: "+ criteria.getEnvironmentId(), e);
+            log.log(Level.SEVERE, "Could not fetch dictionary with id: "+ criteria.getEnvironmentId(), e);
         }
         
         parent.setAttribute("include_all_analyses", criteria.getIsAllAnalysesIncluded());

@@ -137,7 +137,7 @@ public class TurnaroundReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String frDate, tDate, fromDate, toDate, section, loginName, dir, printer, printstat;
+        String frDate, tDate, fromDate, toDate, section, userName, dir, printer, printstat;
         fromDate = toDate = null;
         /*
          * push status into session so we can query it while the report is
@@ -151,7 +151,7 @@ public class TurnaroundReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        loginName = userCache.getName();
+        userName = userCache.getName();
 
         frDate = ReportUtil.getSingleParameter(param, "FROM_RELEASED");
         tDate = ReportUtil.getSingleParameter(param, "TO_RELEASED");
@@ -189,7 +189,7 @@ public class TurnaroundReportBean {
             jparam = new HashMap<String, Object>();
             jparam.put("FROM_DATE", fromDate);
             jparam.put("TO_DATE", toDate);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
             jparam.put("SECTION", section);
 
             status.setMessage("Loading report");

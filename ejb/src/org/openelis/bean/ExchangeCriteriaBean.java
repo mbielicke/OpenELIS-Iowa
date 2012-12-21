@@ -31,6 +31,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -39,7 +41,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.IdNameVO;
@@ -61,14 +62,14 @@ import org.openelis.util.QueryBuilderV2;
 public class ExchangeCriteriaBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                     manager;
-    
+    private EntityManager                      manager;
+
     private static final ExchangeCriteriaMeta meta = new ExchangeCriteriaMeta();
+
+    private static final Logger               log         = Logger.getLogger("openelis");
     
-    private static final Logger               log  = Logger.getLogger(ExchangeCriteriaBean.class);
-    
-    private static String                     FILE_PREFIX = "file://", SOCKET_PREFIX = "socket://"; 
-   
+    private static String                      FILE_PREFIX = "file://", SOCKET_PREFIX = "socket://";
+
     
     public ExchangeCriteriaViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -262,14 +263,14 @@ public class ExchangeCriteriaBean {
         
         try {
             out.close();
-        } catch (Exception e1) {
-            log.error(e1);
+        } catch (Exception e) {
+            log.severe("Could not close output stream");
         }
 
         try {
             enc.close();
-        } catch (Exception e1) {
-            log.error(e1);
+        } catch (Exception e) {
+            log.severe("Could not close XML encoder");
         }
         
         return out != null ? out.toString() : null;
@@ -307,20 +308,21 @@ public class ExchangeCriteriaBean {
             dec = new XMLDecoder(in);
             return (ArrayList<QueryData>)dec.readObject();
         } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to convert xml to the list of query fields", e);
             throw e;
         } finally {
             try {
                 if (in != null)
                     in.close();
             } catch (Exception e) {
-                log.error(e);
+                log.severe("Could not close input stream");
             }
 
             try {
                 if (dec != null)
                     dec.close();
             } catch (Exception e) {
-                log.error(e);
+                log.severe("Could not close XML decoder");
             }
         }
     }

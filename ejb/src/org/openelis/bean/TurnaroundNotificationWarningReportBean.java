@@ -6,13 +6,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SectionParameterDO;
@@ -33,7 +34,7 @@ public class TurnaroundNotificationWarningReportBean {
     @EJB
     private SectionParameterBean sectParamBean;
 
-    private static final Logger   log = Logger.getLogger(TurnaroundNotificationWarningReportBean.class);
+    private static final Logger  log = Logger.getLogger("openelis");
 
     private Integer               sectParamTypeId;
 
@@ -42,7 +43,7 @@ public class TurnaroundNotificationWarningReportBean {
         try {
             sectParamTypeId = dictionaryCache.getBySystemName("section_ta_warn").getId();
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
 
@@ -55,12 +56,12 @@ public class TurnaroundNotificationWarningReportBean {
         ArrayList<Object[]> resultList;
 
         resultList = sample.fetchForTurnaroundWarningReport();
-        log.debug("Considering " + resultList.size() + " cases to run");
+        log.fine("Considering " + resultList.size() + " cases to run");
         if (resultList.size() > 0) {
             try {
                 generateEmail(resultList);
             } catch (Exception anyE) {
-                log.error(anyE.getMessage());
+                log.log(Level.SEVERE, "Could not generate email(s)", anyE);
             }
         }
     }
@@ -139,7 +140,7 @@ public class TurnaroundNotificationWarningReportBean {
                         toEmail += emailList.get(i).getValue().trim();
                     }
                 } catch (NotFoundException nfE) {
-                    log.warn("No Turnaround Warning Email Address(es) for Section ("+sectionName+").");
+                    log.fine("No Turnaround Warning Email Address(es) for Section ("+sectionName+").");
                     continue;
                 }
                 printHeader(contents);

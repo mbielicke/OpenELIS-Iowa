@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -21,7 +23,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.CategoryCacheVO;
@@ -61,9 +62,9 @@ public class QcChartReportBean {
     @EJB
     private UserCacheBean          userCache;
 
-    private static final Logger    log = Logger.getLogger(QcChartReportBean.class);
+    private static final Logger    log = Logger.getLogger("openelis");
 
-    private static Integer         typeDynamicId, typeFixedId, typeQcSpike, typeQcBlank, typeQcDuplicate;
+    private static Integer         typeDynamicId, typeFixedId, typeQcSpike;
 
     @PostConstruct
     public void init() {
@@ -71,10 +72,8 @@ public class QcChartReportBean {
             typeDynamicId = dictionary.fetchBySystemName("chart_type_dynamic").getId();
             typeFixedId = dictionary.fetchBySystemName("chart_type_fixed").getId();
             typeQcSpike = dictionary.fetchBySystemName("qc_spike").getId();
-            typeQcBlank = dictionary.fetchBySystemName("qc_blank").getId();
-            typeQcDuplicate = dictionary.fetchBySystemName("qc_duplicate").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
 
@@ -129,7 +128,7 @@ public class QcChartReportBean {
             if (resultList.size() == 0)
                 throw new NotFoundException("No data found for the query. Please change your query parameters.");
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, "Could not fetch worksheet analyses", e);
             throw e;
         }
 
@@ -248,7 +247,7 @@ public class QcChartReportBean {
     }
 
     public ReportStatus runReport(QcChartReportViewVO dataPoints) throws Exception {
-        String qcName, printstat, printer;
+        String qcName, printstat, printer, userName;
         QcChartReportViewVO result;
         ArrayList<Value> list;
         URL url;
@@ -286,9 +285,13 @@ public class QcChartReportBean {
                 url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikePercent.jasper");
 
             tempFile = File.createTempFile("qcreport", ".pdf", new File("/tmp"));
+            
+            userName = userCache.getName();
+            
             jparam = new HashMap<String, Object>();
             jparam.put("LOGNAME", userCache.getName());
             jparam.put("QCNAME", qcName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
             jreport = (JasperReport)JRLoader.loadObject(url);
@@ -453,7 +456,7 @@ public class QcChartReportBean {
             } catch (NotFoundException ignE) {
                 // ignore not found exception
             } catch (Exception e) {
-                log.error("Error retrieving analyte parameters for an analysis on worksheet", e);
+                log.log(Level.SEVERE, "Error retrieving analyte parameters for an analysis on worksheet", e);
             }
         }
     }

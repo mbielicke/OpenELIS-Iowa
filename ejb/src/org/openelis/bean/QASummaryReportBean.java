@@ -82,7 +82,6 @@ public class QASummaryReportBean {
     
     @EJB
     private UserCacheBean    userCache;
-   
 
     /*
      * Returns the prompt for a single re-print
@@ -161,7 +160,7 @@ public class QASummaryReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, detail, loginName, printer, dir, printstat;
+        String fromDate, toDate, section, test, detail, userName, printer, dir, printstat;
 
         /*
          * push status into session so we can query it while the report is
@@ -201,7 +200,7 @@ public class QASummaryReportBean {
         else
             test = "";        
 
-        loginName = userCache.getName();
+        userName = userCache.getName();
         /*
          * start the report
          */
@@ -222,7 +221,7 @@ public class QASummaryReportBean {
             jparam.put("TEST", test);
             jparam.put("STYLE", detail);
             jparam.put("SUBREPORT_DIR", dir);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

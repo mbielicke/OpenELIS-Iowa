@@ -27,8 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.bean.ResultBean;
@@ -48,7 +49,7 @@ import org.openelis.utils.EJBFactory;
 public class AnalysisResultManagerProxy {
     protected static Integer    dictTypeId, defaultTypeId;
 
-    private static final Logger log  = Logger.getLogger(AnalysisResultManagerProxy.class);
+    private static final Logger log = Logger.getLogger("openelis");
     
     public AnalysisResultManagerProxy() {
         DictionaryBean l;
@@ -60,7 +61,7 @@ public class AnalysisResultManagerProxy {
                 dictTypeId = l.fetchBySystemName("test_res_type_dictionary").getId();     
                 defaultTypeId = l.fetchBySystemName("test_res_type_default").getId();
             } catch (Exception e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
     }    

@@ -27,6 +27,8 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -37,7 +39,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.entity.OrganizationParameter;
@@ -59,9 +60,9 @@ public class OrganizationParameterBean  {
     @EJB
     private DictionaryBean             dictionary;
     
-    private static final Logger log = Logger.getLogger(OrganizationParameterBean.class);
+    private static final Logger      log = Logger.getLogger("openelis");
     
-    private static Integer             receivableReportToId, releasedReportToId;
+    private static Integer            receivableReportToId, releasedReportToId;
     
     @PostConstruct
     public void init() {
@@ -69,7 +70,7 @@ public class OrganizationParameterBean  {
             receivableReportToId = dictionary.fetchBySystemName("receivable_reportto_email").getId();
             releasedReportToId = dictionary.fetchBySystemName("released_reportto_email").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
 
