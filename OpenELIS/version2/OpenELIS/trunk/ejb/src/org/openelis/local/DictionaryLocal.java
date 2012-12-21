@@ -40,6 +40,8 @@ public interface DictionaryLocal {
     public ArrayList<DictionaryDO> fetchByCategorySystemName(String categoryName) throws Exception;
     
     public DictionaryDO fetchBySystemName(String systemName) throws Exception;
+
+    public ArrayList<DictionaryDO> fetchBySystemNames(Collection<String> systemNames) throws Exception;
     
     public DictionaryViewDO fetchById(Integer id) throws Exception;    
     
