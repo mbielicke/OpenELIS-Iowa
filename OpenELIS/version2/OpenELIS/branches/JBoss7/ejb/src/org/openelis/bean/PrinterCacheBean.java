@@ -2,6 +2,8 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
@@ -9,7 +11,6 @@ import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.gwt.common.OptionListItem;
@@ -25,7 +26,7 @@ public class PrinterCacheBean {
     protected ArrayList<Printer>       printerList;
     protected HashMap<String, Printer> printerHash;
     
-    private static final Logger log = Logger.getLogger(PrinterCacheBean.class);
+    private static final Logger       log = Logger.getLogger("openelis");
 
     /**
      * Constructor
@@ -111,7 +112,7 @@ public class PrinterCacheBean {
                 tempHash.put(name, printer);
             }
         } catch (Exception ioE) {
-            log.error(ioE.getMessage());
+            log.log(Level.SEVERE, "Could not look up print services ", ioE);
             tempList = null;
         } finally {
             if (tempList != null) {

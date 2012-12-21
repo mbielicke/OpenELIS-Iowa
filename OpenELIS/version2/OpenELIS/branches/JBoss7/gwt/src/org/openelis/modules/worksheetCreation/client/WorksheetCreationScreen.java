@@ -1442,6 +1442,7 @@ public class WorksheetCreationScreen extends Screen {
         try {
             if (qcLookupScreen == null) {
                 qcLookupScreen = new QcLookupScreen();
+                qcLookupScreen.postConstructor();
                 qcLookupScreen.addActionHandler(new ActionHandler<QcLookupScreen.Action>() {
                     @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<QcLookupScreen.Action> event) {

@@ -63,7 +63,7 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.QcLotViewDO(qcl.id, qcl.qcId, "
                       + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
                       + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive, qc.name)"
-                      + " from QcLot qcl left join qcl.qc qc where qcl.qcId = :id"),                       
+                      + " from QcLot qcl left join qcl.qc qc where qcl.qcId = :id  order by qcl.isActive DESC, qcl.id DESC"),                       
     @NamedQuery( name = "QcLot.FetchByLotNumber",
                 query = "select new org.openelis.domain.QcLotDO(qcl.id, qcl.qcId, "
                       + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"

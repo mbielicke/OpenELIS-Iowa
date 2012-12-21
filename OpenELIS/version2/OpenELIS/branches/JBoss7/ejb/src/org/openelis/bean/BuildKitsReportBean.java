@@ -29,13 +29,14 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -67,7 +68,7 @@ public class BuildKitsReportBean {
     @EJB
     private OrderBean         order;  
     
-    private static final Logger log = Logger.getLogger(BuildKitsReportBean.class);
+    private static final Logger  log = Logger.getLogger("openelis");
 
     public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<OptionListItem> list;
@@ -115,7 +116,7 @@ public class BuildKitsReportBean {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }

@@ -68,7 +68,7 @@ import com.google.gwt.user.client.Window;
 public class LotTab extends Screen {
     private QcManager                   manager;
 
-    private AppButton                   addLotButton, removeLotButton;
+    private AppButton                   addLotButton, removeLotButton, duplicateButton;
     private TableWidget                 table;
     private AutoComplete<Integer>       preparedBy;
 
@@ -166,22 +166,30 @@ public class LotTab extends Screen {
 
         table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                int r;
                 QcLotViewDO data;
                 TableDataRow row, userRow;
 
-                r = event.getIndex();
-                row = table.getRow(r);
+                row = table.getRow(event.getIndex());
                 try {
                     data = new QcLotViewDO();
                     data.setIsActive("Y");
+                    data.setLotNumber((String)row.cells.get(1).getValue());
+                    data.setLocationId((Integer)row.cells.get(2).getValue());
                     data.setPreparedDate((Datetime)row.cells.get(3).getValue());
+                    data.setUsableDate((Datetime)row.cells.get(4).getValue());
+                    data.setExpireDate((Datetime)row.cells.get(5).getValue());
+                    data.setPreparedVolume((Double)row.cells.get(6).getValue());
+                    data.setPreparedUnitId((Integer)row.cells.get(7).getValue());
+                    
                     userRow = (TableDataRow)row.cells.get(8).getValue();
+                    
                     data.setPreparedById((Integer)userRow.key);
                     data.setPreparedByName((String)userRow.cells.get(0).getValue());
-                    manager.getLots().addLotAt(data, r);
+                    
+                    manager.getLots().addLotAt(data, event.getIndex());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });
@@ -218,22 +226,18 @@ public class LotTab extends Screen {
         addLotButton = (AppButton)def.getWidget("addLotButton");
         addScreenHandler(addLotButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                TableDataRow row;
                 int n;
 
                 try {
-                    row = new TableDataRow(9);
-                    row.cells.get(0).setValue("Y");
-                    row.cells.get(3).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                    row.cells.get(8).setValue(new TableDataRow(UserCache.getId(), UserCache.getName()));
-
-                    table.addRow(row);
+                    table.finishEditing();
+                    table.addRow(createLotRow(null));
                     n = table.numRows() - 1;
                     table.selectRow(n);
                     table.scrollToSelection();
                     table.startEditing(n, 1);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    e.printStackTrace();
                 }
             }
 
@@ -260,12 +264,50 @@ public class LotTab extends Screen {
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     e.printStackTrace();
-                }                window.clearStatus();
+                }   
+                window.clearStatus();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 removeLotButton.enable(EnumSet.of(State.ADD, State.UPDATE)
                                                   .contains(event.getState()));
+            }
+        });
+        
+        duplicateButton = (AppButton)def.getWidget("duplicateLotButton");
+        addScreenHandler(duplicateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int n, r;     
+                TableDataRow row;
+                QcLotManager man;
+                
+                r = table.getSelectedRow();
+                if (r == -1)
+                    return;
+                
+                table.finishEditing();
+                try {
+                    man = manager.getLots();
+                    
+                    row = createLotRow(man.getLotAt(r));
+                    
+                    n = r + 1;
+                    if (n < table.numRows())
+                        table.addRow(n, row);
+                    else
+                        table.addRow(row);
+                    
+                    table.selectRow(n);
+                    table.scrollToSelection();
+                    table.startEditing(n, 1);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }                
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicateButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
     }
@@ -357,5 +399,38 @@ public class LotTab extends Screen {
         if (data.getId() == null)
             return;
         QcService.get().validateForDelete(data);
+    }
+    
+    private TableDataRow createLotRow(QcLotViewDO data) throws Exception {
+        Integer userId;
+        String userName;
+        Datetime prepDate;
+        TableDataRow row;
+        
+        row = new TableDataRow(9);
+        
+        row.cells.get(0).setValue("Y");
+        
+        if (data == null) {
+            prepDate = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+            userId = UserCache.getId();
+            userName = UserCache.getName();
+        } else {
+            prepDate = data.getPreparedDate();
+            userId = data.getPreparedById();
+            userName = data.getPreparedByName();
+            
+            row.cells.get(1).setValue(data.getLotNumber());
+            row.cells.get(2).setValue(data.getLocationId());    
+            row.cells.get(4).setValue(data.getUsableDate());
+            row.cells.get(5).setValue(data.getExpireDate());
+            row.cells.get(6).setValue(data.getPreparedVolume());
+            row.cells.get(7).setValue(data.getPreparedUnitId());
+        }
+        
+        row.cells.get(3).setValue(prepDate);
+        row.cells.get(8).setValue(new TableDataRow(userId, userName));
+        
+        return row;
     }
 }

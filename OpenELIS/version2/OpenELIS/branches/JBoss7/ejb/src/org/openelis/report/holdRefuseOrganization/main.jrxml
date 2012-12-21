@@ -9,8 +9,8 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="LOGIN_NAME" class="java.lang.String">
-		<defaultValueExpression><![CDATA["demo"]]></defaultValueExpression>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[select distinct o.id, o.name, a.street_address, a.city, a.state, a.zip_code, op.value
@@ -70,7 +70,7 @@ order by o.name, a.state, a.city, a.street_address]]>
 				<textElement textAlignment="Right">
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

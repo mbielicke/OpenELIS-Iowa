@@ -28,8 +28,9 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.OrderTestAnalyteBean;
 import org.openelis.domain.OrderTestAnalyteViewDO;
@@ -40,9 +41,9 @@ import org.openelis.utils.EJBFactory;
 
 public class OrderTestAnalyteManagerProxy {
 
-    private static Integer      supplementalTypeId;
+    private static Integer       supplementalTypeId;
 
-    private static final Logger log = Logger.getLogger(OrderTestAnalyteManagerProxy.class);
+    private static final Logger log = Logger.getLogger("openelis");
     
     public OrderTestAnalyteManagerProxy() {
         DictionaryBean l;
@@ -53,7 +54,7 @@ public class OrderTestAnalyteManagerProxy {
             try {
                 supplementalTypeId = l.fetchBySystemName("test_analyte_suplmtl").getId();     
             } catch (Exception e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
     }

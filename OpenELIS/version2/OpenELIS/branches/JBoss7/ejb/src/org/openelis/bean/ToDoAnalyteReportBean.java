@@ -31,6 +31,8 @@ import java.net.URL;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -46,7 +48,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
@@ -67,7 +68,7 @@ import org.openelis.utils.ReportUtil;
 public class ToDoAnalyteReportBean {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext      ctx;
 
     @EJB
     private SessionCacheBean session;
@@ -87,8 +88,8 @@ public class ToDoAnalyteReportBean {
     @EJB
     private UserCacheBean     userCache;
     
-    private static final Logger log = Logger.getLogger(ToDoAnalyteReportBean.class);
-
+    private static final Logger log = Logger.getLogger("openelis");
+    
     /*
      * Returns the prompt for To-Do Analyte Report
      */
@@ -157,7 +158,7 @@ public class ToDoAnalyteReportBean {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }
@@ -175,7 +176,7 @@ public class ToDoAnalyteReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, prepTest, analysisStatus, loginName,
+        String fromDate, toDate, section, test, prepTest, analysisStatus, userName,
                orderBy, printer, printstat, dir;
 
         /*
@@ -227,7 +228,7 @@ public class ToDoAnalyteReportBean {
         else
             prepTest = "";
 
-        loginName = userCache.getName();
+        userName = userCache.getName();
         /*
          * start the report
          */
@@ -240,7 +241,7 @@ public class ToDoAnalyteReportBean {
             dir = ReportUtil.getResourcePath(url);
 
             tempFile = File.createTempFile("todoAnalyte", ".pdf", new File("/tmp"));
-
+            
             jparam = new HashMap<String, Object>();
             jparam.put("FROM", fromDate);
             jparam.put("TO", toDate);
@@ -249,7 +250,7 @@ public class ToDoAnalyteReportBean {
             jparam.put("PREP_TEST", prepTest);
             jparam.put("STATUS", analysisStatus);
             jparam.put("ORDER_BY", orderBy);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
             jparam.put("SUBREPORT_DIR", dir);
 
             status.setMessage("Loading report");
@@ -276,14 +277,13 @@ public class ToDoAnalyteReportBean {
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {
-            log.error(e);
             throw e;
         } finally {
             try {
                 if (con != null)
                     con.close();
             } catch (Exception e) {
-                // ignore
+                log.severe("Could not close connection");
             }
         }
 
@@ -301,7 +301,7 @@ public class ToDoAnalyteReportBean {
             for (SectionViewDO n : s)
                 l.add(new OptionListItem(n.getId().toString(), n.getName()));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Could not fetch sections", e);
         }
 
         return l;
@@ -325,7 +325,7 @@ public class ToDoAnalyteReportBean {
                     l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
                                                                        n.getMethodName()));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Could not fetch tests", e);
         }
 
         return l;
@@ -343,7 +343,7 @@ public class ToDoAnalyteReportBean {
             for (DictionaryDO n : statusDO)
                 l.add(new OptionListItem(n.getId().toString(), n.getEntry().toString()));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Could not fetch entries for category 'analysis_status'", e);
         }
 
         return l;

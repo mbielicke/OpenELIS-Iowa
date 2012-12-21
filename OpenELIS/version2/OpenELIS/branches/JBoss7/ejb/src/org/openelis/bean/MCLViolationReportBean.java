@@ -31,13 +31,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventDO;
@@ -80,7 +81,7 @@ public class MCLViolationReportBean {
     @EJB
     private SystemVariableBean      sysVarBean;
 
-    private static final Logger     log  = Logger.getLogger(MCLViolationReportBean.class);
+    private static final Logger    log = Logger.getLogger("openelis");
 
     private HashMap<String, String> contaminantIds, methodCodes;
     private Integer                 ugPerLId, ngPerLId, ngPerMlId, sectParamTypeId;
@@ -97,7 +98,7 @@ public class MCLViolationReportBean {
             ngPerMlId = dictionaryCache.getBySystemName("nanograms_per_milliliter").getId();
             sectParamTypeId = dictionaryCache.getBySystemName("section_mcl_violation_email").getId();
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
     
@@ -110,7 +111,7 @@ public class MCLViolationReportBean {
             p = new ArrayList<Prompt>();
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }
@@ -213,7 +214,7 @@ public class MCLViolationReportBean {
                         toEmail += emailList.get(j).getValue().trim();
                     }
                 } catch (NotFoundException nfE) {
-                    log.warn("No MCL Violation Email Address(es) for Section ("+analysis.getSectionId()+").");
+                    log.fine("No MCL Violation Email Address(es) for Section ("+analysis.getSectionId()+").");
                     continue;
                 }
                 
@@ -223,7 +224,7 @@ public class MCLViolationReportBean {
                 try {
                     resultBean.fetchByAnalysisIdForDisplay(analysis.getAnalysisId(), results);
                 } catch (NotFoundException nfE) {
-                    log.error("Analysis ("+analysis.getAnalysisId()+") is missing results.");
+                    log.severe("Analysis ("+analysis.getAnalysisId()+") is missing results.");
                     continue;
                 }
                 for (j = 0; j < results.size(); j++) {
@@ -253,7 +254,7 @@ public class MCLViolationReportBean {
                                         printDNR(dnrBody, analysis, adMan, rowResult);
                                     }
                                 } catch (NumberFormatException numE) {
-                                    log.error("Value is not parseable as a number", numE);
+                                    log.log(Level.SEVERE, "Value is not parseable as a number", numE);
                                 }
                                 break;
                             }
@@ -265,7 +266,7 @@ public class MCLViolationReportBean {
                     printFooter(shlBody);
                     sendEmail(toEmail, "OpenELIS MCL Violation", shlBody.toString());
                     sendEmail(dnrEmail, "Chemical Exceedance Report for "+analysis.getFieldOffice(), dnrBody.toString());
-                    log.info("MCL Violation email sent for Accession #"+analysis.getAccessionNumber());
+                    log.fine("MCL Violation email sent for Accession #"+analysis.getAccessionNumber());
                     shlBody.setLength(0);
                     dnrBody.setLength(0);
                 }
@@ -276,7 +277,7 @@ public class MCLViolationReportBean {
         } catch (Exception e) {
             if (lastRun != null)
                 sysVarBean.abortUpdate(lastRun.getId());
-            log.error("Failed to run MCL Violation Report ", e);
+            log.log(Level.SEVERE, "Failed to run MCL Violation Report ", e);
             throw e;
         }
         

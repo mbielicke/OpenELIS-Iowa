@@ -27,6 +27,8 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -35,7 +37,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoSampleViewVO;
@@ -61,10 +62,10 @@ public class ToDoBean {
     @EJB
     private WorksheetAnalysisBean worksheetAnalysis;
 
-    private static Integer         loggedInStatusId, initiatedStatusId, completedStatusId,
-                                   notVerifiedStatusId;
+    private static Integer        loggedInStatusId, initiatedStatusId, completedStatusId,
+                                    notVerifiedStatusId;
 
-    private static final Logger    log = Logger.getLogger(ToDoBean.class);
+    private static final Logger  log = Logger.getLogger("openelis");
     
     @PostConstruct
     public void init() {
@@ -74,7 +75,7 @@ public class ToDoBean {
             completedStatusId = dictionary.fetchBySystemName("analysis_completed").getId();
             notVerifiedStatusId = dictionary.fetchBySystemName("sample_not_verified").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
     

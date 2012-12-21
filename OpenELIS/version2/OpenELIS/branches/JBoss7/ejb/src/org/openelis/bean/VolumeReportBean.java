@@ -64,7 +64,7 @@ import org.openelis.utils.ReportUtil;
 public class VolumeReportBean {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext    ctx;
 
     @EJB
     private SessionCacheBean session;
@@ -128,7 +128,7 @@ public class VolumeReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String frDate, tDate, fromDate, toDate, section, loginName, dir, printstat;
+        String frDate, tDate, fromDate, toDate, section, userName, dir, printstat;
         fromDate = toDate = null;
         /*
          * push status into session so we can query it while the report is
@@ -142,7 +142,7 @@ public class VolumeReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        loginName = userCache.getName();
+        userName = userCache.getName();
 
         frDate = ReportUtil.getSingleParameter(param, "FROM");
         tDate = ReportUtil.getSingleParameter(param, "TO");
@@ -180,7 +180,7 @@ public class VolumeReportBean {
             jparam.put("FROM", fromDate);
             jparam.put("TO", toDate);
             jparam.put("SECTION", section);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

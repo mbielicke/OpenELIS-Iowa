@@ -7,8 +7,8 @@
 	<import value="org.openelis.report.turnaround.CounterTurnaround"/>
 	<import value="org.openelis.utils.JasperUtil"/>
 	<reportFont name="times" isDefault="true" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
-	<parameter name="LOGIN_NAME" class="java.lang.String">
-		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="FROM_DATE" class="java.lang.String">
 		<parameterDescription><![CDATA[starting date-time released]]></parameterDescription>
@@ -445,11 +445,11 @@ order by 1, 2]]>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
-				<reportElement key="headerLogname" mode="Opaque" x="654" y="12" width="93" height="12"/>
+				<reportElement key="headerUserName" mode="Opaque" x="654" y="12" width="93" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement key="headerTime" mode="Opaque" x="278" y="12" width="240" height="12"/>

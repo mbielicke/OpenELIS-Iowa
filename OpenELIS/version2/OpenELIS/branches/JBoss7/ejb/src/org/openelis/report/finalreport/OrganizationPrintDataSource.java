@@ -1,8 +1,8 @@
 package org.openelis.report.finalreport;
 
 import java.util.*;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Logger;
 import org.openelis.gwt.common.DataBaseUtil;
 
 import net.sf.jasperreports.engine.*;
@@ -18,7 +18,7 @@ public class OrganizationPrintDataSource implements JRDataSource {
     
     public enum Type {FAX, PRINT, STATS};
     
-    private static final Logger log = Logger.getLogger(OrganizationPrintDataSource.class);
+    private static final Logger      log = Logger.getLogger("openelis");
 
     public OrganizationPrintDataSource(Type type) {
         this.type = type;
@@ -42,7 +42,7 @@ public class OrganizationPrintDataSource implements JRDataSource {
     public boolean next() throws JRException {
         while (iter != null && iter.hasNext()) {
             i++;
-            log.debug("Processed "+i+" records in report");
+            log.fine("Processed "+i+" records in report");
             op = (OrganizationPrint) iter.next();
             if ((Type.PRINT.equals(type) && DataBaseUtil.isEmpty(op.getFaxNumber())) ||
                 (Type.FAX.equals(type) && !DataBaseUtil.isEmpty(op.getFaxNumber()))) {

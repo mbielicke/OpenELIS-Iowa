@@ -27,6 +27,8 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -36,7 +38,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdAccessionVO;
@@ -81,7 +82,7 @@ public class SampleStatusReportBean {
 
     private static final SampleWebMeta meta = new SampleWebMeta();
 
-    private static final Logger log  = Logger.getLogger(SampleStatusReportBean.class);
+    private static final Logger      log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -91,7 +92,7 @@ public class SampleStatusReportBean {
             qaWarningId = dictionary.fetchBySystemName("qaevent_warning").getId();
             qaOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
 

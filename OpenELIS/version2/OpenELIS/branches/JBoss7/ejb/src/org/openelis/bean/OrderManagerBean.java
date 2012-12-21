@@ -26,6 +26,8 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -36,7 +38,6 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
@@ -70,7 +71,7 @@ import org.openelis.manager.OrderTestManager;
 public class OrderManagerBean {
 
     @Resource
-    private SessionContext      ctx;
+    private SessionContext       ctx;
 
     @EJB
     private LockBean           lock;
@@ -81,9 +82,9 @@ public class OrderManagerBean {
     @EJB
     private UserCacheBean      userCache;
 
-    private static final Logger log = Logger.getLogger(OrderManagerBean.class);
+    private static final Logger log = Logger.getLogger("openelis");
 
-    private static Integer      pendingId;
+    private static Integer       pendingId;
     
     @PostConstruct
     public void init() {
@@ -91,7 +92,7 @@ public class OrderManagerBean {
             try {
                 pendingId = dictionary.fetchBySystemName("order_status_pending").getId();
             } catch (Throwable e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
     }

@@ -14,7 +14,7 @@ public class QASummaryReportScreen extends ReportScreen {
 
     public QASummaryReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
-        setName(consts.get("QAByOrganization"));
+        setName(consts.get("QASummaryReport"));
     }
 
     @Override

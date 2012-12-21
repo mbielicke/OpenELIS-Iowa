@@ -13,6 +13,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -29,7 +31,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TurnAroundReportViewVO;
@@ -74,8 +75,8 @@ public class TurnaroundStatisticReportBean {
     private static DictionaryDO     analysisDailyTotalPlotInterval, weeklyTotalPlotInterval,
                                     monthlyTotalPlotInterval;
 
-    private static final Logger     log  = Logger.getLogger(TurnaroundStatisticReportBean.class);
-
+    private static final Logger     log = Logger.getLogger("openelis");
+    
     private static final SampleMeta meta = new SampleMeta();
 
     @PostConstruct
@@ -87,7 +88,7 @@ public class TurnaroundStatisticReportBean {
             monthlyTotalPlotInterval = dictionary.fetchBySystemName("turnaround_monthly");
             ptSampleTypeId = dictionary.fetchBySystemName("pt_sample").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
 
@@ -572,7 +573,7 @@ public class TurnaroundStatisticReportBean {
 
     public ReportStatus runReport(TurnAroundReportViewVO data) throws Exception {
         Integer intervalId;
-        String dir, printer, fromDate, toDate, key, intervalType;
+        String dir, printer, fromDate, toDate, key, intervalType, userName;
         ReportStatus status;
         String printstat;
         ArrayList<Value> values, valueList;
@@ -635,6 +636,9 @@ public class TurnaroundStatisticReportBean {
         dir = ReportUtil.getResourcePath(url);
 
         tempFile = File.createTempFile("turnaroundstatisticreport", ".pdf", new File("/tmp"));
+        
+        userName = userCache.getName();
+        
         jparam = new HashMap<String, Object>();
         jparam.put("LOGNAME", userCache.getName());
         jparam.put("SUBREPORT_DIR", dir);
@@ -642,6 +646,7 @@ public class TurnaroundStatisticReportBean {
         jparam.put("TO_DATE", toDate);
         jparam.put("INTERVAL_TYPE", intervalType);
         jparam.put("TURNAROUND_DATASOURCE", ds);
+        jparam.put("USER_NAME", userName);
 
         status.setMessage("Loading report");
         jprint = JasperFillManager.fillReport(jreport, jparam, ds);
