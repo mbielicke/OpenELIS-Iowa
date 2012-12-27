@@ -29,17 +29,29 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.ejb.EJB;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
-import org.openelis.server.EJBFactory;
-import org.openelis.util.SessionManager;
+import org.openelis.bean.UserCacheBean;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.util.UTFResource;
 import org.openelis.web.modules.main.client.OpenELISRPC;
+import org.openelis.web.modules.main.client.OpenELISWebServiceInt;
+
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * This class loads initial data for the main screen of the OpenELIS Web app
  */
-public class OpenELISWebService {
+@WebServlet("/openelisweb/service")
+public class OpenELISWebServlet extends RemoteServiceServlet implements OpenELISWebServiceInt  {
+
+    private static final long serialVersionUID = 1L;
+    
+    @EJB
+    UserCacheBean userCache;
 
     public OpenELISRPC initialData() {
         OpenELISRPC rpc;
@@ -51,16 +63,18 @@ public class OpenELISWebService {
     }
 
     public void keepAlive() {
+        getThreadLocalRequest().getSession().setAttribute("last_access",
+                                                          Datetime.getInstance(Datetime.YEAR,
+                                                                               Datetime.MINUTE));
     }
 
     public void logout() {
         HttpSession session;
 
         try {
-            EJBFactory.getUserCache().logout();
-            session = SessionManager.getSession();
+            userCache.logout();
+            session = getThreadLocalRequest().getSession(false);
             if (session != null) {
-                SessionManager.removeSession(session.getId());
                 session.invalidate();
             }
         } catch (Exception e) {
@@ -78,11 +92,11 @@ public class OpenELISWebService {
         HashMap<String, String> consts;
         
         locale = null;
-        if (SessionManager.getSession() != null)
-            locale = (String)SessionManager.getSession().getAttribute("locale");
+        if (getThreadLocalRequest().getSession(false) != null)
+            locale = (String)getThreadLocalRequest().getSession().getAttribute("locale");
         if (locale == null)
             locale = "en";
-        resource = UTFResource.getBundle("org.openelis.web.modules.main.server.constants.OpenELISConstants", new Locale(locale));
+        resource = UTFResource.getBundle("org.openelis.constants.OpenELISWebConstants", new Locale(locale));
         
         consts = new HashMap<String, String>();
         keys = resource.getKeys();
@@ -92,5 +106,10 @@ public class OpenELISWebService {
         }
 
         return consts;
+    }
+
+    @Override
+    public Datetime getLastAccess() {
+        return (Datetime)getThreadLocalRequest().getSession().getAttribute("last_access");
     }
 }

@@ -25,18 +25,13 @@
  */
 package org.openelis.web.modules.main.client;
 
-import java.util.HashMap;
 
-import org.openelis.cache.UserCache;
 import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenSessionTimer;
-import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.web.WebWindow;
+import org.openelis.web.cache.UserCache;
 import org.openelis.web.modules.dataView.client.DataViewEnvironmentalScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportPrivateWellScreen;
@@ -52,14 +47,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.ClosingEvent;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -71,7 +59,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * screen navigations will be handled by this class.
  * 
  */
-public class OpenELIS extends Screen implements ScreenSessionTimer {
+public class OpenELIS extends Screen {
 
     /**
      * This panel is where the screen content is displayed
@@ -83,11 +71,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
      */
     protected WebWindow               window;
 
-    private Confirm                   timeoutPopup;
-    private static Timer              timeoutTimer, forceTimer;
-    private static int                SESSION_TIMEOUT = 1000 * 60 * 30, FORCE_TIMEOUT = 1000 * 60;
-    private HandlerRegistration       closeHandler;
-
     /**
      * No-arg Constructor
      * 
@@ -96,16 +79,13 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
 
-        service = new ScreenService("controller?service=org.openelis.web.modules.main.server.OpenELISWebService");
-        rpc = service.call("initialData");
+        rpc = OpenELISWebService.get().initialData();
 
         consts = rpc.appConstants;
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
         window = new WebWindow();
 
-        initializeWindowClose();
-        initializeTimeout();
         initialize();
 
         setScreen(new HomeScreen(), "Home", "home");
@@ -281,95 +261,10 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         });
     }
 
-    /**
-     * resets the timeout timer to allow
-     */
-    public void resetTimeout() {
-        timeoutTimer.schedule(SESSION_TIMEOUT);
-    }
-
-    protected void initializeTimeout() {
-        /*
-         * add session timeout dialog box and timers
-         */
-        timeoutPopup = new Confirm(Confirm.Type.WARN,
-                                   consts.get("timeoutHeader"),
-                                   consts.get("timeoutWarning"),
-                                   consts.get("timeoutExtendTime"),
-                                   consts.get("timeoutLogout"));
-        timeoutPopup.addSelectionHandler(new SelectionHandler<Integer>() {
-            public void onSelection(SelectionEvent<Integer> event) {
-                if (event.getSelectedItem() == 0) {
-                    forceTimer.cancel();
-                    restServerTimeout();
-                } else {
-                    logout();
-                }
-
-            }
-        });
-
-        /*
-         * if they don't answer the dialog box, we are going to log them out
-         * automatically
-         */
-        forceTimer = new Timer() {
-            public void run() {
-                logout();
-            }
-        };
-
-        timeoutTimer = new Timer() {
-            public void run() {
-                forceTimer.schedule(FORCE_TIMEOUT);
-                timeoutPopup.show();
-            }
-        };
-        resetTimeout();
-        /*
-         * Register the reset timer call
-         */
-        ScreenService.setScreenSessionTimer(this);
-    }
-
-    /**
-     * ping the server so we session does not expire
-     */
-    private void restServerTimeout() {
-        service.call("keepAlive", new AsyncCallback<RPC>() {
-            public void onSuccess(RPC result) {
-            }
-
-            public void onFailure(Throwable caught) {
-                Window.alert("Couldn't call the application server; please call your sysadmin");
-            }
-        });
-    }
-
-    /**
-     * Sets up the notification for browser close button or navigating away from
-     * the application
-     */
-
-    private void initializeWindowClose() {
-        closeHandler = Window.addWindowClosingHandler(new Window.ClosingHandler() {
-            public void onWindowClosing(ClosingEvent event) {
-                logout();
-            }
-        });
-    }
-
-    /**
-     * logout the user
-     */
     private void logout() {
-        //
-        // close the handler so we don't get called again
-        //
-        closeHandler.removeHandler();
 
-        service.call("logout", new SyncCallback<RPC>() {
-            public void onSuccess(RPC result) {
+        OpenELISWebService.get().logout(new SyncCallback<Void>() {
+            public void onSuccess(Void result) {
             }
 
             public void onFailure(Throwable caught) {
