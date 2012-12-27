@@ -1372,7 +1372,7 @@ public class WorksheetCreationScreen extends Screen {
                                                                 }
                                                             } else if (waDO.getQcLotId() != null) {
                                                                 try {
-                                                                    qcDO = qcService.call("fetchLotByQcId", waDO.getQcLotId());
+                                                                    qcDO = qcService.call("fetchLotById", waDO.getQcLotId());
                                                                     wqrManager = worksheetService.call("fetchWorksheeetQcResultByWorksheetAnalysisId", waDO.getId());
                                                                     
                                                                     twiDO = new TestWorksheetItemDO();
