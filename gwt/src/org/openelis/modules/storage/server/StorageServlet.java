@@ -34,12 +34,12 @@ import org.openelis.bean.StorageLocationBean;
 import org.openelis.bean.StorageManagerBean;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.storage.client.StorageServiceInt;
 
 @WebServlet("/openelis/storage")
-public class StorageServlet extends AppServlet implements StorageServiceInt {
+public class StorageServlet extends RemoteServlet implements StorageServiceInt {
     
     private static final long serialVersionUID = 1L;
     

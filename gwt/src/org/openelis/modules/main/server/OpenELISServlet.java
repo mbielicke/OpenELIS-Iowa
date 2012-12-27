@@ -34,14 +34,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
 import org.openelis.bean.UserCacheBean;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.modules.main.client.OpenELISRPC;
 import org.openelis.modules.main.client.OpenELISServiceInt;
-import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+
 @WebServlet("/openelis/service")
-public class OpenELISServlet extends AppServlet implements OpenELISServiceInt {
+public class OpenELISServlet extends RemoteServiceServlet implements OpenELISServiceInt {
     
     private static final long serialVersionUID = 1L;
 
@@ -58,16 +59,22 @@ public class OpenELISServlet extends AppServlet implements OpenELISServiceInt {
     }
 
     public void keepAlive() {
+        getThreadLocalRequest().getSession().setAttribute("last_access",
+                                                          Datetime.getInstance(Datetime.YEAR,
+                                                                               Datetime.MINUTE));
     }
 
+    public Datetime getLastAccess() {
+        return (Datetime)getThreadLocalRequest().getSession().getAttribute("last_access");
+    }
+    
     public void logout() {
         HttpSession session;
 
         try {
             userCache.logout();
-            session = SessionManager.getSession();
+            session = getThreadLocalRequest().getSession();
             if (session != null) {
-                SessionManager.removeSession(session.getId());
                 session.invalidate();
             }
         } catch (Exception e) {
@@ -82,8 +89,8 @@ public class OpenELISServlet extends AppServlet implements OpenELISServiceInt {
         HashMap<String, String> consts;
         
         locale = null;
-        if (SessionManager.getSession() != null)
-            locale = (String)SessionManager.getSession().getAttribute("locale");
+        if (getThreadLocalRequest().getSession() != null)
+            locale = (String)getThreadLocalRequest().getSession().getAttribute("locale");
         if (locale == null)
             locale = "en";
         resource = UTFResource.getBundle("org.openelis.constants.OpenELISConstants", new Locale(locale));

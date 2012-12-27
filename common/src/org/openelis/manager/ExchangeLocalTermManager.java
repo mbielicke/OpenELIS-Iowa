@@ -25,11 +25,12 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class ExchangeLocalTermManager implements RPC {
+public class ExchangeLocalTermManager implements Serializable {
 
     private static final long                                serialVersionUID = 1L;
 

@@ -25,12 +25,12 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.InventoryComponentViewDO;
-import org.openelis.gwt.common.RPC;
 
-public class InventoryComponentManager implements RPC {
+public class InventoryComponentManager implements Serializable {
 
     private static final long                                 serialVersionUID = 1L;
 

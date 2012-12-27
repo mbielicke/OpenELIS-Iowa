@@ -26,6 +26,7 @@
 package org.openelis.modules.storage.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -37,10 +38,10 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
@@ -326,7 +327,7 @@ public class CurrentTab extends Screen {
                                 }
 
                                 list = storageCurrentTree.getSelections();
-                                current = Calendar.getCurrentDatetime(Datetime.YEAR,
+                                current = CalendarService.get().getCurrentDatetime(Datetime.YEAR,
                                                                       Datetime.MINUTE);
                                 userId = UserCache.getPermission().getSystemUserId();
                                 for (int i = 0; i < list.size(); i++ ) {
@@ -378,7 +379,7 @@ public class CurrentTab extends Screen {
 
         try {
             list = storageCurrentTree.getSelections();
-            current = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE);
+            current = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE);
             for (int i = 0; i < list.size(); i++ ) {
                 item = list.get(i);
                 oldstorage = (StorageViewDO)item.data;

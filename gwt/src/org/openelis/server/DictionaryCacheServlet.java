@@ -31,10 +31,10 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.cache.DictionaryCacheServiceInt;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 
 @WebServlet("/openelis/dictionaryCache")
-public class DictionaryCacheServlet extends AppServlet implements DictionaryCacheServiceInt {
+public class DictionaryCacheServlet extends RemoteServlet implements DictionaryCacheServiceInt {
 
     private static final long serialVersionUID = 1L;
     

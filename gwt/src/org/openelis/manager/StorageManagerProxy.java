@@ -27,12 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.StorageMeta;
 import org.openelis.modules.storage.client.StorageService;
 

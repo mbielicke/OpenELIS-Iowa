@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
@@ -37,8 +38,7 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.screen.Calendar;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.modules.analysis.client.AnalysisService;
 
@@ -177,7 +177,7 @@ public class AnalysisManagerProxy {
     }
 
     protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
-        return Calendar.getCurrentDatetime(begin, end);
+        return CalendarService.get().getCurrentDatetime(begin, end);
     }
 
     protected SystemUserPermission getSystemUserPermission() {

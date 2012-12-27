@@ -27,6 +27,7 @@
 package org.openelis.modules.orderFill.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -62,11 +63,10 @@ import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.Dropdown;
@@ -413,7 +413,7 @@ public class OrderFillScreen extends Screen {
                         custNoteTab.setState(State.DISPLAY);
                         now = null;
                         try {
-                            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                         } catch (Exception e) {
                             Window.alert("OrderFill Datetime: " + e.getMessage());
                         }
@@ -886,7 +886,7 @@ public class OrderFillScreen extends Screen {
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
                     try {
-                        now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                        now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                     } catch (Exception e) {
                         Window.alert("Order Fill Datetime: " + e.getMessage());
                     }
@@ -974,7 +974,7 @@ public class OrderFillScreen extends Screen {
         now = null;
         
         try {
-            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
             Window.alert("OrderFill Datetime: " + e.getMessage());
             return;

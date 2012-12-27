@@ -25,12 +25,12 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 
 /**
  * The class is used to carry fields for the web based Final Report for SDWIS
@@ -38,7 +38,7 @@ import org.openelis.gwt.common.RPC;
  * the database.
  */
 
-public class SampleStatusWebReportVO implements RPC {
+public class SampleStatusWebReportVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

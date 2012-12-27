@@ -1,5 +1,6 @@
 package org.openelis.modules.main.client;
 
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
@@ -60,6 +61,25 @@ public class OpenELISService implements OpenELISServiceInt, OpenELISServiceIntAs
         
         callback = new Callback<Void>();
         service.logout(callback);
+    }
+
+    @Override
+    public void getLastAccess(AsyncCallback<Datetime> callback) {
+        service.getLastAccess(callback);
+    }
+
+    @Override
+    public Datetime getLastAccess() {
+        Callback<Datetime> callback;
+        
+        callback = new Callback<Datetime>();
+        service.getLastAccess(callback);
+        try {
+            return callback.getResult();
+        }catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     

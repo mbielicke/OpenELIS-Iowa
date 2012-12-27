@@ -34,11 +34,11 @@ import org.openelis.bean.WorksheetCreationBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationServiceInt;
 
 @WebServlet("/openelis/worksheetCreation")
-public class WorksheetCreationServlet extends AppServlet implements WorksheetCreationServiceInt {
+public class WorksheetCreationServlet extends RemoteServlet implements WorksheetCreationServiceInt {
 
     private static final long serialVersionUID = 1L;
     

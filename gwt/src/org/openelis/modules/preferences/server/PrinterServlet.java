@@ -32,11 +32,11 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.PrinterCacheBean;
 import org.openelis.gwt.common.OptionListItem;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.preferences.client.PrinterServiceInt;
 
 @WebServlet("/openelis/printer")
-public class PrinterServlet extends AppServlet implements PrinterServiceInt {
+public class PrinterServlet extends RemoteServlet implements PrinterServiceInt {
     
     private static final long serialVersionUID = 1L;
     

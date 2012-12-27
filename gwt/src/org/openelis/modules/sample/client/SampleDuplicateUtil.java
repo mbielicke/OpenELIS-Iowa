@@ -45,7 +45,6 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
@@ -60,7 +59,6 @@ import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
-import org.openelis.manager.StorageManager;
 
 public class SampleDuplicateUtil {
 

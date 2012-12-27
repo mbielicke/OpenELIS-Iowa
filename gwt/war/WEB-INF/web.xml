@@ -50,13 +50,6 @@ UIRF Software License are applicable instead of those above.
    </form-login-config>
    <realm-name>ApplicationRelam</realm-name>
  </login-config>
-  
-
-  <servlet>
-    <servlet-name>OpenELISServlet</servlet-name>
-    <servlet-class>org.openelis.gwt.server.ScreenControllerServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
 
   <servlet>
     <servlet-name>FileServlet</servlet-name>
@@ -69,13 +62,7 @@ UIRF Software License are applicable instead of those above.
     <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
-  
-
-  <servlet-mapping>
-    <servlet-name>OpenELISServlet</servlet-name>
-    <url-pattern>/openelis/controller</url-pattern>
-  </servlet-mapping>
-  
+   
   <servlet-mapping>
     <servlet-name>FileServlet</servlet-name>
     <url-pattern>/openelis/upload</url-pattern>

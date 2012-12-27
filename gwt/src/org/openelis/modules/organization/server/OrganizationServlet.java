@@ -39,7 +39,7 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
@@ -50,7 +50,7 @@ import org.openelis.modules.organization.client.OrganizationServiceInt;
  * OrganizationContactManager.
  */
 @WebServlet("/openelis/organization")
-public class OrganizationServlet extends AppServlet implements OrganizationServiceInt {
+public class OrganizationServlet extends RemoteServlet implements OrganizationServiceInt {
 
     private static final long serialVersionUID = 1L;
     

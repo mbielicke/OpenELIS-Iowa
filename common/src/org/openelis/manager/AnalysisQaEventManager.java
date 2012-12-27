@@ -26,14 +26,13 @@
 
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
-import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class AnalysisQaEventManager implements RPC {
+public class AnalysisQaEventManager implements Serializable {
 
     private static final long                              serialVersionUID = 1L;
 

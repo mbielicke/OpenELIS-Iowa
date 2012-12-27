@@ -57,7 +57,6 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.AuxFieldGroupManager;

@@ -36,12 +36,12 @@ import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AnalyteParameterManager;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterServiceInt;
 
 @WebServlet("/openelis/analyteParameter")
-public class AnalyteParameterServlet extends AppServlet implements AnalyteParameterServiceInt {
+public class AnalyteParameterServlet extends RemoteServlet implements AnalyteParameterServiceInt {
     
     private static final long serialVersionUID = 1L;
     

@@ -25,14 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
 
-public class StorageManager implements RPC {
+public class StorageManager implements Serializable {
 
     private static final long                      serialVersionUID = 1L;
     protected Integer                              referenceId, referenceTableId;

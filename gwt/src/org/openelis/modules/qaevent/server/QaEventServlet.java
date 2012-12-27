@@ -35,11 +35,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.qaevent.client.QAEventServiceInt;
 
 @WebServlet("/openelis/qa")
-public class QaEventServlet extends AppServlet implements QAEventServiceInt {
+public class QaEventServlet extends RemoteServlet implements QAEventServiceInt {
     
     private static final long serialVersionUID = 1L;
     

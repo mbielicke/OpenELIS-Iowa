@@ -28,7 +28,6 @@ package org.openelis.modules.report.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
@@ -39,7 +38,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * This class is used to execute reports on behalf of those screens that don't
  * implement ReportScreen like Build Kits
  */
-public class BuildKitsReportScreen extends ReportScreen {
+public class BuildKitsReportScreen extends ReportScreen<Query> {
 
     public BuildKitsReportScreen() throws Exception {
         drawScreen(new ScreenDef());
@@ -52,7 +51,8 @@ public class BuildKitsReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
-        BuildKitsReportService.get().runReport((Query)query, callback);
-    }    
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        BuildKitsReportService.get().runReport(query, callback);
+    }
+    
 }

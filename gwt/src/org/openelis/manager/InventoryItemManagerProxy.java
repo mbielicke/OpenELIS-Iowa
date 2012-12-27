@@ -25,7 +25,6 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 
 public class InventoryItemManagerProxy {

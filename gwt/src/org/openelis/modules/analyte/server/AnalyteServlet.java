@@ -35,11 +35,11 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.analyte.client.AnalyteServiceInt;
 
 @WebServlet("/openelis/analyte")
-public class AnalyteServlet extends AppServlet implements AnalyteServiceInt {
+public class AnalyteServlet extends RemoteServlet implements AnalyteServiceInt {
     
     private static final long serialVersionUID = 1L;
     

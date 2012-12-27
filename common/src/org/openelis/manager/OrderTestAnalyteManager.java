@@ -25,13 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.gwt.common.RPC;
 
-public class OrderTestAnalyteManager implements RPC {
+public class OrderTestAnalyteManager implements Serializable {
 
     private static final long                   serialVersionUID = 1L;
 

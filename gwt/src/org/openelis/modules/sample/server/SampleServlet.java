@@ -40,7 +40,7 @@ import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -49,7 +49,7 @@ import org.openelis.manager.SampleQaEventManager;
 import org.openelis.modules.sample.client.SampleServiceInt;
 
 @WebServlet("/openelis/sample")
-public class SampleServlet extends AppServlet implements SampleServiceInt {
+public class SampleServlet extends RemoteServlet implements SampleServiceInt {
     
     private static final long serialVersionUID = 1L;
     

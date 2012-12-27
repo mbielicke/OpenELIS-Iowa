@@ -9,12 +9,11 @@ import org.openelis.bean.TurnaroundReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.TurnaroundReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/turnaroundReport")
-public class TurnaroundReportServlet extends AppServlet implements TurnaroundReportServiceInt {
+public class TurnaroundReportServlet extends RemoteServlet implements TurnaroundReportServiceInt {
     
     private static final long serialVersionUID = 1L;
     
@@ -30,7 +29,7 @@ public class TurnaroundReportServlet extends AppServlet implements TurnaroundRep
         
         st = turnaroundReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

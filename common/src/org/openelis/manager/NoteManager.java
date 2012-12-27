@@ -25,13 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.NoteViewDO;
 import org.openelis.exception.MultipleNoteException;
-import org.openelis.gwt.common.RPC;
 
-public class NoteManager implements RPC {
+public class NoteManager implements Serializable {
 
     private static final long                   serialVersionUID = 1L;
 

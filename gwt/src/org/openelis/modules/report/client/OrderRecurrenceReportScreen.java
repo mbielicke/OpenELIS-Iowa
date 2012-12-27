@@ -28,7 +28,6 @@ package org.openelis.modules.report.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
@@ -37,7 +36,7 @@ import org.openelis.modules.order.client.OrderService;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class OrderRecurrenceReportScreen extends ReportScreen {
+public class OrderRecurrenceReportScreen extends ReportScreen<Query> {
     
     public OrderRecurrenceReportScreen() throws Exception { 
         drawScreen(new ScreenDef());      
@@ -62,7 +61,7 @@ public class OrderRecurrenceReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC rpc, AsyncCallback<ReportStatus> callback) {
+    public void runReport(Query rpc, AsyncCallback<ReportStatus> callback) {
         // TODO Auto-generated method stub
         
     }

@@ -1,9 +1,10 @@
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
+import java.io.Serializable;
 
-public class TestMethodSampleTypeVO implements RPC {
+import org.openelis.gwt.common.DataBaseUtil;
+
+public class TestMethodSampleTypeVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

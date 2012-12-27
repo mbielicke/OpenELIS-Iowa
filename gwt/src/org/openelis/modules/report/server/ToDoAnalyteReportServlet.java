@@ -34,12 +34,11 @@ import org.openelis.bean.ToDoAnalyteReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.ToDoAnalyteReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/todoAnalyteReport")
-public class ToDoAnalyteReportServlet extends AppServlet implements ToDoAnalyteReportServiceInt {
+public class ToDoAnalyteReportServlet extends RemoteServlet implements ToDoAnalyteReportServiceInt {
     
     private static final long serialVersionUID = 1L;
     
@@ -55,7 +54,7 @@ public class ToDoAnalyteReportServlet extends AppServlet implements ToDoAnalyteR
         
         st = toDoAnalyteReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     } 

@@ -25,12 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class OrganizationManager implements RPC, HasNotesInt {
+public class OrganizationManager implements Serializable, HasNotesInt {
 
     private static final long                           serialVersionUID = 1L;
 

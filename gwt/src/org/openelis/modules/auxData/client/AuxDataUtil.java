@@ -37,7 +37,6 @@ import org.openelis.domain.IdVO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.modules.panel.client.PanelService;

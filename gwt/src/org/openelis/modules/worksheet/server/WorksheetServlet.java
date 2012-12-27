@@ -34,7 +34,7 @@ import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetManagerBean;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -43,7 +43,7 @@ import org.openelis.manager.WorksheetResultManager;
 import org.openelis.modules.worksheet.client.WorkSheetServiceInt;
 
 @WebServlet("/openelis/worksheet")
-public class WorksheetServlet extends AppServlet implements WorkSheetServiceInt {
+public class WorksheetServlet extends RemoteServlet implements WorkSheetServiceInt {
 
     private static final long serialVersionUID = 1L;
     

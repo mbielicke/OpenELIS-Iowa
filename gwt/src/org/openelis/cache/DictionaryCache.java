@@ -28,7 +28,6 @@ package org.openelis.cache;
 import java.util.HashMap;
 
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.services.ScreenService;
 
 /**
  * Class provides cache service handling for front end GWT classes. Cache

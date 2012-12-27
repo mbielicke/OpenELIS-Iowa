@@ -97,7 +97,6 @@ public class PrepTestAndReflexTestTab extends Screen implements
     public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
-        this.service = service;
 
         initialize();
         initializeDropdowns();

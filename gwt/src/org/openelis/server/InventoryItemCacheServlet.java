@@ -31,10 +31,10 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.InventoryItemCacheBean;
 import org.openelis.cache.InventoryItemCacheServiceInt;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 
 @WebServlet("/openelis/inventoryItemCache")
-public class InventoryItemCacheServlet extends AppServlet implements InventoryItemCacheServiceInt {   
+public class InventoryItemCacheServlet extends RemoteServlet implements InventoryItemCacheServiceInt {   
     
     private static final long serialVersionUID = 1L;
     

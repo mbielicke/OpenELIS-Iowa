@@ -26,6 +26,7 @@
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
@@ -39,8 +40,8 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
@@ -363,7 +364,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 anDO.setPreAnalysisId(prepDO.getId());
                 if (anCompletedId.equals(prepDO.getStatusId()) || anReleasedId.equals(prepDO.getStatusId())) {
                     anDO.setStatusId(anLoggedInId);
-                    anDO.setAvailableDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+                    anDO.setAvailableDate(CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
                 } else {
                     anDO.setStatusId(anInPrepId);
                     anDO.setAvailableDate(null);

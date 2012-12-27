@@ -34,11 +34,11 @@ import org.openelis.bean.TestTrailerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.testTrailer.client.TestTrailerServiceInt;
 
 @WebServlet("/openelis/testTrailer")
-public class TestTrailerServlet extends AppServlet implements TestTrailerServiceInt {
+public class TestTrailerServlet extends RemoteServlet implements TestTrailerServiceInt {
 
     private static final long serialVersionUID = 1L;
     

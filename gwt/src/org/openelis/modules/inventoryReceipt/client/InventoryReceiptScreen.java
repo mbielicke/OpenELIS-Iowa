@@ -26,6 +26,7 @@
 package org.openelis.modules.inventoryReceipt.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
@@ -56,10 +57,10 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -401,7 +402,7 @@ public class InventoryReceiptScreen extends Screen {
                             dateRec = data.getReceivedDate();
                             if (dateRec == null) {
                                 try {
-                                    dateRec = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                                    dateRec = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                                 } catch (Exception e) {
                                     Window.alert("Inventory Receipt Datetime: " +e.getMessage());
                                     return;

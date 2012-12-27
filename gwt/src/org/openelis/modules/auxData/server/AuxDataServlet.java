@@ -35,12 +35,12 @@ import org.openelis.bean.AuxDataManagerBean;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.IdVO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.modules.auxData.client.AuxDataServiceInt;
 
 @WebServlet("/openelis/auxData")
-public class AuxDataServlet extends AppServlet implements AuxDataServiceInt {
+public class AuxDataServlet extends RemoteServlet implements AuxDataServiceInt {
     
     private static final long serialVersionUID = 1L;
 

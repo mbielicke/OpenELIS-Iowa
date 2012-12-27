@@ -25,16 +25,16 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 
 /**
  * This class is used for managing the analytes and results that will be part of
  * the spreadsheet delivered as a result of executing a data dump
  */
-public class AuxFieldDataViewVO implements RPC {
+public class AuxFieldDataViewVO implements Serializable {
 
     private static final long             serialVersionUID = 1L;
 

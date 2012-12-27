@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -40,11 +41,10 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class AnalysisManager implements RPC {
+public class AnalysisManager implements Serializable {
     private static final long                       serialVersionUID = 1L;
 
     protected Integer                               sampleItemId;
@@ -1117,7 +1117,7 @@ public class AnalysisManager implements RPC {
         return proxy;
     }
 
-    static class AnalysisListItem implements RPC {
+    static class AnalysisListItem implements Serializable {
         private static final long serialVersionUID = 1L;
 
         AnalysisViewDO            analysis;

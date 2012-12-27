@@ -29,11 +29,8 @@ import java.util.ArrayList;
 
 import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
 
@@ -43,7 +40,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * This class is used to execute reports on behalf of those screens that don't
  * implement ReportScreen like QcChartScreen
  */
-public class QcChartReportScreen extends ReportScreen {
+public class QcChartReportScreen extends ReportScreen<QcChartReportViewVO> {
 
     public QcChartReportScreen(ScreenWindowInt window) throws Exception {
         drawScreen(new ScreenDef());
@@ -64,7 +61,7 @@ public class QcChartReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC rpc, AsyncCallback<ReportStatus> callback) {
-        QcChartReportService.get().runReport((QcChartReportViewVO)rpc,callback);
+    public void runReport(QcChartReportViewVO rpc, AsyncCallback<ReportStatus> callback) {
+        QcChartReportService.get().runReport(rpc,callback);
     }
 }

@@ -25,6 +25,8 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
@@ -34,10 +36,9 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class SampleManager implements RPC, HasAuxDataInt {
+public class SampleManager implements Serializable, HasAuxDataInt {
     private static final long                     serialVersionUID = 1L;
 
     protected SampleDO                            sample;

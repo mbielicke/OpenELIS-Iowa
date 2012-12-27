@@ -1,12 +1,12 @@
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldValueViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class AuxFieldValueManager implements RPC {
+public class AuxFieldValueManager implements Serializable {
 
     private static final long                                  serialVersionUID = 1L;
 

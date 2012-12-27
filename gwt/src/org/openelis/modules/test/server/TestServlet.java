@@ -40,7 +40,7 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
@@ -51,7 +51,7 @@ import org.openelis.manager.TestWorksheetManager;
 import org.openelis.modules.test.client.TestServiceInt;
 
 @WebServlet("/openelis/test")
-public class TestServlet extends AppServlet implements TestServiceInt {
+public class TestServlet extends RemoteServlet implements TestServiceInt {
     
     private static final long serialVersionUID = 1L;
     

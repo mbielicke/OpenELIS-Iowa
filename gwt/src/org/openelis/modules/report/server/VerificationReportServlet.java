@@ -34,12 +34,11 @@ import org.openelis.bean.VerificationReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.VerificationReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/verificationReport")
-public class VerificationReportServlet extends AppServlet implements VerificationReportServiceInt {    
+public class VerificationReportServlet extends RemoteServlet implements VerificationReportServiceInt {    
     
     private static final long serialVersionUID = 1L;
     
@@ -55,7 +54,7 @@ public class VerificationReportServlet extends AppServlet implements Verificatio
         
         st = verificationReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

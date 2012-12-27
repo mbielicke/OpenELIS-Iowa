@@ -60,7 +60,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -1120,7 +1119,7 @@ public class TestScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<TestMethodVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
@@ -1145,8 +1144,8 @@ public class TestScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById((entry == null)?null:((TestMethodVO)entry).getTestId());
+            public boolean fetch(TestMethodVO entry) {
+                return fetchById((entry == null)?null:entry.getTestId());
             }
 
             public ArrayList<TableDataRow> getModel() {

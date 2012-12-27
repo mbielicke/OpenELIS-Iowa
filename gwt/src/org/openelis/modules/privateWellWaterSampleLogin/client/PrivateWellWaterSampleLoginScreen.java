@@ -45,7 +45,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -61,7 +60,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -72,7 +70,6 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -978,7 +975,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
         });
 
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdAccessionVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
@@ -1004,8 +1001,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdAccessionVO)entry).getId());
+            public boolean fetch(IdAccessionVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {

@@ -34,11 +34,11 @@ import org.openelis.bean.MethodBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.method.client.MethodServiceInt;
 
 @WebServlet("/openelis/method")
-public class MethodServlet extends AppServlet implements MethodServiceInt {
+public class MethodServlet extends RemoteServlet implements MethodServiceInt {
 
     private static final long serialVersionUID = 1L;
     

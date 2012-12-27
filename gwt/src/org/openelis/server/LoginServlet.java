@@ -40,7 +40,6 @@ import org.openelis.bean.UserCacheBean;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -74,11 +73,6 @@ public class LoginServlet extends HttpServlet {
         String error = null;
         HttpServletRequest hreq = (HttpServletRequest)req;
 
-        //
-        // register this session with SessionManager so we can access it
-        // statically in gwt code
-        //
-        SessionManager.setSession(hreq.getSession());
 
         //
         // pass-through for images and if we are logged-in
@@ -142,7 +136,7 @@ public class LoginServlet extends HttpServlet {
                                                        "/jbosslogin.xsl");
             System.out.println(XMLUtil.toString(doc));
             response.getWriter().write(ServiceUtils.getXML(getServletContext().getRealPath("") +
-                                                       "/jbosslogin.xsl", doc));
+                                                       "/jbosslogin.xsl", doc,(String)hreq.getSession().getAttribute("locale")));
         } catch (Exception e) {
             // log.log(Level.SEVERE, e.getMessage(), e);
             e.printStackTrace();

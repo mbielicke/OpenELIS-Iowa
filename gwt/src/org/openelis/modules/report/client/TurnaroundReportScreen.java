@@ -3,14 +3,13 @@ package org.openelis.modules.report.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class TurnaroundReportScreen extends ReportScreen {
+public class TurnaroundReportScreen extends ReportScreen<Query> {
 
     public TurnaroundReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
@@ -23,8 +22,8 @@ public class TurnaroundReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
-        TurnaroundReportService.get().runReport((Query)query, callback);
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        TurnaroundReportService.get().runReport(query, callback);
     }
     
     

@@ -31,13 +31,13 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.NoteManagerBean;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.NoteManager;
 import org.openelis.meta.NoteMeta;
 import org.openelis.modules.note.client.NoteServiceInt;
 
 @WebServlet("/openelis/note")
-public class NoteServlet extends AppServlet implements NoteServiceInt {
+public class NoteServlet extends RemoteServlet implements NoteServiceInt {
     
     private static final long serialVersionUID = 1L;
     

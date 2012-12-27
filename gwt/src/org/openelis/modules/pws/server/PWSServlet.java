@@ -36,7 +36,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PWSDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
@@ -44,7 +44,7 @@ import org.openelis.manager.PWSMonitorManager;
 import org.openelis.modules.pws.client.PWSServiceInt;
 
 @WebServlet("/openelis/pws")
-public class PWSServlet extends AppServlet implements PWSServiceInt {
+public class PWSServlet extends RemoteServlet implements PWSServiceInt {
     
     private static final long serialVersionUID = 1L;
     

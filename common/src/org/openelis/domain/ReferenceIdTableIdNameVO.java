@@ -25,15 +25,16 @@
 */
 package org.openelis.domain;
 
+import java.io.Serializable;
+
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 
 /**
  *  The class is used to return the data to be shown as the result of querying
  *  the records in the table analyte_parameter. The fields are considered read/display
  *  and do not get committed to the database.
  */
-public class ReferenceIdTableIdNameVO implements RPC {
+public class ReferenceIdTableIdNameVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

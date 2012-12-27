@@ -25,14 +25,14 @@
  */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
+import java.io.Serializable;
 
 /**
  * The class provides application wide constants that are used in the EJB and
  * GWT context. Parts of the class is loaded from the database at server
  * start-up which makes some of these variables not immutable.
  */
-public class Constants implements RPC {
+public class Constants implements Serializable {
     private static final long      serialVersionUID = 1L;
 
     private static final Constants constants        = new Constants();

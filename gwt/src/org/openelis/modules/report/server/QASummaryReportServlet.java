@@ -9,12 +9,11 @@ import org.openelis.bean.QASummaryReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.QASummaryReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/qaSummary")
-public class QASummaryReportServlet extends AppServlet implements QASummaryReportServiceInt {
+public class QASummaryReportServlet extends RemoteServlet implements QASummaryReportServiceInt {
     
     private static final long serialVersionUID = 1L;
     
@@ -30,7 +29,7 @@ public class QASummaryReportServlet extends AppServlet implements QASummaryRepor
         
         st = qaSummaryReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

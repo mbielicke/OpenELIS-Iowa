@@ -9,6 +9,13 @@
 		<exclude name="WEB-INF/lib/gwt-servlet.jar" />
 		<exclude name="WEB-INF/classes/org/openelis/manager/*"/>
 	</war>
+	
+	<delete file="build/openleisweb.war"/>
+	<war destFile="build/openelisweb.war" baseDir="../OpenELIS-Web/war">
+	    <exclude name="WEB-INF/lib/gwt-servlet.jar" />
+	    <exclude name="WEB-INF/classes/org/openelis/manager/*"/>
+    </war>
+	  
 
 	<delete file="build/openelis.jar" />
 	<copy file="src/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />
@@ -65,6 +72,9 @@
 		<fileset dir="build">
 			<include name="openelis.war" />
 		</fileset>
+		<fileset dir="build">
+			<include name="openelisweb.war" />
+	    </fileset>
 		<fileset dir="build">
 			<include name="openelis-common.jar"/>
 	    </fileset>

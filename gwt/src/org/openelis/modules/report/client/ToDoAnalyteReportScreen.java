@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
@@ -38,7 +37,7 @@ import org.openelis.gwt.widget.Dropdown;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class ToDoAnalyteReportScreen extends ReportScreen {
+public class ToDoAnalyteReportScreen extends ReportScreen<Query> {
     private ArrayList<Object> selections;
     
     public ToDoAnalyteReportScreen() throws Exception {
@@ -86,7 +85,7 @@ public class ToDoAnalyteReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
-        ToDoAnalyteReportService.get().runReport((Query)query, callback);
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        ToDoAnalyteReportService.get().runReport(query, callback);
     } 
 }

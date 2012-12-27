@@ -25,11 +25,11 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.QueryData;
 
 /**
@@ -37,7 +37,7 @@ import org.openelis.gwt.common.data.QueryData;
  * This class is used to carry the data entered on Data dump screen to the
  * back-end and also between different screens
  */
-public class DataViewVO implements RPC {
+public class DataViewVO implements Serializable {
 
     private static final long              serialVersionUID = 1L;
 

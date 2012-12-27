@@ -28,14 +28,13 @@ package org.openelis.modules.report.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class TestReportScreen extends ReportScreen {
+public class TestReportScreen extends ReportScreen<Query> {
 
     public TestReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
@@ -48,7 +47,7 @@ public class TestReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
         TestReportService.get().runReport((Query)query, callback);
     }
 }

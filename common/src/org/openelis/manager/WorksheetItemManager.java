@@ -25,6 +25,7 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -32,10 +33,9 @@ import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class WorksheetItemManager implements RPC {
+public class WorksheetItemManager implements Serializable {
     
     private static final long                  serialVersionUID = 1L;
     protected WorksheetViewDO                  worksheet;
@@ -187,7 +187,7 @@ public class WorksheetItemManager implements RPC {
         return proxy;
     }
     
-    static class WorksheetItemListItem implements RPC {
+    static class WorksheetItemListItem implements Serializable {
         private static final long serialVersionUID = 1L;
 
         WorksheetItemDO          worksheetItem;

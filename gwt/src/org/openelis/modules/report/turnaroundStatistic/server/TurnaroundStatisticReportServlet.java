@@ -32,12 +32,11 @@ import org.openelis.bean.TurnaroundStatisticReportBean;
 import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/turnaroundStatisticReport")
-public class TurnaroundStatisticReportServlet extends AppServlet implements TurnaroundStatisticReportServiceInt {
+public class TurnaroundStatisticReportServlet extends RemoteServlet implements TurnaroundStatisticReportServiceInt {
     
     private static final long serialVersionUID = 1L;
     
@@ -59,7 +58,7 @@ public class TurnaroundStatisticReportServlet extends AppServlet implements Turn
         st = turnaroundStatisticReport.runReport(data);
         
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

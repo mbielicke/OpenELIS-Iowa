@@ -25,11 +25,12 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
+public class SampleEnvironmentalManager implements Serializable, SampleDomainInt {
 
     private static final long                           serialVersionUID = 1L;
     protected Integer                                   sampleId;

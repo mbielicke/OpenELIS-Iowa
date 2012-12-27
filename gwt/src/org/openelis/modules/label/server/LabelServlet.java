@@ -35,11 +35,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.label.client.LabelServiceInt;
 
 @WebServlet("/openelis/label")
-public class LabelServlet extends AppServlet implements LabelServiceInt {
+public class LabelServlet extends RemoteServlet implements LabelServiceInt {
 
     private static final long serialVersionUID = 1L;
     

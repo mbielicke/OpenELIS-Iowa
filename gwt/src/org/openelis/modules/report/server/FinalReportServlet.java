@@ -37,12 +37,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.FinalReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/finalReport")
-public class FinalReportServlet extends AppServlet implements FinalReportServiceInt {
+public class FinalReportServlet extends RemoteServlet implements FinalReportServiceInt {
 
     private static final long serialVersionUID = 1L;
     
@@ -69,7 +68,7 @@ public class FinalReportServlet extends AppServlet implements FinalReportService
 
         st = finalReport.runReportForSingle(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
@@ -79,7 +78,7 @@ public class FinalReportServlet extends AppServlet implements FinalReportService
 
         st = finalReport.runReportForPreview(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
@@ -89,7 +88,7 @@ public class FinalReportServlet extends AppServlet implements FinalReportService
 
         st = finalReport.runReportForBatch(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
@@ -99,7 +98,7 @@ public class FinalReportServlet extends AppServlet implements FinalReportService
 
         st = finalReport.runReportForBatchReprint(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
@@ -109,7 +108,7 @@ public class FinalReportServlet extends AppServlet implements FinalReportService
 
         st = finalReport.runReportForWeb(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

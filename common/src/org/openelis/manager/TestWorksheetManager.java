@@ -25,16 +25,16 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.TestWorksheetViewDO;
-import org.openelis.gwt.common.RPC;
 
 
-public class TestWorksheetManager implements RPC {
+public class TestWorksheetManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

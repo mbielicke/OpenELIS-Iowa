@@ -34,12 +34,11 @@ import org.openelis.bean.ShippingReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.ShippingReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/shippingReport")
-public class ShippingReportServlet extends AppServlet implements ShippingReportServiceInt {
+public class ShippingReportServlet extends RemoteServlet implements ShippingReportServiceInt {
 
     private static final long serialVersionUID = 1L;
     
@@ -55,7 +54,7 @@ public class ShippingReportServlet extends AppServlet implements ShippingReportS
         
         st = shippingReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

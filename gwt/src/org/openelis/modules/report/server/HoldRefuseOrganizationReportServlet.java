@@ -34,12 +34,11 @@ import org.openelis.bean.HoldRefuseOrganizationReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/holdRefuse")
-public class HoldRefuseOrganizationReportServlet extends AppServlet implements HoldRefuseOrganizationReportServiceInt  {    
+public class HoldRefuseOrganizationReportServlet extends RemoteServlet implements HoldRefuseOrganizationReportServiceInt  {    
     
     private static final long serialVersionUID = 1L;
     
@@ -55,7 +54,7 @@ public class HoldRefuseOrganizationReportServlet extends AppServlet implements H
         
         st = holdRefuse.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
