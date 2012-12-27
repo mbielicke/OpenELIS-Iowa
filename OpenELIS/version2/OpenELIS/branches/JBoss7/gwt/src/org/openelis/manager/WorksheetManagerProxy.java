@@ -26,7 +26,6 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.worksheet.client.WorksheetService;
 
 

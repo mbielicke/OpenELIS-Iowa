@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleDO;
@@ -35,7 +36,7 @@ import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.screen.Calendar;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.SampleService;
 
@@ -113,7 +114,7 @@ public class SampleManagerProxy {
     }
 
     public Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
-        return Calendar.getCurrentDatetime(begin, end);
+        return CalendarService.get().getCurrentDatetime(begin, end);
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {

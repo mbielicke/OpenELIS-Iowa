@@ -32,12 +32,11 @@ import org.openelis.bean.QcChartReportBean;
 import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.qcChart.client.QcChartReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/qcChartReport")
-public class QcChartReportServlet extends AppServlet implements QcChartReportServiceInt {
+public class QcChartReportServlet extends RemoteServlet implements QcChartReportServiceInt {
     
     private static final long serialVersionUID = 1L;
     
@@ -57,7 +56,7 @@ public class QcChartReportServlet extends AppServlet implements QcChartReportSer
         
         st = qcChartReport.runReport(data);
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

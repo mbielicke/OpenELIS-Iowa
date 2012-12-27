@@ -34,12 +34,11 @@ import org.openelis.bean.BuildKitsReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.BuildKitsReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/buildKitsReport")
-public class BuildKitsReportService extends AppServlet implements BuildKitsReportServiceInt {
+public class BuildKitsReportServlet extends RemoteServlet implements BuildKitsReportServiceInt {
     
     private static final long serialVersionUID = 1L;
 
@@ -55,7 +54,7 @@ public class BuildKitsReportService extends AppServlet implements BuildKitsRepor
         
         st = buildKitsReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

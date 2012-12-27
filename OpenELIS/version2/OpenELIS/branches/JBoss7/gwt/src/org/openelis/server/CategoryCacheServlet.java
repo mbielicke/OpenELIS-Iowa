@@ -33,10 +33,10 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.CategoryCacheBean;
 import org.openelis.cache.CategoryCacheServiceInt;
 import org.openelis.domain.CategoryCacheVO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 
 @WebServlet("/openelis/categoryCache")
-public class CategoryCacheServlet extends AppServlet implements CategoryCacheServiceInt {
+public class CategoryCacheServlet extends RemoteServlet implements CategoryCacheServiceInt {
     
     private static final long serialVersionUID = 1L;
     

@@ -34,20 +34,16 @@ import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -63,7 +59,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -971,7 +966,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         });
 
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdAccessionVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
@@ -997,8 +992,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdAccessionVO)entry).getId());
+            public boolean fetch(IdAccessionVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {

@@ -42,12 +42,11 @@ import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.dataView.client.DataViewServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/dataViewReport")
-public class DataViewReportServlet extends AppServlet implements DataViewServiceInt {
+public class DataViewReportServlet extends RemoteServlet implements DataViewServiceInt {
     
     private static final long serialVersionUID = 1L;
 
@@ -95,7 +94,7 @@ public class DataViewReportServlet extends AppServlet implements DataViewService
             data = dataView.loadQuery(temp.getPath());
             in.close(); 
             temp.delete();
-            SessionManager.getSession().setAttribute("dataViewQuery", data);
+            getThreadLocalRequest().getSession().setAttribute("dataViewQuery", data);
         } catch (Exception e) {
             if (in != null)
                 in.close(); 
@@ -111,7 +110,7 @@ public class DataViewReportServlet extends AppServlet implements DataViewService
         DataViewVO data;
         HttpSession session;
         
-        session = SessionManager.getSession();               
+        session = getThreadLocalRequest().getSession();               
         data = (DataViewVO)session.getAttribute("dataViewQuery");
         /*
          * we remove the VO from the session because there's no need to hold on
@@ -126,7 +125,7 @@ public class DataViewReportServlet extends AppServlet implements DataViewService
 
         st = dataView.saveQuery(data);
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
@@ -136,7 +135,7 @@ public class DataViewReportServlet extends AppServlet implements DataViewService
 
         st = dataView.runReport(data);
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
@@ -146,7 +145,7 @@ public class DataViewReportServlet extends AppServlet implements DataViewService
 
         st = dataView.runReportForWebEnvironmental(data);
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

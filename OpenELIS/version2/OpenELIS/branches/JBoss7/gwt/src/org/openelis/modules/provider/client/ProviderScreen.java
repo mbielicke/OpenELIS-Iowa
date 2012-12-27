@@ -40,7 +40,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -380,7 +379,7 @@ public class ProviderScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdFirstLastNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
@@ -406,8 +405,8 @@ public class ProviderScreen extends Screen {
                  });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdFirstLastNameVO)entry).getId());
+            public boolean fetch(IdFirstLastNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {

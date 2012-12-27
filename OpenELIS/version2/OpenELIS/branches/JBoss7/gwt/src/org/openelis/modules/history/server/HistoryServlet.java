@@ -34,11 +34,11 @@ import org.openelis.bean.HistoryBean;
 import org.openelis.domain.HistoryVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.history.client.HistoryServiceInt;
 
 @WebServlet("/openelis/history")
-public class HistoryServlet extends AppServlet implements HistoryServiceInt {
+public class HistoryServlet extends RemoteServlet implements HistoryServiceInt {
     
     private static final long serialVersionUID = 1L;
 

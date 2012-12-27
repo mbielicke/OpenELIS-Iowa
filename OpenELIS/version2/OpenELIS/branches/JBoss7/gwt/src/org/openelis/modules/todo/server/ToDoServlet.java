@@ -33,13 +33,13 @@ import org.openelis.bean.ToDoBean;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.todo.client.ToDoServiceInt;
 
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("/openelis/todo")
-public class ToDoServlet extends AppServlet implements ToDoServiceInt {
+public class ToDoServlet extends RemoteServlet implements ToDoServiceInt {
 
     private static final long serialVersionUID = 1L;
     

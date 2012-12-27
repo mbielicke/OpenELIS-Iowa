@@ -46,4 +46,10 @@ xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns
         <context-root>openelis</context-root>
       </web>
     </module>
+    <module>
+      <web>
+        <web-uri>openelisweb.war</web-uri>
+        <context-root>openelisweb</context-root>
+      </web>
+    </module>
 </application>

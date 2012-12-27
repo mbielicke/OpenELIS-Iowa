@@ -34,12 +34,12 @@ import org.openelis.bean.WorksheetCompletionBean;
 import org.openelis.bean.WorksheetManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionServiceInt;
 
 @WebServlet("/openelis/worksheetCompletion")
-public class WorksheetCompletionServlet extends AppServlet implements WorksheetCompletionServiceInt {
+public class WorksheetCompletionServlet extends RemoteServlet implements WorksheetCompletionServiceInt {
 
     private static final long serialVersionUID = 1L;
     

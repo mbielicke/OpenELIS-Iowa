@@ -35,14 +35,14 @@ import org.openelis.bean.ShippingManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.modules.shipping.client.ShippingServiceInt;
 
 @WebServlet("/openelis/shipping")
-public class ShippingServlet extends AppServlet implements ShippingServiceInt {
+public class ShippingServlet extends RemoteServlet implements ShippingServiceInt {
             
     private static final long serialVersionUID = 1L;
     

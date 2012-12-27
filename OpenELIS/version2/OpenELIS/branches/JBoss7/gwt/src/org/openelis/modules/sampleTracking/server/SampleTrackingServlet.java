@@ -7,12 +7,12 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.SampleTrackingBean;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.sampleTracking.client.SampleTrackingServiceInt;
 
 @WebServlet("/openelis/sampleTracking")
-public class SampleTrackingServlet extends AppServlet implements SampleTrackingServiceInt {
+public class SampleTrackingServlet extends RemoteServlet implements SampleTrackingServiceInt {
 	
     private static final long serialVersionUID = 1L;
     

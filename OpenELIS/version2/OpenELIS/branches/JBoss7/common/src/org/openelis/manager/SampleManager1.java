@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -48,7 +49,6 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.RPC;
 
 /**
  * This class encapsulates a sample and all its related information including
@@ -56,7 +56,7 @@ import org.openelis.gwt.common.RPC;
  * basic functions internally, it is designed to interact with EJB methods to
  * provide majority of the operations needed to manage a sample.
  */
-public class SampleManager1 implements RPC {
+public class SampleManager1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

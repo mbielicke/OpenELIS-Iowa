@@ -28,7 +28,6 @@ package org.openelis.modules.report.dataExchange.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.widget.ScreenWindowInt;
@@ -40,7 +39,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * This class is used to execute reports on behalf of those screens that don't 
  * implement ReportScreen like Exchange Data Selection
  */
-public class DataExchangeReportScreen extends ReportScreen {
+public class DataExchangeReportScreen extends ReportScreen<Query> {
 
     public DataExchangeReportScreen(ScreenWindowInt window) throws Exception { 
         this.window = window;
@@ -60,7 +59,7 @@ public class DataExchangeReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
-        DataExchangeReportService.get().exportToLocation((Query)query, callback);        
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        DataExchangeReportService.get().exportToLocation(query, callback);        
     }
 }

@@ -37,12 +37,15 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.modules.result.client.ResultServiceInt;
 
 @WebServlet("/openelis/result")
-public class ResultServlet implements ResultServiceInt {
+public class ResultServlet extends RemoteServlet implements ResultServiceInt {
     
+    private static final long serialVersionUID = 1L;
+
     @EJB
     AnalyteBean       analyte;
     

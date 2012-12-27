@@ -1,5 +1,7 @@
 package org.openelis.modules.main.client;
 
+import org.openelis.gwt.common.Datetime;
+
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -11,5 +13,7 @@ public interface OpenELISServiceInt extends RemoteService  {
     void keepAlive();
 
     void logout();
+    
+    Datetime getLastAccess();
 
 }

@@ -29,12 +29,12 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.InventoryTransferManagerBean;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferServiceInt;
 
 @WebServlet("/openelis/inventoryTransfer")
-public class InventoryTransferServlet extends AppServlet implements InventoryTransferServiceInt {
+public class InventoryTransferServlet extends RemoteServlet implements InventoryTransferServiceInt {
 
     private static final long serialVersionUID = 1L;
     

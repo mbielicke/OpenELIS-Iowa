@@ -32,13 +32,13 @@ import org.openelis.bean.AnalysisBean;
 import org.openelis.bean.AnalysisManagerBean;
 import org.openelis.bean.AnalysisQAEventManagerBean;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.modules.analysis.client.AnalysisServiceInt;
 
 @WebServlet("/openelis/analysis")
-public class AnalysisServlet extends AppServlet implements AnalysisServiceInt {
+public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt {
     
     private static final long serialVersionUID = 1L;
     

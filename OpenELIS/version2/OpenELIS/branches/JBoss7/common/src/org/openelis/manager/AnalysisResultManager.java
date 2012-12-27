@@ -10,11 +10,10 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
 
-public class AnalysisResultManager implements RPC {
+public class AnalysisResultManager implements Serializable {
     private static final long                             serialVersionUID = 1L;
 
     protected Integer                                     analysisId, mergeTestId, mergeUnitId;

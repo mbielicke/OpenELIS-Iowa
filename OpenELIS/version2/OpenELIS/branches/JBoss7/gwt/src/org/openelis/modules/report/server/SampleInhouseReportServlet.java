@@ -9,12 +9,11 @@ import org.openelis.bean.SampleInhouseReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.SampleInHouseReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/sampleInHouse")
-public class SampleInhouseReportServlet extends AppServlet implements SampleInHouseReportServiceInt {
+public class SampleInhouseReportServlet extends RemoteServlet implements SampleInHouseReportServiceInt {
 
     private static final long serialVersionUID = 1L;
     
@@ -30,7 +29,7 @@ public class SampleInhouseReportServlet extends AppServlet implements SampleInHo
         
         st = sampleInhouseReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

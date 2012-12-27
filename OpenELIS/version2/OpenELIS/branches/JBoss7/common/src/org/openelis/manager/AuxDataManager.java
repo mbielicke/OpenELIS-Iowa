@@ -1,14 +1,14 @@
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class AuxDataManager implements RPC {
+public class AuxDataManager implements Serializable {
 
     private static final long                      serialVersionUID = 1L;
 
@@ -187,7 +187,7 @@ public class AuxDataManager implements RPC {
         return proxy;
     }
 
-    static class AuxDataListItem implements RPC {
+    static class AuxDataListItem implements Serializable {
         private static final long serialVersionUID = 1L;
 
         AuxDataViewDO                  data;

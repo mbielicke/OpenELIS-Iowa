@@ -34,10 +34,10 @@ import org.openelis.bean.UserCacheBean;
 import org.openelis.cache.UserCacheServiceInt;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 
 @WebServlet("/openelis/userCache")
-public class UserCacheServlet extends AppServlet implements UserCacheServiceInt {
+public class UserCacheServlet extends RemoteServlet implements UserCacheServiceInt {
     
     private static final long serialVersionUID = 1L;
     

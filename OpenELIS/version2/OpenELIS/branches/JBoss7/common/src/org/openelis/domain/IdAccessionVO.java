@@ -25,9 +25,9 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
+import java.io.Serializable;
 
-public class IdAccessionVO implements RPC {
+public class IdAccessionVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

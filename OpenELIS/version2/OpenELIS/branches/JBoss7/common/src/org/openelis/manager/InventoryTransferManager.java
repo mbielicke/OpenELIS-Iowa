@@ -25,13 +25,13 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
-import org.openelis.gwt.common.RPC;
 
-public class InventoryTransferManager implements RPC {
+public class InventoryTransferManager implements Serializable {
 
     private static final long                                serialVersionUID = 1L;
 
@@ -166,7 +166,7 @@ public class InventoryTransferManager implements RPC {
         return proxy;
     }
     
-    static class InventoryTransferDataBundle implements RPC {
+    static class InventoryTransferDataBundle implements Serializable {
         
         private static final long serialVersionUID = 1L;
 

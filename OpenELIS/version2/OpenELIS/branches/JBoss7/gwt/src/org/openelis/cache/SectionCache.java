@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.services.ScreenService;
 
 import com.google.gwt.user.client.Window;
 

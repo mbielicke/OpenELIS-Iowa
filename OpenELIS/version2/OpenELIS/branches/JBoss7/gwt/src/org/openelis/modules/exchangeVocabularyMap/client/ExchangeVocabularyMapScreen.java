@@ -46,7 +46,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -490,7 +489,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<ExchangeLocalTermViewDO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
@@ -516,8 +515,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 });
             }
             
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((ExchangeLocalTermViewDO)entry).getId());
+            public boolean fetch(ExchangeLocalTermViewDO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {

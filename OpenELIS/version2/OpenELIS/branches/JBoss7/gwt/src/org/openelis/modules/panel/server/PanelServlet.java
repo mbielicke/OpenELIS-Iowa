@@ -36,13 +36,13 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.modules.panel.client.PanelServiceInt;
 
 @WebServlet("/openelis/panel")
-public class PanelServlet extends AppServlet implements PanelServiceInt {
+public class PanelServlet extends RemoteServlet implements PanelServiceInt {
     
     private static final long serialVersionUID = 1L;
     

@@ -35,11 +35,11 @@ import org.openelis.bean.SystemVariableBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.systemvariable.client.SystemVariableServiceInt;
 
 @WebServlet("/openelis/systemVariable")
-public class SystemVariableServlet extends AppServlet implements SystemVariableServiceInt {
+public class SystemVariableServlet extends RemoteServlet implements SystemVariableServiceInt {
 
     private static final long serialVersionUID = 1L;
     

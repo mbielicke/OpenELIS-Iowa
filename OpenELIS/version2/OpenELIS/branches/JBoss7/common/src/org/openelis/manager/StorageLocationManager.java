@@ -25,11 +25,12 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class StorageLocationManager implements RPC {
+public class StorageLocationManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

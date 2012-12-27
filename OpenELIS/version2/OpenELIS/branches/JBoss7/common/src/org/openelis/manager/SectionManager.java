@@ -25,12 +25,12 @@
  */
 package org.openelis.manager;
 
-import org.openelis.domain.SectionDO;
+import java.io.Serializable;
+
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class SectionManager implements RPC {
+public class SectionManager implements Serializable {
 
     private static final long                      serialVersionUID = 1L;
 

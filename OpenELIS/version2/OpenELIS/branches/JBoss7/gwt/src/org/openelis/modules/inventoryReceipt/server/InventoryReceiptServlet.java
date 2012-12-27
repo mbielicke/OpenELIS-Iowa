@@ -34,12 +34,12 @@ import org.openelis.bean.InventoryReceiptBean;
 import org.openelis.bean.InventoryReceiptManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptServiceInt;
 
 @WebServlet("/openelis/inventoryReceipt")
-public class InventoryReceiptServlet extends AppServlet implements InventoryReceiptServiceInt {
+public class InventoryReceiptServlet extends RemoteServlet implements InventoryReceiptServiceInt {
     
     private static final long serialVersionUID = 1L;
     

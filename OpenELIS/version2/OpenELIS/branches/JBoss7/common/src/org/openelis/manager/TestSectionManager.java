@@ -25,13 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.RPC;
 
-public class TestSectionManager implements RPC {
+public class TestSectionManager implements Serializable {
 
     /**
      * 

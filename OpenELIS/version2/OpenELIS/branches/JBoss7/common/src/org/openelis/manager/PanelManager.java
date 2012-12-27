@@ -25,11 +25,12 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.PanelDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class PanelManager implements RPC {
+public class PanelManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

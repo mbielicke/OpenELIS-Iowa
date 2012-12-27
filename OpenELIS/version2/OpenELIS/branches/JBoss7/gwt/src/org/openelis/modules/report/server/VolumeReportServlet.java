@@ -9,12 +9,11 @@ import org.openelis.bean.VolumeReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.VolumeReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/volumeReport")
-public class VolumeReportServlet extends AppServlet implements VolumeReportServiceInt {
+public class VolumeReportServlet extends RemoteServlet implements VolumeReportServiceInt {
     
     private static final long serialVersionUID = 1L;
     
@@ -30,7 +29,7 @@ public class VolumeReportServlet extends AppServlet implements VolumeReportServi
         
         st = volumeReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

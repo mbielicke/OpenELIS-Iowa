@@ -1,9 +1,10 @@
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
+import java.io.Serializable;
 
-public class CompleteReleaseVO implements RPC {
+import org.openelis.gwt.common.DataBaseUtil;
+
+public class CompleteReleaseVO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	

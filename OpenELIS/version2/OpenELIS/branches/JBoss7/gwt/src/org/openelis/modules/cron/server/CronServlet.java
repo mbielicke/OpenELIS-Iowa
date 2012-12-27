@@ -9,11 +9,11 @@ import org.openelis.bean.CronBean;
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.cron.client.CronServiceInt;
 
 @WebServlet("/openelis/cron")
-public class CronServlet extends AppServlet implements CronServiceInt {
+public class CronServlet extends RemoteServlet implements CronServiceInt {
     
     private static final long serialVersionUID = 1L;
     

@@ -36,13 +36,13 @@ import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.modules.dictionary.client.DictionaryServiceInt;
 
 @WebServlet("/openelis/dictionary")
-public class DictionaryServlet extends AppServlet implements DictionaryServiceInt {
+public class DictionaryServlet extends RemoteServlet implements DictionaryServiceInt {
     
     private static final long serialVersionUID = 1L;
     

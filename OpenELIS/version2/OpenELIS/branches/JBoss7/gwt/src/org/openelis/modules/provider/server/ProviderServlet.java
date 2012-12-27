@@ -34,13 +34,13 @@ import org.openelis.bean.ProviderBean;
 import org.openelis.bean.ProviderManagerBean;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.modules.provider.client.ProviderServiceInt;
 
 @WebServlet("/openelis/provider")
-public class ProviderServlet extends AppServlet implements ProviderServiceInt {
+public class ProviderServlet extends RemoteServlet implements ProviderServiceInt {
 
     private static final long serialVersionUID = 1L;
     

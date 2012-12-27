@@ -37,14 +37,14 @@ import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
 import org.openelis.modules.inventoryItem.client.InventoryItemServiceInt;
 
 @WebServlet("/openelis/inventoryItem")
-public class InventoryItemServlet extends AppServlet implements InventoryItemServiceInt {
+public class InventoryItemServlet extends RemoteServlet implements InventoryItemServiceInt {
     
     private static final long serialVersionUID = 1L;
     

@@ -1,10 +1,9 @@
 package org.openelis.modules.main.client;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-import org.openelis.gwt.common.RPC;
-
-public class OpenELISRPC implements RPC {
+public class OpenELISRPC implements Serializable {
     
     private static final long serialVersionUID = 1L;
     

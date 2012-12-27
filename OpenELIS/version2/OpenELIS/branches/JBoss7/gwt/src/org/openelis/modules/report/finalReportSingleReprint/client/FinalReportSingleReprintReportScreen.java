@@ -28,7 +28,6 @@ package org.openelis.modules.report.finalReportSingleReprint.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
@@ -38,7 +37,7 @@ import org.openelis.modules.report.client.ReportScreen;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class FinalReportSingleReprintReportScreen extends ReportScreen {
+public class FinalReportSingleReprintReportScreen extends ReportScreen<Query> {
     
     public FinalReportSingleReprintReportScreen(ScreenWindowInt window) throws Exception {         
         drawScreen(new ScreenDef());        
@@ -59,7 +58,7 @@ public class FinalReportSingleReprintReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC query, AsyncCallback<ReportStatus> callback) {
-        FinalReportService.get().runReportForSingle((Query)query, callback);
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        FinalReportService.get().runReportForSingle(query, callback);
     }
 }

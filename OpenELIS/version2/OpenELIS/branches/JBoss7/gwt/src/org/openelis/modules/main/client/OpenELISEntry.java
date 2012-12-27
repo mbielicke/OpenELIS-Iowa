@@ -31,9 +31,9 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -55,6 +55,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
                             Window.enableScrolling(true);
                             RootPanel.get("load").getElement().removeFromParent();
                             RootPanel.get().add(new org.openelis.modules.main.client.OpenELIS());
+                            SessionTimer.start();
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert("Unable to start app : " + e.getMessage());

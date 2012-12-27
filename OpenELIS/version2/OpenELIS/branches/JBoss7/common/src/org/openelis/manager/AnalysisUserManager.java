@@ -25,14 +25,15 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisUserViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class AnalysisUserManager implements RPC {
+
+public class AnalysisUserManager implements Serializable {
 
     private static final long                           serialVersionUID = 1L;
     protected Integer                                   analysisId;

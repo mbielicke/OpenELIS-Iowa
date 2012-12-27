@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.widget.ScreenWindowInt;
@@ -41,7 +40,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * This class is used to execute reports on behalf of those screens that don't
  * implement ReportScreen like TurnaroundStatisticScreen
  */
-public class TurnaroundStatisticReportScreen extends ReportScreen {
+public class TurnaroundStatisticReportScreen extends ReportScreen<TurnAroundReportViewVO> {
 
     public TurnaroundStatisticReportScreen(ScreenWindowInt window) throws Exception {
         drawScreen(new ScreenDef());
@@ -62,7 +61,7 @@ public class TurnaroundStatisticReportScreen extends ReportScreen {
     }
 
     @Override
-    public void runReport(RPC rpc, AsyncCallback<ReportStatus> callback) {
-        TurnaroundStatisticReportService.get().runReport((TurnAroundReportViewVO)rpc, callback);
+    public void runReport(TurnAroundReportViewVO rpc, AsyncCallback<ReportStatus> callback) {
+        TurnaroundStatisticReportService.get().runReport(rpc, callback);
     }
 }

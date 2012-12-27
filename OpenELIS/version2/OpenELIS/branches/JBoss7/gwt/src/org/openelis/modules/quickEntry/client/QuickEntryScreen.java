@@ -26,6 +26,7 @@
 package org.openelis.modules.quickEntry.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -52,11 +53,10 @@ import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
@@ -115,13 +115,11 @@ public class QuickEntryScreen extends Screen {
     private Integer                sampleNotVerifiedId, testSectionDefaultId;
     private Datetime               todaysDate;
     private AccessionNumberUtility accNumUtil;
-    private ScreenService          calendarService;
     private ModulePermission       userPermission;
     private HashMap<Integer, Item> managers;
 
     public QuickEntryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
-        calendarService = new ScreenService("controller?service=org.openelis.gwt.server.CalendarService");
 
         userPermission = UserCache.getPermission().getModule("quickentry");
         if (userPermission == null)
@@ -910,7 +908,7 @@ public class QuickEntryScreen extends Screen {
         try {
             sampleNotVerifiedId = DictionaryCache.getIdBySystemName("sample_not_verified");
             testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
-            todaysDate = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            todaysDate = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             
             testPanelList = TestService.get().fetchTestMethodSampleTypeList();
             model = new ArrayList<TableDataRow>();
@@ -940,7 +938,7 @@ public class QuickEntryScreen extends Screen {
     }
 
     private void updateRecievedDate() {
-        calendarService.callDatetime("getCurrentDatetime", Datetime.YEAR, Datetime.MINUTE,
+        CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE,
                                      new AsyncCallback<Datetime>() {
                      public void onSuccess(Datetime currentDate) {
                          if (currentDateTime.getValue() != null && "Y".equals(currentDateTime.getValue())) {

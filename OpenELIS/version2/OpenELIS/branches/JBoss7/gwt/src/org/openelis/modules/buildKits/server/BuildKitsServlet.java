@@ -29,12 +29,12 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.BuildKitManagerBean;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.BuildKitManager;
 import org.openelis.modules.buildKits.client.BuildKitsServiceInt;
 
 @WebServlet("/openelis/buildkit")
-public class BuildKitsServlet extends AppServlet implements BuildKitsServiceInt {
+public class BuildKitsServlet extends RemoteServlet implements BuildKitsServiceInt {
     
     private static final long serialVersionUID = 1L;
     

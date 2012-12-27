@@ -40,14 +40,14 @@ import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
 import org.openelis.modules.qc.client.QcServiceInt;
 
 @WebServlet("/openelis/qc")
-public class QcServlet extends AppServlet implements QcServiceInt {
+public class QcServlet extends RemoteServlet implements QcServiceInt {
 
     private static final long serialVersionUID = 1L;
     

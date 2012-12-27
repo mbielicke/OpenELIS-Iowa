@@ -18,12 +18,12 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 
 import org.openelis.bean.SampleManager1Bean;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 
-public class SampleManagerTestServlet extends AppServlet {//implements SampleManagerTestServiceInt {
+public class SampleManagerTestServlet extends RemoteServlet {//implements SampleManagerTestServiceInt {
 
     private static final long serialVersionUID = 1L;
     

@@ -36,7 +36,7 @@ import org.openelis.bean.SampleBean;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
 import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionServiceInt;
@@ -45,7 +45,7 @@ import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionSe
  * This class provides service for ExchangeCriteriaManager and ExchangeProfileManager.
  */
 @WebServlet("/openelis/exchangeData")
-public class ExchangeDataSelectionServlet extends AppServlet implements ExchangeDataSelectionServiceInt {
+public class ExchangeDataSelectionServlet extends RemoteServlet implements ExchangeDataSelectionServiceInt {
 
     private static final long serialVersionUID = 1L;
     

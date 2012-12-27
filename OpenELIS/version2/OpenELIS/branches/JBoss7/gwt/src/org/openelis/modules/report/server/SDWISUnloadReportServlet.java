@@ -34,12 +34,11 @@ import org.openelis.bean.SDWISUnloadReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.SDWISUnloadReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openleis/sdwisUnloadReport")
-public class SDWISUnloadReportServlet extends AppServlet implements SDWISUnloadReportServiceInt {    
+public class SDWISUnloadReportServlet extends RemoteServlet implements SDWISUnloadReportServiceInt {    
     
     private static final long serialVersionUID = 1L;
     
@@ -55,7 +54,7 @@ public class SDWISUnloadReportServlet extends AppServlet implements SDWISUnloadR
         
         st = SDWISUnloadReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

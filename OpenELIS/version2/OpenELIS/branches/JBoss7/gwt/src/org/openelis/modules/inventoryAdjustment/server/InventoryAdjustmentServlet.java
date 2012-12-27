@@ -34,13 +34,13 @@ import org.openelis.bean.InventoryAdjustmentBean;
 import org.openelis.bean.InventoryAdjustmentManagerBean;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentServiceInt;
 
 @WebServlet("/openelis/inventoryAdjustment")
-public class InventoryAdjustmentServlet extends AppServlet implements InventoryAdjustmentServiceInt {
+public class InventoryAdjustmentServlet extends RemoteServlet implements InventoryAdjustmentServiceInt {
     
     private static final long serialVersionUID = 1L;
 

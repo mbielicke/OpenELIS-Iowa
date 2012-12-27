@@ -29,7 +29,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.PreferencesManagerBean;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.Preferences;
 import org.openelis.modules.preferences.client.PreferencesServiceInt;
 
@@ -38,7 +38,7 @@ import org.openelis.modules.preferences.client.PreferencesServiceInt;
  *	
  */
 @WebServlet("/openelis/preferences")
-public class PreferencesServlet extends AppServlet implements PreferencesServiceInt {
+public class PreferencesServlet extends RemoteServlet implements PreferencesServiceInt {
     
     private static final long serialVersionUID = 1L;
 

@@ -35,13 +35,13 @@ import org.openelis.bean.SectionManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SectionManager;
 import org.openelis.manager.SectionParameterManager;
 import org.openelis.modules.section.client.SectionServiceInt;
 
 @WebServlet("/openelis/section")
-public class SectionServlet extends AppServlet implements SectionServiceInt {
+public class SectionServlet extends RemoteServlet implements SectionServiceInt {
 
     private static final long serialVersionUID = 1L;
     

@@ -25,11 +25,13 @@
 */
 package org.openelis.manager;
 
+import java.util.Calendar;
+
 import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.screen.Calendar;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
 import org.openelis.modules.sample.client.SampleService;
 
@@ -81,6 +83,6 @@ public class SampleItemManagerProxy {
     }
 
     protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
-        return Calendar.getCurrentDatetime(begin, end);
+        return CalendarService.get().getCurrentDatetime(begin, end);
     }
 }

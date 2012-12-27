@@ -35,12 +35,12 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.meta.StandardNoteMeta;
 import org.openelis.modules.standardnote.client.StandardNoteServiceInt;
 
 @WebServlet("/openelis/standardNote")
-public class StandardNoteServlet extends AppServlet implements StandardNoteServiceInt {
+public class StandardNoteServlet extends RemoteServlet implements StandardNoteServiceInt {
 
     private static final long serialVersionUID = 1L;
     

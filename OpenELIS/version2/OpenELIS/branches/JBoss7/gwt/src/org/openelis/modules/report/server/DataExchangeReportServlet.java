@@ -36,11 +36,11 @@ import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.dataExchange.client.DataExchangeReportServiceInt;
 
 @WebServlet("/openelis/dataExchangeReport")
-public class DataExchangeReportServlet extends AppServlet implements DataExchangeReportServiceInt {
+public class DataExchangeReportServlet extends RemoteServlet implements DataExchangeReportServiceInt {
     
     private static final long serialVersionUID = 1L;
     

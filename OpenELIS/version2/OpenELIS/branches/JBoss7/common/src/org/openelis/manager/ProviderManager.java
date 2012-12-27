@@ -1,11 +1,12 @@
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class ProviderManager implements RPC, HasNotesInt {
+public class ProviderManager implements Serializable, HasNotesInt {
 
     private static final long                       serialVersionUID = 1L;
 

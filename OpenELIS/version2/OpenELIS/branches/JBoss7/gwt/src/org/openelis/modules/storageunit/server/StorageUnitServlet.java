@@ -34,11 +34,11 @@ import org.openelis.bean.StorageUnitBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.storageunit.client.StorageUnitServiceInt;
 
 @WebServlet("/openelis/storageUnit")
-public class StorageUnitServlet extends AppServlet implements StorageUnitServiceInt {
+public class StorageUnitServlet extends RemoteServlet implements StorageUnitServiceInt {
 
     private static final long serialVersionUID = 1L;
     

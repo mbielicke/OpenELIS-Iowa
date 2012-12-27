@@ -38,13 +38,13 @@ import org.openelis.domain.ProjectViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 import org.openelis.modules.project.client.ProjectServiceInt;
 
 @WebServlet("/openelis/project")
-public class ProjectServlet extends AppServlet implements ProjectServiceInt {
+public class ProjectServlet extends RemoteServlet implements ProjectServiceInt {
     
     private static final long serialVersionUID = 1L;
     

@@ -34,12 +34,11 @@ import org.openelis.bean.TestReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.TestReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/testReport")
-public class TestReportServlet extends AppServlet implements TestReportServiceInt {    
+public class TestReportServlet extends RemoteServlet implements TestReportServiceInt {    
     
     private static final long serialVersionUID = 1L;
     
@@ -55,7 +54,7 @@ public class TestReportServlet extends AppServlet implements TestReportServiceIn
         
         st = testReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

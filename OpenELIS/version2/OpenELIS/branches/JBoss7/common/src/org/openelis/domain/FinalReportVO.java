@@ -25,8 +25,9 @@
 */
 package org.openelis.domain;
 
+import java.io.Serializable;
+
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 
 /**
  * The class carries the data, e.g. the ids of the samples, analyses etc, used to
@@ -34,7 +35,7 @@ import org.openelis.gwt.common.RPC;
  * and do not get committed to the database.
  */
 
-public class FinalReportVO implements RPC {
+public class FinalReportVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

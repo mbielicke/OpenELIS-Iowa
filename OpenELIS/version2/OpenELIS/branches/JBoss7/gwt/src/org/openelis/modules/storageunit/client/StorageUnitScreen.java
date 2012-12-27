@@ -35,10 +35,9 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -50,16 +49,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.StorageUnitMeta;
 import org.openelis.modules.history.client.HistoryScreen;
@@ -285,7 +282,7 @@ public class StorageUnitScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
@@ -311,8 +308,8 @@ public class StorageUnitScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -436,7 +433,7 @@ public class StorageUnitScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = StorageUnitService.get().fetchForUpdate(data.getId());
 
             setState(State.DELETE);
             DataChangeEvent.fire(this);

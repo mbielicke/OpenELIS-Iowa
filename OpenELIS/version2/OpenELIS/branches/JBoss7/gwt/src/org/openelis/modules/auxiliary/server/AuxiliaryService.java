@@ -36,14 +36,14 @@ import org.openelis.bean.AuxFieldGroupManagerBean;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.modules.auxiliary.client.AuxiliaryServiceInt;
 
 @WebServlet("/openelis/auxiliary")
-public class AuxiliaryService extends AppServlet implements AuxiliaryServiceInt {
+public class AuxiliaryService extends RemoteServlet implements AuxiliaryServiceInt {
 
     private static final long serialVersionUID = 1L;
     

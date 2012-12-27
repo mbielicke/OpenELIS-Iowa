@@ -25,13 +25,14 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.StorageMeta;
 
-public class StorageViewManager implements RPC {
+public class StorageViewManager implements Serializable {
 
     private static final long        serialVersionUID = 1L;
     protected StorageManager         current, history;

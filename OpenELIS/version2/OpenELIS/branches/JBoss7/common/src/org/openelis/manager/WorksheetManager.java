@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -34,10 +35,9 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class WorksheetManager implements RPC, HasNotesInt {
+public class WorksheetManager implements Serializable, HasNotesInt {
 
     private static final long      serialVersionUID = 1L;
 

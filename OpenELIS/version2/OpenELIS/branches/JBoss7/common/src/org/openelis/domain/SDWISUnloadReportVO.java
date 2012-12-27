@@ -25,18 +25,18 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 
 /**
  * The class is used to carry fields for the analysis records on SDWIS Unload report.
  * The fields are considered read/display and do not get committed to the database.
  */
 
-public class SDWISUnloadReportVO implements RPC {
+public class SDWISUnloadReportVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

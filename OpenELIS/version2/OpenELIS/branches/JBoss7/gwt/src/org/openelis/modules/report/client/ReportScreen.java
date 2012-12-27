@@ -25,13 +25,13 @@
  */
 package org.openelis.modules.report.client;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.OptionListItem;
 import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.data.Query;
@@ -74,7 +74,7 @@ import com.google.gwt.user.client.ui.Widget;
  * should extend this class and specify the report servlet service to get report
  * prompts and run the report.
  */
-public abstract class ReportScreen extends Screen {
+public abstract class ReportScreen<T extends Serializable> extends Screen {
 
     protected ArrayList<Prompt> reportParameters;
 
@@ -304,19 +304,19 @@ public abstract class ReportScreen extends Screen {
 
 		query = new Query();
 		query.setFields(getQueryFields());
-		runReport(query);		
+		runReport((T)query);		
 	}
 	
 	/**
      * Provides a more generic interface to run reports so that screens not 
      * implementing ReportScreen can utilize this functionality too
      */
-    public abstract void runReport(RPC rpc, AsyncCallback<ReportStatus> callback);
+    public abstract void runReport(T rpc, AsyncCallback<ReportStatus> callback);
     
-    protected void runReport(Query query) {
+    protected void runReport(T query) {
         window.setBusy(consts.get("genReportMessage"));
 
-        runReport((Query)query, new AsyncCallback<ReportStatus>() {
+        runReport(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
                 String url;
 

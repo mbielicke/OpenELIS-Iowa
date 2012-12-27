@@ -32,11 +32,11 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.ScriptletBean;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.scriptlet.client.ScriptletServiceInt;
 
 @WebServlet("/openelis/scriptlet")
-public class ScriptletServlet extends AppServlet implements ScriptletServiceInt {
+public class ScriptletServlet extends RemoteServlet implements ScriptletServiceInt {
     
     private static final long serialVersionUID = 1L;
     

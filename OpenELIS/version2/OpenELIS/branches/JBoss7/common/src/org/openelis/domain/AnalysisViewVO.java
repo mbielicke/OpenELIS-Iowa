@@ -25,16 +25,16 @@
 */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 /** 
  * This class's objects store the data for the individual records that populate
  * the todo lists for analyses
  */
-public class AnalysisViewVO implements RPC {
+public class AnalysisViewVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

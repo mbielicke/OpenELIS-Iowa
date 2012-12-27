@@ -38,7 +38,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleSDWISManager;

@@ -29,15 +29,11 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.analyteParameter.client.AnalyteParameterService;
 
 public class AnalyteParameterManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.analyteParameter.server.AnalyteParameterService";
-    protected ScreenService       service;
     
     public AnalyteParameterManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }   
     
     public AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Integer referenceId, Integer referenceTableId) throws Exception {
@@ -65,23 +61,23 @@ public class AnalyteParameterManagerProxy {
         fields.add(field);
         query.setFields(fields);        
         
-        return service.call("fetchActiveByReferenceIdReferenceTableId", query);
+        return AnalyteParameterService.get().fetchActiveByReferenceIdReferenceTableId(query);
     }
     
     public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception {
-        return service.call("add", man);
+        return AnalyteParameterService.get().add(man);
     }
     
     public AnalyteParameterManager update(AnalyteParameterManager man) throws Exception {
-        return service.call("update", man);
+        return AnalyteParameterService.get().update(man);
     }
     
     public AnalyteParameterManager fetchForUpdate(AnalyteParameterManager man) throws Exception {
-        return service.call("fetchForUpdate", man);
+        return AnalyteParameterService.get().fetchForUpdate(man);
     }
     
     public AnalyteParameterManager abortUpdate(AnalyteParameterManager man) throws Exception {
-        return service.call("abortUpdate", man);
+        return AnalyteParameterService.get().abortUpdate(man);
     }
     
     public void validate(AnalyteParameterManager man) throws Exception {

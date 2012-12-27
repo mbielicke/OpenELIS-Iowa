@@ -40,7 +40,6 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.modules.result.client.ResultService;
 
 public class AnalysisResultManagerProxy {

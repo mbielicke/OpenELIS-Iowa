@@ -25,20 +25,19 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.HashMap;
-
-import org.openelis.gwt.common.RPC;
 
 /**
  * This is an implementation of the java.util.prefs.Preferences that is
  * available on the client and the server environment.
  */
-public class Preferences implements RPC {
+public class Preferences implements Serializable {
 
     private static final long                 serialVersionUID = 1L;
 
     /*
-     * Since this implementation is serialized through RPC, we can not use hash
+     * Since this implementation is serialized through Serializable, we can not use hash
      * of hash to store preferences. This data is stored in map and nodes.
      */
 
@@ -70,7 +69,7 @@ public class Preferences implements RPC {
     private transient static PreferencesProxy proxy;
 
     /**
-     * Protected no-arg constructor for RPC requirement
+     * Protected no-arg constructor for Serializable requirement
      */
     protected Preferences() {
     }

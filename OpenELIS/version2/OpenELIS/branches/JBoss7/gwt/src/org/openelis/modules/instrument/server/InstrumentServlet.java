@@ -35,13 +35,13 @@ import org.openelis.bean.InstrumentManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
 import org.openelis.modules.instrument.client.InstrumentServiceInt;
 
 @WebServlet("/openelis/instrument")
-public class InstrumentServlet extends AppServlet implements InstrumentServiceInt {
+public class InstrumentServlet extends RemoteServlet implements InstrumentServiceInt {
     
     private static final long serialVersionUID = 1L;
     

@@ -47,7 +47,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -63,7 +62,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -121,8 +119,6 @@ public class AnalyteParameterScreen extends Screen {
     public AnalyteParameterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteParameterDef.class));
         
-        service = new ScreenService("controller?service=org.openelis.modules.analyteParameter.server.AnalyteParameterService");
-
         userPermission =  UserCache.getPermission().getModule("analyteparameter");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Analyte Parameter Screen");
@@ -415,7 +411,7 @@ public class AnalyteParameterScreen extends Screen {
                 
                 try {
                     window.setBusy(consts.get("fetching"));
-                    list = service.callList("fetchByAnalyteIdReferenceIdReferenceTableId", query);
+                    list = AnalyteParameterService.get().fetchByAnalyteIdReferenceIdReferenceTableId(query);
                     index = manager.indexOf(data);
                     if (data.getId() == null || index == 0)
                         j = 1;
@@ -579,12 +575,12 @@ public class AnalyteParameterScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<ReferenceIdTableIdNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(18);
-                service.callList("query", query, new AsyncCallback<ArrayList<ReferenceIdTableIdNameVO>>() {
+                AnalyteParameterService.get().query(query, new AsyncCallback<ArrayList<ReferenceIdTableIdNameVO>>() {
                     public void onSuccess(ArrayList<ReferenceIdTableIdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -605,13 +601,11 @@ public class AnalyteParameterScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                ReferenceIdTableIdNameVO data;
+            public boolean fetch(ReferenceIdTableIdNameVO entry) {
                 if (entry == null) {
                     return fetchByRefIdRefTableId(null, null);
                 } else {
-                    data = (ReferenceIdTableIdNameVO)entry;
-                    return fetchByRefIdRefTableId(data.getReferenceId(), data.getReferenceTableId());
+                    return fetchByRefIdRefTableId(entry.getReferenceId(), entry.getReferenceTableId());
                 }
             }
 

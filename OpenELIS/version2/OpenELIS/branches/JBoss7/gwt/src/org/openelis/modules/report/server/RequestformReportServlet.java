@@ -34,12 +34,11 @@ import org.openelis.bean.RequestformReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.RequestformReportServiceInt;
-import org.openelis.util.SessionManager;
 
 @WebServlet("/openelis/requestForm")
-public class RequestformReportServlet extends AppServlet implements RequestformReportServiceInt {    
+public class RequestformReportServlet extends RemoteServlet implements RequestformReportServiceInt {    
     
     private static final long serialVersionUID = 1L;
     
@@ -55,7 +54,7 @@ public class RequestformReportServlet extends AppServlet implements RequestformR
         
         st = requestFormReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
+            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }

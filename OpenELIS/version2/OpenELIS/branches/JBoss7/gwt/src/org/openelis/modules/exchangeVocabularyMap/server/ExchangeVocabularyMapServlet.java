@@ -34,7 +34,7 @@ import org.openelis.bean.ExchangeLocalTermBean;
 import org.openelis.bean.ExchangeLocalTermManagerBean;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapServiceInt;
@@ -44,7 +44,7 @@ import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapSe
  * This class provides service for ExchangeExternalTermManager and ExchangeLocalTermManager
  */
 @WebServlet("/openelis/exchangeVocabulary")
-public class ExchangeVocabularyMapServlet extends AppServlet implements ExchangeVocabularyMapServiceInt {
+public class ExchangeVocabularyMapServlet extends RemoteServlet implements ExchangeVocabularyMapServiceInt {
     
     private static final long serialVersionUID = 1L;
     

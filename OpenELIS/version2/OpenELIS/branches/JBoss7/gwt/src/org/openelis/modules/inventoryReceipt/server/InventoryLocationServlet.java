@@ -33,11 +33,11 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.InventoryLocationBean;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.inventoryReceipt.client.InventoryLocationServiceInt;
 
 @WebServlet("/openelis/inventoryLocation")
-public class InventoryLocationServlet extends AppServlet implements InventoryLocationServiceInt {
+public class InventoryLocationServlet extends RemoteServlet implements InventoryLocationServiceInt {
 
     private static final long serialVersionUID = 1L;
     

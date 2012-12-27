@@ -38,7 +38,7 @@ import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
@@ -50,7 +50,7 @@ import org.openelis.manager.OrderTestManager;
 import org.openelis.modules.order.client.OrderServiceInt;
 
 @WebServlet("/openelis/order")
-public class OrderServlet extends AppServlet implements OrderServiceInt {
+public class OrderServlet extends RemoteServlet implements OrderServiceInt {
     
     private static final long serialVersionUID = 1L;
     

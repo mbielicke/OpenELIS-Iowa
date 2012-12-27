@@ -33,11 +33,11 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.EventLogBean;
 import org.openelis.domain.EventLogDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.eventLog.client.EventLogServiceInt;
 
 @WebServlet("/openelis/eventLog")
-public class EventLogServlet extends AppServlet implements EventLogServiceInt {
+public class EventLogServlet extends RemoteServlet implements EventLogServiceInt {
     
     private static final long serialVersionUID = 1L;
     

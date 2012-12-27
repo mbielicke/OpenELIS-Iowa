@@ -25,15 +25,15 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 
-public class TurnAroundReportViewVO implements RPC {
+public class TurnAroundReportViewVO implements Serializable {
     private static final long  serialVersionUID = 1L;
 
     public enum StatisticType {
@@ -108,7 +108,7 @@ public class TurnAroundReportViewVO implements RPC {
         this.values = values;
     }
 
-    public static class Value implements RPC {
+    public static class Value implements Serializable {
         private static final long serialVersionUID = 1L;
 
         protected List<PlotValue> plotValues;
@@ -179,7 +179,7 @@ public class TurnAroundReportViewVO implements RPC {
             return stats[type.ordinal()];
         }
 
-        public static class Stat implements RPC {
+        public static class Stat implements Serializable {
             private static final long serialVersionUID = 1L;
 
             protected int             numTested, min, max, sum;
@@ -247,7 +247,7 @@ public class TurnAroundReportViewVO implements RPC {
         }
     }
 
-    public static class PlotValue implements RPC {
+    public static class PlotValue implements Serializable {
         private static final long serialVersionUID = 1L;
 
         protected Integer         accessionNumber, revision;

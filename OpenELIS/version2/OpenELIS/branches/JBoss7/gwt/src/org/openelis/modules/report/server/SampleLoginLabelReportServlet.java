@@ -34,11 +34,11 @@ import org.openelis.bean.SampleLoginLabelReportBean;
 import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.AppServlet;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.SampleLoginLabelReportServiceInt;
 
 @WebServlet("/openelis/sampleLoginLabelReport")
-public class SampleLoginLabelReportServlet extends AppServlet implements SampleLoginLabelReportServiceInt {    
+public class SampleLoginLabelReportServlet extends RemoteServlet implements SampleLoginLabelReportServiceInt {    
     
     private static final long serialVersionUID = 1L;
     
