@@ -40,7 +40,7 @@ import org.openelis.gwt.widget.IntegerField;
 import org.openelis.gwt.widget.StringField;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.report.Prompt;
+import org.openelis.gwt.common.Prompt;
 
 public class ReportScreenUtility {
     protected ArrayList<Prompt> reportParameters;

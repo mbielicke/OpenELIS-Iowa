@@ -1,0 +1,5 @@
+eclipse.preferences.version=1
+jarsExcludedFromWebInfLib=
+launchConfigExternalUrlPrefix=https\:http\://127.0.0.1\:8080/openelisweb
+warSrcDir=war
+warSrcDirIsOutput=true

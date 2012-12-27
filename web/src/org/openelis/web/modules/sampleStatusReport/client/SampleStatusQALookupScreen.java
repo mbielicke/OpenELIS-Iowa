@@ -27,7 +27,7 @@ package org.openelis.web.modules.sampleStatusReport.client;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.web.cache.DictionaryCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.NotFoundException;
@@ -41,8 +41,8 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.manager.AnalysisQaEventManager;
-import org.openelis.manager.SampleQaEventManager;
+//import org.openelis.manager.AnalysisQaEventManager;
+//import org.openelis.manager.SampleQaEventManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -126,10 +126,11 @@ public class SampleStatusQALookupScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model;
+        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
         SampleQaEventViewDO sampleData;
         AnalysisQaEventViewDO analysisData;
         TableDataRow row;
+        /*
         SampleQaEventManager sqm;
         AnalysisQaEventManager aqm;
 
@@ -137,7 +138,7 @@ public class SampleStatusQALookupScreen extends Screen {
 
         if (Type.SAMPLE.equals(type)) {
             try {
-                sqm = SampleQaEventManager.fetchBySampleId(id);
+          //      sqm = SampleQaEventManager.fetchBySampleId(id);
                 for (int i = 0; i < sqm.count(); i++ ) {
                     sampleData = sqm.getSampleQAAt(i);
                     if (qaInternalId != sampleData.getTypeId()) {
@@ -168,6 +169,7 @@ public class SampleStatusQALookupScreen extends Screen {
                 Window.alert(e.getMessage());
             }
         }
+        */
         return model;
     }
 }

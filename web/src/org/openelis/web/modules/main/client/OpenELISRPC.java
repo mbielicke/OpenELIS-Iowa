@@ -25,16 +25,14 @@
  */
 package org.openelis.web.modules.main.client;
 
+import java.io.Serializable;
 import java.util.HashMap;
-
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SystemUserPermission;
 
 /**
  * This class is used to set initial data to the web client from the server.
  *
  */
-public class OpenELISRPC implements RPC {
+public class OpenELISRPC implements Serializable {
     
     private static final long serialVersionUID = 1L;
     

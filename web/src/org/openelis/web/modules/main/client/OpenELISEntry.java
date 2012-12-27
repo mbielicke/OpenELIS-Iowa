@@ -25,6 +25,7 @@
  */
 package org.openelis.web.modules.main.client;
 
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -49,6 +50,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
             RootPanel.get("main").add(new OpenELIS());
             RootPanel.get("main").setHeight("100%");
             RootPanel.get().setStyleName("AppBackground");
+            SessionTimer.start();
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert("Unable to start app : " + e.getMessage());
