@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="shipping" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SHIPPING_ID" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT s.*, sl.entry ship_from_location
+FROM shipping s, outer dictionary sl
+WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer"/>
+	<field name="status_id" class="java.lang.Integer"/>
+	<field name="shipped_from_id" class="java.lang.Integer"/>
+	<field name="shipped_to_id" class="java.lang.Integer"/>
+	<field name="shipped_to_attention" class="java.lang.String"/>
+	<field name="processed_by" class="java.lang.String"/>
+	<field name="processed_date" class="java.sql.Timestamp"/>
+	<field name="shipped_method_id" class="java.lang.Integer"/>
+	<field name="shipped_date" class="java.sql.Timestamp"/>
+	<field name="number_of_packages" class="java.lang.Integer"/>
+	<field name="cost" class="java.math.BigDecimal"/>
+	<field name="ship_from_location" class="java.lang.String"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="204" splitType="Stretch">
+			<image>
+				<reportElement key="uhl-logo-image" positionType="Float" x="1" y="0" width="85" height="85"/>
+				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "/uhlseal.gif"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement key="header-top" x="139" y="0" width="437" height="47"/>
+				<textElement textAlignment="Left">
+					<font size="33" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[State Hygienic Laboratory]]></text>
+			</staticText>
+			<line>
+				<reportElement key="header-divide-line" x="139" y="46" width="437" height="1"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<rectangle>
+				<reportElement positionType="Float" x="139" y="53" width="437" height="28" forecolor="#E7E4E4" backcolor="#E7E4E4"/>
+				<graphicElement>
+					<pen lineWidth="0.0" lineStyle="Solid"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement key="header-bottom" x="148" y="53" width="248" height="28" backcolor="#E7E4E4"/>
+				<textElement textAlignment="Left">
+					<font size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[The University of Iowa]]></text>
+			</staticText>
+			<textField pattern="MMM dd, yyyy">
+				<reportElement x="2" y="100" width="100" height="12"/>
+				<textElement>
+					<font fontName="Arial" size="10" isUnderline="false" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="Float" x="199" y="95" width="179" height="17"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="14" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[SHIPPING MANIFEST]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="388" y="100" width="158" height="12"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="546" y="100" width="27" height="12"/>
+				<textElement>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" "+$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="128" width="295" height="12" backcolor="#C0C0C0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[SHIP TO]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="140" width="295" height="60"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ORGANIZATION_ID">
+					<subreportParameterExpression><![CDATA[$F{shipped_to_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ATTENTION">
+					<subreportParameterExpression><![CDATA[$F{shipped_to_attention}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "organization.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement mode="Transparent" x="306" y="128" width="72" height="12" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[Ship From:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="306" y="140" width="72" height="12" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" isBold="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[Shipping Id:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="381" y="128" width="195" height="12"/>
+				<textElement>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ship_from_location}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="381" y="140" width="71" height="12"/>
+				<textElement>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["SH"+$F{id}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="381" y="152" width="190" height="31"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[$F{id}.toString()]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="12">
+			<subreport>
+				<reportElement key="shipping note" positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SHIPPING_ID">
+					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "noteShipping.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="12">
+			<subreport>
+				<reportElement key="order info" positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SHIPPING_ID">
+					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "orderInformation.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="48" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="6" width="576" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="2" y="8" width="118" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="8" width="175" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[University of Iowa Research Park]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="295" y="8" width="142" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Lakeside Laboratory]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="8" width="139" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Iowa Laboratories Complex]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="18" width="118" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Michael A. Pentella, Ph.D.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="18" width="175" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[2490 Crosspark Road, Coralville, Iowa 52241-4721]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="295" y="18" width="142" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[1838 Highway 86, Milford, IA 51351]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="18" width="139" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[2220 S. Ankeny Blvd, Ankeny, IA  50023 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="28" width="118" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Associate Directors]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="28" width="175" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="295" y="28" width="142" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[712/337-3669  ext. 6 Fax: 712/337-0227]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="437" y="28" width="139" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="38" width="118" height="10"/>
+				<textElement>
+					<font size="8" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[http://www.uhl.uiowa.edu]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>
