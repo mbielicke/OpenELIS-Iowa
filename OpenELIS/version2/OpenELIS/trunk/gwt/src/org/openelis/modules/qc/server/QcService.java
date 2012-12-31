@@ -75,6 +75,19 @@ public class QcService {
         return list;
     }
 
+    public ArrayList<QcLotViewDO> fetchActiveByExactName(String search) throws Exception {
+        ArrayList<QcLotViewDO> list;
+
+        try {
+            list = EJBFactory.getQc().fetchActiveByName(search, 10);
+        } catch (NotFoundException e) {
+            list = new ArrayList<QcLotViewDO>(0);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+        return list;
+    }
+
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
         return EJBFactory.getQcManager().fetchWithAnalytes(id);
     }

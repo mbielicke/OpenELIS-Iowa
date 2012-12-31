@@ -953,7 +953,7 @@ public class WorksheetCreationScreen extends Screen {
                 twiDO = twManager.getItemAt(i);
                 try {
                     if (!typeDup.equals(twiDO.getTypeId())) {
-                        list = qcService.callList("fetchActiveByName", twiDO.getQcName());
+                        list = qcService.callList("fetchActiveByExactName", twiDO.getQcName());
                         if (list.size() == 0) {
                             if (typeRand.equals(twiDO.getTypeId())) {
                                 qcErrors.put(-1, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeRandString));
