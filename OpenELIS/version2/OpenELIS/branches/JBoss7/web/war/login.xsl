@@ -106,8 +106,8 @@ UIRF Software License are applicable instead of those above.
 	</head>
 
 	<body onLoad="focusLogin()">
-		<form method="post" name="login_form" autocomplete="off" action="j_security_check"
-                    margin="0">
+		<form method="post" name="login" autocomplete="off" action="j_security_check"
+                    margin="0" onsubmit="document.forms['login'].style.display='none';document.forms['login'].elements['j_username'].value+=';{session};{locale}';">
 		<table cellspacing="0" cellpadding="0">
 			<tr>
 				<td>
@@ -140,12 +140,7 @@ UIRF Software License are applicable instead of those above.
             			<tr>
                 			<td colspan="2">
                 			    <div class="error">
-                    			<xsl:for-each select="error">
-                                    <!-- 
-	                        		<xsl:variable name="errorKey" select="."/>
-	                            		<xsl:value-of select="resource:getString($constants,$errorKey)"/>
-                                    -->
-                    			</xsl:for-each>
+                    			<xsl:value-of select="error"/>
                 			    </div>
 			                </td>
             			</tr>
