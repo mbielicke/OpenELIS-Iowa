@@ -133,398 +133,398 @@ import org.openelis.security.remote.SystemUserPermissionRemote;
 public class EJBFactory {
     
     public static AnalysisBean getAnalysis() {
-        return (AnalysisBean)lookup("AnalysisBean");
+        return lookup("AnalysisBean");
     }
 
     public static AnalysisQAEventBean getAnalysisQAEvent() {
-        return (AnalysisQAEventBean)lookup("AnalysisQAEventBean");
+        return lookup("AnalysisQAEventBean");
     }
 
     public static AnalysisReportFlagsBean getAnalysisReportFlags() {
-        return (AnalysisReportFlagsBean)lookup("AnalysisReportFlagsBean");
+        return lookup("AnalysisReportFlagsBean");
     }
 
     public static AnalysisUserBean getAnalysisUser() {
-        return (AnalysisUserBean)lookup("AnalysisUserBean");
+        return lookup("AnalysisUserBean");
     }
     
     public static AnalyteBean getAnalyte() {
-        return (AnalyteBean)lookup("AnalyteBean");
+        return lookup("AnalyteBean");
     }
     
     public static AnalyteParameterBean getAnalyteParameter() {
-        return (AnalyteParameterBean)lookup("AnalyteParameterBean");
+        return lookup("AnalyteParameterBean");
     }
 
     public static AuxDataBean getAuxData() {
-        return (AuxDataBean)lookup("AuxDataBean");
+        return lookup("AuxDataBean");
     }    
 
     public static AuxFieldGroupBean getAuxFieldGroup() {
-        return (AuxFieldGroupBean)lookup("AuxFieldGroupBean");
+        return lookup("AuxFieldGroupBean");
     }
 
     public static AuxFieldBean getAuxField() {
-        return (AuxFieldBean)lookup("AuxFieldBean");
+        return lookup("AuxFieldBean");
     }
 
     public static AuxFieldValueBean getAuxFieldValue() {
-        return (AuxFieldValueBean)lookup("AuxFieldValueBean");
+        return lookup("AuxFieldValueBean");
     }
     
     public static CategoryBean getCategory() {
-        return (CategoryBean)lookup("CategoryBean");
+        return lookup("CategoryBean");
     }
 
     public static DictionaryBean getDictionary() {
-        return (DictionaryBean)lookup("DictionaryBean");
+        return lookup("DictionaryBean");
     }  
     
     public static ExchangeLocalTermBean getExchangeLocalTerm() {
-        return (ExchangeLocalTermBean)lookup("ExchangeLocalTermBean");
+        return lookup("ExchangeLocalTermBean");
     }
     
     public static ExchangeExternalTermBean getExchangeExternalTerm() {
-        return (ExchangeExternalTermBean)lookup("ExchangeExternalTermBean");
+        return lookup("ExchangeExternalTermBean");
     }
     
     public static ExchangeCriteriaBean getExchangeCriteria() {
-        return (ExchangeCriteriaBean)lookup("ExchangeCriteriaBean");
+        return lookup("ExchangeCriteriaBean");
     }
     
     public static ExchangeProfileBean getExchangeProfile() {
-        return (ExchangeProfileBean)lookup("ExchangeProfileBean");
+        return lookup("ExchangeProfileBean");
     }
     
     public static EventLogBean getEventLog() {
-        return (EventLogBean)lookup("EventLogBean");
+        return lookup("EventLogBean");
     }
     
     public static HistoryBean getHistory() {
-        return (HistoryBean)lookup("HistoryBean");
+        return lookup("HistoryBean");
     }
 
     public static InstrumentBean getInstrument() {
-        return (InstrumentBean)lookup("InstrumentBean");
+        return lookup("InstrumentBean");
     }   
     
     public static InstrumentLogBean getInstrumentLog() {
-        return (InstrumentLogBean)lookup("InstrumentLogBean");
+        return lookup("InstrumentLogBean");
     }
     
     public static InventoryAdjustmentBean getInventoryAdjustment() {
-        return (InventoryAdjustmentBean)lookup("InventoryAdjustmentBean");
+        return lookup("InventoryAdjustmentBean");
     }
 
     public static InventoryComponentBean getInventoryComponent() {
-        return (InventoryComponentBean)lookup("InventoryComponentBean");
+        return lookup("InventoryComponentBean");
     }
 
     public static InventoryItemBean getInventoryItem() {
-        return (InventoryItemBean)lookup("InventoryItemBean");
+        return lookup("InventoryItemBean");
     }
 
     public static InventoryLocationBean getInventoryLocation() {
-        return (InventoryLocationBean)lookup("InventoryLocationBean");
+        return lookup("InventoryLocationBean");
     }    
 
     public static InventoryReceiptBean getInventoryReceipt() {
-        return (InventoryReceiptBean)lookup("InventoryReceiptBean");
+        return lookup("InventoryReceiptBean");
     }
 
     public static InventoryXAdjustBean getInventoryXAdjust() {
-        return (InventoryXAdjustBean)lookup("InventoryXAdjustBean");
+        return lookup("InventoryXAdjustBean");
     }
 
     public static InventoryXPutBean getInventoryXPut() {
-        return (InventoryXPutBean)lookup("InventoryXPutBean");
+        return lookup("InventoryXPutBean");
     }
 
     public static InventoryXUseBean getInventoryXUse() {
-        return (InventoryXUseBean)lookup("InventoryXUseBean");
+        return lookup("InventoryXUseBean");
     }
     
     public static LockBean getLock() {
-        return (LockBean)lookup("LockBean");
+        return lookup("LockBean");
     }
     
     public static NoteBean getNote() {
-        return (NoteBean)lookup("NoteBean");
+        return lookup("NoteBean");
     }
 
     public static OrderOrganizationBean getOrderOrganization() {
-        return (OrderOrganizationBean)lookup("OrderOrganizationBean");
+        return lookup("OrderOrganizationBean");
     }
     
     public static OrderContainerBean getOrderContainer() {
-        return (OrderContainerBean)lookup("OrderContainerBean");
+        return lookup("OrderContainerBean");
     }
 
     public static OrderItemBean getOrderItem() {
-        return (OrderItemBean)lookup("OrderItemBean");
+        return lookup("OrderItemBean");
     }
     
     public static OrderBean getOrder() {
-        return (OrderBean)lookup("OrderBean");
+        return lookup("OrderBean");
     }
     
     public static OrderTestBean getOrderTest() {
-        return (OrderTestBean)lookup("OrderTestBean");
+        return lookup("OrderTestBean");
     }
     
     public static OrderTestAnalyteBean getOrderTestAnalyte() {
-        return (OrderTestAnalyteBean)lookup("OrderTestAnalyteBean");
+        return lookup("OrderTestAnalyteBean");
     }
     
     public static OrderRecurrenceBean getOrderRecurrence() {
-        return (OrderRecurrenceBean)lookup("OrderRecurrenceBean");
+        return lookup("OrderRecurrenceBean");
     }
     
     public static OrganizationContactBean getOrganizationContact() {
-        return (OrganizationContactBean)lookup("OrganizationContactBean");
+        return lookup("OrganizationContactBean");
     }
     
     
     public static OrganizationBean getOrganization() {
-        return (OrganizationBean)lookup("OrganizationBean");
+        return lookup("OrganizationBean");
     }
     
     
     public static OrganizationParameterBean getOrganizationParameter() {
-        return (OrganizationParameterBean)lookup("OrganizationParameterBean");
+        return lookup("OrganizationParameterBean");
     }
 
     public static PanelItemBean getPanelItem() {
-        return (PanelItemBean)lookup("PanelItemBean");
+        return lookup("PanelItemBean");
     }
     
     public static PanelBean getPanel() {
-        return (PanelBean)lookup("PanelBean");
+        return lookup("PanelBean");
     }
     
     public static ProjectBean getProject() {
-        return (ProjectBean)lookup("ProjectBean");
+        return lookup("ProjectBean");
     }
     
     public static ProjectParameterBean getProjectParameter() {
-        return (ProjectParameterBean)lookup("ProjectParameterBean");
+        return lookup("ProjectParameterBean");
     }
     
     public static ProviderBean getProvider() {
-        return (ProviderBean)lookup("ProviderBean");
+        return lookup("ProviderBean");
     }
     
     public static ProviderLocationBean getProviderLocation() {
-        return (ProviderLocationBean)lookup("ProviderLocationBean");
+        return lookup("ProviderLocationBean");
     }
     
     public static PWSAddressBean getPWSAddress() {
-        return (PWSAddressBean)lookup("PWSAddressBean");
+        return lookup("PWSAddressBean");
     }
     
     public static PWSFacilityBean getPWSFacility() {
-        return (PWSFacilityBean)lookup("PWSFacilityBean");
+        return lookup("PWSFacilityBean");
     }        
     
     public static PWSBean getPWS() {
-        return (PWSBean)lookup("PWSBean");
+        return lookup("PWSBean");
     }
     
     public static PWSMonitorBean getPWSMonitor() {
-        return (PWSMonitorBean)lookup("PWSMonitorBean");
+        return lookup("PWSMonitorBean");
     }
 
     public static QaEventBean getQaevent() {
-        return (QaEventBean)lookup("QaEventBean");
+        return lookup("QaEventBean");
     }
     
     public static QcAnalyteBean getQcAnalyte() {
-        return (QcAnalyteBean)lookup("QcAnalyteBean");
+        return lookup("QcAnalyteBean");
     }
     
     public static QcLotBean getQcLot() {
-        return (QcLotBean)lookup("QcLotBean");
+        return lookup("QcLotBean");
     }
     
     public static QcBean getQc() {
-        return (QcBean)lookup("QcBean");
+        return lookup("QcBean");
     }
 
     public static ResultBean getResult() {
-        return (ResultBean)lookup("ResultBean");
+        return lookup("ResultBean");
     }
     
     public static SampleEnvironmentalBean getSampleEnvironmental() {
-        return (SampleEnvironmentalBean)lookup("SampleEnvironmentalBean");
+        return lookup("SampleEnvironmentalBean");
     }
     
     public static SampleItemBean getSampleItem() {
-        return (SampleItemBean)lookup("SampleItemBean");
+        return lookup("SampleItemBean");
     }
     
     public static SampleBean getSample() {
-        return (SampleBean)lookup("SampleBean");
+        return lookup("SampleBean");
     }
     
     public static SampleManagerBean getSampleManager() {
-        return (SampleManagerBean)lookup("SampleManagerBean");
+        return lookup("SampleManagerBean");
     }
     
     public static SampleOrganizationBean getSampleOrganization() {
-        return (SampleOrganizationBean)lookup("SampleOrganizationBean");
+        return lookup("SampleOrganizationBean");
     }
                                                                                                                                                                                                                             
     public static SamplePrivateWellBean getSamplePrivateWell() {
-        return (SamplePrivateWellBean)lookup("SamplePrivateWellBean");
+        return lookup("SamplePrivateWellBean");
     }
     
     public static SampleProjectBean getSampleProject() {
-        return (SampleProjectBean)lookup("SampleProjectBean");
+        return lookup("SampleProjectBean");
     }
     
     public static SampleQAEventBean getSampleQAEvent() {
-        return (SampleQAEventBean)lookup("SampleQAEventBean");
+        return lookup("SampleQAEventBean");
     }
     
     public static SampleSDWISBean getSampleSDWIS() {
-        return (SampleSDWISBean)lookup("SampleSDWISBean");
+        return lookup("SampleSDWISBean");
     }
     
     public static SectionBean getSection() {
-        return (SectionBean)lookup("SectionBean");
+        return lookup("SectionBean");
     }    
     
     public static SectionParameterBean getSectionParameter() {
-        return (SectionParameterBean)lookup("SectionParameterBean");
+        return lookup("SectionParameterBean");
     }
     
     public static ShippingItemBean getShippingItem() {
-        return (ShippingItemBean)lookup("ShippingItemBean");
+        return lookup("ShippingItemBean");
     }
     
     public static ShippingBean getShipping() {
-        return (ShippingBean)lookup("ShippingBean");
+        return lookup("ShippingBean");
     }
     
     public static ShippingTrackingBean getShippingTracking() {
-        return (ShippingTrackingBean)lookup("ShippingTrackingBean");
+        return lookup("ShippingTrackingBean");
     }
     
     public static StorageBean getStorage() {
-        return (StorageBean)lookup("StorageBean");
+        return lookup("StorageBean");
     }
     
     public static StorageLocationBean getStorageLocation() {
-        return (StorageLocationBean)lookup("StorageLocationBean");
+        return lookup("StorageLocationBean");
     }
     
     public static SystemVariableBean getSystemVariable() {
-        return (SystemVariableBean)lookup("SystemVariableBean");
+        return lookup("SystemVariableBean");
     }
     
     public static TestAnalyteBean getTestAnalyte() {
-        return (TestAnalyteBean)lookup("TestAnalyteBean");
+        return lookup("TestAnalyteBean");
     }
     
     public static TestBean getTest() {
-        return (TestBean)lookup("TestBean");
+        return lookup("TestBean");
     }
     
     public static TestPrepBean getTestPrep() {
-        return (TestPrepBean)lookup("TestPrepBean");
+        return lookup("TestPrepBean");
     }
     
     public static TestReflexBean getTestReflex() {
-        return (TestReflexBean)lookup("TestReflexBean");
+        return lookup("TestReflexBean");
     }
     
     public static TestResultBean getTestResult() {
-        return (TestResultBean)lookup("TestResultBean");
+        return lookup("TestResultBean");
     }
     
     public static TestSectionBean getTestSection() {
-        return (TestSectionBean)lookup("TestSectionBean");
+        return lookup("TestSectionBean");
     }
     
     public static TestTrailerBean getTestTrailer() {
-        return (TestTrailerBean)lookup("TestTrailerBean");
+        return lookup("TestTrailerBean");
     }
     
     public static TestTypeOfSampleBean getTestTypeOfSample() {
-        return (TestTypeOfSampleBean)lookup("TestTypeOfSampleBean");
+        return lookup("TestTypeOfSampleBean");
     }
     
     public static TestWorksheetAnalyteBean getTestWorksheetAnalyte() {
-        return (TestWorksheetAnalyteBean)lookup("TestWorksheetAnalyteBean");
+        return lookup("TestWorksheetAnalyteBean");
     }
     
     public static TestWorksheetItemBean getTestWorksheetItem() {
-        return (TestWorksheetItemBean)lookup("TestWorksheetItemBean");
+        return lookup("TestWorksheetItemBean");
     }
     
     public static TestWorksheetBean getTestWorksheet() {
-        return (TestWorksheetBean)lookup("TestWorksheetBean");
+        return lookup("TestWorksheetBean");
     }
     
     public static WorksheetAnalysisBean getWorksheetAnalysis() {
-        return (WorksheetAnalysisBean)lookup("WorksheetAnalysisBean");
+        return lookup("WorksheetAnalysisBean");
     }
     
     public static WorksheetItemBean getWorksheetItem() {
-        return (WorksheetItemBean)lookup("WorksheetItemBean");
+        return lookup("WorksheetItemBean");
     }
     
     public static WorksheetBean getWorksheet() {
-        return (WorksheetBean)lookup("WorksheetBean");
+        return lookup("WorksheetBean");
     }
     
     public static WorksheetQcResultBean getWorksheetQcResult() {
-        return (WorksheetQcResultBean)lookup("WorksheetQcResultBean");
+        return lookup("WorksheetQcResultBean");
     }
     
     public static WorksheetResultBean getWorksheetResult() {
-        return (WorksheetResultBean)lookup("WorksheetResultBean");
+        return lookup("WorksheetResultBean");
     }
     
     public static DictionaryCacheBean getDictionaryCache() {
-        return (DictionaryCacheBean) lookup("DictionaryCacheBean");
+        return lookup("DictionaryCacheBean");
     }
     
     public static CategoryCacheBean getCategoryCache() {
-        return (CategoryCacheBean) lookup("CategoryCacheBean");
+        return lookup("CategoryCacheBean");
     }
     
     public static InventoryItemCacheBean getInventoryItemCache() {
-        return (InventoryItemCacheBean) lookup("InventoryItemCacheBean");
+        return lookup("InventoryItemCacheBean");
     }                                                            
     
     public static SectionCacheBean getSectionCache() {
-        return (SectionCacheBean) lookup("SectionCacheBean");
+        return lookup("SectionCacheBean");
     }
     
     public static SessionCacheBean getSessionCache() {
-        return (SessionCacheBean)lookup("SessionCacheBean");
+        return lookup("SessionCacheBean");
     }
     
     public static UserCacheBean getUserCache() {
-        return (UserCacheBean)lookup("UserCacheBean");
+        return lookup("UserCacheBean");
     }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
 
     public static PreferencesBean getPreferences() {
-        return (PreferencesBean)lookup("PreferencesBean");
+        return lookup("PreferencesBean");
     }
 
     public static PrinterCacheBean getPrinterCache() {
-    	return (PrinterCacheBean)lookup("PrinterCacheBean");
+    	return lookup("PrinterCacheBean");
     }
     /*
      * Bean from Security project
      */
     public static SystemUserPermissionRemote getSecurity() {
-        return (SystemUserPermissionRemote)lookup("java:global/security/security.jar/SystemUserPermissionBean!org.openelis.security.remote.SystemUserPermissionRemote");
+        return lookup("java:global/security/security.jar/SystemUserPermissionBean!org.openelis.security.remote.SystemUserPermissionRemote");
     }
 
-    private static Object lookup(String bean) {
+    private static <T> T lookup(String bean) {
         InitialContext ctx;
         
         if (!bean.startsWith("java"))
@@ -532,7 +532,7 @@ public class EJBFactory {
             
         try {
             ctx = new InitialContext();
-            return ctx.lookup(bean);
+            return (T)ctx.lookup(bean);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
