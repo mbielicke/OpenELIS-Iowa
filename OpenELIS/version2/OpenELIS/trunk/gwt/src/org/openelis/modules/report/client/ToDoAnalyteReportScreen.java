@@ -27,7 +27,7 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Dropdown;
@@ -50,16 +50,16 @@ public class ToDoAnalyteReportScreen extends ReportScreen {
          * The following list contains those options. After the dropdown is initialized, this list is set as the selection.
          */
         try {
-            id = DictionaryCache.getIdBySystemName("analysis_logged_in");
+            id = Constants.dictionary().ANALYSIS_LOGGED_IN;
             if (id != null)
                 selections.add(id.toString());
-            id = DictionaryCache.getIdBySystemName("analysis_initiated");
+            id = Constants.dictionary().ANALYSIS_INITIATED;
             if (id != null)
                 selections.add(id.toString());
-            id = DictionaryCache.getIdBySystemName("analysis_inprep");
+            id = Constants.dictionary().ANALYSIS_INPREP;
             if (id != null)
                 selections.add(id.toString());
-            id = DictionaryCache.getIdBySystemName("analysis_requeue");
+            id = Constants.dictionary().ANALYSIS_REQUEUE;
             if (id != null)
                 selections.add(id.toString());
         } catch (Exception e) {

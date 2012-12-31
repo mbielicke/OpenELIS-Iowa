@@ -28,8 +28,8 @@ package org.openelis.modules.report.finalReportSingleReprint.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
@@ -79,7 +79,6 @@ public class FinalReportSingleReprintScreen extends Screen {
     private TextArea                             comment;
     private AppButton                            runReportButton, resetButton;
     private FinalReportSingleReprintReportScreen finalReportScreen;
-    private Integer                              billToTypeId, finalRepFaxTypeId;
     private String                               VIEW_PDF_KEY = "-view-";
     private ScreenService                        preferencesService;
 
@@ -392,8 +391,6 @@ public class FinalReportSingleReprintScreen extends Screen {
             model.add(new TableDataRow(VIEW_PDF_KEY, consts.get("viewInPDF")));
             for (OptionListItem item : options)
                 model.add(new TableDataRow(item.getKey(), item.getLabel()));
-            billToTypeId = DictionaryCache.getIdBySystemName("org_bill_to");
-            finalRepFaxTypeId = DictionaryCache.getIdBySystemName("org_finalrep_fax_number");
         } catch (Exception e) {
             window.close();
             Window.alert("Failed to load printers " + e.getMessage());
@@ -588,7 +585,7 @@ public class FinalReportSingleReprintScreen extends Screen {
             for (i = 0; i < orgs.count(); i++ ) {
                 samOrg = orgs.getOrganizationAt(i);
                 orgId = samOrg.getOrganizationId();
-                if ( !orgIds.contains(orgId) && !billToTypeId.equals(samOrg.getTypeId())) {
+                if ( !orgIds.contains(orgId) && !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {
                     row = new TableDataRow(orgId, samOrg.getOrganizationName());
                     model.add(row);
                     orgIds.add(orgId);
@@ -659,7 +656,7 @@ public class FinalReportSingleReprintScreen extends Screen {
             for (i = 0; i < orgs.count(); i++ ) {
                 samOrg = orgs.getOrganizationAt(i);
                 orgId = samOrg.getOrganizationId();
-                if ( !orgIds.contains(orgId) && !billToTypeId.equals(samOrg.getTypeId())) {                    
+                if ( !orgIds.contains(orgId) && !Constants.dictionary().ORG_BILL_TO.equals(samOrg.getTypeId())) {                    
                     faxVO = new FaxVO();                
                     faxVO.setToCompany(samOrg.getOrganizationName());
                     faxVO.setToName(samOrg.getOrganizationAttention());
@@ -730,7 +727,7 @@ public class FinalReportSingleReprintScreen extends Screen {
             opm = OrganizationParameterManager.fetchByOrganizationId(orgId);
             for (int i = 0; i < opm.count(); i++ ) {
                 op = opm.getParameterAt(i);
-                if (finalRepFaxTypeId.equals(op.getTypeId()))
+                if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(op.getTypeId()))
                     return op;
             }
         } catch (NotFoundException ignE) {

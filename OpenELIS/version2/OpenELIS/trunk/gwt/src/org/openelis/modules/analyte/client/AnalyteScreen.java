@@ -31,8 +31,8 @@ import java.util.EnumSet;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -53,6 +53,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
@@ -60,7 +61,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.modules.history.client.HistoryScreen;
@@ -79,8 +79,8 @@ public class AnalyteScreen extends Screen {
 
     private TextBox               name, externalId;
     private CheckBox              isActive;
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
+    private AppButton             queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton;
     protected MenuItem            history;
     private AutoComplete<Integer> parent;
     private ButtonGroup           atoz;
@@ -89,8 +89,8 @@ public class AnalyteScreen extends Screen {
     public AnalyteScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        
-        userPermission = UserCache.getPermission().getModule("analyte");        
+
+        userPermission = UserCache.getPermission().getModule("analyte");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Analyte Screen");
 
@@ -108,7 +108,7 @@ public class AnalyteScreen extends Screen {
      */
     private void postConstructor() {
         data = new AnalyteViewDO();
-        
+
         initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
@@ -137,7 +137,8 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -215,7 +216,7 @@ public class AnalyteScreen extends Screen {
                 history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         name = (TextBox)def.getWidget(AnalyteMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -236,7 +237,8 @@ public class AnalyteScreen extends Screen {
         parent = (AutoComplete<Integer>)def.getWidget(AnalyteMeta.getParentAnalyteName());
         addScreenHandler(parent, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parent.setSelection(data.getParentAnalyteId(), data.getParentAnalyteName());
+                parent.setSelection(data.getParentAnalyteId(),
+                                    data.getParentAnalyteName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -258,7 +260,8 @@ public class AnalyteScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = service.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = service.callList("fetchByName",
+                                            QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -314,24 +317,27 @@ public class AnalyteScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(9);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
-                        setQueryResult(result);
-                    }
+                service.callList("query",
+                                 query,
+                                 new AsyncCallback<ArrayList<IdNameVO>>() {
+                                     public void onSuccess(ArrayList<IdNameVO> result) {
+                                         setQueryResult(result);
+                                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
-                        } else {
-                            Window.alert("Error: Project call query failed; " + error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError(consts.get("noMoreRecordInDir"));
+                                         } else {
+                                             Window.alert("Error: Project call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(RPC entry) {
@@ -356,7 +362,8 @@ public class AnalyteScreen extends Screen {
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -376,9 +383,9 @@ public class AnalyteScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -502,12 +509,14 @@ public class AnalyteScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void history() {
         IdNameVO hist;
-        
+
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("analyteHistory"), ReferenceTable.ANALYTE, hist);
+        HistoryScreen.showHistory(consts.get("analyteHistory"),
+                                  Constants.table().ANALYTE,
+                                  hist);
     }
 
     protected boolean fetchById(Integer id) {

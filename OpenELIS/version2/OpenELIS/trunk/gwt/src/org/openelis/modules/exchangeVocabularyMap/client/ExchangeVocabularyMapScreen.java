@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.exchangeVocabularyMap.client;
 
 import java.util.ArrayList;
@@ -32,13 +32,13 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ExchangeExternalTermDO;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
@@ -98,20 +98,19 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class ExchangeVocabularyMapScreen extends Screen {
     private ExchangeLocalTermManager    manager;
     private ModulePermission            userPermission;
-    
+
     private ExchangeVocabularyMapScreen screen;
     private ScreenNavigator             nav;
-    
-    private AppButton                   queryButton, previousButton, nextButton, 
-                                        addButton, updateButton, commitButton, 
-                                        abortButton, addExternalTermButton,
-                                        removeExternalTermButton;  
+
+    private AppButton                   queryButton, previousButton, nextButton,
+                    addButton, updateButton, commitButton, abortButton,
+                    addExternalTermButton, removeExternalTermButton;
     private MenuItem                    localTermHistory, externalTermHistory;
-    private AutoComplete<Integer>       referenceName; 
-    private Dropdown<Integer>           referenceTableId;   
+    private AutoComplete<Integer>       referenceName;
+    private Dropdown<Integer>           referenceTableId;
     private TableWidget                 termMappingTable;
     private ScreenService               analyteService, dictionaryService, methodService,
-                                        organizationService, testService;
+                    organizationService, testService;
 
     public ExchangeVocabularyMapScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeVocabularyMapDef.class));
@@ -124,15 +123,16 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         userPermission = UserCache.getPermission().getModule("exchangevocabularymap");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Exchange Vocabulary Map Screen");
-         
+            throw new PermissionException("screenPermException",
+                                          "Exchange Vocabulary Map Screen");
+
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
             }
         });
     }
-    
+
     /**
      * This method is called to set the initial state of widgets after the
      * screen is attached to the browser. It is usually called in deferred
@@ -140,20 +140,21 @@ public class ExchangeVocabularyMapScreen extends Screen {
      */
     private void postConstructor() {
         manager = ExchangeLocalTermManager.getInstance();
-        
+
         try {
             CategoryCache.getBySystemNames("exchange_local_type", "exchange_profile");
         } catch (Exception e) {
-            Window.alert("ExchangeVocabularyMapScreen: missing dictionary entry; " + e.getMessage());
+            Window.alert("ExchangeVocabularyMapScreen: missing dictionary entry; " +
+                         e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
-        DataChangeEvent.fire(this);       
+        DataChangeEvent.fire(this);
     }
-    
+
     /**
      * Setup state and data change handles for every widget on the screen
      */
@@ -169,8 +170,9 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -183,7 +185,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -205,8 +208,9 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -219,8 +223,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -233,7 +237,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -244,10 +249,11 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
-        
+
         localTermHistory = (MenuItem)def.getWidget("localTermHistory");
         addScreenHandler(localTermHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -255,10 +261,11 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                localTermHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                localTermHistory.enable(EnumSet.of(State.DISPLAY)
+                                               .contains(event.getState()));
             }
         });
-        
+
         externalTermHistory = (MenuItem)def.getWidget("externalTermHistory");
         addScreenHandler(externalTermHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -266,45 +273,41 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                externalTermHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                externalTermHistory.enable(EnumSet.of(State.DISPLAY)
+                                                  .contains(event.getState()));
             }
         });
 
         referenceTableId = (Dropdown)def.getWidget(ExchangeLocalTermMeta.getReferenceTableId());
         addScreenHandler(referenceTableId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                referenceTableId.setSelection(manager.getExchangeLocalTerm().getReferenceTableId());
+                referenceTableId.setSelection(manager.getExchangeLocalTerm()
+                                                     .getReferenceTableId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 Integer refTableId;
                 ExchangeLocalTermViewDO data;
-                
+
                 refTableId = event.getValue();
                 if (refTableId == null)
                     return;
-                
+
                 /*
-                 * since the autocomplete can show data from different tables, the
-                 * text's case needs to vary based on the data being queried for
+                 * since the autocomplete can show data from different tables,
+                 * the text's case needs to vary based on the data being queried
+                 * for
                  */
-                switch (refTableId) {
-                    case ReferenceTable.ANALYTE:   
-                    case ReferenceTable.DICTIONARY: 
-                        referenceName.setCase(Case.MIXED);
-                        break;
-                    case ReferenceTable.METHOD:       
-                    case ReferenceTable.TEST:
-                        referenceName.setCase(Case.LOWER);
-                        break;
-                    case ReferenceTable.ORGANIZATION:    
-                        referenceName.setCase(Case.UPPER);
-                        break;
-                }
-                
+                if (Constants.table().ANALYTE.equals(refTableId) || Constants.table().DICTIONARY.equals(refTableId))
+                    referenceName.setCase(Case.MIXED);
+                else if (Constants.table().METHOD.equals(refTableId) || Constants.table().TEST.equals(refTableId))
+                    referenceName.setCase(Case.LOWER);
+                else if (Constants.table().ORGANIZATION.equals(refTableId))
+                    referenceName.setCase(Case.UPPER);
+
                 if (state == State.QUERY)
                     return;
-                
+
                 data = manager.getExchangeLocalTerm();
                 data.setReferenceTableId(refTableId);
                 data.setReferenceId(null);
@@ -313,7 +316,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceTableId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+                referenceTableId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                               .contains(event.getState()));
                 referenceTableId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -322,80 +326,77 @@ public class ExchangeVocabularyMapScreen extends Screen {
         addScreenHandler(referenceName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ExchangeLocalTermViewDO data;
-                
+
                 data = manager.getExchangeLocalTerm();
-                referenceName.setSelection(data.getReferenceId() ,data.getReferenceName());
+                referenceName.setSelection(data.getReferenceId(), data.getReferenceName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 ExchangeLocalTermViewDO data;
-                
+
                 data = manager.getExchangeLocalTerm();
                 data.setReferenceId(event.getValue());
                 data.setReferenceName(referenceName.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                referenceName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                            .contains(event.getState()));
                 referenceName.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        referenceName.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {           
-            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {                
+
+        referenceName.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
+            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
                 if (referenceTableId.getValue() == null) {
-                    Window.alert(consts.get("pleaseSelectType"));                    
+                    Window.alert(consts.get("pleaseSelectType"));
                     event.cancel();
                 }
             }
         });
-        
-        referenceName.addGetMatchesHandler(new GetMatchesHandler() {           
+
+        referenceName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 String search;
-                               
+
                 search = QueryFieldUtil.parseAutocomplete(event.getMatch());
-                
+
                 window.setBusy(consts.get("fetching"));
-                switch (referenceTableId.getValue()) {
-                    case ReferenceTable.ANALYTE:   
-                        referenceName.showAutoMatches(getAnalyteModel(search));
-                        break;
-                    case ReferenceTable.DICTIONARY: 
-                        referenceName.showAutoMatches(getDictionaryModel(search));
-                        break;
-                    case ReferenceTable.METHOD:       
-                        referenceName.showAutoMatches(getMethodModel(search));
-                        break;
-                    case ReferenceTable.ORGANIZATION:    
-                        referenceName.showAutoMatches(getOrganizationModel(search));
-                        break;
-                    case ReferenceTable.TEST:
-                        referenceName.showAutoMatches(getTestModel(search));
-                        break;
-                }
+
+                if (Constants.table().ANALYTE.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getAnalyteModel(search));
+                else if (Constants.table().DICTIONARY.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getDictionaryModel(search));
+                else if (Constants.table().METHOD.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getMethodModel(search));
+                else if (Constants.table().ORGANIZATION.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getOrganizationModel(search));
+                else if (Constants.table().TEST.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getTestModel(search));
+
                 window.clearStatus();
             }
         });
 
         termMappingTable = (TableWidget)def.getWidget("termMappingTable");
-        addScreenHandler(termMappingTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (state != State.QUERY)
-                    termMappingTable.load(getTableModel());
-            }
+        addScreenHandler(termMappingTable,
+                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 if (state != State.QUERY)
+                                     termMappingTable.load(getTableModel());
+                             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                termMappingTable.enable(true);
-                termMappingTable.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-        
+                             public void onStateChange(StateChangeEvent<State> event) {
+                                 termMappingTable.enable(true);
+                                 termMappingTable.setQueryMode(event.getState() == State.QUERY);
+                             }
+                         });
+
         termMappingTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
-                if(state != State.ADD && state != State.UPDATE)  
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if (state != State.ADD && state != State.UPDATE)
                     event.cancel();
-            }            
+            }
         });
 
         termMappingTable.addCellEditedHandler(new CellEditedHandler() {
@@ -406,7 +407,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = termMappingTable.getObject(r,c);
+                val = termMappingTable.getObject(r, c);
 
                 try {
                     data = manager.getExternalTerms().getExternalTermAt(r);
@@ -462,22 +463,23 @@ public class ExchangeVocabularyMapScreen extends Screen {
         addScreenHandler(removeExternalTermButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
-                
+
                 r = termMappingTable.getSelectedRow();
                 if (r > -1 && termMappingTable.numRows() > 0)
                     termMappingTable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeExternalTermButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                removeExternalTermButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                       .contains(event.getState()));
             }
         });
-        
+
         addExternalTermButton = (AppButton)def.getWidget("addExternalTermButton");
         addScreenHandler(addExternalTermButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;
-                
+
                 termMappingTable.addRow();
                 n = termMappingTable.numRows() - 1;
                 termMappingTable.selectRow(n);
@@ -487,7 +489,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addExternalTermButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addExternalTermButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                    .contains(event.getState()));
             }
         });
 
@@ -499,27 +502,29 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<ExchangeLocalTermViewDO>>() {
-                    public void onSuccess(ArrayList<ExchangeLocalTermViewDO> result) {
-                        setQueryResult(result);
-                    }
+                service.callList("query",
+                                 query,
+                                 new AsyncCallback<ArrayList<ExchangeLocalTermViewDO>>() {
+                                     public void onSuccess(ArrayList<ExchangeLocalTermViewDO> result) {
+                                         setQueryResult(result);
+                                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
-                        } else {
-                            Window.alert("Error: Exchange Vocabulary Map call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError(consts.get("noMoreRecordInDir"));
+                                         } else {
+                                             Window.alert("Error: Exchange Vocabulary Map call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
-            
+
             public boolean fetch(RPC entry) {
                 return fetchById( (entry == null) ? null : ((ExchangeLocalTermViewDO)entry).getId());
             }
@@ -532,19 +537,21 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();                    
+                    model = new ArrayList<TableDataRow>();
                     for (ExchangeLocalTermViewDO entry : result) {
                         if (entry.getReferenceDescription() == null)
                             name = entry.getReferenceName();
                         else
-                            name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(), ", ", entry.getReferenceDescription());
+                            name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(),
+                                                                    ", ",
+                                                                    entry.getReferenceDescription());
                         model.add(new TableDataRow(entry.getId(), name));
                     }
                 }
                 return model;
             }
         };
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
@@ -554,7 +561,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
         });
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
@@ -562,33 +569,33 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("exchange_local_type");   
+        list = CategoryCache.getBySystemName("exchange_local_type");
         for (DictionaryDO d : list) {
             if ("local_type_analyte".equals(d.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.ANALYTE, d.getEntry());
+                row = new TableDataRow(Constants.table().ANALYTE, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             } else if ("local_type_dictionary".equals(d.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.DICTIONARY, d.getEntry());
+                row = new TableDataRow(Constants.table().DICTIONARY, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);  
+                model.add(row);
             } else if ("local_type_method".equals(d.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.METHOD, d.getEntry());
+                row = new TableDataRow(Constants.table().METHOD, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);  
+                model.add(row);
             } else if ("local_type_organization".equals(d.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.ORGANIZATION, d.getEntry());
+                row = new TableDataRow(Constants.table().ORGANIZATION, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);  
+                model.add(row);
             } else if ("local_type_test".equals(d.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.TEST, d.getEntry());
+                row = new TableDataRow(Constants.table().TEST, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
-                model.add(row);  
+                model.add(row);
             }
         }
 
         referenceTableId.setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("exchange_profile");
@@ -597,31 +604,31 @@ public class ExchangeVocabularyMapScreen extends Screen {
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        
+
         ((Dropdown)termMappingTable.getColumnWidget(ExchangeLocalTermMeta.getExternalTermExchangeProfileId())).setModel(model);
     }
-    
+
     public boolean validate() {
         ArrayList<TableDataRow> sels;
-        
+
         if (state != State.QUERY)
             return super.validate();
-                
+
         sels = referenceTableId.getSelections();
-        
-        if (sels.size() == 0 || sels.get(0).key == null) { 
+
+        if (sels.size() == 0 || sels.get(0).key == null) {
             //
             // type e.g. Test, Analyte etc. must be specified in query mode
             //
-            referenceTableId.addException(new LocalizedException(consts.get("fieldRequiredException")));            
+            referenceTableId.addException(new LocalizedException(consts.get("fieldRequiredException")));
         } else if (sels.size() > 1) {
             //
             // we don't allow more than one type to be selected
             //
             referenceTableId.addException(new LocalizedException(consts.get("onlyOneTypeSelectionForQueryException")));
-        } 
+        }
         return super.validate();
-    }    
+    }
 
     protected void query() {
         manager = ExchangeLocalTermManager.getInstance();
@@ -632,7 +639,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         setFocus(referenceTableId);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
-    
+
     protected void previous() {
         nav.previous();
     }
@@ -640,7 +647,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
     protected void next() {
         nav.next();
     }
-    
+
     protected void add() {
         manager = ExchangeLocalTermManager.getInstance();
 
@@ -650,7 +657,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         setFocus(referenceTableId);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
-    
+
     protected void update() {
         window.setBusy(consts.get("lockForUpdate"));
 
@@ -664,20 +671,20 @@ public class ExchangeVocabularyMapScreen extends Screen {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
-        
+
     }
 
     protected void commit() {
         Query query;
-        
+
         setFocus(null);
         /*
-         * this is done to make sure that the errors added from the back-end are 
+         * this is done to make sure that the errors added from the back-end are
          * cleaned up before the screen does its validation so that if there are
-         * no errors added on the screen, the data can be committed 
+         * no errors added on the screen, the data can be committed
          */
         termMappingTable.clearCellExceptions();
-        
+
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
@@ -742,18 +749,20 @@ public class ExchangeVocabularyMapScreen extends Screen {
             window.setDone(consts.get("updateAborted"));
         } else {
             window.clearStatus();
-        }        
+        }
     }
-    
+
     protected void localTermHistory() {
         IdNameVO hist;
-        
-        hist = new IdNameVO(manager.getExchangeLocalTerm().getId(), manager.getExchangeLocalTerm().getReferenceName());
+
+        hist = new IdNameVO(manager.getExchangeLocalTerm().getId(),
+                            manager.getExchangeLocalTerm().getReferenceName());
         HistoryScreen.showHistory(consts.get("localTermHistory"),
-                                  ReferenceTable.EXCHANGE_LOCAL_TERM, hist);  
-        
+                                  Constants.table().EXCHANGE_LOCAL_TERM,
+                                  hist);
+
     }
-    
+
     protected void externalTermHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -775,9 +784,10 @@ public class ExchangeVocabularyMapScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("externalTermHistory"),
-                                  ReferenceTable.EXCHANGE_EXTERNAL_TERM, refVoList);
+                                  Constants.table().EXCHANGE_EXTERNAL_TERM,
+                                  refVoList);
     }
-    
+
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = ExchangeLocalTermManager.getInstance();
@@ -785,7 +795,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                manager = ExchangeLocalTermManager.fetchWithExternalTerms(id);                
+                manager = ExchangeLocalTermManager.fetchWithExternalTerms(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
@@ -798,7 +808,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 return false;
             }
         }
-        
+
         DataChangeEvent.fire(this);
         window.clearStatus();
 
@@ -810,14 +820,14 @@ public class ExchangeVocabularyMapScreen extends Screen {
         ArrayList<TableDataRow> model;
         ExchangeExternalTermDO data;
         ExchangeExternalTermManager man;
-        
+
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
 
         try {
             man = manager.getExternalTerms();
-            for (int i = 0; i < man.count(); i++) {
+            for (int i = 0; i < man.count(); i++ ) {
                 data = man.getExternalTermAt(i);
 
                 row = new TableDataRow(5);
@@ -834,7 +844,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
         }
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getAnalyteModel(String search) {
         ArrayList<AnalyteDO> list;
         ArrayList<TableDataRow> model;
@@ -852,7 +862,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getDictionaryModel(String search) {
         TableDataRow row;
         ArrayList<TableDataRow> model;
@@ -861,26 +871,29 @@ public class ExchangeVocabularyMapScreen extends Screen {
         QueryData field;
 
         query = new Query();
-        
-        field = new QueryData();        
+
+        field = new QueryData();
         field.key = CategoryMeta.getDictionaryEntry();
         field.query = search + "*";
-        field.type = QueryData.Type.STRING;                
+        field.type = QueryData.Type.STRING;
         query.setFields(field);
-        
-        field = new QueryData();        
+
+        field = new QueryData();
         field.key = CategoryMeta.getDictionaryIsActive();
         field.query = "Y";
-        field.type = QueryData.Type.STRING;                
+        field.type = QueryData.Type.STRING;
         query.setFields(field);
-        
+
         model = new ArrayList<TableDataRow>();
         try {
             list = dictionaryService.callList("fetchByEntry", query);
             for (IdNameVO data : list) {
                 row = new TableDataRow(1);
-                row.key = data.getId();    
-                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(data.getName(), ", ", data.getDescription()));
+                row.key = data.getId();
+                row.cells.get(0)
+                         .setValue(DataBaseUtil.concatWithSeparator(data.getName(),
+                                                                    ", ",
+                                                                    data.getDescription()));
                 model.add(row);
             }
         } catch (NotFoundException ignE) {
@@ -889,10 +902,10 @@ public class ExchangeVocabularyMapScreen extends Screen {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        
+
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getMethodModel(String search) {
         ArrayList<MethodDO> list;
         ArrayList<TableDataRow> model;
@@ -900,17 +913,17 @@ public class ExchangeVocabularyMapScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         try {
             list = methodService.callList("fetchByName", search);
-            
+
             for (MethodDO data : list)
-                model.add(new TableDataRow(data.getId(), data.getName()));                    
+                model.add(new TableDataRow(data.getId(), data.getName()));
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        
+
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getOrganizationModel(String search) {
         TableDataRow row;
         ArrayList<OrganizationDO> orgs;
@@ -931,40 +944,43 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 list.add(addr.getStreetAddress());
                 list.add(addr.getCity());
                 list.add(addr.getState());
-                
+
                 row = new TableDataRow(1);
-                row.key = org.getId();    
+                row.key = org.getId();
                 row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(list, ", "));
-                
+
                 model.add(row);
             }
         } catch (Throwable e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        
+
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getTestModel(String search) {
         TableDataRow row;
         ArrayList<TableDataRow> model;
         ArrayList<TestMethodVO> list;
-        
+
         model = new ArrayList<TableDataRow>();
         try {
-            list  = testService.callList("fetchByName", search);
-            for (TestMethodVO data: list) {
+            list = testService.callList("fetchByName", search);
+            for (TestMethodVO data : list) {
                 row = new TableDataRow(1);
-                row.key = data.getTestId();    
-                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(data.getTestName(), ", ", data.getMethodName()));
+                row.key = data.getTestId();
+                row.cells.get(0)
+                         .setValue(DataBaseUtil.concatWithSeparator(data.getTestName(),
+                                                                    ", ",
+                                                                    data.getMethodName()));
                 model.add(row);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        
+
         return model;
     }
 }

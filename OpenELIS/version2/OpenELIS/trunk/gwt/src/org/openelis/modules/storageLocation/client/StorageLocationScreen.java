@@ -29,14 +29,14 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -52,6 +52,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
@@ -59,7 +60,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -712,7 +712,7 @@ public class StorageLocationScreen extends Screen {
         
         hist = new IdNameVO(manager.getStorageLocation().getId(), manager.getStorageLocation().getName());
         HistoryScreen.showHistory(consts.get("storageLocationHistory"),
-                                  ReferenceTable.STORAGE_LOCATION, hist);        
+                                  Constants.table().STORAGE_LOCATION, hist);        
         
     }
 
@@ -737,7 +737,7 @@ public class StorageLocationScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("subLocationHistory"),
-                                  ReferenceTable.STORAGE_LOCATION, refVoList);        
+                                  Constants.table().STORAGE_LOCATION, refVoList);        
     }
 
     protected boolean fetchById(Integer id) {

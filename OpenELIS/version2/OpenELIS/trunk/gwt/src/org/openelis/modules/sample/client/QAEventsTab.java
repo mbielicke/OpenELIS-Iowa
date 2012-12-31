@@ -34,6 +34,7 @@ import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
@@ -91,9 +92,7 @@ public class QAEventsTab extends Screen {
     protected SampleManager          sampleManager;
     protected AnalysisManager        analysisManager;
     protected AnalysisViewDO         analysis, emptyAnalysis;
-    protected Integer                analysisCancelledId, analysisReleasedId, sampleReleasedId, 
-                                     qaInternal, qaWarning, qaOverride;
-
+    
     protected QaeventLookupScreen    qaEventScreen;
 
     public QAEventsTab(ScreenDefInt def, ScreenWindowInt window) {
@@ -479,18 +478,6 @@ public class QAEventsTab extends Screen {
 
         ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
         ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
-
-        try {
-            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-            qaInternal = DictionaryCache.getIdBySystemName("qaevent_internal");
-            qaWarning = DictionaryCache.getIdBySystemName("qaevent_warning");
-            qaOverride = DictionaryCache.getIdBySystemName("qaevent_override");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     private boolean canEditSampleQA() {
@@ -499,9 +486,9 @@ public class QAEventsTab extends Screen {
     
     private boolean canEditSampleQA(Integer type) {
         try {
-            return ((!sampleReleasedId.equals(sampleManager.getSample().getStatusId()) &&
+            return ((!Constants.dictionary().SAMPLE_RELEASED.equals(sampleManager.getSample().getStatusId()) &&
                       !sampleManager.hasReleasedAnalysis()) ||
-                     qaInternal.equals(type));
+                      Constants.dictionary().QAEVENT_INTERNAL.equals(type));
         } catch (Exception e) {
             return false;
         }
@@ -519,8 +506,9 @@ public class QAEventsTab extends Screen {
             try {
                 sectionVDO = SectionCache.getById(analysis.getSectionId());
                 perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                return !analysisCancelledId.equals(analysis.getStatusId()) &&
-                        (!analysisReleasedId.equals(analysis.getStatusId()) || qaInternal.equals(type)) &&
+                return !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysis.getStatusId()) &&
+                        (!Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId()) ||
+                                        Constants.dictionary().QAEVENT_INTERNAL.equals(type)) &&
                         perm != null &&
                         (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception anyE) {

@@ -32,9 +32,9 @@ import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
@@ -779,7 +779,7 @@ public class DictionaryScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getCategory().getId(), manager.getCategory().getName());
-        HistoryScreen.showHistory(consts.get("categoryHistory"), ReferenceTable.CATEGORY, hist);
+        HistoryScreen.showHistory(consts.get("categoryHistory"), Constants.table().CATEGORY, hist);
     }
 
     protected void dictionaryHistory() {
@@ -802,7 +802,7 @@ public class DictionaryScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("dictionaryHistory"), ReferenceTable.DICTIONARY, list);
+        HistoryScreen.showHistory(consts.get("dictionaryHistory"), Constants.table().DICTIONARY, list);
     }
 
     protected boolean fetchByCategoryId(Integer id) {

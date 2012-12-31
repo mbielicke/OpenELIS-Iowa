@@ -51,11 +51,11 @@ public class QaEventService {
         return EJBFactory.getQaEvent().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
-    public QaEventViewDO add(QaEventViewDO data) throws Exception {
+    public QaEventDO add(QaEventDO data) throws Exception {
         return EJBFactory.getQaEvent().add(data);
     }
 
-    public QaEventViewDO update(QaEventViewDO data) throws Exception {
+    public QaEventDO update(QaEventDO data) throws Exception {
         return EJBFactory.getQaEvent().update(data);
     }
 

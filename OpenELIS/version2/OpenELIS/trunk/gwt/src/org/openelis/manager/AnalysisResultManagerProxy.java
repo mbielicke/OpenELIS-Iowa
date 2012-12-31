@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
@@ -49,11 +49,6 @@ public class AnalysisResultManagerProxy {
 
     public AnalysisResultManagerProxy() {
         service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
-        try {
-            dictTypeId = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
-        } catch (Exception e) {
-            e.printStackTrace();
-        } 
     }
 
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
@@ -151,7 +146,7 @@ public class AnalysisResultManagerProxy {
                          * that the correct value gets set. For the results of the
                          * other types, the value doesn't need to be changed.   
                          */
-                        if (testResult.getTypeId().equals(dictTypeId))
+                        if (testResult.getTypeId().equals(Constants.dictionary().TEST_RES_TYPE_DICTIONARY))
                             result.setValue(testResult.getValue());                     
                     }
                 }
@@ -169,10 +164,9 @@ public class AnalysisResultManagerProxy {
         ArrayList<ResultViewDO> results;
         ResultViewDO result, rowResult;
         TestResultDO testResult;
-        Integer testResultId, resultRequiredId;
+        Integer testResultId;
         int i, j;
 
-        resultRequiredId = DictionaryCache.getIdBySystemName("test_analyte_req");
         i = 0;
         // go through the results look for empty required and invalid results
         while (i < man.rowCount()) {
@@ -186,7 +180,7 @@ public class AnalysisResultManagerProxy {
                     rowResult = result;
 
                 // if required if needs to have a value
-                if (DataBaseUtil.isSame(resultRequiredId, result.getTestAnalyteTypeId()) &&
+                if (DataBaseUtil.isSame(Constants.dictionary().TEST_ANALYTE_REQ, result.getTestAnalyteTypeId()) &&
                     (DataBaseUtil.isEmpty(result.getValue()))) {
                     if (j == 0)
                         errorsList.add(new FormErrorException("completeStatusRequiredResultsException",

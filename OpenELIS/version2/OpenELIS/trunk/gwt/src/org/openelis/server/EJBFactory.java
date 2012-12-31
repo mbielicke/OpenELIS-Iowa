@@ -30,112 +30,7 @@ import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
-import org.openelis.remote.AnalysisManagerRemote;
-import org.openelis.remote.AnalysisQAEventManagerRemote;
-import org.openelis.remote.AnalysisRemote;
-import org.openelis.remote.AnalysisUserManagerRemote;
-import org.openelis.remote.AnalyteParameterManagerRemote;
-import org.openelis.remote.AnalyteParameterRemote;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.remote.AuxDataManagerRemote;
-import org.openelis.remote.AuxDataRemote;
-import org.openelis.remote.AuxFieldGroupManagerRemote;
-import org.openelis.remote.AuxFieldGroupRemote;
-import org.openelis.remote.BuildKitManagerRemote;
-import org.openelis.remote.BuildKitsReportRemote;
-import org.openelis.remote.CategoryCacheRemote;
-import org.openelis.remote.CategoryManagerRemote;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.CompleteReleaseRemote;
-import org.openelis.remote.CronRemote;
-import org.openelis.remote.DataExchangeReportRemote;
-import org.openelis.remote.DataViewRemote;
-import org.openelis.remote.DictionaryCacheRemote;
-import org.openelis.remote.DictionaryRemote;
-import org.openelis.remote.ExchangeLocalTermManagerRemote;
-import org.openelis.remote.ExchangeLocalTermRemote;
-import org.openelis.remote.FinalReportRemote;
-import org.openelis.remote.FinalReportWebRemote;
-import org.openelis.remote.HistoryRemote;
-import org.openelis.remote.HoldRefuseOrganizationReportRemote;
-import org.openelis.remote.InstrumentManagerRemote;
-import org.openelis.remote.InstrumentRemote;
-import org.openelis.remote.InventoryAdjustmentManagerRemote;
-import org.openelis.remote.InventoryAdjustmentRemote;
-import org.openelis.remote.InventoryItemCacheRemote;
-import org.openelis.remote.InventoryItemManagerRemote;
-import org.openelis.remote.InventoryItemRemote;
-import org.openelis.remote.InventoryLocationRemote;
-import org.openelis.remote.InventoryReceiptManagerRemote;
-import org.openelis.remote.InventoryReceiptRemote;
-import org.openelis.remote.InventoryTransferManagerRemote;
-import org.openelis.remote.LabelRemote;
-import org.openelis.remote.MethodRemote;
-import org.openelis.remote.NoteManagerRemote;
-import org.openelis.remote.OrderManagerRemote;
-import org.openelis.remote.OrderRecurrenceReportRemote;
-import org.openelis.remote.OrderRemote;
-import org.openelis.remote.OrganizationManagerRemote;
-import org.openelis.remote.OrganizationRemote;
-import org.openelis.remote.PWSManagerRemote;
-import org.openelis.remote.PWSRemote;
-import org.openelis.remote.PanelManagerRemote;
-import org.openelis.remote.PanelRemote;
-import org.openelis.remote.PreferencesRemote;
-import org.openelis.remote.PrinterCacheRemote;
-import org.openelis.remote.ProjectManagerRemote;
-import org.openelis.remote.ProjectRemote;
-import org.openelis.remote.ProviderManagerRemote;
-import org.openelis.remote.ProviderRemote;
-import org.openelis.remote.QASummaryReportRemote;
-import org.openelis.remote.QaEventRemote;
-import org.openelis.remote.QcChartReportRemote;
-import org.openelis.remote.QcLotRemote;
-import org.openelis.remote.QcManagerRemote;
-import org.openelis.remote.QcRemote;
-import org.openelis.remote.RequestformReportRemote;
-import org.openelis.remote.ResultManagerRemote;
-import org.openelis.remote.SDWISUnloadReportRemote;
-import org.openelis.remote.SampleInhouseReportRemote;
-import org.openelis.remote.SampleLoginLabelReportRemote;
-import org.openelis.remote.SampleManagerRemote;
-import org.openelis.remote.SampleManager1Remote;
-import org.openelis.remote.SampleQAEventManagerRemote;
-import org.openelis.remote.SampleRemote;
-import org.openelis.remote.SampleStatusReportRemote;
-import org.openelis.remote.SampleTrackingRemote;
-import org.openelis.remote.ScriptletRemote;
-import org.openelis.remote.SectionCacheRemote;
-import org.openelis.remote.SectionManagerRemote;
-import org.openelis.remote.SectionRemote;
-import org.openelis.remote.ShippingManagerRemote;
-import org.openelis.remote.ShippingRemote;
-import org.openelis.remote.ShippingReportRemote;
-import org.openelis.remote.StandardNoteRemote;
-import org.openelis.remote.StorageLocationManagerRemote;
-import org.openelis.remote.StorageLocationRemote;
-import org.openelis.remote.StorageManagerRemote;
-import org.openelis.remote.StorageUnitRemote;
-import org.openelis.remote.SystemVariableRemote;
-import org.openelis.remote.TestManagerRemote;
-import org.openelis.remote.TestRemote;
-import org.openelis.remote.TestReportRemote;
-import org.openelis.remote.TestTrailerRemote;
-import org.openelis.remote.TestTypeOfSampleRemote;
-import org.openelis.remote.ToDoAnalyteReportRemote;
-import org.openelis.remote.ToDoRemote;
-import org.openelis.remote.TurnaroundReportRemote;
-import org.openelis.remote.TurnaroundStatisticReportRemote;
-import org.openelis.remote.UserCacheRemote;
-import org.openelis.remote.VerificationReportRemote;
-import org.openelis.remote.VolumeReportRemote;
-import org.openelis.remote.WorksheetCompletionRemote;
-import org.openelis.remote.WorksheetCreationRemote;
-import org.openelis.remote.WorksheetManagerRemote;
-import org.openelis.remote.WorksheetRemote;
-import org.openelis.remote.ExchangeCriteriaManagerRemote;
-import org.openelis.remote.ExchangeCriteriaRemote;
-import org.openelis.remote.EventLogRemote;
+import org.openelis.remote.*;
 import org.openelis.util.SessionManager;
 
 public class EJBFactory {
@@ -151,6 +46,10 @@ public class EJBFactory {
     
     public static AnalysisQAEventManagerRemote getAnalysisQAEventManager() {
     	return (AnalysisQAEventManagerRemote)lookup("AnalysisQAEventManagerBean!org.openelis.remote.AnalysisQAEventManagerRemote");
+    }
+    
+    public static ApplicationRemote getApplication() {
+        return (ApplicationRemote)lookup("ApplicationBean!org.openelis.remote.ApplicationRemote");
     }
 	
     public static PanelRemote getPanel() {

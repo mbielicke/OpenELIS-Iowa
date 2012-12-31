@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
@@ -169,16 +170,16 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
              * for the sample if the corresponding organizations are defined in
              * the order
              */
-            if (reportToId.equals(ordOrg.getTypeId())) {
+            if (Constants.dictionary().ORG_REPORT_TO.equals(ordOrg.getTypeId())) {
                 ordReportTo = ordOrg;
                 well.setOrganizationId(ordReportTo.getOrganizationId());
                 well.setOrganization(createOrganization(ordOrg));
                 well.setReportToAttention(ordOrg.getOrganizationAttention());
-            } else if (billToId.equals(ordOrg.getTypeId())) {
-                samBillTo = createSampleOrganization(ordOrg, billToId);
+            } else if (Constants.dictionary().ORG_BILL_TO.equals(ordOrg.getTypeId())) {
+                samBillTo = createSampleOrganization(ordOrg, Constants.dictionary().ORG_BILL_TO);
                 samOrgMan.addOrganization(samBillTo);
-            } else if (secondReportToId.equals(ordOrg.getTypeId())) {
-                samOrgMan.addOrganization(createSampleOrganization(ordOrg, secondReportToId));
+            } else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(ordOrg.getTypeId())) {
+                samOrgMan.addOrganization(createSampleOrganization(ordOrg, Constants.dictionary().ORG_SECOND_REPORT_TO));
             }
         }       
                 
@@ -198,9 +199,9 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
          */
         if (samBillTo == null) {
             if (ordReportTo != null)
-                samOrgMan.addOrganization(createSampleOrganization(ordReportTo, billToId));
+                samOrgMan.addOrganization(createSampleOrganization(ordReportTo, Constants.dictionary().ORG_BILL_TO));
             else
-                samOrgMan.addOrganization(createSampleOrganization(order, billToId));
+                samOrgMan.addOrganization(createSampleOrganization(order, Constants.dictionary().ORG_BILL_TO));
         }
     }
     

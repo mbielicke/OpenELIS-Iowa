@@ -10,6 +10,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleDO;
@@ -145,7 +146,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                                      historyAuxData;
 
     private ScreenService            finalReportService;
-    private Integer                  analysisOnHoldId, lastAccession;
+    private Integer                  lastAccession;
 
 
     private enum Tabs {
@@ -788,14 +789,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         ArrayList<TableDataRow> model;
         window.clearStatus();
 
-        // preload dictionary models and single entries, close the window if an
-        // error is found
-        try {            
-            analysisOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
+        // preload dictionary models and single entries
 
         // sample status dropdown
         model = new ArrayList<TableDataRow>();
@@ -975,7 +969,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                              .getSampleItems()
                              .getAnalysisAt(bundle.getSampleItemIndex());
                 data = aman.getAnalysisAt(bundle.getAnalysisIndex());
-                if (analysisOnHoldId.equals(data.getStatusId()) &&
+                if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(data.getStatusId()) &&
                     !Window.confirm(consts.get("onHoldWarning")))
                     continue;
                 aman.completeAnalysisAt(bundle.getAnalysisIndex());

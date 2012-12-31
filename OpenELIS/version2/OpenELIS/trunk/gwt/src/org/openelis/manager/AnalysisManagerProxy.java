@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.HashMap;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -44,36 +44,6 @@ import org.openelis.manager.AnalysisManager.AnalysisListItem;
 public class AnalysisManagerProxy {
     protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
     protected ScreenService       service;
-    protected static Integer      anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
-                                  anInPrepId, anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId,
-                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,
-                                  sampleNotVerifiedId, sampleReleasedId;
-
-    public AnalysisManagerProxy() {
-        service = new ScreenService("controller?service=" + ANALYSIS_SERVICE_URL);
-
-        if (anLoggedInId == null) {
-            try {
-                anLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
-                anInitiatedId = DictionaryCache.getIdBySystemName("analysis_initiated");
-                anCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
-                anReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-                anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
-                anOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
-                anRequeueId = DictionaryCache.getIdBySystemName("analysis_requeue");
-                anCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-                anErrorLoggedInId = DictionaryCache.getIdBySystemName("analysis_error_logged_in");
-                anErrorInitiatedId = DictionaryCache.getIdBySystemName("analysis_error_initiated");
-                anErrorInPrepId = DictionaryCache.getIdBySystemName("analysis_error_inprep");
-                anErrorCompletedId = DictionaryCache.getIdBySystemName("analysis_error_completed");
-                sampleNotVerifiedId = DictionaryCache.getIdBySystemName("sample_not_verified");
-                sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-            } catch (Exception e) {
-                e.printStackTrace();
-                anLoggedInId = null;
-            }
-        }
-    }
 
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         return service.call("fetchBySampleItemId", sampleItemId);
@@ -108,8 +78,8 @@ public class AnalysisManagerProxy {
             // We do NOT need to validate analyses that are in cancelled or released
             // status 
             //
-            if (anCancelledId.equals(analysisDO.getStatusId()) ||
-                (anReleasedId.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() != null))
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(analysisDO.getStatusId()) ||
+                (Constants.dictionary().ANALYSIS_RELEASED.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() != null))
                 continue;
 
             //

@@ -25,7 +25,6 @@
  */
 package org.openelis.manager;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -57,15 +56,7 @@ public class AnalysisUserManagerProxy {
 
     }
 
-    protected void loadDictionaryEntries(AnalysisUserManager m) throws Exception {
-        if (m.actionCompletedId == null) {
-            m.actionCompletedId = DictionaryCache.getIdBySystemName("an_user_ac_completed");
-            m.actionReleasedId = DictionaryCache.getIdBySystemName("an_user_ac_released");
-        }
-    }
-
     protected SystemUserVO getSystemUser() {
         return UserCache.getPermission().getUser();
     }
-
 }

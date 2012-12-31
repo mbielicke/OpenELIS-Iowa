@@ -26,6 +26,7 @@
 package org.openelis.modules.main.client;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.screen.Screen;
@@ -139,11 +140,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         OpenELISRPC rpc;
         VerticalPanel vp;
 
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.main.server.OpenELISScreenService");
+        service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
+        
         rpc = service.call("initialData");
-
         consts = rpc.appConstants;
+        Constants.setConstants(rpc.constants);
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
 

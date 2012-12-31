@@ -28,8 +28,8 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestSectionViewDO;
@@ -58,18 +58,8 @@ public class TestReflexUtility extends Screen implements
 
     protected Screen                    screen;
 
-    private Integer                     autoAddId, promptId;
     private ArrayList<SampleDataBundle> bundles;
     private ValidationErrorsList        errorsList;
-
-    public TestReflexUtility() {
-        try {
-            autoAddId = DictionaryCache.getIdBySystemName("reflex_auto");
-            promptId = DictionaryCache.getIdBySystemName("reflex_prompt");
-        } catch (Exception e) {
-            Window.alert("testlookup constructor: " + e.getMessage());
-        }
-    }
     
     public Screen getScreen() {
         return screen;
@@ -204,7 +194,8 @@ public class TestReflexUtility extends Screen implements
         try {
             itemMan = anaBundle.getSampleManager().getSampleItems();
 
-            if (promptId.equals(reflexVDO.getFlagsId()) || autoAddId.equals(reflexVDO.getFlagsId()) ||
+            if (Constants.dictionary().REFLEX_PROMPT.equals(reflexVDO.getFlagsId()) || 
+                 Constants.dictionary().REFLEX_AUTO.equals(reflexVDO.getFlagsId()) ||
                 !duplicatePresent(itemMan, reflexVDO.getAddTestId())) {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(reflexVDO.getAddTestId());
                 tsVDO = new TestSectionViewDO();

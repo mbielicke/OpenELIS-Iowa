@@ -30,8 +30,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -63,7 +63,6 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     protected TreeWidget            itemsTestsTree;
     protected TableWidget           sampleItemTable;
     protected AppButton             moveButton;
-    private Integer                 analysisReleasedId, analysisCancelledId, sampleReleasedId;
     private SampleManager           manager;
     private ArrayList<TreeDataItem> checkedAnaRows;
 
@@ -217,8 +216,8 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                      */
                     window.setError(consts.get("analysisNotMovedToOwnItem"));
                     return;
-                } else if (analysisReleasedId.equals(ana.getStatusId()) || 
-                                analysisCancelledId.equals(ana.getStatusId())) {
+                } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) || 
+                                Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId())) {
                     /*
                      * released and cancelled analyses can't be moved
                      */
@@ -337,14 +336,6 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
-        try {
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -371,6 +362,6 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     }    
     
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()));
     }
 }

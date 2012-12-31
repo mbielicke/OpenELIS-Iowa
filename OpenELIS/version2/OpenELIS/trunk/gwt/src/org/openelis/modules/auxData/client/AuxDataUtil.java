@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
 import org.openelis.exception.ParseException;
@@ -45,7 +46,6 @@ import org.openelis.utilcommon.ResultValidator;
 public class AuxDataUtil {
     
     private static ScreenService panelService;
-    private static Integer       auxAlphaMixedId, auxDictionaryId;
     private static HashMap<Integer, ResultValidator.Type> types;
     
     static {
@@ -53,33 +53,21 @@ public class AuxDataUtil {
     } 
     
     private static void initialize() throws Exception {
-        Integer typeId;
-        
         types = new HashMap<Integer, ResultValidator.Type>();
         try {
-            typeId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
-            types.put(typeId, ResultValidator.Type.ALPHA_LOWER);
-            typeId = DictionaryCache.getIdBySystemName("aux_alpha_upper");
-            types.put(typeId, ResultValidator.Type.ALPHA_UPPER);
-            typeId = DictionaryCache.getIdBySystemName("aux_date");
-            types.put(typeId, ResultValidator.Type.DATE);
-            typeId = DictionaryCache.getIdBySystemName("aux_date_time");
-            types.put(typeId, ResultValidator.Type.DATE_TIME);
-            typeId = DictionaryCache.getIdBySystemName("aux_default");
-            types.put(typeId, ResultValidator.Type.DEFAULT);
-            typeId = DictionaryCache.getIdBySystemName("aux_numeric");
-            types.put(typeId, ResultValidator.Type.NUMERIC);
-            typeId = DictionaryCache.getIdBySystemName("aux_time");
-            types.put(typeId, ResultValidator.Type.TIME);
-            auxAlphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
-            types.put(auxAlphaMixedId, ResultValidator.Type.ALPHA_MIXED);
-            auxDictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
-            types.put(auxDictionaryId, ResultValidator.Type.DICTIONARY);
+            types.put(Constants.dictionary().AUX_ALPHA_LOWER, ResultValidator.Type.ALPHA_LOWER);
+            types.put(Constants.dictionary().AUX_ALPHA_UPPER, ResultValidator.Type.ALPHA_UPPER);
+            types.put(Constants.dictionary().AUX_DATE, ResultValidator.Type.DATE);
+            types.put(Constants.dictionary().AUX_DATE_TIME, ResultValidator.Type.DATE_TIME);
+            types.put(Constants.dictionary().AUX_DEFAULT, ResultValidator.Type.DEFAULT);
+            types.put(Constants.dictionary().AUX_NUMERIC, ResultValidator.Type.NUMERIC);
+            types.put(Constants.dictionary().AUX_TIME, ResultValidator.Type.TIME);
+            types.put(Constants.dictionary().AUX_ALPHA_MIXED, ResultValidator.Type.ALPHA_MIXED);
+            types.put(Constants.dictionary().AUX_DICTIONARY, ResultValidator.Type.DICTIONARY);
         } catch (Exception e) {
             types = null;
             throw e;
         }
-        
     }
 
     public static ValidationErrorsList addAuxGroupsFromPanel(Integer panelId, AuxDataManager auxMan) throws Exception {
@@ -209,7 +197,7 @@ public class AuxDataUtil {
                         for (j = 0; j < values.size(); j++) {
                             value = values.get(j);
                             if (value.getId().equals(validId)) {
-                                if (auxDictionaryId.equals(value.getTypeId())) {
+                                if (Constants.dictionary().AUX_DICTIONARY.equals(value.getTypeId())) {
                                     data.setTypeId(value.getTypeId());
                                     data.setValue(value.getValue());
                                     data.setDictionary(value.getDictionary());
@@ -226,7 +214,7 @@ public class AuxDataUtil {
                                                             field.getAnalyteName()));
                     }
                 } else {
-                    data.setTypeId(auxAlphaMixedId);
+                    data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
                 }
 
                 auxMan.addAuxDataFieldAndValues(data, field, values);

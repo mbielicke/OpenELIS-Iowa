@@ -28,8 +28,8 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestSectionViewDO;
@@ -63,8 +63,6 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         DONE
     };
 
-    protected Integer                              anLoggedInId, anInPrepId, anCompletedId,
-                                                   anReleasedId, anCancelledId;
     protected Screen                               screen;
 
     private ArrayList<SampleDataBundle>            bundles, analysisDataBundles;
@@ -73,15 +71,6 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
     public TestPrepUtility() {
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
-        try {
-            anLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
-            anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
-            anCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
-            anReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-            anCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-        } catch (Exception e) {
-            Window.alert("testlookup constructor: " + e.getMessage());
-        }
     }
 
     public Screen getScreen() {
@@ -359,15 +348,16 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
             prepDO = checkForPrepTest(anMan, tpId);
 
-            if (prepDO != null && !anCancelledId.equals(prepDO.getStatusId())) { // prep already exists
+            if (prepDO != null && !Constants.dictionary().ANALYSIS_CANCELLED.equals(prepDO.getStatusId())) { // prep already exists
                 anDO = anMan.getAnalysisAt(parentIndex);
 
                 anDO.setPreAnalysisId(prepDO.getId());
-                if (anCompletedId.equals(prepDO.getStatusId()) || anReleasedId.equals(prepDO.getStatusId())) {
-                    anDO.setStatusId(anLoggedInId);
+                if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prepDO.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_RELEASED.equals(prepDO.getStatusId())) {
+                    anDO.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN); 
                     anDO.setAvailableDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
                 } else {
-                    anDO.setStatusId(anInPrepId);
+                    anDO.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
                     anDO.setAvailableDate(null);
                 }
                 anDO.setPreAnalysisTest(prepDO.getTestName());

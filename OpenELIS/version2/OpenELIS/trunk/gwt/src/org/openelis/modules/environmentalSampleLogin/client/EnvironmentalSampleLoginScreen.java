@@ -29,12 +29,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -69,18 +68,12 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.manager.SampleProjectManager;
-import org.openelis.manager.StorageManager;
-import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
@@ -123,7 +116,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     private boolean                       quickUpdate;
     private SampleManager                  manager, previousManager;
     protected Tabs                         tab;
-    private Integer                        sampleReleasedId;
     private EnvironmentalSampleLoginScreen screen;
     private SampleItemAnalysisTreeTab      treeTab;
     private EnvironmentalTab               environmentalTab;
@@ -1381,7 +1373,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             field = new QueryData();
             field.key = SampleMeta.getAuxDataReferenceTableId();
             field.type = QueryData.Type.INTEGER;
-            field.query = String.valueOf(ReferenceTable.SAMPLE);
+            field.query = String.valueOf(Constants.table().SAMPLE);
             fields.add(field);
             
             // add aux fields
@@ -1405,7 +1397,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         statusId.setModel(model);          
         
         try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
             autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_environmental");
         } catch (NotFoundException nfE) {
             // ignore not found exception, as this domain may not have a default note
@@ -1416,7 +1407,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()));
     }
     
     private void drawTabs() {

@@ -32,6 +32,7 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.IdNameVO;
@@ -39,7 +40,6 @@ import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -104,14 +104,16 @@ public class InventoryItemScreen extends Screen {
     private NotesTab              noteTab;
     private Tabs                  tab;
 
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
-    protected MenuItem            duplicate, invItemHistory,invComponentHistory,invLocationHistory;
-    private TextBox               id, name, description, quantityMinLevel, quantityToReorder,
-                                  quantityMaxLevel, productUri, parentRatio, averageLeadTime, averageCost,
-                                  averageDailyUse;
-    private CheckBox              isActive, isReorderAuto, isLotMaintained, isSerialMaintained,
-                                  isBulk, isNotForSale, isSubAssembly, isLabor, isNotInventoried;
+    private AppButton             queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton;
+    protected MenuItem            duplicate, invItemHistory, invComponentHistory,
+                    invLocationHistory;
+    private TextBox               id, name, description, quantityMinLevel,
+                    quantityToReorder, quantityMaxLevel, productUri, parentRatio,
+                    averageLeadTime, averageCost, averageDailyUse;
+    private CheckBox              isActive, isReorderAuto, isLotMaintained,
+                    isSerialMaintained, isBulk, isNotForSale, isSubAssembly, isLabor,
+                    isNotInventoried;
     private Dropdown<String>      categoryId, storeId, dispensedUnitsId;
     private AutoComplete<Integer> parentInventoryItemId;
     private TabPanel              tabPanel;
@@ -177,7 +179,8 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -228,8 +231,10 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                           .contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY,
+                                               State.ADD,
+                                               State.UPDATE,
+                                               State.DELETE).contains(event.getState()));
             }
         });
 
@@ -240,11 +245,13 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                          .contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY,
+                                              State.ADD,
+                                              State.UPDATE,
+                                              State.DELETE).contains(event.getState()));
             }
         });
-        
+
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -256,7 +263,7 @@ public class InventoryItemScreen extends Screen {
                                  userPermission.hasAddPermission());
             }
         });
-        
+
         invItemHistory = (MenuItem)def.getWidget("invItemHistory");
         addScreenHandler(invItemHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -264,10 +271,11 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                invItemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                invItemHistory.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
-        
+
         invComponentHistory = (MenuItem)def.getWidget("invComponentHistory");
         addScreenHandler(invComponentHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -275,10 +283,11 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                invComponentHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                invComponentHistory.enable(EnumSet.of(State.DISPLAY)
+                                                  .contains(event.getState()));
             }
         });
-        
+
         invLocationHistory = (MenuItem)def.getWidget("invLocationHistory");
         addScreenHandler(invLocationHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -286,7 +295,8 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                invLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                invLocationHistory.enable(EnumSet.of(State.DISPLAY)
+                                                 .contains(event.getState()));
             }
         });
 
@@ -377,7 +387,8 @@ public class InventoryItemScreen extends Screen {
         quantityMinLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMinLevel());
         addScreenHandler(quantityMinLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                quantityMinLevel.setValue(manager.getInventoryItem().getQuantityMinLevel());
+                quantityMinLevel.setValue(manager.getInventoryItem()
+                                                 .getQuantityMinLevel());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -394,7 +405,8 @@ public class InventoryItemScreen extends Screen {
         quantityToReorder = (TextBox)def.getWidget(InventoryItemMeta.getQuantityToReorder());
         addScreenHandler(quantityToReorder, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                quantityToReorder.setValue(manager.getInventoryItem().getQuantityToReorder());
+                quantityToReorder.setValue(manager.getInventoryItem()
+                                                  .getQuantityToReorder());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -411,7 +423,8 @@ public class InventoryItemScreen extends Screen {
         quantityMaxLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMaxLevel());
         addScreenHandler(quantityMaxLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                quantityMaxLevel.setValue(manager.getInventoryItem().getQuantityMaxLevel());
+                quantityMaxLevel.setValue(manager.getInventoryItem()
+                                                 .getQuantityMaxLevel());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -428,7 +441,8 @@ public class InventoryItemScreen extends Screen {
         dispensedUnitsId = (Dropdown)def.getWidget(InventoryItemMeta.getDispensedUnitsId());
         addScreenHandler(dispensedUnitsId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                dispensedUnitsId.setSelection(manager.getInventoryItem().getDispensedUnitsId());
+                dispensedUnitsId.setSelection(manager.getInventoryItem()
+                                                     .getDispensedUnitsId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -496,7 +510,8 @@ public class InventoryItemScreen extends Screen {
         isSerialMaintained = (CheckBox)def.getWidget(InventoryItemMeta.getIsSerialMaintained());
         addScreenHandler(isSerialMaintained, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isSerialMaintained.setValue(manager.getInventoryItem().getIsSerialMaintained());
+                isSerialMaintained.setValue(manager.getInventoryItem()
+                                                   .getIsSerialMaintained());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -581,7 +596,8 @@ public class InventoryItemScreen extends Screen {
         isNotInventoried = (CheckBox)def.getWidget(InventoryItemMeta.getIsNotInventoried());
         addScreenHandler(isNotInventoried, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isNotInventoried.setValue(manager.getInventoryItem().getIsNotInventoried());
+                isNotInventoried.setValue(manager.getInventoryItem()
+                                                 .getIsNotInventoried());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -590,11 +606,11 @@ public class InventoryItemScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 isNotInventoried.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
+                                               .contains(event.getState()));
                 isNotInventoried.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         productUri = (TextBox)def.getWidget(InventoryItemMeta.getProductUri());
         addScreenHandler(productUri, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -606,7 +622,8 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                productUri.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                productUri.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                         .contains(event.getState()));
                 productUri.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -614,21 +631,27 @@ public class InventoryItemScreen extends Screen {
         parentInventoryItemId = (AutoComplete)def.getWidget(InventoryItemMeta.getParentInventoryItemName());
         addScreenHandler(parentInventoryItemId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentInventoryItemId.setSelection(manager.getInventoryItem().getParentInventoryItemId(),
-                                                   manager.getInventoryItem().getParentInventoryItemName());
+                parentInventoryItemId.setSelection(manager.getInventoryItem()
+                                                          .getParentInventoryItemId(),
+                                                   manager.getInventoryItem()
+                                                          .getParentInventoryItemName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getInventoryItem().setParentInventoryItemId(event.getValue());
-                manager.getInventoryItem().setParentInventoryItemName(parentInventoryItemId.getTextBoxDisplay());
+                manager.getInventoryItem()
+                       .setParentInventoryItemName(parentInventoryItemId.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parentInventoryItemId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parentInventoryItemId.enable(EnumSet.of(State.QUERY,
+                                                        State.ADD,
+                                                        State.UPDATE)
+                                                    .contains(event.getState()));
                 parentInventoryItemId.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         parentInventoryItemId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 InventoryItemDO data;
@@ -642,11 +665,13 @@ public class InventoryItemScreen extends Screen {
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
-                        data = (InventoryItemDO) list.get(i);
+                        data = (InventoryItemDO)list.get(i);
                         store = DictionaryCache.getById(data.getStoreId());
                         units = DictionaryCache.getById(data.getDispensedUnitsId());
-                        row = new TableDataRow(data.getId(), data.getName(),
-                                               store.getEntry(), units.getEntry());
+                        row = new TableDataRow(data.getId(),
+                                               data.getName(),
+                                               store.getEntry(),
+                                               units.getEntry());
                         row.data = data;
                         model.add(row);
                     }
@@ -654,7 +679,7 @@ public class InventoryItemScreen extends Screen {
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-            }                                        
+            }
         });
 
         parentRatio = (TextBox)def.getWidget(InventoryItemMeta.getParentRatio());
@@ -668,7 +693,8 @@ public class InventoryItemScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                parentRatio.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                parentRatio.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 parentRatio.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -714,7 +740,7 @@ public class InventoryItemScreen extends Screen {
                 averageDailyUse.enable(false);
             }
         });
-        
+
         //
         // tabs
         //
@@ -760,7 +786,10 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        manufacturingTab = new ManufacturingTab(def, window, "manufacturingPanel", "editManufacturingButton");
+        manufacturingTab = new ManufacturingTab(def,
+                                                window,
+                                                "manufacturingPanel",
+                                                "editManufacturingButton");
         addScreenHandler(manufacturingTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 manufacturingTab.setManager(manager);
@@ -794,25 +823,27 @@ public class InventoryItemScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(23);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameStoreVO>>() {
-                    public void onSuccess(ArrayList<IdNameStoreVO> result) {
-                        setQueryResult(result);
-                    }
+                service.callList("query",
+                                 query,
+                                 new AsyncCallback<ArrayList<IdNameStoreVO>>() {
+                                     public void onSuccess(ArrayList<IdNameStoreVO> result) {
+                                         setQueryResult(result);
+                                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
-                        } else {
-                            Window.alert("Error: InventoryItem call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError("No more records in this direction");
+                                         } else {
+                                             Window.alert("Error: InventoryItem call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(RPC entry) {
@@ -828,7 +859,9 @@ public class InventoryItemScreen extends Screen {
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
                     for (IdNameStoreVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(), entry.getStore()));
+                        model.add(new TableDataRow(entry.getId(),
+                                                   entry.getName(),
+                                                   entry.getStore()));
                 }
                 return model;
             }
@@ -838,7 +871,8 @@ public class InventoryItemScreen extends Screen {
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -858,9 +892,9 @@ public class InventoryItemScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -897,12 +931,12 @@ public class InventoryItemScreen extends Screen {
             model.add(row);
         }
         storeId.setModel(model);
-        
+
         // add the same store model to left hand side atoz table
         atozTable = (TableWidget)def.getWidget("atozTable");
         atozStoreId = (Dropdown)atozTable.getColumns().get(1).getColumnWidget();
         atozStoreId.setModel(model);
-        
+
         // units dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -1046,45 +1080,47 @@ public class InventoryItemScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void duplicate() {
         try {
-            manager = InventoryItemManager.fetchById(manager.getInventoryItem().getId());         
+            manager = InventoryItemManager.fetchById(manager.getInventoryItem().getId());
             manager.getInventoryItem().setIsActive("Y");
-            
+
             componentTab.setManager(manager);
             locationTab.setManager(manager);
             manufacturingTab.setManager(manager);
             noteTab.setManager(manager);
-            
+
             manager.getComponents();
             manager.getManufacturing();
-            
+
             clearKeys();
-            
+
             componentTab.draw();
             locationTab.draw();
             manufacturingTab.draw();
-            noteTab.draw();     
-            
+            noteTab.draw();
+
             setState(State.ADD);
             DataChangeEvent.fire(this);
-            
+
             setFocus(name);
             window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
     }
-    
+
     protected void invItemHistory() {
         IdNameVO hist;
-        
-        hist = new IdNameVO(manager.getInventoryItem().getId(), manager.getInventoryItem().getName());
+
+        hist = new IdNameVO(manager.getInventoryItem().getId(),
+                            manager.getInventoryItem().getName());
         HistoryScreen.showHistory(consts.get("invItemHistory"),
-                                  ReferenceTable.INVENTORY_ITEM, hist);                
+                                  Constants.table().INVENTORY_ITEM,
+                                  hist);
     }
-    
+
     protected void invComponentHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -1106,9 +1142,10 @@ public class InventoryItemScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("invComponentHistory"),
-                                  ReferenceTable.INVENTORY_COMPONENT, refVoList);
+                                  Constants.table().INVENTORY_COMPONENT,
+                                  refVoList);
     }
-    
+
     protected void invLocationHistory() {
         int i, count;
         String locationName;
@@ -1134,7 +1171,8 @@ public class InventoryItemScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("invLocationHistory"),
-                                  ReferenceTable.INVENTORY_LOCATION, refVoList);
+                                  Constants.table().INVENTORY_LOCATION,
+                                  refVoList);
     }
 
     protected boolean fetchById(Integer id) {
@@ -1196,33 +1234,33 @@ public class InventoryItemScreen extends Screen {
                 break;
         }
     }
-    
+
     private void clearKeys() {
-       int i;
-       InventoryComponentManager icman;
-       NoteManager nman;
-       InventoryComponentViewDO comp;
-       NoteViewDO note;
-       
-       manager.getInventoryItem().setId(null);
-       try {
-           icman = manager.getComponents();
-           for (i = 0; i < icman.count(); i++) {
-               comp = icman.getComponentAt(i);
-               comp.setId(null);
-               comp.setInventoryItemId(null);
-           }
-           
-           nman = manager.getManufacturing();
-           for (i = 0; i < nman.count(); i++ ) {
-               note = nman.getNoteAt(i);
-               note.setId(null);
-               note.setReferenceId(null);
-               note.setReferenceTableId(null);
-           }           
-       } catch (Exception e) {
-           Window.alert(e.getMessage());
-           e.printStackTrace();
-       }
+        int i;
+        InventoryComponentManager icman;
+        NoteManager nman;
+        InventoryComponentViewDO comp;
+        NoteViewDO note;
+
+        manager.getInventoryItem().setId(null);
+        try {
+            icman = manager.getComponents();
+            for (i = 0; i < icman.count(); i++ ) {
+                comp = icman.getComponentAt(i);
+                comp.setId(null);
+                comp.setInventoryItemId(null);
+            }
+
+            nman = manager.getManufacturing();
+            for (i = 0; i < nman.count(); i++ ) {
+                note = nman.getNoteAt(i);
+                note.setId(null);
+                note.setReferenceId(null);
+                note.setReferenceTableId(null);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }
