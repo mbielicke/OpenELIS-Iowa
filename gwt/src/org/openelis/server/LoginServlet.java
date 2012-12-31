@@ -29,16 +29,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.openelis.bean.UserCacheBean;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
@@ -56,11 +52,8 @@ public class LoginServlet extends HttpServlet {
     private static Logger     authLog          = Logger.getLogger("org.openelis.auth");
     private static String     AppRoot;
     private static int        LOGIN_LOCK_TIME  = 1000 * 60 * 10, // minutes to lock user out
-                             LOGIN_TRY_IP_CNT = 7, // max # of bad ip counts before being locked out
-                             LOGIN_TRY_NM_CNT = 4; // max # of bad name counts before being locked out
-
-    @EJB
-    private UserCacheBean     userCache;
+                              LOGIN_TRY_IP_CNT = 7, // max # of bad ip counts before being locked out
+                              LOGIN_TRY_NM_CNT = 4; // max # of bad name counts before being locked out
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -70,71 +63,43 @@ public class LoginServlet extends HttpServlet {
     
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException,IOException {
-        String error = null;
+        String error = null,locale = "en";
         HttpServletRequest hreq = (HttpServletRequest)req;
-
-
-        //
-        // pass-through for images and if we are logged-in
-        /*
-        if (hreq.getRequestURI().endsWith(".jpg") || hreq.getRequestURI().endsWith(".gif") ||
-            hreq.getSession().getAttribute("USER_NAME") != null) {
-            try {
-                chain.doFilter(req, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        */
 
         //
         // used for language binding
         //
-        if (hreq.getParameter("locale") != null)
-            hreq.getSession().setAttribute("locale", req.getParameter("locale"));
-
-        //
-        // check to see if we are coming from login screen
-        /*
-        if (hreq.getParameter("username") != null) {
-            try {
-                login(hreq,
-                      hreq.getParameter("username"),
-                      req.getParameter("password"),
-                      hreq.getRemoteAddr());
-                try {
-                    chain.doFilter(req, response);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return;
-            } catch (Exception e) {
-                error = "gen.authFailure";
-            }
+        if (hreq.getParameter("locale") != null) {
+            locale = req.getParameter("locale");
+            hreq.getSession().setAttribute("locale", locale);
         }
-        */
+
         //
         // ask them to authenticate
         //
         try {
             Document doc;
-            Element action;
+            Element session,localeEl;
 
             doc = XMLUtil.createNew("login");
-            //action = doc.createElement("session");
-            //action.appendChild(doc.createTextNode(String.valueOf(req.getSession().getId())));
-            //doc.getDocumentElement().appendChild(action);
+            
+            session = doc.createElement("session");
+            session.appendChild(doc.createTextNode(String.valueOf(req.getSession().getId())));
+            doc.getDocumentElement().appendChild(session);
+            
+            localeEl = doc.createElement("locale");
+            localeEl.appendChild(doc.createTextNode(locale));
+            doc.getDocumentElement().appendChild(localeEl);
+            
             if (req.getParameter("error") != null) {
                 Element errorEL = doc.createElement("error");
                 errorEL.appendChild(doc.createTextNode("Failed to login"));
                 doc.getDocumentElement().appendChild(errorEL);
             }
+            
             ((HttpServletResponse)response).setContentType("text/html");
             ((HttpServletResponse)response).setCharacterEncoding("UTF-8");
-            System.out.println(getServletContext().getRealPath("") +
-                                                       "/jbosslogin.xsl");
-            System.out.println(XMLUtil.toString(doc));
+            
             response.getWriter().write(ServiceUtils.getXML(getServletContext().getRealPath("") +
                                                        "/jbosslogin.xsl", doc,(String)hreq.getSession().getAttribute("locale")));
         } catch (Exception e) {
@@ -143,39 +108,6 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    public void destroy() {
-        System.out.println("in static filter distroy");
-    }
-
-    /*
-     * log the user into the system by sending its credentials to JBOSS for
-     * authentication
-     */
-
-    private void login(HttpServletRequest req, String name, String password, String ipAddress) throws Exception {
-        SystemUserPermission perm;
-
-        try {
-            if ( !LoginAttempt.isValid(name, ipAddress))
-                throw new PermissionException();
-
-            perm = userCache.login();
-            //
-            // check to see if she has connect permission
-            //
-            if ( !perm.hasConnectPermission())
-                throw new PermissionException();
-
-            req.getSession().setAttribute("UserPermission", perm);
-            req.getSession().setAttribute("USER_NAME", name);
-
-            LoginAttempt.success(name, ipAddress);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LoginAttempt.fail(name, ipAddress);
-            throw e;
-        }
-    }
 
     /*
      * Simple class to manage login attempts

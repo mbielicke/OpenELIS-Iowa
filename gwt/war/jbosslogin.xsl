@@ -49,7 +49,7 @@
     <table align="center" id="table" style="position:absolute;left:28%;top:28%;">
         <tr>
             <td>
-                <form method="post" id="login" autocomplete="off" action="j_security_check" onsubmit="document.forms['login'].style.display='none';document.forms['login'].elements['j_username'].value+=';travis;en';" > 
+                <form method="post" id="login" autocomplete="off" action="j_security_check" onsubmit="document.forms['login'].style.display='none';document.forms['login'].elements['j_username'].value+=';{session};{locale}';" > 
                     <center>
                         <table border="0" cellspacing="5" align='center' class="inputbackground">
                             <tr><td colspan='2' style="height: 130px;"></td></tr>
