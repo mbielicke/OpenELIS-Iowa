@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -184,7 +184,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (worksheet.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.WORKSHEET,
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().WORKSHEET,
                                                                   worksheet.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore

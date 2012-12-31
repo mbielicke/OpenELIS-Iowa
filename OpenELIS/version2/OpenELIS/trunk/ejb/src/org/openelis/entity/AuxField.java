@@ -48,9 +48,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -297,24 +296,24 @@ public class AuxField implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.AUX_FIELD);
+        audit.setReferenceTableId(Constants.table().AUX_FIELD);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("aux_field_group_id", auxFieldGroupId, original.auxFieldGroupId)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
+                 .setField("analyte_id", analyteId, original.analyteId, Constants.table().ANALYTE)
                  .setField("description", description, original.description)
-                 .setField("method_id", methodId, original.methodId, ReferenceTable.METHOD)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.DICTIONARY)
+                 .setField("method_id", methodId, original.methodId, Constants.table().METHOD)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, Constants.table().DICTIONARY)
                  .setField("is_required", isRequired, original.isRequired)
                  .setField("is_active", isActive, original.isActive)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().SCRIPTLET);
 
         return audit;
     }

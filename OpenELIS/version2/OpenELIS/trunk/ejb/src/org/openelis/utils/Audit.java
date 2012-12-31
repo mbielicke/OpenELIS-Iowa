@@ -27,9 +27,9 @@ package org.openelis.utils;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.util.XMLUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -46,10 +46,9 @@ public class Audit {
     }
 
     protected ArrayList<Field> fields;
-    protected AuditActivity    operation;
-    protected Integer          referenceId, referenceTableId;
+    protected Integer          operation, referenceId, referenceTableId;
 
-    public Audit(AuditActivity operation) {
+    public Audit(Integer operation) {
         this.operation = operation;
     }
 
@@ -100,8 +99,9 @@ public class Audit {
                           Integer linkedTableId) {
         Field f;
 
-        if ( (operation == AuditActivity.UPDATE && isDifferent(originalValue, currentValue)) ||
-            operation == AuditActivity.DELETE) {
+        if ( (Constants.audit().UPDATE.equals(operation) && isDifferent(originalValue,
+                                                                        currentValue)) ||
+            Constants.audit().DELETE.equals(operation)) {
             f = new Field();
             f.name = fieldName;
             f.value = (originalValue == null) ? "" : originalValue.toString();

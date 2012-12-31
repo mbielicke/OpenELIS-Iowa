@@ -25,8 +25,8 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.InventoryItemViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
@@ -156,7 +156,7 @@ public class InventoryItemManager implements RPC, HasNotesInt {
         if (manufacturing == null) {
             if (inventoryItem.getId() != null) {
                 try {
-                    manufacturing = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.INVENTORY_ITEM_MANUFACTURING,
+                    manufacturing = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().INVENTORY_ITEM_MANUFACTURING,
                                                                     inventoryItem.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
@@ -176,7 +176,7 @@ public class InventoryItemManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (inventoryItem.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.INVENTORY_ITEM,
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().INVENTORY_ITEM,
                                                             inventoryItem.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore

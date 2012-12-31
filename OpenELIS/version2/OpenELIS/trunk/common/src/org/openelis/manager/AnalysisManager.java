@@ -30,7 +30,7 @@ import java.util.HashMap;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestSectionViewDO;
@@ -114,7 +114,7 @@ public class AnalysisManager implements RPC {
         old = getAnalysisAt(linkIndex);
 
         // set the old analysis parameters according to new prep
-        old.setStatusId(proxy().anInPrepId);
+        old.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
         old.setAvailableDate(null);
         old.setPreAnalysisId(prep.getId());
 
@@ -134,7 +134,7 @@ public class AnalysisManager implements RPC {
         data.setPreAnalysisId(null);
         data.setPreAnalysisTest(null);
         data.setPreAnalysisMethod(null);
-        data.setStatusId(proxy().anLoggedInId);
+        data.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
 
         try {
             data.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
@@ -216,7 +216,7 @@ public class AnalysisManager implements RPC {
             for (j = 0; j < aMan.count(); j++) {
                 checkData = aMan.getAnalysisAt(j);
                 if (data.getId().equals(checkData.getPreAnalysisId()) &&
-                    proxy().anReleasedId.equals(checkData.getStatusId())) {
+                                Constants.dictionary().ANALYSIS_RELEASED.equals(checkData.getStatusId())) {
                     errorsList = new ValidationErrorsList();
                     errorsList.add(new FormErrorException("noCancelPrepWithReleasedTest",
                                                           data.getTestName(), data.getMethodName(),
@@ -227,7 +227,7 @@ public class AnalysisManager implements RPC {
         }
 
         try {
-            data.setStatusId(proxy().anCancelledId);
+            data.setStatusId(Constants.dictionary().ANALYSIS_CANCELLED);
             SectionCache.getById(data.getSectionId());
             data.setPreAnalysisId(null);
 
@@ -248,10 +248,10 @@ public class AnalysisManager implements RPC {
         assert data.getSectionId() != null : "section id is null";
 
         // make sure the status is not released, cancelled, or in prep
-        if (proxy().anErrorInPrepId.equals(data.getStatusId()) ||
-            proxy().anInPrepId.equals(data.getStatusId()) ||
-            proxy().anReleasedId.equals(data.getStatusId()) ||
-            proxy().anCancelledId.equals(data.getStatusId())) {
+        if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_INPREP.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoInitiate"));
             throw errorsList;
@@ -282,11 +282,11 @@ public class AnalysisManager implements RPC {
             throw errorsList;
         }
 
-        if (proxy().anLoggedInId.equals(data.getStatusId()) ||
-            proxy().anRequeueId.equals(data.getStatusId()))
-            data.setStatusId(proxy().anInitiatedId);
-        else if (proxy().anErrorLoggedInId.equals(data.getStatusId()))
-            data.setStatusId(proxy().anErrorInitiatedId);
+        if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_REQUEUE.equals(data.getStatusId()))
+            data.setStatusId(Constants.dictionary().ANALYSIS_INITIATED);
+        else if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(data.getStatusId()))
+            data.setStatusId(Constants.dictionary().ANALYSIS_ERROR_INITIATED);
 
         if (data.getStartedDate() == null)
             data.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
@@ -306,10 +306,10 @@ public class AnalysisManager implements RPC {
         //
         // make sure the status is completed, initiated, on hold or logged-in
         //
-        if ( !proxy().anCompletedId.equals(data.getStatusId()) &&
-            !proxy().anOnHoldId.equals(data.getStatusId()) &&
-            !proxy().anInitiatedId.equals(data.getStatusId()) &&
-            !proxy().anLoggedInId.equals(data.getStatusId())) {
+        if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(data.getStatusId()) &&
+            !Constants.dictionary().ANALYSIS_ON_HOLD.equals(data.getStatusId()) &&
+            !Constants.dictionary().ANALYSIS_INITIATED.equals(data.getStatusId()) &&
+            !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoComplete"));
             throw errorsList;
@@ -349,7 +349,7 @@ public class AnalysisManager implements RPC {
             !getSampleItemManager().getSampleManager().getQaEvents().hasResultOverrideQA())
             getAnalysisResultAt(index).validateForComplete(data);
 
-        data.setStatusId(proxy().anCompletedId);
+        data.setStatusId(Constants.dictionary().ANALYSIS_COMPLETED);
         if (data.getStartedDate() == null)
             data.setStartedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
@@ -377,11 +377,11 @@ public class AnalysisManager implements RPC {
         assert data.getSectionId() != null : "section id is null";
 
         // make sure the status is completed
-        if (proxy().anReleasedId.equals(data.getStatusId())) {
+        if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("analysisAlreadyReleased"));
             throw errorsList;
-        } else if ( !proxy().anCompletedId.equals(data.getStatusId())) {
+        } else if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("completeStatusRequiredToRelease",
                                                   data.getTestName(),
@@ -391,7 +391,7 @@ public class AnalysisManager implements RPC {
 
         // sample must not be in 'Not Verified' status
         sample = items.get(index).bundle.getSampleManager().getSample();
-        if (proxy().sampleNotVerifiedId.equals(sample.getStatusId())) {
+        if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(sample.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("sampleNotVerifiedForAnalysisRelease",
                                                   sample.getAccessionNumber().toString(),
@@ -412,7 +412,7 @@ public class AnalysisManager implements RPC {
             throw errorsList;
         }
 
-        data.setStatusId(proxy().anReleasedId);
+        data.setStatusId(Constants.dictionary().ANALYSIS_RELEASED);
         // data.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR,
         // Datetime.MINUTE));
 
@@ -435,7 +435,7 @@ public class AnalysisManager implements RPC {
         intenotes = getInternalNotesAt(index);
         errorsList = new ValidationErrorsList();
 
-        if ( !proxy().anReleasedId.equals(data.getStatusId()))
+        if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
             errorsList.add(new FormErrorException("wrongStatusUnrelease"));
 
         // make sure the user has release permission for the section
@@ -453,7 +453,7 @@ public class AnalysisManager implements RPC {
         if (errorsList.size() > 0)
             throw errorsList;
 
-        data.setStatusId(proxy().anCompletedId);
+        data.setStatusId(Constants.dictionary().ANALYSIS_COMPLETED);
         data.setReleasedDate(null);
         data.setPrintedDate(null);
         data.setRevision(data.getRevision() + 1);
@@ -461,7 +461,7 @@ public class AnalysisManager implements RPC {
         // every unreleased sample needs an internal comment describing the
         // reason
         man = sampleItemBundle.getSampleManager();
-        if (proxy().sampleReleasedId.equals(man.getSample().getStatusId()))
+        if (Constants.dictionary().SAMPLE_RELEASED.equals(man.getSample().getStatusId()))
             man.unrelease(false);
     }
 
@@ -477,8 +477,8 @@ public class AnalysisManager implements RPC {
         assert data.getSectionId() != null : "section id is null";
 
         // make sure the status is initiated
-        if (!proxy().anInitiatedId.equals(data.getStatusId()) &&
-            !proxy().anErrorInitiatedId.equals(data.getStatusId()))
+        if (!Constants.dictionary().ANALYSIS_INITIATED.equals(data.getStatusId()) &&
+            !Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(data.getStatusId()))
             return;
 
         // make sure the user has complete permission for the section
@@ -498,9 +498,9 @@ public class AnalysisManager implements RPC {
         bundle = getBundleAt(index);
         if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
                                                                .getTypeOfSampleId()))
-            data.setStatusId(proxy().anErrorLoggedInId);
+            data.setStatusId(Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN);
         else
-            data.setStatusId(proxy().anLoggedInId);
+            data.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
         
         if (clearStartedDate)
             data.setStartedDate(null);
@@ -561,7 +561,7 @@ public class AnalysisManager implements RPC {
         try {
             analysis = getItemAt(index).analysis;
             analysis.setId(sampleItemManager.getNextTempId());
-            analysis.setStatusId(proxy().anLoggedInId);
+            analysis.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
             analysis.setRevision(0);
             analysis.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
         } catch (Exception e) {
@@ -620,7 +620,7 @@ public class AnalysisManager implements RPC {
         if (item.analysisInternalNotes == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS,
+                    item.analysisInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().ANALYSIS,
                                                                                        item.analysis.getId(),
                                                                                        false);
                 } catch (NotFoundException e) {
@@ -651,7 +651,7 @@ public class AnalysisManager implements RPC {
         if (item.analysisExternalNote == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.analysisExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS,
+                    item.analysisExternalNote = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().ANALYSIS,
                                                                                       item.analysis.getId(),
                                                                                       true);
                 } catch (NotFoundException e) {
@@ -682,7 +682,7 @@ public class AnalysisManager implements RPC {
         if (item.storages == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
                 try {
-                    item.storages = StorageManager.fetchByRefTableRefId(ReferenceTable.ANALYSIS,
+                    item.storages = StorageManager.fetchByRefTableRefId(Constants.table().ANALYSIS,
                                                                         item.analysis.getId());
                 } catch (NotFoundException e) {
                     // ignore
@@ -931,7 +931,7 @@ public class AnalysisManager implements RPC {
         data = getItemAt(anaIndex).analysis;
 
         // if the analysis is cancelled stop now
-        if (proxy().anCancelledId.equals(data.getStatusId()))
+        if (Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId()))
             return;
 
         testMan = getTestAt(anaIndex);
@@ -944,15 +944,15 @@ public class AnalysisManager implements RPC {
         // "Logged In"
         //
 
-        if (currentStatusId.equals(proxy().anCompletedId)) {
+        if (currentStatusId.equals(Constants.dictionary().ANALYSIS_COMPLETED)) {
             bundle = getBundleAt(anaIndex);
             siMan = bundle.sampleManager.getSampleItems();
             for (i = 0; i < siMan.count(); i++ ) {
                 anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(i);
                 for (AnalysisViewDO temp : anaMan.getAnalysisList()) {
                     if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId()) &&
-                        temp.getStatusId().equals(proxy().anInPrepId)) {
-                        temp.setStatusId(proxy().anLoggedInId);
+                        temp.getStatusId().equals(Constants.dictionary().ANALYSIS_INPREP)) {
+                        temp.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
                         temp.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
                     }
                 }
@@ -966,23 +966,23 @@ public class AnalysisManager implements RPC {
             error = true;
 
         if (error) {
-            if (currentStatusId.equals(proxy().anLoggedInId))
-                data.setStatusId(proxy().anErrorLoggedInId);
-            else if (currentStatusId.equals(proxy().anInitiatedId))
-                data.setStatusId(proxy().anErrorInitiatedId);
-            else if (currentStatusId.equals(proxy().anCompletedId))
-                data.setStatusId(proxy().anErrorCompletedId);
-            else if (currentStatusId.equals(proxy().anInPrepId))
-                data.setStatusId(proxy().anErrorInPrepId);
+            if (currentStatusId.equals(Constants.dictionary().ANALYSIS_LOGGED_IN))
+                data.setStatusId(Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN);
+            else if (currentStatusId.equals(Constants.dictionary().ANALYSIS_INITIATED))
+                data.setStatusId(Constants.dictionary().ANALYSIS_ERROR_INITIATED);
+            else if (currentStatusId.equals(Constants.dictionary().ANALYSIS_COMPLETED))
+                data.setStatusId(Constants.dictionary().ANALYSIS_ERROR_COMPLETED);
+            else if (currentStatusId.equals(Constants.dictionary().ANALYSIS_INPREP))
+                data.setStatusId(Constants.dictionary().ANALYSIS_ERROR_INPREP);
         } else {
-            if (currentStatusId.equals(proxy().anErrorLoggedInId))
-                data.setStatusId(proxy().anLoggedInId);
-            else if (currentStatusId.equals(proxy().anErrorInitiatedId))
-                data.setStatusId(proxy().anInitiatedId);
-            else if (currentStatusId.equals(proxy().anErrorCompletedId))
-                data.setStatusId(proxy().anCompletedId);
-            else if (currentStatusId.equals(proxy().anErrorInPrepId))
-                data.setStatusId(proxy().anInPrepId);
+            if (currentStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN))
+                data.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+            else if (currentStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_INITIATED))
+                data.setStatusId(Constants.dictionary().ANALYSIS_INITIATED);
+            else if (currentStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_COMPLETED))
+                data.setStatusId(Constants.dictionary().ANALYSIS_COMPLETED);
+            else if (currentStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_INPREP))
+                data.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
         }
     }
 
@@ -1058,7 +1058,7 @@ public class AnalysisManager implements RPC {
         for (int i = 0; i < count(); i++ ) {
             an = getItemAt(i).analysis;
 
-            if (proxy().anReleasedId.equals(an.getStatusId())) {
+            if (Constants.dictionary().ANALYSIS_RELEASED.equals(an.getStatusId())) {
                 released = true;
                 break;
             }

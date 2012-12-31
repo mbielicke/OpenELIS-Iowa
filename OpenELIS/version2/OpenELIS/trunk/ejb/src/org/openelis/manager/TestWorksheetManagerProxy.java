@@ -29,14 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.local.TestWorksheetItemLocal;
 import org.openelis.local.TestWorksheetLocal;
@@ -44,45 +43,6 @@ import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
 public class TestWorksheetManagerProxy {
-
-    private static int typeDupl, typeFixed, typeFixedAlways;
-
-    public TestWorksheetManagerProxy() {
-        DictionaryDO data;
-        DictionaryLocal dl;
-
-        dl = EJBFactory.getDictionary();
-
-        if (typeDupl == 0) {
-            try {
-                data = dl.fetchBySystemName("pos_duplicate");
-                typeDupl = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDupl = 0;
-            }
-        }
-
-        if (typeFixed == 0) {
-            try {
-                data = dl.fetchBySystemName("pos_fixed");
-                typeFixed = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeFixed = 0;
-            }
-        }
-
-        if (typeFixedAlways == 0) {
-            try {
-                data = dl.fetchBySystemName("pos_fixed_always");
-                typeFixedAlways = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeFixedAlways = 0;
-            }
-        }
-    }
 
     public TestWorksheetManager fetchByTestId(Integer testId) throws Exception {
         TestWorksheetLocal wl;
@@ -92,8 +52,8 @@ public class TestWorksheetManagerProxy {
         TestWorksheetViewDO data;
         ArrayList<TestWorksheetItemDO> items;
         ArrayList<TestWorksheetAnalyteViewDO> analytes;
-               
-        items = null;        
+
+        items = null;
         twm = TestWorksheetManager.getInstance();
         data = null;
         analytes = null;
@@ -101,7 +61,7 @@ public class TestWorksheetManagerProxy {
         il = EJBFactory.getTestWorksheetItem();
         al = EJBFactory.getTestWorksheetAnalyte();
         data = wl.fetchByTestId(testId);
-        
+
         if (data == null) {
             data = new TestWorksheetViewDO();
         } else {
@@ -118,8 +78,8 @@ public class TestWorksheetManagerProxy {
         return twm;
     }
 
-    public TestWorksheetManager add(TestWorksheetManager man, HashMap<Integer, Integer> anaIdMap)
-                                                                                                 throws Exception {
+    public TestWorksheetManager add(TestWorksheetManager man,
+                                    HashMap<Integer, Integer> anaIdMap) throws Exception {
         TestWorksheetLocal wl;
         TestWorksheetItemLocal il;
         TestWorksheetAnalyteLocal al;
@@ -130,7 +90,7 @@ public class TestWorksheetManagerProxy {
         Integer id;
 
         worksheet = man.getWorksheet();
-        
+
         wl = EJBFactory.getTestWorksheet();
         il = EJBFactory.getTestWorksheetItem();
         al = EJBFactory.getTestWorksheetAnalyte();
@@ -173,8 +133,8 @@ public class TestWorksheetManagerProxy {
         return man;
     }
 
-    public TestWorksheetManager update(TestWorksheetManager man, HashMap<Integer, Integer> anaIdMap)
-                                                                                                    throws Exception {
+    public TestWorksheetManager update(TestWorksheetManager man,
+                                       HashMap<Integer, Integer> anaIdMap) throws Exception {
         TestWorksheetLocal wl;
         TestWorksheetItemLocal il;
         TestWorksheetAnalyteLocal al;
@@ -254,16 +214,22 @@ public class TestWorksheetManagerProxy {
 
         try {
             //
-            // This check is put here in order to distinguish between the cases where
-            // the TestWorksheetDO was changed on the screen and where it was not.
-            // This is necessary because it is possible for the users to enter no
+            // This check is put here in order to distinguish between the cases
+            // where
+            // the TestWorksheetDO was changed on the screen and where it was
+            // not.
+            // This is necessary because it is possible for the users to enter
+            // no
             // information on the screen in the fields related to the DO and
-            // commit the data and since the DO can't be null because then the fields
-            // on the screen won't get refreshed on fetch, the validation code below
-            // will make error messages get displayed on the screen when there was
+            // commit the data and since the DO can't be null because then the
+            // fields
+            // on the screen won't get refreshed on fetch, the validation code
+            // below
+            // will make error messages get displayed on the screen when there
+            // was
             // no fault of the user.
             //
-            if (data.isChanged() || man.itemCount() > 0 || man.analyteCount() > 0) 
+            if (data.isChanged() || man.itemCount() > 0 || man.analyteCount() > 0)
                 wl.validate(data);
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
@@ -281,16 +247,16 @@ public class TestWorksheetManagerProxy {
         int i, size;
         boolean checkPosition;
         Integer bc, tc, position;
-        ArrayList<Integer> posList;        
+        ArrayList<Integer> posList;
         TestWorksheetItemDO currDO, prevDO;
         TestWorksheetItemLocal il;
 
         if (items == null)
-            return;        
-        
+            return;
+
         size = items.size();
         il = EJBFactory.getTestWorksheetItem();
-        
+
         bc = data.getSubsetCapacity();
         tc = data.getTotalCapacity();
         posList = new ArrayList<Integer>();
@@ -315,17 +281,20 @@ public class TestWorksheetManagerProxy {
 
             if (position != null) {
                 if (position <= 0) {
-                    list.add(new TableFieldErrorException("posMoreThanZeroException", i,
+                    list.add(new TableFieldErrorException("posMoreThanZeroException",
+                                                          i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;
                 } else if (bc != null && position > bc) {
-                    list.add(new TableFieldErrorException("posExcSubsetCapacityException", i,
+                    list.add(new TableFieldErrorException("posExcSubsetCapacityException",
+                                                          i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;
                 } else if (tc != null && position > tc) {
-                    list.add(new TableFieldErrorException("posExcTotalCapacityException", i,
+                    list.add(new TableFieldErrorException("posExcTotalCapacityException",
+                                                          i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;
@@ -333,7 +302,8 @@ public class TestWorksheetManagerProxy {
                     if ( !posList.contains(position)) {
                         posList.add(position);
                     } else {
-                        list.add(new TableFieldErrorException("duplicatePosForQCsException", i,
+                        list.add(new TableFieldErrorException("duplicatePosForQCsException",
+                                                              i,
                                                               TestMeta.getWorksheetItemPosition(),
                                                               "worksheetTable"));
                         checkPosition = false;
@@ -343,7 +313,8 @@ public class TestWorksheetManagerProxy {
 
             if (checkPosition) {
                 if (duplicateAfterFixed(currDO, prevDO)) {
-                    list.add(new TableFieldErrorException("duplPosAfterFixedPosException", i,
+                    list.add(new TableFieldErrorException("duplPosAfterFixedPosException",
+                                                          i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                 }
@@ -361,7 +332,7 @@ public class TestWorksheetManagerProxy {
 
         if (analytes == null)
             return;
-        
+
         idlist = new ArrayList<Integer>();
         al = EJBFactory.getTestWorksheetAnalyte();
 
@@ -377,7 +348,8 @@ public class TestWorksheetManagerProxy {
             if ( !idlist.contains(anaId)) {
                 idlist.add(anaId);
             } else {
-                list.add(new TableFieldErrorException("duplicateWSAnalyteException", i,
+                list.add(new TableFieldErrorException("duplicateWSAnalyteException",
+                                                      i,
                                                       TestMeta.getWorksheetAnalyteAnalyteId(),
                                                       "worksheetAnalyteTable"));
             }
@@ -387,13 +359,14 @@ public class TestWorksheetManagerProxy {
 
     /**
      * This method will return true if the type specified in currDO is duplicate
-     * and if the type specified in prevDO is fixed or fixedAlways and, such that
-     * the position specified in prevDO is one less than the position in currDO.
-     * The three integers, typeDupl, typeFixed and typeFixedAlways, are the ids
-     * of the dictionary records that contain the entries for the fixed and duplicate
-     * types respectively
+     * and if the type specified in prevDO is fixed or fixedAlways and, such
+     * that the position specified in prevDO is one less than the position in
+     * currDO. The three integers, typeDupl, typeFixed and typeFixedAlways, are
+     * the ids of the dictionary records that contain the entries for the fixed
+     * and duplicate types respectively
      */
-    private boolean duplicateAfterFixed(TestWorksheetItemDO currDO, TestWorksheetItemDO prevDO) {
+    private boolean duplicateAfterFixed(TestWorksheetItemDO currDO,
+                                        TestWorksheetItemDO prevDO) {
         Integer ptId, ctId, ppos, cpos;
 
         if (prevDO == null || currDO == null)
@@ -405,8 +378,9 @@ public class TestWorksheetManagerProxy {
         ppos = prevDO.getPosition();
 
         if (ppos != null && cpos != null && ppos == cpos - 1) {
-            if (DataBaseUtil.isSame(typeDupl, ctId) &&
-                (DataBaseUtil.isSame(typeFixed, ptId) || DataBaseUtil.isSame(typeFixedAlways, ptId)))
+            if (DataBaseUtil.isSame(Constants.dictionary().POS_DUPLICATE, ctId) &&
+                (DataBaseUtil.isSame(Constants.dictionary().POS_FIXED, ptId) ||
+                                DataBaseUtil.isSame(Constants.dictionary().POS_FIXED_ALWAYS, ptId)))
                 return true;
         }
 

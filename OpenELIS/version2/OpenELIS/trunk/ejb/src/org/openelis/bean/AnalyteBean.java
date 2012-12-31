@@ -41,8 +41,8 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Analyte;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -65,12 +65,12 @@ import org.openelis.utils.EJBFactory;
 public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager               manager;   
+    private EntityManager            manager;
 
     @EJB
-    private LockLocal                   lock;
+    private LockLocal                lock;
 
-    private static final AnalyteMeta    meta = new AnalyteMeta();
+    private static final AnalyteMeta meta = new AnalyteMeta();
 
     public AnalyteViewDO fetchById(Integer analyteId) throws Exception {
         Query query;
@@ -87,17 +87,17 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         }
         return data;
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<AnalyteViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
         Query query;
 
         query = manager.createNamedQuery("Analyte.FetchByIds");
         query.setParameter("ids", ids);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<AnalyteDO> fetchByName(String name, int maxResults) {
         Query query = null;
@@ -123,8 +123,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                     throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 qb;
         List list;
@@ -133,8 +132,8 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
         qb.setMeta(meta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + AnalyteMeta.getId() + ", " +
-                     AnalyteMeta.getName() + ") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + AnalyteMeta.getId() +
+                     ", " + AnalyteMeta.getName() + ") ");
 
         qb.constructWhere(fields);
 
@@ -179,14 +178,14 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         Analyte entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.ANALYTE, data.getId());
+            lock.unlock(Constants.table().ANALYTE, data.getId());
             return data;
         }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.ANALYTE, data.getId());
+        lock.validateLock(Constants.table().ANALYTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -196,7 +195,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         entity.setName(data.getName());
         entity.setParentAnalyteId(data.getParentAnalyteId());
 
-        lock.unlock(ReferenceTable.ANALYTE, data.getId());
+        lock.unlock(Constants.table().ANALYTE, data.getId());
 
         return data;
 
@@ -209,19 +208,19 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
         validateForDelete(data.getId());
 
-        lock.validateLock(ReferenceTable.ANALYTE, data.getId());
+        lock.validateLock(Constants.table().ANALYTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Analyte.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lock.unlock(ReferenceTable.ANALYTE, data.getId());
+        lock.unlock(Constants.table().ANALYTE, data.getId());
     }
 
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.ANALYTE, id);
+            lock.lock(Constants.table().ANALYTE, id);
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
@@ -229,20 +228,20 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
     }
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.ANALYTE, id);
+        lock.unlock(Constants.table().ANALYTE, id);
         return fetchById(id);
     }
-    
+
     public ArrayList<AnalyteDO> getAlias(ArrayList<Integer> analyteIds) throws Exception {
         Query query;
         ArrayList<AnalyteDO> data, returnList;
 
         query = manager.createNamedQuery("Analyte.FetchAliases");
-        
+
         returnList = new ArrayList<AnalyteDO>();
-        for(int i=0; i<analyteIds.size(); i++){
+        for (int i = 0; i < analyteIds.size(); i++ ) {
             query.setParameter("id", analyteIds.get(i));
-            
+
             try {
                 data = DataBaseUtil.toArrayList(query.getResultList());
                 returnList.addAll(data);
@@ -250,8 +249,8 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
                 throw new DatabaseException(e);
             }
         }
-        
-        return returnList; 
+
+        return returnList;
     }
 
     public void validateForDelete(Integer id) throws Exception {
@@ -280,14 +279,16 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", AnalyteMeta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             AnalyteMeta.getName()));
 
         try {
             query = manager.createQuery("from Analyte where name = :name");
             query.setParameter("name", data.getName());
             analyte = (Analyte)query.getSingleResult();
             if (data.getId() == null || !data.getId().equals(analyte.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", AnalyteMeta.getName()));
+                list.add(new FieldErrorException("fieldUniqueException",
+                                                 AnalyteMeta.getName()));
         } catch (EntityNotFoundException e) {
             // Do nothing here, this is what we expect and do not want this
             // exception thrown.

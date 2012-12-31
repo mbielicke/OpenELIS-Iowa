@@ -41,9 +41,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -163,16 +162,16 @@ public class ExchangeCriteria implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.EXCHANGE_CRITERIA);
+        audit.setReferenceTableId(Constants.table().EXCHANGE_CRITERIA);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
-                 .setField("environment_id", environmentId, original.environmentId, ReferenceTable.DICTIONARY)
+                 .setField("environment_id", environmentId, original.environmentId, Constants.table().DICTIONARY)
                  .setField("destinationUri", destinationUri, original.destinationUri)
                  .setField("is_all_analyses_included", isAllAnalysesIncluded, original.isAllAnalysesIncluded)
                  .setField("query", query, original.query);

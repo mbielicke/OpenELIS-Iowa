@@ -47,10 +47,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -542,18 +541,18 @@ public class Test implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.TEST);
+        audit.setReferenceTableId(Constants.table().TEST);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
                  .setField("reporting_description", reportingDescription, original.reportingDescription)
-                 .setField("method_id", methodId, original.methodId, ReferenceTable.METHOD)
+                 .setField("method_id", methodId, original.methodId, Constants.table().METHOD)
                  .setField("is_active", isActive, original.isActive)
                  .setField("active_begin", activeBegin, original.activeBegin)
                  .setField("active_end", activeEnd, original.activeEnd)
@@ -563,14 +562,14 @@ public class Test implements Auditable, Cloneable {
                  .setField("time_ta_average", timeTaAverage, original.timeTaAverage)
                  .setField("time_ta_warning", timeTaWarning, original.timeTaWarning)
                  .setField("time_ta_max", timeTaMax, original.timeTaMax)
-                 .setField("label_id", labelId, original.labelId, ReferenceTable.LABEL)
+                 .setField("label_id", labelId, original.labelId, Constants.table().LABEL)
                  .setField("label_qty", labelQty, original.labelQty)
-                 .setField("test_trailer_id", testTrailerId, original.testTrailerId, ReferenceTable.TEST_TRAILER)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET)
-                 .setField("test_format_id", testFormatId, original.testFormatId, ReferenceTable.DICTIONARY)
-                 .setField("revision_method_id", revisionMethodId, original.revisionMethodId, ReferenceTable.DICTIONARY)
-                 .setField("reporting_method_id", reportingMethodId, original.reportingMethodId, ReferenceTable.DICTIONARY)
-                 .setField("sorting_method_id", sortingMethodId, original.sortingMethodId, ReferenceTable.DICTIONARY)
+                 .setField("test_trailer_id", testTrailerId, original.testTrailerId, Constants.table().TEST_TRAILER)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().SCRIPTLET)
+                 .setField("test_format_id", testFormatId, original.testFormatId, Constants.table().DICTIONARY)
+                 .setField("revision_method_id", revisionMethodId, original.revisionMethodId, Constants.table().DICTIONARY)
+                 .setField("reporting_method_id", reportingMethodId, original.reportingMethodId, Constants.table().DICTIONARY)
+                 .setField("sorting_method_id", sortingMethodId, original.sortingMethodId, Constants.table().DICTIONARY)
                  .setField("reporting_sequence", reportingSequence, original.reportingSequence);
 
         return audit;

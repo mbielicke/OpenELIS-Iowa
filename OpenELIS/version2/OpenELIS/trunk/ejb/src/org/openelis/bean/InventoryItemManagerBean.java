@@ -34,7 +34,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.InventoryComponentManager;
@@ -46,7 +46,6 @@ import org.openelis.utils.EJBFactory;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class InventoryItemManagerBean implements InventoryItemManagerRemote {
 
     @Resource
@@ -92,13 +91,12 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
             throw e;
         }
 
-
         return man;
     }
 
     public InventoryItemManager update(InventoryItemManager man) throws Exception {
         UserTransaction ut;
-        
+
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
@@ -106,9 +104,11 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.INVENTORY_ITEM, man.getInventoryItem().getId());        
+            lockBean.validateLock(Constants.table().INVENTORY_ITEM,
+                                  man.getInventoryItem().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.INVENTORY_ITEM, man.getInventoryItem().getId());
+            lockBean.unlock(Constants.table().INVENTORY_ITEM, man.getInventoryItem()
+                                                                 .getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -125,7 +125,7 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.INVENTORY_ITEM, id);
+            lockBean.lock(Constants.table().INVENTORY_ITEM, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -136,14 +136,14 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
     }
 
     public InventoryItemManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.INVENTORY_ITEM, id);
+        lockBean.unlock(Constants.table().INVENTORY_ITEM, id);
         return fetchById(id);
     }
 
     public InventoryComponentManager fetchComponentByInventoryItemId(Integer id) throws Exception {
         return InventoryComponentManager.fetchByInventoryItemId(id);
     }
-    
+
     public InventoryLocationManager fetchLocationByInventoryItemId(Integer id) throws Exception {
         return InventoryLocationManager.fetchByInventoryItemId(id);
     }

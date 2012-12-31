@@ -38,9 +38,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -111,17 +110,17 @@ public class PatientRelation implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.PATIENT_RELATION);
+        audit.setReferenceTableId(Constants.table().PATIENT_RELATION);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("relation_id", relationId, original.relationId, ReferenceTable.DICTIONARY)
-                 .setField("from_patient_id", fromPatientId, original.fromPatientId, ReferenceTable.PATIENT)
-                 .setField("to_patient_id", toPatientId, original.toPatientId, ReferenceTable.PATIENT);
+                 .setField("relation_id", relationId, original.relationId, Constants.table().DICTIONARY)
+                 .setField("from_patient_id", fromPatientId, original.fromPatientId, Constants.table().PATIENT)
+                 .setField("to_patient_id", toPatientId, original.toPatientId, Constants.table().PATIENT);
 
         return audit;
     }

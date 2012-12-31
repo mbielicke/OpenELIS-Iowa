@@ -25,8 +25,8 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.InventoryItemViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryItemLocal;
@@ -102,12 +102,12 @@ public class InventoryItemManagerProxy {
         }
         if (man.manufacturing != null) {
             man.getManufacturing().setReferenceId(id);
-            man.getManufacturing().setReferenceTableId(ReferenceTable.INVENTORY_ITEM_MANUFACTURING);
+            man.getManufacturing().setReferenceTableId(Constants.table().INVENTORY_ITEM_MANUFACTURING);
             man.getManufacturing().add();
         }
         if (man.notes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.INVENTORY_ITEM);
+            man.getNotes().setReferenceTableId(Constants.table().INVENTORY_ITEM);
             man.getNotes().add();
         }
 
@@ -132,12 +132,12 @@ public class InventoryItemManagerProxy {
         }
         if (man.manufacturing != null) {
             man.getManufacturing().setReferenceId(id);
-            man.getManufacturing().setReferenceTableId(ReferenceTable.INVENTORY_ITEM_MANUFACTURING);
+            man.getManufacturing().setReferenceTableId(Constants.table().INVENTORY_ITEM_MANUFACTURING);
             man.getManufacturing().update();
         }
         if (man.notes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.INVENTORY_ITEM);
+            man.getNotes().setReferenceTableId(Constants.table().INVENTORY_ITEM);
             man.getNotes().update();
         }
 

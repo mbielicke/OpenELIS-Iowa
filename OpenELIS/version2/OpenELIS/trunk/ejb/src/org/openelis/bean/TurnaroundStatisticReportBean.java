@@ -13,10 +13,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -32,7 +29,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.domain.TurnAroundReportViewVO.PlotValue;
 import org.openelis.domain.TurnAroundReportViewVO.StatisticType;
@@ -44,7 +41,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
@@ -66,7 +63,7 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
     private SessionCacheLocal       session;
 
     @EJB
-    private DictionaryLocal         dictionary;
+    private DictionaryCacheLocal    dictionaryCache;
     
     @EJB
     private SampleQAEventLocal      sampleQAEvent;
@@ -77,27 +74,7 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
     @EJB
     private UserCacheLocal          userCache;
 
-    private static Integer          releasedStatusId, ptSampleTypeId;
-    
-    private static DictionaryDO     analysisDailyTotalPlotInterval, weeklyTotalPlotInterval,
-                                    monthlyTotalPlotInterval;
-
-    private static final Logger     log = Logger.getLogger("openelis");
-    
     private static final SampleMeta meta = new SampleMeta();
-
-    @PostConstruct
-    public void init() {
-        try {
-            releasedStatusId = dictionary.fetchBySystemName("analysis_released").getId();
-            analysisDailyTotalPlotInterval = dictionary.fetchBySystemName("turnaround_daily");
-            weeklyTotalPlotInterval = dictionary.fetchBySystemName("turnaround_weekly");
-            monthlyTotalPlotInterval = dictionary.fetchBySystemName("turnaround_monthly");
-            ptSampleTypeId = dictionary.fetchBySystemName("pt_sample").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-    }
 
     public TurnAroundReportViewVO fetchForTurnaroundStatistic(ArrayList<QueryData> paramList) throws Exception {
         int i;
@@ -187,11 +164,11 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
         }
 
         data = new TurnAroundReportViewVO();
-        if (analysisDailyTotalPlotInterval.getId().equals(plotTypeId))
+        if (Constants.dictionary().TURNAROUND_DAILY.equals(plotTypeId))
             data = getDataForDailyReport(resultList, currentReleasedDate);
-        else if (weeklyTotalPlotInterval.getId().equals(plotTypeId))
+        else if (Constants.dictionary().TURNAROUND_WEEKLY.equals(plotTypeId))
             data = fetchForWeeklyReport(resultList, currentReleasedDate);
-        else if (monthlyTotalPlotInterval.getId().equals(plotTypeId))
+        else if (Constants.dictionary().TURNAROUND_MONTHLY.equals(plotTypeId))
             data = fetchForMonthlyReport(resultList, currentReleasedDate);
 
         return data;
@@ -215,11 +192,11 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
                           SampleMeta.getAnalysisCompletedDate() + "," +
                           SampleMeta.getAnalysisStartedDate() + "," + SampleMeta.getId());
         builder.addWhere(SampleMeta.getAnalysisTestIsActive() + "=" + "'Y'");
-        builder.addWhere(SampleMeta.getAnalysisStatusId() + "=" + releasedStatusId);
+        builder.addWhere(SampleMeta.getAnalysisStatusId() + "=" + Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleMeta.getAnalysisTestMethodId() + "=" +
                          SampleMeta.getAnalysisMethodId());
         if ("Y".equals(excludePT))
-            builder.addWhere(SampleMeta.getItemTypeOfSampleId() + "!=" + ptSampleTypeId);
+            builder.addWhere(SampleMeta.getItemTypeOfSampleId() + "!=" + Constants.dictionary().PT_SAMPLE);
         builder.constructWhere(fields);
         builder.setOrderBy(SampleMeta.getAnalysisReleasedDate() + ", " +
                            SampleMeta.getAnalysisTestName() + ", " +
@@ -579,7 +556,6 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
     }
 
     public ReportStatus runReport(TurnAroundReportViewVO data) throws Exception {
-        Integer intervalId;
         String dir, printer, fromDate, toDate, key, intervalType, userName;
         ReportStatus status;
         String printstat;
@@ -596,14 +572,8 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
         fromDate = data.getFromDate().toString();
         toDate = data.getToDate().toString();
         printer = data.getPrinter();
-        intervalId = data.getIntervalId();
-        intervalType = null;
-        if (analysisDailyTotalPlotInterval.getId().equals(intervalId))
-            intervalType = analysisDailyTotalPlotInterval.getEntry();
-        else if (weeklyTotalPlotInterval.getId().equals(intervalId))
-            intervalType = weeklyTotalPlotInterval.getEntry();
-        else if (monthlyTotalPlotInterval.getId().equals(intervalId))
-            intervalType = monthlyTotalPlotInterval.getEntry();
+        
+        intervalType = dictionaryCache.getById(data.getIntervalId()).getEntry();
         /*
          * push status into session so we can query it while the report is
          * running

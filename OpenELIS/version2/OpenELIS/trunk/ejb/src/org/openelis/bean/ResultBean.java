@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -40,6 +39,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
@@ -50,7 +50,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.manager.TestManager;
@@ -65,55 +65,25 @@ public class ResultBean implements ResultLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
-    @EJB
-    private DictionaryLocal               dictionary;
+    private DictionaryCacheLocal          dictionaryCache;
 
-    private static Integer                supplementalTypeId, roundSigFigId,
-                    roundSigFigNOEId, roundIntId, roundIntSigFigId, roundIntSigFigNOEId,
-                    qaEventOverrideId;
     private static HashMap<Integer, Type> types;
 
     @PostConstruct
     public void init() {
         if (types == null) {
             types = new HashMap<Integer, Type>();
-            try {
-                types.put(dictionary.fetchBySystemName("test_res_type_dictionary")
-                                    .getId(), Type.DICTIONARY);
-                types.put(dictionary.fetchBySystemName("test_res_type_numeric").getId(),
-                          Type.NUMERIC);
-                types.put(dictionary.fetchBySystemName("test_res_type_titer").getId(),
-                          Type.TITER);
-                types.put(dictionary.fetchBySystemName("test_res_type_date").getId(),
-                          Type.DATE);
-                types.put(dictionary.fetchBySystemName("test_res_type_date_time").getId(),
-                          Type.DATE_TIME);
-                types.put(dictionary.fetchBySystemName("test_res_type_time").getId(),
-                          Type.TIME);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_lower")
-                                    .getId(), Type.ALPHA_LOWER);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_upper")
-                                    .getId(), Type.ALPHA_UPPER);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_mixed")
-                                    .getId(), Type.ALPHA_MIXED);
-                types.put(dictionary.fetchBySystemName("test_res_type_default").getId(),
-                          Type.DEFAULT);
 
-                supplementalTypeId = dictionary.fetchBySystemName("test_analyte_suplmtl")
-                                               .getId();
-                qaEventOverrideId = dictionary.fetchBySystemName("qaevent_override")
-                                              .getId();
-                roundSigFigId = dictionary.fetchBySystemName("round_sig_fig").getId();
-                roundSigFigNOEId = dictionary.fetchBySystemName("round_sig_fig_noe")
-                                             .getId();
-                roundIntId = dictionary.fetchBySystemName("round_int").getId();
-                roundIntSigFigId = dictionary.fetchBySystemName("round_int_sig_fig")
-                                             .getId();
-                roundIntSigFigNOEId = dictionary.fetchBySystemName("round_int_sig_fig_noe")
-                                                .getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
+            types.put(Constants.dictionary().TEST_RES_TYPE_DICTIONARY, Type.DICTIONARY);
+            types.put(Constants.dictionary().TEST_RES_TYPE_NUMERIC, Type.NUMERIC);
+            types.put(Constants.dictionary().TEST_RES_TYPE_TITER, Type.TITER);
+            types.put(Constants.dictionary().TEST_RES_TYPE_DATE, Type.DATE);
+            types.put(Constants.dictionary().TEST_RES_TYPE_DATE_TIME, Type.DATE_TIME);
+            types.put(Constants.dictionary().TEST_RES_TYPE_TIME, Type.TIME);
+            types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER, Type.ALPHA_LOWER);
+            types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER, Type.ALPHA_UPPER);
+            types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED, Type.ALPHA_MIXED);
+            types.put(Constants.dictionary().TEST_RES_TYPE_DEFAULT, Type.DEFAULT);
         }
     }
 
@@ -206,7 +176,9 @@ public class ResultBean implements ResultLocal {
             // if there are only supplementals in a row group it will not
             // show a header so the user wont be able to add any analytes
             //
-            if ( !suppRow && !DataBaseUtil.isSame(supplementalTypeId, data.getTypeId())) {
+            if ( !suppRow &&
+                !DataBaseUtil.isSame(Constants.dictionary().TEST_ANALYTE_SUPLMTL,
+                                     data.getTypeId())) {
                 // create a new resultDO
                 ResultViewDO resultDO = new ResultViewDO();
                 resultDO.setTestAnalyteId(data.getId());
@@ -540,7 +512,7 @@ public class ResultBean implements ResultLocal {
         query = manager.createNamedQuery("Result.FetchForFinalReportByAnalysisId");
         query.setParameter("sid", sampleId);
         query.setParameter("aid", analysisId);
-        query.setParameter("overrideid", qaEventOverrideId);
+        query.setParameter("overrideid", Constants.dictionary().QAEVENT_OVERRIDE);
 
         list = query.getResultList();
         if (list == null || list.size() == 0)
@@ -685,37 +657,37 @@ public class ResultBean implements ResultLocal {
 
         e = new ValidationErrorsList();
 
-        if (!DataBaseUtil.isEmpty(data.getValue())) {
+        if ( !DataBaseUtil.isEmpty(data.getValue())) {
             if (tm != null) {
                 test = tm.getTest().getName();
                 method = tm.getTest().getMethodName();
                 e.add(new FormErrorException("oneOrMoreResultValuesInvalid"));
             }
         }
-        
+
         if (e.size() > 0)
             throw e;
 
-//                if (!DataBaseUtil.isEmpty(result.getValue())) {
-//                    testResultId = man.validateResultValue(result.getResultGroup(),
-//                                                           data.getUnitOfMeasureId(),
-//                                                           result.getValue());
-//                    testResult = man.getTestResultList().get(testResultId);
-//
-//                    result.setTypeId(testResult.getTypeId());
-//                    result.setTestResultId(testResult.getId());
-//                    /*
-//                         * If the tab for results on the screen was never opened
-//                         * after an analysis was either added or its test was changed
-//                         * then the code on the screen wouldn't have had the chance
-//                         * to put the dictionary entry's id as the value for the
-//                         * results of the type dictionary. This code makes sure
-//                         * that the correct value gets set. For the results of the
-//                         * other types, the value doesn't need to be changed.   
-//                         */
-//                        if (testResult.getTypeId().equals(dictTypeId))
-//                            result.setValue(testResult.getValue());                     
-//                    }
+        //      if (!DataBaseUtil.isEmpty(result.getValue())) {
+        //      testResultId = man.validateResultValue(result.getResultGroup(),
+        //                                             data.getUnitOfMeasureId(),
+        //                                             result.getValue());
+        //      testResult = man.getTestResultList().get(testResultId);
+        //
+        //      result.setTypeId(testResult.getTypeId());
+        //      result.setTestResultId(testResult.getId());
+        //      /*
+        //           * If the tab for results on the screen was never opened
+        //           * after an analysis was either added or its test was changed
+        //           * then the code on the screen wouldn't have had the chance
+        //           * to put the dictionary entry's id as the value for the
+        //           * results of the type dictionary. This code makes sure
+        //           * that the correct value gets set. For the results of the
+        //           * other types, the value doesn't need to be changed.   
+        //           */
+        //          if (testResult.getTypeId().equals(dictTypeId))
+        //              result.setValue(testResult.getValue());                     
+        //      }
     }
 
     private void createTestResultHash(List<TestResultDO> testResultList,
@@ -740,25 +712,34 @@ public class ResultBean implements ResultLocal {
                     resultValidators.add(rv);
                 }
 
-                if (DataBaseUtil.isSame(roundSigFigId, data.getRoundingMethodId()))
+                if (DataBaseUtil.isSame(Constants.dictionary().ROUND_SIG_FIG,
+                                        data.getRoundingMethodId()))
                     method = RoundingMethod.SIG_FIG;
-                else if (DataBaseUtil.isSame(roundSigFigNOEId, data.getRoundingMethodId()))
+                else if (DataBaseUtil.isSame(Constants.dictionary().ROUND_SIG_FIG_NOE,
+                                             data.getRoundingMethodId()))
                     method = RoundingMethod.SIG_FIG_NOE;
-                else if (DataBaseUtil.isSame(roundIntId, data.getRoundingMethodId()))
+                else if (DataBaseUtil.isSame(Constants.dictionary().ROUND_INT,
+                                             data.getRoundingMethodId()))
                     method = RoundingMethod.INT;
-                else if (DataBaseUtil.isSame(roundIntSigFigId, data.getRoundingMethodId()))
+                else if (DataBaseUtil.isSame(Constants.dictionary().ROUND_INT_SIG_FIG,
+                                             data.getRoundingMethodId()))
                     method = RoundingMethod.INT_SIG_FIG;
-                else if (DataBaseUtil.isSame(roundIntSigFigNOEId,
+                else if (DataBaseUtil.isSame(Constants.dictionary().ROUND_INT_SIG_FIG_NOE,
                                              data.getRoundingMethodId()))
                     method = RoundingMethod.INT_SIG_FIG_NOE;
 
                 type = types.get(data.getTypeId());
                 if (type == Type.DICTIONARY) {
-                    dict = dictionary.fetchById(new Integer(data.getValue()));
+                    dict = dictionaryCache.getById(Integer.parseInt(data.getValue()));
                     dictEntry = dict.getEntry();
                 }
-                rv.addResult(data.getId(), data.getUnitOfMeasureId(), type, method,
-                             data.getSignificantDigits(), data.getValue(), dictEntry);
+                rv.addResult(data.getId(),
+                             data.getUnitOfMeasureId(),
+                             type,
+                             method,
+                             data.getSignificantDigits(),
+                             data.getValue(),
+                             dictEntry);
             }
         } catch (Exception e) {
             resultValidators.clear();

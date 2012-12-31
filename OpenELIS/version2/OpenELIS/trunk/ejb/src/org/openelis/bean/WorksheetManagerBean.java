@@ -36,7 +36,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.local.LockLocal;
@@ -52,23 +52,21 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class WorksheetManagerBean implements WorksheetManagerRemote {
 
     @Resource
-    private SessionContext ctx;
+    private SessionContext    ctx;
 
     @EJB
-    private SessionCacheLocal session;    
+    private SessionCacheLocal session;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockLocal         lockBean;
 
     public WorksheetManagerBean() {
     }
-    
+
     public WorksheetManager fetchById(Integer id) throws Exception {
         return WorksheetManager.fetchById(id);
     }
@@ -93,7 +91,7 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         Iterator<SampleManager> iter;
         UserTransaction ut;
         SampleManager sMan;
-        
+
         checkSecurity(ModuleFlags.ADD);
 
         man.validate();
@@ -108,7 +106,7 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             iter = man.getLockedManagers().values().iterator();
             while (iter.hasNext()) {
                 sMan = iter.next();
-                lockBean.unlock(ReferenceTable.SAMPLE, sMan.getSample().getId());
+                lockBean.unlock(Constants.table().SAMPLE, sMan.getSample().getId());
             }
             man.getLockedManagers().clear();
             throw e;
@@ -136,10 +134,10 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());        
+            lockBean.validateLock(Constants.table().WORKSHEET, man.getWorksheet().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.WORKSHEET, man.getWorksheet().getId());
-            status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
+            lockBean.unlock(Constants.table().WORKSHEET, man.getWorksheet().getId());
+            status = (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
             status.setPercentComplete(95);
             session.setAttribute("WorksheetUpdateStatus", status);
             ut.commit();
@@ -148,13 +146,13 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             iter = man.getLockedManagers().values().iterator();
             while (iter.hasNext()) {
                 sMan = iter.next();
-                lockBean.unlock(ReferenceTable.SAMPLE, sMan.getSample().getId());
+                lockBean.unlock(Constants.table().SAMPLE, sMan.getSample().getId());
             }
             man.getLockedManagers().clear();
             throw e;
         }
 
-        status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
+        status = (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
         status.setPercentComplete(100);
         status.setStatus(ReportStatus.Status.SAVED);
         session.setAttribute("WorksheetUpdateStatus", status);
@@ -169,7 +167,7 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.WORKSHEET, id);
+            lockBean.lock(Constants.table().WORKSHEET, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -180,30 +178,30 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
 
     public WorksheetManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.WORKSHEET, id);
+        lockBean.unlock(Constants.table().WORKSHEET, id);
         return fetchById(id);
     }
 
     public WorksheetItemManager fetchWorksheetItemByWorksheetId(Integer id) throws Exception {
         return WorksheetItemManager.fetchByWorksheetId(id);
     }
-    
+
     public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception {
         return WorksheetAnalysisManager.fetchByWorksheetItemId(id);
     }
-    
+
     public WorksheetResultManager fetchWorksheetResultByWorksheetAnalysisId(Integer id) throws Exception {
         return WorksheetResultManager.fetchByWorksheetAnalysisId(id);
     }
-    
+
     public WorksheetQcResultManager fetchWorksheetQcResultByWorksheetAnalysisId(Integer id) throws Exception {
         return WorksheetQcResultManager.fetchByWorksheetAnalysisId(id);
     }
-    
+
     public ReportStatus getUpdateStatus() {
-        return (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
+        return (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
     }
-    
+
     private void checkSecurity(ModuleFlags flag) throws Exception {
         EJBFactory.getUserCache().applyPermission("worksheet", flag);
     }

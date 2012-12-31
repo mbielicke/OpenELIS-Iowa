@@ -45,7 +45,7 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.LabelReportLocal;
 import org.openelis.local.OrderLocal;
 import org.openelis.local.PrinterCacheLocal;
@@ -66,7 +66,7 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
     private PrinterCacheLocal      printer;
 
     @EJB
-    private DictionaryLocal        dictionary;
+    private CategoryCacheLocal     categoryCache;
 
     @EJB
     private LabelReportLocal       labelReport;
@@ -108,7 +108,7 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
                                                                      .setRequired(true));
             p.add(new Prompt("KIT_DESCRIPTION", Prompt.Type.STRING).setPrompt("Description:")
                                                                    .setHidden(true));
-            d = dictionary.fetchByCategorySystemName("kit_special_instructions");
+            d = categoryCache.getBySystemName("kit_special_instructions").getDictionaryList();
             list = getInstructions(d);
             p.add(new Prompt("SPECIAL_INSTRUCTIONS", Prompt.Type.ARRAY).setPrompt("Special Instructions:")
                                                                         .setWidth(200)

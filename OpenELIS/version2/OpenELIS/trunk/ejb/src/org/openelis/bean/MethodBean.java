@@ -38,9 +38,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Method;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -60,7 +60,6 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class MethodBean implements MethodRemote, MethodLocal {
 
     @PersistenceContext(unitName = "openelis")
@@ -70,13 +69,13 @@ public class MethodBean implements MethodRemote, MethodLocal {
     private LockLocal               lock;
 
     private static final MethodMeta meta = new MethodMeta();
-    
+
     public MethodDO fetchById(Integer id) throws Exception {
-    	Query query;
-    	MethodDO data;
-    	
+        Query query;
+        MethodDO data;
+
         query = manager.createNamedQuery("Method.FetchById");
-        query.setParameter("id",id);
+        query.setParameter("id", id);
         try {
             data = (MethodDO)query.getSingleResult();
         } catch (NoResultException e) {
@@ -84,15 +83,15 @@ public class MethodBean implements MethodRemote, MethodLocal {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        
+
         return data;
     }
-    
+
     @SuppressWarnings("unchecked")
     public MethodDO fetchByName(String name) throws Exception {
         Query query;
         MethodDO data;
-        
+
         query = manager.createNamedQuery("Method.FetchByName");
         query.setParameter("name", name);
 
@@ -103,40 +102,40 @@ public class MethodBean implements MethodRemote, MethodLocal {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        
+
         return data;
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<MethodDO> fetchActiveByName(String name, int maxResults) {
         Query query = null;
-        
-        query = manager.createNamedQuery("Method.FetchActiveByName");        
+
+        query = manager.createNamedQuery("Method.FetchActiveByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<MethodDO> fetchByIds(Collection<Integer> ids) throws Exception {
         Query query;
-        
+
         query = manager.createNamedQuery("Method.FetchByIds");
-        query.setParameter("ids",ids);
-        
+        query.setParameter("ids", ids);
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {        
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + MethodMeta.getId()
-                          + "," + MethodMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          MethodMeta.getId() + "," + MethodMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(MethodMeta.getName());
 
@@ -153,16 +152,16 @@ public class MethodBean implements MethodRemote, MethodLocal {
 
         return (ArrayList<IdNameVO>)list;
     }
-    
+
     public MethodDO add(MethodDO data) throws Exception {
-    	Method entity;
+        Method entity;
 
         checkSecurity(ModuleFlags.ADD);
-                    
+
         validate(data);
 
         manager.setFlushMode(FlushModeType.COMMIT);
-       
+
         entity = new Method();
         entity.setActiveBegin(data.getActiveBegin());
         entity.setActiveEnd(data.getActiveEnd());
@@ -179,20 +178,20 @@ public class MethodBean implements MethodRemote, MethodLocal {
     }
 
     public MethodDO update(MethodDO data) throws Exception {
-    	Method entity;
-    	
-    	if( !data.isChanged()) {
-    	    lock.unlock(ReferenceTable.METHOD, data.getId());
-    		return data;
-    	}
-    	checkSecurity(ModuleFlags.UPDATE);
-    	
+        Method entity;
+
+        if ( !data.isChanged()) {
+            lock.unlock(Constants.table().METHOD, data.getId());
+            return data;
+        }
+        checkSecurity(ModuleFlags.UPDATE);
+
         validate(data);
-    	
-        lock.validateLock(ReferenceTable.METHOD, data.getId());
-           
+
+        lock.validateLock(Constants.table().METHOD, data.getId());
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = manager.find(Method.class, data.getId());
         entity.setActiveBegin(data.getActiveBegin());
         entity.setActiveEnd(data.getActiveEnd());
@@ -201,56 +200,60 @@ public class MethodBean implements MethodRemote, MethodLocal {
         entity.setName(data.getName());
         entity.setReportingDescription(data.getReportingDescription());
 
-        lock.unlock(ReferenceTable.METHOD, data.getId());            
-        
+        lock.unlock(Constants.table().METHOD, data.getId());
+
         return data;
     }
-    
-    public MethodDO fetchForUpdate(Integer id) throws Exception {        
+
+    public MethodDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.METHOD, id);
+            lock.lock(Constants.table().METHOD, id);
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
         }
     }
-    
+
     public MethodDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.METHOD, id);
+        lock.unlock(Constants.table().METHOD, id);
         return fetchById(id);
     }
-    
+
     public void validate(MethodDO data) throws Exception {
         ValidationErrorsList list;
-        
+
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", MethodMeta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             MethodMeta.getName()));
         } else {
             MethodDO dup;
-            
+
             try {
                 dup = fetchByName(data.getName());
                 if (DataBaseUtil.isDifferent(data.getId(), dup.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException", MethodMeta.getName()));
+                    list.add(new FieldErrorException("fieldUniqueException",
+                                                     MethodMeta.getName()));
             } catch (NotFoundException ignE) {
             }
         }
-        
-        if (DataBaseUtil.isEmpty(data.getActiveBegin())) 
-            list.add(new FieldErrorException("fieldRequiredException", MethodMeta.getActiveBegin()));
-        
-        if (DataBaseUtil.isEmpty(data.getActiveEnd())) 
-            list.add(new FieldErrorException("fieldRequiredException", MethodMeta.getActiveEnd()));                
-                
-        if (DataBaseUtil.isAfter(data.getActiveBegin(),data.getActiveEnd())) 
-            list.add(new FormErrorException("endDateAfterBeginDateException"));                   
+
+        if (DataBaseUtil.isEmpty(data.getActiveBegin()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             MethodMeta.getActiveBegin()));
+
+        if (DataBaseUtil.isEmpty(data.getActiveEnd()))
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             MethodMeta.getActiveEnd()));
+
+        if (DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd()))
+            list.add(new FormErrorException("endDateAfterBeginDateException"));
 
         if (list.size() > 0)
             throw list;
     }
-    
+
     private void checkSecurity(ModuleFlags flag) throws Exception {
         EJBFactory.getUserCache().applyPermission("method", flag);
     }

@@ -244,7 +244,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         return data;
     }
 
-    public void validate(ProjectDO data) throws ValidationErrorsList {
+    public void validate(ProjectDO data) throws Exception {
         ArrayList<ProjectDO> dups;
         ValidationErrorsList list;
         

@@ -3,6 +3,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
@@ -86,19 +87,11 @@ public class AuxFieldValueManager implements RPC {
     
     public AuxFieldValueViewDO getDefaultValue(){
         AuxFieldValueViewDO item,tmp;
-        Integer defaultTypeId;
-        
-        try{
-            defaultTypeId = proxy().getIdFromSystemName("aux_default");
-        }catch(Exception e){
-            e.printStackTrace(); 
-            return null;
-        }
         
         item = null;
         for(int i=0; i<count(); i++){
             tmp = values.get(i);
-            if(defaultTypeId.equals(tmp.getTypeId())){
+            if(Constants.dictionary().AUX_DEFAULT.equals(tmp.getTypeId())){
                 item = tmp;
                 break;
             }

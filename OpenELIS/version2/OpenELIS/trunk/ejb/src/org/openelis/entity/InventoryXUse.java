@@ -41,12 +41,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
-import org.openelis.utils.Audit;
 
 @NamedQueries({
     @NamedQuery( name = "InventoryXUse.FetchByOrderId",
@@ -82,9 +78,6 @@ public class InventoryXUse {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
     private InventoryLocation inventoryLocation;
-
-    @Transient
-    private InventoryXUse     original;
 
     public OrderItem getOrderItem() {
         return orderItem;
@@ -128,20 +121,5 @@ public class InventoryXUse {
 
     public InventoryLocation getInventoryLocation() {
         return inventoryLocation;
-    }
-
-    public Audit getAudit(AuditActivity activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.INVENTORY_X_USE);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId, ReferenceTable.INVENTORY_LOCATION)
-                 .setField("order_item_id", orderItemId, original.orderItemId, ReferenceTable.ORDER_ITEM)
-                 .setField("quantity", quantity, original.quantity);
-
-        return audit;
     }
 }

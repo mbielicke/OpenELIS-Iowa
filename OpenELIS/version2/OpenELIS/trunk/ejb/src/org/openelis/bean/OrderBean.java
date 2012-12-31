@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderViewDO;
@@ -89,6 +90,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         Query query;
         
         query = manager.createNamedQuery("Order.FetchByShippingId");
+        query.setParameter("referenceTableId", Constants.table().ORDER_ITEM);
         query.setParameter("shippingId", shippingId);
         
         return DataBaseUtil.toArrayList(query.getResultList());
@@ -99,7 +101,9 @@ public class OrderBean implements OrderRemote, OrderLocal {
         OrderViewDO data;
         
         query = manager.createNamedQuery("Order.FetchByShippingItemId");
+        query.setParameter("referenceTableId", Constants.table().ORDER_ITEM);
         query.setParameter("id", id);
+        
         try {
             data = (OrderViewDO)query.getSingleResult();         
             if (data.getOrganizationId() != null)

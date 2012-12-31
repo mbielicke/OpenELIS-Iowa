@@ -30,7 +30,7 @@ import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
-import org.openelis.utilcommon.AuditActivity;
+import org.openelis.domain.Constants;
 
 public class AuditUtil {
     @PostLoad
@@ -44,10 +44,10 @@ public class AuditUtil {
         Audit audit;
 
         if (entity instanceof Auditable) {
-            audit = ((Auditable)entity).getAudit(AuditActivity.ADD);
+            audit = ((Auditable)entity).getAudit(Constants.audit().ADD);
             EJBFactory.getHistory().add(audit.getReferenceId(),
                                         audit.getReferenceTableId(),
-                                        AuditActivity.ADD,
+                                        Constants.audit().ADD,
                                         audit.getXML());
         }
     }
@@ -57,10 +57,10 @@ public class AuditUtil {
         Audit audit;
 
         if (entity instanceof Auditable) {
-            audit = ((Auditable)entity).getAudit(AuditActivity.UPDATE);
+            audit = ((Auditable)entity).getAudit(Constants.audit().UPDATE);
             EJBFactory.getHistory().add(audit.getReferenceId(),
                                         audit.getReferenceTableId(),
-                                        AuditActivity.UPDATE,
+                                        Constants.audit().UPDATE,
                                         audit.getXML());
         }
     }
@@ -70,10 +70,10 @@ public class AuditUtil {
         Audit audit;
 
         if (entity instanceof Auditable) {
-            audit = ((Auditable)entity).getAudit(AuditActivity.DELETE);
+            audit = ((Auditable)entity).getAudit(Constants.audit().DELETE);
             EJBFactory.getHistory().add(audit.getReferenceId(),
                                         audit.getReferenceTableId(),
-                                        AuditActivity.DELETE,
+                                        Constants.audit().DELETE,
                                         audit.getXML());
         }
     }

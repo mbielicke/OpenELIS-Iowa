@@ -28,47 +28,18 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestSectionLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
 public class TestSectionManagerProxy {
-
-    private static int typeDefault, typeMatch;
-
-    public TestSectionManagerProxy() {
-        DictionaryDO data;
-        DictionaryLocal dl;
-
-        dl = EJBFactory.getDictionary();
-
-        if (typeDefault == 0) {
-            try {
-                data = dl.fetchBySystemName("test_section_default");
-                typeDefault = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDefault = 0;
-            }
-        }
-
-        if (typeMatch == 0) {
-            try {
-                data = dl.fetchBySystemName("test_section_match");
-                typeMatch = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeMatch = 0;
-            }
-        }
-    }
 
     public TestSectionManager add(TestSectionManager man) throws Exception {
         TestSectionLocal tl;
@@ -113,7 +84,6 @@ public class TestSectionManagerProxy {
         List<TestSectionViewDO> sectionList;
         TestSectionViewDO data;
         TestSectionLocal sl;
-        DictionaryLocal dl;
         Integer flagId, sectId;
         List<Integer> idList;
         int numDef, numMatch, numBlank, i;
@@ -127,8 +97,6 @@ public class TestSectionManagerProxy {
             list.add(new FieldErrorException("atleastOneSection", null));
             throw list;
         }
-
-        dl = EJBFactory.getDictionary();
 
         numDef = 0;
         numMatch = 0;
@@ -156,9 +124,9 @@ public class TestSectionManagerProxy {
 
             if (flagId == null) {
                 numBlank++ ;
-            } else if (DataBaseUtil.isSame(typeDefault, flagId)) {
+            } else if (DataBaseUtil.isSame(Constants.dictionary().TEST_SECTION_DEFAULT, flagId)) {
                 numDef++ ;
-            } else if (DataBaseUtil.isSame(typeMatch, flagId)) {
+            } else if (DataBaseUtil.isSame(Constants.dictionary().TEST_SECTION_MATCH, flagId)) {
                 numMatch++ ;
             }
         }
@@ -185,7 +153,7 @@ public class TestSectionManagerProxy {
             for (i = 0; i < man.count(); i++ ) {
                 data = sectionList.get(i);
                 flagId = data.getFlagId();
-                if ( !DataBaseUtil.isSame(typeDefault, flagId)) {
+                if ( !DataBaseUtil.isSame(Constants.dictionary().TEST_SECTION_DEFAULT, flagId)) {
                     exc = new TableFieldErrorException("allSectBlankIfDefException", i,
                                                        TestMeta.getSectionFlagId(), "sectionTable");
                     list.add(exc);
@@ -200,7 +168,7 @@ public class TestSectionManagerProxy {
                 data = sectionList.get(i);
                 flagId = data.getFlagId();
 
-                if ( !DataBaseUtil.isSame(typeMatch, flagId)) {
+                if ( !DataBaseUtil.isSame(Constants.dictionary().TEST_SECTION_MATCH, flagId)) {
                     exc = new TableFieldErrorException("allSectMatchFlagException", i,
                                                        TestMeta.getSectionFlagId(), "sectionTable");
                     list.add(exc);
@@ -210,13 +178,6 @@ public class TestSectionManagerProxy {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        DictionaryDO data;
-
-        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
-        return data.getId();
     }
     
     public DictionaryDO getDictionaryById(Integer id) throws Exception {

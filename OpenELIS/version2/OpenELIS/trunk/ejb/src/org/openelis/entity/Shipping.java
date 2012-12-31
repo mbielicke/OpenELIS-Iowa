@@ -47,10 +47,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -65,14 +64,8 @@ import org.openelis.utils.Auditable;
                query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
                        "s.shippedFromId,s.shippedToId,s.shippedToAttention,s.processedBy,s.processedDate," +
                        "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
-                     + " from Shipping s left join s.shippingItem i where i.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM "
-                     + " and i.referenceId in (select id from OrderItem oi where oi.orderId = :orderId)"),
-    @NamedQuery( name = "Shipping.FetchBySampleId",
-               query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
-                       "s.shippedFromId,s.shippedToId,s.shippedToAttention,s.processedBy,s.processedDate," +
-                       "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
-                     + " from Shipping s left join s.shippingItem i where i.referenceTableId = org.openelis.domain.ReferenceTable.SAMPLE_ITEM "
-                     + " and i.referenceId in (select id from SampleItem si where si.sampleId = :sampleId)")})                
+                     + " from Shipping s left join s.shippingItem i where i.referenceTableId = :referenceTableId "
+                     + " and i.referenceId in (select id from OrderItem oi where oi.orderId = :orderId)")})                
 
 @Entity
 @Table(name = "shipping")
@@ -260,21 +253,21 @@ public class Shipping implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.SHIPPING);
+        audit.setReferenceTableId(Constants.table().SHIPPING);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
-                 .setField("shipped_from_id", shippedFromId, original.shippedFromId, ReferenceTable.DICTIONARY)
-                 .setField("shipped_to_id", shippedToId, original.shippedToId, ReferenceTable.ORGANIZATION)
+                 .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
+                 .setField("shipped_from_id", shippedFromId, original.shippedFromId, Constants.table().DICTIONARY)
+                 .setField("shipped_to_id", shippedToId, original.shippedToId, Constants.table().ORGANIZATION)
                  .setField("shipped_to_attention", shippedToAttention, original.shippedToAttention)
                  .setField("processed_by", processedBy, original.processedBy)
                  .setField("processed_date", processedDate, original.processedDate)
-                 .setField("shipped_method_id", shippedMethodId, original.shippedMethodId, ReferenceTable.DICTIONARY)
+                 .setField("shipped_method_id", shippedMethodId, original.shippedMethodId, Constants.table().DICTIONARY)
                  .setField("shipped_date", shippedDate, original.shippedDate)
                  .setField("number_of_packages", numberOfPackages, original.numberOfPackages)
                  .setField("cost", cost, original.cost);

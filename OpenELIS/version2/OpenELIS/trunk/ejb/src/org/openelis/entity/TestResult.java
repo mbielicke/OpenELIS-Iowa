@@ -40,9 +40,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -203,23 +202,23 @@ public class TestResult implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.TEST_RESULT);
+        audit.setReferenceTableId(Constants.table().TEST_RESULT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
                  .setField("result_group", resultGroup, original.resultGroup)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.DICTIONARY)
-                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, Constants.table().DICTIONARY)
+                 .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
                  .setField("value", value, original.value)
                  .setField("significant_digits", significantDigits, original.significantDigits)
-                 .setField("rounding_method_id", roundingMethodId, original.roundingMethodId, ReferenceTable.DICTIONARY)
-                 .setField("flags_id", flagsId, original.flagsId, ReferenceTable.DICTIONARY);
+                 .setField("rounding_method_id", roundingMethodId, original.roundingMethodId, Constants.table().DICTIONARY)
+                 .setField("flags_id", flagsId, original.flagsId, Constants.table().DICTIONARY);
 
         return audit;
 

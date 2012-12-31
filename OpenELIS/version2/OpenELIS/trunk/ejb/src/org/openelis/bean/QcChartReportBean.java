@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -26,12 +25,12 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.CategoryCacheVO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.domain.QcChartReportViewVO.ReportType;
 import org.openelis.domain.QcChartReportViewVO.Value;
 import org.openelis.domain.QcChartResultVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
@@ -40,7 +39,6 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.CategoryCacheLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
@@ -59,9 +57,6 @@ public class QcChartReportBean implements QcChartReportRemote {
     private WorksheetAnalysisLocal worksheetAnalysis;
 
     @EJB
-    private DictionaryLocal        dictionary;
-
-    @EJB
     private CategoryCacheLocal     categoryCache;
 
     @EJB
@@ -71,19 +66,6 @@ public class QcChartReportBean implements QcChartReportRemote {
     private UserCacheLocal         userCache;
 
     private static final Logger    log = Logger.getLogger("openelis");
-
-    private static Integer         typeDynamicId, typeFixedId, typeQcSpike;
-
-    @PostConstruct
-    public void init() {
-        try {
-            typeDynamicId = dictionary.fetchBySystemName("chart_type_dynamic").getId();
-            typeFixedId = dictionary.fetchBySystemName("chart_type_fixed").getId();
-            typeQcSpike = dictionary.fetchBySystemName("qc_spike").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-    }
 
     public QcChartReportViewVO fetchForQcChart(ArrayList<QueryData> paramList) throws Exception {
         Integer plot, qc, number;
@@ -99,8 +81,10 @@ public class QcChartReportBean implements QcChartReportRemote {
 
         param = ReportUtil.getMapParameter(paramList);
 
-        worksheetCreatedDateFrom = ReportUtil.getSingleParameter(param, "WORKSHEET_CREATED_DATE_FROM");
-        worksheetCreatedDateTo = ReportUtil.getSingleParameter(param, "WORKSHEET_CREATED_DATE_TO");
+        worksheetCreatedDateFrom = ReportUtil.getSingleParameter(param,
+                                                                 "WORKSHEET_CREATED_DATE_FROM");
+        worksheetCreatedDateTo = ReportUtil.getSingleParameter(param,
+                                                               "WORKSHEET_CREATED_DATE_TO");
         numInstances = ReportUtil.getSingleParameter(param, "NUM_INSTANCES");
         qcName = ReportUtil.getSingleParameter(param, "QC_NAME");
         qcType = ReportUtil.getSingleParameter(param, "QC_TYPE");
@@ -151,10 +135,11 @@ public class QcChartReportBean implements QcChartReportRemote {
             loadMapForQC(systemName, columnMap);
 
             vo = getCommonFields(result);
-            if (DataBaseUtil.isSame(typeQcSpike, qc) && systemName.equals("wf_rad1")) {
+            if (DataBaseUtil.isSame(Constants.dictionary().QC_SPIKE, qc) &&
+                systemName.equals("wf_rad1")) {
                 vo = getQCSpikePercent(result, vo, columnMap);
                 data.setReportType(ReportType.SPIKE_PERCENT);
-            } else if (DataBaseUtil.isSame(typeQcSpike, qc)) {
+            } else if (DataBaseUtil.isSame(Constants.dictionary().QC_SPIKE, qc)) {
                 vo = getQCSpikeConc(result, vo, columnMap);
                 data.setReportType(ReportType.SPIKE_CONC);
             }
@@ -186,11 +171,11 @@ public class QcChartReportBean implements QcChartReportRemote {
             }
         }
 
-        if (DataBaseUtil.isSame(typeDynamicId, plot)) {
+        if (DataBaseUtil.isSame(Constants.dictionary().CHART_TYPE_DYNAMIC, plot)) {
             for (Entry<String, QcChartReportViewVO> entry : analyteMap.entrySet())
                 calculateDynamicStatistics(entry.getValue());
 
-        } else if (DataBaseUtil.isSame(typeFixedId, plot)) {
+        } else if (DataBaseUtil.isSame(Constants.dictionary().CHART_TYPE_FIXED, plot)) {
             for (Entry<String, QcChartReportViewVO> entry : analyteMap.entrySet())
                 calculateStaticStatistics(entry.getValue());
         }
@@ -241,9 +226,11 @@ public class QcChartReportBean implements QcChartReportRemote {
          * Compute values for each analyte
          */
         for (Entry<String, QcChartReportViewVO> entry : analyteMap.entrySet())
-            if (DataBaseUtil.isSame(typeDynamicId, dataPoints.getPlotType()))
+            if (DataBaseUtil.isSame(Constants.dictionary().CHART_TYPE_DYNAMIC,
+                                    dataPoints.getPlotType()))
                 calculateDynamicStatistics(entry.getValue());
-            else if (DataBaseUtil.isSame(typeFixedId, dataPoints.getPlotType()))
+            else if (DataBaseUtil.isSame(Constants.dictionary().CHART_TYPE_FIXED,
+                                         dataPoints.getPlotType()))
                 calculateStaticStatistics(entry.getValue());
         vo = new QcChartReportViewVO();
         vo.setQcList(qcList);
@@ -293,9 +280,9 @@ public class QcChartReportBean implements QcChartReportRemote {
                 url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikePercent.jasper");
 
             tempFile = File.createTempFile("qcreport", ".pdf", new File("/tmp"));
-            
+
             userName = userCache.getName();
-            
+
             jparam = new HashMap<String, Object>();
             jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
             jparam.put("QCNAME", qcName);
@@ -305,7 +292,8 @@ public class QcChartReportBean implements QcChartReportRemote {
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, ds);
             jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM,
+                                 new FileOutputStream(tempFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setMessage("Outputing report").setPercentComplete(20);
@@ -430,7 +418,8 @@ public class QcChartReportBean implements QcChartReportRemote {
      * Retrieves values from columns of the worksheet depending on the
      * appropriate worksheet format and the column name.
      */
-    protected String getValue(String worksheetFormat, String columnName, QcChartResultVO result,
+    protected String getValue(String worksheetFormat, String columnName,
+                              QcChartResultVO result,
                               HashMap<String, HashMap<String, Integer>> map) throws Exception {
         Integer column;
         String value;
@@ -453,7 +442,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             try {
                 apVDO = analyteParameter.fetchForQcChartReport(vo.getAnalyteId(),
                                                                vo.getQcId(),
-                                                               ReferenceTable.QC,
+                                                               Constants.table().QC,
                                                                vo.getWorksheetCreatedDate()
                                                                  .getDate());
                 if (apVDO != null) {
@@ -464,7 +453,9 @@ public class QcChartReportBean implements QcChartReportRemote {
             } catch (NotFoundException ignE) {
                 // ignore not found exception
             } catch (Exception e) {
-                log.log(Level.SEVERE, "Error retrieving analyte parameters for an analysis on worksheet", e);
+                log.log(Level.SEVERE,
+                        "Error retrieving analyte parameters for an analysis on worksheet",
+                        e);
             }
         }
     }
@@ -480,16 +471,16 @@ public class QcChartReportBean implements QcChartReportRemote {
         numValue = qcList.size();
         sum = 0.0;
         recovery = 0.0;
-        for (i = 0; i < numValue; i++)
+        for (i = 0; i < numValue; i++ )
             sum += qcList.get(i).getPlotValue();
-        
+
         if (QcChartReportViewVO.ReportType.SPIKE_CONC.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++) {
+            for (i = 0; i < numValue; i++ ) {
                 if (qcList.get(i).getValue2() != null)
                     recovery += Double.valueOf(qcList.get(i).getValue2());
             }
         } else if (QcChartReportViewVO.ReportType.SPIKE_PERCENT.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++)
+            for (i = 0; i < numValue; i++ )
                 recovery += qcList.get(i).getPlotValue();
         }
 
@@ -497,7 +488,7 @@ public class QcChartReportBean implements QcChartReportRemote {
         meanRecovery = recovery / numValue;
         sqDiffSum = 0.0;
         if (numValue > 1) {
-            for (i = 0; i < numValue; i++) {
+            for (i = 0; i < numValue; i++ ) {
                 diff = qcList.get(i).getPlotValue() - mean;
                 sqDiffSum += diff * diff;
             }
@@ -513,7 +504,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             lWL = mean;
             lCL = mean;
         }
-        for (i = 0; i < numValue; i++) {
+        for (i = 0; i < numValue; i++ ) {
             value = qcList.get(i);
             value.setMean(mean);
             value.setMeanRecovery(meanRecovery);

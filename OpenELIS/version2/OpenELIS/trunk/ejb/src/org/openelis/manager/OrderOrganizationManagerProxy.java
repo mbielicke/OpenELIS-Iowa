@@ -27,33 +27,15 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.OrderOrganizationLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderOrganizationManagerProxy {
-
-    protected static Integer orgBillToId, orgReportToId;
-
-    public OrderOrganizationManagerProxy() {
-        DictionaryLocal l;
-        
-        if (orgBillToId == null) {
-            l = EJBFactory.getDictionary();
-
-            try {
-                orgBillToId = l.fetchBySystemName("org_bill_to").getId();
-                orgReportToId = l.fetchBySystemName("org_report_to").getId();
-            } catch (Exception e) {
-                e.printStackTrace();
-                orgBillToId = null;
-            }
-        }
-    }
 
     public OrderOrganizationManager fetchByOrderId(Integer OrderId) throws Exception {
         ArrayList<OrderOrganizationViewDO> orgs;
@@ -107,11 +89,6 @@ public class OrderOrganizationManagerProxy {
         return man;
     }
 
-    public Integer getIdFromSystemName(String systemName) {
-        assert false : "not supported";
-        return null;
-    }
-
     public void validate(OrderOrganizationManager man) throws Exception {
         int numBillTo, numReportTo;
         OrderOrganizationViewDO data;
@@ -131,10 +108,10 @@ public class OrderOrganizationManagerProxy {
                 DataBaseUtil.mergeException(list, e, "organizationTable", i);
             }
             
-            if (orgReportToId.equals(data.getTypeId()))
+            if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
                 numReportTo++ ;
             
-            if (orgBillToId.equals(data.getTypeId()))
+            if (Constants.dictionary().ORG_BILL_TO.equals(data.getTypeId()))
                 numBillTo++ ;
         }
 

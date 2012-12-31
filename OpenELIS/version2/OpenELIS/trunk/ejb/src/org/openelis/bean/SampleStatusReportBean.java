@@ -27,10 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -40,6 +37,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleQaEventViewDO;
@@ -49,7 +47,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ProjectLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleQAEventLocal;
@@ -70,9 +67,6 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
     private ProjectLocal               project;
 
     @EJB
-    private DictionaryLocal            dictionary;
-
-    @EJB
     private SampleQAEventLocal         sampleQa;
 
     @EJB
@@ -81,24 +75,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
 
-    private static Integer             sampleNotVerifiedId, organizationReportToId, qaWarningId,
-                    qaOverrideId;
-
     private static final SampleWebMeta meta = new SampleWebMeta();
-
-    private static final Logger      log = Logger.getLogger("openelis");
-
-    @PostConstruct
-    public void init() {
-        try {
-            sampleNotVerifiedId = dictionary.fetchBySystemName("sample_not_verified").getId();
-            organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
-            qaWarningId = dictionary.fetchBySystemName("qaevent_warning").getId();
-            qaOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-    }
 
     @RolesAllowed("w_status-select")
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
@@ -118,7 +95,10 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * Retrieve the sql clause that limits what the user can access. Don't
          * allow an empty clause
          */
-        clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
+        clause = EJBFactory.getUserCache()
+                           .getPermission()
+                           .getModule("w_status")
+                           .getClause();
         if (clause == null)
             return returnList;
 
@@ -163,9 +143,9 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
                 try {
                     sampleQAList = sampleQa.fetchExternalBySampleId(vo.getSampleId());
                     for (SampleQaEventViewDO sq : sampleQAList) {
-                        if (qaWarningId.equals(sq.getTypeId())) {
+                        if (Constants.dictionary().QAEVENT_WARNING.equals(sq.getTypeId())) {
                             vo.setSampleQA(QAEventType.WARNING);
-                        } else if (qaOverrideId.equals(sq.getTypeId())) {
+                        } else if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sq.getTypeId())) {
                             vo.setSampleQA(QAEventType.OVERRIDE);
                             break;
                         }
@@ -178,9 +158,9 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
             try {
                 analysisQAList = analysisQa.fetchExternalByAnalysisId(analysisId);
                 for (AnalysisQaEventViewDO aq : analysisQAList) {
-                    if (qaWarningId.equals(aq.getTypeId())) {
+                    if (Constants.dictionary().QAEVENT_WARNING.equals(aq.getTypeId())) {
                         vo.setAnalysisQA(QAEventType.WARNING);
-                    } else if (qaOverrideId.equals(aq.getTypeId())) {
+                    } else if (Constants.dictionary().QAEVENT_OVERRIDE.equals(aq.getTypeId())) {
                         vo.setAnalysisQA(QAEventType.OVERRIDE);
                         break;
                     }
@@ -204,7 +184,10 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * Retrieve the sql clause that limits what the user can access. Don't
          * allow an empty clause
          */
-        clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
+        clause = EJBFactory.getUserCache()
+                           .getPermission()
+                           .getModule("w_status")
+                           .getClause();
         if (clause == null)
             return new ArrayList<IdNameVO>();
 
@@ -223,15 +206,18 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         return projectList;
     }
 
-    private ArrayList<IdAccessionVO> getPrivateSamples(ArrayList<QueryData> fields, String clause) throws Exception {
+    private ArrayList<IdAccessionVO> getPrivateSamples(ArrayList<QueryData> fields,
+                                                       String clause) throws Exception {
         QueryBuilderV2 builder;
         Query query;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
-                          SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() + ") ");
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleNotVerifiedId);
+                          SampleWebMeta.getId() + "," +
+                          SampleWebMeta.getAccessionNumber() + ") ");
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
+                         Constants.dictionary().SAMPLE_NOT_VERIFIED);
         builder.constructWhere(fields);
         builder.addWhere(SampleWebMeta.getWellOrganizationId() + clause);
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
@@ -242,19 +228,23 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    private ArrayList<IdAccessionVO> getNonPrivateSamples(ArrayList<QueryData> fields, String clause) throws Exception {
+    private ArrayList<IdAccessionVO> getNonPrivateSamples(ArrayList<QueryData> fields,
+                                                          String clause) throws Exception {
         QueryBuilderV2 builder;
         Query query;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
-                          SampleWebMeta.getId() + ", " + SampleWebMeta.getAccessionNumber() + ") ");
-        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleNotVerifiedId);
+                          SampleWebMeta.getId() + ", " +
+                          SampleWebMeta.getAccessionNumber() + ") ");
+        builder.addWhere(SampleWebMeta.getStatusId() + " != " +
+                         Constants.dictionary().SAMPLE_NOT_VERIFIED);
         builder.constructWhere(fields);
 
         builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + clause);
-        builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+        builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" +
+                         Constants.dictionary().ORG_REPORT_TO);
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);

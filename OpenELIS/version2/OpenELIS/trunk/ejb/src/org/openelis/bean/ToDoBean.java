@@ -27,10 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -38,11 +34,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.AnalysisViewVO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.remote.ToDoRemote;
 
@@ -60,33 +56,13 @@ public class ToDoBean implements ToDoRemote {
     private EntityManager          manager;
 
     @EJB
-    private DictionaryLocal        dictionary;
-
-    @EJB
     private WorksheetAnalysisLocal worksheetAnalysis;
 
-    private static Integer        loggedInStatusId, initiatedStatusId, completedStatusId,
-                                    notVerifiedStatusId;
-
-    private static final Logger  log = Logger.getLogger("openelis");
-    
-    @PostConstruct
-    public void init() {
-        try {
-            loggedInStatusId = dictionary.fetchBySystemName("analysis_logged_in").getId();
-            initiatedStatusId = dictionary.fetchBySystemName("analysis_initiated").getId();
-            completedStatusId = dictionary.fetchBySystemName("analysis_completed").getId();
-            notVerifiedStatusId = dictionary.fetchBySystemName("sample_not_verified").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-    }
-    
     public ArrayList<AnalysisViewVO> getLoggedIn() throws Exception {
         Query query;
 
         query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
-        query.setParameter("statusId", loggedInStatusId);
+        query.setParameter("statusId", Constants.dictionary().ANALYSIS_LOGGED_IN);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
@@ -95,7 +71,7 @@ public class ToDoBean implements ToDoRemote {
         Query query;
 
         query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
-        query.setParameter("statusId", initiatedStatusId);
+        query.setParameter("statusId", Constants.dictionary().ANALYSIS_INITIATED);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
@@ -104,7 +80,7 @@ public class ToDoBean implements ToDoRemote {
         Query query;
 
         query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
-        query.setParameter("statusId", completedStatusId);
+        query.setParameter("statusId", Constants.dictionary().ANALYSIS_COMPLETED);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
@@ -134,7 +110,7 @@ public class ToDoBean implements ToDoRemote {
         Query query;
 
         query = manager.createNamedQuery("ToDoSampleView.FetchBySampleStatusId");
-        query.setParameter("statusId", notVerifiedStatusId);
+        query.setParameter("statusId", Constants.dictionary().SAMPLE_NOT_VERIFIED);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }

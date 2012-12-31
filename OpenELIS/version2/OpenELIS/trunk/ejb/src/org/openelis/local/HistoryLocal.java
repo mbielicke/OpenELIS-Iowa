@@ -27,11 +27,9 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
-import org.openelis.utilcommon.AuditActivity;
-
 @Local
 public interface HistoryLocal {
 
-    public void add(Integer referenceId, Integer referenceTableId, AuditActivity activity,
+    public void add(Integer referenceId, Integer referenceTableId, Integer activity,
                     String changes) throws Exception;
 }

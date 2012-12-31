@@ -27,7 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleQAEventLocal;
@@ -85,12 +84,5 @@ public class SampleQAEventManagerProxy {
     }
     
     public void validate(SampleQaEventManager man, ValidationErrorsList errorsList) throws Exception {        
-    }
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception{
-        DictionaryDO data;
-        
-        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
-        return data.getId();
     }
 }

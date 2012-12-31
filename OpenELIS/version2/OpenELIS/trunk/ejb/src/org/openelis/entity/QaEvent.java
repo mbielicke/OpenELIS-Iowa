@@ -43,9 +43,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -222,18 +221,18 @@ public class QaEvent implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.QAEVENT);
+        audit.setReferenceTableId(Constants.table().QAEVENT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("test_id", testId, original.testId, ReferenceTable.TEST)
-                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
+                 .setField("test_id", testId, original.testId, Constants.table().TEST)
+                 .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
                  .setField("is_billable", isBillable, original.isBillable)
                  .setField("reporting_sequence", reportingSequence, original.reportingSequence)
                  .setField("reporting_text", reportingText, original.reportingText);

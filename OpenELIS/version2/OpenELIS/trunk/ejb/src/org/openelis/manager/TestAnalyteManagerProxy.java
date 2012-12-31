@@ -29,37 +29,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestAnalyteLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
 public class TestAnalyteManagerProxy {
-
-    private static int typeSuppl;
-
-    public TestAnalyteManagerProxy() {
-        DictionaryDO data;
-        DictionaryLocal dl;
-
-        dl = EJBFactory.getDictionary();
-
-        if (typeSuppl == 0) {
-            try {
-                data = dl.fetchBySystemName("test_analyte_suplmtl");
-                typeSuppl = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeSuppl = 0;
-            }
-        }
-    }
 
     public TestAnalyteManager fetchByTestId(Integer testId) throws Exception {
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
@@ -182,7 +162,7 @@ public class TestAnalyteManagerProxy {
                         list.add(exc);
                     }
 
-                    if (j > 0 && DataBaseUtil.isSame(typeSuppl, data.getTypeId())) {
+                    if (j > 0 && DataBaseUtil.isSame(Constants.dictionary().TEST_ANALYTE_SUPLMTL, data.getTypeId())) {
                         exc = new GridFieldErrorException("columnAnalyteSupplException", i, j,
                                                           TestMeta.getAnalyteTypeId(),
                                                           "analyteTable");

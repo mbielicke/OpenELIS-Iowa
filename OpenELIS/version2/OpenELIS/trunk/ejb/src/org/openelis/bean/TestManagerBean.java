@@ -34,7 +34,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.TestAnalyteManager;
@@ -50,7 +50,6 @@ import org.openelis.utils.EJBFactory;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class TestManagerBean implements TestManagerRemote {
 
     @Resource
@@ -113,9 +112,9 @@ public class TestManagerBean implements TestManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.TEST, man.getTest().getId());
+            lockBean.validateLock(Constants.table().TEST, man.getTest().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.TEST, man.getTest().getId());
+            lockBean.unlock(Constants.table().TEST, man.getTest().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -132,7 +131,7 @@ public class TestManagerBean implements TestManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.TEST, id);
+            lockBean.lock(Constants.table().TEST, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -143,7 +142,7 @@ public class TestManagerBean implements TestManagerRemote {
     }
 
     public TestManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.TEST, id);
+        lockBean.unlock(Constants.table().TEST, id);
         return fetchById(id);
     }
 

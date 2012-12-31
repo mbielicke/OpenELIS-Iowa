@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.GridFieldErrorException;
@@ -39,50 +39,12 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldLocal;
 import org.openelis.local.AuxFieldValueLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.manager.AuxFieldManager.AuxFieldListItem;
 import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utils.EJBFactory;
 
 public class AuxFieldManagerProxy {
-
-    private static int typeDict, typeNumeric, typeDefault;
-
-    public AuxFieldManagerProxy() {
-        DictionaryDO data;
-        DictionaryLocal dl;
-
-        dl = EJBFactory.getDictionary();
-
-        if (typeDict == 0) {
-            try {
-                data = dl.fetchBySystemName("aux_dictionary");
-                typeDict = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDict = 0;
-            }
-        }
-
-        if (typeNumeric == 0)
-            try {
-                data = dl.fetchBySystemName("aux_numeric");
-                typeNumeric = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeNumeric = 0;
-            }
-
-        if (typeDefault == 0)
-            try {
-                data = dl.fetchBySystemName("aux_default");
-                typeDefault = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDefault = 0;
-            }
-    }
 
     public AuxFieldManager fetchById(Integer id) throws Exception {
         AuxFieldLocal l;
@@ -216,6 +178,7 @@ public class AuxFieldManagerProxy {
     }
 
     public void validate(AuxFieldManager man, ValidationErrorsList list) throws Exception {
+        int numDefault, count;
         AuxFieldLocal al;
         AuxFieldValueLocal vl;
         AuxFieldValueManager vm;
@@ -225,14 +188,12 @@ public class AuxFieldManagerProxy {
         ResultRangeNumeric nr;
         Integer typeId, entryId, firstTypeId;
         ArrayList<Integer> dictList;
-        int numDefault, numOther, count;
 
         al = EJBFactory.getAuxField();
         vl = EJBFactory.getAuxFieldValue();
         value = null;
         fieldName = null;
         numDefault = 0;
-        numOther = 0;
 
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -246,7 +207,6 @@ public class AuxFieldManagerProxy {
             nrList = new ArrayList<ResultRangeNumeric>();
             firstTypeId = 0;
             numDefault = 0;
-            numOther = 0;
             count = vm.count();
 
             for (int j = 0; j < count; j++ ) {
@@ -260,10 +220,9 @@ public class AuxFieldManagerProxy {
                 }
 
                 try {
-                    if (DataBaseUtil.isSame(typeDefault, typeId)) {
+                    if (DataBaseUtil.isSame(Constants.dictionary().AUX_DEFAULT, typeId)) {
                         numDefault++ ;
                     } else if ( !DataBaseUtil.isEmpty(typeId)) {
-                        numOther++ ;
                         if (DataBaseUtil.isSame(0, firstTypeId))
                             //
                             // Assign the first non-null selected type to
@@ -281,7 +240,8 @@ public class AuxFieldManagerProxy {
                     }
 
                     if (DataBaseUtil.isDifferent(firstTypeId, typeId) &&
-                        DataBaseUtil.isDifferent(typeDefault, typeId)) {
+                        DataBaseUtil.isDifferent(Constants.dictionary().AUX_DEFAULT,
+                                                 typeId)) {
                         //
                         // If dissimilar types have been selected for different
                         // aux field values for an aux field than they cannot be
@@ -292,12 +252,13 @@ public class AuxFieldManagerProxy {
                         throw new InconsistencyException("auxMoreThanOneTypeException");
                     }
 
-                    if (DataBaseUtil.isSame(typeNumeric, typeId)) {
+                    if (DataBaseUtil.isSame(Constants.dictionary().AUX_NUMERIC, typeId)) {
                         nr = new ResultRangeNumeric();
                         fieldName = AuxFieldGroupMeta.getFieldValueValue();
                         nr.setRange(value);
                         addNumericIfNoOverLap(nrList, nr);
-                    } else if (DataBaseUtil.isSame(typeDict, typeId)) {
+                    } else if (DataBaseUtil.isSame(Constants.dictionary().AUX_DICTIONARY,
+                                                   typeId)) {
                         entryId = Integer.parseInt(value);
                         fieldName = AuxFieldGroupMeta.getFieldValueValue();
                         if (entryId == null)
@@ -309,18 +270,24 @@ public class AuxFieldManagerProxy {
                             throw new InconsistencyException("auxDictEntryNotUniqueException");
                     }
                 } catch (ParseException pe) {
-                    list.add(new GridFieldErrorException(pe.getKey(), i, j, fieldName,
+                    list.add(new GridFieldErrorException(pe.getKey(),
+                                                         i,
+                                                         j,
+                                                         fieldName,
                                                          "auxFieldValueTable"));
                 } catch (InconsistencyException ie) {
-                    list.add(new GridFieldErrorException(ie.getMessage(), i, j, fieldName,
+                    list.add(new GridFieldErrorException(ie.getMessage(),
+                                                         i,
+                                                         j,
+                                                         fieldName,
                                                          "auxFieldValueTable"));
                 }
             }
         }
     }
 
-    private void addNumericIfNoOverLap(List<ResultRangeNumeric> nrList, ResultRangeNumeric nr)
-                                                                                              throws InconsistencyException {
+    private void addNumericIfNoOverLap(List<ResultRangeNumeric> nrList,
+                                       ResultRangeNumeric nr) throws InconsistencyException {
         ResultRangeNumeric lr;
         for (int i = 0; i < nrList.size(); i++ ) {
             lr = nrList.get(i);
@@ -330,5 +297,4 @@ public class AuxFieldManagerProxy {
 
         nrList.add(nr);
     }
-
 }
