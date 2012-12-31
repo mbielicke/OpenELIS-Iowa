@@ -34,7 +34,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.CategoryManager;
@@ -45,7 +45,6 @@ import org.openelis.utils.EJBFactory;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class CategoryManagerBean implements CategoryManagerRemote {
 
     @Resource
@@ -54,13 +53,13 @@ public class CategoryManagerBean implements CategoryManagerRemote {
     @EJB
     private LockLocal      lockBean;
 
-    public CategoryManagerBean() {       
+    public CategoryManagerBean() {
     }
 
     public CategoryManager fetchById(Integer id) throws Exception {
         return CategoryManager.fetchById(id);
     }
-    
+
     public CategoryManager fetchWithEntries(Integer id) throws Exception {
         return CategoryManager.fetchWithEntries(id);
     }
@@ -95,9 +94,9 @@ public class CategoryManagerBean implements CategoryManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.DICTIONARY, man.getCategory().getId());
+            lockBean.validateLock(Constants.table().DICTIONARY, man.getCategory().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.DICTIONARY, man.getCategory().getId());
+            lockBean.unlock(Constants.table().DICTIONARY, man.getCategory().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -114,7 +113,7 @@ public class CategoryManagerBean implements CategoryManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.DICTIONARY, id);
+            lockBean.lock(Constants.table().DICTIONARY, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -125,10 +124,10 @@ public class CategoryManagerBean implements CategoryManagerRemote {
     }
 
     public CategoryManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.DICTIONARY, id);
+        lockBean.unlock(Constants.table().DICTIONARY, id);
         return fetchById(id);
     }
-    
+
     public DictionaryManager fetchEntryByCategoryId(Integer id) throws Exception {
         return DictionaryManager.fetchByCategoryId(id);
     }

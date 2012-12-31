@@ -26,7 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -164,7 +164,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
             sample.setNextItemSequence(0);
             sample.setRevision(0);
             sample.setEnteredDate(date);
-            sample.setStatusId(proxy().samNotVerifiedId);
+            sample.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
     
         } catch (Exception e) {
             // ignore, we catch this on the validation
@@ -178,13 +178,13 @@ public class SampleManager implements RPC, HasAuxDataInt {
     public void unrelease(boolean unreleaseWithNotes) throws Exception {
         ValidationErrorsList errorsList;
 
-        if ( !proxy().samReleasedId.equals(sample.getStatusId())) {
+        if ( !Constants.dictionary().SAMPLE_RELEASED.equals(sample.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusUnrelease"));
             throw errorsList;
         }
 
-        sample.setStatusId(proxy().samCompletedId);
+        sample.setStatusId(Constants.dictionary().SAMPLE_COMPLETED);
         sample.setReleasedDate(null);
         sample.setRevision(sample.getRevision() + 1);     
         this.unreleaseWithNotes = unreleaseWithNotes;
@@ -323,7 +323,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         if (sampleInternalNotes == null) {
             if (sample.getId() != null) {
                 try {
-                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE,
+                    sampleInternalNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().SAMPLE,
                                                                                 sample.getId(),
                                                                                 false);
                 } catch (NotFoundException e) {
@@ -346,7 +346,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         if (sampleExternalNote == null) {
             if (sample.getId() != null) {
                 try {
-                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE,
+                    sampleExternalNote = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().SAMPLE,
                                                                                sample.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
@@ -387,7 +387,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         if (auxData == null) {
             if (sample.getId() != null) {
                 try {
-                    auxData = AuxDataManager.fetchById(sample.getId(), ReferenceTable.SAMPLE);
+                    auxData = AuxDataManager.fetchById(sample.getId(), Constants.table().SAMPLE);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -439,21 +439,21 @@ public class SampleManager implements RPC, HasAuxDataInt {
                 analysis = analysisMan.getAnalysisAt(a);
                 analysisStatusId = analysis.getStatusId();
 
-                if (analysisStatusId.equals(proxy().anErrorLoggedInId) ||
-                    analysisStatusId.equals(proxy().anErrorInitiatedId) ||
-                    analysisStatusId.equals(proxy().anErrorInPrepId) ||
-                    analysisStatusId.equals(proxy().anErrorCompletedId))
+                if (analysisStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN) ||
+                    analysisStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_INITIATED) ||
+                    analysisStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_INPREP) ||
+                    analysisStatusId.equals(Constants.dictionary().ANALYSIS_ERROR_COMPLETED))
                     e++ ;
-                else if (analysisStatusId.equals(proxy().anLoggedInId) ||
-                         analysisStatusId.equals(proxy().anInitiatedId) ||
-                         analysisStatusId.equals(proxy().anRequeueId) ||
-                         analysisStatusId.equals(proxy().anInPrepId))
+                else if (analysisStatusId.equals(Constants.dictionary().ANALYSIS_LOGGED_IN) ||
+                         analysisStatusId.equals(Constants.dictionary().ANALYSIS_INITIATED) ||
+                         analysisStatusId.equals(Constants.dictionary().ANALYSIS_REQUEUE) ||
+                         analysisStatusId.equals(Constants.dictionary().ANALYSIS_INPREP))
                     l++ ;
-                else if (analysisStatusId.equals(proxy().anCompletedId) ||
-                         analysisStatusId.equals(proxy().anOnHoldId))
+                else if (analysisStatusId.equals(Constants.dictionary().ANALYSIS_COMPLETED) ||
+                         analysisStatusId.equals(Constants.dictionary().ANALYSIS_ON_HOLD))
                     c++ ;
-                else if (analysisStatusId.equals(proxy().anReleasedId) ||
-                         analysisStatusId.equals(proxy().anCancelledId))
+                else if (analysisStatusId.equals(Constants.dictionary().ANALYSIS_RELEASED) ||
+                         analysisStatusId.equals(Constants.dictionary().ANALYSIS_CANCELLED))
                     r++ ;
             }
         }
@@ -462,23 +462,23 @@ public class SampleManager implements RPC, HasAuxDataInt {
         // The only way for a sample to come out of 'Not Verified' status is 
         // through the verification screen
         //
-        if (proxy().samNotVerifiedId.equals(oldStatusId))
+        if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(oldStatusId))
             return;
         
         //
         // change the sample status to lowest
         //
         if (statusWithError || e > 0)
-            statusId = proxy().samErrorId;
+            statusId = Constants.dictionary().SAMPLE_ERROR;
         else if (l > 0)
-            statusId = proxy().samLoggedInId;
+            statusId = Constants.dictionary().SAMPLE_LOGGED_IN;
         else if (c > 0)
-            statusId = proxy().samCompletedId;
+            statusId = Constants.dictionary().SAMPLE_COMPLETED;
         else if (r > 0)
-            statusId = proxy().samReleasedId;
+            statusId = Constants.dictionary().SAMPLE_RELEASED;
 
         if (statusId != null && statusId != oldStatusId) {
-            if (statusId == proxy().samReleasedId) {
+            if (Constants.dictionary().SAMPLE_RELEASED.equals(statusId)) {
                 if (sample.getReleasedDate() == null)
                     sample.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
             } else {

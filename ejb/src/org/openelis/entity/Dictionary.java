@@ -48,9 +48,8 @@ import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -370,17 +369,17 @@ public class Dictionary implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.DICTIONARY);
+        audit.setReferenceTableId(Constants.table().DICTIONARY);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("category_id", categoryId, original.categoryId)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("related_entry_id", relatedEntryId, original.relatedEntryId, ReferenceTable.DICTIONARY)
+                 .setField("related_entry_id", relatedEntryId, original.relatedEntryId, Constants.table().DICTIONARY)
                  .setField("system_name", systemName, original.systemName)
                  .setField("is_active", isActive, original.isActive)
                  .setField("code", code, original.code)

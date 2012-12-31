@@ -44,9 +44,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -213,19 +212,19 @@ public class TestReflex implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.TEST_REFLEX);
+        audit.setReferenceTableId(Constants.table().TEST_REFLEX);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId, ReferenceTable.TEST_ANALYTE)
-                 .setField("test_result_id", testResultId, original.testResultId, ReferenceTable.TEST_RESULT)
-                 .setField("flags_id", flagsId, original.flagsId, ReferenceTable.DICTIONARY)
-                 .setField("add_test_id", addTestId, original.addTestId, ReferenceTable.TEST);
+                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId, Constants.table().TEST_ANALYTE)
+                 .setField("test_result_id", testResultId, original.testResultId, Constants.table().TEST_RESULT)
+                 .setField("flags_id", flagsId, original.flagsId, Constants.table().DICTIONARY)
+                 .setField("add_test_id", addTestId, original.addTestId, Constants.table().TEST);
 
         return audit;
     }

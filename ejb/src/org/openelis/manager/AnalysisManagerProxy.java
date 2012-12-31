@@ -30,50 +30,17 @@ import java.util.HashMap;
 
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisManagerProxy {
-    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
-                             anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
-                             anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId,
-                             anErrorCompletedId, sampleNotVerifiedId, sampleReleasedId;
 
-    public AnalysisManagerProxy() {
-        DictionaryLocal l;
-
-        if (anLoggedInId == null) {
-            l = EJBFactory.getDictionary();
-
-            try {
-                anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
-                anInitiatedId = l.fetchBySystemName("analysis_initiated").getId();
-                anCompletedId = l.fetchBySystemName("analysis_completed").getId();
-                anReleasedId = l.fetchBySystemName("analysis_released").getId();
-                anInPrepId = l.fetchBySystemName("analysis_inprep").getId();
-                anOnHoldId = l.fetchBySystemName("analysis_on_hold").getId();
-                anRequeueId = l.fetchBySystemName("analysis_requeue").getId();
-                anCancelledId = l.fetchBySystemName("analysis_cancelled").getId();
-                anErrorLoggedInId = l.fetchBySystemName("analysis_error_logged_in").getId();
-                anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
-                anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
-                anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
-                sampleNotVerifiedId = l.fetchBySystemName("sample_not_verified").getId();
-                sampleReleasedId = l.fetchBySystemName("sample_released").getId();
-            } catch (Exception e) {
-                e.printStackTrace();
-                anLoggedInId = null;
-            }
-        }
-    }
-    
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         AnalysisViewDO anDO;
         ArrayList<AnalysisViewDO> analyses;
@@ -93,9 +60,9 @@ public class AnalysisManagerProxy {
     }
 
     public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
-        boolean        unresolved;
-        int            i, numUnresolved;
-        Integer        oldId, parentId, prepId;
+        boolean unresolved;
+        int i, numUnresolved;
+        Integer oldId, parentId, prepId;
         AnalysisViewDO analysisDO;
 
         numUnresolved = 0;
@@ -104,7 +71,8 @@ public class AnalysisManagerProxy {
             analysisDO = man.getAnalysisAt(i);
 
             // try to resolve a negative prep analysis id
-            if (analysisDO.getPreAnalysisId() != null && analysisDO.getPreAnalysisId() < 0) {
+            if (analysisDO.getPreAnalysisId() != null &&
+                analysisDO.getPreAnalysisId() < 0) {
                 prepId = idHash.get(analysisDO.getPreAnalysisId());
                 if (prepId != null) {
                     analysisDO.setPreAnalysisId(prepId);
@@ -114,7 +82,8 @@ public class AnalysisManagerProxy {
             }
 
             // try to resolve a negative parent analysis id
-            if (analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() < 0) {
+            if (analysisDO.getParentAnalysisId() != null &&
+                analysisDO.getParentAnalysisId() < 0) {
                 parentId = idHash.get(analysisDO.getParentAnalysisId());
                 if (parentId != null) {
                     analysisDO.setParentAnalysisId(parentId);
@@ -122,11 +91,11 @@ public class AnalysisManagerProxy {
                     unresolved = true;
                 }
             }
-            
+
             // if both the prep and parent ids are resolved, then add/update the
             // analysis and set the mappings in the hash, otherwise skip
-            if (!unresolved) {
-                if (!idHash.containsKey(analysisDO.getId())) {
+            if ( !unresolved) {
+                if ( !idHash.containsKey(analysisDO.getId())) {
                     if (analysisDO.getId() < 0) {
                         oldId = analysisDO.getId();
                         add(man, analysisDO, i);
@@ -137,15 +106,15 @@ public class AnalysisManagerProxy {
                     idHash.put(analysisDO.getId(), null);
                 }
             } else {
-                numUnresolved++;
+                numUnresolved++ ;
             }
         }
-        
+
         return numUnresolved;
     }
 
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
-        AnalysisListItem      item;
+        AnalysisListItem item;
         AnalysisReportFlagsDO arfDO;
 
         analysisDO.setSampleItemId(man.getSampleItemId());
@@ -153,7 +122,7 @@ public class AnalysisManagerProxy {
 
         arfDO = new AnalysisReportFlagsDO(analysisDO.getId(), "N", "N", null, 0, "N");
         EJBFactory.getAnalysisReportFlags().add(arfDO);
-        
+
         item = man.getItemAt(i);
 
         if (item.analysisUsers != null) {
@@ -173,19 +142,19 @@ public class AnalysisManagerProxy {
 
         if (item.analysisInternalNotes != null) {
             man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-            man.getInternalNotesAt(i).setReferenceTableId(ReferenceTable.ANALYSIS);
+            man.getInternalNotesAt(i).setReferenceTableId(Constants.table().ANALYSIS);
             man.getInternalNotesAt(i).add();
         }
 
         if (item.analysisExternalNote != null) {
             man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-            man.getExternalNoteAt(i).setReferenceTableId(ReferenceTable.ANALYSIS);
+            man.getExternalNoteAt(i).setReferenceTableId(Constants.table().ANALYSIS);
             man.getExternalNoteAt(i).add();
         }
 
         if (item.storages != null) {
             man.getStorageAt(i).setReferenceId(analysisDO.getId());
-            man.getStorageAt(i).setReferenceTableId(ReferenceTable.ANALYSIS);
+            man.getStorageAt(i).setReferenceTableId(Constants.table().ANALYSIS);
             man.getStorageAt(i).add();
         }
     }
@@ -194,7 +163,7 @@ public class AnalysisManagerProxy {
         Integer analysisRefId;
         AnalysisListItem item;
 
-        analysisRefId = ReferenceTable.ANALYSIS;
+        analysisRefId = Constants.table().ANALYSIS;
 
         if (analysisDO.getId() == null) {
             analysisDO.setSampleItemId(man.getSampleItemId());
@@ -204,17 +173,19 @@ public class AnalysisManagerProxy {
             // if the analysis was moved to a different sample item, we need to
             // update the sample_item_id
             //
-            if (!man.getSampleItemId().equals(analysisDO.getSampleItemId()))
+            if ( !man.getSampleItemId().equals(analysisDO.getSampleItemId()))
                 analysisDO.setSampleItemId(man.getSampleItemId());
             //
-            // we delay setting the released date until after the validation, 
-            // to detect newly released analyses 
+            // we delay setting the released date until after the validation,
+            // to detect newly released analyses
             //
-            if (anReleasedId.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() == null)
-                analysisDO.setReleasedDate(getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));   
+            if (Constants.dictionary().ANALYSIS_RELEASED.equals(analysisDO.getStatusId()) &&
+                analysisDO.getReleasedDate() == null)
+                analysisDO.setReleasedDate(getCurrentDatetime(Datetime.YEAR,
+                                                              Datetime.MINUTE));
             EJBFactory.getAnalysis().update(analysisDO);
         }
-        
+
         item = man.getItemAt(i);
 
         if (item.analysisUsers != null) {
@@ -255,10 +226,8 @@ public class AnalysisManagerProxy {
         validate(man, null, null, null, errorsList);
     }
 
-    public void validate(AnalysisManager man,
-                         String sampleItemSequence,
-                         Integer sampleTypeId,
-                         String sampleDomain,
+    public void validate(AnalysisManager man, String sampleItemSequence,
+                         Integer sampleTypeId, String sampleDomain,
                          ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
         AnalysisViewDO analysisDO;
@@ -272,13 +241,14 @@ public class AnalysisManagerProxy {
             testMan = man.getTestAt(i);
 
             //
-            // We do NOT need to validate analyses that are in cancelled or released
-            // status 
+            // We do NOT need to validate analyses that are in cancelled or
+            // released
+            // status
             //
-            if (anCancelledId.equals(analysisDO.getStatusId()) ||
-                (anReleasedId.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() != null))
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(analysisDO.getStatusId()) ||
+                (Constants.dictionary().ANALYSIS_RELEASED.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() != null))
                 continue;
-                            
+
             //
             // Only validate the analysis if it has changed, so we don't cause
             // problems when a user updates one analysis on a sample and another
@@ -286,14 +256,16 @@ public class AnalysisManagerProxy {
             //
             if (analysisDO.isChanged()) {
                 if (analysisDO.getTestId() == null)
-                    errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
-    
+                    errorsList.add(new FormErrorException("analysisTestIdMissing",
+                                                          sampleItemSequence));
+
                 if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                     errorsList.add(new FormErrorException("analysisSectionIdMissing",
                                                           analysisDO.getTestName(),
                                                           analysisDO.getMethodName()));
-    
-                // if unit is null, check the test definition to see if all sample types
+
+                // if unit is null, check the test definition to see if all
+                // sample types
                 // have units defined. if so, require the user to enter units
                 if (analysisDO.getTestId() != null &&
                     analysisDO.getUnitOfMeasureId() == null &&
@@ -301,14 +273,15 @@ public class AnalysisManagerProxy {
                     errorsList.add(new FormErrorException("analysisUnitRequired",
                                                           analysisDO.getTestName(),
                                                           analysisDO.getMethodName()));
-    
-                if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
+
+                if (analysisDO.getStartedDate() != null &&
+                    analysisDO.getCompletedDate() != null &&
                     analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
                     errorsList.add(new FormErrorException("startedDateInvalidError",
                                                           analysisDO.getTestName(),
                                                           analysisDO.getMethodName()));
             }
-            
+
             item = man.getItemAt(i);
             // validate the children
 

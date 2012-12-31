@@ -57,7 +57,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.ProjectLocal;
 import org.openelis.local.SectionCacheLocal;
@@ -87,7 +87,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
     private SectionCacheLocal section;
 
     @EJB
-    private DictionaryLocal dictionary;
+    private CategoryCacheLocal categoryCache;
 
     @EJB
     private ProjectLocal    project;
@@ -357,7 +357,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         l.add(new OptionListItem("", ""));
         statusDO = new ArrayList<DictionaryDO>();
         try {
-            statusDO = dictionary.fetchByCategorySystemName("analysis_status");
+            statusDO = categoryCache.getBySystemName("analysis_status").getDictionaryList();
             for (DictionaryDO n : statusDO)
                 l.add(new OptionListItem(n.getId().toString(), n.getEntry().toString()));
         } catch (Exception e) {

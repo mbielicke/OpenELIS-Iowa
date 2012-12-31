@@ -28,8 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,6 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.entity.OrderRecurrence;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -46,7 +45,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.OrderRecurrenceLocal;
 import org.openelis.meta.OrderMeta;
 
@@ -57,23 +55,6 @@ public class OrderRecurrenceBean implements OrderRecurrenceLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
-    
-    @EJB
-    private DictionaryLocal dictionary;
-    
-    private static Integer monthId, yearId;
-    
-    @PostConstruct
-    public void init() {
-        try {
-            if (monthId == null) {
-                monthId = dictionary.fetchBySystemName("order_recurrence_unit_months").getId();
-                yearId = dictionary.fetchBySystemName("order_recurrence_unit_years").getId();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
     
     public OrderRecurrenceDO fetchByOrderId(Integer orderId) throws Exception {
         Query query;
@@ -217,7 +198,7 @@ public class OrderRecurrenceBean implements OrderRecurrenceLocal {
         nyr = byr;
         nday = bday;                    
         nmon = bmon;        
-        if (monthId.equals(unit)) {             
+        if (Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS.equals(unit)) {             
             if (dfyr > 0) 
                 nmons = bmon + (dfyr-1)*11 + emon;
             else 
@@ -245,7 +226,7 @@ public class OrderRecurrenceBean implements OrderRecurrenceLocal {
                 
                 iter += freq;
             }
-        } else if (yearId.equals(unit)) {
+        } else if (Constants.dictionary().ORDER_RECURRENCE_UNIT_YEARS.equals(unit)) {
             if (nmon != 1 || nday <= 28) {
                 return true;
             } else {

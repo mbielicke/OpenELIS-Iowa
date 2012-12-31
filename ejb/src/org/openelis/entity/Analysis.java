@@ -47,10 +47,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -378,24 +377,24 @@ public class Analysis implements Auditable, Cloneable {
         }
     }
 
-  public Audit getAudit(AuditActivity activity) {
+  public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.ANALYSIS);
+        audit.setReferenceTableId(Constants.table().ANALYSIS);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_item_id", sampleItemId, original.sampleItemId, ReferenceTable.SAMPLE_ITEM)
+                 .setField("sample_item_id", sampleItemId, original.sampleItemId, Constants.table().SAMPLE_ITEM)
                  .setField("revision", revision, original.revision)
-                 .setField("test_id", testId, original.testId, ReferenceTable.TEST)
-                 .setField("section_id", sectionId, original.sectionId, ReferenceTable.SECTION)
-                 .setField("pre_analysis_id", preAnalysisId, original.preAnalysisId, ReferenceTable.ANALYSIS)
-                 .setField("parent_analysis_id", parentAnalysisId, original.parentAnalysisId, ReferenceTable.ANALYSIS)
-                 .setField("parent_result_id", parentResultId, original.parentResultId, ReferenceTable.RESULT)
+                 .setField("test_id", testId, original.testId, Constants.table().TEST)
+                 .setField("section_id", sectionId, original.sectionId, Constants.table().SECTION)
+                 .setField("pre_analysis_id", preAnalysisId, original.preAnalysisId, Constants.table().ANALYSIS)
+                 .setField("parent_analysis_id", parentAnalysisId, original.parentAnalysisId, Constants.table().ANALYSIS)
+                 .setField("parent_result_id", parentResultId, original.parentResultId, Constants.table().RESULT)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.DICTIONARY)
-                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, Constants.table().DICTIONARY)
+                 .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("available_date", availableDate, original.availableDate)
                  .setField("started_date", startedDate, original.startedDate)
                  .setField("completed_date", completedDate, original.completedDate)

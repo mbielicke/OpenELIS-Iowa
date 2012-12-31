@@ -22,10 +22,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -188,21 +187,21 @@ public class Worksheet implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.WORKSHEET);
+        audit.setReferenceTableId(Constants.table().WORKSHEET);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("created_date", createdDate, original.createdDate)
                  .setField("system_user_id", systemUserId, original.systemUserId)
-                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
-                 .setField("format_id", formatId, original.formatId, ReferenceTable.DICTIONARY)
+                 .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
+                 .setField("format_id", formatId, original.formatId, Constants.table().DICTIONARY)
                  .setField("subset_capacity", subsetCapacity, original.subsetCapacity)
-                 .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId, ReferenceTable.WORKSHEET)
-                 .setField("instrument_id", instrumentId, original.instrumentId, ReferenceTable.INSTRUMENT)
+                 .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId, Constants.table().WORKSHEET)
+                 .setField("instrument_id", instrumentId, original.instrumentId, Constants.table().INSTRUMENT)
                  .setField("description", description, original.description);
 
         return audit;

@@ -38,14 +38,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.entity.TestResult;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.ResultValidator.Type;
@@ -59,7 +60,7 @@ public class TestResultBean implements TestResultLocal {
     private EntityManager   manager;
 
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryCacheLocal dictionaryCache;
 
     private static HashMap<Integer, Type> types;
     
@@ -67,19 +68,15 @@ public class TestResultBean implements TestResultLocal {
     public void init() {        
         if (types == null) {
             types = new HashMap<Integer, Type>();
-            try {
-                types.put(dictionary.fetchBySystemName("test_res_type_dictionary").getId(), Type.DICTIONARY);
-                types.put(dictionary.fetchBySystemName("test_res_type_numeric").getId(), Type.NUMERIC);
-                types.put(dictionary.fetchBySystemName("test_res_type_titer").getId(), Type.TITER);
-                types.put(dictionary.fetchBySystemName("test_res_type_date").getId(), Type.DATE);
-                types.put(dictionary.fetchBySystemName("test_res_type_date_time").getId(), Type.DATE_TIME);
-                types.put(dictionary.fetchBySystemName("test_res_type_time").getId(), Type.TIME);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_lower").getId(), Type.ALPHA_LOWER);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_upper").getId(), Type.ALPHA_UPPER);
-                types.put(dictionary.fetchBySystemName("test_res_type_alpha_mixed").getId(), Type.ALPHA_MIXED);
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
+            types.put(Constants.dictionary().TEST_RES_TYPE_DICTIONARY, Type.DICTIONARY);
+            types.put(Constants.dictionary().TEST_RES_TYPE_NUMERIC, Type.NUMERIC);
+            types.put(Constants.dictionary().TEST_RES_TYPE_TITER, Type.TITER);
+            types.put(Constants.dictionary().TEST_RES_TYPE_DATE, Type.DATE);
+            types.put(Constants.dictionary().TEST_RES_TYPE_DATE_TIME, Type.DATE_TIME);
+            types.put(Constants.dictionary().TEST_RES_TYPE_TIME, Type.TIME);
+            types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER, Type.ALPHA_LOWER);
+            types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER, Type.ALPHA_UPPER);
+            types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED, Type.ALPHA_MIXED);
         }
     }
 
@@ -89,7 +86,7 @@ public class TestResultBean implements TestResultLocal {
         TestResultViewDO data;
         Integer rg;
         Query query;
-        DictionaryViewDO dict;
+        DictionaryDO dict;
         Type type;
 
         list = null;
@@ -118,7 +115,7 @@ public class TestResultBean implements TestResultLocal {
                      */
                     type = types.get(data.getTypeId());
                     if (type == Type.DICTIONARY) {
-                        dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                        dict = dictionaryCache.getById(Integer.parseInt(data.getValue()));
                         if (dict != null)
                             data.setDictionary(dict.getEntry());
                     }

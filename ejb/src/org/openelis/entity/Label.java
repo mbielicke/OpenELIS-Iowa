@@ -43,9 +43,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -152,18 +151,18 @@ public class Label implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.LABEL);
+        audit.setReferenceTableId(Constants.table().LABEL);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("printer_type_id", printerTypeId, original.printerTypeId, ReferenceTable.DICTIONARY)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
+                 .setField("printer_type_id", printerTypeId, original.printerTypeId, Constants.table().DICTIONARY)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().SCRIPTLET);
 
         return audit;
     }

@@ -45,10 +45,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -199,17 +198,17 @@ public class Storage implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.STORAGE);
+        audit.setReferenceTableId(Constants.table().STORAGE);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("reference_id", referenceId, original.referenceId)
                  .setField("reference_table_id", referenceTableId, original.referenceTableId)
-                 .setField("storage_location_id", storageLocationId, original.storageLocationId, ReferenceTable.STORAGE_LOCATION)
+                 .setField("storage_location_id", storageLocationId, original.storageLocationId, Constants.table().STORAGE_LOCATION)
                  .setField("checkin", checkin, original.checkin)
                  .setField("checkout", checkout, original.checkout)
                  .setField("system_user_id", systemUserId, original.systemUserId);

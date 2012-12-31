@@ -36,7 +36,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.OrganizationContactManager;
@@ -47,9 +47,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class OrganizationManagerBean implements OrganizationManagerRemote {
 
     @Resource
@@ -61,7 +59,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     public OrganizationManager fetchById(Integer id) throws Exception {
         return OrganizationManager.fetchById(id);
     }
-    
+
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
         return OrganizationManager.fetchWithContacts(id);
     }
@@ -69,15 +67,15 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     public OrganizationManager fetchWithParameters(Integer id) throws Exception {
         return OrganizationManager.fetchWithParameters(id);
     }
-    
+
     public ArrayList<OrganizationManager> fetchByIdList(ArrayList<Integer> ids) throws Exception {
-        ArrayList<OrganizationManager> list;        
-        
+        ArrayList<OrganizationManager> list;
+
         list = new ArrayList<OrganizationManager>();
-        
-        for (Integer id : ids) 
-            list.add(fetchById(id));        
-        
+
+        for (Integer id : ids)
+            list.add(fetchById(id));
+
         return list;
     }
 
@@ -107,7 +105,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
 
     public OrganizationManager update(OrganizationManager man) throws Exception {
         UserTransaction ut;
-        
+
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
@@ -115,9 +113,10 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());        
+            lockBean.validateLock(Constants.table().ORGANIZATION, man.getOrganization()
+                                                                     .getId());
             man.update();
-            lockBean.unlock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
+            lockBean.unlock(Constants.table().ORGANIZATION, man.getOrganization().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -129,7 +128,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
 
     public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
         UserTransaction ut;
-        
+
         checkSecurityForNotify(ModuleFlags.SELECT);
 
         man.getParameters().validate();
@@ -137,9 +136,10 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());        
+            lockBean.validateLock(Constants.table().ORGANIZATION, man.getOrganization()
+                                                                     .getId());
             man.updateForNotify();
-            lockBean.unlock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
+            lockBean.unlock(Constants.table().ORGANIZATION, man.getOrganization().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -156,7 +156,7 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.ORGANIZATION, id);
+            lockBean.lock(Constants.table().ORGANIZATION, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -167,14 +167,14 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.ORGANIZATION, id);
+        lockBean.unlock(Constants.table().ORGANIZATION, id);
         return fetchById(id);
     }
 
     public OrganizationContactManager fetchContactByOrganizationId(Integer id) throws Exception {
         return OrganizationContactManager.fetchByOrganizationId(id);
     }
-    
+
     public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception {
         return OrganizationParameterManager.fetchByOrganizationId(id);
     }

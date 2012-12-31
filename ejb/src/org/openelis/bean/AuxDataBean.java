@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -44,6 +43,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.SystemVariableDO;
@@ -53,39 +53,22 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.remote.AuxDataRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager        manager;
 
     @EJB
-    private DictionaryLocal      dictionary;
-
-    @EJB
     private DictionaryCacheLocal dictionaryCache;
-    
-    private static Integer       dictionaryTypeId;
-    
-    private static final Logger log = Logger.getLogger("openelis");
-    
-    @PostConstruct
-    public void init() {
-        if (dictionaryTypeId == null) {
-            try {
-                dictionaryTypeId = dictionary.fetchBySystemName("aux_dictionary").getId(); 
-            } catch (Throwable e) {
-                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-            }
-        }
-    }
 
-    public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
+    private static final Logger  log = Logger.getLogger("openelis");
+
+    public ArrayList<AuxDataViewDO> fetchById(Integer referenceId,
+                                              Integer referenceTableId) throws Exception {
         Query query;
         ArrayList<AuxDataViewDO> list;
         AuxDataViewDO data;
@@ -98,7 +81,8 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
             list = DataBaseUtil.toArrayList(query.getResultList());
             for (int i = 0; i < list.size(); i++ ) {
                 data = list.get(i);
-                if (dictionaryTypeId.equals(data.getTypeId()) && data.getValue() != null) {
+                if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()) &&
+                    data.getValue() != null) {
                     dict = dictionaryCache.getById(new Integer(data.getValue()));
                     data.setDictionary(dict.getEntry());
                 }
@@ -110,8 +94,9 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         }
         return list;
     }
-    
-    public ArrayList<AuxDataViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer referenceTableId) {
+
+    public ArrayList<AuxDataViewDO> fetchByIds(ArrayList<Integer> referenceIds,
+                                               Integer referenceTableId) {
         Integer dictId;
         String value;
         Query query;
@@ -122,16 +107,17 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
         query = manager.createNamedQuery("AuxData.FetchByIds");
         query.setParameter("ids", referenceIds);
-        query.setParameter("tableId", referenceTableId);        
+        query.setParameter("tableId", referenceTableId);
         list = DataBaseUtil.toArrayList(query.getResultList());
-        
+
         dictMap = new HashMap<String, DictionaryDO>();
-        
+
         for (int i = 0; i < list.size(); i++ ) {
             data = list.get(i);
 
             value = data.getValue();
-            if (dictionaryTypeId.equals(data.getTypeId()) && value != null) {
+            if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()) &&
+                value != null) {
                 dict = dictMap.get(value);
                 /*
                  * the following helps avoid creating new integers from the same
@@ -140,14 +126,16 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
                  * fetching it failed previously
                  */
                 if (dict == null) {
-                    dictId = Integer.valueOf(value);                    
-                    
+                    dictId = Integer.valueOf(value);
+
                     try {
                         dict = dictionaryCache.getById(dictId);
                         dictMap.put(value, dict);
                         data.setDictionary(dict.getEntry());
                     } catch (Exception e) {
-                        log.log(Level.SEVERE, "Failed to lookup dictionary entry with id: " + dictId, e);
+                        log.log(Level.SEVERE,
+                                "Failed to lookup dictionary entry with id: " + dictId,
+                                e);
                     }
                 } else {
                     data.setDictionary(dict.getEntry());
@@ -157,8 +145,7 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
         return list;
     }
-    
-    
+
     public ArrayList<AuxDataViewDO> fetchForDataView(Integer referenceTableId,
                                                      ArrayList<Integer> ids) throws Exception {
         Query query;
@@ -166,7 +153,7 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
         if (ids.size() == 0)
             throw new NotFoundException();
-        
+
         query = manager.createNamedQuery("AuxData.FetchForDataView");
         query.setParameter("ids", ids);
         query.setParameter("tableId", referenceTableId);
@@ -174,62 +161,63 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
         if (auxList.isEmpty())
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(auxList);
-    }    
+    }
 
     public IdVO fetchGroupIdBySystemVariable(String sysVariableKey) throws Exception {
         SystemVariableDO sysVariable;
         AuxFieldGroupDO groupDO;
         IdVO idVO;
         Query query;
-    
+
         query = manager.createNamedQuery("SystemVariable.FetchByName");
         query.setParameter("name", sysVariableKey);
         sysVariable = (SystemVariableDO)query.getSingleResult();
-    
+
         query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
         query.setParameter("name", sysVariable.getValue());
         groupDO = (AuxFieldGroupDO)query.getSingleResult();
-    
+
         idVO = new IdVO(groupDO.getId());
-    
+
         return idVO;
     }
-    
-    public ArrayList<AuxDataViewDO> fetchByIdAnalyteName(Integer referenceId, Integer referenceTableId,
+
+    public ArrayList<AuxDataViewDO> fetchByIdAnalyteName(Integer referenceId,
+                                                         Integer referenceTableId,
                                                          String analyteName) throws Exception {
         Query query;
         List<AuxDataViewDO> list;
-        
+
         query = manager.createNamedQuery("AuxData.FetchByIdAnalyteName");
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
         query.setParameter("analyteName", analyteName);
-        
+
         list = (List<AuxDataViewDO>)query.getResultList();
 
         if (list.isEmpty())
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(list);
     }
-    
+
     public ArrayList<AuxDataViewDO> fetchByRefIdRefTableIdGroupName(Integer referenceId,
                                                                     Integer referenceTableId,
                                                                     String auxFieldGroupName) throws Exception {
         Query query;
         List<AuxDataViewDO> list;
-        
+
         query = manager.createNamedQuery("AuxData.FetchByRefIdRefTableIdGroupName");
         query.setParameter("referenceId", referenceId);
         query.setParameter("referenceTableId", referenceTableId);
         query.setParameter("auxFieldGroupName", auxFieldGroupName);
         list = query.getResultList();
-        
+
         if (list.isEmpty())
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(list);
     }
 

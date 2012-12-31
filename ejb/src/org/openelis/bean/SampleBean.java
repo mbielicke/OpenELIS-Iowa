@@ -31,11 +31,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -61,7 +57,6 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
@@ -75,17 +70,9 @@ public class SampleBean implements SampleLocal, SampleRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
 
-    @EJB
-    private DictionaryLocal         dictionary;
-
     private static final SampleMeta meta = new SampleMeta();
 
-    private static final Logger     log  = Logger.getLogger("openelis");
-
     private static HashMap<String, String> wellOrgFieldMap, reportToAddressFieldMap;
-
-    private static Integer                 reportToTypeId, sampleErrorStatusId,
-                    analysisReleasedStatusId;
 
     static {
         wellOrgFieldMap = new HashMap<String, String>();
@@ -123,23 +110,6 @@ public class SampleBean implements SampleLocal, SampleRemote {
                                     SampleMeta.getAddressWorkPhone());
         reportToAddressFieldMap.put(SampleMeta.getAddressFaxPhone(),
                                     SampleMeta.getAddressFaxPhone());
-    }
-
-    @PostConstruct
-    public void init() {
-        if (reportToTypeId == null) {
-            try {
-                reportToTypeId = dictionary.fetchBySystemName("org_report_to").getId();
-                sampleErrorStatusId = dictionary.fetchBySystemName("sample_error")
-                                                .getId();
-                analysisReleasedStatusId = dictionary.fetchBySystemName("analysis_released")
-                                                     .getId();
-            } catch (Throwable e) {
-                log.log(Level.SEVERE,
-                        "Failed to lookup constants for dictionary entries",
-                        e);
-            }
-        }
     }
 
     public ArrayList<IdAccessionVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -211,8 +181,9 @@ public class SampleBean implements SampleLocal, SampleRemote {
         builder.constructWhere(fields);
 
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
-                         analysisReleasedStatusId);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleErrorStatusId);
+                         Constants.dictionary().ANALYSIS_RELEASED);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
+                         Constants.dictionary().SAMPLE_ERROR);
 
         orgPresent = false;
         for (QueryData f : fields) {
@@ -223,7 +194,8 @@ public class SampleBean implements SampleLocal, SampleRemote {
         }
 
         if (orgPresent)
-            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" + reportToTypeId);
+            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +
+                             Constants.dictionary().ORG_REPORT_TO);
 
         builder.setOrderBy(SampleMeta.getAccessionNumber());
         query = manager.createQuery(builder.getEJBQL());
@@ -517,7 +489,8 @@ public class SampleBean implements SampleLocal, SampleRemote {
                           ") ");
 
         builder.constructWhere(fields);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleErrorStatusId);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
+                         Constants.dictionary().SAMPLE_ERROR);
 
         orgPresent = false;
         for (QueryData f : fields) {
@@ -528,7 +501,8 @@ public class SampleBean implements SampleLocal, SampleRemote {
         }
 
         if (orgPresent)
-            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" + reportToTypeId);
+            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +
+                             Constants.dictionary().ORG_REPORT_TO);
 
         dateClause = new ArrayList<String>();
 
@@ -602,7 +576,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(results);
     }
 
-    public SampleDO add(SampleDO data) {
+    public SampleDO add(SampleDO data) throws Exception {
         Sample entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

@@ -38,7 +38,6 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.entity.Section;
@@ -46,33 +45,26 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.LockLocal;
 import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.meta.SectionMeta;
 import org.openelis.remote.SectionRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class SectionBean implements SectionRemote, SectionLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager               manager;    
-    
+    private EntityManager            manager;
+
     @EJB
-    private LockLocal                   lock;
-    
-    @EJB
-    private SectionCacheLocal           secCache;
-       
-    private static final SectionMeta    meta = new SectionMeta();
+    private SectionCacheLocal        secCache;
+
+    private static final SectionMeta meta = new SectionMeta();
 
     public SectionViewDO fetchById(Integer id) throws Exception {
         SectionViewDO data;
@@ -92,7 +84,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
 
     public ArrayList<SectionDO> fetchByName(String name, int maxResults) throws Exception {
         Query query;
-        
+
         query = manager.createNamedQuery("Section.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
@@ -109,8 +101,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
         return DataBaseUtil.toArrayList(sections);
     }
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                     throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
@@ -118,8 +109,8 @@ public class SectionBean implements SectionRemote, SectionLocal {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
 
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SectionMeta.getId() + ", " +
-                          SectionMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          SectionMeta.getId() + ", " + SectionMeta.getName() + ") ");
 
         builder.constructWhere(fields);
         builder.setOrderBy(SectionMeta.getName());
@@ -141,10 +132,6 @@ public class SectionBean implements SectionRemote, SectionLocal {
     public SectionDO add(SectionDO data) throws Exception {
         Section entity;
 
-        checkSecurity(ModuleFlags.ADD);
-
-        validate(data);
-
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = new Section();
@@ -157,8 +144,8 @@ public class SectionBean implements SectionRemote, SectionLocal {
         manager.persist(entity);
 
         data.setId(entity.getId());
-        
-        // empty the cache so that it gets refreshed on the next fetch        
+
+        // empty the cache so that it gets refreshed on the next fetch
         secCache.evict();
 
         return data;
@@ -167,44 +154,22 @@ public class SectionBean implements SectionRemote, SectionLocal {
     public SectionDO update(SectionDO data) throws Exception {
         Section entity;
 
-        if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.SECTION, data.getId());
+        if ( !data.isChanged())
             return data;
-        }
-        checkSecurity(ModuleFlags.UPDATE);
 
-        validate(data);
-
-        lock.validateLock(ReferenceTable.SECTION, data.getId());
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Section.class, data.getId());
 
         // need to remove it before we change it
         secCache.evict();
-        
+
         entity.setDescription(data.getDescription());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setName(data.getName());
         entity.setIsExternal(data.getIsExternal());
         entity.setParentSectionId(data.getParentSectionId());
 
-        lock.unlock(ReferenceTable.SECTION, data.getId());
-
         return data;
-    }
-
-    public SectionViewDO fetchForUpdate(Integer id) throws Exception {
-        try {
-            lock.lock(ReferenceTable.SECTION, id);
-            return fetchById(id);
-        } catch (NotFoundException e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    public SectionViewDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.SECTION, id);
-        return fetchById(id);
     }
 
     public void validate(SectionDO data) throws Exception {
@@ -219,22 +184,25 @@ public class SectionBean implements SectionRemote, SectionLocal {
         name = data.getName();
         exceptionList = new ValidationErrorsList();
         if (name == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException", SectionMeta.getName()));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                      SectionMeta.getName()));
         } else {
             query = manager.createNamedQuery("Section.FetchByName");
             query.setParameter("name", name);
             list = query.getResultList();
-            for (i = 0; i < list.size(); i++) {
+            for (i = 0; i < list.size(); i++ ) {
                 sectDO = list.get(i);
-                if(!sectDO.getId().equals(data.getId())) {
-                    exceptionList.add(new FieldErrorException("fieldUniqueException", SectionMeta.getName()));
+                if ( !sectDO.getId().equals(data.getId())) {
+                    exceptionList.add(new FieldErrorException("fieldUniqueException",
+                                                              SectionMeta.getName()));
                     break;
                 }
             }
         }
 
-        if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null) 
-            exceptionList.add(new FieldErrorException("orgNotSpecForExtSectionException", null));        
+        if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null)
+            exceptionList.add(new FieldErrorException("orgNotSpecForExtSectionException",
+                                                      null));
 
         psecId = data.getParentSectionId();
         if (psecId != null && psecId.equals(data.getId())) {
@@ -244,9 +212,5 @@ public class SectionBean implements SectionRemote, SectionLocal {
 
         if (exceptionList.size() > 0)
             throw exceptionList;
-    }
-
-    private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("section", flag);
     }
 }

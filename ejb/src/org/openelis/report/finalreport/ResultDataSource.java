@@ -33,9 +33,10 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.utils.EJBFactory;
 
@@ -46,10 +47,8 @@ public class ResultDataSource implements JRRewindableDataSource {
 	private Iterator<HashMap<String, String>> iter;
 	private HashMap<Integer, String> dictValueMap;
 	private ResultLocal rl;
-	private DictionaryLocal dl;
+	private DictionaryCacheLocal dcl;
 	
-	private static Integer typeDictionary;
-
 	private ResultDataSource() {
 	}
 
@@ -59,7 +58,7 @@ public class ResultDataSource implements JRRewindableDataSource {
 
 		try {
 			rl = EJBFactory.getResult();
-			dl = EJBFactory.getDictionary();
+			dcl = EJBFactory.getDictionaryCache();
 		} catch (Exception e) {
 			rows = null;
 			return;
@@ -71,8 +70,6 @@ public class ResultDataSource implements JRRewindableDataSource {
 			throw e;
 		}
 
-		if (typeDictionary == null)
-			typeDictionary = dl.fetchBySystemName("test_res_type_dictionary").getId();
 		if (dictValueMap == null)
 			dictValueMap = new HashMap<Integer, String>();
 
@@ -150,11 +147,11 @@ public class ResultDataSource implements JRRewindableDataSource {
 			data = list.get(i - 1);
 			value = data.getValue();
 			try {
-				if (typeDictionary.equals(data.getTypeId())) {
+				if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
 					id = Integer.parseInt(value);
 					value = dictValueMap.get(id);
 					if (value == null) {
-						value = dl.fetchById(id).getEntry();
+						value = dcl.getById(id).getEntry();
 						dictValueMap.put(id, value);
 					}
 				}

@@ -43,9 +43,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -154,16 +153,16 @@ public class SampleProject implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.SAMPLE_PROJECT);
+        audit.setReferenceTableId(Constants.table().SAMPLE_PROJECT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("sample_id", sampleId, original.sampleId)
-                 .setField("project_id", projectId, original.projectId, ReferenceTable.PROJECT)
+                 .setField("project_id", projectId, original.projectId, Constants.table().PROJECT)
                  .setField("is_permanent", isPermanent, original.isPermanent);
 
         return audit;

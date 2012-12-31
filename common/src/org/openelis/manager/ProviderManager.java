@@ -1,7 +1,7 @@
 package org.openelis.manager;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.ProviderDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
@@ -103,7 +103,7 @@ public class ProviderManager implements RPC, HasNotesInt {
         if (notes == null) {
             if (provider.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.PROVIDER,
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().PROVIDER,
                                                                   provider.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore

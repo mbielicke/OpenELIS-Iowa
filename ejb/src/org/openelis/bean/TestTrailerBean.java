@@ -38,10 +38,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestTrailerDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.entity.TestTrailer;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -61,14 +60,13 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager             manager;
+    private EntityManager                manager;
 
     @EJB
-    private LockLocal                 lock;
+    private LockLocal                    lock;
 
     private static final TestTrailerMeta meta = new TestTrailerMeta();
 
@@ -90,13 +88,13 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
         }
         return data;
     }
-    
+
     public ArrayList<TestTrailerDO> fetchByIds(Collection<Integer> ids) throws Exception {
         Query query;
 
         query = manager.createNamedQuery("TestTrailer.FetchByIds");
         query.setParameter("ids", ids);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
@@ -117,8 +115,9 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + TestTrailerMeta.getId() +
-                          ", " + TestTrailerMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          TestTrailerMeta.getId() + ", " + TestTrailerMeta.getName() +
+                          ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(TestTrailerMeta.getName());
 
@@ -160,14 +159,14 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
         TestTrailer entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.TEST_TRAILER, data.getId());
+            lock.unlock(Constants.table().TEST_TRAILER, data.getId());
             return data;
         }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.validateLock(Constants.table().TEST_TRAILER, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(TestTrailer.class, data.getId());
@@ -175,14 +174,14 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
         entity.setDescription(data.getDescription());
         entity.setText(data.getText());
 
-        lock.unlock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.unlock(Constants.table().TEST_TRAILER, data.getId());
 
         return data;
     }
 
     public TestTrailerDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.TEST_TRAILER, id);
+            lock.lock(Constants.table().TEST_TRAILER, id);
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
@@ -190,7 +189,7 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
     }
 
     public TestTrailerDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.TEST_TRAILER, id);
+        lock.unlock(Constants.table().TEST_TRAILER, id);
         return fetchById(id);
     }
 
@@ -212,14 +211,14 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
                 throw errors;
             }
         }
-        lock.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.validateLock(Constants.table().TEST_TRAILER, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(TestTrailer.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lock.unlock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.unlock(Constants.table().TEST_TRAILER, data.getId());
     }
 
     public void validate(TestTrailerDO data) throws Exception {
@@ -228,13 +227,15 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             TestTrailerMeta.getName()));
         } else {
             ArrayList<IdNameVO> dups;
 
             dups = fetchByName(data.getName(), 1);
             if (dups.size() > 0 && !dups.get(0).getId().equals(data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", TestTrailerMeta.getName()));
+                list.add(new FieldErrorException("fieldUniqueException",
+                                                 TestTrailerMeta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getDescription()))
@@ -242,7 +243,8 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
                                              TestTrailerMeta.getDescription()));
 
         if (DataBaseUtil.isEmpty(data.getText()))
-            list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getText()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             TestTrailerMeta.getText()));
 
         if (list.size() > 0)
             throw list;

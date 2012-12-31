@@ -28,36 +28,16 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.OrderTestAnalyteLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderTestAnalyteManagerProxy {
-
-    private static Integer       supplementalTypeId;
-
-    private static final Logger log = Logger.getLogger("openelis");
-    
-    public OrderTestAnalyteManagerProxy() {
-        DictionaryLocal l;
-
-        if (supplementalTypeId == null) {
-            l = EJBFactory.getDictionary();
-
-            try {
-                supplementalTypeId = l.fetchBySystemName("test_analyte_suplmtl").getId();     
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-            }
-        }
-    }
     
     public OrderTestAnalyteManager fetchByOrderTestId(Integer id) throws Exception {
         OrderTestAnalyteManager man;
@@ -210,7 +190,7 @@ public class OrderTestAnalyteManagerProxy {
                      */
                     testAna.setTestAnalyteIsReportable("N");
                 }
-            } else if (supplementalTypeId.equals(testAna.getTestAnalyteTypeId())) {
+            } else if (Constants.dictionary().TEST_ANALYTE_SUPLMTL.equals(testAna.getTestAnalyteTypeId())) {
                 /*
                  * No analytes were added to the order from this test. So each one
                  * preserves its reportability from the test unless it's supplemental.

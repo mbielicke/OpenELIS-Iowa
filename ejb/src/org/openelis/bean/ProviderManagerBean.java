@@ -9,7 +9,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.ProviderLocationManager;
@@ -20,9 +20,8 @@ import org.openelis.utils.EJBFactory;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class ProviderManagerBean implements ProviderManagerRemote {
-	
+
     @Resource
     private SessionContext ctx;
 
@@ -41,26 +40,26 @@ public class ProviderManagerBean implements ProviderManagerRemote {
         return ProviderManager.fetchWithNotes(id);
     }
 
-	public ProviderManager add(ProviderManager man) throws Exception {
-		UserTransaction ut;
-		
-		checkSecurity(ModuleFlags.ADD);
-		
-		man.validate();
-		
-		ut = ctx.getUserTransaction();
-		try {
-    		ut.begin();
-    		man.add();
-    		ut.commit();
-		} catch (Exception e) {
+    public ProviderManager add(ProviderManager man) throws Exception {
+        UserTransaction ut;
+
+        checkSecurity(ModuleFlags.ADD);
+
+        man.validate();
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            man.add();
+            ut.commit();
+        } catch (Exception e) {
             ut.rollback();
             throw e;
         }
-		
-		return man;
-		
-	}
+
+        return man;
+
+    }
 
     public ProviderManager fetchForUpdate(Integer id) throws Exception {
         UserTransaction ut;
@@ -70,7 +69,7 @@ public class ProviderManagerBean implements ProviderManagerRemote {
         try {
             ut.begin();
 
-            lockBean.lock(ReferenceTable.PROVIDER, id);
+            lockBean.lock(Constants.table().PROVIDER, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -80,9 +79,9 @@ public class ProviderManagerBean implements ProviderManagerRemote {
         }
     }
 
-	public ProviderManager update(ProviderManager man) throws Exception {
+    public ProviderManager update(ProviderManager man) throws Exception {
         UserTransaction ut;
-        
+
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
@@ -90,9 +89,9 @@ public class ProviderManagerBean implements ProviderManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.PROVIDER, man.getProvider().getId());        
+            lockBean.validateLock(Constants.table().PROVIDER, man.getProvider().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.PROVIDER, man.getProvider().getId());
+            lockBean.unlock(Constants.table().PROVIDER, man.getProvider().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -100,10 +99,10 @@ public class ProviderManagerBean implements ProviderManagerRemote {
         }
 
         return man;
-	}
-	
+    }
+
     public ProviderManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.PROVIDER,id);
+        lockBean.unlock(Constants.table().PROVIDER, id);
         return fetchById(id);
     }
 

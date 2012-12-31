@@ -25,7 +25,6 @@
  */
 package org.openelis.utils;
 
-import org.openelis.utilcommon.AuditActivity;
 
 /**
  * Interface implemented by all the Entities that are audited.
@@ -34,5 +33,5 @@ import org.openelis.utilcommon.AuditActivity;
 public interface Auditable {
     public void setClone();
 
-    public Audit getAudit(AuditActivity op);
+    public Audit getAudit(Integer op);
 }

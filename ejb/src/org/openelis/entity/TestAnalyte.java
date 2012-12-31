@@ -43,9 +43,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -242,11 +241,11 @@ public class TestAnalyte implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.TEST_ANALYTE);
+        audit.setReferenceTableId(Constants.table().TEST_ANALYTE);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
@@ -254,11 +253,11 @@ public class TestAnalyte implements Auditable, Cloneable {
                  .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("row_group", rowGroup, original.rowGroup)
                  .setField("is_column", isColumn, original.isColumn)
-                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
-                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
+                 .setField("analyte_id", analyteId, original.analyteId, Constants.table().ANALYTE)
+                 .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
                  .setField("is_reportable", isReportable, original.isReportable)
                  .setField("result_group", resultGroup, original.resultGroup)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().SCRIPTLET);
 
         return audit;
     }

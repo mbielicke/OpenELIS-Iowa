@@ -37,7 +37,7 @@ public interface SampleOrganizationLocal {
     public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;  
     public ArrayList<SampleOrganizationViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public SampleOrganizationViewDO fetchReportToBySampleId(Integer sampleId) throws Exception;
-    public SampleOrganizationDO add(SampleOrganizationDO data);
-    public SampleOrganizationDO update(SampleOrganizationDO data); 
-    public void delete(SampleOrganizationDO data);
+    public SampleOrganizationDO add(SampleOrganizationDO data) throws Exception;
+    public SampleOrganizationDO update(SampleOrganizationDO data) throws Exception; 
+    public void delete(SampleOrganizationDO data) throws Exception;
 }

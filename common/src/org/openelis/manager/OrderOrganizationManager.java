@@ -2,6 +2,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
@@ -71,7 +72,7 @@ public class OrderOrganizationManager implements RPC {
         if (organizations == null || i >= organizations.size())
             return;
 
-        tmp = organizations.remove(i);        
+        tmp = organizations.remove(i);
 
         if (tmp.getId() != null) {
             if (deletedList == null)
@@ -87,7 +88,8 @@ public class OrderOrganizationManager implements RPC {
         int i = 0;
 
         while (i < organizations.size() &&
-               !DataBaseUtil.isSame(proxy().orgBillToId, organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(Constants.dictionary().ORG_BILL_TO,
+                                    organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())
@@ -100,7 +102,8 @@ public class OrderOrganizationManager implements RPC {
         int i = 0;
 
         while (i < organizations.size() &&
-               !DataBaseUtil.isSame(proxy().orgReportToId,organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(Constants.dictionary().ORG_REPORT_TO,
+                                    organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())

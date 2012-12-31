@@ -29,38 +29,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestReflexLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
 public class TestReflexManagerProxy {
-    
-    private static int  typeDefault;
-        
-    public TestReflexManagerProxy() {
-        DictionaryDO data;
-        DictionaryLocal dl;
-
-        dl = EJBFactory.getDictionary();
-
-        if (typeDefault == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_default");
-                typeDefault = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDefault = 0;
-            }
-        }
-    }
     
     public TestReflexManager fetchByTestId(Integer testId) throws Exception {
         TestReflexManager trm;        
@@ -190,7 +170,7 @@ public class TestReflexManagerProxy {
                 
                 typeId = getResultTypeForReflexId(anaResGrpMap, resGrpRsltMap, data);
                     
-                if(DataBaseUtil.isSame(typeDefault, typeId))                             
+                if(DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DEFAULT, typeId))                             
                     throw new InconsistencyException("resultDefaultReflexTestException");
                         
 

@@ -27,11 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AnalyteParameterViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.QcViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -39,8 +37,6 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalyteParameterLocal;
-import org.openelis.local.QcLocal;
-import org.openelis.local.TestLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AnalyteParameterManagerProxy {
@@ -59,18 +55,14 @@ public class AnalyteParameterManagerProxy {
         for (AnalyteParameterViewDO data: list) 
             m.addParamater(data);
         
-        switch (referenceTableId) {
-            case ReferenceTable.TEST:               
+            if (Constants.table().TEST.equals(referenceTableId)) {              
                 t = EJBFactory.getTest().fetchById(referenceId);
                 m.setReferenceName(t.getName()+" , "+t.getMethodName());
-                break;
-            case ReferenceTable.QC:
+            } else if (Constants.table().QC.equals(referenceTableId)) {
                 q = EJBFactory.getQc().fetchById(referenceId);
                 m.setReferenceName(q.getName());
-                break;
-            case ReferenceTable.PROVIDER:
-                break;
-        }
+            } else if (Constants.table().PROVIDER.equals(referenceTableId)) {                
+            }
                         
         return m;
     }

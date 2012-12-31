@@ -43,9 +43,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -134,16 +133,16 @@ public class InventoryComponent implements Auditable, Cloneable {
         }
     }
     
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.INVENTORY_COMPONENT);
+        audit.setReferenceTableId(Constants.table().INVENTORY_COMPONENT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, ReferenceTable.INVENTORY_ITEM)
-                 .setField("component_id", componentId, original.componentId, ReferenceTable.INVENTORY_ITEM)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, Constants.table().INVENTORY_ITEM)
+                 .setField("component_id", componentId, original.componentId, Constants.table().INVENTORY_ITEM)
                  .setField("quantity", quantity, original.quantity);
 
         return audit;

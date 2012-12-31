@@ -32,13 +32,12 @@ import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.NoteLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.TestTrailerLocal;
@@ -50,7 +49,6 @@ public class NoteDataSource implements JRRewindableDataSource {
     private SampleQAEventLocal sl;
     private AnalysisQAEventLocal al;
     private TestTrailerLocal tl;
-	private DictionaryLocal dl;
     private String qas, notes, trailer;
     private boolean aOverride, sOverride, hasNext;
 	
@@ -76,7 +74,6 @@ public class NoteDataSource implements JRRewindableDataSource {
 	            al = (AnalysisQAEventLocal) ctx.lookup("openelis/AnalysisQAEventBean/local");
 	            tl = (TestTrailerLocal) ctx.lookup("openelis/TestTrailerBean/local");
 			}*/
-			dl = EJBFactory.getDictionary();
             sl = EJBFactory.getSampleQAEvent();
             nl = EJBFactory.getNote();
             if (analysisId != null) {
@@ -90,7 +87,6 @@ public class NoteDataSource implements JRRewindableDataSource {
 
 		sOverride = false;
 		aOverride = false;
-		overrideId = dl.fetchBySystemName("qaevent_override").getId();
 
         // for sample lookup, use the absence of analysis id
         if (analysisId == null) {
@@ -99,7 +95,7 @@ public class NoteDataSource implements JRRewindableDataSource {
                 tmp = new StringBuffer();
                 slist = sl.fetchExternalBySampleId(sampleId);
                 for (SampleQaEventViewDO data: slist) {
-                    if (overrideId.equals(data.getTypeId()))
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(data.getTypeId()))
                         sOverride = true;
                     if (tmp.length() > 0)
                         tmp.append(" ");
@@ -112,7 +108,7 @@ public class NoteDataSource implements JRRewindableDataSource {
 
             // sample level notes
             try {
-                nlist = nl.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE, sampleId, "Y");
+                nlist = nl.fetchByRefTableRefIdIsExt(Constants.table().SAMPLE, sampleId, "Y");
                 notes = nlist.get(0).getText();
             } catch (NotFoundException e) {
                 // ignore
@@ -123,7 +119,7 @@ public class NoteDataSource implements JRRewindableDataSource {
                 alist = al.fetchExternalByAnalysisId(analysisId);
                 tmp = new StringBuffer();
                 for (AnalysisQaEventViewDO data: alist) {
-                    if (overrideId.equals(data.getTypeId()))
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(data.getTypeId()))
                         aOverride = true;
                     if (tmp.length() > 0)
                         tmp.append(" ");
@@ -137,7 +133,7 @@ public class NoteDataSource implements JRRewindableDataSource {
             try {
                 slist = sl.fetchBySampleId(sampleId);
                 for (SampleQaEventViewDO data: slist) {
-                    if (overrideId.equals(data.getTypeId())) {
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(data.getTypeId())) {
                         sOverride = true;
                         break;
                     }
@@ -148,7 +144,7 @@ public class NoteDataSource implements JRRewindableDataSource {
 
             // analysis level notes
             try {
-                nlist = nl.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS, analysisId, "Y");
+                nlist = nl.fetchByRefTableRefIdIsExt(Constants.table().ANALYSIS, analysisId, "Y");
                 notes = nlist.get(0).getText();
             } catch (NotFoundException e) {
                 // ignore

@@ -25,34 +25,15 @@
 */
 package org.openelis.remote;
 
-import java.util.ArrayList;
-
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.QaEventDO;
-import org.openelis.domain.QaEventViewDO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.domain.Constants;
 
+/**
+ * @author akampoow
+ *
+ */
 @Remote
-public interface QaEventRemote {
-   
-    public QaEventViewDO fetchById(Integer id) throws Exception;
-
-    public ArrayList<QaEventViewDO> fetchByName(String name) throws Exception;
-
-    public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception;
-
-    public ArrayList<QaEventDO> fetchByCommon() throws Exception;
-    
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
-
-    public QaEventDO add(QaEventDO data) throws Exception;
-
-    public QaEventDO update(QaEventDO data) throws Exception;
-
-    public QaEventViewDO fetchForUpdate(Integer id) throws Exception;
-
-    public QaEventViewDO abortUpdate(Integer id) throws Exception;
+public interface ApplicationRemote {
+    public Constants getConstants() throws Exception;
 }
-

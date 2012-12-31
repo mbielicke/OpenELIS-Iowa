@@ -17,9 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -105,17 +104,17 @@ public class TestSection implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.TEST_SECTION);
+        audit.setReferenceTableId(Constants.table().TEST_SECTION);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("section_id", sectionId, original.sectionId, ReferenceTable.SECTION)
-                 .setField("flag_id", flagId, original.flagId, ReferenceTable.DICTIONARY);
+                 .setField("section_id", sectionId, original.sectionId, Constants.table().SECTION)
+                 .setField("flag_id", flagId, original.flagId, Constants.table().DICTIONARY);
 
         return audit;
     }

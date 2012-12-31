@@ -39,7 +39,7 @@ public interface SampleProjectLocal {
     public ArrayList<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
     public ArrayList<SampleProjectViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public ArrayList<SampleProjectViewDO> fetchPermanentBySampleId(Integer sampleId) throws Exception;
-    public SampleProjectDO add(SampleProjectDO data);
-    public SampleProjectDO update(SampleProjectDO data);
-    public void delete(SampleProjectDO data);
+    public SampleProjectDO add(SampleProjectDO data) throws Exception;
+    public SampleProjectDO update(SampleProjectDO data) throws Exception;
+    public void delete(SampleProjectDO data) throws Exception;
 }
