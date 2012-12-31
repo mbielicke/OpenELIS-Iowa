@@ -33,6 +33,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
@@ -41,7 +42,6 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -64,7 +64,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -306,7 +305,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                 IdNameVO hist;
 
                 hist = new IdNameVO(manager.getExchangeCriteria().getId(), manager.getExchangeCriteria().getName());
-                HistoryScreen.showHistory(consts.get("exchangeCriteriaHistory"), ReferenceTable.EXCHANGE_CRITERIA, hist);
+                HistoryScreen.showHistory(consts.get("exchangeCriteriaHistory"), Constants.table().EXCHANGE_CRITERIA, hist);
                 
             }
 
@@ -343,7 +342,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                     return;
                 }
 
-                HistoryScreen.showHistory(consts.get("exchangeProfileHistory"), ReferenceTable.EXCHANGE_PROFILE, list);
+                HistoryScreen.showHistory(consts.get("exchangeProfileHistory"), Constants.table().EXCHANGE_PROFILE, list);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1378,7 +1377,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         
         field = new QueryData();
         field.key = EventLogMeta.getReferenceTableId();
-        field.query = String.valueOf(ReferenceTable.EXCHANGE_CRITERIA);
+        field.query = String.valueOf(Constants.table().EXCHANGE_CRITERIA);
         field.type = QueryData.Type.INTEGER;
         query.setFields(field);
         

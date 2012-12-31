@@ -27,10 +27,10 @@ package org.openelis.modules.sample.client;
 
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -71,16 +71,14 @@ public class AnalysisNotesTab extends NotesTab {
     protected EditNoteScreen   internalEditNote;
     protected NoteViewDO       internalNote;
 
-    private Integer            analysisCancelledId, analysisReleasedId;
-
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window, String notesPanelKey,
-                            String editButtonKey) {
+    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window,
+                            String notesPanelKey, String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }
 
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window, String externalNotesPanelKey,
-                            String externalEditButtonKey, String internalNotesPanelKey,
-                            String internalEditButtonKey) {
+    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window,
+                            String externalNotesPanelKey, String externalEditButtonKey,
+                            String internalNotesPanelKey, String internalEditButtonKey) {
 
         super(def, window, externalNotesPanelKey, externalEditButtonKey);
 
@@ -88,7 +86,6 @@ public class AnalysisNotesTab extends NotesTab {
         this.internalEditButtonKey = internalEditButtonKey;
 
         initialize();
-        initializeDropdowns();
     }
 
     // overrides the notetab initialize to control the external notes button
@@ -118,8 +115,10 @@ public class AnalysisNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                standardNote.enable( !isReleased() && canEdit() &&
-                                    EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                standardNote.enable( !isReleased() &&
+                                    canEdit() &&
+                                    EnumSet.of(State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -174,7 +173,8 @@ public class AnalysisNotesTab extends NotesTab {
                 }
                 internalNote.setSystemUser(userName);
                 internalNote.setSystemUserId(userId);
-                internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+                internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR,
+                                                               Datetime.SECOND));
                 internalEditNote.setNote(internalNote);
             }
 
@@ -190,8 +190,10 @@ public class AnalysisNotesTab extends NotesTab {
         internalNotesPanel.clearNotes();
         for (int i = 0; i < internalManager.count(); i++ ) {
             NoteViewDO noteRow = internalManager.getNoteAt(i);
-            internalNotesPanel.addNote(noteRow.getSubject(), noteRow.getSystemUser(),
-                                       noteRow.getText(), noteRow.getTimestamp());
+            internalNotesPanel.addNote(noteRow.getSubject(),
+                                       noteRow.getSystemUser(),
+                                       noteRow.getText(),
+                                       noteRow.getTimestamp());
         }
     }
 
@@ -217,7 +219,7 @@ public class AnalysisNotesTab extends NotesTab {
     }
 
     private boolean isReleased() {
-        return (analysis != null && analysisReleasedId.equals(analysis.getStatusId()));
+        return (analysis != null && Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId()));
     }
 
     private boolean canEdit() {
@@ -228,23 +230,14 @@ public class AnalysisNotesTab extends NotesTab {
             try {
                 sectionVDO = SectionCache.getById(analysis.getSectionId());
                 perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                return !analysisCancelledId.equals(analysis.getStatusId()) && perm != null &&
+                return !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysis.getStatusId()) &&
+                       perm != null &&
                        (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception anyE) {
                 Window.alert("canEdit:" + anyE.getMessage());
             }
         }
         return false;
-    }
-
-    private void initializeDropdowns() {
-        try {
-            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     public void setData(SampleDataBundle data) {

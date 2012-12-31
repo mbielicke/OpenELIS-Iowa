@@ -1,47 +1,36 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
@@ -80,11 +69,20 @@ import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCreationMeta;
 
-public class WorksheetCreationLookupScreen extends Screen 
-                                           implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
-    private Integer                 statusErrorInPrep, statusInPrep, statusReleased,
-                                    statusCancelled;
+public class WorksheetCreationLookupScreen extends Screen
+                                                         implements
+                                                         HasActionHandlers<WorksheetCreationLookupScreen.Action> {
     private ScreenService           testService;
     private ModulePermission        userPermission;
 
@@ -95,7 +93,7 @@ public class WorksheetCreationLookupScreen extends Screen
     protected TableWidget           analysesTable;
     protected TextBox               methodName;
     protected TextBox<Integer>      accessionNumber;
-    
+
     public enum Action {
         ADD
     };
@@ -104,10 +102,11 @@ public class WorksheetCreationLookupScreen extends Screen
         super((ScreenDefInt)GWT.create(WorksheetCreationLookupDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
         testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        
+
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Worksheet Creation Lookup Screen");
+            throw new PermissionException("screenPermException",
+                                          "Worksheet Creation Lookup Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -115,15 +114,15 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
     }
-    
+
     /**
      * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred command.
+     * screen is attached to the browser. It is usually called in deferred
+     * command.
      */
     private void postConstructor() {
         try {
-            CategoryCache.getBySystemNames("analysis_status",
-                                           "type_of_sample");
+            CategoryCache.getBySystemNames("analysis_status", "type_of_sample");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -135,10 +134,11 @@ public class WorksheetCreationLookupScreen extends Screen
         DataChangeEvent.fire(this);
         setFocus(testId);
     }
-    
+
     /**
-     * Setup state and data change handles for every widget on the screen.  This
-     * screen is query only, so most of the widgets do not need an onValueChange method.
+     * Setup state and data change handles for every widget on the screen. This
+     * screen is query only, so most of the widgets do not need an onValueChange
+     * method.
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
@@ -149,8 +149,8 @@ public class WorksheetCreationLookupScreen extends Screen
         addScreenHandler(testId, new ScreenEventHandler<Integer>() {
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 TableDataRow selectedRow = testId.getSelection();
-                
-                //set the method
+
+                // set the method
                 if (selectedRow != null && selectedRow.key != null)
                     methodName.setValue((String)selectedRow.cells.get(1).value);
                 else
@@ -166,15 +166,16 @@ public class WorksheetCreationLookupScreen extends Screen
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<TableDataRow> model;
                 ArrayList<TestMethodVO> matches;
-                TableDataRow            row;
-                TestMethodVO            tmVO;                
+                TableDataRow row;
+                TestMethodVO tmVO;
 
                 try {
                     model = new ArrayList<TableDataRow>();
-                    matches = testService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    for (int i = 0; i < matches.size(); i++) {
+                    matches = testService.callList("fetchByName",
+                                                   QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    for (int i = 0; i < matches.size(); i++ ) {
                         tmVO = (TestMethodVO)matches.get(i);
-                        
+
                         row = new TableDataRow(5);
                         row.key = tmVO.getTestId();
                         row.cells.get(0).value = tmVO.getTestName();
@@ -185,16 +186,16 @@ public class WorksheetCreationLookupScreen extends Screen
                             row.cells.get(4).value = tmVO.getActiveEnd();
                         }
                         row.data = tmVO.getMethodId();
-                        
+
                         model.add(row);
-                    } 
-                    
+                    }
+
                     testId.showAutoMatches(model);
-                        
-                } catch(Exception e) {
-                    Window.alert(e.getMessage());                     
+
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
-            } 
+            }
         });
 
         methodName = (TextBox)def.getWidget(WorksheetCreationMeta.getAnalysisTestMethodName());
@@ -269,31 +270,32 @@ public class WorksheetCreationLookupScreen extends Screen
         // analysis search results table
         //
         analysesTable = (TableWidget)def.getWidget("analysesTable");
-        addScreenHandler(analysesTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onStateChange(StateChangeEvent<State> event) {
-                analysesTable.enable(true);
-                analysesTable.enableMultiSelect(true);
-            }
-        });
+        addScreenHandler(analysesTable,
+                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
+                             public void onStateChange(StateChangeEvent<State> event) {
+                                 analysesTable.enable(true);
+                                 analysesTable.enableMultiSelect(true);
+                             }
+                         });
 
         analysesTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent event) {
                 addButton.enable(true);
             }
         });
-        
+
         analysesTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
             public void onUnselection(UnselectionEvent event) {
                 if (analysesTable.getSelectedRows().length == 0)
                     addButton.enable(false);
             }
         });
-        
+
         analysesTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 // this table cannot be edited
                 event.cancel();
-                
+
             }
         });
 
@@ -319,55 +321,45 @@ public class WorksheetCreationLookupScreen extends Screen
             public void onStateChange(StateChangeEvent<State> event) {
                 selectAllButton.enable(true);
             }
-        });   
+        });
     }
-    
+
     @SuppressWarnings("unchecked")
     private void initializeDropdowns() {
         ArrayList<DictionaryDO> dictList;
         ArrayList<SectionViewDO> sectList;
         ArrayList<TableDataRow> model;
 
-        try {
-            statusErrorInPrep = DictionaryCache.getIdBySystemName("analysis_error_inprep");
-            statusInPrep      = DictionaryCache.getIdBySystemName("analysis_inprep");
-            statusReleased    = DictionaryCache.getIdBySystemName("analysis_released");
-            statusCancelled   = DictionaryCache.getIdBySystemName("analysis_cancelled");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
+        //
+        // load analysis status dropdown model
+        //
+        sectList = SectionCache.getList();
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (SectionViewDO resultDO : sectList)
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
+        sectionId.setModel(model);
+        ((Dropdown<Integer>)analysesTable.getColumns().get(4).getColumnWidget()).setModel(model);
 
         //
         // load analysis status dropdown model
         //
-        sectList  = SectionCache.getList();
+        dictList = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (SectionViewDO resultDO : sectList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getName()));
-        sectionId.setModel(model);
-        ((Dropdown<Integer>)analysesTable.getColumns().get(4).getColumnWidget()).setModel(model);
-        
-        //
-        // load analysis status dropdown model
-        //
-        dictList  = CategoryCache.getBySystemName("analysis_status");
-        model = new ArrayList<TableDataRow>();
-//        model.add(new TableDataRow(null, ""));
+        // model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         statusId.setModel(model);
         ((Dropdown<Integer>)analysesTable.getColumns().get(5).getColumnWidget()).setModel(model);
-        
+
         //
         // load type of sample dropdown model
         //
-        dictList  = CategoryCache.getBySystemName("type_of_sample");
+        dictList = CategoryCache.getBySystemName("type_of_sample");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         typeOfSampleId.setModel(model);
     }
 
@@ -378,15 +370,15 @@ public class WorksheetCreationLookupScreen extends Screen
     @SuppressWarnings("unchecked")
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> list;
-        QueryData            qd;
-        QueryFieldUtil       qField;
-        TableDataRow         row;
+        QueryData qd;
+        QueryFieldUtil qField;
+        TableDataRow row;
 
         list = new ArrayList<QueryData>();
         for (String key : def.getWidgets().keySet()) {
             if (def.getWidget(key) instanceof AutoComplete) {
                 row = ((AutoComplete)def.getWidget(key)).getSelection();
-                if(row != null && row.key != null) {
+                if (row != null && row.key != null) {
                     qd = new QueryData();
                     qd.key = key;
                     qd.query = ((Integer)row.key).toString();
@@ -406,7 +398,7 @@ public class WorksheetCreationLookupScreen extends Screen
     protected void executeQuery() {
         Query query;
 
-        if (!validate()) {
+        if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
         }
@@ -416,45 +408,48 @@ public class WorksheetCreationLookupScreen extends Screen
 
         if (query.getFields().size() > 0) {
             window.setBusy(consts.get("querying"));
-    
+
             query.setRowsPerPage(500);
-            service.callList("query", query, new AsyncCallback<ArrayList<WorksheetCreationVO>>() {
-                public void onSuccess(ArrayList<WorksheetCreationVO> list) {
-                    setQueryResult(list);
-                }
-    
-                public void onFailure(Throwable error) {
-                    setQueryResult(null);
-                    if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
-                    } else {
-                        Window.alert("Error: WorksheetCreationLookup call query failed; "+error.getMessage());
-                        window.setError(consts.get("queryFailed"));
-                    }
-                }
-            });
+            service.callList("query",
+                             query,
+                             new AsyncCallback<ArrayList<WorksheetCreationVO>>() {
+                                 public void onSuccess(ArrayList<WorksheetCreationVO> list) {
+                                     setQueryResult(list);
+                                 }
+
+                                 public void onFailure(Throwable error) {
+                                     setQueryResult(null);
+                                     if (error instanceof NotFoundException) {
+                                         window.setDone(consts.get("noRecordsFound"));
+                                     } else {
+                                         Window.alert("Error: WorksheetCreationLookup call query failed; " +
+                                                      error.getMessage());
+                                         window.setError(consts.get("queryFailed"));
+                                     }
+                                 }
+                             });
         } else {
             window.setDone(consts.get("emptyQueryException"));
         }
     }
 
     private void setQueryResult(ArrayList<WorksheetCreationVO> list) {
-        int                     i;
+        int i;
         ArrayList<TableDataRow> model;
-        TableDataRow            row;
-        WorksheetCreationVO     analysisRow;
-        
+        TableDataRow row;
+        WorksheetCreationVO analysisRow;
+
         if (list == null || list.size() == 0) {
             window.setDone(consts.get("noRecordsFound"));
-            
+
             analysesTable.clear();
         } else {
             window.setDone(consts.get("queryingComplete"));
 
             model = new ArrayList<TableDataRow>();
-            for (i = 0; i < list.size(); i++) {
+            for (i = 0; i < list.size(); i++ ) {
                 analysisRow = list.get(i);
-                
+
                 row = new TableDataRow(11);
                 row.key = analysisRow.getAnalysisId();
                 row.cells.get(0).value = analysisRow.getAccessionNumber();
@@ -462,7 +457,7 @@ public class WorksheetCreationLookupScreen extends Screen
                 row.cells.get(2).value = analysisRow.getTestName();
                 row.cells.get(3).value = analysisRow.getMethodName();
                 row.cells.get(4).value = analysisRow.getSectionId();
-                row.cells.get(5).value = analysisRow.getStatusId();          
+                row.cells.get(5).value = analysisRow.getStatusId();
                 row.cells.get(6).value = analysisRow.getCollectionDate();
                 row.cells.get(7).value = analysisRow.getReceivedDate();
                 row.cells.get(8).value = analysisRow.getDueDays();
@@ -479,24 +474,27 @@ public class WorksheetCreationLookupScreen extends Screen
             analysesTable.load(model);
         }
     }
-    
+
     protected void addAnalyses() {
-        int                     i;
-        SectionViewDO           sectionVDO;
-        StringBuffer            message;
-        WorksheetCreationVO     analysisRow;
+        int i;
+        SectionViewDO sectionVDO;
+        StringBuffer message;
+        WorksheetCreationVO analysisRow;
         ArrayList<TableDataRow> selections;
-        
+
         i = 0;
         message = new StringBuffer();
         selections = analysesTable.getSelections();
         while (i < selections.size()) {
-            analysisRow = (WorksheetCreationVO) selections.get(i).data;
-            if (! isAnalysisEditable(analysisRow)) {
+            analysisRow = (WorksheetCreationVO)selections.get(i).data;
+            if ( !isAnalysisEditable(analysisRow)) {
                 selections.remove(i);
-                
-                message.append(consts.get("accessionNum")).append(analysisRow.getAccessionNumber())
-                       .append("\t").append(analysisRow.getTestName().trim()).append(", ")
+
+                message.append(consts.get("accessionNum"))
+                       .append(analysisRow.getAccessionNumber())
+                       .append("\t")
+                       .append(analysisRow.getTestName().trim())
+                       .append(", ")
                        .append(analysisRow.getMethodName().trim());
                 try {
                     sectionVDO = SectionCache.getById(analysisRow.getSectionId());
@@ -507,12 +505,13 @@ public class WorksheetCreationLookupScreen extends Screen
                 }
                 message.append("\n");
             } else {
-                i++;
+                i++ ;
             }
         }
-        
+
         if (message.length() > 0)
-            Window.alert(consts.get("worksheetItemsNotAdded")+":\n\n"+message.toString());
+            Window.alert(consts.get("worksheetItemsNotAdded") + ":\n\n" +
+                         message.toString());
         if (selections.size() > 0)
             ActionEvent.fire(this, Action.ADD, selections);
     }
@@ -523,21 +522,21 @@ public class WorksheetCreationLookupScreen extends Screen
      */
     private boolean isAnalysisEditable(WorksheetCreationVO analysisRow) {
         boolean editable;
-        
+
         editable = false;
         if (analysisRow != null) {
             editable = canAddTest(analysisRow) &&
                        Boolean.FALSE.equals(analysisRow.getHasQaOverride()) &&
-                       !statusErrorInPrep.equals(analysisRow.getStatusId()) &&
-                       !statusInPrep.equals(analysisRow.getStatusId()) &&
-                       !statusReleased.equals(analysisRow.getStatusId()) &&
-                       !statusCancelled.equals(analysisRow.getStatusId());
+                       !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(analysisRow.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_INPREP.equals(analysisRow.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_RELEASED.equals(analysisRow.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysisRow.getStatusId());
         }
         return editable;
     }
 
     private boolean canAddTest(WorksheetCreationVO analysisRow) {
-        boolean       allow;
+        boolean allow;
         SectionViewDO section;
         SectionPermission perm;
 
@@ -547,7 +546,7 @@ public class WorksheetCreationLookupScreen extends Screen
 
         try {
             section = SectionCache.getById(analysisRow.getSectionId());
-            perm = UserCache.getPermission().getSection(section.getName()); 
+            perm = UserCache.getPermission().getSection(section.getName());
             if (perm != null && perm.hasCompletePermission())
                 allow = true;
         } catch (Exception anyE) {

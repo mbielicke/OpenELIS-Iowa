@@ -43,7 +43,11 @@ public class OpenELISScreenService {
 
         rpc = new OpenELISRPC();
         rpc.appConstants = getConstants();
-
+        try {
+            rpc.constants = EJBFactory.getApplication().getConstants();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return rpc;
     }
 

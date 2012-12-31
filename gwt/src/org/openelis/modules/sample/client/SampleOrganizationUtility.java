@@ -25,27 +25,22 @@
 */
 package org.openelis.modules.sample.client;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.manager.OrganizationParameterManager;
 
 public class SampleOrganizationUtility {
 
-    private static Integer orgHoldRefuseSampleId;
-    
     public static boolean isHoldRefuseSampleForOrg(Integer orgId) throws Exception {
         OrganizationParameterManager man;
         
         if (orgId == null)
             return false;
         
-        if (orgHoldRefuseSampleId == null)
-            initialize();
-        
         try {
             man = OrganizationParameterManager.fetchByOrganizationId(orgId);
             for (int i = 0; i < man.count(); i++) {
-                if (orgHoldRefuseSampleId.equals(man.getParameterAt(i).getTypeId()))
+                if (Constants.dictionary().ORG_HOLD_SAMPLE.equals(man.getParameterAt(i).getTypeId()))
                     return true;
             }
         } catch (NotFoundException e) {
@@ -53,14 +48,5 @@ public class SampleOrganizationUtility {
         }
         
         return false;
-    }
-    
-    private static void initialize() throws Exception {
-        try {            
-            orgHoldRefuseSampleId = DictionaryCache.getIdBySystemName("org_hold_sample");
-        } catch (Exception e) {
-            orgHoldRefuseSampleId = null;
-            throw e;
-        }
     }
 }

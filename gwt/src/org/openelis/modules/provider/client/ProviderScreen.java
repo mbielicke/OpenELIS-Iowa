@@ -30,12 +30,12 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ProviderLocationDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -612,7 +612,7 @@ public class ProviderScreen extends Screen {
         
         hist = new IdNameVO(data.getId(), name);
         HistoryScreen.showHistory(consts.get("providerHistory"),
-                                  ReferenceTable.PROVIDER, hist); 
+                                  Constants.table().PROVIDER, hist); 
     }
     
     protected void providerLocationHistory() {
@@ -636,7 +636,7 @@ public class ProviderScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("providerLocationHistory"),
-                                  ReferenceTable.PROVIDER_LOCATION, refVoList);
+                                  Constants.table().PROVIDER_LOCATION, refVoList);
     }
 
     protected boolean fetchById(Integer id) {

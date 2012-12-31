@@ -30,10 +30,10 @@ import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.PanelVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -732,7 +732,7 @@ public class PanelScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getPanel().getId(), manager.getPanel().getName());
-        HistoryScreen.showHistory(consts.get("panelHistory"), ReferenceTable.PANEL, hist);
+        HistoryScreen.showHistory(consts.get("panelHistory"), Constants.table().PANEL, hist);
     }
 
     protected void panelItemHistory() {
@@ -763,7 +763,7 @@ public class PanelScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("panelItemHistory"), ReferenceTable.PANEL_ITEM,
+        HistoryScreen.showHistory(consts.get("panelItemHistory"), Constants.table().PANEL_ITEM,
                                   refVoList);
     }
 

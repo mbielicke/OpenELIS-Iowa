@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.domain.SampleStatusWebReportVO.QAEventType;
@@ -72,7 +72,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class SampleStatusScreen extends Screen {
-    private FinalReportFormVO                      data;
+    private FinalReportFormVO                  data;
     private ModulePermission                   userPermission;
     private CalendarLookUp                     collectedFrom, collectedTo;
     private TextBox                            accessionFrom, accessionTo, clientReference;
@@ -86,7 +86,6 @@ public class SampleStatusScreen extends Screen {
     private Label<String>                      queryDeckLabel;
     private AppButton                          getSamplesButton, resetButton, backButton;
     private ArrayList<SampleStatusWebReportVO> results;
-    private Integer                            statusReleased;
     private SampleStatusQALookupScreen         sampleStatusQALookupscreen;
 
     private enum Decks {
@@ -275,15 +274,16 @@ public class SampleStatusScreen extends Screen {
         });
 
         sampleEntTable = (TableWidget)def.getWidget("sampleEntTable");
-        addScreenHandler(sampleEntTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleEntTable.load(getTableModel());
-            }
+        addScreenHandler(sampleEntTable,
+                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sampleEntTable.load(getTableModel());
+                             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                sampleEntTable.enable(true);
-            }
-        });
+                             public void onStateChange(StateChangeEvent<State> event) {
+                                 sampleEntTable.enable(true);
+                             }
+                         });
 
         sampleEntTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -315,9 +315,11 @@ public class SampleStatusScreen extends Screen {
                     str = s.split(":");
                     id = Integer.parseInt(str[1]);
                     if ("SAMPLE".equals(str[0]))
-                        sampleStatusQALookupscreen.refresh(id, SampleStatusQALookupScreen.Type.SAMPLE);
+                        sampleStatusQALookupscreen.refresh(id,
+                                                           SampleStatusQALookupScreen.Type.SAMPLE);
                     else
-                        sampleStatusQALookupscreen.refresh(id, SampleStatusQALookupScreen.Type.ANALYSIS);
+                        sampleStatusQALookupscreen.refresh(id,
+                                                           SampleStatusQALookupScreen.Type.ANALYSIS);
                 }
                 event.cancel();
             }
@@ -355,20 +357,14 @@ public class SampleStatusScreen extends Screen {
         try {
             list = service.callList("getSampleStatusProjectList");
             for (int counter = 0; counter < list.size(); counter++ ) {
-                row = new TableDataRow(list.get(counter).getId(), list.get(counter).getName());
+                row = new TableDataRow(list.get(counter).getId(), list.get(counter)
+                                                                      .getName());
                 model.add(row);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         projectCode.setModel(model);
-
-        try {
-            statusReleased = DictionaryCache.getIdBySystemName("analysis_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     protected void getSamples() {
@@ -495,11 +491,11 @@ public class SampleStatusScreen extends Screen {
                 row.cells.get(3).setValue(temp1);
                 row.cells.get(4).setValue(data.getReceivedDate());
                 row.cells.get(5).setValue(data.getClientReference());
-                if ((QAEventType.OVERRIDE).equals(data.getSampleQA()))
+                if ( (QAEventType.OVERRIDE).equals(data.getSampleQA()))
                     row.cells.get(6).setValue("No Result");
-                else if ((QAEventType.WARNING).equals(data.getSampleQA()))
+                else if ( (QAEventType.WARNING).equals(data.getSampleQA()))
                     row.cells.get(6).setValue("Warning");
-                
+
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
                 row.data = "SAMPLE:" + data.getSampleId();
                 model.add(row);
@@ -507,11 +503,11 @@ public class SampleStatusScreen extends Screen {
                 row = new TableDataRow(7);
                 row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
                                           data.getMethodReportingDescription());
-                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId()) ? completed
-                                                                                   : inProgress);
-                if ((QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
+                row.cells.get(2)
+                         .setValue(Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ? completed : inProgress);
+                if ( (QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("No Result");
-                else if ((QAEventType.WARNING).equals(data.getAnalysisQA()))
+                else if ( (QAEventType.WARNING).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("Warning");
                 row.data = "ANALYSIS:" + data.getAnalysisId();
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
@@ -520,11 +516,11 @@ public class SampleStatusScreen extends Screen {
                 row = new TableDataRow(7);
                 row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
                                           data.getMethodReportingDescription());
-                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId()) ? completed
-                                                                                   : inProgress);
-                if ((QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
+                row.cells.get(2)
+                         .setValue(Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ? completed : inProgress);
+                if ( (QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("No Result");
-                else if ((QAEventType.WARNING).equals(data.getAnalysisQA()))
+                else if ( (QAEventType.WARNING).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("Warning");
                 row.data = "ANALYSIS:" + data.getAnalysisId();
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";

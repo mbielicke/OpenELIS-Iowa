@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
@@ -98,8 +98,6 @@ public class SDWISTab extends Screen {
 
     private SampleManager                  manager, previousManager;
     private SampleSDWISManager             sdwisManager, previousSDWISManager;
-
-    private Integer                        sampleReleasedId;
 
     protected boolean                      loaded = false;
 
@@ -970,13 +968,6 @@ public class SDWISTab extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
-        try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-
         // sample type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -995,7 +986,7 @@ public class SDWISTab extends Screen {
     }
     
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()));
     }
     
     public void showErrors(ValidationErrorsList errors) {

@@ -25,28 +25,14 @@
  */
 package org.openelis.manager;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 public class OrderOrganizationManagerProxy {
     protected static final String ORDER_SERVICE_URL = "org.openelis.modules.order.server.OrderService";
     protected ScreenService       service;
-    protected static Integer      orgBillToId, orgReportToId, orgSecondaryReportToId;
 
     public OrderOrganizationManagerProxy() {
         service = new ScreenService("controller?service=" + ORDER_SERVICE_URL);
-        
-        if (orgBillToId == null) {
-            try {
-                orgBillToId = DictionaryCache.getIdBySystemName("org_bill_to");
-                orgReportToId = DictionaryCache.getIdBySystemName("org_report_to");
-                orgSecondaryReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");                
-            } catch (Exception e) {
-                e.printStackTrace();
-                orgBillToId = null;
-            }
-        }
     }
 
     public OrderOrganizationManager fetchByOrderId(Integer OrderId) throws Exception {

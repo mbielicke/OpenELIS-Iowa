@@ -29,14 +29,13 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -110,7 +109,6 @@ public class VendorOrderScreen extends Screen {
                               commitButton, abortButton;
     private MenuItem          duplicate, orderHistory, itemHistory;
     private TabPanel          tabPanel;
-    private Integer           status_pending;
 
     protected ScreenService   organizationService;
 
@@ -795,13 +793,6 @@ public class VendorOrderScreen extends Screen {
         }
 
         costCenterId.setModel(model);
-
-        try {
-            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     /*
@@ -843,7 +834,7 @@ public class VendorOrderScreen extends Screen {
 
         manager = OrderManager.getInstance();
         data = manager.getOrder();
-        data.setStatusId(status_pending);
+        data.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         data.setOrderedDate(now);
         data.setRequestedBy(UserCache.getPermission().getLoginName());
         data.setType(OrderManager.TYPE_VENDOR);
@@ -977,7 +968,7 @@ public class VendorOrderScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder().getId().toString());
-        HistoryScreen.showHistory(consts.get("orderHistory"), ReferenceTable.ORDER, hist);
+        HistoryScreen.showHistory(consts.get("orderHistory"), Constants.table().ORDER, hist);
     }
 
     protected void itemHistory() {
@@ -1000,7 +991,7 @@ public class VendorOrderScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orderItemHistory"), ReferenceTable.ORDER_ITEM,
+        HistoryScreen.showHistory(consts.get("orderItemHistory"), Constants.table().ORDER_ITEM,
                                   refVoList);
     }
 

@@ -31,10 +31,10 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -56,6 +56,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -65,7 +66,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -789,7 +789,7 @@ public class InstrumentScreen extends Screen {
         
         hist = new IdNameVO(manager.getInstrument().getId(), manager.getInstrument().getName());
         HistoryScreen.showHistory(consts.get("instrumentHistory"),
-                                  ReferenceTable.INSTRUMENT, hist); 
+                                  Constants.table().INSTRUMENT, hist); 
     }
     
     protected void instrumentLogHistory() {
@@ -823,7 +823,7 @@ public class InstrumentScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("instrumentLogHistory"),
-                                  ReferenceTable.INSTRUMENT_LOG, refVoList);
+                                  Constants.table().INSTRUMENT_LOG, refVoList);
     }
 
 

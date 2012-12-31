@@ -28,13 +28,13 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
@@ -45,7 +45,6 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
@@ -60,32 +59,24 @@ import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
-import org.openelis.manager.StorageManager;
 
 public class SampleDuplicateUtil {
 
-    private static Integer anaCancelledId, anaInPrepId, anaLoggedInId, anaErrorLoggedInId;  
-    
     public static SampleManager duplicate(SampleManager oldMan) throws Exception {
         Integer statusId;
         SampleManager newMan;
         SampleItemManager siMan;
         AnalysisManager anMan;
 
-        if (anaCancelledId == null) {
-            anaCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-            anaInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
-            anaLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
-            anaErrorLoggedInId = DictionaryCache.getIdBySystemName("analysis_error_logged_in");
-        }
-
         siMan = oldMan.getSampleItems();
         for (int i = 0; i < siMan.count(); i++ ) {
             anMan = siMan.getAnalysisAt(i);
             for (int j = 0; j < anMan.count(); j++ ) {
                 statusId = anMan.getAnalysisAt(j).getStatusId();
-                if ( !anaCancelledId.equals(statusId) && !anaInPrepId.equals(statusId) &&
-                    !anaLoggedInId.equals(statusId) && !anaErrorLoggedInId.equals(statusId))
+                if (!Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId) &&
+                    !Constants.dictionary().ANALYSIS_INPREP.equals(statusId) &&
+                    !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId) &&
+                    !Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId))
                     throw new LocalizedException("analysisHasAdvancedStatusException");
             }
         }
@@ -254,7 +245,7 @@ public class SampleDuplicateUtil {
             //
             // cancelled analyses are not duplicated
             //
-            if (anaCancelledId.equals(statusId)) 
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) 
                 continue;
             //
             // we don't allow duplication if even one analysis has reflexed analyses
@@ -364,7 +355,7 @@ public class SampleDuplicateUtil {
                 if (oldPrepId != null) {
                     newData = oldNewAnaMap.get(oldId);
                     newPrepData = oldNewAnaMap.get(oldPrepId);
-                    newData.setStatusId(anaInPrepId);
+                    newData.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
                     newData.setPreAnalysisId(newPrepData.getId());
                     newData.setAvailableDate(null);
                     newData.setPreAnalysisTest(newPrepData.getTestName());

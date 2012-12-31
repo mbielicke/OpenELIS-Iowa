@@ -41,6 +41,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.SampleManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -49,9 +50,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 public class ChangeDomainScreen extends Screen implements
                                                  HasActionHandlers<ChangeDomainScreen.Action> {
 
-    private Dropdown<Integer> domain;
-    private AppButton         okButton, cancelButton;
-    private Integer           domainId;
+    private Dropdown<String> domain;
+    private AppButton        okButton, cancelButton;
+    private String           domainKey;
  
     public enum Action {
         OK, CANCEL
@@ -68,10 +69,10 @@ public class ChangeDomainScreen extends Screen implements
     }
 
     private void initialize() {        
-        domain = (Dropdown<Integer>)def.getWidget("domain");
+        domain = (Dropdown<String>)def.getWidget("domain");
         addScreenHandler(domain, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                domain.setValue(domainId);
+                domain.setValue(domainKey);
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
@@ -103,7 +104,7 @@ public class ChangeDomainScreen extends Screen implements
     }
     
     private void initializeDropdowns() {
-        String sname;
+        String sname, dom;
         ArrayList<TableDataRow> model;  
         List<DictionaryDO> list;
         TableDataRow row;
@@ -113,12 +114,20 @@ public class ChangeDomainScreen extends Screen implements
         list = CategoryCache.getBySystemName("sample_domain");
         for (DictionaryDO resultDO : list) {
             sname = resultDO.getSystemName();
-            if ("environmental".equals(sname) || "private_well".equals(sname) ||
-                "sdwis".equals(sname)) {
-                row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
+            dom = null;
+            if ("environmental".equals(sname)) {
+                dom = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
+            } else if ("private_well".equals(sname)) {
+                dom = SampleManager.WELL_DOMAIN_FLAG;
+            } else if ("sdwis".equals(sname)) {
+                dom = SampleManager.SDWIS_DOMAIN_FLAG;
+            }
+            
+            if (dom != null) {
+                row = new TableDataRow(dom, resultDO.getEntry());
                 row.enabled = ("Y".equals(resultDO.getIsActive()));
-                model.add(row);                
-            }         
+                model.add(row);
+            }
         }
         
         domain.setModel(model);                
@@ -145,9 +154,9 @@ public class ChangeDomainScreen extends Screen implements
         return addHandler(handler, ActionEvent.getType());
     }
 
-    public void setDomain(Integer id) {
-       if (id != null)
-           domainId = id;
+    public void setDomain(String domain) {
+       if (domain != null)
+           domainKey = domain;
        DataChangeEvent.fire(this);
     }
 }

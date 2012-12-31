@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -51,13 +51,13 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.MethodMeta;
 import org.openelis.modules.history.client.HistoryScreen;
@@ -78,8 +78,8 @@ public class MethodScreen extends Screen {
     private CalendarLookUp   activeBegin, activeEnd;
     private TextBox          name, description, reportingDescription;
     private CheckBox         isActive;
-    private AppButton        queryButton, previousButton, nextButton, addButton, updateButton,
-                             commitButton, abortButton;
+    private AppButton        queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton;
     protected MenuItem       history;
     private ButtonGroup      atoz;
     private ScreenNavigator  nav;
@@ -135,7 +135,8 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -259,7 +260,9 @@ public class MethodScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportingDescription.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                reportingDescription.enable(EnumSet.of(State.QUERY,
+                                                       State.ADD,
+                                                       State.UPDATE)
                                                    .contains(event.getState()));
                 reportingDescription.setQueryMode(event.getState() == State.QUERY);
             }
@@ -324,24 +327,27 @@ public class MethodScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(9);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
-                        setQueryResult(result);
-                    }
+                service.callList("query",
+                                 query,
+                                 new AsyncCallback<ArrayList<IdNameVO>>() {
+                                     public void onSuccess(ArrayList<IdNameVO> result) {
+                                         setQueryResult(result);
+                                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
-                        } else {
-                            Window.alert("Error: Method call query failed; " + error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError(consts.get("noMoreRecordInDir"));
+                                         } else {
+                                             Window.alert("Error: Method call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(RPC entry) {
@@ -366,7 +372,8 @@ public class MethodScreen extends Screen {
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -537,7 +544,9 @@ public class MethodScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("methodHistory"), ReferenceTable.METHOD, hist);
+        HistoryScreen.showHistory(consts.get("methodHistory"),
+                                  Constants.table().METHOD,
+                                  hist);
     }
 
     protected boolean fetchById(Integer id) {

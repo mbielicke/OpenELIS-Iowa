@@ -2,7 +2,7 @@ package org.openelis.modules.completeRelease.client;
 
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -34,8 +34,6 @@ public class SampleTab extends Screen {
 	
 	boolean loaded;
 
-    private Integer sampleReleasedId;
-
     protected AccessionNumberUtility accessionNumUtil;
 
     public SampleTab(ScreenDefInt def, ScreenWindowInt window) {
@@ -43,7 +41,6 @@ public class SampleTab extends Screen {
 		setWindow(window);
 		
 		initialize();
-		initializeDropdowns();
 	}
 	
 	public void initialize() {
@@ -205,18 +202,9 @@ public class SampleTab extends Screen {
 
         loaded = true;
     }
-
-    private void initializeDropdowns() {
-        try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-    }
     
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()));
     }
     
     public boolean validate() {

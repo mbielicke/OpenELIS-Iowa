@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.inventoryAdjustment.client;
 
 import java.util.ArrayList;
@@ -31,13 +31,13 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryAdjustmentViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -95,34 +95,36 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InventoryAdjustmentScreen extends Screen {
-    
+
     private InventoryAdjustmentManager manager;
-    private ModulePermission           userPermission;    
-    
-    
+    private ModulePermission           userPermission;
+
     private ButtonGroup                atoz;
     private ScreenNavigator            nav;
-    
+
     private Dropdown<Integer>          inventoryItemStoreId;
     private CalendarLookUp             adjustmentDate;
     private TextBox                    id, description, systemUserId;
-    private AutoComplete<Integer>      inventoryLocationId, inventoryLocationInventoryItemName;
-    
-    private AppButton                  queryButton, previousButton, nextButton, addButton,
-                                       updateButton, commitButton, abortButton, addRowButton,
-                                       removeRowButton;
-    protected MenuItem                 inventoryAdjustmentHistory, inventoryAdjustmentLocationHistory;
+    private AutoComplete<Integer>      inventoryLocationId,
+                    inventoryLocationInventoryItemName;
+
+    private AppButton                  queryButton, previousButton, nextButton,
+                    addButton, updateButton, commitButton, abortButton, addRowButton,
+                    removeRowButton;
+    protected MenuItem                 inventoryAdjustmentHistory,
+                    inventoryAdjustmentLocationHistory;
     private TableWidget                adjustmentTable;
     private ScreenService              inventoryLocationService;
-    
+
     public InventoryAdjustmentScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryAdjustmentDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService");
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");        
+        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
 
         userPermission = UserCache.getPermission().getModule("inventoryadjustment");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Inventory Adjustment Screen");
+            throw new PermissionException("screenPermException",
+                                          "Inventory Adjustment Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -130,21 +132,22 @@ public class InventoryAdjustmentScreen extends Screen {
             }
         });
     }
-    
+
     private void postConstructor() {
         manager = InventoryAdjustmentManager.getInstance();
         try {
             CategoryCache.getBySystemNames("inventory_store");
         } catch (Exception e) {
-            Window.alert("Inventory Adjustment Screen: missing dictionary entry; " + e.getMessage());
+            Window.alert("Inventory Adjustment Screen: missing dictionary entry; " +
+                         e.getMessage());
             window.close();
         }
-        
-        initialize(); 
+
+        initialize();
         initializeDropdowns();
         setState(State.DEFAULT);
-        DataChangeEvent.fire(this); 
-    }   
+        DataChangeEvent.fire(this);
+    }
 
     private void initialize() {
         //
@@ -157,8 +160,9 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -171,7 +175,8 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -193,8 +198,9 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -207,8 +213,8 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -218,10 +224,11 @@ public class InventoryAdjustmentScreen extends Screen {
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 commit();
-            }           
+            }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -232,10 +239,11 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
-        
+
         inventoryAdjustmentHistory = (MenuItem)def.getWidget("inventoryAdjustmentHistory");
         addScreenHandler(inventoryAdjustmentHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -243,20 +251,23 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryAdjustmentHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                inventoryAdjustmentHistory.enable(EnumSet.of(State.DISPLAY)
+                                                         .contains(event.getState()));
             }
         });
-        
-        inventoryAdjustmentLocationHistory = (MenuItem)def.getWidget("inventoryAdjustmentLocationHistory");
-        addScreenHandler(inventoryAdjustmentLocationHistory, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                inventoryAdjustmentLocationHistory();
-            }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                inventoryAdjustmentLocationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
+        inventoryAdjustmentLocationHistory = (MenuItem)def.getWidget("inventoryAdjustmentLocationHistory");
+        addScreenHandler(inventoryAdjustmentLocationHistory,
+                         new ScreenEventHandler<Object>() {
+                             public void onClick(ClickEvent event) {
+                                 inventoryAdjustmentLocationHistory();
+                             }
+
+                             public void onStateChange(StateChangeEvent<State> event) {
+                                 inventoryAdjustmentLocationHistory.enable(EnumSet.of(State.DISPLAY)
+                                                                                  .contains(event.getState()));
+                             }
+                         });
 
         id = (TextBox)def.getWidget(InventoryAdjustmentMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
@@ -265,7 +276,7 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                // this field is not edited except for in query mode 
+                // this field is not edited except for in query mode
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -285,7 +296,8 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -293,7 +305,8 @@ public class InventoryAdjustmentScreen extends Screen {
         adjustmentDate = (CalendarLookUp)def.getWidget(InventoryAdjustmentMeta.getAdjustmentDate());
         addScreenHandler(adjustmentDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                adjustmentDate.setValue(manager.getInventoryAdjustment().getAdjustmentDate());
+                adjustmentDate.setValue(manager.getInventoryAdjustment()
+                                               .getAdjustmentDate());
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -301,7 +314,8 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                adjustmentDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                adjustmentDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                             .contains(event.getState()));
                 adjustmentDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -309,7 +323,8 @@ public class InventoryAdjustmentScreen extends Screen {
         systemUserId = (TextBox)def.getWidget(InventoryAdjustmentMeta.getSystemUserId());
         addScreenHandler(systemUserId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                systemUserId.setValue(manager.getInventoryAdjustment().getSystemUserName());
+                systemUserId.setValue(manager.getInventoryAdjustment()
+                                             .getSystemUserName());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -324,44 +339,50 @@ public class InventoryAdjustmentScreen extends Screen {
         inventoryItemStoreId = (Dropdown)def.getWidget(InventoryAdjustmentMeta.getInventoryLocationInventoryItemStoreId());
         addScreenHandler(inventoryItemStoreId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                inventoryItemStoreId.setSelection(manager.getInventoryAdjustment().getInventoryXAdjustInventoryLocationInventoryItemStoreId());
+                inventoryItemStoreId.setSelection(manager.getInventoryAdjustment()
+                                                         .getInventoryXAdjustInventoryLocationInventoryItemStoreId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getInventoryAdjustment().setInventoryXAdjustInventoryLocationInventoryItemStoreId(event.getValue());
+                manager.getInventoryAdjustment()
+                       .setInventoryXAdjustInventoryLocationInventoryItemStoreId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItemStoreId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                inventoryItemStoreId.enable(EnumSet.of(State.QUERY,
+                                                       State.ADD,
+                                                       State.UPDATE)
+                                                   .contains(event.getState()));
                 inventoryItemStoreId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
         adjustmentTable = (TableWidget)def.getWidget("adjustmentTable");
-        addScreenHandler(adjustmentTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (state != State.QUERY)
-                    adjustmentTable.load(getAdjustmentTableModel());
-            }
+        addScreenHandler(adjustmentTable,
+                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 if (state != State.QUERY)
+                                     adjustmentTable.load(getAdjustmentTableModel());
+                             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                adjustmentTable.enable(true);
-                adjustmentTable.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-        
+                             public void onStateChange(StateChangeEvent<State> event) {
+                                 adjustmentTable.enable(true);
+                                 adjustmentTable.setQueryMode(event.getState() == State.QUERY);
+                             }
+                         });
+
         adjustmentTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) { 
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int c;
-                
+
                 c = event.getCol();
-                
+
                 if (state != State.UPDATE && state != State.ADD) {
                     event.cancel();
                 } else if (c == 3 || c == 5) {
-                    event.cancel();                
-                }                     
-            }           
+                    event.cancel();
+                }
+            }
         });
 
         adjustmentTable.addCellEditedHandler(new CellEditedHandler() {
@@ -370,39 +391,39 @@ public class InventoryAdjustmentScreen extends Screen {
                 Integer qtyOnHand, physCount, adjQty;
                 InventoryXAdjustViewDO data;
                 InventoryLocationViewDO invLoc;
-                TableDataRow row;                             
+                TableDataRow row;
                 Object val;
-                
+
                 r = event.getRow();
                 c = event.getCol();
-                val = adjustmentTable.getObject(r,c);
-                
+                val = adjustmentTable.getObject(r, c);
+
                 try {
                     data = manager.getAdjustments().getAdjustmentAt(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
                 }
-                switch(c) {
+                switch (c) {
                     case 0:
                         row = (TableDataRow)val;
                         if (row != null && row.data != null) {
                             invLoc = (InventoryLocationViewDO)row.data;
                             loadFromInventoryLocation(data, invLoc, r);
                             adjustmentTable.clearCellExceptions(r, 1);
-                        } else  {                           
+                        } else {
                             loadFromInventoryLocation(data, null, r);
-                        }                      
+                        }
                         break;
                     case 1:
                         row = (TableDataRow)val;
                         if (row != null) {
-                            invLoc = (InventoryLocationViewDO)row.data;                            
+                            invLoc = (InventoryLocationViewDO)row.data;
                             loadFromInventoryLocation(data, invLoc, r);
                             adjustmentTable.clearCellExceptions(r, 0);
-                        } else  {
+                        } else {
                             loadFromInventoryLocation(data, null, r);
-                        }                      
+                        }
                         break;
                     case 4:
                         physCount = (Integer)val;
@@ -437,9 +458,9 @@ public class InventoryAdjustmentScreen extends Screen {
                 }
             }
         });
-        
+
         inventoryLocationId = (AutoComplete<Integer>)adjustmentTable.getColumnWidget(InventoryAdjustmentMeta.getInventoryLocationId());
-        
+
         inventoryLocationId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 Integer id;
@@ -448,7 +469,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 TableDataRow row;
                 ArrayList<TableDataRow> model;
                 String location;
-                
+
                 id = null;
                 model = new ArrayList<TableDataRow>();
                 try {
@@ -458,12 +479,12 @@ public class InventoryAdjustmentScreen extends Screen {
                     inventoryLocationId.showAutoMatches(model);
                     return;
                 }
-                
+
                 try {
                     data = inventoryLocationService.call("fetchById", id);
-                    
+
                     row = new TableDataRow(7);
-                    row.key = data.getId();  
+                    row.key = data.getId();
                     row.cells.get(0).setValue(data.getId().toString());
                     row.cells.get(1).setValue(data.getInventoryItemName());
                     store = DictionaryCache.getById(data.getInventoryItemStoreId());
@@ -480,20 +501,19 @@ public class InventoryAdjustmentScreen extends Screen {
 
                     model.add(row);
 
-                    
-                } catch (NotFoundException e) {    
+                } catch (NotFoundException e) {
                     model.add(new TableDataRow(null, ""));
-                } catch (Exception e) {                     
+                } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
-                    
+
                 }
                 inventoryLocationId.showAutoMatches(model);
             }
         });
-        
+
         inventoryLocationInventoryItemName = (AutoComplete<Integer>)adjustmentTable.getColumnWidget(InventoryAdjustmentMeta.getInventoryLocationInventoryItemName());
-        
+
         inventoryLocationInventoryItemName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 Integer storeId;
@@ -507,12 +527,12 @@ public class InventoryAdjustmentScreen extends Screen {
                 QueryData field;
 
                 storeId = inventoryItemStoreId.getValue();
-                
+
                 if (storeId == null) {
                     Window.alert(consts.get("plsSelStore"));
                     return;
                 }
-                
+
                 query = new Query();
 
                 field = new QueryData();
@@ -520,13 +540,13 @@ public class InventoryAdjustmentScreen extends Screen {
                 field.type = QueryData.Type.STRING;
                 field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 query.setFields(field);
-                
+
                 field = new QueryData();
                 field.key = InventoryItemMeta.getStoreId();
-                field.type = QueryData.Type.INTEGER;                     
-                field.query = storeId.toString();           
+                field.type = QueryData.Type.INTEGER;
+                field.query = storeId.toString();
                 query.setFields(field);
-                
+
                 try {
                     list = inventoryLocationService.callList("fetchByInventoryItemNameStoreId",
                                                              query);
@@ -536,7 +556,7 @@ public class InventoryAdjustmentScreen extends Screen {
                         row = new TableDataRow(6);
                         data = list.get(i);
 
-                        row.key = data.getId();                        
+                        row.key = data.getId();
                         row.cells.get(0).setValue(data.getInventoryItemName());
                         store = DictionaryCache.getById(data.getInventoryItemStoreId());
                         row.cells.get(1).setValue(store.getEntry());
@@ -558,13 +578,13 @@ public class InventoryAdjustmentScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
             }
-        });    
-        
+        });
+
         addRowButton = (AppButton)def.getWidget("addRowButton");
         addScreenHandler(addRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int n;                
-                    
+                int n;
+
                 adjustmentTable.addRow();
                 n = adjustmentTable.numRows() - 1;
                 adjustmentTable.selectRow(n);
@@ -573,7 +593,8 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addRowButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addRowButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -588,34 +609,37 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeRowButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                removeRowButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                              .contains(event.getState()));
             }
         });
-        
+
         nav = new ScreenNavigator(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(19);
-                service.callList("query", query, new AsyncCallback<ArrayList<InventoryAdjustmentDO>>() {
-                    public void onSuccess(ArrayList<InventoryAdjustmentDO> result) {
-                        setQueryResult(result);
-                    }
+                service.callList("query",
+                                 query,
+                                 new AsyncCallback<ArrayList<InventoryAdjustmentDO>>() {
+                                     public void onSuccess(ArrayList<InventoryAdjustmentDO> result) {
+                                         setQueryResult(result);
+                                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
-                        } else {
-                            Window.alert("Error: Inventory Adjustment call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError("No more records in this direction");
+                                         } else {
+                                             Window.alert("Error: Inventory Adjustment call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(RPC entry) {
@@ -631,17 +655,20 @@ public class InventoryAdjustmentScreen extends Screen {
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
                     for (InventoryAdjustmentDO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getId().toString(), entry.getAdjustmentDate()));
+                        model.add(new TableDataRow(entry.getId(),
+                                                   entry.getId().toString(),
+                                                   entry.getAdjustmentDate()));
                 }
                 return model;
             }
         };
-        
+
         atoz = (ButtonGroup)def.getWidget("atozButtons");
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -661,9 +688,9 @@ public class InventoryAdjustmentScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -671,7 +698,7 @@ public class InventoryAdjustmentScreen extends Screen {
             }
         });
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
@@ -688,19 +715,19 @@ public class InventoryAdjustmentScreen extends Screen {
         }
 
         inventoryItemStoreId.setModel(model);
-        
+
     }
-    
+
     private void query() {
         manager = InventoryAdjustmentManager.getInstance();
 
         setState(State.QUERY);
-        DataChangeEvent.fire(this);        
+        DataChangeEvent.fire(this);
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
-        
+
     }
-    
+
     protected void previous() {
         nav.previous();
     }
@@ -715,7 +742,7 @@ public class InventoryAdjustmentScreen extends Screen {
         try {
             now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
-            Window.alert("Inventory Adjustment Datetime: " +e.getMessage());
+            Window.alert("Inventory Adjustment Datetime: " + e.getMessage());
             return;
         }
         manager = InventoryAdjustmentManager.getInstance();
@@ -723,7 +750,7 @@ public class InventoryAdjustmentScreen extends Screen {
         data.setAdjustmentDate(now);
         data.setSystemUserId(UserCache.getPermission().getSystemUserId());
         data.setSystemUserName(UserCache.getPermission().getLoginName());
-                
+
         setState(State.ADD);
         DataChangeEvent.fire(this);
 
@@ -744,13 +771,13 @@ public class InventoryAdjustmentScreen extends Screen {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
-        
+
     }
-    
+
     protected void commit() {
         ArrayList<QueryData> fields;
         Query query;
-        
+
         setFocus(null);
 
         if ( !validate()) {
@@ -760,15 +787,16 @@ public class InventoryAdjustmentScreen extends Screen {
 
         if (state == State.QUERY) {
             query = new Query();
-            fields = getQueryFields();            
+            fields = getQueryFields();
             /*
-             * since the widget for inventory location id in the table is an autocomplete
-             * which sets the type of the query field created from its data to string,
-             * we need to change the type to integer here in order to make sure 
-             * that the query in the back end doesn't fail because of the value 
-             * queried by being treated as a string instead of an integer             
+             * since the widget for inventory location id in the table is an
+             * autocomplete which sets the type of the query field created from
+             * its data to string, we need to change the type to integer here in
+             * order to make sure that the query in the back end doesn't fail
+             * because of the value queried by being treated as a string instead
+             * of an integer
              */
-            for (QueryData f : fields) {                
+            for (QueryData f : fields) {
                 if (InventoryAdjustmentMeta.getInventoryLocationId().equals(f.key)) {
                     f.type = QueryData.Type.INTEGER;
                     break;
@@ -804,9 +832,9 @@ public class InventoryAdjustmentScreen extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();
             }
-        }        
+        }
     }
-    
+
     protected void abort() {
         setFocus(null);
         clearErrors();
@@ -830,16 +858,19 @@ public class InventoryAdjustmentScreen extends Screen {
             window.setDone(consts.get("updateAborted"));
         } else {
             window.clearStatus();
-        }        
+        }
     }
-    
+
     protected void inventoryAdjustmentHistory() {
         IdNameVO hist;
-        
-        hist = new IdNameVO(manager.getInventoryAdjustment().getId(), manager.getInventoryAdjustment().getDescription());
-        HistoryScreen.showHistory(consts.get("inventoryAdjustmentHistory"), ReferenceTable.INVENTORY_ADJUSTMENT, hist);        
+
+        hist = new IdNameVO(manager.getInventoryAdjustment().getId(),
+                            manager.getInventoryAdjustment().getDescription());
+        HistoryScreen.showHistory(consts.get("inventoryAdjustmentHistory"),
+                                  Constants.table().INVENTORY_ADJUSTMENT,
+                                  hist);
     }
-    
+
     protected void inventoryAdjustmentLocationHistory() {
         int count;
         IdNameVO list[];
@@ -853,10 +884,11 @@ public class InventoryAdjustmentScreen extends Screen {
             list = new IdNameVO[count];
             for (int i = 0; i < count; i++ ) {
                 data = man.getAdjustmentAt(i);
-                label = data.getInventoryLocationInventoryItemName()+ ": "+
-                                StorageLocationManager.getLocationForDisplay(data.getInventoryLocationStorageLocationName(),
-                                                                             data.getInventoryLocationStorageLocationUnitDescription(),
-                                                                             data.getInventoryLocationStorageLocationLocation());
+                label = data.getInventoryLocationInventoryItemName() +
+                        ": " +
+                        StorageLocationManager.getLocationForDisplay(data.getInventoryLocationStorageLocationName(),
+                                                                     data.getInventoryLocationStorageLocationUnitDescription(),
+                                                                     data.getInventoryLocationStorageLocationLocation());
                 list[i] = new IdNameVO(data.getId(), label);
             }
         } catch (Exception e) {
@@ -865,9 +897,11 @@ public class InventoryAdjustmentScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("inventoryAdjustmentLocationHistory"), ReferenceTable.INVENTORY_X_ADJUST, list);
+        HistoryScreen.showHistory(consts.get("inventoryAdjustmentLocationHistory"),
+                                  Constants.table().INVENTORY_X_ADJUST,
+                                  list);
     }
-    
+
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = InventoryAdjustmentManager.getInstance();
@@ -894,27 +928,30 @@ public class InventoryAdjustmentScreen extends Screen {
 
         return true;
     }
-    
+
     private ArrayList<TableDataRow> getAdjustmentTableModel() {
         ArrayList<TableDataRow> model;
         InventoryXAdjustManager man;
         InventoryXAdjustViewDO data;
         TableDataRow row;
         String location;
-        
+
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
-        
+
         try {
             man = manager.getAdjustments();
-            for(int i = 0; i < man.count(); i++) {
+            for (int i = 0; i < man.count(); i++ ) {
                 data = man.getAdjustmentAt(i);
                 row = new TableDataRow(6);
                 row.key = data.getId();
-                row.cells.get(0).setValue(new TableDataRow(data.getInventoryLocationId(), data.getInventoryLocationId().toString()));
-                row.cells.get(1).setValue(new TableDataRow(data.getInventoryLocationInventoryItemId(),
-                                                           data.getInventoryLocationInventoryItemName()));
+                row.cells.get(0).setValue(new TableDataRow(data.getInventoryLocationId(),
+                                                           data.getInventoryLocationId()
+                                                               .toString()));
+                row.cells.get(1)
+                         .setValue(new TableDataRow(data.getInventoryLocationInventoryItemId(),
+                                                    data.getInventoryLocationInventoryItemName()));
                 location = StorageLocationManager.getLocationForDisplay(data.getInventoryLocationStorageLocationName(),
                                                                         data.getInventoryLocationStorageLocationUnitDescription(),
                                                                         data.getInventoryLocationStorageLocationLocation());
@@ -922,23 +959,24 @@ public class InventoryAdjustmentScreen extends Screen {
                 row.cells.get(3).setValue(data.getInventoryLocationQuantityOnhand());
                 row.cells.get(4).setValue(data.getPhysicalCount());
                 row.cells.get(5).setValue(data.getQuantity());
-                
+
                 model.add(row);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        
+
         return model;
     }
-    
-    private void loadFromInventoryLocation(InventoryXAdjustViewDO data, InventoryLocationViewDO invLoc, int r) {
+
+    private void loadFromInventoryLocation(InventoryXAdjustViewDO data,
+                                           InventoryLocationViewDO invLoc, int r) {
         Integer itemId;
         String name, location;
 
         if (invLoc != null) {
-            data.setInventoryLocationId(invLoc.getId()); 
+            data.setInventoryLocationId(invLoc.getId());
             itemId = invLoc.getInventoryItemId();
             data.setInventoryLocationInventoryItemId(itemId);
             name = invLoc.getInventoryItemName();
@@ -949,8 +987,8 @@ public class InventoryAdjustmentScreen extends Screen {
             data.setInventoryLocationStorageLocationName(invLoc.getStorageLocationName());
             data.setInventoryLocationStorageLocationUnitDescription(invLoc.getStorageLocationUnitDescription());
 
-            adjustmentTable.setCell(r, 0, new TableDataRow(invLoc.getId(), invLoc.getId()
-                                                                                 .toString()));
+            adjustmentTable.setCell(r, 0, new TableDataRow(invLoc.getId(),
+                                                           invLoc.getId().toString()));
             location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
                                                                     invLoc.getStorageLocationUnitDescription(),
                                                                     invLoc.getStorageLocationLocation());

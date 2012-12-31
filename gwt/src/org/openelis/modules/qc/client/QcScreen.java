@@ -31,12 +31,12 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -70,7 +70,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
-import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 
@@ -84,7 +83,6 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class QcScreen extends Screen {
     private QcManager             manager;
@@ -277,29 +275,6 @@ public class QcScreen extends Screen {
         addScreenHandler(qcLotHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 qcLotHistory();
-            }
-
-            private void qcLotHistory() {
-                int i, count;
-                IdNameVO refVoList[];
-                QcLotManager man;
-                QcLotViewDO data;
-
-                try {
-                    man = manager.getLots();
-                    count = man.count();
-                    refVoList = new IdNameVO[count];
-                    for (i = 0; i < count; i++ ) {
-                        data = man.getLotAt(i);
-                        refVoList[i] = new IdNameVO(data.getId(), data.getLotNumber());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                    return;
-                }
-
-                HistoryScreen.showHistory(consts.get("qcLotHistory"), ReferenceTable.QC_LOT, refVoList);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -732,7 +707,7 @@ public class QcScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getQc().getId(), manager.getQc().getName());
-        HistoryScreen.showHistory(consts.get("qcHistory"), ReferenceTable.QC, hist);
+        HistoryScreen.showHistory(consts.get("qcHistory"), Constants.table().QC, hist);
     }
 
     private void qcAnalyteHistory() {
@@ -755,8 +730,31 @@ public class QcScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("qcAnalyteHistory"), ReferenceTable.QC_ANALYTE,
+        HistoryScreen.showHistory(consts.get("qcAnalyteHistory"), Constants.table().QC_ANALYTE,
                                   refVoList);
+    }
+    
+    private void qcLotHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        QcLotManager man;
+        QcLotViewDO data;
+
+        try {
+            man = manager.getLots();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getLotAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getLotNumber());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("qcLotHistory"), Constants.table().QC_LOT, refVoList);
     }
 
     protected boolean fetchById(Integer id) {

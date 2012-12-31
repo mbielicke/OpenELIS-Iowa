@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.OrderItemViewDO;
@@ -46,7 +46,6 @@ public class ItemTab extends Screen {
 
     private boolean               loaded, hasExtraCols;
     private int                   numColumns;
-    private Integer               statusProcessedId;
 
     protected ScreenService       inventoryService;
 
@@ -67,7 +66,7 @@ public class ItemTab extends Screen {
 
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                if(state != State.QUERY)
+                if (state != State.QUERY)
                     table.load(getTableModel());
             }
 
@@ -79,12 +78,13 @@ public class ItemTab extends Screen {
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ((state != State.ADD && state != State.UPDATE) ||
-                                (statusProcessedId.equals(manager.getOrder().getStatusId()))) {
+                if ( (state != State.ADD && state != State.UPDATE) ||
+                    (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                                                                                 .getStatusId()))) {
                     event.cancel();
                     return;
                 }
-                
+
                 // store column is not editable -- it is set from inventory item
                 // column
                 if (event.getCol() == 2)
@@ -170,13 +170,17 @@ public class ItemTab extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = inventoryService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = inventoryService.callList("fetchActiveByName",
+                                                     QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO)list.get(i);
-                        row = new TableDataRow(data.getId(), data.getName(), data.getDescription(),
-                                               data.getStoreId(), data.getDispensedUnitsId());
+                        row = new TableDataRow(data.getId(),
+                                               data.getName(),
+                                               data.getDescription(),
+                                               data.getStoreId(),
+                                               data.getDispensedUnitsId());
                         row.data = data;
                         model.add(row);
                     }
@@ -257,12 +261,6 @@ public class ItemTab extends Screen {
             model.add(row);
         }
         units.setModel(model);
-        try {
-            statusProcessedId = DictionaryCache.getIdBySystemName("order_status_processed");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -308,9 +306,10 @@ public class ItemTab extends Screen {
 
         loaded = true;
     }
-    
+
     private boolean canEdit(State state) {
         return EnumSet.of(State.ADD).contains(state) ||
-               (state == State.UPDATE && !statusProcessedId.equals(manager.getOrder().getStatusId()));
+               (state == State.UPDATE && !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                                                                                                      .getStatusId()));
     }
 }
