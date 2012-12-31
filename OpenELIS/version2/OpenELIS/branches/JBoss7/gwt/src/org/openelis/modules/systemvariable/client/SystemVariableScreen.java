@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -502,7 +502,7 @@ public class SystemVariableScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("systemVariableHistory"), ReferenceTable.SYSTEM_VARIABLE, hist);
+        HistoryScreen.showHistory(consts.get("systemVariableHistory"), Constants.table().SYSTEM_VARIABLE, hist);
     }
 
     protected boolean fetchById(Integer id) {

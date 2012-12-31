@@ -25,7 +25,7 @@
 */
 package org.openelis.manager;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -82,7 +82,7 @@ public class ShippingManagerProxy {
         
         if (man.shipNotes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.SHIPPING);
+            man.getNotes().setReferenceTableId(Constants.table().SHIPPING);
             man.getNotes().add();
         }
         
@@ -107,7 +107,7 @@ public class ShippingManagerProxy {
         
         if (man.shipNotes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.SHIPPING);
+            man.getNotes().setReferenceTableId(Constants.table().SHIPPING);
             man.getNotes().update();
         }
         

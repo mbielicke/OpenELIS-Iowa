@@ -31,10 +31,10 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -643,7 +643,7 @@ public class QaEventScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("qaeventHistory"), ReferenceTable.QAEVENT, hist);
+        HistoryScreen.showHistory(consts.get("qaeventHistory"), Constants.table().QAEVENT, hist);
     }
 
     protected boolean fetchById(Integer id) {

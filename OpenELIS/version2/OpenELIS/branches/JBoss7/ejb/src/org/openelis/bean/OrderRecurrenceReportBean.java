@@ -30,13 +30,13 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
@@ -48,30 +48,12 @@ import org.openelis.gwt.common.Prompt;
 public class OrderRecurrenceReportBean {
     
     @EJB
-    private DictionaryBean       dictionary;
-
-    @EJB
     private OrderRecurrenceBean  orderRecurrence;
 
     @EJB
     private OrderManagerBean     orderManager;
 
-    private static Integer       daysId, monthsId, yearsId;
-
     private static final Logger log = Logger.getLogger("openelis");
-    
-    @PostConstruct
-    public void init() {
-        if (daysId == null) {
-            try {
-                daysId = dictionary.fetchBySystemName("order_recurrence_unit_days").getId();
-                monthsId = dictionary.fetchBySystemName("order_recurrence_unit_months").getId();
-                yearsId = dictionary.fetchBySystemName("order_recurrence_unit_years").getId();
-            } catch (Throwable e) {
-                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-            }
-        }
-    }   
     
     public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<Prompt> p;
@@ -137,11 +119,11 @@ public class OrderRecurrenceReportBean {
         while (next.compareTo(today) < 1) {            
             if (next.compareTo(today) == 0) 
                 return true;            
-            if (daysId.equals(unitId))
+            if (Constants.dictionary().ORDER_RECURRENCE_UNIT_DAYS.equals(unitId))
                 next.add(Calendar.DAY_OF_MONTH, freq);
-            else if (monthsId.equals(unitId))
+            else if (Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS.equals(unitId))
                 next.add(Calendar.MONTH, freq);
-            else if (yearsId.equals(unitId))
+            else if (Constants.dictionary().ORDER_RECURRENCE_UNIT_YEARS.equals(unitId))
                 next.add(Calendar.YEAR, freq);
         }
         

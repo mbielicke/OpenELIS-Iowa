@@ -25,7 +25,6 @@
 */
 package org.openelis.manager;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 
@@ -48,9 +47,5 @@ public class AuxFieldValueManagerProxy {
     
     public void validate(AuxFieldValueManager man, ValidationErrorsList errorsList) throws Exception {
         
-    }
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdBySystemName(systemName);
     }
 }

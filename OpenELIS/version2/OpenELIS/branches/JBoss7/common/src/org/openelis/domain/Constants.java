@@ -29,17 +29,33 @@ import java.io.Serializable;
 
 /**
  * The class provides application wide constants that are used in the EJB and
- * GWT context. Parts of the class is loaded from the database at server
- * start-up which makes some of these variables not immutable.
+ * GWT context. Because some of the constants are loaded from the database and
+ * the entire class has to be serialized to the GWT context, every constant is
+ * an instance variable rather than static final. Additionally, the dictionary
+ * constants are not immutable.
  */
 public class Constants implements Serializable {
-    private static final long      serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private static final Constants constants        = new Constants();
-    protected Table                table            = new Table();
-    protected Domain               domain           = new Domain();
-    protected Audit                audit            = new Audit();
-    protected Dictionary           dictionary       = new Dictionary();
+    private static Constants  constants;
+    protected Table           table            = new Table();
+    protected Domain          domain           = new Domain();
+    protected Audit           audit            = new Audit();
+    protected Dictionary      dictionary       = new Dictionary();
+
+    /**
+     * This method is used to set a serialized instance of this class for the
+     * GWT application. ApplicationBean will create and set an instance of this
+     * class at application startup.
+     */
+    public static void setConstants(Constants instance) {
+        assert constants == null : "Cannot create duplicate constants";
+        constants = instance;
+    }
+
+    public static Constants getConstants() {
+        return constants;
+    }
 
     /**
      * Table reference
@@ -73,14 +89,17 @@ public class Constants implements Serializable {
      * The class is used for table reference id. Table reference ids are used
      * for common tables such as notes to link to other tables-records.
      */
-    public class Table {
-        public final Integer PERSON = 1, PATIENT = 2, PATIENT_RELATION = 3, PROVIDER = 4,
-                        ORGANIZATION = 5, ORGANIZATION_CONTACT = 6, SAMPLE = 8,
-                        SAMPLE_ENVIRONMENTAL = 9, SAMPLE_ANIMAL = 10, SAMPLE_HUMAN = 11,
-                        SAMPLE_PROJECT = 12, SAMPLE_ORGANIZATION = 13, SAMPLE_ITEM = 14,
-                        ANALYSIS = 15, ANALYSIS_QAEVENT = 16, ANALYSIS_USER = 17,
-                        RESULT = 18, QAEVENT = 19, NOTE = 20, STANDARD_NOTE = 21,
-                        TEST = 22, TEST_ANALYTE = 23, TEST_RESULT = 24, TEST_REFLEX = 25,
+    public static class Table implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public final Integer      PERSON           = 1, PATIENT = 2,
+                        PATIENT_RELATION = 3, PROVIDER = 4, ORGANIZATION = 5,
+                        ORGANIZATION_CONTACT = 6, SAMPLE = 8, SAMPLE_ENVIRONMENTAL = 9,
+                        SAMPLE_ANIMAL = 10, SAMPLE_HUMAN = 11, SAMPLE_PROJECT = 12,
+                        SAMPLE_ORGANIZATION = 13, SAMPLE_ITEM = 14, ANALYSIS = 15,
+                        ANALYSIS_QAEVENT = 16, ANALYSIS_USER = 17, RESULT = 18,
+                        QAEVENT = 19, NOTE = 20, STANDARD_NOTE = 21, TEST = 22,
+                        TEST_ANALYTE = 23, TEST_RESULT = 24, TEST_REFLEX = 25,
                         TEST_WORKSHEET = 26, TEST_WORKSHEET_ITEM = 27, SECTION = 28,
                         TEST_TRAILER = 29, METHOD = 30, SAMPLE_PRIVATE_WELL = 31,
                         PROJECT = 33, PROJECT_PARAMETER = 34, INVENTORY_ITEM = 35,
@@ -119,18 +138,22 @@ public class Constants implements Serializable {
      * The class represents all the sample domains that can be used in sample
      * record
      */
-    public class Domain {
-        public final String QUICKENTRY = "Q", ENVIRONMENTAL = "E", SDWIS = "S",
-                        PRIVATEWELL = "W", NEWBORN = "N", HUMAN = "H", ANIMAL = "A",
-                        PT = "P";
+    public static class Domain implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public final String       QUICKENTRY       = "Q", ENVIRONMENTAL = "E",
+                        SDWIS = "S", PRIVATEWELL = "W", NEWBORN = "N", HUMAN = "H",
+                        ANIMAL = "A", PT = "P";
     }
 
     /**
      * The class represents all the operations that can be performed for
      * auditing.
      */
-    public class Audit {
-        public final Integer ADD = 1, UPDATE = 2, DELETE = 3, VIEW = 4;
+    public static class Audit implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public final Integer      ADD              = 1, UPDATE = 2, DELETE = 3, VIEW = 4;
     }
 
     /**
@@ -138,35 +161,46 @@ public class Constants implements Serializable {
      * the program. The constants are not final; they are loaded at server load
      * time because the value is the dictionary entry id.
      */
-    public class Dictionary {
-        public Integer ANALYSIS_CANCELLED, ANALYSIS_COMPLETED, ANALYSIS_ERROR_COMPLETED,
-                        ANALYSIS_ERROR_INITIATED, ANALYSIS_ERROR_INPREP,
-                        ANALYSIS_ERROR_LOGGED_IN, ANALYSIS_INITIATED, ANALYSIS_INPREP,
-                        ANALYSIS_LOGGED_IN, ANALYSIS_ON_HOLD, ANALYSIS_RELEASED,
-                        ANALYSIS_REQUEUE, AN_USER_AC_COMPLETED, AN_USER_AC_RELEASED,
-                        AUX_ALPHA_LOWER, AUX_ALPHA_MIXED, AUX_ALPHA_UPPER, AUX_DATE,
-                        AUX_DATE_TIME, AUX_DEFAULT, AUX_DICTIONARY, AUX_NUMERIC,
-                        AUX_TIME, CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED,
-                        INSTRUMENT_LOG_COMPLETED, INSTRUMENT_LOG_PENDING,
-                        LOG_LEVEL_ERROR, LOG_LEVEL_INFO, LOG_TYPE_DATA_TRANSMISSION,
+    public static class Dictionary implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public Integer            ANALYSIS_CANCELLED, ANALYSIS_COMPLETED,
+                        ANALYSIS_ERROR_COMPLETED, ANALYSIS_ERROR_INITIATED,
+                        ANALYSIS_ERROR_INPREP, ANALYSIS_ERROR_LOGGED_IN,
+                        ANALYSIS_INITIATED, ANALYSIS_INPREP, ANALYSIS_LOGGED_IN,
+                        ANALYSIS_ON_HOLD, ANALYSIS_RELEASED, ANALYSIS_REQUEUE,
+                        AN_USER_AC_COMPLETED, AN_USER_AC_RELEASED, AUX_ALPHA_LOWER,
+                        AUX_ALPHA_MIXED, AUX_ALPHA_UPPER, AUX_DATE, AUX_DATE_TIME,
+                        AUX_DEFAULT, AUX_DICTIONARY, AUX_NUMERIC, AUX_TIME,
+                        CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED, INSTRUMENT_LOG_COMPLETED,
+                        INSTRUMENT_LOG_PENDING, LOG_LEVEL_ERROR, LOG_LEVEL_INFO,
+                        LOG_TYPE_DATA_TRANSMISSION, MICROGRAMS_PER_LITER,
+                        NANOGRAMS_PER_LITER, NANOGRAMS_PER_MILLILITER,
                         ORDER_RECURRENCE_UNIT_DAYS, ORDER_RECURRENCE_UNIT_MONTHS,
                         ORDER_RECURRENCE_UNIT_YEARS, ORDER_STATUS_BACK_ORDERED,
-                        ORDER_STATUS_PENDING, ORDER_STATUS_PROCESSED, ORG_BILL_TO,
-                        ORG_FINALREP_FAX_NUMBER, ORG_NO_FINALREPORT, ORG_REPORT_TO,
-                        ORG_SECOND_REPORT_TO, POS_DUPLICATE, POS_FIXED, POS_FIXED_ALWAYS,
+                        ORDER_STATUS_PENDING, ORDER_STATUS_PROCESSED,
+                        ORDER_STATUS_RECURRING, ORDER_STATUS_ON_HOLD,
+                        ORDER_STATUS_CANCELLED, ORG_BILL_TO, ORG_FINALREP_FAX_NUMBER,
+                        ORG_NO_FINALREPORT, ORG_REPORT_TO, ORG_SECOND_REPORT_TO,
+                        POS_DUPLICATE, POS_FIXED, POS_FIXED_ALWAYS, POS_RANDOM,
+                        POS_LAST_OF_SUBSET, POS_LAST_OF_RUN, POS_LAST_OF_SUBSET_AND_RUN,
                         PT_SAMPLE, QAEVENT_INTERNAL, QAEVENT_OVERRIDE, QAEVENT_WARNING,
                         QC_BLANK, QC_DUPLICATE, QC_SPIKE, RECEIVABLE_REPORTTO_EMAIL,
-                        RELEASED_REPORTTO_EMAIL, ROUND_INT, ROUND_INT_SIG_FIG,
-                        ROUND_INT_SIG_FIG_NOE, ROUND_SIG_FIG, ROUND_SIG_FIG_NOE,
-                        SAMPLE_COMPLETED, SAMPLE_ERROR, SAMPLE_LOGGED_IN,
-                        SAMPLE_NOT_VERIFIED, SAMPLE_RELEASED, TEST_ANALYTE_SUPLMTL,
+                        RELEASED_REPORTTO_EMAIL, ORG_HOLD_SAMPLE, REFLEX_AUTO,
+                        REFLEX_PROMPT, REFLEX_AUTO_NDUP, REFLEX_PROMPT_NDUP, ROUND_INT,
+                        ROUND_INT_SIG_FIG, ROUND_INT_SIG_FIG_NOE, ROUND_SIG_FIG,
+                        ROUND_SIG_FIG_NOE, SAMPLE_COMPLETED, SAMPLE_ERROR,
+                        SAMPLE_LOGGED_IN, SAMPLE_NOT_VERIFIED, SAMPLE_RELEASED,
+                        SDWIS_CATEGORY_BACTERIAL, SECTION_MCL_VIOLATION_EMAIL,
+                        SHIPPING_STATUS_PROCESSED, SHIPPING_STATUS_SHIPPED,
+                        TEST_ANALYTE_REQ, TEST_ANALYTE_SUPLMTL, TEST_ANALYTE_READ_ONLY,
                         TEST_RES_TYPE_ALPHA_LOWER, TEST_RES_TYPE_ALPHA_MIXED,
                         TEST_RES_TYPE_ALPHA_UPPER, TEST_RES_TYPE_DATE,
                         TEST_RES_TYPE_DATE_TIME, TEST_RES_TYPE_DEFAULT,
                         TEST_RES_TYPE_DICTIONARY, TEST_RES_TYPE_NUMERIC,
                         TEST_RES_TYPE_TIME, TEST_RES_TYPE_TITER, TEST_SECTION_DEFAULT,
                         TEST_SECTION_MATCH, TURNAROUND_DAILY, TURNAROUND_MONTHLY,
-                        TURNAROUND_WEEKLY, WORKSHEET_COMPLETE, WORKSHEET_FAILED,
-                        WORKSHEET_VOID, WORKSHEET_WORKING;
+                        TURNAROUND_WEEKLY, WF_TOTAL, WORKSHEET_COMPLETE,
+                        WORKSHEET_FAILED, WORKSHEET_VOID, WORKSHEET_WORKING;
     }
 }

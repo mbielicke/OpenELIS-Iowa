@@ -80,7 +80,7 @@ public class ToDoAnalyteReportBean {
     private SectionCacheBean section;
 
     @EJB
-    private DictionaryBean  dictionary;
+    private CategoryCacheBean categoryCache;
     
     @EJB
     private PrinterCacheBean printers;
@@ -339,7 +339,7 @@ public class ToDoAnalyteReportBean {
         l.add(new OptionListItem("", ""));
         statusDO = new ArrayList<DictionaryDO>();
         try {
-            statusDO = dictionary.fetchByCategorySystemName("analysis_status");
+            statusDO = categoryCache.getBySystemName("analysis_status").getDictionaryList();
             for (DictionaryDO n : statusDO)
                 l.add(new OptionListItem(n.getId().toString(), n.getEntry().toString()));
         } catch (Exception e) {

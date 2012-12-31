@@ -61,6 +61,9 @@ public class BuildKitsReportBean {
     
     @EJB
     private DictionaryBean    dictionary;
+    
+    @EJB
+    private CategoryCacheBean categoryCache;
      
     @EJB   
     private LabelReportBean labelReport;
@@ -102,7 +105,7 @@ public class BuildKitsReportBean {
                                                                      .setRequired(true));
             p.add(new Prompt("KIT_DESCRIPTION", Prompt.Type.STRING).setPrompt("Description:")
                                                                    .setHidden(true));
-            d = dictionary.fetchByCategorySystemName("kit_special_instructions");
+            d = categoryCache.getBySystemName("kit_special_instructions").getDictionaryList();
             list = getInstructions(d);
             p.add(new Prompt("SPECIAL_INSTRUCTIONS", Prompt.Type.ARRAY).setPrompt("Special Instructions:")
                                                                         .setWidth(200)

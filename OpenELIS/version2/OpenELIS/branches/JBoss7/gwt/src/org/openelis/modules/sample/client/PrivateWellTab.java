@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
@@ -99,8 +99,6 @@ public class PrivateWellTab extends Screen {
     private SampleManager                  manager, previousManager;
     private SamplePrivateWellManager       wellManager, previousWellManager;
 
-    private Integer                        sampleReleasedId;
-    
     protected boolean                      loaded = false;
 
     public PrivateWellTab(ScreenWindowInt window) throws Exception {        
@@ -1404,13 +1402,6 @@ public class PrivateWellTab extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
-        try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-
         // state dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -1422,7 +1413,7 @@ public class PrivateWellTab extends Screen {
     }
     
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && ! Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()));
     }
 
     public void showErrors(ValidationErrorsList errors) {

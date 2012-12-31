@@ -47,10 +47,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -69,13 +68,13 @@ import org.openelis.utils.Auditable;
                         "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
                         "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
                       + " from Order o left join o.orderItem i "
-                      +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.id = :id)"),
+                      +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.id = :id)"),
     @NamedQuery( name = "Order.FetchByShippingId",
                 query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                          "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
                          "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
                        + " from Order o left join o.orderItem i "
-                       + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.shippingId = :shippingId)")})
+                       + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.shippingId = :shippingId)")})
 
 @Entity
 @Table(name = "order")
@@ -343,26 +342,26 @@ public class Order implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.ORDER);
+        audit.setReferenceTableId(Constants.table().ORDER);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("parentOrderId", parentOrderId, original.parentOrderId)
                  .setField("description", description, original.description)
-                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
+                 .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("ordered_date", orderedDate, original.orderedDate)
                  .setField("needed_in_days", neededInDays, original.neededInDays)
                  .setField("requested_by", requestedBy, original.requestedBy)
-                 .setField("cost_center_id", costCenterId, original.costCenterId,ReferenceTable.DICTIONARY)
-                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
+                 .setField("cost_center_id", costCenterId, original.costCenterId,Constants.table().DICTIONARY)
+                 .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
                  .setField("organization_attention", organizationAttention, original.organizationAttention)
                  .setField("type", type, original.type)
                  .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)
-                 .setField("ship_from_id", shipFromId, original.shipFromId, ReferenceTable.DICTIONARY)
+                 .setField("ship_from_id", shipFromId, original.shipFromId, Constants.table().DICTIONARY)
                  .setField("number_of_forms", numberOfForms, original.numberOfForms);
 
         return audit;

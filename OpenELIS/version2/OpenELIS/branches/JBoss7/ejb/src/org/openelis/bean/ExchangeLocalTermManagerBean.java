@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import javax.annotation.Resource;
@@ -34,16 +34,14 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 
 @Stateless
 @SecurityDomain("openelis")
-
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class ExchangeLocalTermManagerBean {
 
     @Resource
@@ -54,13 +52,13 @@ public class ExchangeLocalTermManagerBean {
     
     @EJB
     private UserCacheBean  userCache;
-    
+
     public ExchangeLocalTermManager fetchById(Integer id) throws Exception {
         return ExchangeLocalTermManager.fetchById(id);
     }
 
     public ExchangeLocalTermManager fetchWithExternalTerms(Integer id) throws Exception {
-        return ExchangeLocalTermManager.fetchWithExternalTerms(id) ;
+        return ExchangeLocalTermManager.fetchWithExternalTerms(id);
     }
 
     public ExchangeLocalTermManager add(ExchangeLocalTermManager man) throws Exception {
@@ -85,7 +83,7 @@ public class ExchangeLocalTermManagerBean {
 
     public ExchangeLocalTermManager update(ExchangeLocalTermManager man) throws Exception {
         UserTransaction ut;
-        
+
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
@@ -93,9 +91,11 @@ public class ExchangeLocalTermManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.EXCHANGE_LOCAL_TERM, man.getExchangeLocalTerm().getId());        
+            lockBean.validateLock(Constants.table().EXCHANGE_LOCAL_TERM,
+                                  man.getExchangeLocalTerm().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.EXCHANGE_LOCAL_TERM, man.getExchangeLocalTerm().getId());
+            lockBean.unlock(Constants.table().EXCHANGE_LOCAL_TERM,
+                            man.getExchangeLocalTerm().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -112,7 +112,7 @@ public class ExchangeLocalTermManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.EXCHANGE_LOCAL_TERM, id);
+            lockBean.lock(Constants.table().EXCHANGE_LOCAL_TERM, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -123,7 +123,7 @@ public class ExchangeLocalTermManagerBean {
     }
 
     public ExchangeLocalTermManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.EXCHANGE_LOCAL_TERM, id);
+        lockBean.unlock(Constants.table().EXCHANGE_LOCAL_TERM, id);
         return fetchById(id);
     }
 

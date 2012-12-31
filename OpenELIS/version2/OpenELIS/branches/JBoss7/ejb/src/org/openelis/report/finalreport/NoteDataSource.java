@@ -37,8 +37,8 @@ import org.openelis.bean.NoteBean;
 import org.openelis.bean.SampleQAEventBean;
 import org.openelis.bean.TestTrailerBean;
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,7 +50,6 @@ public class NoteDataSource implements JRRewindableDataSource {
     private SampleQAEventBean sl;
     private AnalysisQAEventBean al;
     private TestTrailerBean tl;
-	private DictionaryBean dl;
     private String qas, notes, trailer;
     private boolean aOverride, sOverride, hasNext;
 	
@@ -76,7 +75,6 @@ public class NoteDataSource implements JRRewindableDataSource {
 	            al = (AnalysisQAEventLocal) ctx.lookup("openelis/AnalysisQAEventBean/local");
 	            tl = (TestTrailerLocal) ctx.lookup("openelis/TestTrailerBean/local");
 			}*/
-			dl = EJBFactory.getDictionary();
             sl = EJBFactory.getSampleQAEvent();
             nl = EJBFactory.getNote();
             if (analysisId != null) {
@@ -90,7 +88,6 @@ public class NoteDataSource implements JRRewindableDataSource {
 
 		sOverride = false;
 		aOverride = false;
-		overrideId = dl.fetchBySystemName("qaevent_override").getId();
 
         // for sample lookup, use the absence of analysis id
         if (analysisId == null) {
@@ -99,7 +96,7 @@ public class NoteDataSource implements JRRewindableDataSource {
                 tmp = new StringBuffer();
                 slist = sl.fetchExternalBySampleId(sampleId);
                 for (SampleQaEventViewDO data: slist) {
-                    if (overrideId.equals(data.getTypeId()))
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(data.getTypeId()))
                         sOverride = true;
                     if (tmp.length() > 0)
                         tmp.append(" ");
@@ -112,7 +109,7 @@ public class NoteDataSource implements JRRewindableDataSource {
 
             // sample level notes
             try {
-                nlist = nl.fetchByRefTableRefIdIsExt(ReferenceTable.SAMPLE, sampleId, "Y");
+                nlist = nl.fetchByRefTableRefIdIsExt(Constants.table().SAMPLE, sampleId, "Y");
                 notes = nlist.get(0).getText();
             } catch (NotFoundException e) {
                 // ignore
@@ -123,7 +120,7 @@ public class NoteDataSource implements JRRewindableDataSource {
                 alist = al.fetchExternalByAnalysisId(analysisId);
                 tmp = new StringBuffer();
                 for (AnalysisQaEventViewDO data: alist) {
-                    if (overrideId.equals(data.getTypeId()))
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(data.getTypeId()))
                         aOverride = true;
                     if (tmp.length() > 0)
                         tmp.append(" ");
@@ -137,7 +134,7 @@ public class NoteDataSource implements JRRewindableDataSource {
             try {
                 slist = sl.fetchBySampleId(sampleId);
                 for (SampleQaEventViewDO data: slist) {
-                    if (overrideId.equals(data.getTypeId())) {
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(data.getTypeId())) {
                         sOverride = true;
                         break;
                     }
@@ -148,7 +145,7 @@ public class NoteDataSource implements JRRewindableDataSource {
 
             // analysis level notes
             try {
-                nlist = nl.fetchByRefTableRefIdIsExt(ReferenceTable.ANALYSIS, analysisId, "Y");
+                nlist = nl.fetchByRefTableRefIdIsExt(Constants.table().ANALYSIS, analysisId, "Y");
                 notes = nlist.get(0).getText();
             } catch (NotFoundException e) {
                 // ignore

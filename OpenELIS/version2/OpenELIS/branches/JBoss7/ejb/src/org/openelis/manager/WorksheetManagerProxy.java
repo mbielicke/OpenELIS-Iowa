@@ -30,7 +30,7 @@ import java.util.Iterator;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.LockBean;
 import org.openelis.bean.SessionCacheBean;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ReportStatus;
@@ -38,30 +38,12 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetManagerProxy {
-    protected static Integer instrumentLogPendingId, instrumentLogCompletedId, statusCompleteId;
-    
-    public WorksheetManagerProxy() {
-        DictionaryBean l;
 
-        if (instrumentLogPendingId == null) {
-            l = EJBFactory.getDictionary();
-
-            try {
-                instrumentLogPendingId = l.fetchBySystemName("instrument_log_pending").getId();
-                instrumentLogCompletedId = l.fetchBySystemName("instrument_log_completed").getId();
-                statusCompleteId = l.fetchBySystemName("worksheet_complete").getId();
-            } catch (Exception e) {
-                e.printStackTrace();
-                instrumentLogPendingId = null;
-            }
-        }
-    }
-    
     public WorksheetManager fetchById(Integer id) throws Exception {
         WorksheetManager manager;
-        WorksheetViewDO  data;
+        WorksheetViewDO data;
 
-        data    = EJBFactory.getWorksheet().fetchById(id);
+        data = EJBFactory.getWorksheet().fetchById(id);
         manager = WorksheetManager.getInstance();
 
         manager.setWorksheet(data);
@@ -105,9 +87,9 @@ public class WorksheetManagerProxy {
 
         manager = fetchById(id);
         wiMan = manager.getItems();
-        for (i = 0; i < wiMan.count(); i++) {
+        for (i = 0; i < wiMan.count(); i++ ) {
             waMan = wiMan.getWorksheetAnalysisAt(i);
-            for (j = 0; j < waMan.count(); j++) {
+            for (j = 0; j < waMan.count(); j++ ) {
                 if (waMan.getWorksheetAnalysisAt(j).getAnalysisId() != null) {
                     waMan.getBundleAt(j);
                     waMan.getWorksheetResultAt(j);
@@ -122,7 +104,7 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager add(WorksheetManager manager) throws Exception {
-        Integer                 id;
+        Integer id;
         Iterator<SampleManager> iter;
         LockBean                lock;
         SampleManager           sManager;
@@ -134,22 +116,24 @@ public class WorksheetManagerProxy {
         if (manager.items != null) {
             manager.getItems().setWorksheet(manager.getWorksheet());
             manager.getItems().add();
-            
+
             iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
-                sManager = (SampleManager) iter.next();
-                if (manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
-                    lock.validateLock(ReferenceTable.SAMPLE, sManager.getSample().getId());
+                sManager = (SampleManager)iter.next();
+                if (manager.getLockedManagers()
+                           .containsKey(sManager.getSample().getAccessionNumber())) {
+                    lock.validateLock(Constants.table().SAMPLE, sManager.getSample().getId());
                     sManager.update();
-                    lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
-                    manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
+                    lock.unlock(Constants.table().SAMPLE, sManager.getSample().getId());
+                    manager.getLockedManagers().remove(sManager.getSample()
+                                                               .getAccessionNumber());
                 }
             }
         }
-        
+
         if (manager.notes != null) {
             manager.getNotes().setReferenceId(id);
-            manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
+            manager.getNotes().setReferenceTableId(Constants.table().WORKSHEET);
             manager.getNotes().add();
         }
 
@@ -157,8 +141,8 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        int                     sManIndex, sManCount;
-        Integer                 id;
+        int sManIndex, sManCount;
+        Integer id;
         Iterator<SampleManager> iter;
         LockBean                lock;
         ReportStatus            status;
@@ -166,10 +150,10 @@ public class WorksheetManagerProxy {
         SessionCacheBean        session;
 
         session = EJBFactory.getSessionCache();
-        
+
         EJBFactory.getWorksheet().update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
-        
+
         lock = EJBFactory.getLock();
         if (manager.items != null) {
             manager.getItems().setWorksheet(manager.getWorksheet());
@@ -178,26 +162,28 @@ public class WorksheetManagerProxy {
             iter = manager.getSampleManagers().values().iterator();
             sManCount = manager.getSampleManagers().values().size();
             sManIndex = 0;
-            status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
+            status = (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
             while (iter.hasNext()) {
-                sManager = (SampleManager) iter.next();
-                if (manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
-                    lock.validateLock(ReferenceTable.SAMPLE, sManager.getSample().getId());
+                sManager = (SampleManager)iter.next();
+                if (manager.getLockedManagers()
+                           .containsKey(sManager.getSample().getAccessionNumber())) {
+                    lock.validateLock(Constants.table().SAMPLE, sManager.getSample().getId());
                     sManager.update();
-                    lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
-                    manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
+                    lock.unlock(Constants.table().SAMPLE, sManager.getSample().getId());
+                    manager.getLockedManagers().remove(sManager.getSample()
+                                                               .getAccessionNumber());
                 }
-                status.setPercentComplete((++sManIndex / sManCount) * 40 + 55);
+                status.setPercentComplete( ( ++sManIndex / sManCount) * 40 + 55);
                 session.setAttribute("WorksheetUpdateStatus", status);
             }
         }
-        
+
         if (manager.notes != null) {
             manager.getNotes().setReferenceId(id);
-            manager.getNotes().setReferenceTableId(ReferenceTable.WORKSHEET);
+            manager.getNotes().setReferenceTableId(Constants.table().WORKSHEET);
             manager.getNotes().update();
         }
-        
+
         return manager;
     }
 
@@ -213,7 +199,7 @@ public class WorksheetManagerProxy {
 
     public void validate(WorksheetManager manager, ValidationErrorsList errorList) throws Exception {
         Iterator<SampleManager> iter;
-        SampleManager           sManager;
+        SampleManager sManager;
 
         try {
             EJBFactory.getWorksheet().validate(manager.getWorksheet());
@@ -226,7 +212,7 @@ public class WorksheetManagerProxy {
 
             iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
-                sManager = (SampleManager) iter.next();
+                sManager = (SampleManager)iter.next();
                 try {
                     sManager.validate();
                 } catch (Exception e) {

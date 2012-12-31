@@ -39,9 +39,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -207,11 +206,11 @@ public class SampleSDWIS implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.SAMPLE_SDWIS);
+        audit.setReferenceTableId(Constants.table().SAMPLE_SDWIS);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)

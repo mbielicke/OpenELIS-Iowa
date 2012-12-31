@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ShippingDO;
@@ -91,6 +92,7 @@ public class ShippingBean {
         List list;
         
         query = manager.createNamedQuery("Shipping.FetchByOrderId");
+        query.setParameter("referenceTableId", Constants.table().ORDER_ITEM);
         query.setParameter("orderId", orderId);
         data = null;
         

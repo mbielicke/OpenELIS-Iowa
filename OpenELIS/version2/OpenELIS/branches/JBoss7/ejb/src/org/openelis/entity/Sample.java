@@ -53,10 +53,9 @@ import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -844,11 +843,11 @@ public class Sample implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.SAMPLE);
+        audit.setReferenceTableId(Constants.table().SAMPLE);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
@@ -856,13 +855,13 @@ public class Sample implements Auditable, Cloneable {
                  .setField("domain", domain, original.domain)
                  .setField("accession_number", accessionNumber, original.accessionNumber)
                  .setField("revision", revision, original.revision)
-                 .setField("order_id", orderId, original.orderId, ReferenceTable.ORDER)
+                 .setField("order_id", orderId, original.orderId, Constants.table().ORDER)
                  .setField("entered_date", enteredDate, original.enteredDate)
                  .setField("received_date", receivedDate, original.receivedDate)
                  .setField("received_by_id", receivedById, original.receivedById)
                  .setField("collection_date", collectionDate, original.collectionDate)
                  .setField("collection_time", collectionTime, original.collectionTime)
-                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
+                 .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("package_id", packageId, original.packageId)
                  .setField("client_reference", clientReference, original.clientReference)
                  .setField("released_date", releasedDate, original.releasedDate);

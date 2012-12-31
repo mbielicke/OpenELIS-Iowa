@@ -29,12 +29,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.domain.ShippingViewDO;
@@ -92,42 +91,42 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class ShippingScreen extends Screen implements HasActionHandlers<ShippingScreen.Action> {
-    private ShippingManager                manager;
-    private ModulePermission               userPermission;
+public class ShippingScreen extends Screen implements
+                                          HasActionHandlers<ShippingScreen.Action> {
+    private ShippingManager       manager;
+    private ModulePermission      userPermission;
 
-    private ScreenNavigator                nav;
+    private ScreenNavigator       nav;
 
-    private NotesTab                       noteTab;
-    private ItemTab                        itemTab;
-    private Tabs                           tab;
+    private NotesTab              noteTab;
+    private ItemTab               itemTab;
+    private Tabs                  tab;
 
-    private AppButton                      queryButton, previousButton, nextButton, addButton,
-                                           updateButton, commitButton, abortButton;
-    protected MenuItem                     processShipping, print, shippingHistory, shippingItemHistory,
-                                           shippingTrackingHistory;
-    private TextBox                        id, numberOfPackages, cost, shippedToAttention,
-                                           shippedToAddressMultipleUnit, processedById, 
-                                           shippedToAddressStreetAddress, shippedToAddressCity,
-                                           shippedToAddressState, shippedToAddressZipCode;
-    private CalendarLookUp                 shippedDate, processedDate;
-    private Dropdown<Integer>              statusId, shippedFromId, shippedMethodId;
-    private AutoComplete<Integer>          shippedToName;
-    private TabPanel                       tabPanel;
-    private Integer                        statusProcessedId, statusShippedId;
-    private ShippingScreen                 screen;
-    private ProcessShippingScreen          processShippingScreen;
-    private ShippingReportScreen           shippingReportScreen;
-    private boolean                        openedFromMenu;
+    private AppButton             queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton;
+    protected MenuItem            processShipping, print, shippingHistory,
+                    shippingItemHistory, shippingTrackingHistory;
+    private TextBox               id, numberOfPackages, cost, shippedToAttention,
+                    shippedToAddressMultipleUnit, processedById,
+                    shippedToAddressStreetAddress, shippedToAddressCity,
+                    shippedToAddressState, shippedToAddressZipCode;
+    private CalendarLookUp        shippedDate, processedDate;
+    private Dropdown<Integer>     statusId, shippedFromId, shippedMethodId;
+    private AutoComplete<Integer> shippedToName;
+    private TabPanel              tabPanel;
+    private ShippingScreen        screen;
+    private ProcessShippingScreen processShippingScreen;
+    private ShippingReportScreen  shippingReportScreen;
+    private boolean               openedFromMenu;
             
     private enum Tabs {
         ITEM, SHIP_NOTE
-    };    
-    
+    };
+
     public enum Action {
         COMMIT, ABORT
     };
-    
+
     public ShippingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ShippingDef.class));
 
@@ -140,7 +139,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
 
         ShippingScreenImpl(false);
     }
-    
+
     private void ShippingScreenImpl(boolean fromMenu) throws Exception {
         
         userPermission = UserCache.getPermission().getModule("shipping");
@@ -148,10 +147,10 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             throw new PermissionException("screenPermException", "Shipping Screen");
 
         openedFromMenu = fromMenu;
-        
+
         /*
          * this is done here in order to make sure that if the screen is brought
-         * up from some other screen (i.e. window != null) then its widgets are 
+         * up from some other screen (i.e. window != null) then its widgets are
          * initialized before the constructor ends execution
          */
         if (window != null) {
@@ -163,7 +162,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 }
             });
         }
-    }   
+    }
 
     /**
      * This method is called to set the initial state of widgets after the
@@ -173,27 +172,28 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
     private void postConstructor() {
         tab = Tabs.ITEM;
         manager = ShippingManager.getInstance();
-        
+
         try {
-            CategoryCache.getBySystemNames("shipping_status", "laboratory_location",
-                                                         "shipping_method");
+            CategoryCache.getBySystemNames("shipping_status",
+                                           "laboratory_location",
+                                           "shipping_method");
         } catch (Exception e) {
             Window.alert("ShippingSreen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
-    }   
+    }
 
     private void initialize() {
         //
         // button panel buttons
         //
         screen = this;
-        
+
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -201,8 +201,9 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -215,7 +216,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -237,8 +239,9 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -251,8 +254,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -265,7 +268,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -276,25 +280,27 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
-        
+
         processShipping = (MenuItem)def.getWidget("processShipping");
         addScreenHandler(processShipping, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {                
+            public void onClick(ClickEvent event) {
                 processShipping();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                processShipping.enable(EnumSet.of(State.DISPLAY, State.DEFAULT).contains(event.getState())
-                                       && userPermission.hasUpdatePermission());
+                processShipping.enable(EnumSet.of(State.DISPLAY, State.DEFAULT)
+                                              .contains(event.getState()) &&
+                                       userPermission.hasUpdatePermission());
             }
         });
-        
+
         print = (MenuItem)def.getWidget("print");
         addScreenHandler(print, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {                
+            public void onClick(ClickEvent event) {
                 print();
             }
 
@@ -302,19 +308,19 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 print.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         shippingHistory = (MenuItem)def.getWidget("shippingHistory");
         addScreenHandler(shippingHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 shippingHistory();
             }
 
-
             public void onStateChange(StateChangeEvent<State> event) {
-                shippingHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                shippingHistory.enable(EnumSet.of(State.DISPLAY)
+                                              .contains(event.getState()));
             }
         });
-        
+
         shippingItemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(shippingItemHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -322,10 +328,11 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shippingItemHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                shippingItemHistory.enable(EnumSet.of(State.DISPLAY)
+                                                  .contains(event.getState()));
             }
         });
-        
+
         shippingTrackingHistory = (MenuItem)def.getWidget("trackingHistory");
         addScreenHandler(shippingTrackingHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -333,7 +340,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shippingTrackingHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                shippingTrackingHistory.enable(EnumSet.of(State.DISPLAY)
+                                                      .contains(event.getState()));
             }
         });
 
@@ -348,29 +356,29 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                id.enable(EnumSet.of(State.QUERY)
-                                 .contains(event.getState()));
+                id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 id.setQueryMode(event.getState() == State.QUERY);
             }
-        });    
-        
+        });
+
         statusId = (Dropdown)def.getWidget(ShippingMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(manager.getShipping().getStatusId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {                
-                if (!statusShippedId.equals(event.getValue())) {
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                if ( !Constants.dictionary().SHIPPING_STATUS_SHIPPED.equals(event.getValue())) {
                     manager.getShipping().setShippedDate(null);
                     shippedDate.setValue(manager.getShipping().getShippedDate());
                 }
-                
+
                 manager.getShipping().setStatusId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                statusId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                       .contains(event.getState()));
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -386,7 +394,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shippedDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                shippedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 shippedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -402,7 +411,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                numberOfPackages.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                numberOfPackages.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                               .contains(event.getState()));
                 numberOfPackages.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -418,10 +428,11 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cost.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                cost.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
                 cost.setQueryMode(event.getState() == State.QUERY);
             }
-        });                
+        });
 
         shippedFromId = (Dropdown)def.getWidget(ShippingMeta.getShippedFromId());
         addScreenHandler(shippedFromId, new ScreenEventHandler<Integer>() {
@@ -434,11 +445,12 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shippedFromId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                shippedFromId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                            .contains(event.getState()));
                 shippedFromId.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         shippedToAttention = (TextBox)def.getWidget(ShippingMeta.getShippedToAttention());
         addScreenHandler(shippedToAttention, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -450,7 +462,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shippedToAttention.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+                shippedToAttention.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                 .contains(event.getState()));
                 shippedToAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -459,34 +472,36 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         addScreenHandler(shippedToName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ShippingViewDO data;
-                
+
                 data = manager.getShipping();
-                if(data.getShippedTo() != null) {
-                    shippedToName.setSelection(data.getShippedTo().getId(), 
+                if (data.getShippedTo() != null) {
+                    shippedToName.setSelection(data.getShippedTo().getId(),
                                                data.getShippedTo().getName());
                 } else {
-                    shippedToName.setSelection(null,"");
+                    shippedToName.setSelection(null, "");
                 }
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;
-                
-                if(shippedToName.getSelection() != null) {
-                    data = (OrganizationDO) shippedToName.getSelection().data;
-                    
+
+                if (shippedToName.getSelection() != null) {
+                    data = (OrganizationDO)shippedToName.getSelection().data;
+
                     manager.getShipping().setShippedToId(data.getId());
                     manager.getShipping().setShippedTo(data);
-                    
-                    shippedToAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
-                    shippedToAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
+
+                    shippedToAddressMultipleUnit.setValue(data.getAddress()
+                                                              .getMultipleUnit());
+                    shippedToAddressStreetAddress.setValue(data.getAddress()
+                                                               .getStreetAddress());
                     shippedToAddressCity.setValue(data.getAddress().getCity());
                     shippedToAddressState.setValue(data.getAddress().getState());
                     shippedToAddressZipCode.setValue(data.getAddress().getZipCode());
                 } else {
                     manager.getShipping().setShippedToId(null);
                     manager.getShipping().setShippedTo(null);
-                    
+
                     shippedToAddressMultipleUnit.setValue(null);
                     shippedToAddressStreetAddress.setValue(null);
                     shippedToAddressCity.setValue(null);
@@ -496,11 +511,12 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shippedToName.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                shippedToName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                            .contains(event.getState()));
                 shippedToName.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
+
         shippedToName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 TableDataRow row;
@@ -521,21 +537,21 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                         row.cells.get(1).setValue(data.getAddress().getStreetAddress());
                         row.cells.get(2).setValue(data.getAddress().getCity());
                         row.cells.get(3).setValue(data.getAddress().getState());
-                        
+
                         row.data = data;
-                        
+
                         model.add(row);
                     }
-                    
+
                     shippedToName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
                 }
                 window.clearStatus();
-                
+
             }
-            
+
         });
 
         processedDate = (CalendarLookUp)def.getWidget(ShippingMeta.getProcessedDate());
@@ -549,7 +565,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                processedDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                processedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                            .contains(event.getState()));
                 processedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -558,12 +575,14 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         addScreenHandler(shippedToAddressMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ShippingViewDO data;
-                
+
                 data = manager.getShipping();
-                if(data.getShippedTo() != null) 
-                    shippedToAddressMultipleUnit.setValue(data.getShippedTo().getAddress().getMultipleUnit());
-                else 
-                    shippedToAddressMultipleUnit.setValue(null);                
+                if (data.getShippedTo() != null)
+                    shippedToAddressMultipleUnit.setValue(data.getShippedTo()
+                                                              .getAddress()
+                                                              .getMultipleUnit());
+                else
+                    shippedToAddressMultipleUnit.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -587,7 +606,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                processedById.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                processedById.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                            .contains(event.getState()));
                 processedById.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -596,11 +616,13 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         addScreenHandler(shippedToAddressStreetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ShippingViewDO data;
-                
+
                 data = manager.getShipping();
-                if(data.getShippedTo() != null) 
-                    shippedToAddressStreetAddress.setValue(data.getShippedTo().getAddress().getStreetAddress());
-                else 
+                if (data.getShippedTo() != null)
+                    shippedToAddressStreetAddress.setValue(data.getShippedTo()
+                                                               .getAddress()
+                                                               .getStreetAddress());
+                else
                     shippedToAddressStreetAddress.setValue(null);
             }
 
@@ -625,7 +647,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shippedMethodId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                shippedMethodId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                              .contains(event.getState()));
                 shippedMethodId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -634,16 +657,18 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         addScreenHandler(shippedToAddressCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ShippingViewDO data;
-                
+
                 data = manager.getShipping();
-                if(data.getShippedTo() != null) 
-                    shippedToAddressCity.setValue(data.getShippedTo().getAddress().getCity());
-                else 
+                if (data.getShippedTo() != null)
+                    shippedToAddressCity.setValue(data.getShippedTo()
+                                                      .getAddress()
+                                                      .getCity());
+                else
                     shippedToAddressCity.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-               // this is a read only and the value will not change
+                // this is a read only and the value will not change
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -656,16 +681,18 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         addScreenHandler(shippedToAddressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ShippingViewDO data;
-                
+
                 data = manager.getShipping();
-                if(data.getShippedTo() != null) 
-                    shippedToAddressState.setValue(data.getShippedTo().getAddress().getState());
+                if (data.getShippedTo() != null)
+                    shippedToAddressState.setValue(data.getShippedTo()
+                                                       .getAddress()
+                                                       .getState());
                 else
                     shippedToAddressState.setValue(null);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-               // this is a read only and the value will not change
+                // this is a read only and the value will not change
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -678,11 +705,13 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         addScreenHandler(shippedToAddressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 ShippingViewDO data;
-                
+
                 data = manager.getShipping();
-                if(data.getShippedTo() != null)
-                    shippedToAddressZipCode.setValue(data.getShippedTo().getAddress().getZipCode());
-                else 
+                if (data.getShippedTo() != null)
+                    shippedToAddressZipCode.setValue(data.getShippedTo()
+                                                         .getAddress()
+                                                         .getZipCode());
+                else
                     shippedToAddressZipCode.setValue(null);
             }
 
@@ -735,7 +764,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 noteTab.setState(event.getState());
             }
         });
-        
+
         //
         // left hand navigation panel
         //
@@ -749,20 +778,20 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                         setQueryResult(result);
                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
-                        } else {
-                            Window.alert("Error: Order call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError("No more records in this direction");
+                                         } else {
+                                             Window.alert("Error: Order call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(IdNameVO entry) {
@@ -783,22 +812,22 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 return model;
             }
         };
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
             }
         });
-    }    
-        
-    public void loadShippingData(ShippingManager manager, State state) { 
-        if(state == State.ADD) {
-            add(manager);                    
-        } else if(state == State.DISPLAY){
-            this.manager = manager; 
+    }
+
+    public void loadShippingData(ShippingManager manager, State state) {
+        if (state == State.ADD) {
+            add(manager);
+        } else if (state == State.DISPLAY) {
+            this.manager = manager;
             itemTab.setManager(manager);
             noteTab.setManager(manager);
             setState(state);
@@ -806,11 +835,11 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             drawTabs();
         }
     }
-    
+
     public HandlerRegistration addActionHandler(ActionHandler<ShippingScreen.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
@@ -838,7 +867,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         }
 
         shippedFromId.setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("shipping_method");
@@ -847,16 +876,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         }
 
         shippedMethodId.setModel(model);
-        
-        try {
-            statusProcessedId  = DictionaryCache.getIdBySystemName("shipping_status_processed");
-            statusShippedId  = DictionaryCache.getIdBySystemName("shipping_status_shipped");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
-    
+
     /*
      * basic button methods
      */
@@ -869,7 +890,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         // clear all the tabs
         itemTab.draw();
         noteTab.draw();
-        
+
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -882,24 +903,24 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         nav.next();
     }
 
-    protected void add(ShippingManager manager) { 
+    protected void add(ShippingManager manager) {
         ShippingViewDO data;
         Datetime now;
-        
+
         try {
             now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
-            Window.alert("Shipping Add Datetime: " +e.getMessage());
+            Window.alert("Shipping Add Datetime: " + e.getMessage());
             return;
         }
-        
-        if(manager == null)
+
+        if (manager == null)
             this.manager = ShippingManager.getInstance();
-        else 
+        else
             this.manager = manager;
-        
+
         data = this.manager.getShipping();
-        data.setStatusId(statusProcessedId);
+        data.setStatusId(Constants.dictionary().SHIPPING_STATUS_PROCESSED);
         data.setProcessedDate(now);
         data.setProcessedBy(UserCache.getPermission().getLoginName());
 
@@ -909,39 +930,41 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         setFocus(statusId);
         window.setDone(consts.get("enterInformationPressCommit"));
     }
-    
+
     protected void update() {
         boolean ok;
         window.setBusy(consts.get("lockForUpdate"));
 
-        try {            
+        try {
             ok = true;
-            
-            if (statusProcessedId.equals(manager.getShipping().getStatusId())) 
-                ok = Window.confirm(consts.get("shippingStatusProcessed"));                
-            else if (statusShippedId.equals(manager.getShipping().getStatusId())) 
-                ok = Window.confirm(consts.get("shippingStatusShipped"));                            
-            
-            if (!ok) {
+
+            if (Constants.dictionary().SHIPPING_STATUS_PROCESSED.equals(manager.getShipping()
+                                                                               .getStatusId()))
+                ok = Window.confirm(consts.get("shippingStatusProcessed"));
+            else if (Constants.dictionary().SHIPPING_STATUS_SHIPPED.equals(manager.getShipping()
+                                                                                  .getStatusId()))
+                ok = Window.confirm(consts.get("shippingStatusShipped"));
+
+            if ( !ok) {
                 manager = manager.abortUpdate();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("updateAborted"));
                 return;
             }
-            
+
             manager = manager.fetchForUpdate();
             setState(State.UPDATE);
             setFocus(statusId);
             DataChangeEvent.fire(this);
             window.clearStatus();
-        }  catch (Exception e) {
+        } catch (Exception e) {
             Window.alert(e.getMessage());
             window.clearStatus();
-        }      
-    }    
+        }
+    }
 
-    protected void commit() {        
+    protected void commit() {
         setFocus(null);
 
         if ( !validate()) {
@@ -963,8 +986,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
-                
-                if (!openedFromMenu) {
+
+                if ( !openedFromMenu) {
                     ActionEvent.fire(this, Action.COMMIT, manager.getShipping().getId());
                     window.close();
                 }
@@ -982,7 +1005,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));               
+                window.setDone(consts.get("updatingComplete"));
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -990,7 +1013,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 window.clearStatus();
             }
         }
-    }      
+    }
 
     protected void abort() {
         if (state == State.QUERY) {
@@ -1000,25 +1023,26 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             fetchById(null);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
-            if (!openedFromMenu) {
+            if ( !openedFromMenu) {
                 /*
-                 * If this screen was brought up from Fill Order screen then we 
-                 * ask the user whether he or she is sure about aborting because then
-                 * no shipping record would be created for the orders sent from
-                 * that screen and there won't be any chance of creating a shipping
-                 * record for them in the future. If the user says no then we don't
-                 * do anything.       
+                 * If this screen was brought up from Fill Order screen then we
+                 * ask the user whether he or she is sure about aborting because
+                 * then no shipping record would be created for the orders sent
+                 * from that screen and there won't be any chance of creating a
+                 * shipping record for them in the future. If the user says no
+                 * then we don't do anything.
                  */
                 if (Window.confirm(consts.get("abortNotCreateShippingRecord"))) {
                     /*
-                     * fetchById(null) is called here to make sure that the screen
-                     * doesn't have any data and is not in Add mode before window.close()
-                     * is called because otherwise window.close() will prevent the
-                     * window from being closed because of it being in Add mode 
+                     * fetchById(null) is called here to make sure that the
+                     * screen doesn't have any data and is not in Add mode
+                     * before window.close() is called because otherwise
+                     * window.close() will prevent the window from being closed
+                     * because of it being in Add mode
                      */
                     fetchById(null);
                     ActionEvent.fire(this, Action.ABORT, null);
-                    window.close();                
+                    window.close();
                 }
                 return;
             }
@@ -1026,7 +1050,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             clearErrors();
             window.setBusy(consts.get("cancelChanges"));
             fetchById(null);
-            window.setDone(consts.get("addAborted"));                                    
+            window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             setFocus(null);
             clearErrors();
@@ -1046,11 +1070,11 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             window.clearStatus();
         }
     }
-    
+
     protected void processShipping() {
-        int t,l,w;
+        int t, l, w;
         ScreenWindow modal;
-        
+
         if (processShippingScreen == null) {
             try {
                 processShippingScreen = new ProcessShippingScreen();
@@ -1063,21 +1087,21 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
 
                         if (event.getAction() == ProcessShippingScreen.Action.SHIPPING) {
                             id = (Integer)event.getData();
-                            
-                            if (state == State.UPDATE) { 
-                                commit();                            
-                                if (state != State.DISPLAY) 
+
+                            if (state == State.UPDATE) {
+                                commit();
+                                if (state != State.DISPLAY)
                                     return;
                             }
                             //
                             // the current record should be locked and fetched
-                            //                            
+                            //
                             try {
-                                if (!fetchById(id)) {
+                                if ( !fetchById(id)) {
                                     processShippingScreen.reset();
                                     return;
                                 }
-                                
+
                                 window.setBusy(consts.get("lockForUpdate"));
                                 manager = manager.fetchForUpdate();
                                 data = manager.getShipping();
@@ -1087,8 +1111,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                                  * or "Shipped"
                                  */
                                 setState(State.UPDATE);
-                                if ( !statusShippedId.equals(data.getStatusId()) &&
-                                    !statusProcessedId.equals(data.getStatusId())) {
+                                if ( !Constants.dictionary().SHIPPING_STATUS_SHIPPED.equals(data.getStatusId()) &&
+                                    !Constants.dictionary().SHIPPING_STATUS_PROCESSED.equals(data.getStatusId())) {
                                     Window.alert(consts.get("statusProcessedShipped"));
                                     abort();
                                     return;
@@ -1115,7 +1139,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                             try {
                                 man = manager.getTrackings();
                                 i = man.addTracking();
-                                man.getTrackingAt(i).setTrackingNumber((String)event.getData());
+                                man.getTrackingAt(i)
+                                   .setTrackingNumber((String)event.getData());
                                 itemTab.setManager(manager);
                                 drawTabs();
                             } catch (Exception e) {
@@ -1133,14 +1158,14 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         w = screen.getOffsetWidth();
         t = screen.getAbsoluteTop();
         l = screen.getAbsoluteLeft();
-        
+
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
         modal.setName(consts.get("processShipping"));
         /*
          * we display the pop up screen a little outside of the area in which
          * this screen is showing
          */
-        modal.setContent(processShippingScreen, l+w+20, t);
+        modal.setContent(processShippingScreen, l + w + 20, t);
         processShippingScreen.reset();
 
         modal.addCloseHandler(new CloseHandler<ScreenWindow>() {
@@ -1155,61 +1180,64 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
         });
     }
-    
+
     protected void print() {
         ScreenWindow modal;
-        
+
         try {
             if (shippingReportScreen == null) {
-                shippingReportScreen = new ShippingReportScreen();               
-                
+                shippingReportScreen = new ShippingReportScreen();
+
                 /*
                  * we need to make sure that the value of SHIPPING_ID gets set
-                 * the first time the screen is brought up 
+                 * the first time the screen is brought up
                  */
                 DeferredCommand.addCommand(new Command() {
                     public void execute() {
-                        shippingReportScreen.setFieldValue("SHIPPING_ID", manager.getShipping().getId());
+                        shippingReportScreen.setFieldValue("SHIPPING_ID",
+                                                           manager.getShipping().getId());
                     }
                 });
-            } else {           
+            } else {
                 shippingReportScreen.reset();
-                shippingReportScreen.setFieldValue("SHIPPING_ID", manager.getShipping().getId());
+                shippingReportScreen.setFieldValue("SHIPPING_ID", manager.getShipping()
+                                                                         .getId());
             }
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("print"));       
+            modal.setName(consts.get("print"));
             modal.setContent(shippingReportScreen);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
     }
-    
+
     protected void shippingHistory() {
         IdNameVO hist;
         ShippingViewDO data;
-        
+
         data = manager.getShipping();
-        
+
         hist = new IdNameVO(data.getId(), consts.get("shipping"));
         HistoryScreen.showHistory(consts.get("shippingHistory"),
-                                  ReferenceTable.SHIPPING, hist);            
-                        
+                                  Constants.table().SHIPPING,
+                                  hist);
+
     }
-    
+
     protected void shippingItemHistory() {
         int i, count;
         IdNameVO refVoList[];
         ShippingItemManager man;
         ShippingItemDO data;
-        
+
         try {
             man = manager.getItems();
             count = man.count();
             refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++) {
-                data = man.getItemAt(i);                                
-                refVoList[i] = new IdNameVO(data.getId(), data.getDescription());                
+            for (i = 0; i < count; i++ ) {
+                data = man.getItemAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getDescription());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1218,22 +1246,23 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         }
 
         HistoryScreen.showHistory(consts.get("shippingItemHistory"),
-                                  ReferenceTable.SHIPPING_ITEM, refVoList);
+                                  Constants.table().SHIPPING_ITEM,
+                                  refVoList);
     }
-    
+
     protected void shippingTrackingHistory() {
         int i, count;
         IdNameVO refVoList[];
         ShippingTrackingManager man;
         ShippingTrackingDO data;
-        
+
         try {
             man = manager.getTrackings();
             count = man.count();
             refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++) {
-                data = man.getTrackingAt(i);                                
-                refVoList[i] = new IdNameVO(data.getId(), data.getTrackingNumber());                
+            for (i = 0; i < count; i++ ) {
+                data = man.getTrackingAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getTrackingNumber());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1242,10 +1271,11 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         }
 
         HistoryScreen.showHistory(consts.get("shippingTrackingHistory"),
-                                  ReferenceTable.SHIPPING_TRACKING, refVoList);
-        
-    }       
-    
+                                  Constants.table().SHIPPING_TRACKING,
+                                  refVoList);
+
+    }
+
     protected boolean fetchById(Integer id) {
         if (id == null) {
             manager = ShippingManager.getInstance();
@@ -1255,12 +1285,12 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             try {
                 switch (tab) {
                     case ITEM:
-                      manager = ShippingManager.fetchWithItemsAndTracking(id);
-                      break;
-                    case SHIP_NOTE: 
-                      manager = ShippingManager.fetchWithNotes(id);
-                      break;                        
-                        
+                        manager = ShippingManager.fetchWithItemsAndTracking(id);
+                        break;
+                    case SHIP_NOTE:
+                        manager = ShippingManager.fetchWithNotes(id);
+                        break;
+
                 }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
@@ -1279,20 +1309,20 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
 
         return true;
     }
-    
+
     private void drawTabs() {
         switch (tab) {
             case ITEM:
                 itemTab.draw();
-                break;                   
+                break;
             case SHIP_NOTE:
                 noteTab.draw();
-                break;   
+                break;
         }
     }
-    
+
     private void setProcessShippingData(ShippingViewDO data) throws Exception {
         data.setShippedDate(CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY));        
-        data.setStatusId(statusShippedId);        
+        data.setStatusId(Constants.dictionary().SHIPPING_STATUS_SHIPPED);        
     }
 }

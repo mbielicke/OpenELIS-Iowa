@@ -28,7 +28,6 @@ package org.openelis.manager;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 
-
 public class TestSectionManagerProxy {
     
     public TestSectionManagerProxy() {
@@ -46,11 +45,7 @@ public class TestSectionManagerProxy {
     }
     
     public void validate(TestSectionManager man) throws Exception {        
-    }
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdBySystemName(systemName);
-    }
+    }   
     
     public DictionaryDO getDictionaryById(Integer id) throws Exception {
         return DictionaryCache.getById(id);

@@ -36,7 +36,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.StorageDO;
@@ -49,7 +49,6 @@ import org.openelis.gwt.common.SystemUserVO;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class StorageBean {
 
     @PersistenceContext(unitName = "openelis")
@@ -63,10 +62,9 @@ public class StorageBean {
 
     @EJB
     private SampleBean     sample;
-    
+
     @EJB
     private UserCacheBean   userCache; 
-        
 
     public ArrayList<StorageViewDO> fetchById(Integer referenceId, Integer refTableId) throws Exception {
         Query query;
@@ -94,8 +92,9 @@ public class StorageBean {
 
         return list;
     }
-    
-    public ArrayList<StorageViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer refTableId) {
+
+    public ArrayList<StorageViewDO> fetchByIds(ArrayList<Integer> referenceIds,
+                                               Integer refTableId) {
         Query query;
         SystemUserVO user;
         StorageViewDO data;
@@ -131,8 +130,8 @@ public class StorageBean {
         ArrayList<StorageViewDO> list;
         String description, container;
 
-        sampleItemId = ReferenceTable.SAMPLE_ITEM;
-        analysisId = ReferenceTable.ANALYSIS;
+        sampleItemId = Constants.table().SAMPLE_ITEM;
+        analysisId = Constants.table().ANALYSIS;
 
         query = manager.createNamedQuery("Storage.FetchCurrentByLocationId");
         query.setParameter("id", id);
@@ -151,7 +150,8 @@ public class StorageBean {
             if (sampleItemId.equals(refTableId)) {
                 itemDO = sampleItem.fetchById(data.getReferenceId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                description = sampleDO.getAccessionNumber() + " - " + itemDO.getItemSequence();
+                description = sampleDO.getAccessionNumber() + " - " +
+                              itemDO.getItemSequence();
                 container = itemDO.getContainer();
                 if (container != null)
                     data.setItemDescription(description + "," + container);
@@ -162,8 +162,9 @@ public class StorageBean {
                 itemDO = sampleItem.fetchById(anaDO.getSampleItemId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
                 data.setItemDescription(sampleDO.getAccessionNumber() + " - " +
-                                        itemDO.getItemSequence() + "," + anaDO.getTestName() +
-                                        " : " + anaDO.getMethodName());
+                                        itemDO.getItemSequence() + "," +
+                                        anaDO.getTestName() + " : " +
+                                        anaDO.getMethodName());
             }
 
         }
@@ -174,7 +175,8 @@ public class StorageBean {
         return list;
     }
 
-    public ArrayList<StorageViewDO> fetchHistoryByLocationId(Integer id, int first, int max) throws Exception {
+    public ArrayList<StorageViewDO> fetchHistoryByLocationId(Integer id, int first,
+                                                             int max) throws Exception {
         SystemUserVO user;
         StorageViewDO data;
         AnalysisViewDO anaDO;
@@ -185,9 +187,9 @@ public class StorageBean {
         ArrayList<StorageViewDO> list;
         String description, container;
 
-        sampleItemId = ReferenceTable.SAMPLE_ITEM;
-        analysisId = ReferenceTable.ANALYSIS;
-        
+        sampleItemId = Constants.table().SAMPLE_ITEM;
+        analysisId = Constants.table().ANALYSIS;
+
         query = manager.createNamedQuery("Storage.FetchHistoryByLocationId");
         query.setParameter("id", id);
         query.setMaxResults(first + max);
@@ -213,7 +215,8 @@ public class StorageBean {
             if (sampleItemId.equals(refTableId)) {
                 itemDO = sampleItem.fetchById(data.getReferenceId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                description = sampleDO.getAccessionNumber() + "," + itemDO.getItemSequence();
+                description = sampleDO.getAccessionNumber() + "," +
+                              itemDO.getItemSequence();
                 container = itemDO.getContainer();
                 if (container != null)
                     data.setItemDescription(description + "," + container);
@@ -223,8 +226,9 @@ public class StorageBean {
                 anaDO = analysis.fetchById(data.getReferenceId());
                 itemDO = sampleItem.fetchById(anaDO.getSampleItemId());
                 sampleDO = sample.fetchById(itemDO.getSampleId());
-                data.setItemDescription(sampleDO.getAccessionNumber() + "," + anaDO.getTestName() +
-                                        " : " + anaDO.getMethodName());
+                data.setItemDescription(sampleDO.getAccessionNumber() + "," +
+                                        anaDO.getTestName() + " : " +
+                                        anaDO.getMethodName());
             }
 
         }
@@ -280,16 +284,17 @@ public class StorageBean {
         if (entity != null)
             manager.remove(entity);
     }
-    
+
     public void deleteById(Integer referenceId, Integer refTableId) throws Exception {
         ArrayList<StorageViewDO> list;
-        
+
         try {
             list = fetchById(referenceId, refTableId);
             for (StorageViewDO data : list)
                 delete(data);
         } catch (NotFoundException e) {
-            // there may not be any storages linked to the reference table and reference id
+            // there may not be any storages linked to the reference table and
+            // reference id
         }
     }
 }

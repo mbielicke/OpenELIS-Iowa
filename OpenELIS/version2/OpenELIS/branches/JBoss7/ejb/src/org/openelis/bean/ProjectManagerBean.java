@@ -9,7 +9,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
@@ -17,7 +17,6 @@ import org.openelis.manager.ProjectParameterManager;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class ProjectManagerBean {
 
     @Resource
@@ -46,7 +45,7 @@ public class ProjectManagerBean {
         checkSecurity(ModuleFlags.ADD);
 
         man.validate();
-        
+
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
@@ -70,9 +69,9 @@ public class ProjectManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.PROJECT, man.getProject().getId());
+            lockBean.validateLock(Constants.table().PROJECT, man.getProject().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.PROJECT, man.getProject().getId());
+            lockBean.unlock(Constants.table().PROJECT, man.getProject().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -89,7 +88,7 @@ public class ProjectManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.PROJECT, id);
+            lockBean.lock(Constants.table().PROJECT, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -100,7 +99,7 @@ public class ProjectManagerBean {
     }
 
     public ProjectManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.PROJECT, id);
+        lockBean.unlock(Constants.table().PROJECT, id);
         return fetchById(id);
     }
 

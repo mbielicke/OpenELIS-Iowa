@@ -38,10 +38,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.QaEvent;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -57,11 +57,10 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class QaEventBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager               manager;
+    private EntityManager            manager;
 
     @EJB
     private LockBean                   lock;
@@ -69,7 +68,7 @@ public class QaEventBean {
     @EJB
     private UserCacheBean               userCache;
 
-    private static final QaEventMeta    meta = new QaEventMeta();
+    private static final QaEventMeta meta = new QaEventMeta();
 
     public QaEventViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -86,7 +85,7 @@ public class QaEventBean {
         }
         return data;
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventViewDO> fetchByIds(Collection<Integer> ids) {
         Query query;
@@ -95,11 +94,11 @@ public class QaEventBean {
         query.setParameter("ids", ids);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventViewDO> fetchByName(String name) throws Exception {
         Query query;
-    
+
         query = manager.createNamedQuery("QaEvent.FetchByName");
         query.setParameter("name", name);
         return DataBaseUtil.toArrayList(query.getResultList());
@@ -108,7 +107,7 @@ public class QaEventBean {
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception {
         Query query;
-        
+
         query = manager.createNamedQuery("QaEvent.FetchByTestId");
         query.setParameter("testId", id);
         return DataBaseUtil.toArrayList(query.getResultList());
@@ -121,7 +120,7 @@ public class QaEventBean {
         query = manager.createNamedQuery("QaEvent.FetchByCommon");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventDO> fetchBySampleId(Integer sampleId) {
         Query query;
@@ -167,8 +166,7 @@ public class QaEventBean {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
-                          QaEventMeta.getId() + "," +
-                          QaEventMeta.getName() + "," +
+                          QaEventMeta.getId() + "," + QaEventMeta.getName() + "," +
                           QaEventMeta.getTestName() + ")");
         builder.constructWhere(fields);
         builder.setOrderBy(QaEventMeta.getName() + "," + QaEventMeta.getTestName());
@@ -187,7 +185,7 @@ public class QaEventBean {
         return (ArrayList<IdNameVO>)list;
     }
 
-    public QaEventViewDO add(QaEventViewDO data) throws Exception {
+    public QaEventDO add(QaEventDO data) throws Exception {
         QaEvent entity;
 
         checkSecurity(ModuleFlags.ADD);
@@ -211,18 +209,18 @@ public class QaEventBean {
         return data;
     }
 
-    public QaEventViewDO update(QaEventViewDO data) throws Exception {
+    public QaEventDO update(QaEventDO data) throws Exception {
         QaEvent entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.QAEVENT, data.getId());
+            lock.unlock(Constants.table().QAEVENT, data.getId());
             return data;
         }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.QAEVENT, data.getId());
+        lock.validateLock(Constants.table().QAEVENT, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(QaEvent.class, data.getId());
@@ -234,14 +232,14 @@ public class QaEventBean {
         entity.setReportingSequence(data.getReportingSequence());
         entity.setReportingText(data.getReportingText());
 
-        lock.unlock(ReferenceTable.QAEVENT, data.getId());
+        lock.unlock(Constants.table().QAEVENT, data.getId());
 
         return data;
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.QAEVENT, id);
+            lock.lock(Constants.table().QAEVENT, id);
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
@@ -249,7 +247,7 @@ public class QaEventBean {
     }
 
     public QaEventViewDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.QAEVENT, id);
+        lock.unlock(Constants.table().QAEVENT, id);
         return fetchById(id);
     }
 
@@ -260,7 +258,8 @@ public class QaEventBean {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", QaEventMeta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             QaEventMeta.getName()));
         } else {
             //
             // do not allow duplicates names for the same test or
@@ -279,10 +278,12 @@ public class QaEventBean {
         }
 
         if (DataBaseUtil.isEmpty(data.getTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException", QaEventMeta.getTypeId()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             QaEventMeta.getTypeId()));
 
         if (DataBaseUtil.isEmpty(data.getReportingText()))
-            list.add(new FieldErrorException("fieldRequiredException", QaEventMeta.getReportingText()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             QaEventMeta.getReportingText()));
 
         if (list.size() > 0)
             throw list;

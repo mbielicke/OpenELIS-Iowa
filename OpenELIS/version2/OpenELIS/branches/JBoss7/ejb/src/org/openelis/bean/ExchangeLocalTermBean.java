@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -39,12 +39,12 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalyteViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.ExchangeLocalTermDO;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.ExchangeLocalTerm;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -80,8 +80,8 @@ public class ExchangeLocalTermBean {
     @EJB
     private TestBean                          test;
 
-    private static final ExchangeLocalTermMeta meta = new ExchangeLocalTermMeta();   
-    
+    private static final ExchangeLocalTermMeta meta = new ExchangeLocalTermMeta();
+
     public ExchangeLocalTermViewDO fetchById(Integer id) throws Exception {
         Query query;
         ExchangeLocalTermViewDO data;
@@ -98,7 +98,7 @@ public class ExchangeLocalTermBean {
         }
         return data;
     }
-    
+
     public ExchangeLocalTermViewDO fetchByReferenceTableIdReferenceId(Integer referenceTableId,
                                                                       Integer referenceId) throws Exception {
         Query query;
@@ -118,7 +118,8 @@ public class ExchangeLocalTermBean {
         return data;
     }
 
-    public ArrayList<ExchangeLocalTermViewDO> query(ArrayList<QueryData> fields, int first, int max)  throws Exception {
+    public ArrayList<ExchangeLocalTermViewDO> query(ArrayList<QueryData> fields,
+                                                    int first, int max) throws Exception {
         QueryBuilderV2 builder;
         Integer refTableId;
         QueryData refName;
@@ -131,48 +132,46 @@ public class ExchangeLocalTermBean {
         results = null;
         refName = null;
         for (QueryData field : fields) {
-            if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.key)) 
-                refTableId = Integer.parseInt(field.query);                                        
-            else if (ExchangeLocalTermMeta.getReferenceName().equals(field.key)) 
-                refName = field;                            
-        }        
-        
-        switch (refTableId) {
-            /*
-             * The field that shows the name of the test, method etc. on the screen 
-             * has the key ExchangeLocalTermMeta.getReferenceName() because
-             * it can't be named "test.name" or "method.name" as it can represent
-             * different reference tables at different times. Thus when a query 
-             * contains that field, we have to replace its key with the right 
-             * field for the reference table e.g "test.name" because otherwise,
-             * the query that gets built below doesn't contain the name of the
-             * reference table in the "from" clause.   
-             */
-            case ReferenceTable.ANALYTE:
-                setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getAnalyteName());
-                results = analyteQuery(fields, builder, first, max);
-                break;
-            case ReferenceTable.DICTIONARY:
-                setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getDictionaryEntry());
-                results = dictionaryQuery(fields, builder, first, max);                
-                break;
-            case ReferenceTable.METHOD:
-                setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getMethodName());
-                results = methodQuery(fields, builder, first, max);                
-                break;
-            case ReferenceTable.ORGANIZATION:
-                setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getOrganizationName());
-                results = organizationQuery(fields, builder, first, max);                
-                break;
-            case ReferenceTable.TEST:     
-                setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getTestName());
-                results = testQuery(fields, builder, first, max);
-                break;
+            if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.key))
+                refTableId = Integer.parseInt(field.query);
+            else if (ExchangeLocalTermMeta.getReferenceName().equals(field.key))
+                refName = field;
         }
-        
+
+        /*
+         * The field that shows the name of the test, method etc. on the screen
+         * has the key ExchangeLocalTermMeta.getReferenceName() because it can't
+         * be named "test.name" or "method.name" as it can represent different
+         * reference tables at different times. Thus when a query contains that
+         * field, we have to replace its key with the right field for the
+         * reference table e.g "test.name" because otherwise, the query that
+         * gets built below doesn't contain the name of the reference table in
+         * the "from" clause.
+         */
+        if (Constants.table().ANALYTE.equals(refTableId)) {
+            setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getAnalyteName());
+            results = analyteQuery(fields, builder, first, max);
+        } else if (Constants.table().DICTIONARY.equals(refTableId)) {
+            setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getDictionaryEntry());
+            results = dictionaryQuery(fields, builder, first, max);
+        } else if (Constants.table().METHOD.equals(refTableId)) {
+            setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getMethodName());
+            results = methodQuery(fields, builder, first, max);
+        } else if (Constants.table().ORGANIZATION.equals(refTableId)) {
+            setReferenceQuery(refName,
+                              fields,
+                              ExchangeLocalTermMeta.getOrganizationName());
+            results = organizationQuery(fields, builder, first, max);
+        } else if (Constants.table().TEST.equals(refTableId)) {
+            setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getTestName());
+            results = testQuery(fields, builder, first, max);
+        }
+
         if (results.isEmpty())
             throw new NotFoundException();
-        results = (ArrayList<ExchangeLocalTermViewDO>)DataBaseUtil.subList(results, first, max);
+        results = (ArrayList<ExchangeLocalTermViewDO>)DataBaseUtil.subList(results,
+                                                                           first,
+                                                                           max);
         if (results == null)
             throw new LastPageException();
 
@@ -197,9 +196,9 @@ public class ExchangeLocalTermBean {
     public ExchangeLocalTermDO update(ExchangeLocalTermDO data) throws Exception {
         ExchangeLocalTerm entity;
 
-        if (!data.isChanged())
+        if ( !data.isChanged())
             return data;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(ExchangeLocalTerm.class, data.getId());
         entity.setReferenceId(data.getReferenceId());
@@ -211,26 +210,30 @@ public class ExchangeLocalTermBean {
     public void validate(ExchangeLocalTermDO data) throws Exception {
         boolean checkDuplicate;
         ExchangeLocalTermViewDO localTerm;
-        ValidationErrorsList list;        
+        ValidationErrorsList list;
 
         list = new ValidationErrorsList();
         checkDuplicate = false;
 
         if (data.getReferenceTableId() == null)
-            list.add(new FieldErrorException("fieldRequiredException", ExchangeLocalTermMeta.getReferenceTableId()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             ExchangeLocalTermMeta.getReferenceTableId()));
         else
             checkDuplicate = true;
-        
+
         if (data.getReferenceId() == null)
-            list.add(new FieldErrorException("fieldRequiredException", ExchangeLocalTermMeta.getReferenceName()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             ExchangeLocalTermMeta.getReferenceName()));
         else
             checkDuplicate = true;
-        
+
         if (checkDuplicate) {
             try {
-                localTerm = fetchByReferenceTableIdReferenceId(data.getReferenceTableId(), data.getReferenceId());
-                if (!localTerm.getId().equals(data.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException", ExchangeLocalTermMeta.getReferenceName()));
+                localTerm = fetchByReferenceTableIdReferenceId(data.getReferenceTableId(),
+                                                               data.getReferenceId());
+                if ( !localTerm.getId().equals(data.getId()))
+                    list.add(new FieldErrorException("fieldUniqueException",
+                                                     ExchangeLocalTermMeta.getReferenceName()));
             } catch (NotFoundException ignE) {
                 // ignore
             }
@@ -238,7 +241,7 @@ public class ExchangeLocalTermBean {
         if (list.size() > 0)
             throw list;
     }
-    
+
     private void setReferenceName(ExchangeLocalTermViewDO data) throws Exception {
         AnalyteViewDO ana;
         DictionaryViewDO dict;
@@ -247,40 +250,39 @@ public class ExchangeLocalTermBean {
         OrganizationViewDO org;
         AddressDO addr;
         ArrayList<String> list;
-        
-        switch (data.getReferenceTableId()) {
-            case ReferenceTable.ANALYTE:
-                ana = analyte.fetchById(data.getReferenceId());
-                data.setReferenceName(ana.getName());
-                break;
-            case ReferenceTable.DICTIONARY:
-                dict = dictionary.fetchById(data.getReferenceId());
-                data.setReferenceName(DataBaseUtil.concatWithSeparator(dict.getEntry(), ", ", dict.getCategoryName()));
-                break;
-            case ReferenceTable.METHOD:
-                mtd = method.fetchById(data.getReferenceId());
-                data.setReferenceName(mtd.getName());
-                break;
-            case ReferenceTable.ORGANIZATION:
-                org = organization.fetchById(data.getReferenceId());
-                addr = org.getAddress();
-                
-                list = new ArrayList<String>();
-                list.add(org.getName());
-                list.add(addr.getStreetAddress());
-                list.add(addr.getCity());
-                list.add(addr.getState());
-                
-                data.setReferenceName(DataBaseUtil.concatWithSeparator(list, ", "));
-                break;
-            case ReferenceTable.TEST:
-                tst = test.fetchById(data.getReferenceId());
-                data.setReferenceName(DataBaseUtil.concatWithSeparator(tst.getName(), ", ", tst.getMethodName()));
-                break;                    
+
+        if (Constants.table().ANALYTE.equals(data.getReferenceTableId())) {
+            ana = analyte.fetchById(data.getReferenceId());
+            data.setReferenceName(ana.getName());
+        } else if (Constants.table().DICTIONARY.equals(data.getReferenceTableId())) {
+            dict = dictionary.fetchById(data.getReferenceId());
+            data.setReferenceName(DataBaseUtil.concatWithSeparator(dict.getEntry(),
+                                                                   ", ",
+                                                                   dict.getCategoryName()));
+        } else if (Constants.table().METHOD.equals(data.getReferenceTableId())) {
+            mtd = method.fetchById(data.getReferenceId());
+            data.setReferenceName(mtd.getName());
+        } else if (Constants.table().ORGANIZATION.equals(data.getReferenceTableId())) {
+            org = organization.fetchById(data.getReferenceId());
+            addr = org.getAddress();
+
+            list = new ArrayList<String>();
+            list.add(org.getName());
+            list.add(addr.getStreetAddress());
+            list.add(addr.getCity());
+            list.add(addr.getState());
+
+            data.setReferenceName(DataBaseUtil.concatWithSeparator(list, ", "));
+        } else if (Constants.table().TEST.equals(data.getReferenceTableId())) {
+            tst = test.fetchById(data.getReferenceId());
+            data.setReferenceName(DataBaseUtil.concatWithSeparator(tst.getName(),
+                                                                   ", ",
+                                                                   tst.getMethodName()));
         }
     }
-    
-    private void setReferenceQuery(QueryData refName, ArrayList<QueryData> fields, String key) {
+
+    private void setReferenceQuery(QueryData refName, ArrayList<QueryData> fields,
+                                   String key) {
         if (refName != null) {
             refName.key = key;
         } else {
@@ -291,19 +293,19 @@ public class ExchangeLocalTermBean {
             fields.add(refName);
         }
     }
-    
+
     private List analyteQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
                               int first, int max) throws Exception {
         Query query;
-        
+
         builder = new QueryBuilderV2();
-        builder.setMeta(meta);                        
-      
-        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +ExchangeLocalTermMeta.getId() +
-                          ", " + ExchangeLocalTermMeta.getReferenceTableId()+ 
-                          ", " + ExchangeLocalTermMeta.getReferenceId() + 
-                          ", " + ExchangeLocalTermMeta.getAnalyteName() + 
-                          ", " + "''" + ") ");        
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +
+                          ExchangeLocalTermMeta.getId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceTableId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceId() + ", " +
+                          ExchangeLocalTermMeta.getAnalyteName() + ", " + "''" + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(ExchangeLocalTermMeta.getAnalyteName());
 
@@ -313,21 +315,23 @@ public class ExchangeLocalTermBean {
 
         return query.getResultList();
     }
-    
+
     private List dictionaryQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
                                  int first, int max) throws Exception {
         Query query;
-        
+
         builder = new QueryBuilderV2();
-        builder.setMeta(meta);                        
-      
-        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +ExchangeLocalTermMeta.getId() +
-                          ", " + ExchangeLocalTermMeta.getReferenceTableId()+ 
-                          ", " + ExchangeLocalTermMeta.getReferenceId() + 
-                          ", " + ExchangeLocalTermMeta.getDictionaryEntry()+
-                          ", " + ExchangeLocalTermMeta.getDictionaryCategoryName()+") ");   
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +
+                          ExchangeLocalTermMeta.getId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceTableId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceId() + ", " +
+                          ExchangeLocalTermMeta.getDictionaryEntry() + ", " +
+                          ExchangeLocalTermMeta.getDictionaryCategoryName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(ExchangeLocalTermMeta.getDictionaryEntry()+", "+ExchangeLocalTermMeta.getDictionaryCategoryName());
+        builder.setOrderBy(ExchangeLocalTermMeta.getDictionaryEntry() + ", " +
+                           ExchangeLocalTermMeta.getDictionaryCategoryName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -335,18 +339,19 @@ public class ExchangeLocalTermBean {
 
         return query.getResultList();
     }
-    
-    private List methodQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first, int max) throws Exception {
+
+    private List methodQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
+                             int first, int max) throws Exception {
         Query query;
-        
+
         builder = new QueryBuilderV2();
-        builder.setMeta(meta);                        
-      
-        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +ExchangeLocalTermMeta.getId() +
-                          ", " + ExchangeLocalTermMeta.getReferenceTableId()+ 
-                          ", " + ExchangeLocalTermMeta.getReferenceId() + 
-                          ", " + ExchangeLocalTermMeta.getMethodName()+
-                          ", " + "''" + ") ");          
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +
+                          ExchangeLocalTermMeta.getId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceTableId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceId() + ", " +
+                          ExchangeLocalTermMeta.getMethodName() + ", " + "''" + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(ExchangeLocalTermMeta.getMethodName());
 
@@ -356,19 +361,20 @@ public class ExchangeLocalTermBean {
 
         return query.getResultList();
     }
-    
+
     private List organizationQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
                                    int first, int max) throws Exception {
         Query query;
-        
+
         builder = new QueryBuilderV2();
-        builder.setMeta(meta);                        
-      
-        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +ExchangeLocalTermMeta.getId() +
-                          ", " + ExchangeLocalTermMeta.getReferenceTableId()+ 
-                          ", " + ExchangeLocalTermMeta.getReferenceId() + 
-                          ", " + ExchangeLocalTermMeta.getOrganizationName()+
-                          ", " + "''" + ") ");  
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +
+                          ExchangeLocalTermMeta.getId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceTableId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceId() + ", " +
+                          ExchangeLocalTermMeta.getOrganizationName() + ", " + "''" +
+                          ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(ExchangeLocalTermMeta.getOrganizationName());
 
@@ -378,21 +384,23 @@ public class ExchangeLocalTermBean {
 
         return query.getResultList();
     }
-    
+
     private List testQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
                            int first, int max) throws Exception {
         Query query;
-        
+
         builder = new QueryBuilderV2();
-        builder.setMeta(meta);                        
-      
-        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +ExchangeLocalTermMeta.getId() +
-                          ", " + ExchangeLocalTermMeta.getReferenceTableId()+ 
-                          ", " + ExchangeLocalTermMeta.getReferenceId() + 
-                          ", " + ExchangeLocalTermMeta.getTestName()+
-                          ", " + ExchangeLocalTermMeta.getTestMethodName() + ") ");        
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +
+                          ExchangeLocalTermMeta.getId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceTableId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceId() + ", " +
+                          ExchangeLocalTermMeta.getTestName() + ", " +
+                          ExchangeLocalTermMeta.getTestMethodName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(ExchangeLocalTermMeta.getTestName()+", "+ ExchangeLocalTermMeta.getTestMethodName());
+        builder.setOrderBy(ExchangeLocalTermMeta.getTestName() + ", " +
+                           ExchangeLocalTermMeta.getTestMethodName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

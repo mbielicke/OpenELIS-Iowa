@@ -31,12 +31,12 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -95,10 +95,10 @@ public class OrganizationScreen extends Screen {
     private NotesTab              noteTab;
     private Tabs                  tab;
 
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
-    private MenuItem              orgHistory, orgAddressHistory, orgContactHistory, 
-                                  orgContactAddressHistory, orgParameterHistory;
+    private AppButton             queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton;
+    private MenuItem              orgHistory, orgAddressHistory, orgContactHistory,
+                    orgContactAddressHistory, orgParameterHistory;
     private TextBox               id, name, multipleUnit, city, zipCode, streetAddress;
     private CheckBox              isActive;
     private Dropdown<String>      stateCode, country;
@@ -133,13 +133,16 @@ public class OrganizationScreen extends Screen {
         manager = OrganizationManager.getInstance();
 
         try {
-            CategoryCache.getBySystemNames("country", "state",
-                                           "contact_type", "parameter_type");
+            CategoryCache.getBySystemNames("country",
+                                           "state",
+                                           "contact_type",
+                                           "parameter_type");
         } catch (Exception e) {
-            Window.alert("OrganizationScreen: missing dictionary entry; " + e.getMessage());
+            Window.alert("OrganizationScreen: missing dictionary entry; " +
+                         e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
@@ -175,7 +178,8 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -226,8 +230,10 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                           .contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY,
+                                               State.ADD,
+                                               State.UPDATE,
+                                               State.DELETE).contains(event.getState()));
             }
         });
 
@@ -238,11 +244,13 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                          .contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY,
+                                              State.ADD,
+                                              State.UPDATE,
+                                              State.DELETE).contains(event.getState()));
             }
         });
-        
+
         orgHistory = (MenuItem)def.getWidget("orgHistory");
         addScreenHandler(orgHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -253,7 +261,7 @@ public class OrganizationScreen extends Screen {
                 orgHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         orgAddressHistory = (MenuItem)def.getWidget("orgAddressHistory");
         addScreenHandler(orgAddressHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -261,10 +269,11 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orgAddressHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                orgAddressHistory.enable(EnumSet.of(State.DISPLAY)
+                                                .contains(event.getState()));
             }
         });
-        
+
         orgContactHistory = (MenuItem)def.getWidget("orgContactHistory");
         addScreenHandler(orgContactHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -272,10 +281,11 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orgContactHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                orgContactHistory.enable(EnumSet.of(State.DISPLAY)
+                                                .contains(event.getState()));
             }
         });
-        
+
         orgContactAddressHistory = (MenuItem)def.getWidget("orgContactAddressHistory");
         addScreenHandler(orgContactAddressHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -283,10 +293,11 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orgContactAddressHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                orgContactAddressHistory.enable(EnumSet.of(State.DISPLAY)
+                                                       .contains(event.getState()));
             }
         });
-        
+
         orgParameterHistory = (MenuItem)def.getWidget("orgParameterHistory");
         addScreenHandler(orgParameterHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -294,7 +305,8 @@ public class OrganizationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orgParameterHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                orgParameterHistory.enable(EnumSet.of(State.DISPLAY)
+                                                  .contains(event.getState()));
             }
         });
 
@@ -354,7 +366,9 @@ public class OrganizationScreen extends Screen {
         multipleUnit = (TextBox)def.getWidget(OrganizationMeta.getAddressMultipleUnit());
         addScreenHandler(multipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                multipleUnit.setValue(manager.getOrganization().getAddress().getMultipleUnit());
+                multipleUnit.setValue(manager.getOrganization()
+                                             .getAddress()
+                                             .getMultipleUnit());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -405,7 +419,9 @@ public class OrganizationScreen extends Screen {
         streetAddress = (TextBox)def.getWidget(OrganizationMeta.getAddressStreetAddress());
         addScreenHandler(streetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                streetAddress.setValue(manager.getOrganization().getAddress().getStreetAddress());
+                streetAddress.setValue(manager.getOrganization()
+                                              .getAddress()
+                                              .getStreetAddress());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -439,13 +455,16 @@ public class OrganizationScreen extends Screen {
         parentName = (AutoComplete)def.getWidget(OrganizationMeta.getParentOrganizationName());
         addScreenHandler(parentName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentName.setSelection(manager.getOrganization().getParentOrganizationId(),
-                                        manager.getOrganization().getParentOrganizationName());
+                parentName.setSelection(manager.getOrganization()
+                                               .getParentOrganizationId(),
+                                        manager.getOrganization()
+                                               .getParentOrganizationName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getOrganization().setParentOrganizationId(event.getValue());
-                manager.getOrganization().setParentOrganizationName(parentName.getTextBoxDisplay());
+                manager.getOrganization()
+                       .setParentOrganizationName(parentName.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -460,7 +479,6 @@ public class OrganizationScreen extends Screen {
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
-
 
                 window.setBusy();
                 try {
@@ -575,20 +593,20 @@ public class OrganizationScreen extends Screen {
                         setQueryResult(result);
                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
-                        } else {
-                            Window.alert("Error: Organization call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError("No more records in this direction");
+                                         } else {
+                                             Window.alert("Error: Organization call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(IdNameVO entry) {
@@ -614,7 +632,8 @@ public class OrganizationScreen extends Screen {
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -634,9 +653,9 @@ public class OrganizationScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -665,7 +684,7 @@ public class OrganizationScreen extends Screen {
         // state dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  CategoryCache.getBySystemName("state");
+        list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getEntry(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -689,7 +708,7 @@ public class OrganizationScreen extends Screen {
         contactTab.draw();
         noteTab.draw();
         parameterTab.draw();
-        
+
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -798,24 +817,28 @@ public class OrganizationScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void orgHistory() {
         IdNameVO hist;
-        
-        hist = new IdNameVO(manager.getOrganization().getId(), manager.getOrganization().getName());
+
+        hist = new IdNameVO(manager.getOrganization().getId(), manager.getOrganization()
+                                                                      .getName());
         HistoryScreen.showHistory(consts.get("orgHistory"),
-                                  ReferenceTable.ORGANIZATION, hist);                
+                                  Constants.table().ORGANIZATION,
+                                  hist);
     }
-    
+
     protected void orgAddressHistory() {
         IdNameVO hist;
         AddressDO addr;
 
         addr = manager.getOrganization().getAddress();
         hist = new IdNameVO(addr.getId(), addr.getStreetAddress());
-        HistoryScreen.showHistory(consts.get("orgAddressHistory"), ReferenceTable.ADDRESS, hist);
+        HistoryScreen.showHistory(consts.get("orgAddressHistory"),
+                                  Constants.table().ADDRESS,
+                                  hist);
     }
-    
+
     protected void orgContactHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -837,9 +860,10 @@ public class OrganizationScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("orgContactHistory"),
-                                  ReferenceTable.ORGANIZATION_CONTACT, refVoList);
+                                  Constants.table().ORGANIZATION_CONTACT,
+                                  refVoList);
     }
-    
+
     protected void orgContactAddressHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -860,10 +884,12 @@ public class OrganizationScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orgContactAddressHistory"), ReferenceTable.ADDRESS, refVoList);
+        HistoryScreen.showHistory(consts.get("orgContactAddressHistory"),
+                                  Constants.table().ADDRESS,
+                                  refVoList);
     }
-    
-    protected void orgParameterHistory() {        
+
+    protected void orgParameterHistory() {
         int i, count;
         IdNameVO refVoList[];
         OrganizationParameterManager man;
@@ -884,9 +910,9 @@ public class OrganizationScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("orgParameterHistory"),
-                                  ReferenceTable.ORGANIZATION_PARAMETER, refVoList);
+                                  Constants.table().ORGANIZATION_PARAMETER,
+                                  refVoList);
     }
-
 
     protected boolean fetchById(Integer id) {
         if (id == null) {

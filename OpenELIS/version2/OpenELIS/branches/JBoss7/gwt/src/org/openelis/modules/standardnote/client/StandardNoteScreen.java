@@ -30,9 +30,9 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -70,17 +70,17 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class StandardNoteScreen extends Screen {
-    private StandardNoteDO      data;
-    private ModulePermission    userPermission;
+    private StandardNoteDO    data;
+    private ModulePermission  userPermission;
 
-    private TextBox             name, description;
-    private TextArea            text;
-    private AppButton           queryButton, previousButton, nextButton, addButton, updateButton,
-                                deleteButton, commitButton, abortButton;
-    protected MenuItem          history;
-    private Dropdown<Integer>   typeId;
-    private ButtonGroup         atoz;
-    private ScreenNavigator     nav;
+    private TextBox           name, description;
+    private TextArea          text;
+    private AppButton         queryButton, previousButton, nextButton, addButton,
+                    updateButton, deleteButton, commitButton, abortButton;
+    protected MenuItem        history;
+    private Dropdown<Integer> typeId;
+    private ButtonGroup       atoz;
+    private ScreenNavigator   nav;
 
     public StandardNoteScreen() throws Exception {
         super((ScreenDefInt)GWT.create(StandardNoteDef.class));
@@ -135,7 +135,8 @@ public class StandardNoteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -200,8 +201,10 @@ public class StandardNoteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                           .contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY,
+                                               State.ADD,
+                                               State.UPDATE,
+                                               State.DELETE).contains(event.getState()));
             }
         });
 
@@ -212,11 +215,13 @@ public class StandardNoteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                          .contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY,
+                                              State.ADD,
+                                              State.UPDATE,
+                                              State.DELETE).contains(event.getState()));
             }
         });
-        
+
         history = (MenuItem)def.getWidget("standardNoteHistory");
         addScreenHandler(history, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -290,7 +295,8 @@ public class StandardNoteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                text.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                text.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                   .contains(event.getState()));
                 text.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -308,19 +314,20 @@ public class StandardNoteScreen extends Screen {
                         setQueryResult(result);
                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
-                        } else {
-                            Window.alert("Error: Project call query failed; " + error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError(consts.get("noMoreRecordInDir"));
+                                         } else {
+                                             Window.alert("Error: Project call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(IdNameVO entry) {
@@ -345,7 +352,8 @@ public class StandardNoteScreen extends Screen {
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -365,9 +373,9 @@ public class StandardNoteScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -380,11 +388,11 @@ public class StandardNoteScreen extends Screen {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
         TableDataRow row;
-        
+
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("standard_note_type");
-        for (DictionaryDO entry : list) {            
+        for (DictionaryDO entry : list) {
             row = new TableDataRow(entry.getId(), entry.getEntry());
             row.enabled = ("Y".equals(entry.getIsActive()));
             model.add(row);
@@ -512,12 +520,13 @@ public class StandardNoteScreen extends Screen {
 
     protected void history() {
         IdNameVO hist;
-        
+
         hist = new IdNameVO(data.getId(), data.getName());
         HistoryScreen.showHistory(consts.get("standardNoteHistory"),
-                                  ReferenceTable.STANDARD_NOTE, hist);
+                                  Constants.table().STANDARD_NOTE,
+                                  hist);
     }
-    
+
     protected void abort() {
         setFocus(null);
         clearErrors();

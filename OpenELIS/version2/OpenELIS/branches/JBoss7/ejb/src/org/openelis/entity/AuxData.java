@@ -43,9 +43,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -211,11 +210,11 @@ public class AuxData implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.AUX_DATA);
+        audit.setReferenceTableId(Constants.table().AUX_DATA);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
@@ -224,7 +223,7 @@ public class AuxData implements Auditable, Cloneable {
                  .setField("reference_id", referenceId, original.referenceId)
                  .setField("reference_table_id", referenceTableId, original.referenceTableId)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
+                 .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
                  .setField("value", value, original.value);
 
         return audit;

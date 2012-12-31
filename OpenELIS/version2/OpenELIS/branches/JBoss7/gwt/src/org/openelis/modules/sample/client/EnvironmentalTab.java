@@ -28,8 +28,8 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -93,8 +93,6 @@ public class EnvironmentalTab extends Screen {
     private SampleManager                  manager, previousManager;
     private SampleEnvironmentalManager     envManager, previousEnvManager;
 
-    private Integer                        sampleReleasedId;
-
     protected boolean                      loaded = false;
 
     public EnvironmentalTab(ScreenWindowInt window) throws Exception {
@@ -110,7 +108,6 @@ public class EnvironmentalTab extends Screen {
         setWindow(window);
 
         initialize();
-        initializeDropdowns();
     }
 
     public void initialize() {     
@@ -845,19 +842,10 @@ public class EnvironmentalTab extends Screen {
             Window.alert("error: " + e.getMessage());
             return;
         }
-    }
-    
-    private void initializeDropdowns() {
-        try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-    }
+    }   
     
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()));
     }
 
     public void showErrors(ValidationErrorsList errors) {

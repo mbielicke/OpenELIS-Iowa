@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -504,7 +504,7 @@ public class CronScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("cronHistory"), ReferenceTable.CRON, hist);
+        HistoryScreen.showHistory(consts.get("cronHistory"), Constants.table().CRON, hist);
     }
 
     protected boolean fetchById(Integer id) {

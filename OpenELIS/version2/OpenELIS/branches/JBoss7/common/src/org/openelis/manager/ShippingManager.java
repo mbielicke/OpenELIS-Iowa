@@ -27,7 +27,7 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.NotFoundException;
 
@@ -145,7 +145,7 @@ public class ShippingManager implements Serializable, HasNotesInt {
         if (shipNotes == null) {
             if (shipping.getId() != null) {
                 try {
-                    shipNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.SHIPPING, shipping.getId(), false);
+                    shipNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().SHIPPING, shipping.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {

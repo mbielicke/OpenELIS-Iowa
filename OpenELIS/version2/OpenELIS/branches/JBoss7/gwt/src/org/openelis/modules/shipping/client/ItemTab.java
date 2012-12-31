@@ -1,35 +1,35 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.shipping.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -76,16 +76,16 @@ public class ItemTab extends Screen {
 
     public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
-        setWindow(window);        
-        
+        setWindow(window);
+
         initialize();
     }
-    
+
     private void initialize() {
         itemTable = (TableWidget)def.getWidget("itemTable");
         addScreenHandler(itemTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                itemTable.load(getItemTableModel()); 
+                itemTable.load(getItemTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -93,38 +93,38 @@ public class ItemTab extends Screen {
                 itemTable.setQueryMode(false);
             }
         });
-        
-        itemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
-                event.cancel();           
-            }            
+
+        itemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();
+            }
         });
-        
+
         itemTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
-                lookupItemButton.enable(true);   
-            }           
+                lookupItemButton.enable(true);
+            }
         });
-        
+
         itemTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
                 ShippingItemDO data;
-                
+
                 r = event.getRow();
                 c = event.getCol();
-                
-                val = itemTable.getObject(r,c);
-                
+
+                val = itemTable.getObject(r, c);
+
                 try {
                     data = manager.getItems().getItemAt(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
                 }
-                
-                switch(c) {
+
+                switch (c) {
                     case 0:
                         data.setQuantity((Integer)val);
                         break;
@@ -155,10 +155,10 @@ public class ItemTab extends Screen {
                 }
             }
         });
-        
+
         addItemButton = (AppButton)def.getWidget("addItemButton");
         addScreenHandler(addItemButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) { 
+            public void onClick(ClickEvent event) {
                 int n;
 
                 itemTable.addRow();
@@ -175,7 +175,7 @@ public class ItemTab extends Screen {
 
         removeItemButton = (AppButton)def.getWidget("removeItemButton");
         addScreenHandler(removeItemButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {       
+            public void onClick(ClickEvent event) {
                 int r;
 
                 r = itemTable.getSelectedRow();
@@ -187,10 +187,10 @@ public class ItemTab extends Screen {
                 removeItemButton.enable(false);
             }
         });
-        
+
         lookupItemButton = (AppButton)def.getWidget("lookupItemButton");
         addScreenHandler(lookupItemButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {                       
+            public void onClick(ClickEvent event) {
                 showParent();
             }
 
@@ -200,24 +200,25 @@ public class ItemTab extends Screen {
         });
 
         trackingTable = (TableWidget)def.getWidget("trackingTable");
-        addScreenHandler(trackingTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                if(state != State.QUERY)
-                    trackingTable.load(getTrackingNumbersTableModel());
-            }
+        addScreenHandler(trackingTable,
+                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 if (state != State.QUERY)
+                                     trackingTable.load(getTrackingNumbersTableModel());
+                             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                trackingTable.enable(true);
-                trackingTable.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-        
+                             public void onStateChange(StateChangeEvent<State> event) {
+                                 trackingTable.enable(true);
+                                 trackingTable.setQueryMode(event.getState() == State.QUERY);
+                             }
+                         });
+
         trackingTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if(state != State.ADD && state != State.UPDATE && state != State.QUERY) { 
+                if (state != State.ADD && state != State.UPDATE && state != State.QUERY) {
                     event.cancel();
-                } 
-            }           
+                }
+            }
         });
 
         trackingTable.addCellEditedHandler(new CellEditedHandler() {
@@ -225,20 +226,20 @@ public class ItemTab extends Screen {
                 int r, c;
                 String val;
                 ShippingTrackingDO data;
-                
+
                 r = event.getRow();
                 c = event.getCol();
-                
-                val = (String)trackingTable.getObject(r,c);
-                
+
+                val = (String)trackingTable.getObject(r, c);
+
                 try {
                     data = manager.getTrackings().getTrackingAt(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
                 }
-                
-                switch(c) {
+
+                switch (c) {
                     case 0:
                         data.setTrackingNumber(val);
                         break;
@@ -266,7 +267,7 @@ public class ItemTab extends Screen {
                 }
             }
         });
-        
+
         addTrackingButton = (AppButton)def.getWidget("addTrackingButton");
         addScreenHandler(addTrackingButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -280,7 +281,8 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addTrackingButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                addTrackingButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                .contains(event.getState()));
             }
         });
 
@@ -295,12 +297,13 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeTrackingButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+                removeTrackingButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                   .contains(event.getState()));
             }
         });
-        
-    }    
-    
+
+    }
+
     private ArrayList<TableDataRow> getTrackingNumbersTableModel() {
         int i;
         ShippingTrackingDO data;
@@ -311,36 +314,36 @@ public class ItemTab extends Screen {
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
-         
+
         try {
             man = manager.getTrackings();
-            for(i = 0; i < man.count(); i++) {
+            for (i = 0; i < man.count(); i++ ) {
                 data = man.getTrackingAt(i);
-                row = new TableDataRow(null, data.getTrackingNumber());  
-                
+                row = new TableDataRow(null, data.getTrackingNumber());
+
                 model.add(row);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        
+
         return model;
     }
 
-    public void setManager(ShippingManager manager) {        
+    public void setManager(ShippingManager manager) {
         this.manager = manager;
-        loaded = false;        
+        loaded = false;
     }
 
     public void draw() {
         if ( !loaded)
             DataChangeEvent.fire(this);
 
-        loaded = true;        
+        loaded = true;
     }
-    
-    private ArrayList<TableDataRow> getItemTableModel(){
+
+    private ArrayList<TableDataRow> getItemTableModel() {
         ArrayList<TableDataRow> model;
         ShippingItemManager man;
         ShippingItemDO data;
@@ -369,27 +372,27 @@ public class ItemTab extends Screen {
 
         return model;
     }
-    
+
     private void showParent() {
         TableDataRow row;
         ShippingItemDO data;
-        
+
         row = itemTable.getSelection();
-        
-        if(row == null) 
+
+        if (row == null)
             return;
-        
+
         data = (ShippingItemDO)row.data;
-        if(data.getReferenceTableId().equals(ReferenceTable.ORDER_ITEM)) {
+        if (data.getReferenceTableId().equals(Constants.table().ORDER_ITEM)) {
             showOrder(data);
-        } else if(data.getReferenceTableId().equals(ReferenceTable.SAMPLE_ITEM)) {
-            showSample(data);   
-        }        
+        } else if (data.getReferenceTableId().equals(Constants.table().SAMPLE_ITEM)) {
+            showSample(data);
+        }
     }
 
     private void showOrder(ShippingItemDO data) {
         ScreenWindow modal;
-        
+
         try {
             window.setBusy(consts.get("fetching"));
             OrderService.get().fetchByShippingItemId(data.getId(), new SyncCallback<OrderViewDO>() {
@@ -419,22 +422,22 @@ public class ItemTab extends Screen {
                 modal.setName(consts.get("sendoutOrder"));
                 if (sendoutOrderScreen == null)
                     sendoutOrderScreen = new SendoutOrderScreen(modal);
-                                
+
                 modal.setContent(sendoutOrderScreen);
-                sendoutOrderScreen.setManager(orderManager);                        
+                sendoutOrderScreen.setManager(orderManager);
                 window.clearStatus();
             }
-            
+
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
             window.clearStatus();
             return;
         }
-        
+
     }
 
     private void showSample(ShippingItemDO data) {
-        // TODO Auto-generated method stub        
+        // TODO Auto-generated method stub
     }
 }

@@ -47,10 +47,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -247,17 +246,17 @@ public class InventoryReceipt implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.INVENTORY_RECEIPT);
+        audit.setReferenceTableId(Constants.table().INVENTORY_RECEIPT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, ReferenceTable.INVENTORY_ITEM)
-                 .setField("order_item_id", orderItemId, original.orderItemId, ReferenceTable.ORDER_ITEM)
-                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, Constants.table().INVENTORY_ITEM)
+                 .setField("order_item_id", orderItemId, original.orderItemId, Constants.table().ORDER_ITEM)
+                 .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
                  .setField("received_date", receivedDate, original.receivedDate)
                  .setField("quantity_received", quantityReceived, original.quantityReceived)
                  .setField("unit_cost", unitCost, original.unitCost)

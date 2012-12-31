@@ -37,8 +37,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.SystemVariable;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -54,11 +54,10 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class SystemVariableBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                      manager;
+    private EntityManager                   manager;
 
     @EJB
     private LockBean                          lock;
@@ -120,7 +119,8 @@ public class SystemVariableBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SystemVariableMeta.getId() + ", " +
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          SystemVariableMeta.getId() + ", " +
                           SystemVariableMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(SystemVariableMeta.getName());
@@ -162,21 +162,21 @@ public class SystemVariableBean {
         SystemVariable entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+            lock.unlock(Constants.table().SYSTEM_VARIABLE, data.getId());
             return data;
         }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.validateLock(Constants.table().SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, data.getId());
         entity.setName(data.getName());
         entity.setValue(data.getValue());
 
-        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.unlock(Constants.table().SYSTEM_VARIABLE, data.getId());
 
         return data;
     }
@@ -188,42 +188,42 @@ public class SystemVariableBean {
         SystemVariable entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+            lock.unlock(Constants.table().SYSTEM_VARIABLE, data.getId());
             return data;
         }
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.validateLock(Constants.table().SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, data.getId());
         entity.setName(data.getName());
         entity.setValue(data.getValue());
 
-        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.unlock(Constants.table().SYSTEM_VARIABLE, data.getId());
 
         return data;
     }
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.SYSTEM_VARIABLE, id);
+            lock.lock(Constants.table().SYSTEM_VARIABLE, id);
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
         }
     }
-    
+
     public SystemVariableDO fetchForUpdateByName(String name) throws Exception {
         SystemVariableDO data;
 
         data = fetchByName(name);
         return fetchForUpdate(data.getId());
     }
-    
+
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, id);
+        lock.unlock(Constants.table().SYSTEM_VARIABLE, id);
         return fetchById(id);
     }
 
@@ -232,35 +232,35 @@ public class SystemVariableBean {
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lock.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.validateLock(Constants.table().SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.unlock(Constants.table().SYSTEM_VARIABLE, data.getId());
     }
-    
+
     public void validate(SystemVariableDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", 
+            list.add(new FieldErrorException("fieldRequiredException",
                                              SystemVariableMeta.getName()));
         } else {
             ArrayList<SystemVariableDO> dups;
-            
+
             dups = fetchByName(data.getName(), 1);
-            if (dups.size() > 0 && ! dups.get(0).getId().equals(data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", 
+            if (dups.size() > 0 && !dups.get(0).getId().equals(data.getId()))
+                list.add(new FieldErrorException("fieldUniqueException",
                                                  SystemVariableMeta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getValue()))
-            list.add(new FieldErrorException("fieldRequiredException", 
+            list.add(new FieldErrorException("fieldRequiredException",
                                              SystemVariableMeta.getValue()));
 
         if (list.size() > 0)

@@ -26,9 +26,8 @@
 package org.openelis.manager;
 
 import java.io.Serializable;
-
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 
 public class OrganizationManager implements Serializable, HasNotesInt {
@@ -156,7 +155,7 @@ public class OrganizationManager implements Serializable, HasNotesInt {
         if (notes == null) {
             if (organization.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORGANIZATION, organization.getId(), false);
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().ORGANIZATION, organization.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {

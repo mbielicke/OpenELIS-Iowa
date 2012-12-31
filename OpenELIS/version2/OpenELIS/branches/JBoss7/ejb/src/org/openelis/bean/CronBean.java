@@ -42,7 +42,7 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.entity.Cron;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -102,8 +102,7 @@ public class CronBean {
     }
 
     @SuppressWarnings("uncheked")
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                     throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 qb;
         List list;
@@ -112,8 +111,8 @@ public class CronBean {
 
         qb.setMeta(meta);
 
-        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + CronMeta.getId() + "," +
-                     CronMeta.getName() + ") ");
+        qb.setSelect("distinct new org.openelis.domain.IdNameVO(" + CronMeta.getId() +
+                     "," + CronMeta.getName() + ") ");
 
         qb.constructWhere(fields);
 
@@ -163,7 +162,7 @@ public class CronBean {
         Cron entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.CRON, data.getId());
+            lock.unlock(Constants.table().CRON, data.getId());
             return data;
         }
 
@@ -171,7 +170,7 @@ public class CronBean {
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.CRON, data.getId());
+        lock.validateLock(Constants.table().CRON, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -184,7 +183,7 @@ public class CronBean {
         entity.setMethod(data.getMethod());
         entity.setParameters(data.getParameters());
 
-        lock.unlock(ReferenceTable.CRON, data.getId());
+        lock.unlock(Constants.table().CRON, data.getId());
 
         return data;
     }
@@ -194,7 +193,7 @@ public class CronBean {
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lock.validateLock(ReferenceTable.CRON, data.getId());
+        lock.validateLock(Constants.table().CRON, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Cron.class, data.getId());
@@ -202,12 +201,12 @@ public class CronBean {
         if (entity != null)
             manager.remove(entity);
 
-        lock.unlock(ReferenceTable.CRON, data.getId());
+        lock.unlock(Constants.table().CRON, data.getId());
     }
 
     public CronDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.CRON, id);
+            lock.lock(Constants.table().CRON, id);
             return fetchById(id);
         } catch (Exception e) {
             throw new DatabaseException(e);
@@ -215,7 +214,7 @@ public class CronBean {
     }
 
     public CronDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.CRON, id);
+        lock.unlock(Constants.table().CRON, id);
         return fetchById(id);
     }
 
@@ -233,7 +232,8 @@ public class CronBean {
             list.add(new FieldErrorException("fieldRequiredException", CronMeta.getName()));
 
         if (DataBaseUtil.isEmpty(data.getCronTab()))
-            list.add(new FieldErrorException("fieldRequiredException", CronMeta.getCronTab()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             CronMeta.getCronTab()));
         else {
             try {
                 new FixedPeriodCron(data.getCronTab().trim());
@@ -253,7 +253,8 @@ public class CronBean {
         }
 
         if (DataBaseUtil.isEmpty(data.getMethod()))
-            list.add(new FieldErrorException("fieldRequiredException", CronMeta.getMethod()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             CronMeta.getMethod()));
         else if (bean != null) {
             if ( !DataBaseUtil.isEmpty(data.getParameters())) {
                 params = data.getParameters().split(";");
@@ -275,7 +276,8 @@ public class CronBean {
             if (method == null)
                 list.add(new FieldErrorException("invalidMethod", CronMeta.getMethod()));
             else if (method.getParameterTypes().length != params.length)
-                list.add(new FieldErrorException("invalidNumParams", CronMeta.getParameters()));
+                list.add(new FieldErrorException("invalidNumParams",
+                                                 CronMeta.getParameters()));
         }
 
         if (list.size() > 0)

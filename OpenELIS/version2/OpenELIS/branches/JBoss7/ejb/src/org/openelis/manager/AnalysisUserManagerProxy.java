@@ -103,15 +103,4 @@ public class AnalysisUserManagerProxy {
             return null;
         }
     }
-
-    protected void loadDictionaryEntries(AnalysisUserManager m) throws Exception {
-        DictionaryBean l;
-
-        if (m.actionCompletedId == null) {
-            l = EJBFactory.getDictionary();
-            m.actionCompletedId = l.fetchBySystemName("an_user_ac_completed").getId();
-            m.actionReleasedId = l.fetchBySystemName("an_user_ac_released").getId();
-        }
-    }
-
 }

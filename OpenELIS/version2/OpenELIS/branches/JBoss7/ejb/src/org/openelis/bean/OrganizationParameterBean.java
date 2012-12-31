@@ -27,11 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.internet.AddressException;
 import javax.persistence.EntityManager;
@@ -40,6 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.entity.OrganizationParameter;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -51,28 +48,10 @@ import org.openelis.utils.EmailUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class OrganizationParameterBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
-    
-    @EJB
-    private DictionaryBean             dictionary;
-    
-    private static final Logger      log = Logger.getLogger("openelis");
-    
-    private static Integer            receivableReportToId, releasedReportToId;
-    
-    @PostConstruct
-    public void init() {
-        try {
-            receivableReportToId = dictionary.fetchBySystemName("receivable_reportto_email").getId();
-            releasedReportToId = dictionary.fetchBySystemName("released_reportto_email").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-    }
 
     public ArrayList<OrganizationParameterDO> fetchByOrganizationId(Integer id) throws Exception {
         Query query;
@@ -87,8 +66,9 @@ public class OrganizationParameterBean  {
 
         return DataBaseUtil.toArrayList(list);
     }
-    
-    public ArrayList<OrganizationParameterDO> fetchByOrgIdAndDictSystemName(Integer id, String systemName) throws Exception {
+
+    public ArrayList<OrganizationParameterDO> fetchByOrgIdAndDictSystemName(Integer id,
+                                                                            String systemName) throws Exception {
         Query query;
         List list;
 
@@ -102,7 +82,7 @@ public class OrganizationParameterBean  {
 
         return DataBaseUtil.toArrayList(list);
     }
-    
+
     public ArrayList<OrganizationParameterDO> fetchByDictionarySystemName(String systemName) {
         Query query;
 
@@ -161,22 +141,24 @@ public class OrganizationParameterBean  {
         list = new ValidationErrorsList();
         typeId = data.getTypeId();
         value = data.getValue();
-        
+
         if (DataBaseUtil.isEmpty(typeId))
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrganizationMeta.getOrganizationParameterTypeId()));
         if (DataBaseUtil.isEmpty(value)) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrganizationMeta.getOrganizationParameterValue()));
-        } else if (receivableReportToId.equals(typeId) || releasedReportToId.equals(typeId)) {
+        } else if (Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL.equals(typeId) ||
+                   Constants.dictionary().RELEASED_REPORTTO_EMAIL.equals(typeId)) {
             try {
                 EmailUtil.validateAddress(value);
             } catch (AddressException e) {
                 list.add(new FieldErrorException("invalidFormatEmailException",
-                                                 OrganizationMeta.getOrganizationParameterValue(), value));
+                                                 OrganizationMeta.getOrganizationParameterValue(),
+                                                 value));
             }
         }
-        
+
         if (list.size() > 0)
             throw list;
     }

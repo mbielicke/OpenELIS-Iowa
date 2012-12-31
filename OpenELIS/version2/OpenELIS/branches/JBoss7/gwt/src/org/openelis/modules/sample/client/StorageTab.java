@@ -28,10 +28,10 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
@@ -82,14 +82,11 @@ public class StorageTab extends Screen {
     protected SampleDataBundle      bundle;
     protected StorageManager        manager;
 
-    private Integer                 analysisCancelledId;
-
     public StorageTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
 
         initialize();
-        initializeDropdowns();
     }
 
     private void initialize() {
@@ -339,7 +336,7 @@ public class StorageTab extends Screen {
                     if (anDO != null && anDO.getSectionId() != null) {
                         sectionVDO = SectionCache.getById(anDO.getSectionId());
                         perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                        return !analysisCancelledId.equals(anDO.getStatusId()) &&
+                        return !Constants.dictionary().ANALYSIS_CANCELLED.equals(anDO.getStatusId()) &&
                                perm != null &&
                                (perm.hasAssignPermission() || perm.hasCompletePermission());
                     }
@@ -353,15 +350,6 @@ public class StorageTab extends Screen {
         }
             
         return false;
-    }
-
-    private void initializeDropdowns() {
-        try {
-            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     public void setData(SampleDataBundle data) {

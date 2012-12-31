@@ -1,9 +1,8 @@
 package org.openelis.manager;
 
 import java.io.Serializable;
-
+import org.openelis.domain.Constants;
 import org.openelis.domain.ProviderDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 
 public class ProviderManager implements Serializable, HasNotesInt {
@@ -104,7 +103,7 @@ public class ProviderManager implements Serializable, HasNotesInt {
         if (notes == null) {
             if (provider.getId() != null) {
                 try {
-                    notes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.PROVIDER,
+                    notes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().PROVIDER,
                                                                   provider.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore

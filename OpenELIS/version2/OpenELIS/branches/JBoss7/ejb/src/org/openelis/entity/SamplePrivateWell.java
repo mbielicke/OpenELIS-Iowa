@@ -39,9 +39,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -245,21 +244,21 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.SAMPLE_PRIVATE_WELL);
+        audit.setReferenceTableId(Constants.table().SAMPLE_PRIVATE_WELL);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_id", sampleId, original.sampleId, ReferenceTable.SAMPLE)
-                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
+                 .setField("sample_id", sampleId, original.sampleId, Constants.table().SAMPLE)
+                 .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
                  .setField("report_to_name", reportToName, original.reportToName)
                  .setField("report_to_attention", reportToAttention, original.reportToAttention)
-                 .setField("report_to_address_id", reportToAddressId, original.reportToAddressId, ReferenceTable.ADDRESS)
+                 .setField("report_to_address_id", reportToAddressId, original.reportToAddressId, Constants.table().ADDRESS)
                  .setField("location", location, original.location)
-                 .setField("location_address_id", locationAddressId, original.locationAddressId, ReferenceTable.ADDRESS)
+                 .setField("location_address_id", locationAddressId, original.locationAddressId, Constants.table().ADDRESS)
                  .setField("owner", owner, original.owner)
                  .setField("collector", collector, original.collector)
                  .setField("well_number", wellNumber, original.wellNumber);

@@ -34,7 +34,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
@@ -92,9 +92,9 @@ public class InstrumentManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());        
+            lockBean.validateLock(Constants.table().INSTRUMENT, man.getInstrument().getId());        
             man.update();
-            lockBean.unlock(ReferenceTable.INSTRUMENT, man.getInstrument().getId());
+            lockBean.unlock(Constants.table().INSTRUMENT, man.getInstrument().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -111,7 +111,7 @@ public class InstrumentManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.INSTRUMENT, id);
+            lockBean.lock(Constants.table().INSTRUMENT, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -122,7 +122,7 @@ public class InstrumentManagerBean {
     }
     
     public InstrumentManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.INSTRUMENT, id);
+        lockBean.unlock(Constants.table().INSTRUMENT, id);
         return fetchById(id);
     }
 

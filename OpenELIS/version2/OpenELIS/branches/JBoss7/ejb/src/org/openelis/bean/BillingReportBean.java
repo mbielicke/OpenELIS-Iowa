@@ -35,7 +35,6 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -46,8 +45,8 @@ import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
@@ -104,25 +103,12 @@ public class BillingReportBean {
     @EJB
     private DictionaryBean           dictionary;
     
-    private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
-                                     MISC_BILLING = "billing misc charges by no method",
-                                     RUSH_BILLING = "billing rush charges by no method",
-                                     EOL = "\r\n", ZERO_BILL = "0.00";
+    private static final String    RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
+                                   MISC_BILLING = "billing misc charges by no method",
+                                   RUSH_BILLING = "billing rush charges by no method",
+                                   EOL = "\r\n", ZERO_BILL = "0.00";
     
-    private static Integer           organizationReportToId, organizationBillToId, analysisCancelledId;
-    
-    private static final Logger        log = Logger.getLogger("openelis");
-
-    @PostConstruct
-    public void init() {
-        try {
-            organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
-            organizationBillToId = dictionary.fetchBySystemName("org_bill_to").getId();
-            analysisCancelledId = dictionary.fetchBySystemName("analysis_cancelled").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-    }
+    private static final Logger     log = Logger.getLogger("openelis");
     
     /**
      * Execute the report and email its output to specified addresses
@@ -397,7 +383,7 @@ public class BillingReportBean {
                 else if ("N".equals(anaReportable) && !MISC_BILLING.equals(procedure) &&
                                 !RUSH_BILLING.equals(procedure)) 
                     needCredit = true;
-                else if (analysisCancelledId.equals(statusId))
+                else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
                     needCredit = true;
             }
                         
@@ -407,7 +393,7 @@ public class BillingReportBean {
             needCharge = false;
             if (billed == null || billableAnalytes != billedAnalytes ||
                 !billedZero.equals(anaZeroCharge ? "Y" : "N")) {                
-                if (!analysisCancelledId.equals(statusId) && ("Y".equals(anaReportable) ||
+                if (!Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId) && ("Y".equals(anaReportable) ||
                     MISC_BILLING.equals(procedure) || RUSH_BILLING.equals(procedure))) 
                     needCharge = true;
             }            
@@ -505,10 +491,10 @@ public class BillingReportBean {
             list = sampleOrganization.fetchBySampleId(id);
             for (int i = 0; i < list.size(); i++ ) {
                 so = list.get(i);
-                if (organizationBillToId.equals(so.getTypeId())) {
+                if (Constants.dictionary().ORG_BILL_TO.equals(so.getTypeId())) {
                     index = i;
                     break;
-                } else if (organizationReportToId.equals(so.getTypeId())) {
+                } else if (Constants.dictionary().ORG_REPORT_TO.equals(so.getTypeId())) {
                     index = i;
                 }
             }
@@ -566,7 +552,7 @@ public class BillingReportBean {
         
         value = null;
         try {
-            auxList = auxData.fetchByIdAnalyteName(id, ReferenceTable.SAMPLE, analyteName);
+            auxList = auxData.fetchByIdAnalyteName(id, Constants.table().SAMPLE, analyteName);
             value = auxList.get(0).getValue();            
         } catch (NotFoundException e) {
             // ignore

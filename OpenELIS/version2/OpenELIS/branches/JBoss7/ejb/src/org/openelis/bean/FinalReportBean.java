@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.Asynchronous;
@@ -35,10 +34,10 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
@@ -63,9 +62,6 @@ public class FinalReportBean {
     private SessionCacheBean          session;
 
     @EJB
-    private DictionaryBean             dictionary;
-
-    @EJB
     private SampleBean                 sample;
 
     @EJB
@@ -85,25 +81,11 @@ public class FinalReportBean {
     
     @EJB
     private UserCacheBean              userCache;
-    
+
     @Resource
     private SessionContext             ctx;
 
-    private static Integer            finalReportFaxNumTypeId, noFinalReportTypeId,
-                                        primaryReportToTypeId;
-
-    private static final Logger      log = Logger.getLogger("openelis");
-
-    @PostConstruct
-    public void init() {
-        try {
-            finalReportFaxNumTypeId = dictionary.fetchBySystemName("org_finalrep_fax_number").getId();
-            noFinalReportTypeId = dictionary.fetchBySystemName("org_no_finalreport").getId();
-            primaryReportToTypeId = dictionary.fetchBySystemName("org_report_to").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-    }
+    private static final Logger        log = Logger.getLogger("openelis");
 
     /**
      * Returns the prompt for a single re-print
@@ -257,7 +239,7 @@ public class FinalReportBean {
                      * for the other domains. Otherwise the report is faxed for
                      * the organization specified by the user.
                      */
-                    if ( (orgId == null && (primaryReportToTypeId.equals(typeId) || zero.equals(typeId))) ||
+                    if ( (orgId == null && (Constants.dictionary().ORG_REPORT_TO.equals(typeId) || zero.equals(typeId))) ||
                         DataBaseUtil.isSame(orgId, result.getOrganizationId())) {
                         orgPrint = new OrganizationPrint();
                         orgPrint.setOrganizationId(result.getOrganizationId());
@@ -441,7 +423,7 @@ public class FinalReportBean {
             lockSucceeded = samLockMap.get(result.getSampleId());
             if (lockSucceeded == null) {
                 try {
-                    lock.lock(ReferenceTable.SAMPLE, result.getSampleId());
+                    lock.lock(Constants.table().SAMPLE, result.getSampleId());
                     lockSucceeded = Boolean.TRUE;
                 } catch (Exception e) {
                     log.finer("Sample id " + result.getSampleId() + " can't be locked");
@@ -483,9 +465,9 @@ public class FinalReportBean {
                     try {
                         orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
                         for (OrganizationParameterDO orgParam : orgParamList) {
-                            if (finalReportFaxNumTypeId.equals(orgParam.getTypeId()))
+                            if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(orgParam.getTypeId()))
                                 orgFaxNumber = orgParam.getValue();
-                            else if (noFinalReportTypeId.equals(orgParam.getTypeId()))
+                            else if (Constants.dictionary().ORG_NO_FINALREPORT.equals(orgParam.getTypeId()))
                                 orgPrint = false;
                         }
                     } catch (NotFoundException e) {
@@ -499,11 +481,12 @@ public class FinalReportBean {
              * defines the values for faxing.Auxiliary fax info on sample is
              * applied only to the primary report to.
              */
-            if ( (primaryReportToTypeId.equals(result.getOrganizationTypeId()) || zero.equals(result.getOrganizationTypeId())) &&
+            if ( (DataBaseUtil.isSame(Constants.dictionary().ORG_REPORT_TO,
+                                      result.getOrganizationTypeId()) || zero.equals(result.getOrganizationTypeId())) &&
                 !DataBaseUtil.isEmpty(faxGrpName)) {
                 try {
                     auxList = auxData.fetchByRefIdRefTableIdGroupName(result.getSampleId(),
-                                                                      ReferenceTable.SAMPLE,
+                                                                      Constants.table().SAMPLE,
                                                                       faxGrpName);
                     for (AuxDataViewDO aux : auxList) {
                         if ("final_report_fax_num".equals(aux.getAnalyteExternalId()))
@@ -543,7 +526,7 @@ public class FinalReportBean {
         log.fine("Unlocking all samples");
         for (Map.Entry<Integer, Boolean> entry : samLockMap.entrySet()) {
             if (entry.getValue())
-                lock.unlock(ReferenceTable.SAMPLE, entry.getKey());
+                lock.unlock(Constants.table().SAMPLE, entry.getKey());
         }
 
         return status;
@@ -632,9 +615,9 @@ public class FinalReportBean {
                     try {
                         orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
                         for (OrganizationParameterDO orgParam : orgParamList) {
-                            if (finalReportFaxNumTypeId.equals(orgParam.getTypeId()))
+                            if (Constants.dictionary().ORG_FINALREP_FAX_NUMBER.equals(orgParam.getTypeId()))
                                 orgFaxNumber = orgParam.getValue();
-                            else if (noFinalReportTypeId.equals(orgParam.getTypeId()))
+                            else if (Constants.dictionary().ORG_NO_FINALREPORT.equals(orgParam.getTypeId()))
                                 orgPrint = false;
                         }
                     } catch (NotFoundException e) {
@@ -648,11 +631,12 @@ public class FinalReportBean {
              * defines the values for faxing.Auxiliary fax info on sample is
              * applied only to the primary report to.
              */
-            if ( (primaryReportToTypeId.equals(result.getOrganizationTypeId()) || zero.equals(result.getOrganizationTypeId())) &&
+            if (Constants.dictionary().ORG_REPORT_TO.equals(result.getOrganizationTypeId()) ||
+                zero.equals(result.getOrganizationTypeId()) &&
                 !DataBaseUtil.isEmpty(faxGrpName)) {
                 try {
                     auxList = auxData.fetchByRefIdRefTableIdGroupName(result.getSampleId(),
-                                                                      ReferenceTable.SAMPLE,
+                                                                      Constants.table().SAMPLE,
                                                                       faxGrpName);
                     for (AuxDataViewDO aux : auxList) {
                         if ("final_report_fax_num".equals(aux.getAnalyteExternalId()))
@@ -844,8 +828,8 @@ public class FinalReportBean {
             }
 
             /*
-             * generate state page at the end of print run to list all the organizations 
-             * printed/faxed.
+             * generate state page at the end of print run to list all the
+             * organizations printed/faxed.
              */
             if (forMailing) {
                 ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.STATS);

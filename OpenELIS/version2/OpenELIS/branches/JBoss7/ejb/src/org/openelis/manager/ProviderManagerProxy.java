@@ -25,9 +25,9 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.Constants;
 import org.openelis.bean.ProviderBean;
 import org.openelis.domain.ProviderDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
@@ -80,7 +80,7 @@ public class ProviderManagerProxy {
         }
         if (man.notes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.PROVIDER);
+            man.getNotes().setReferenceTableId(Constants.table().PROVIDER);
             man.getNotes().add();
         }
         return man;
@@ -100,7 +100,7 @@ public class ProviderManagerProxy {
         }
         if (man.notes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.PROVIDER);
+            man.getNotes().setReferenceTableId(Constants.table().PROVIDER);
             man.getNotes().update();
         }
         return man;
@@ -118,7 +118,7 @@ public class ProviderManagerProxy {
 
     public void validate(ProviderManager man) throws Exception {
         ValidationErrorsList list;
-        
+
         list = new ValidationErrorsList();
         try {
             EJBFactory.getProvider().validate(man.getProvider());
@@ -137,7 +137,7 @@ public class ProviderManagerProxy {
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
-        
+
         if (list.size() > 0)
             throw list;
     }

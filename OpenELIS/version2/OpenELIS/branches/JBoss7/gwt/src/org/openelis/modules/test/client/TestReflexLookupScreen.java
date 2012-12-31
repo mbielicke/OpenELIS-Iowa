@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.TestReflexViewDO;
@@ -73,9 +73,6 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
     };
 
     protected TreeWidget                 reflexTestTree;
-    
-    private Integer                      autoAddId, autoAddNonDupId, promptNonDupId,
-                                         testSectionDefaultId;
     private ArrayList<ArrayList<Object>> reflexBundles;
     private AppButton                    copyToEmptyButton, copyToAllButton;
 
@@ -87,8 +84,6 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
         
         // Initialize Screen
         setState(State.DEFAULT);
-
-        initializeDropdowns();
     }
 
     private void initialize() {
@@ -159,8 +154,8 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                         // If the reflex test is of one of the two AUTO ADD types,
                         // we need to prevent the user from unchecking this item
                         //
-                        if (autoAddId.equals(((TestReflexViewDO)((ArrayList<Object>)row.data).get(1)).getFlagsId()) ||
-                            autoAddNonDupId.equals(((TestReflexViewDO)((ArrayList<Object>)row.data).get(1)).getFlagsId()))
+                        if (Constants.dictionary().REFLEX_AUTO.equals(((TestReflexViewDO)((ArrayList<Object>)row.data).get(1)).getFlagsId()) ||
+                            Constants.dictionary().REFLEX_AUTO_NDUP.equals(((TestReflexViewDO)((ArrayList<Object>)row.data).get(1)).getFlagsId()))
                             event.cancel();
                     } else {
                         event.cancel();
@@ -294,17 +289,6 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
             }
         });
     }
-
-    private void initializeDropdowns() {
-        try {
-            autoAddId = DictionaryCache.getIdBySystemName("reflex_auto");
-            autoAddNonDupId = DictionaryCache.getIdBySystemName("reflex_auto_ndup");
-            promptNonDupId = DictionaryCache.getIdBySystemName("reflex_prompt_ndup");
-            testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
-        } catch (Exception e) {
-            Window.alert("TestReflexUtility constructor: " + e.getMessage());
-        }
-    }
     
     @SuppressWarnings("unchecked")
     private void ok() {
@@ -420,7 +404,8 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                     for (j = 0; j < reflexList.size(); j++) {
                         reflexDO = reflexList.get(j);
                         
-                        if (promptNonDupId.equals(reflexDO.getFlagsId()) || autoAddNonDupId.equals(reflexDO.getFlagsId())) {
+                        if (Constants.dictionary().REFLEX_PROMPT_NDUP.equals(reflexDO.getFlagsId()) || 
+                            Constants.dictionary().REFLEX_AUTO_NDUP.equals(reflexDO.getFlagsId())) {
                             siMan = bundle.getSampleManager().getSampleItems();
                             if (duplicatePresent(siMan, reflexDO.getAddTestId()))
                                 continue;
@@ -430,7 +415,8 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                         rtRow.leafType = "reflexTest";
                         rtRow.key = reflexDO.getAddTestId();
                         rtRow.cells.get(0).setValue(reflexDO.getAddTestName()+", "+reflexDO.getAddMethodName());
-                        if (autoAddId.equals(reflexDO.getFlagsId()) || autoAddNonDupId.equals(reflexDO.getFlagsId()))
+                        if (Constants.dictionary().REFLEX_AUTO.equals(reflexDO.getFlagsId()) || 
+                            Constants.dictionary().REFLEX_AUTO_NDUP.equals(reflexDO.getFlagsId()))
                             rtRow.cells.get(2).setValue("Y");
                         else
                             rtRow.cells.get(2).setValue("N");

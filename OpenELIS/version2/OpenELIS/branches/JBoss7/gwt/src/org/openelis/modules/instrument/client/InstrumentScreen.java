@@ -31,10 +31,10 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -784,7 +784,7 @@ public class InstrumentScreen extends Screen {
         
         hist = new IdNameVO(manager.getInstrument().getId(), manager.getInstrument().getName());
         HistoryScreen.showHistory(consts.get("instrumentHistory"),
-                                  ReferenceTable.INSTRUMENT, hist); 
+                                  Constants.table().INSTRUMENT, hist); 
     }
     
     protected void instrumentLogHistory() {
@@ -818,7 +818,7 @@ public class InstrumentScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("instrumentLogHistory"),
-                                  ReferenceTable.INSTRUMENT_LOG, refVoList);
+                                  Constants.table().INSTRUMENT_LOG, refVoList);
     }
 
 

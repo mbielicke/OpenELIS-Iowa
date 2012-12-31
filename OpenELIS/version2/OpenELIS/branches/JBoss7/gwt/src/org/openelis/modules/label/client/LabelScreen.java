@@ -31,10 +31,10 @@ import java.util.List;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -583,7 +583,7 @@ public class LabelScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("labelHistory"), ReferenceTable.LABEL, hist);
+        HistoryScreen.showHistory(consts.get("labelHistory"), Constants.table().LABEL, hist);
     }
 
     protected boolean fetchById(Integer id) {

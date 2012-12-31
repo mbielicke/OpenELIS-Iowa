@@ -49,9 +49,8 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -234,19 +233,19 @@ public class StorageLocation implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.STORAGE_LOCATION);
+        audit.setReferenceTableId(Constants.table().STORAGE_LOCATION);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("name", name, original.name)
                  .setField("location", location, original.location)
-                 .setField("parent_storage_location_id", parentStorageLocationId, original.parentStorageLocationId, ReferenceTable.STORAGE_LOCATION)
-                 .setField("storage_unit_id", storageUnitId, original.storageUnitId, ReferenceTable.STORAGE_UNIT)
+                 .setField("parent_storage_location_id", parentStorageLocationId, original.parentStorageLocationId, Constants.table().STORAGE_LOCATION)
+                 .setField("storage_unit_id", storageUnitId, original.storageUnitId, Constants.table().STORAGE_UNIT)
                  .setField("is_available", isAvailable, original.isAvailable);
 
         return audit;

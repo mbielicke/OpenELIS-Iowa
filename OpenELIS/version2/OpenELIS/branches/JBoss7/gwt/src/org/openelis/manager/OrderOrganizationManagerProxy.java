@@ -29,20 +29,8 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.modules.order.client.OrderService;
 
 public class OrderOrganizationManagerProxy {
-    protected static Integer      orgBillToId, orgReportToId, orgSecondaryReportToId;
 
     public OrderOrganizationManagerProxy() {
-        
-        if (orgBillToId == null) {
-            try {
-                orgBillToId = DictionaryCache.getIdBySystemName("org_bill_to");
-                orgReportToId = DictionaryCache.getIdBySystemName("org_report_to");
-                orgSecondaryReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");                
-            } catch (Exception e) {
-                e.printStackTrace();
-                orgBillToId = null;
-            }
-        }
     }
 
     public OrderOrganizationManager fetchByOrderId(Integer OrderId) throws Exception {

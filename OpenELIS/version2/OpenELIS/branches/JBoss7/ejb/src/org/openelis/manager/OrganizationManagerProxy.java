@@ -25,8 +25,8 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
@@ -68,7 +68,7 @@ public class OrganizationManagerProxy {
 
         m = fetchById(id);
         m.getParameters();
-        
+
         return m;
     }
 
@@ -88,7 +88,7 @@ public class OrganizationManagerProxy {
         }
         if (man.notes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
+            man.getNotes().setReferenceTableId(Constants.table().ORGANIZATION);
             man.getNotes().add();
         }
 
@@ -111,7 +111,7 @@ public class OrganizationManagerProxy {
         }
         if (man.notes != null) {
             man.getNotes().setReferenceId(id);
-            man.getNotes().setReferenceTableId(ReferenceTable.ORGANIZATION);
+            man.getNotes().setReferenceTableId(Constants.table().ORGANIZATION);
             man.getNotes().update();
         }
 
@@ -142,7 +142,7 @@ public class OrganizationManagerProxy {
 
     public void validate(OrganizationManager man) throws Exception {
         ValidationErrorsList list;
-        
+
         list = new ValidationErrorsList();
         try {
             EJBFactory.getOrganization().validate(man.getOrganization());
@@ -161,7 +161,7 @@ public class OrganizationManagerProxy {
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
-        
+
         if (list.size() > 0)
             throw list;
     }

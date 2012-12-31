@@ -45,9 +45,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -170,19 +169,19 @@ public class TestWorksheet implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.TEST_WORKSHEET);
+        audit.setReferenceTableId(Constants.table().TEST_WORKSHEET);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
                  .setField("subset_capacity", subsetCapacity, original.subsetCapacity)
                  .setField("total_capacity", totalCapacity, original.totalCapacity)
-                 .setField("format_id", formatId, original.formatId, ReferenceTable.DICTIONARY)
-                 .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
+                 .setField("format_id", formatId, original.formatId, Constants.table().DICTIONARY)
+                 .setField("scriptlet_id", scriptletId, original.scriptletId, Constants.table().SCRIPTLET);
 
         return audit;
     }

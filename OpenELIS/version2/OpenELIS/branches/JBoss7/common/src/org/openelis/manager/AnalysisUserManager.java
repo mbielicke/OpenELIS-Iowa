@@ -29,16 +29,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisUserViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 
 public class AnalysisUserManager implements Serializable {
 
-    private static final long                           serialVersionUID = 1L;
+    private static final long                         serialVersionUID = 1L;
     protected Integer                                   analysisId;
     protected ArrayList<AnalysisUserViewDO>             analysisUserList, deletedList;
-    protected transient Integer                         actionCompletedId, actionReleasedId;
 
     protected transient static AnalysisUserManagerProxy proxy;
 
@@ -67,15 +67,14 @@ public class AnalysisUserManager implements Serializable {
         AnalysisUserViewDO data;
 
         user = proxy().getSystemUser();
-        proxy().loadDictionaryEntries(this);
 
         // if this user has already completed this record, don't add another one
-        if (getIndex(actionCompletedId, user.getId()) >= 0)
+        if (getIndex(Constants.dictionary().AN_USER_AC_COMPLETED, user.getId()) >= 0)
             return -1;
 
         // multiples allowed
         data = new AnalysisUserViewDO();
-        data.setActionId(actionCompletedId);
+        data.setActionId(Constants.dictionary().AN_USER_AC_COMPLETED);
         data.setSystemUserId(user.getId());
         data.setSystemUser(user.getLoginName());
 
@@ -85,15 +84,13 @@ public class AnalysisUserManager implements Serializable {
     public int addCompleteRecord(SystemUserVO user) throws Exception {
         AnalysisUserViewDO data;
 
-        proxy().loadDictionaryEntries(this);
-
         // if this user has already completed this record, don't add another one
-        if (getIndex(actionCompletedId, user.getId()) >= 0)
+        if (getIndex(Constants.dictionary().AN_USER_AC_COMPLETED, user.getId()) >= 0)
             return -1;
 
         // multiples allowed
         data = new AnalysisUserViewDO();
-        data.setActionId(actionCompletedId);
+        data.setActionId(Constants.dictionary().AN_USER_AC_COMPLETED);
         data.setSystemUserId(user.getId());
         data.setSystemUser(user.getLoginName());
 
@@ -106,15 +103,14 @@ public class AnalysisUserManager implements Serializable {
         AnalysisUserViewDO data;
 
         user = proxy().getSystemUser();
-        proxy().loadDictionaryEntries(this);
 
         // if a release entry already exists delete it, and create the new one
-        i = getIndex(actionReleasedId, null);
+        i = getIndex(Constants.dictionary().AN_USER_AC_RELEASED, null);
         if (i != -1)
             removeAnalysisUserAt(i);
             
         data = new AnalysisUserViewDO();
-        data.setActionId(actionReleasedId);
+        data.setActionId(Constants.dictionary().AN_USER_AC_RELEASED);
         data.setSystemUserId(user.getId());
         data.setSystemUser(user.getLoginName());
 

@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -707,7 +707,7 @@ public class StorageLocationScreen extends Screen {
         
         hist = new IdNameVO(manager.getStorageLocation().getId(), manager.getStorageLocation().getName());
         HistoryScreen.showHistory(consts.get("storageLocationHistory"),
-                                  ReferenceTable.STORAGE_LOCATION, hist);        
+                                  Constants.table().STORAGE_LOCATION, hist);        
         
     }
 
@@ -732,7 +732,7 @@ public class StorageLocationScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("subLocationHistory"),
-                                  ReferenceTable.STORAGE_LOCATION, refVoList);        
+                                  Constants.table().STORAGE_LOCATION, refVoList);        
     }
 
     protected boolean fetchById(Integer id) {

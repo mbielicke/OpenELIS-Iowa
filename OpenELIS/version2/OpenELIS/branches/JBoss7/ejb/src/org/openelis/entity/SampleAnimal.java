@@ -38,9 +38,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -158,21 +157,21 @@ public class SampleAnimal implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.SAMPLE_ANIMAL);
+        audit.setReferenceTableId(Constants.table().SAMPLE_ANIMAL);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_id", sampleId, original.sampleId, ReferenceTable.SAMPLE)
-                 .setField("animal_common_name_id", animalCommonNameId, original.animalCommonNameId, ReferenceTable.DICTIONARY)
-                 .setField("animal_scientific_name_id", animalScientificNameId, original.animalScientificNameId, ReferenceTable.DICTIONARY)
+                 .setField("sample_id", sampleId, original.sampleId, Constants.table().SAMPLE)
+                 .setField("animal_common_name_id", animalCommonNameId, original.animalCommonNameId, Constants.table().DICTIONARY)
+                 .setField("animal_scientific_name_id", animalScientificNameId, original.animalScientificNameId, Constants.table().DICTIONARY)
                  .setField("collector", collector, original.collector)
                  .setField("collector_phone", collectorPhone, original.collectorPhone)
                  .setField("sampling_location", samplingLocation, original.samplingLocation)
-                 .setField("address_id", addressId, original.addressId, ReferenceTable.ADDRESS);
+                 .setField("address_id", addressId, original.addressId, Constants.table().ADDRESS);
 
         return audit;
     }

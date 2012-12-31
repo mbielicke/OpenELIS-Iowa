@@ -86,13 +86,6 @@ public class AuxFieldValueManagerProxy {
         return man;
     }
     
-    public Integer getIdFromSystemName(String systemName) throws Exception{
-        DictionaryDO data;
-        
-        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
-        return data.getId();
-    }
-    
     public void validate(AuxFieldValueManager man, ValidationErrorsList list) throws Exception {       
     }
 }

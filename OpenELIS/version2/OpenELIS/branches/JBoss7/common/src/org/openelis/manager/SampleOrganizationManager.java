@@ -3,13 +3,14 @@ package org.openelis.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 public class SampleOrganizationManager implements Serializable {
 
-    private static final long                                 serialVersionUID = 1L;
+    private static final long                               serialVersionUID = 1L;
 
     protected Integer                                         sampleId;
     protected ArrayList<SampleOrganizationViewDO>             organizations, deletedList;
@@ -119,14 +120,14 @@ public class SampleOrganizationManager implements Serializable {
     // helper methods
     //
     public void setBillTo(SampleOrganizationViewDO billToDO) {
-        setRowFor(proxy().orgBillToId, billToDO);
+        setRowFor(Constants.dictionary().ORG_BILL_TO, billToDO);
     }
 
     public SampleOrganizationViewDO getBillTo() {
         int i = 0;
 
         while (i < organizations.size() &&
-               !DataBaseUtil.isSame(proxy().orgBillToId, organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(Constants.dictionary().ORG_BILL_TO, organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())
@@ -136,14 +137,14 @@ public class SampleOrganizationManager implements Serializable {
     }
 
     public void setReportTo(SampleOrganizationViewDO reportToDO) {
-        setRowFor(proxy().orgReportToId, reportToDO);
+        setRowFor(Constants.dictionary().ORG_REPORT_TO, reportToDO);
     }
 
     public SampleOrganizationViewDO getReportTo() {
         int i = 0;
 
         while (i < organizations.size() &&
-               !DataBaseUtil.isSame(proxy().orgReportToId,organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(Constants.dictionary().ORG_REPORT_TO, organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())
@@ -157,7 +158,7 @@ public class SampleOrganizationManager implements Serializable {
 
         i = 0;
         while (i < organizations.size() &&
-               !DataBaseUtil.isSame(proxy().orgSecondaryReportToId, organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(Constants.dictionary().ORG_SECOND_REPORT_TO, organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())
