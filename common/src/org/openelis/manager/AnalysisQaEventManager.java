@@ -30,13 +30,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 public class AnalysisQaEventManager implements Serializable {
 
     private static final long                              serialVersionUID = 1L;
 
-    protected Integer                                      analysisId, qaResultOverrideId;
+    protected Integer                                      analysisId;
     protected ArrayList<AnalysisQaEventViewDO>             items, deletedList;
 
     protected transient static AnalysisQAEventManagerProxy proxy;
@@ -99,13 +100,12 @@ public class AnalysisQaEventManager implements Serializable {
     
     public boolean hasResultOverrideQA() throws Exception {
         AnalysisQaEventViewDO eventDO;
-        
-        loadDictionaryEntries();
+       
         
         for(int i=0; i<count(); i++){
             eventDO = items.get(i);
             
-            if(qaResultOverrideId.equals(eventDO.getTypeId()))
+            if(Constants.dictionary().QAEVENT_OVERRIDE.equals(eventDO.getTypeId()))
                 return true;
         }
         
@@ -172,12 +172,6 @@ public class AnalysisQaEventManager implements Serializable {
 
     void setAnalysisQAEvents(ArrayList<AnalysisQaEventViewDO> analysisQas) {
         this.items = analysisQas;
-    }
-
-    private void loadDictionaryEntries() throws Exception {
-        if (qaResultOverrideId == null) {
-            qaResultOverrideId = proxy().getIdFromSystemName("qaevent_override");
-        }
     }
     
     private static AnalysisQAEventManagerProxy proxy() {

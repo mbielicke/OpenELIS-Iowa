@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleOrganizationDO;
@@ -80,7 +80,6 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     private SampleOrganizationManager manager;
     protected AppButton               organizationRemoveButton;
     private boolean                   canAddReportTo, canAddBillTo, canAddSecondReportTo;
-    private Integer                   reportToId, billToId, secondReportToId;
     
     public enum Action {
         OK
@@ -155,13 +154,13 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                 switch (c) {
                     case 0:
                         sampleOrganizationTable.clearCellExceptions(r, c);
-                        if(reportToId.equals((Integer)val) && !canAddReportTo)
+                        if(Constants.dictionary().ORG_REPORT_TO.equals((Integer)val) && !canAddReportTo)
                             sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddReportToException"));
                         
-                        else if(billToId.equals((Integer)val) && !canAddBillTo)
+                        else if(Constants.dictionary().ORG_BILL_TO.equals((Integer)val) && !canAddBillTo)
                             sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddBillToException"));
                         
-                        else if(secondReportToId.equals((Integer)val) && !canAddSecondReportTo)
+                        else if(Constants.dictionary().ORG_SECOND_REPORT_TO.equals((Integer)val) && !canAddSecondReportTo)
                             sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddSecondReortToException"));
                         
                         data.setTypeId((Integer)val);
@@ -394,13 +393,8 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                 if ("Y".equals(data.getIsActive()))
                     model.add(new TableDataRow(data.getEntry(), data.getEntry()));
             }
-            ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(8).getColumnWidget()).setModel(model);
-            
-            //load the type ids
-            reportToId = DictionaryCache.getIdBySystemName("org_report_to");
-            billToId = DictionaryCache.getIdBySystemName("org_bill_to");
-            secondReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");
-        }catch(Exception e){
+            ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(8).getColumnWidget()).setModel(model);            
+        } catch(Exception e) {
             Window.alert("initializedropdowns: "+e.getMessage());
         }
     }
@@ -437,10 +431,10 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             numReportTo = 0;
             for(int i=0; i<manager.count(); i++){
                 SampleOrganizationDO orgDO = manager.getOrganizationAt(i);
-                if(DictionaryCache.getIdBySystemName("org_bill_to").equals(orgDO.getTypeId()))
+                if(Constants.dictionary().ORG_BILL_TO.equals(orgDO.getTypeId()))
                     numBillTo++;
                 
-                if(DictionaryCache.getIdBySystemName("org_report_to").equals(orgDO.getTypeId()))
+                if(Constants.dictionary().ORG_REPORT_TO.equals(orgDO.getTypeId()))
                     numReportTo++;
             }
             

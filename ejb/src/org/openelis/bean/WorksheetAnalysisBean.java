@@ -28,10 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -41,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -57,30 +55,12 @@ import org.openelis.meta.WorksheetCompletionMeta;
 @SecurityDomain("openelis")
 public class WorksheetAnalysisBean {
 
-    @EJB
-    private DictionaryBean       dictionary;
-
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager manager;
+    
     @EJB
     private UserCacheBean        userCache;
     
-    private static Integer       workingId;
-    
-    private static final Logger log = Logger.getLogger("openelis");
-
-    @PostConstruct
-    public void init() {
-        if (workingId == null) {
-            try {
-                workingId = dictionary.fetchBySystemName("worksheet_working").getId();
-            } catch (Throwable e) {
-                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-            }
-        }
-    }
-
-    @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
-
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception {
         Query query;
@@ -134,7 +114,7 @@ public class WorksheetAnalysisBean {
         SystemUserVO user;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetStatusId");
-        query.setParameter("statusId", workingId);
+        query.setParameter("statusId", Constants.dictionary().WORKSHEET_WORKING);
         list = query.getResultList();
 
         for (ToDoWorksheetVO data : list) {

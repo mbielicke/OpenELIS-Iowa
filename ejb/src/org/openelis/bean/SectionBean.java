@@ -38,7 +38,6 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.entity.Section;
@@ -46,7 +45,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
@@ -55,20 +53,13 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class SectionBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager               manager;    
-    
-    @EJB
-    private LockBean                   lock;
+    private EntityManager            manager;
     
     @EJB
     private SectionCacheBean           secCache;
-    
-    @EJB
-    private UserCacheBean               userCache;
        
     private static final SectionMeta    meta = new SectionMeta();
 
@@ -90,7 +81,7 @@ public class SectionBean {
 
     public ArrayList<SectionDO> fetchByName(String name, int maxResults) throws Exception {
         Query query;
-        
+
         query = manager.createNamedQuery("Section.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
@@ -107,8 +98,7 @@ public class SectionBean {
         return DataBaseUtil.toArrayList(sections);
     }
 
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                     throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
@@ -116,8 +106,8 @@ public class SectionBean {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
 
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + SectionMeta.getId() + ", " +
-                          SectionMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          SectionMeta.getId() + ", " + SectionMeta.getName() + ") ");
 
         builder.constructWhere(fields);
         builder.setOrderBy(SectionMeta.getName());
@@ -139,10 +129,6 @@ public class SectionBean {
     public SectionDO add(SectionDO data) throws Exception {
         Section entity;
 
-        checkSecurity(ModuleFlags.ADD);
-
-        validate(data);
-
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = new Section();
@@ -155,8 +141,8 @@ public class SectionBean {
         manager.persist(entity);
 
         data.setId(entity.getId());
-        
-        // empty the cache so that it gets refreshed on the next fetch        
+
+        // empty the cache so that it gets refreshed on the next fetch
         secCache.evict();
 
         return data;
@@ -165,44 +151,22 @@ public class SectionBean {
     public SectionDO update(SectionDO data) throws Exception {
         Section entity;
 
-        if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.SECTION, data.getId());
+        if ( !data.isChanged())
             return data;
-        }
-        checkSecurity(ModuleFlags.UPDATE);
 
-        validate(data);
-
-        lock.validateLock(ReferenceTable.SECTION, data.getId());
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Section.class, data.getId());
 
         // need to remove it before we change it
         secCache.evict();
-        
+
         entity.setDescription(data.getDescription());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setName(data.getName());
         entity.setIsExternal(data.getIsExternal());
         entity.setParentSectionId(data.getParentSectionId());
 
-        lock.unlock(ReferenceTable.SECTION, data.getId());
-
         return data;
-    }
-
-    public SectionViewDO fetchForUpdate(Integer id) throws Exception {
-        try {
-            lock.lock(ReferenceTable.SECTION, id);
-            return fetchById(id);
-        } catch (NotFoundException e) {
-            throw new DatabaseException(e);
-        }
-    }
-
-    public SectionViewDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.SECTION, id);
-        return fetchById(id);
     }
 
     public void validate(SectionDO data) throws Exception {
@@ -217,22 +181,25 @@ public class SectionBean {
         name = data.getName();
         exceptionList = new ValidationErrorsList();
         if (name == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException", SectionMeta.getName()));
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                      SectionMeta.getName()));
         } else {
             query = manager.createNamedQuery("Section.FetchByName");
             query.setParameter("name", name);
             list = query.getResultList();
-            for (i = 0; i < list.size(); i++) {
+            for (i = 0; i < list.size(); i++ ) {
                 sectDO = list.get(i);
-                if(!sectDO.getId().equals(data.getId())) {
-                    exceptionList.add(new FieldErrorException("fieldUniqueException", SectionMeta.getName()));
+                if ( !sectDO.getId().equals(data.getId())) {
+                    exceptionList.add(new FieldErrorException("fieldUniqueException",
+                                                              SectionMeta.getName()));
                     break;
                 }
             }
         }
 
-        if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null) 
-            exceptionList.add(new FieldErrorException("orgNotSpecForExtSectionException", null));        
+        if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null)
+            exceptionList.add(new FieldErrorException("orgNotSpecForExtSectionException",
+                                                      null));
 
         psecId = data.getParentSectionId();
         if (psecId != null && psecId.equals(data.getId())) {
@@ -242,9 +209,5 @@ public class SectionBean {
 
         if (exceptionList.size() > 0)
             throw exceptionList;
-    }
-
-    private void checkSecurity(ModuleFlags flag) throws Exception {
-        userCache.applyPermission("section", flag);
     }
 }

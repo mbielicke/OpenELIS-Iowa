@@ -44,9 +44,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -154,16 +153,16 @@ public class InventoryXPut implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.INVENTORY_X_PUT);
+        audit.setReferenceTableId(Constants.table().INVENTORY_X_PUT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_receipt_id", inventoryReceiptId, original.inventoryReceiptId, ReferenceTable.INVENTORY_X_PUT)
-                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId, ReferenceTable.INVENTORY_LOCATION)
+                 .setField("inventory_receipt_id", inventoryReceiptId, original.inventoryReceiptId, Constants.table().INVENTORY_X_PUT)
+                 .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId, Constants.table().INVENTORY_LOCATION)
                  .setField("quantity", quantity, original.quantity);
 
         return audit;

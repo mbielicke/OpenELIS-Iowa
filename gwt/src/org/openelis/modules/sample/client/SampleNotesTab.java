@@ -27,7 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
@@ -73,7 +73,6 @@ public class SampleNotesTab extends NotesTab {
         this.internalEditButtonKey = internalEditButtonKey;
 
         initialize();
-        initializeDropdowns();
     }
 
     // overrides the notetab initialize to control the external notes button
@@ -214,15 +213,6 @@ public class SampleNotesTab extends NotesTab {
     }
 
     private boolean canEdit() {
-        return (sampleManager != null && !sampleReleasedId.equals(sampleManager.getSample().getStatusId()));
-    }
-    
-    private void initializeDropdowns() {
-        try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
+        return (sampleManager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(sampleManager.getSample().getStatusId()));
     }
 }

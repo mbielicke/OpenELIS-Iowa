@@ -40,9 +40,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -124,15 +123,15 @@ public class StorageUnit implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.STORAGE_UNIT);
+        audit.setReferenceTableId(Constants.table().STORAGE_UNIT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("category_id", categoryId, original.categoryId, ReferenceTable.DICTIONARY)
+                 .setField("category_id", categoryId, original.categoryId, Constants.table().DICTIONARY)
                  .setField("description", description, original.description)
                  .setField("is_singular", isSingular, original.isSingular);
 

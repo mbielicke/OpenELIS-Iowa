@@ -29,12 +29,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -117,7 +116,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     private boolean                   quickUpdate;
     private SampleManager             manager, previousManager;
     protected Tabs                    tab;
-    private Integer                   sampleReleasedId;
     private SDWISSampleLoginScreen    screen;
     private SampleItemAnalysisTreeTab treeTab;
     private SDWISTab                  sdwisTab;
@@ -138,12 +136,13 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     protected TextBox<Datetime>       collectedTime;
     protected Dropdown<Integer>       statusId;
     protected CalendarLookUp          collectedDate, receivedDate;
-    protected MenuItem                duplicate, historySample, historySampleSdwis, historySampleOrganization,
-                                      historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
-                                      historySampleQA, historyAnalysisQA, historyAuxData;
+    protected MenuItem                duplicate, historySample, historySampleSdwis,
+                    historySampleOrganization, historySampleItem, historyAnalysis,
+                    historyCurrentResult, historyStorage, historySampleQA,
+                    historyAnalysisQA, historyAuxData;
 
-    protected AppButton               queryButton, addButton, updateButton, nextButton, prevButton,
-                                      commitButton, abortButton, orderLookup;
+    protected AppButton               queryButton, addButton, updateButton, nextButton,
+                    prevButton, commitButton, abortButton, orderLookup;
     protected TabPanel                tabs;
 
     private ScreenNavigator           nav;
@@ -153,16 +152,17 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     private StandardNoteDO            autoNote;
 
     private enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA
+        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE,
+        QA_EVENTS, AUX_DATA
     };
 
     public SDWISSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SDWISSampleLoginDef.class));
-        
+
         userPermission = UserCache.getPermission().getModule("samplesdwis");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "SDWIS Sample Login Screen");
+            throw new PermissionException("screenPermException",
+                                          "SDWIS Sample Login Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -181,15 +181,22 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
         quickUpdate = false;
-        
+
         try {
-            CategoryCache.getBySystemNames("sample_status", "analysis_status",
-                                           "type_of_sample", "source_of_sample",
-                                           "sample_container", "unit_of_measure",
-                                           "qaevent_type", "aux_field_value_type",
-                                           "organization_type", "user_action",
-                                           "sdwis_lead_sample_type", "worksheet_status",
-                                           "sdwis_repeat_code", "sdwis_sample_category",
+            CategoryCache.getBySystemNames("sample_status",
+                                           "analysis_status",
+                                           "type_of_sample",
+                                           "source_of_sample",
+                                           "sample_container",
+                                           "unit_of_measure",
+                                           "qaevent_type",
+                                           "aux_field_value_type",
+                                           "organization_type",
+                                           "user_action",
+                                           "sdwis_lead_sample_type",
+                                           "worksheet_status",
+                                           "sdwis_repeat_code",
+                                           "sdwis_sample_category",
                                            "sdwis_sample_type");
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -198,7 +205,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         initialize();
         initializeDropdowns();
-        
+
         setDataInTabs();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
@@ -306,7 +313,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                           .contains(event.getState()));
             }
         });
-        
+
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -341,7 +348,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleSdwis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySampleSdwis.enable(EnumSet.of(State.DISPLAY)
+                                                 .contains(event.getState()));
             }
         });
 
@@ -366,7 +374,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleItem.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySampleItem.enable(EnumSet.of(State.DISPLAY)
+                                                .contains(event.getState()));
             }
         });
 
@@ -378,7 +387,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyAnalysis.enable(EnumSet.of(State.DISPLAY)
+                                              .contains(event.getState()));
             }
         });
 
@@ -387,17 +397,19 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             public void onClick(ClickEvent event) {
                 historyUtility.setManager(manager);
                 /*
-                 * Since the analyses shown on this screen are managed by SampleItemAnalysisTreeTab,
-                 * this screen has no knowledge of the analysis selected by the user
-                 * to see the history of its results. So an ActionEvent is fired
-                 * so that SampleItemAnalysisTreeTab can find the desired analysis
-                 * and show the history.
+                 * Since the analyses shown on this screen are managed by
+                 * SampleItemAnalysisTreeTab, this screen has no knowledge of
+                 * the analysis selected by the user to see the history of its
+                 * results. So an ActionEvent is fired so that
+                 * SampleItemAnalysisTreeTab can find the desired analysis and
+                 * show the history.
                  */
                 ActionEvent.fire(screen, ResultTab.Action.RESULT_HISTORY, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyCurrentResult.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyCurrentResult.enable(EnumSet.of(State.DISPLAY)
+                                                   .contains(event.getState()));
             }
         });
 
@@ -409,7 +421,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyStorage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyStorage.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -421,7 +434,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historySampleQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historySampleQA.enable(EnumSet.of(State.DISPLAY)
+                                              .contains(event.getState()));
             }
         });
 
@@ -433,7 +447,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyAnalysisQA.enable(EnumSet.of(State.DISPLAY)
+                                                .contains(event.getState()));
             }
         });
 
@@ -445,18 +460,20 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                historyAuxData.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                historyAuxData.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
+                accessionNumber.setValue(Util.toString(manager.getSample()
+                                                              .getAccessionNumber()));
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                Integer       oldNumber, orderId;
+                Integer oldNumber, orderId;
                 SampleManager quickEntryMan;
 
                 oldNumber = manager.getSample().getAccessionNumber();
@@ -466,7 +483,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                         accessionNumber.setValue(Util.toString(oldNumber));
                         setFocus(accessionNumber);
                         return;
-                    } else if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                    } else if ( !Window.confirm(consts.get("accessionNumberEditConfirm"))) {
                         accessionNumber.setValue(Util.toString(oldNumber));
                         setFocus(accessionNumber);
                         return;
@@ -480,7 +497,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
                     window.setBusy(consts.get("fetching"));
                     quickEntryMan = accessionNumUtil.validateAccessionNumber(manager.getSample());
-                    
+
                     if (quickEntryMan == null) {
                         window.clearStatus();
                         return;
@@ -492,41 +509,41 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                         window.clearStatus();
                         return;
                     }
-                    
-                        if (state == State.ADD) {
-                            orderId = manager.getSample().getOrderId();
-                            if (orderId != null) {
-                                SampleMergeUtility.mergeTests(manager, quickEntryMan);
-                                manager.setSample(quickEntryMan.getSample());
-                                manager.getSample().setOrderId(orderId);
-                            } else {
-                                manager = quickEntryMan;
-                            }
-                            
-                            manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-                            manager.createEmptyDomainManager();
-                            
-                            /*
-                             * We add the standard note, if any, defined through
-                             * a system variable for this domain, because it isn't 
-                             * present in the manager fetched from the back-end. 
-                             */
-                            setDefaults();
-                            DeferredCommand.addCommand(new Command() {
-                                public void execute() {
-                                    setFocus(null);
-                                    setDataInTabs();
-                                    setState(State.UPDATE);
-                                    DataChangeEvent.fire(screen);
-                                    window.clearStatus();
-                                    quickUpdate = true;
-                                }
-                            });
+
+                    if (state == State.ADD) {
+                        orderId = manager.getSample().getOrderId();
+                        if (orderId != null) {
+                            SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                            manager.setSample(quickEntryMan.getSample());
+                            manager.getSample().setOrderId(orderId);
                         } else {
-                            quickEntryMan.abortUpdate();
-                            window.clearStatus();
-                            throw new Exception(consts.get("quickEntryNumberExists"));
+                            manager = quickEntryMan;
                         }
+
+                        manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+                        manager.createEmptyDomainManager();
+
+                        /*
+                         * We add the standard note, if any, defined through a
+                         * system variable for this domain, because it isn't
+                         * present in the manager fetched from the back-end.
+                         */
+                        setDefaults();
+                        DeferredCommand.addCommand(new Command() {
+                            public void execute() {
+                                setFocus(null);
+                                setDataInTabs();
+                                setState(State.UPDATE);
+                                DataChangeEvent.fire(screen);
+                                window.clearStatus();
+                                quickUpdate = true;
+                            }
+                        });
+                    } else {
+                        quickEntryMan.abortUpdate();
+                        window.clearStatus();
+                        throw new Exception(consts.get("quickEntryNumberExists"));
+                    }
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                     accessionNumber.setValue(Util.toString(oldNumber));
@@ -543,7 +560,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(event.getState() == State.QUERY ||
-                                       (canEdit() && EnumSet.of(State.ADD).contains(event.getState())));
+                                       (canEdit() && EnumSet.of(State.ADD)
+                                                            .contains(event.getState())));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -565,20 +583,20 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        orderNumber.addKeyDownHandler(new KeyDownHandler() {            
+
+        orderNumber.addKeyDownHandler(new KeyDownHandler() {
             public void onKeyDown(KeyDownEvent event) {
                 Integer orderId, prevOrderId;
-                
-                if (canCopyFromPrevious(event)) { 
+
+                if (canCopyFromPrevious(event)) {
                     orderId = manager.getSample().getOrderId();
                     prevOrderId = previousManager.getSample().getOrderId();
                     /*
                      * we don't want to incur the cost of importing the order if
-                     * the order id in the previous manager is the same as the 
-                     * one in the current manager 
+                     * the order id in the previous manager is the same as the
+                     * one in the current manager
                      */
-                    if (!DataBaseUtil.isSame(orderId, prevOrderId)) {
+                    if ( !DataBaseUtil.isSame(orderId, prevOrderId)) {
                         importOrder(prevOrderId);
                         orderNumber.setValue(Util.toString(prevOrderId));
                     }
@@ -588,7 +606,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 }
             }
         });
-        
+
         orderLookup = (AppButton)def.getWidget("orderButton");
         addScreenHandler(orderLookup, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -619,16 +637,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        collectedDate.addKeyDownHandler(new KeyDownHandler() {            
+
+        collectedDate.addKeyDownHandler(new KeyDownHandler() {
             public void onKeyDown(KeyDownEvent event) {
                 if (canCopyFromPrevious(event)) {
                     Datetime dt;
-                    
+
                     dt = previousManager.getSample().getCollectionDate();
                     manager.getSample().setCollectionDate(dt);
                     collectedDate.setValue(dt);
-                    
+
                     event.preventDefault();
                     event.stopPropagation();
                     setFocusToNext(collectedDate);
@@ -648,21 +666,22 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                         .contains(event.getState()));
+                collectedTime.enable(canEdit() &&
+                                     EnumSet.of(State.ADD, State.UPDATE)
+                                            .contains(event.getState()));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        collectedTime.addKeyDownHandler(new KeyDownHandler() {            
+
+        collectedTime.addKeyDownHandler(new KeyDownHandler() {
             public void onKeyDown(KeyDownEvent event) {
                 if (canCopyFromPrevious(event)) {
                     Datetime dt;
-                    
+
                     dt = previousManager.getSample().getCollectionTime();
                     manager.getSample().setCollectionTime(dt);
                     collectedTime.setValue(dt);
-                    
+
                     event.preventDefault();
                     event.stopPropagation();
                     setFocusToNext(collectedTime);
@@ -687,16 +706,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        receivedDate.addKeyDownHandler(new KeyDownHandler() {            
+
+        receivedDate.addKeyDownHandler(new KeyDownHandler() {
             public void onKeyDown(KeyDownEvent event) {
                 if (canCopyFromPrevious(event)) {
                     Datetime dt;
-                    
+
                     dt = previousManager.getSample().getReceivedDate();
                     manager.getSample().setReceivedDate(dt);
                     receivedDate.setValue(dt);
-                    
+
                     event.preventDefault();
                     event.stopPropagation();
                     setFocusToNext(receivedDate);
@@ -737,16 +756,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
-        
-        clientReference.addKeyDownHandler(new KeyDownHandler() {            
+
+        clientReference.addKeyDownHandler(new KeyDownHandler() {
             public void onKeyDown(KeyDownEvent event) {
-                if (canCopyFromPrevious(event)) {  
+                if (canCopyFromPrevious(event)) {
                     String cr;
-                    
+
                     cr = previousManager.getSample().getClientReference();
                     manager.getSample().setClientReference(cr);
                     clientReference.setValue(cr);
-                    
+
                     event.preventDefault();
                     event.stopPropagation();
                     setFocusToNext(clientReference);
@@ -767,16 +786,17 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 treeTab.setState(event.getState());
             }
         });
-        
+
         /*
-         * This handler would be invoked when the tree in the tree tab needs to be
-         * refreshed due to new prep tests being added e.g. on importing an order.
-         * The handler above isn't used for this purpose because it responds to 
-         * the DataChangeEvent fired by this screen and not by the tree utility.
-         * The utility doesn't make a DataChangeEvent be fired by the screen because
-         * the above handler would be invoked and it would need to reset the manager
-         * in the tab, which is not the desired default behavior. The data in the 
-         * tab in the default case is set by setDataInTabs() due to other issues. 
+         * This handler would be invoked when the tree in the tree tab needs to
+         * be refreshed due to new prep tests being added e.g. on importing an
+         * order. The handler above isn't used for this purpose because it
+         * responds to the DataChangeEvent fired by this screen and not by the
+         * tree utility. The utility doesn't make a DataChangeEvent be fired by
+         * the screen because the above handler would be invoked and it would
+         * need to reset the manager in the tab, which is not the desired
+         * default behavior. The data in the tab in the default case is set by
+         * setDataInTabs() due to other issues.
          */
         treeTab.getTreeUtil().addScreenHandler(screen, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -841,8 +861,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         });
 
-        analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton",
-                                                "anIntNotesPanel", "anIntNoteButton");
+        analysisNotesTab = new AnalysisNotesTab(def,
+                                                window,
+                                                "anExNotesPanel",
+                                                "anExNoteButton",
+                                                "anIntNotesPanel",
+                                                "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 if (tab == Tabs.ANALYSIS_NOTES)
@@ -854,8 +878,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         });
 
-        sampleNotesTab = new SampleNotesTab(def, window, "sampleExtNotesPanel",
-                                            "sampleExtNoteButton", "sampleIntNotesPanel",
+        sampleNotesTab = new SampleNotesTab(def,
+                                            window,
+                                            "sampleExtNotesPanel",
+                                            "sampleExtNoteButton",
+                                            "sampleIntNotesPanel",
                                             "sampleIntNoteButton");
         addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -915,7 +942,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     storageTab.setData(data);
                     qaEventsTab.setData(data);
                     auxDataTab.setManager(manager);
-                    
+
                     drawTabs();
                 }
             }
@@ -930,15 +957,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if (state != State.QUERY && event.getAction() != AnalysisTab.Action.UNIT_CHANGED)
+                if (state != State.QUERY &&
+                    event.getAction() != AnalysisTab.Action.UNIT_CHANGED)
                     ActionEvent.fire(screen, event.getAction(), event.getData());
             }
         });
-        
+
         /*
-         * The action UNIT_CHANGED fired by AnalysisTab affects only ResultTab and
-         * no other so it doesn't need to be processed by the above handler which
-         * makes SampleItemAnalysisTreeTab to respond to those actions.
+         * The action UNIT_CHANGED fired by AnalysisTab affects only ResultTab
+         * and no other so it doesn't need to be processed by the above handler
+         * which makes SampleItemAnalysisTreeTab to respond to those actions.
          */
         analysisTab.addActionHandler(testResultsTab);
 
@@ -976,20 +1004,20 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                         setQueryResult(result);
                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
-                        } else {
-                            Window.alert("Error: envsample call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError("No more records in this direction");
+                                         } else {
+                                             Window.alert("Error: envsample call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(IdAccessionVO entry) {
@@ -1004,12 +1032,13 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 model = new ArrayList<TableDataRow>();
                 if (result != null) {
                     for (IdAccessionVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getAccessionNumber()));
+                        model.add(new TableDataRow(entry.getId(),
+                                                   entry.getAccessionNumber()));
                 }
                 return model;
             }
         };
-        
+
         //
         // screen fields
         //
@@ -1061,7 +1090,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         // default the form
         try {
             manager.setDefaults();
-            manager.getSample().setReceivedById(UserCache.getPermission().getSystemUserId());
+            manager.getSample().setReceivedById(UserCache.getPermission()
+                                                         .getSystemUserId());
             setDefaults();
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1080,7 +1110,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         try {
             manager = manager.fetchForUpdate();
-            
+
             setDataInTabs();
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -1095,7 +1125,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     protected void commit() {
         Query query;
         ArrayList<QueryData> queryFields;
-        
+
         setFocus(null);
         clearErrors();
         manager.setStatusWithError(false);
@@ -1108,7 +1138,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         if (state == State.QUERY) {
             queryFields = getQueryFields();
             query = new Query();
-            query.setFields(queryFields);            
+            query.setFields(queryFields);
 
             nav.setQuery(query);
         } else if (state == State.ADD) {
@@ -1196,7 +1226,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         if (state == State.QUERY) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-            
+
             setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
@@ -1205,7 +1235,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         } else if (state == State.ADD) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-            
+
             setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
@@ -1218,7 +1248,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
                     manager = SampleManager.getInstance();
                     manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
-                    
+
                     setDataInTabs();
                     setState(State.DEFAULT);
                 } else {
@@ -1238,29 +1268,29 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.clearStatus();
         }
     }
-    
-    protected void duplicate() {       
+
+    protected void duplicate() {
         try {
             window.setBusy(consts.get("fetching"));
             manager = SampleManager.fetchWithAllDataById(manager.getSample().getId());
-            if (!SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+            if ( !SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
                 Window.alert(consts.get("sampleDomainChangedException"));
                 abort();
                 return;
             }
-            
-            previousManager = manager;
-            manager = SampleDuplicateUtil.duplicate(manager);            
 
-            setDataInTabs();            
-            setState(State.ADD);            
-            
+            previousManager = manager;
+            manager = SampleDuplicateUtil.duplicate(manager);
+
+            setDataInTabs();
+            setState(State.ADD);
+
             treeTab.draw();
             sdwisTab.draw();
             storageTab.draw();
             auxDataTab.draw();
             sampleNotesTab.draw();
-            
+
             DataChangeEvent.fire(this);
 
             setFocus(accessionNumber);
@@ -1268,10 +1298,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         } catch (Exception e) {
             Window.alert("Sample duplicate: " + e.getMessage());
             e.printStackTrace();
-            abort();  
+            abort();
         }
     }
-    
+
     protected void onOrderLookupClick() {
         Integer id;
         OrderManager man;
@@ -1298,18 +1328,18 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         if (man != null)
             showOrder(man);
     }
-    
+
     private void showOrder(OrderManager orderManager) {
         ScreenWindow modal;
         try {
-                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                modal.setName(consts.get("sendoutOrder"));
-                if (sendoutOrderScreen == null)
-                    sendoutOrderScreen = new SendoutOrderScreen(modal);
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(consts.get("sendoutOrder"));
+            if (sendoutOrderScreen == null)
+                sendoutOrderScreen = new SendoutOrderScreen(modal);
 
-                modal.setContent(sendoutOrderScreen);
-                sendoutOrderScreen.setManager(orderManager);
-                window.clearStatus();
+            modal.setContent(sendoutOrderScreen);
+            sendoutOrderScreen.setManager(orderManager);
+            window.clearStatus();
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -1350,7 +1380,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     public ArrayList<QueryData> getQueryFields() {
-        int                  i;
+        int i;
         ArrayList<QueryData> fields, auxFields;
         QueryData field;
 
@@ -1358,26 +1388,26 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         // add aux data values if necessary
         auxFields = auxDataTab.getQueryFields();
-     
+
         // add the domain
         field = new QueryData();
         field.key = SampleMeta.getDomain();
         field.query = SampleManager.SDWIS_DOMAIN_FLAG;
         field.type = QueryData.Type.STRING;
         fields.add(field);
-        
+
         if (auxFields.size() > 0) {
             // add ref table
             field = new QueryData();
             field.key = SampleMeta.getAuxDataReferenceTableId();
             field.type = QueryData.Type.INTEGER;
-            field.query = String.valueOf(ReferenceTable.SAMPLE);
+            field.query = String.valueOf(Constants.table().SAMPLE);
             fields.add(field);
 
             // add aux fields
-            for (i = 0; i < auxFields.size(); i++ ) {                
-                fields.add(auxFields.get(i));            
-            } 
+            for (i = 0; i < auxFields.size(); i++ ) {
+                fields.add(auxFields.get(i));
+            }
         }
 
         return fields;
@@ -1388,8 +1418,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-
             // sample status dropdown
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
@@ -1401,11 +1429,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             Window.alert(e.getMessage());
             window.close();
         }
-        
+
         try {
             autoNote = StandardNoteService.get().fetchBySystemVariableName("auto_comment_sdwis");
         } catch (NotFoundException nfE) {
-            // ignore not found exceptions since this domain may not have a default note
+            // ignore not found exceptions since this domain may not have a
+            // default note
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1413,9 +1442,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                         .getStatusId()));
     }
-    
+
     private void drawTabs() {
         switch (tab) {
             case SAMPLE_ITEM:
@@ -1444,7 +1474,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 break;
         }
     }
-    
+
     public boolean validate() {
         return super.validate() & storageTab.validate();
     }
@@ -1452,12 +1482,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
     }
-    
+
     private void setDefaults() throws Exception {
         NoteViewDO exn;
-                
-        if (autoNote != null) {                
-            exn = manager.getExternalNote().getEditingNote();            
+
+        if (autoNote != null) {
+            exn = manager.getExternalNote().getEditingNote();
             exn.setIsExternal("Y");
             exn.setText(autoNote.getText());
         }
@@ -1466,25 +1496,24 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     private boolean canCopyFromPrevious(KeyDownEvent event) {
         return (previousManager != null) && event.getNativeKeyCode() == 113;
     }
-    
-    
+
     private void importOrder(Integer orderId) {
         int i;
         Integer orgId;
-        ArrayList<Integer> orgIds; 
+        ArrayList<Integer> orgIds;
         OrderManager man;
         SampleManager quickEntryMan;
         SampleItemManager itemMan;
         SampleOrganizationManager sorgMan;
         SampleSDWISManager orderSDMan, qeSDMan;
         SampleOrganizationViewDO data;
-        ValidationErrorsList errors;        
-        
+        ValidationErrorsList errors;
+
         if (orderId == null) {
             manager.getSample().setOrderId(orderId);
             return;
         }
-        
+
         try {
             if (manager.getSample().getAccessionNumber() == null) {
                 Window.alert(consts.get("enterAccNumBeforeOrderLoad"));
@@ -1493,16 +1522,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             manager.getSample().setOrderId(orderId);
-            
+
             window.setBusy(consts.get("fetching"));
-            
+
             man = OrderManager.fetchById(orderId);
-            if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
-                orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
+            if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                orderNumber.addException(new LocalizedException("orderIdInvalidException"));
                 window.clearStatus();
                 return;
             }
-        } catch (NotFoundException e) {                    
+        } catch (NotFoundException e) {
             orderNumber.addException(new LocalizedException("orderIdInvalidException"));
             window.clearStatus();
             return;
@@ -1511,17 +1540,17 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.clearStatus();
             return;
         }
-                                                       
+
         try {
             if (sdwisOrderImport == null)
                 sdwisOrderImport = new SampleSDWISImportOrder();
-            
+
             quickEntryMan = null;
             if (quickUpdate) {
                 /*
                  * keep track of the manager loaded through quick entry in order
                  * to be able to merge any sample items and tests present in it
-                 * with the ones added from the order                  
+                 * with the ones added from the order
                  */
                 quickEntryMan = manager;
                 manager = SampleManager.getInstance();
@@ -1530,48 +1559,49 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 qeSDMan = ((SampleSDWISManager)quickEntryMan.getDomainManager());
                 orderSDMan = ((SampleSDWISManager)manager.getDomainManager());
                 orderSDMan.setSDWIS(qeSDMan.getSDWIS());
-                
+
                 itemMan = manager.getSampleItems();
-                
-                /* 
-                 * any existing sample items and tests in the manager created through
-                 * quick entry are removed before loading the sample items and tests
-                 * from the order so that after the order has been loaded,  only
-                 * the tests loaded from the order, which are treated as the
-                 * base case for merging the tests, can be present when the two 
-                 * sets of tests are merged later
+
+                /*
+                 * any existing sample items and tests in the manager created
+                 * through quick entry are removed before loading the sample
+                 * items and tests from the order so that after the order has
+                 * been loaded, only the tests loaded from the order, which are
+                 * treated as the base case for merging the tests, can be
+                 * present when the two sets of tests are merged later
                  */
                 while (itemMan.count() > 0)
-                    itemMan.removeSampleItemAt(0);                
-                
-                manager.getSample().setNextItemSequence(0);                 
+                    itemMan.removeSampleItemAt(0);
+
+                manager.getSample().setNextItemSequence(0);
             }
-            
+
             errors = sdwisOrderImport.importOrderInfo(orderId, manager);
-            
+
             if (quickEntryMan != null)
                 SampleMergeUtility.mergeTests(manager, quickEntryMan);
-                        
+
             setDataInTabs();
             DataChangeEvent.fire(screen);
             window.clearStatus();
-                
+
             ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, null);
             if (errors != null && errors.size() > 0)
                 showErrors(errors);
 
             /*
-             * check to see if any of the sample organizations has been marked for
-             * holding or refusing samples from 
-             */                       
+             * check to see if any of the sample organizations has been marked
+             * for holding or refusing samples from
+             */
             sorgMan = manager.getOrganizations();
             orgIds = new ArrayList<Integer>();
-            for (i = 0; i < sorgMan.count(); i++) {
+            for (i = 0; i < sorgMan.count(); i++ ) {
                 data = sorgMan.getOrganizationAt(i);
                 orgId = data.getOrganizationId();
-                if (!orgIds.contains(orgId)) {
-                    if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
-                        Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ data.getOrganizationName()+"'");
+                if ( !orgIds.contains(orgId)) {
+                    if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId))
+                        Window.alert(consts.get("orgMarkedAsHoldRefuseSample") + "'" +
+                                     data.getOrganizationName() + "'");
                     orgIds.add(orgId);
                 }
             }
@@ -1580,24 +1610,29 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             window.clearStatus();
         }
     }
-    
+
     private void setFocusToNext(Widget currWidget) {
         NativeEvent event;
-        
-        event = Document.get().createKeyPressEvent(false, false, false, false, 
-                                                        KeyCodes.KEY_TAB, KeyCodes.KEY_TAB);        
+
+        event = Document.get().createKeyPressEvent(false,
+                                                   false,
+                                                   false,
+                                                   false,
+                                                   KeyCodes.KEY_TAB,
+                                                   KeyCodes.KEY_TAB);
         KeyPressEvent.fireNativeEvent(event, currWidget);
     }
-    
+
     /**
-     * If the status of the sample showing on the screen is changed from Released to
-     * something else and on changing the state, the status stays Released and the
-     *  widgets in the tabs stay disabled. Also, if the status changes from something
-     * else to Released, the widgets are not disabled. This is because the data 
-     * in the tabs is set in their handlers of DataChangeEvent which is fired after
-     * StateChangeEvent and the handlers of the latter in the widgets are responsible
-     * for enabling or disabling the widgets. That is why we need to set the data
-     * in the tabs before changing the state.
+     * If the status of the sample showing on the screen is changed from
+     * Released to something else and on changing the state, the status stays
+     * Released and the widgets in the tabs stay disabled. Also, if the status
+     * changes from something else to Released, the widgets are not disabled.
+     * This is because the data in the tabs is set in their handlers of
+     * DataChangeEvent which is fired after StateChangeEvent and the handlers of
+     * the latter in the widgets are responsible for enabling or disabling the
+     * widgets. That is why we need to set the data in the tabs before changing
+     * the state.
      */
     private void setDataInTabs() {
         treeTab.setData(manager);

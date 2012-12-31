@@ -73,7 +73,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -245,14 +244,14 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.AUXDATA)) {
-            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addAuxilliary(sm, data);
             }
         }
 
         if (el.contains(SampleManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addSampleNote(sm, data);
             }
@@ -273,7 +272,8 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids2, ReferenceTable.SAMPLE_ITEM)) {
+            for (StorageViewDO data : storage.fetchByIds(ids2,
+                                                         Constants.table().SAMPLE_ITEM)) {
                 sm = map2.get(data.getReferenceId());
                 addStorage(sm, data);
             }
@@ -296,7 +296,7 @@ public class SampleManager1Bean {
         map2 = null;
 
         if (el.contains(SampleManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addAnalysisNote(sm, data);
             }
@@ -310,7 +310,7 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
+            for (StorageViewDO data : storage.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addStorage(sm, data);
             }
@@ -379,7 +379,8 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids2, ReferenceTable.SAMPLE_ITEM)) {
+            for (StorageViewDO data : storage.fetchByIds(ids2,
+                                                         Constants.table().SAMPLE_ITEM)) {
                 sm = map2.get(data.getReferenceId());
                 addStorage(sm, data);
             }
@@ -436,14 +437,14 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.AUXDATA)) {
-            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addAuxilliary(sm, data);
             }
         }
 
         if (el.contains(SampleManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addSampleNote(sm, data);
             }
@@ -466,7 +467,7 @@ public class SampleManager1Bean {
         map2 = null;
 
         if (el.contains(SampleManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addAnalysisNote(sm, data);
             }
@@ -480,7 +481,7 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
+            for (StorageViewDO data : storage.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addStorage(sm, data);
             }
@@ -562,7 +563,7 @@ public class SampleManager1Bean {
      */
     public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds,
                                                     SampleManager1.Load... elements) throws Exception {
-        lock.lock(ReferenceTable.SAMPLE, sampleIds);
+        lock.lock(Constants.table().SAMPLE, sampleIds);
         return fetchByIds(sampleIds, elements);
     }
 
@@ -578,7 +579,7 @@ public class SampleManager1Bean {
         for (SampleItemViewDO data : item.fetchByAnalysisIds(analysisIds))
             ids.add(data.getSampleId());
 
-        lock.lock(ReferenceTable.SAMPLE, ids);
+        lock.lock(Constants.table().SAMPLE, ids);
         return fetchByAnalyses(analysisIds, elements);
     }
 
@@ -619,13 +620,13 @@ public class SampleManager1Bean {
 
         if (el.contains(SampleManager1.Load.AUXDATA)) {
             setAuxilliary(sm, null);
-            for (AuxDataViewDO data : auxdata.fetchByIds(ids, ReferenceTable.SAMPLE))
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids, Constants.table().SAMPLE))
                 addAuxilliary(sm, data);
         }
 
         if (el.contains(SampleManager1.Load.NOTE)) {
             setSampleNotes(sm, null);
-            for (NoteViewDO data : note.fetchByIds(ids, ReferenceTable.SAMPLE))
+            for (NoteViewDO data : note.fetchByIds(ids, Constants.table().SAMPLE))
                 addSampleNote(sm, data);
         }
 
@@ -637,7 +638,8 @@ public class SampleManager1Bean {
             for (SampleItemViewDO data : getItems(sm))
                 ids.add(data.getId());
             setStorages(sm, null);
-            for (StorageViewDO data : storage.fetchByIds(ids, ReferenceTable.SAMPLE_ITEM))
+            for (StorageViewDO data : storage.fetchByIds(ids,
+                                                         Constants.table().SAMPLE_ITEM))
                 addStorage(sm, data);
         }
 
@@ -650,7 +652,7 @@ public class SampleManager1Bean {
 
         if (el.contains(SampleManager1.Load.NOTE)) {
             setAnalysisNotes(sm, null);
-            for (NoteViewDO data : note.fetchByIds(ids, ReferenceTable.ANALYSIS))
+            for (NoteViewDO data : note.fetchByIds(ids, Constants.table().ANALYSIS))
                 addAnalysisNote(sm, data);
         }
 
@@ -661,7 +663,7 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids, ReferenceTable.ANALYSIS))
+            for (StorageViewDO data : storage.fetchByIds(ids, Constants.table().ANALYSIS))
                 addStorage(sm, data);
         }
 
@@ -731,7 +733,7 @@ public class SampleManager1Bean {
                         DataBaseUtil.mergeException(e, err);
                     }
             }
-            
+
             /*
              * additional domain sample validation for sdwis, private well, ...
              * samples should go here after checking to see if the VO/DO has

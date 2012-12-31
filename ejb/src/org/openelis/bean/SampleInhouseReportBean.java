@@ -79,7 +79,7 @@ public class SampleInhouseReportBean {
     private SectionCacheBean section;
 
     @EJB
-    private DictionaryBean  dictionary;
+    private CategoryCacheBean categoryCache;
 
     @EJB
     private ProjectBean     project;
@@ -349,7 +349,7 @@ public class SampleInhouseReportBean {
         l.add(new OptionListItem("", ""));
         statusDO = new ArrayList<DictionaryDO>();
         try {
-            statusDO = dictionary.fetchByCategorySystemName("analysis_status");
+            statusDO = categoryCache.getBySystemName("analysis_status").getDictionaryList();
             for (DictionaryDO n : statusDO)
                 l.add(new OptionListItem(n.getId().toString(), n.getEntry().toString()));
         } catch (Exception e) {

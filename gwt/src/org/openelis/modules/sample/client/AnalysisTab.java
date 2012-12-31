@@ -35,6 +35,7 @@ import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -137,12 +138,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleDataBundle                          bundle;
     protected AnalysisViewDO                            analysis;
     protected SampleItemViewDO                          sampleItem;
-
-    protected Integer                                   analysisLoggedInId, analysisInitiatedId, 
-                                                        analysisOnHoldId, analysisRequeueId,
-                                                        analysisCompletedId, analysisCancelledId,
-                                                        analysisReleasedId, analysisInPrepId,
-                                                        actionReleasedId;
 
     private Confirm                                     changeTestConfirm;
 
@@ -397,8 +392,10 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 model = statusId.getData();
                 for (i = 0; i < model.size(); i++) {
                     r = model.get(i);
-                    if (!analysisInitiatedId.equals(r.key) && !analysisOnHoldId.equals(r.key) && 
-                        !analysisRequeueId.equals(r.key) && !analysisLoggedInId.equals(r.key) &&
+                    if (!Constants.dictionary().ANALYSIS_INITIATED.equals(r.key) &&
+                        !Constants.dictionary().ANALYSIS_ON_HOLD.equals(r.key) && 
+                        !Constants.dictionary().ANALYSIS_REQUEUE.equals(r.key) &&
+                        !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(r.key) &&
                         !State.QUERY.equals(event.getState())) 
                         r.enabled = false;
                     else
@@ -687,7 +684,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                             anDO = anMan.getAnalysisAt(j);
 
                             if ( !currentId.equals(anDO.getId()) && anDO.getTestName() != null &&
-                                anDO.getTestName().startsWith(match) && !analysisCancelledId.equals(anDO.getStatusId())) {
+                                anDO.getTestName().startsWith(match) && 
+                                !Constants.dictionary().ANALYSIS_CANCELLED.equals(anDO.getStatusId())) {
                                 row = new TableDataRow(
                                                        anDO.getId(),
                                                        anDO.getTestName() +
@@ -788,7 +786,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                         }
                         break;
                     case 1:
-                        if (actionReleasedId.equals(data.getActionId())) {
+                        if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId())) {
                             analysisUserTable.setCell(r, c, data.getActionId());
                             window.setError(consts.get("analysisUserActionException"));
                         } else {
@@ -908,7 +906,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                         return;
                     }
                     
-                    if (!actionReleasedId.equals(action))
+                    if (!Constants.dictionary().AN_USER_AC_RELEASED.equals(action))
                         analysisUserTable.deleteRow(r);  
                     else 
                         window.setError(consts.get("analysisUserActionException"));
@@ -925,20 +923,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         TableDataRow r;
-        try {
-            analysisInitiatedId = DictionaryCache.getIdBySystemName("analysis_initiated"); 
-            analysisOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
-            analysisRequeueId = DictionaryCache.getIdBySystemName("analysis_requeue");
-            analysisCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
-            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-            analysisLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
-            analysisInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
-            actionReleasedId = DictionaryCache.getIdBySystemName("an_user_ac_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
@@ -975,7 +959,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("user_action")) {
             r = new TableDataRow(d.getId(), d.getEntry());
-            if(actionReleasedId.equals(d.getId())) 
+            if(Constants.dictionary().AN_USER_AC_RELEASED.equals(d.getId())) 
                 r.enabled = false;
             model.add(r);
         }
@@ -1133,8 +1117,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             try {
                 sectionVDO = SectionCache.getById(analysis.getSectionId());
                 perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                return !analysisCancelledId.equals(analysis.getStatusId()) &&
-                       !analysisReleasedId.equals(analysis.getStatusId()) &&
+                return !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysis.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId()) &&
                        perm != null &&
                        (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception anyE) {

@@ -34,10 +34,10 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QaEventDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -697,11 +697,11 @@ public class SampleManager1 implements Serializable {
          * specified index.
          */
         public StorageViewDO get(SampleItemViewDO item, int i) {
-            return get(ReferenceTable.SAMPLE_ITEM, item.getId(), i);
+            return get(Constants.table().SAMPLE_ITEM, item.getId(), i);
         }
 
         public StorageViewDO get(AnalysisDO analysis, int i) {
-            return get(ReferenceTable.ANALYSIS, analysis.getId(), i);
+            return get(Constants.table().ANALYSIS, analysis.getId(), i);
         }
 
         protected StorageViewDO get(int tableId, int id, int i) {
@@ -722,11 +722,11 @@ public class SampleManager1 implements Serializable {
          * Returns a new storage location for a sample item or analysis
          */
         public StorageViewDO add(SampleItemViewDO item) {
-            return add(ReferenceTable.SAMPLE_ITEM, item.getId());
+            return add(Constants.table().SAMPLE_ITEM, item.getId());
         }
 
         public StorageViewDO add(AnalysisDO analysis) {
-            return add(ReferenceTable.ANALYSIS, analysis.getId());
+            return add(Constants.table().ANALYSIS, analysis.getId());
         }
 
         protected StorageViewDO add(int tableId, int id) {
@@ -746,11 +746,11 @@ public class SampleManager1 implements Serializable {
          * Removes a storage from sample item or analysis
          */
         public void remove(SampleItemViewDO item, int i) {
-            remove(ReferenceTable.SAMPLE_ITEM, item.getId(), i);
+            remove(Constants.table().SAMPLE_ITEM, item.getId(), i);
         }
 
         public void remove(AnalysisDO analysis, int i) {
-            remove(ReferenceTable.ANALYSIS, analysis.getId(), i);
+            remove(Constants.table().ANALYSIS, analysis.getId(), i);
         }
 
         protected void remove(int tableId, int id, int i) {
@@ -787,11 +787,11 @@ public class SampleManager1 implements Serializable {
          * item or analysis
          */
         public int count(SampleItemViewDO item) {
-            return count(ReferenceTable.SAMPLE_ITEM, item.getId());
+            return count(Constants.table().SAMPLE_ITEM, item.getId());
         }
 
         public int count(AnalysisDO analysis) {
-            return count(ReferenceTable.ANALYSIS, analysis.getId());
+            return count(Constants.table().ANALYSIS, analysis.getId());
         }
 
         protected int count(int tableId, int id) {
@@ -1157,6 +1157,7 @@ public class SampleManager1 implements Serializable {
                 }
             }
         }
+
 
         // /**
         // * Adds a new row. The first column is created from row-analyte data

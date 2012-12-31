@@ -85,7 +85,7 @@ public class SampleProjectBean  {
         return DataBaseUtil.toArrayList(returnList);
     }
 
-    public SampleProjectDO add(SampleProjectDO data) {
+    public SampleProjectDO add(SampleProjectDO data) throws Exception {
         SampleProject entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -101,7 +101,7 @@ public class SampleProjectBean  {
         return data;
     }
 
-    public SampleProjectDO update(SampleProjectDO data) {
+    public SampleProjectDO update(SampleProjectDO data) throws Exception  {
         SampleProject entity;
         
         if (!data.isChanged())
@@ -117,7 +117,7 @@ public class SampleProjectBean  {
         return data;
     }
 
-    public void delete(SampleProjectDO data) {
+    public void delete(SampleProjectDO data) throws Exception {
         SampleProject entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);

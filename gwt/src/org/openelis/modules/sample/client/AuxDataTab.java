@@ -28,10 +28,10 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -78,8 +78,7 @@ public class AuxDataTab extends Screen {
     protected AppButton             addAuxButton, removeAuxButton;
     protected TextBox               auxMethod, auxUnits, auxDesc;
     protected AutoComplete<Integer> ac, auxField;
-    protected Integer               alphaMixedId, dictionaryId, sampleReleasedId; 
-    protected boolean               queryFieldEntered;
+    protected boolean              queryFieldEntered;
     protected HasAuxDataInt         parentMan;
     protected AuxDataManager        manager;
 
@@ -88,7 +87,6 @@ public class AuxDataTab extends Screen {
         setWindow(window);
 
         initialize();
-        initializeDropdowns();
     }
 
     private void initialize() {
@@ -102,7 +100,8 @@ public class AuxDataTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxValsTable.enable(EnumSet.of(State.QUERY, State.DISPLAY).contains(event.getState()) ||
+                auxValsTable.enable(EnumSet.of(State.QUERY, State.DISPLAY)
+                                           .contains(event.getState()) ||
                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                          .contains(event.getState())));
             }
@@ -139,17 +138,17 @@ public class AuxDataTab extends Screen {
 
         auxValsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                int    r, c;
+                int r, c;
                 Object val;
-                
+
                 c = event.getCol();
                 r = event.getRow();
 
                 window.clearStatus();
-                
+
                 if (state == State.QUERY) {
                     val = auxValsTable.getObject(r, c);
-                    
+
                     if (c == 0) {
                         event.cancel();
                     } else if (c == 2 && queryFieldEntered && DataBaseUtil.isEmpty(val)) {
@@ -157,24 +156,24 @@ public class AuxDataTab extends Screen {
                         window.setError(consts.get("auxDataOneQueryException"));
                     }
                 } else if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
-                    if (!canEdit())
+                    if ( !canEdit())
                         event.cancel();
                 } else {
                     event.cancel();
                 }
             }
         });
-        
+
         auxValsTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int             r, c, i;
-                Integer         avId;
-                TableDataRow    row;
-                String          value;
-                AuxDataViewDO   data;
+                int r, c, i;
+                Integer avId;
+                TableDataRow row;
+                String value;
+                AuxDataViewDO data;
                 ResultValidator rv;
                 ArrayList<AuxFieldValueViewDO> values;
-                AuxFieldValueViewDO            valueDO;
+                AuxFieldValueViewDO valueDO;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -202,30 +201,30 @@ public class AuxDataTab extends Screen {
                         break;
                     case 2:
                         auxValsTable.clearCellExceptions(r, c);
-                        if (!DataBaseUtil.isEmpty(value)) {
+                        if ( !DataBaseUtil.isEmpty(value)) {
                             values = manager.getAuxValuesAt(r);
                             row = auxValsTable.getRow(r);
                             rv = (ResultValidator)row.data;
                             try {
                                 avId = rv.validate((Integer)null, value);
                                 data.setValue(rv.getValue((Integer)null, avId, value));
-                                for (i = 0; i < values.size(); i++) {
+                                for (i = 0; i < values.size(); i++ ) {
                                     valueDO = values.get(i);
                                     if (valueDO.getId().equals(avId)) {
                                         data.setTypeId(valueDO.getTypeId());
-                                        if (dictionaryId.equals(valueDO.getTypeId()))
+                                        if (Constants.dictionary().AUX_DICTIONARY.equals(valueDO.getTypeId()))
                                             data.setDictionary(valueDO.getDictionary());
                                         break;
                                     }
                                 }
                             } catch (ParseException e) {
                                 auxValsTable.setCellException(r, c, e);
-                                data.setTypeId(alphaMixedId);
+                                data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
                                 data.setValue(null);
                                 data.setDictionary(null);
                             }
                         } else {
-                            data.setTypeId(alphaMixedId);
+                            data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
                             data.setValue(null);
                             data.setDictionary(null);
                         }
@@ -267,7 +266,7 @@ public class AuxDataTab extends Screen {
         addScreenHandler(removeAuxButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
-                
+
                 r = auxValsTable.getSelectedRow();
                 if (r == -1)
                     return;
@@ -317,12 +316,13 @@ public class AuxDataTab extends Screen {
             }
         });
     }
-    
-    private boolean canEdit() {        
+
+    private boolean canEdit() {
         if (parentMan == null)
             return false;
-        else if (parentMan instanceof SampleManager) 
-            return !sampleReleasedId.equals(((SampleManager)parentMan).getSample().getStatusId());        
+        else if (parentMan instanceof SampleManager)
+            return !Constants.dictionary().SAMPLE_RELEASED.equals( ((SampleManager)parentMan).getSample()
+                                                                                             .getStatusId());
         return true;
     }
 
@@ -348,7 +348,7 @@ public class AuxDataTab extends Screen {
                 row = new TableDataRow(3);
                 row.cells.get(0).setValue(data.getIsReportable());
                 row.cells.get(1).setValue(field.getAnalyteName());
-                if (dictionaryId.equals(data.getTypeId()))
+                if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
                     row.cells.get(2).setValue(data.getDictionary());
                 else
                     row.cells.get(2).setValue(data.getValue());
@@ -368,31 +368,31 @@ public class AuxDataTab extends Screen {
     private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields) {
         ValidationErrorsList errors;
         try {
-            //auxValsTable.fireEvents(false);
+            // auxValsTable.fireEvents(false);
             errors = AuxDataUtil.addAuxGroupsFromAuxFields(fields, manager);
-            DataChangeEvent.fire(this); 
-            //auxValsTable.fireEvents(true);
+            DataChangeEvent.fire(this);
+            // auxValsTable.fireEvents(true);
             if (errors != null && errors.size() > 0)
                 showErrors(errors);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
     }
-    
+
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fieldList;
         AuxFieldViewDO fieldDO;
         TableDataRow row;
         QueryData field;
-        
+
         fieldList = new ArrayList<QueryData>();
 
         for (int i = 0; i < auxValsTable.numRows(); i++ ) {
             row = auxValsTable.getRow(i);
             fieldDO = manager.getAuxFieldAt(i);
 
-            if (row.cells.get(2).value != null) {                                
-                
+            if (row.cells.get(2).value != null) {
+
                 field = new QueryData();
                 field.key = SampleMeta.getAuxDataAuxFieldId();
                 field.type = QueryData.Type.INTEGER;
@@ -409,17 +409,6 @@ public class AuxDataTab extends Screen {
         }
 
         return fieldList;
-    }
-
-    private void initializeDropdowns() {
-        try {
-            alphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
-            dictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");            
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     public void setManager(HasAuxDataInt parentMan) {

@@ -63,11 +63,11 @@ public class QaEventServlet extends RemoteServlet implements QAEventServiceInt {
     }
 
     public QaEventViewDO add(QaEventViewDO data) throws Exception {
-        return qaEvent.add(data);
+        return (QaEventViewDO)qaEvent.add(data);
     }
 
     public QaEventViewDO update(QaEventViewDO data) throws Exception {
-        return qaEvent.update(data);
+        return (QaEventViewDO)qaEvent.update(data);
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {

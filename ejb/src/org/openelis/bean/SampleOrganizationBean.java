@@ -87,7 +87,7 @@ public class SampleOrganizationBean {
         }
     }
     
-    public SampleOrganizationDO add(SampleOrganizationDO data) {
+    public SampleOrganizationDO add(SampleOrganizationDO data) throws Exception {
         SampleOrganization entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -104,7 +104,7 @@ public class SampleOrganizationBean {
         return data;
     }
 
-    public SampleOrganizationDO update(SampleOrganizationDO data) {
+    public SampleOrganizationDO update(SampleOrganizationDO data) throws Exception {
         SampleOrganization entity;
         
         if (!data.isChanged())
@@ -121,7 +121,7 @@ public class SampleOrganizationBean {
         return data;
     }
     
-    public void delete(SampleOrganizationDO data) {
+    public void delete(SampleOrganizationDO data) throws Exception {
         SampleOrganization entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);

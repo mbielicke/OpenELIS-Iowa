@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Util;
@@ -58,7 +58,6 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     };
 
     private boolean             loaded;
-    private Integer             sampleReleasedId;
 
     protected SampleDataBundle  bundle;
     protected SampleItemViewDO  sampleItem;
@@ -208,13 +207,6 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         ArrayList<TableDataRow> model;
         TableDataRow            row;
 
-        try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-
         // sample type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -281,7 +273,6 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     }
 
     public void draw() {
-        if ( !loaded)
             DataChangeEvent.fire(this);
 
         loaded = true;
@@ -289,7 +280,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     
     private boolean canEdit() {
         return (bundle != null && bundle.getSampleManager() != null &&
-                !sampleReleasedId.equals(bundle.getSampleManager().getSample().getStatusId()));
+                !Constants.dictionary().SAMPLE_RELEASED.equals(bundle.getSampleManager().getSample().getStatusId()));
     }
     
     private boolean itemHasReleasedAnalyses() {

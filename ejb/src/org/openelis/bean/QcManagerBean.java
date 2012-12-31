@@ -34,9 +34,9 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
@@ -44,9 +44,7 @@ import org.openelis.manager.QcManager;
 
 @Stateless
 @SecurityDomain("openelis")
-
 @TransactionManagement(TransactionManagementType.BEAN)
-
 public class QcManagerBean {
 
     @Resource
@@ -65,7 +63,7 @@ public class QcManagerBean {
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
         return QcManager.fetchWithAnalytes(id);
     }
-    
+
     public QcManager fetchWithLots(Integer id) throws Exception {
         return QcManager.fetchWithLots(id);
     }
@@ -100,9 +98,9 @@ public class QcManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.QC, man.getQc().getId());
+            lockBean.validateLock(Constants.table().QC, man.getQc().getId());
             man.update();
-            lockBean.unlock(ReferenceTable.QC, man.getQc().getId());
+            lockBean.unlock(Constants.table().QC, man.getQc().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -119,7 +117,7 @@ public class QcManagerBean {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.QC, id);
+            lockBean.lock(Constants.table().QC, id);
             man = fetchById(id);
             ut.commit();
             return man;
@@ -130,52 +128,51 @@ public class QcManagerBean {
     }
 
     public QcManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.QC, id);
+        lockBean.unlock(Constants.table().QC, id);
         return fetchById(id);
     }
-    
+
     public QcManager duplicate(Integer id) throws Exception {
         QcManager oldMan, newMan;
-        
+
         oldMan = fetchById(id);
-        newMan = QcManager.getInstance();      
+        newMan = QcManager.getInstance();
         duplicateQc(oldMan, newMan);
-        
+
         return newMan;
     }
 
     public QcAnalyteManager fetchAnalyteByQcId(Integer id) throws Exception {
         return QcAnalyteManager.fetchByQcId(id);
     }
-    
+
     public QcLotManager fetchLotByQcId(Integer id) throws Exception {
         return QcLotManager.fetchByQcId(id);
     }
-    
+
     private void checkSecurity(ModuleFlags flag) throws Exception {
         userCache.applyPermission("qc", flag);
     }
-    
 
     private void duplicateQc(QcManager oldMan, QcManager newMan) throws Exception {
         QcViewDO oldData, newData;
-        
+
         oldData = oldMan.getQc();
         newData = newMan.getQc();
-        
+
         newData.setName(oldData.getName());
         newData.setTypeId(oldData.getTypeId());
         newData.setInventoryItemId(oldData.getInventoryItemId());
         newData.setSource(oldData.getSource());
         newData.setIsActive(oldData.getIsActive());
-        
+
         duplicateAnalytes(oldMan.getAnalytes(), newMan.getAnalytes());
     }
 
     private void duplicateAnalytes(QcAnalyteManager oldMan, QcAnalyteManager newMan) {
         QcAnalyteViewDO oldData, newData;
-        
-        for (int i = 0; i < oldMan.count(); i++) {
+
+        for (int i = 0; i < oldMan.count(); i++ ) {
             oldData = oldMan.getAnalyteAt(i);
             newData = new QcAnalyteViewDO();
             newData.setSortOrder(oldData.getSortOrder());

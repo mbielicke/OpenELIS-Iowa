@@ -37,8 +37,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.entity.StorageUnit;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -55,11 +55,10 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class StorageUnitBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                   manager;
+    private EntityManager                manager;
 
     @EJB
     private LockBean                       lock;
@@ -100,15 +99,15 @@ public class StorageUnitBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                     throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + StorageUnitMeta.getId() + ", " +
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          StorageUnitMeta.getId() + ", " +
                           StorageUnitMeta.getDescription() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(StorageUnitMeta.getDescription());
@@ -151,14 +150,14 @@ public class StorageUnitBean {
         StorageUnit entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
+            lock.unlock(Constants.table().STORAGE_UNIT, data.getId());
             return data;
         }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.validateLock(Constants.table().STORAGE_UNIT, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -167,14 +166,14 @@ public class StorageUnitBean {
         entity.setDescription(data.getDescription());
         entity.setIsSingular(data.getIsSingular());
 
-        lock.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.unlock(Constants.table().STORAGE_UNIT, data.getId());
 
         return data;
     }
 
     public StorageUnitDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.STORAGE_UNIT, id);
+            lock.lock(Constants.table().STORAGE_UNIT, id);
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
@@ -182,7 +181,7 @@ public class StorageUnitBean {
     }
 
     public StorageUnitDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.STORAGE_UNIT, id);
+        lock.unlock(Constants.table().STORAGE_UNIT, id);
         return fetchById(id);
     }
 
@@ -193,14 +192,14 @@ public class StorageUnitBean {
 
         validateForDelete(data);
 
-        lock.validateLock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.validateLock(Constants.table().STORAGE_UNIT, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(StorageUnit.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lock.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.unlock(Constants.table().STORAGE_UNIT, data.getId());
 
     }
 
@@ -215,7 +214,7 @@ public class StorageUnitBean {
         locations = query.getResultList();
 
         if (locations.size() > 0) {
-            list.add(new FormErrorException("storageUnitDeleteException"));        
+            list.add(new FormErrorException("storageUnitDeleteException"));
             throw list;
         }
     }
@@ -224,21 +223,25 @@ public class StorageUnitBean {
         ValidationErrorsList list;
         String desc;
         ArrayList<IdNameVO> dups;
-        
+
         desc = data.getDescription();
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getCategoryId()))
-            list.add(new FieldErrorException("fieldRequiredException", StorageUnitMeta.getCategoryId()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             StorageUnitMeta.getCategoryId()));
 
         if (DataBaseUtil.isEmpty(desc)) {
-            list.add(new FieldErrorException("fieldRequiredException", StorageUnitMeta.getDescription()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             StorageUnitMeta.getDescription()));
         } else {
             dups = fetchByDescription(desc, 1);
-            if(dups.size() > 0 && DataBaseUtil.isDifferent(dups.get(0).getId(), data.getId())) 
-                list.add(new FieldErrorException("fieldUniqueException", StorageUnitMeta.getDescription()));            
-        } 
-            
+            if (dups.size() > 0 &&
+                DataBaseUtil.isDifferent(dups.get(0).getId(), data.getId()))
+                list.add(new FieldErrorException("fieldUniqueException",
+                                                 StorageUnitMeta.getDescription()));
+        }
+
         if (list.size() > 0)
             throw list;
     }

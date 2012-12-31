@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -110,10 +111,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     protected SampleDataBundle                      bundle;
     private Screen                                  parentScreen;
 
-    private Integer                                 analysisCancelledId, analysisReleasedId,
-                                                    testAnalyteReadOnlyId, testAnalyteRequiredId,
-                                                    addedTestAnalyteId, addedAnalyteId, 
-                                                    typeDictionary, sampleReleasedId;
+    private Integer                                 addedTestAnalyteId, addedAnalyteId;
     private String                                  addedAnalyteName;
 
     private TestReflexUtility                       reflexTestUtil;
@@ -125,7 +123,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         this.parentScreen = parentScreen;
 
         initialize();
-        initializeDropdowns();
     }
 
     public ResultTab() throws Exception {
@@ -133,7 +130,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
         // Setup link between Screen and widget Handlers
         initialize();
-        initializeDropdowns();
         popoutTable.setVisible(false);
         // Initialize Screen
         setState(State.DEFAULT);
@@ -206,7 +202,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     addResultButton.enable(true);
                     suggestionsButton.enable(true);
 
-                    if (testAnalyteRequiredId.equals(data.getTestAnalyteTypeId()))
+                    if (Constants.dictionary().TEST_ANALYTE_REQ.equals(data.getTestAnalyteTypeId()))
                         removeResultButton.enable(false);
                     else
                         removeResultButton.enable(true);
@@ -293,7 +289,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         window.setError(consts.get("testAnalyteDefinitionChanged"));
                         event.cancel();
                         enableButton = false;
-                    } else if (testAnalyteReadOnlyId.equals(testAnalyte.getTypeId()) && c > 0) {
+                    } else if (Constants.dictionary().TEST_ANALYTE_READ_ONLY.equals(testAnalyte.getTypeId()) && c > 0) {
                         event.cancel();
                         enableButton = false;
                     } else if (analysis.getUnitOfMeasureId() == null &&
@@ -352,7 +348,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                                                         testResultId, val);
                         data.setValue(val);
 
-                        if ( !typeDictionary.equals(testResult.getTypeId()))
+                        if ( !Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(testResult.getTypeId()))
                             testResultsTable.setCell(row, col, val);
 
                         if (reflexTestUtil == null) {
@@ -432,7 +428,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                             data.setTestResultId(testResult.getId());
                             data.setValue(val);
 
-                            if (typeDictionary.equals(testResult.getTypeId()))
+                            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(testResult.getTypeId()))
                                 val = DictionaryCache.getById(Integer.parseInt(val))
                                                      .getEntry();
 
@@ -786,7 +782,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                      * that gets set in the cell for the type dictionary is the
                      * id of the record and not the entry 
                      */
-                    if (!typeDictionary.equals(data.getTypeId())) {
+                    if (!Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
                         row.cells.get(c+2).setValue(val);
                     } else {
                         entry = DictionaryCache.getById(Integer.parseInt(val)).getEntry();
@@ -832,7 +828,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                          * was called, and we have to perform the check for the type
                          * again to set the appropriate value.    
                          */
-                        if ( !typeDictionary.equals(data.getTypeId())) {
+                        if ( !Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
                             row.cells.get(c+2).setValue(val);
                         } else {
                             entry = DictionaryCache.getById(Integer.parseInt(val)).getEntry();
@@ -1004,28 +1000,14 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         }
     }
 
-    private void initializeDropdowns() {
-        try {
-            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-            testAnalyteReadOnlyId = DictionaryCache.getIdBySystemName("test_analyte_read_only");
-            testAnalyteRequiredId = DictionaryCache.getIdBySystemName("test_analyte_req");
-            typeDictionary = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-    }
-
     private boolean canEdit() {
         return (bundle != null && bundle.getSampleManager() != null &&
-                !sampleReleasedId.equals(bundle.getSampleManager().getSample().getStatusId()));
+                !Constants.dictionary().SAMPLE_RELEASED.equals(bundle.getSampleManager().getSample().getStatusId()));
     }
     
     private boolean canEditAnalysis() {
-        return (!analysisReleasedId.equals(analysis.getStatusId()) &&
-                !analysisCancelledId.equals(analysis.getStatusId()));
+        return (!Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId()) &&
+                !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysis.getStatusId()));
     }
     
     private boolean onlyRowUnderHeading(int index) {

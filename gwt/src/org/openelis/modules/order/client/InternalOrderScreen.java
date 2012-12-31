@@ -29,13 +29,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -79,25 +78,24 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InternalOrderScreen extends Screen {
-    private OrderManager      manager;
-    private ModulePermission  userPermission;
+    private OrderManager     manager;
+    private ModulePermission userPermission;
 
-    private ButtonGroup       atoz;
-    private ScreenNavigator   nav;
+    private ButtonGroup      atoz;
+    private ScreenNavigator  nav;
 
-    private ItemTab           itemTab;
-    private FillTab           fillTab;
-    private ShipNoteTab       shipNoteTab;
-    private Tabs              tab;
+    private ItemTab          itemTab;
+    private FillTab          fillTab;
+    private ShipNoteTab      shipNoteTab;
+    private Tabs             tab;
 
-    private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                              commitButton, abortButton;
-    private MenuItem          duplicate, orderHistory, itemHistory;
-    private TextBox           id, neededInDays, requestedBy;
-    private CalendarLookUp    orderedDate;
+    private AppButton        queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton;
+    private MenuItem         duplicate, orderHistory, itemHistory;
+    private TextBox          id, neededInDays, requestedBy;
+    private CalendarLookUp   orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
     private TabPanel          tabPanel;
-    private Integer           status_pending;
 
     private enum Tabs {
         ITEM, FILL, SHIPNOTE
@@ -122,13 +120,15 @@ public class InternalOrderScreen extends Screen {
         manager = OrderManager.getInstance();
 
         try {
-            CategoryCache.getBySystemNames("order_status", "cost_centers",
-                                                         "inventory_store", "inventory_unit");
+            CategoryCache.getBySystemNames("order_status",
+                                           "cost_centers",
+                                           "inventory_store",
+                                           "inventory_unit");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
@@ -146,8 +146,9 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasSelectPermission());
+                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                          .contains(event.getState()) &&
+                                   userPermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -160,7 +161,8 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -182,8 +184,9 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasAddPermission());
+                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                        .contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -196,8 +199,8 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState())
-                                     && userPermission.hasUpdatePermission());
+                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    userPermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -210,7 +213,8 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -221,10 +225,11 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
             }
         });
-        
+
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -247,7 +252,7 @@ public class InternalOrderScreen extends Screen {
                 orderHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         itemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -289,7 +294,8 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                neededInDays.enable(EnumSet.of(State.QUERY,State.ADD, State.UPDATE).contains(event.getState()));
+                neededInDays.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 neededInDays.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -321,7 +327,8 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                requestedBy.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                requestedBy.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 requestedBy.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -337,7 +344,8 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderedDate.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                orderedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                          .contains(event.getState()));
                 orderedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -353,7 +361,8 @@ public class InternalOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                costCenterId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 costCenterId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -437,20 +446,20 @@ public class InternalOrderScreen extends Screen {
                         setQueryResult(result);
                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError("No more records in this direction");
-                        } else {
-                            Window.alert("Error: Order call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError("No more records in this direction");
+                                         } else {
+                                             Window.alert("Error: Order call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(IdNameVO entry) {
@@ -466,7 +475,9 @@ public class InternalOrderScreen extends Screen {
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getId(), entry.getName()));
+                        model.add(new TableDataRow(entry.getId(),
+                                                   entry.getId(),
+                                                   entry.getName()));
                 }
                 return model;
             }
@@ -476,7 +487,8 @@ public class InternalOrderScreen extends Screen {
         addScreenHandler(atoz, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
@@ -496,9 +508,9 @@ public class InternalOrderScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -506,7 +518,7 @@ public class InternalOrderScreen extends Screen {
             }
         });
     }
-    
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
@@ -532,20 +544,13 @@ public class InternalOrderScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("cost_centers");
-        for (DictionaryDO d : list) {         
+        for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
 
         costCenterId.setModel(model);
-        
-        try {
-            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     /*
@@ -562,7 +567,7 @@ public class InternalOrderScreen extends Screen {
         itemTab.draw();
         fillTab.draw();
         shipNoteTab.draw();
-        
+
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -582,13 +587,13 @@ public class InternalOrderScreen extends Screen {
         try {
             now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
-            Window.alert("OrderAdd Datetime: " +e.getMessage());
+            Window.alert("OrderAdd Datetime: " + e.getMessage());
             return;
         }
-        
+
         manager = OrderManager.getInstance();
         data = manager.getOrder();
-        data.setStatusId(status_pending);
+        data.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         data.setOrderedDate(now);
         data.setRequestedBy(UserCache.getPermission().getLoginName());
         data.setType(OrderManager.TYPE_INTERNAL);
@@ -604,11 +609,11 @@ public class InternalOrderScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = manager.fetchForUpdate();    
-            
-            setState(State.UPDATE);                
+            manager = manager.fetchForUpdate();
+
+            setState(State.UPDATE);
             DataChangeEvent.fire(this);
-            setFocus(neededInDays);  
+            setFocus(neededInDays);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -693,11 +698,11 @@ public class InternalOrderScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void duplicate() {
         try {
             window.setBusy(consts.get("fetching"));
-            
+
             manager = OrderService.get().duplicate(manager.getOrder().getId());
 
             itemTab.setManager(manager);
@@ -720,12 +725,15 @@ public class InternalOrderScreen extends Screen {
 
     protected void orderHistory() {
         IdNameVO hist;
-        
-        hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder().getId().toString());
+
+        hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder()
+                                                               .getId()
+                                                               .toString());
         HistoryScreen.showHistory(consts.get("orderHistory"),
-                                  ReferenceTable.ORDER, hist);                
+                                  Constants.table().ORDER,
+                                  hist);
     }
-    
+
     protected void itemHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -747,7 +755,8 @@ public class InternalOrderScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("orderItemHistory"),
-                                  ReferenceTable.ORDER_ITEM, refVoList);
+                                  Constants.table().ORDER_ITEM,
+                                  refVoList);
     }
 
     protected boolean fetchById(Integer id) {

@@ -46,9 +46,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -439,18 +438,18 @@ public class InventoryItem implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.INVENTORY_ITEM);
+        audit.setReferenceTableId(Constants.table().INVENTORY_ITEM);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("description", description, original.description)
-                 .setField("category_id", categoryId, original.categoryId, ReferenceTable.DICTIONARY)
-                 .setField("store_id", storeId, original.storeId, ReferenceTable.DICTIONARY)
+                 .setField("category_id", categoryId, original.categoryId, Constants.table().DICTIONARY)
+                 .setField("store_id", storeId, original.storeId, Constants.table().DICTIONARY)
                  .setField("quantity_min_level", quantityMinLevel, original.quantityMinLevel)
                  .setField("quantity_max_level", quantityMaxLevel, original.quantityMaxLevel)
                  .setField("quantity_to_reorder", quantityToReorder, original.quantityToReorder)

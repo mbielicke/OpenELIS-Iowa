@@ -37,10 +37,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.Label;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -56,11 +56,10 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class LabelBean   {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager             manager;
+    private EntityManager          manager;
 
     @EJB
     private LockBean                 lock;
@@ -68,7 +67,7 @@ public class LabelBean   {
     @EJB
     private UserCacheBean             userCache;
 
-    private static final LabelMeta    meta = new LabelMeta();
+    private static final LabelMeta meta = new LabelMeta();
 
     public LabelBean() {
     }
@@ -109,8 +108,8 @@ public class LabelBean   {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + LabelMeta.getId() + ", " +
-                          LabelMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          LabelMeta.getId() + ", " + LabelMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(LabelMeta.getName());
 
@@ -153,14 +152,14 @@ public class LabelBean   {
         Label entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.LABEL, data.getId());
+            lock.unlock(Constants.table().LABEL, data.getId());
             return data;
         }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lock.validateLock(ReferenceTable.LABEL, data.getId());
+        lock.validateLock(Constants.table().LABEL, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Label.class, data.getId());
@@ -169,14 +168,14 @@ public class LabelBean   {
         entity.setPrinterTypeId(data.getPrinterTypeId());
         entity.setScriptletId(data.getScriptletId());
 
-        lock.unlock(ReferenceTable.LABEL, data.getId());
+        lock.unlock(Constants.table().LABEL, data.getId());
 
         return data;
     }
 
     public LabelViewDO fetchForUpdate(Integer id) throws Exception {
         try {
-            lock.lock(ReferenceTable.LABEL, id);
+            lock.lock(Constants.table().LABEL, id);
             return fetchById(id);
         } catch (NotFoundException e) {
             throw new DatabaseException(e);
@@ -184,7 +183,7 @@ public class LabelBean   {
     }
 
     public LabelViewDO abortUpdate(Integer id) throws Exception {
-        lock.unlock(ReferenceTable.LABEL, id);
+        lock.unlock(Constants.table().LABEL, id);
         return fetchById(id);
     }
 
@@ -195,14 +194,14 @@ public class LabelBean   {
 
         validateForDelete(data.getId());
 
-        lock.validateLock(ReferenceTable.LABEL, data.getId());
+        lock.validateLock(Constants.table().LABEL, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Label.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lock.unlock(ReferenceTable.LABEL, data.getId());
+        lock.unlock(Constants.table().LABEL, data.getId());
     }
 
     public void validateForDelete(Integer id) throws Exception {
@@ -232,12 +231,13 @@ public class LabelBean   {
             list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
         } else {
             dups = fetchByName(data.getName(), 1);
-            if (dups.size() > 0 && ! dups.get(0).getId().equals(data.getId()))
+            if (dups.size() > 0 && !dups.get(0).getId().equals(data.getId()))
                 list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getPrinterTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getPrinterTypeId()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             meta.getPrinterTypeId()));
 
         if (list.size() > 0)
             throw list;

@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
 
@@ -118,14 +119,12 @@ public class TestSectionManager implements Serializable {
     
     public TestSectionViewDO getDefaultSection() throws Exception {
         DictionaryDO locationDict;
-        Integer defaultId, matchId, locationId;
+        Integer locationId;
         Preferences prefs;
         String locationName, locationSuffix, sectionName;
         TestSectionViewDO data;
         
         data = null;
-        defaultId = proxy().getIdFromSystemName("test_section_default");
-        matchId = proxy().getIdFromSystemName("test_section_match");
         
         prefs = Preferences.userRoot();
         locationSuffix = "NONE";
@@ -137,10 +136,10 @@ public class TestSectionManager implements Serializable {
         }
         
         for (int i = 0; i < sections.size(); i++ ) {
-            if (defaultId.equals(sections.get(i).getFlagId())) {
+            if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(sections.get(i).getFlagId())) {
                 data = sections.get(i);
                 break;
-            } else if (matchId.equals(sections.get(i).getFlagId())) {
+            } else if (Constants.dictionary().TEST_SECTION_MATCH.equals(sections.get(i).getFlagId())) {
                 sectionName = sections.get(i).getSection();
                 if (locationSuffix.equals(sectionName.substring(sectionName.lastIndexOf("-") + 1))) {
                     data = sections.get(i);

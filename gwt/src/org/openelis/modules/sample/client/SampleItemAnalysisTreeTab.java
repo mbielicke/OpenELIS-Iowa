@@ -32,6 +32,7 @@ import java.util.HashMap;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -74,8 +75,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandlers<SampleItemAnalysisTreeTab.Action> {
-    private Integer                       analysisCancelledId, analysisReleasedId,
-                                          sampleReleasedId;
     protected TreeWidget                  itemsTree;
     protected AppButton                   removeRow, addItem, addAnalysis, popoutTree;
     private HasActionHandlers             parentScreen;
@@ -175,8 +174,8 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
                                               .getAnalysisAt(data.getSampleItemIndex())
                                               .getAnalysisAt(data.getAnalysisIndex());
 
-                                if (analysisCancelledId.equals(anDO.getStatusId()) ||
-                                    analysisReleasedId.equals(anDO.getStatusId()))
+                                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(anDO.getStatusId()) ||
+                                    Constants.dictionary().ANALYSIS_RELEASED.equals(anDO.getStatusId()))
                                     enable = false;
                                 else
                                     enable = true;
@@ -416,16 +415,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
-        // preload dictionary models and single entries, close the window if an
-        // error is found
-        try {
-            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
+        // preload dictionary models
 
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
@@ -496,7 +486,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     }
 
     private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+        return (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId()));
     }
     
     protected void historyCurrentResult() {

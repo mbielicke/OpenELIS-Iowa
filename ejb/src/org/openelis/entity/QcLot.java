@@ -45,10 +45,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -238,20 +237,20 @@ public class QcLot implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.QC_LOT);
+        audit.setReferenceTableId(Constants.table().QC_LOT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("qc_id", qcId, original.qcId)
                  .setField("lot_number", lotNumber, original.lotNumber)
-                 .setField("location_id", locationId, original.locationId, ReferenceTable.DICTIONARY)
+                 .setField("location_id", locationId, original.locationId, Constants.table().DICTIONARY)
                  .setField("prepared_date", preparedDate, original.preparedDate)
                  .setField("prepared_volume", preparedVolume, original.preparedVolume)
-                 .setField("prepared_unit_id", preparedUnitId, original.preparedUnitId, ReferenceTable.DICTIONARY)
+                 .setField("prepared_unit_id", preparedUnitId, original.preparedUnitId, Constants.table().DICTIONARY)
                  .setField("prepared_by_id", preparedById, original.preparedById)
                  .setField("usable_date", usableDate, original.usableDate)
                  .setField("expire_date", expireDate, original.expireDate)

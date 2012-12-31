@@ -30,8 +30,7 @@ import java.util.HashMap;
 
 import org.openelis.bean.SampleItemBean;
 import org.openelis.bean.StorageBean;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -59,10 +58,10 @@ public class SampleItemManagerProxy {
         SampleItemListItem item;
         SampleItemBean l;
 
-        sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
+        sampleItemRefTableId = Constants.table().SAMPLE_ITEM;
 
-        l = EJBFactory.getSampleItem();       
-        
+        l = EJBFactory.getSampleItem();
+
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getSampleItemAt(i);
             data.setSampleId(man.getSampleId());
@@ -79,14 +78,14 @@ public class SampleItemManagerProxy {
                 man.getAnalysisAt(i).setSampleItemId(data.getId());
         }
 
-//        addAnalyses(man);
+        // addAnalyses(man);
         updateAnalyses(man);
 
         return man;
     }
 
     public SampleItemManager update(SampleItemManager man) throws Exception {
-        int i, j;
+        int i;
         Integer sampleItemRefTableId;
         SampleItemBean l;
         StorageBean sl;        
@@ -94,12 +93,12 @@ public class SampleItemManagerProxy {
         SampleItemListItem item;
 
         l = EJBFactory.getSampleItem();
-        sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
+        sampleItemRefTableId = Constants.table().SAMPLE_ITEM;
 
         sl = EJBFactory.getStorage();
         for (i = 0; i < man.deleteCount(); i++ ) {
             data = man.getDeletedAt(i).sampleItem;
-            sl.deleteById(data.getId(), ReferenceTable.SAMPLE_ITEM);
+            sl.deleteById(data.getId(), Constants.table().SAMPLE_ITEM);
             l.delete(data);
         }
 
@@ -128,13 +127,6 @@ public class SampleItemManagerProxy {
         return man;
     }
 
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        DictionaryDO data;
-
-        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
-        return data.getId();
-    }
-
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
         String sequenceNum;
         SampleItemListItem item;
@@ -146,7 +138,8 @@ public class SampleItemManagerProxy {
             sequenceNum = man.getSampleItemAt(i).getItemSequence().toString();
             // validate the sample item
             if (man.getSampleItemAt(i).getTypeOfSampleId() == null)
-                errorsList.add(new FormErrorException("sampleItemTypeMissing", sequenceNum));
+                errorsList.add(new FormErrorException("sampleItemTypeMissing",
+                                                      sequenceNum));
 
             item = man.getItemAt(i);
             // validate the children
@@ -156,7 +149,9 @@ public class SampleItemManagerProxy {
             if (item.analysis != null)
                 man.getAnalysisAt(i).validate(sequenceNum,
                                               man.getSampleItemAt(i).getTypeOfSampleId(),
-                                              man.getSampleManager().getSample().getDomain(),
+                                              man.getSampleManager()
+                                                 .getSample()
+                                                 .getDomain(),
                                               errorsList);
         }
     }
@@ -174,7 +169,7 @@ public class SampleItemManagerProxy {
 
             if (unresolved != 0 && unresolved == lastUnresolved)
                 throw new Exception("Cannot resolve ids when analysis is linked to itself");
-            
+
             lastUnresolved = unresolved;
         } while (unresolved != 0);
     }

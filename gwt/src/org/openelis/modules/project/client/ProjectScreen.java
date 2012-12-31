@@ -30,10 +30,10 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -760,7 +760,7 @@ public class ProjectScreen extends Screen {
         
         hist = new IdNameVO(manager.getProject().getId(), manager.getProject().getName());
         HistoryScreen.showHistory(consts.get("projectHistory"),
-                                  ReferenceTable.PROJECT, hist); 
+                                  Constants.table().PROJECT, hist); 
     }
     
     protected void projectParameterHistory() {
@@ -784,7 +784,7 @@ public class ProjectScreen extends Screen {
         }
 
         HistoryScreen.showHistory(consts.get("projectParameterHistory"),
-                                  ReferenceTable.PROJECT_PARAMETER, refVoList);
+                                  Constants.table().PROJECT_PARAMETER, refVoList);
     }
 
     protected boolean fetchById(Integer id) {

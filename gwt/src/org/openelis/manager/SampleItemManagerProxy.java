@@ -27,7 +27,6 @@ package org.openelis.manager;
 
 import java.util.Calendar;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -52,10 +51,6 @@ public class SampleItemManagerProxy {
     public SampleItemManager update(SampleItemManager man) throws Exception {
         assert false : "not supported";
         return null;
-    }
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdBySystemName(systemName);
     }
 
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {

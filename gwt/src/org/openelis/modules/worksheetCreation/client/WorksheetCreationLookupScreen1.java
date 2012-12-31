@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
@@ -84,11 +84,20 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 public class WorksheetCreationLookupScreen1 extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen1.Action> {
 
-    private Integer                 statusErrorInPrep, statusInPrep, statusReleased,
-                                    statusCancelled;
     private ModulePermission        userPermission;
 
     protected AppButton             searchButton, addButton, selectAllButton;
@@ -347,16 +356,6 @@ public class WorksheetCreationLookupScreen1 extends Screen
         ArrayList<SectionViewDO> sectList;
         ArrayList<TableDataRow> model;
 
-        try {
-            statusErrorInPrep = DictionaryCache.getIdBySystemName("analysis_error_inprep");
-            statusInPrep      = DictionaryCache.getIdBySystemName("analysis_inprep");
-            statusReleased    = DictionaryCache.getIdBySystemName("analysis_released");
-            statusCancelled   = DictionaryCache.getIdBySystemName("analysis_cancelled");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-
         //
         // load section dropdown model
         //
@@ -559,10 +558,10 @@ public class WorksheetCreationLookupScreen1 extends Screen
         if (analysisRow != null) {
             editable = canAddTest(analysisRow) &&
                        Boolean.FALSE.equals(analysisRow.getHasQaOverride()) &&
-                       !statusErrorInPrep.equals(analysisRow.getStatusId()) &&
-                       !statusInPrep.equals(analysisRow.getStatusId()) &&
-                       !statusReleased.equals(analysisRow.getStatusId()) &&
-                       !statusCancelled.equals(analysisRow.getStatusId());
+                       !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(analysisRow.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_INPREP.equals(analysisRow.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_RELEASED.equals(analysisRow.getStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysisRow.getStatusId());
         }
         return editable;
     }

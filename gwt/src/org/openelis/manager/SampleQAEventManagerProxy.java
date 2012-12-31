@@ -25,7 +25,6 @@
 */
 package org.openelis.manager;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.modules.sample.client.SampleService;
 
@@ -46,10 +45,6 @@ public class SampleQAEventManagerProxy {
     public SampleQaEventManager update(SampleQaEventManager man) throws Exception {
         assert false : "not supported";
         return null;
-    }
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdBySystemName(systemName);
     }
     
     public void validate(SampleQaEventManager man, ValidationErrorsList errorsList) throws Exception {

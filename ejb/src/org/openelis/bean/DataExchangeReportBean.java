@@ -48,10 +48,10 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.IdAccessionVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -88,9 +88,10 @@ public class DataExchangeReportBean {
     private DataExchangeXMLMapperBean dataExchangeXMLMapper;
     
     @EJB
+    private ExchangeCriteriaBean      exchangeCriteria;
+    
+    @EJB
     private UserCacheBean              userCache;
-
-    private static Integer            dataTransLogTypeId, infoLogLevelId, errorLogLevelId;
 
     private static final Logger      log = Logger.getLogger("openelis");
 
@@ -101,14 +102,6 @@ public class DataExchangeReportBean {
     @PostConstruct
     public void init() {
         String locale;
-        
-        try {
-            dataTransLogTypeId = dictionary.fetchBySystemName("log_type_data_transmission").getId();
-            infoLogLevelId = dictionary.fetchBySystemName("log_level_info").getId();
-            errorLogLevelId = dictionary.fetchBySystemName("log_level_error").getId();
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
         
         try {
             if (resource == null) {
@@ -152,18 +145,18 @@ public class DataExchangeReportBean {
             man = ExchangeCriteriaManager.fetchByName(name);
             data = man.getExchangeCriteria();
         } catch (NotFoundException e) {
-            addLogEntry("dataExchangeCriteriaNotFound", name, null, errorLogLevelId, null);
+            addLogEntry("dataExchangeCriteriaNotFound", name, null, Constants.dictionary().LOG_LEVEL_ERROR, null);
             log.log(Level.SEVERE, getSource("dataExchangeCriteriaNotFound", name), e);
             return;            
         } catch (Exception e) {
-            addLogEntry("dataExchangeCriteriaFetchFailed", name, null, errorLogLevelId, null);
+            addLogEntry("dataExchangeCriteriaFetchFailed", name, null, Constants.dictionary().LOG_LEVEL_ERROR, null);
             log.log(Level.SEVERE, getSource("dataExchangeCriteriaFetchFailed", name), e);
             return;
         }
         
         cal = Calendar.getInstance();
         try {
-            elogs = eventLog.fetchByRefTableIdRefId(ReferenceTable.EXCHANGE_CRITERIA, data.getId());
+            elogs = eventLog.fetchByRefTableIdRefId(Constants.table().EXCHANGE_CRITERIA, data.getId());
             lastRunDate = elogs.get(0).getTimeStamp().getDate();
         } catch (NotFoundException e) {
             /*
@@ -173,7 +166,7 @@ public class DataExchangeReportBean {
             cal.add(Calendar.DAY_OF_MONTH, -1);
             lastRunDate = cal.getTime();         
         } catch (Exception e) {
-            addLogEntry("dataExchangeLastRunDateFetchFailed", name, null, errorLogLevelId, null);
+            addLogEntry("dataExchangeLastRunDateFetchFailed", name, null, Constants.dictionary().LOG_LEVEL_ERROR, null);
             log.log(Level.SEVERE, getSource("dataExchangeLastRunDateFetchFailed", name), e);
             return;
         }
@@ -196,11 +189,11 @@ public class DataExchangeReportBean {
                 /*
                  * generate the message for the successful execution of the criteria
                  */
-                addLogEntry("dataExchangeExecutedCriteria", name, data.getId(), dataTransLogTypeId, text);
+                addLogEntry("dataExchangeExecutedCriteria", name, data.getId(), Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION, text);
             } catch (NotFoundException e) {
-                addLogEntry("dataExchangeNoSamplesFound", name, data.getId(), infoLogLevelId, null);
+                addLogEntry("dataExchangeNoSamplesFound", name, data.getId(), Constants.dictionary().LOG_LEVEL_INFO, null);
             } catch (Exception e) {
-                addLogEntry("dataExchangeCouldNotExecuteCriteria", name, data.getId(), errorLogLevelId, null);
+                addLogEntry("dataExchangeCouldNotExecuteCriteria", name, data.getId(), Constants.dictionary().LOG_LEVEL_ERROR, null);
                 log.log(Level.SEVERE, getSource("dataExchangeCouldNotExecuteCriteria", name), e);
             }
         }
@@ -219,7 +212,7 @@ public class DataExchangeReportBean {
             throw new Exception("The URI must not be blank");
         
         errors = new ValidationErrorsList();        
-        EJBFactory.getExchangeCriteria().validateDestinationURI(uri, errors);
+        exchangeCriteria.validateDestinationURI(uri, errors);
         
         if (errors.size() > 0) 
             throw errors;
@@ -328,7 +321,7 @@ public class DataExchangeReportBean {
     
     private void addLogEntry(String key, String name, Integer referenceId, Integer levelId, String text) {
         try {
-            eventLog.add(dataTransLogTypeId, getSource(key, name), ReferenceTable.EXCHANGE_CRITERIA,
+            eventLog.add(Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION, getSource(key, name), Constants.table().EXCHANGE_CRITERIA,
                      referenceId, levelId, text);
         } catch (Exception e) {
             log.log(Level.SEVERE, "Failed to add log entry for: "+ name, e);

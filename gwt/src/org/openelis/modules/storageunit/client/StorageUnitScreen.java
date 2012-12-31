@@ -30,9 +30,9 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -543,7 +543,7 @@ public class StorageUnitScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(data.getId(), data.getDescription());
-        HistoryScreen.showHistory(consts.get("storageUnitHistory"), ReferenceTable.STORAGE_UNIT, hist);
+        HistoryScreen.showHistory(consts.get("storageUnitHistory"), Constants.table().STORAGE_UNIT, hist);
     }
 
     protected boolean fetchById(Integer id) {

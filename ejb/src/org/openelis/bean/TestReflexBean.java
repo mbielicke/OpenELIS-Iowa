@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -37,7 +36,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.entity.TestReflex;
@@ -52,29 +52,16 @@ import org.openelis.meta.TestMeta;
 public class TestReflexBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager   manager;
+    private EntityManager        manager;
 
     @EJB
-    private DictionaryBean  dictionary;
-
-    private static Integer  typeDict;
-
-    @PostConstruct
-    public void init() {
-        if (typeDict == null) {
-            try {
-                typeDict = dictionary.fetchBySystemName("test_res_type_dictionary").getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    private DictionaryCacheBean  dictionaryCache;
 
     public ArrayList<TestReflexViewDO> fetchByTestId(Integer testId) throws Exception {
         Query query;
         List<TestReflexViewDO> list;
         TestReflexViewDO data;
-        DictionaryViewDO dict;
+        DictionaryDO dict;
 
         query = manager.createNamedQuery("TestReflex.FetchByTestId");
         query.setParameter("testId", testId);
@@ -87,8 +74,8 @@ public class TestReflexBean {
                 // for entries that are dictionary, we want to fetch the
                 // dictionary text and set it for display
                 //
-                if (DataBaseUtil.isSame(typeDict, data.getTestResultTypeId())) {
-                    dict = dictionary.fetchById(Integer.parseInt(data.getTestResultValue()));
+                if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DICTIONARY, data.getTestResultTypeId())) {
+                    dict = dictionaryCache.getById(Integer.parseInt(data.getTestResultValue()));
                     data.setTestResultValue(dict.getEntry());
                 }
             }

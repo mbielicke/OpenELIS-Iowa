@@ -28,7 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -41,37 +40,8 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.SampleService;
 
 public class SampleManagerProxy {
-    protected static Integer      anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
-                                  anInPrepId, anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId,
-                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId, samNotVerifiedId,
-                                  samLoggedInId, samCompletedId, samReleasedId, samErrorId;
-
+    
     public SampleManagerProxy() {
-
-        if (anLoggedInId == null) {
-            try {
-                anLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
-                anInitiatedId = DictionaryCache.getIdBySystemName("analysis_initiated");
-                anCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
-                anReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
-                anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
-                anOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
-                anRequeueId = DictionaryCache.getIdBySystemName("analysis_requeue");
-                anCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
-                anErrorLoggedInId = DictionaryCache.getIdBySystemName("analysis_error_logged_in");
-                anErrorInitiatedId = DictionaryCache.getIdBySystemName("analysis_error_initiated");
-                anErrorInPrepId = DictionaryCache.getIdBySystemName("analysis_error_inprep");
-                anErrorCompletedId = DictionaryCache.getIdBySystemName("analysis_error_completed");
-                samNotVerifiedId = DictionaryCache.getIdBySystemName("sample_not_verified");
-                samLoggedInId = DictionaryCache.getIdBySystemName("sample_logged_in");
-                samCompletedId = DictionaryCache.getIdBySystemName("sample_completed");
-                samReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-                samErrorId = DictionaryCache.getIdBySystemName("sample_error");
-            } catch (Exception e) {
-                e.printStackTrace();
-                anLoggedInId = null;
-            }
-        }
     }
 
     public SampleManager fetchById(Integer sampleId) throws Exception {
@@ -85,12 +55,12 @@ public class SampleManagerProxy {
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
         return SampleService.get().fetchWithItemsAnalyses(sampleId);
     }
-    
-    public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {        
+
+    public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {
         return SampleService.get().fetchWithAllDataById(sampleId);
     }
-    
-    public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {        
+
+    public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {
         return SampleService.get().fetchWithAllDataByAccessionNumber(accessionNumber);
     }
 
@@ -101,10 +71,10 @@ public class SampleManagerProxy {
     public SampleManager update(SampleManager man) throws Exception {
         return SampleService.get().update(man);
     }
-    
-    public void updateCache(SampleManager man) {      
+
+    public void updateCache(SampleManager man) {
     }
-    
+
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
         return SampleService.get().fetchForUpdate(sampleId);
     }
@@ -120,7 +90,7 @@ public class SampleManagerProxy {
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         SampleDomainInt domMan;
         SampleDO data;
-        NoteManager noteMan;      
+        NoteManager noteMan;
 
         data = man.getSample();
 
@@ -133,32 +103,33 @@ public class SampleManagerProxy {
             errorsList.add(new FieldErrorWarning("receivedDateRequiredException",
                                                  SampleMeta.getReceivedDate()));
         else if (data.getEnteredDate() != null &&
-                 data.getReceivedDate().before(data.getEnteredDate().add(-180)))
+                 data.getReceivedDate().before(data.getEnteredDate().add( -180)))
             // received can't be more than 180 days before entered
             errorsList.add(new FieldErrorWarning("receivedTooOldWarning",
                                                  SampleMeta.getReceivedDate()));
 
         if (data.getEnteredDate() != null && data.getCollectionDate() != null &&
-            data.getCollectionDate().before(data.getEnteredDate().add(-180)))
+            data.getCollectionDate().before(data.getEnteredDate().add( -180)))
             errorsList.add(new FieldErrorException("collectedTooOldWarning",
                                                    SampleMeta.getCollectionDate()));
 
         if (data.getCollectionDate() != null && data.getReceivedDate() != null &&
             data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
-                errorsList.add(new FieldErrorException("collectedDateInvalidError",
-                                                       SampleMeta.getReceivedDate()));
-        
-        // every unreleased sample needs an internal comment describing the reason
+            errorsList.add(new FieldErrorException("collectedDateInvalidError",
+                                                   SampleMeta.getReceivedDate()));
+
+        // every unreleased sample needs an internal comment describing the
+        // reason
         if (man.unreleaseWithNotes) {
             noteMan = man.getInternalNotes();
-            if ((noteMan == null || noteMan.count() == 0) ||
+            if ( (noteMan == null || noteMan.count() == 0) ||
                 (noteMan != null && noteMan.count() > 0 && noteMan.getNoteAt(0).getId() != null)) {
                 errorsList.add(new FormErrorException("unreleaseNoNoteException"));
             }
         }
 
         //
-        // the domain manager can be null if the domain is quick entry 
+        // the domain manager can be null if the domain is quick entry
         //
         domMan = man.getDomainManager();
         if (domMan != null)
@@ -192,21 +163,21 @@ public class SampleManagerProxy {
                 errorsList.add(errors.get(i));
         }
     }
-    
+
     private void validateOrderId(SampleDO data, ValidationErrorsList errorsList) throws Exception {
         OrderManager man;
-        
+
         if (data.getOrderId() == null)
             return;
         try {
             man = OrderManager.fetchById(data.getOrderId());
-            if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType()))
+            if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType()))
                 errorsList.add(new FieldErrorException("orderIdInvalidException",
                                                        SampleMeta.getOrderId()));
         } catch (NotFoundException e) {
             errorsList.add(new FieldErrorException("orderIdInvalidException",
                                                    SampleMeta.getOrderId()));
         }
-        
+
     }
 }

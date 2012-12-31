@@ -27,14 +27,13 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.bean.ResultBean;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestResultDO;
@@ -47,24 +46,6 @@ import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisResultManagerProxy {
-    protected static Integer    dictTypeId, defaultTypeId;
-
-    private static final Logger log = Logger.getLogger("openelis");
-    
-    public AnalysisResultManagerProxy() {
-        DictionaryBean l;
-
-        if (dictTypeId == null) {
-            l = EJBFactory.getDictionary();
-
-            try {
-                dictTypeId = l.fetchBySystemName("test_res_type_dictionary").getId();     
-                defaultTypeId = l.fetchBySystemName("test_res_type_default").getId();
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-            }
-        }
-    }    
 
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results;
@@ -397,7 +378,7 @@ public class AnalysisResultManagerProxy {
                         for (ResultViewDO ocol: oldList) {
                             if (ncol.getAnalyteId().equals(ocol.getAnalyteId()) && ncol.getValue() == null) {
                                 val = ocol.getValue();                                
-                                if (dictTypeId.equals(ocol.getTypeId()) && !DataBaseUtil.isEmpty(val)) 
+                                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(ocol.getTypeId()) && !DataBaseUtil.isEmpty(val)) 
                                     val = dcl.getById(Integer.valueOf(val)).getEntry();
                                 ncol.setValue(val);                   
                             }
@@ -428,7 +409,7 @@ public class AnalysisResultManagerProxy {
          * and the value won't be a valid id. The following check makes sure that
          * the value is set to the correct id taken from the test result.                  
          */
-        if (dictTypeId.equals(typeId))
+        if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(typeId))
             result.setValue(data.getValue());
         result.setTestResultId(data.getId());
     }

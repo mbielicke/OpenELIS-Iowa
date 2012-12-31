@@ -40,9 +40,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -131,17 +130,17 @@ public class ProjectParameter implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.PROJECT_PARAMETER);
+        audit.setReferenceTableId(Constants.table().PROJECT_PARAMETER);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("project_id", projectId, original.projectId)
                  .setField("parameter", parameter, original.parameter)
-                 .setField("operation_id", operationId, original.operationId, ReferenceTable.DICTIONARY)
+                 .setField("operation_id", operationId, original.operationId, Constants.table().DICTIONARY)
                  .setField("value", value, original.value);
         
         return audit;

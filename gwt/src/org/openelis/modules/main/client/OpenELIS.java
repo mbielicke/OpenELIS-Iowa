@@ -26,6 +26,7 @@
 package org.openelis.modules.main.client;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -125,8 +126,8 @@ public class OpenELIS extends Screen {
         VerticalPanel vp;
 
         rpc = OpenELISService.get().initialData();
-
         consts = rpc.appConstants;
+        Constants.setConstants(rpc.constants);
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
 

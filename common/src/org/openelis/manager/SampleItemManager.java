@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
@@ -40,8 +40,6 @@ public class SampleItemManager implements Serializable {
     private static final long                         serialVersionUID = 1L;
 
     protected Integer                                 sampleId;
-    protected transient Integer                       anLoggedInId, anInPrepId,
-                                                      anCompletedId, anReleasedId;
     protected SampleManager                           sampleManager;
     private int                                       tempId;
     protected ArrayList<SampleItemListItem>           items;
@@ -180,7 +178,7 @@ public class SampleItemManager implements Serializable {
         if (item.storage == null) {
             if (item.sampleItem != null && item.sampleItem.getId() != null) {
                 try {
-                    item.storage = StorageManager.fetchByRefTableRefId(ReferenceTable.SAMPLE_ITEM,
+                    item.storage = StorageManager.fetchByRefTableRefId(Constants.table().SAMPLE_ITEM,
                                                                        item.sampleItem.getId());
                 } catch (NotFoundException e) {
                     // ignore
@@ -277,18 +275,17 @@ public class SampleItemManager implements Serializable {
                              int prepAnalysisIndex) throws Exception {
         AnalysisViewDO anDO, prepDO;
         
-        loadDictionaryEntries();
-
         anDO = getAnalysisAt(sampleItemIndex).getAnalysisAt(analysisIndex);
         prepDO = getAnalysisAt(prepSampleItemIndex).getAnalysisAt(prepAnalysisIndex);
         anDO.setPreAnalysisId(prepDO.getId());
         anDO.setPreAnalysisTest(prepDO.getTestName());
         anDO.setPreAnalysisMethod(prepDO.getMethodName());
-        if (anCompletedId.equals(prepDO.getStatusId()) || anReleasedId.equals(prepDO.getStatusId())) {
-            anDO.setStatusId(anLoggedInId);
+        if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prepDO.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_RELEASED.equals(prepDO.getStatusId())) {
+            anDO.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
             anDO.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
         } else {
-            anDO.setStatusId(anInPrepId);
+            anDO.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
             anDO.setAvailableDate(null);
         }
     }
@@ -358,15 +355,7 @@ public class SampleItemManager implements Serializable {
 
         return released;
     }
-    
-    private void loadDictionaryEntries() throws Exception {
-        if (anInPrepId == null) {
-            anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
-            anInPrepId = proxy().getIdFromSystemName("analysis_inprep");
-            anCompletedId = proxy().getIdFromSystemName("analysis_completed");
-            anReleasedId = proxy().getIdFromSystemName("analysis_released");
-        }
-    }
+   
 
     private static SampleItemManagerProxy proxy() {
         if (proxy == null)

@@ -23,30 +23,17 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sample.client;
+package org.openelis.remote;
+
+import javax.ejb.Remote;
 
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.manager.OrganizationParameterManager;
 
-public class SampleOrganizationUtility {
-
-    public static boolean isHoldRefuseSampleForOrg(Integer orgId) throws Exception {
-        OrganizationParameterManager man;
-        
-        if (orgId == null)
-            return false;
-        
-        try {
-            man = OrganizationParameterManager.fetchByOrganizationId(orgId);
-            for (int i = 0; i < man.count(); i++) {
-                if (Constants.dictionary().ORG_HOLD_SAMPLE.equals(man.getParameterAt(i).getTypeId()))
-                    return true;
-            }
-        } catch (NotFoundException e) {
-            //ignore
-        }
-        
-        return false;
-    }
+/**
+ * @author akampoow
+ *
+ */
+@Remote
+public interface ApplicationRemote {
+    public Constants getConstants() throws Exception;
 }

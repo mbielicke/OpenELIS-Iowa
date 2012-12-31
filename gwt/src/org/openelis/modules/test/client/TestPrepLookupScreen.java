@@ -28,7 +28,6 @@ package org.openelis.modules.test.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
@@ -70,7 +69,6 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
 
     protected TreeWidget      prepTestTree;
 
-    private Integer                      testSectionDefaultId;
     private ArrayList<ArrayList<Object>> prepBundles;
     private AppButton                    copyToEmptyButton, copyToAllButton;
 
@@ -82,8 +80,6 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
 
         // Initialize Screen
         setState(State.DEFAULT);
-        
-        initializeDropdowns();
     }
 
     private void initialize() {
@@ -296,15 +292,6 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 copyToAllButton.enable(false);
             }
         });
-    }
-
-    private void initializeDropdowns() {
-        try {
-            testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
-        } catch (Exception e) {
-            Window.alert("inializeDropdowns: " + e.getMessage());
-            window.close();
-        }
     }
 
     @SuppressWarnings("unchecked")

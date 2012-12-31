@@ -26,10 +26,9 @@
 package org.openelis.manager;
 
 import java.io.Serializable;
-
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
 
 public class OrderManager implements Serializable, HasAuxDataInt {
@@ -230,7 +229,7 @@ public class OrderManager implements Serializable, HasAuxDataInt {
         if (shipNotes == null) {
             if (order.getId() != null) {
                 try {
-                    shipNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER_SHIPPING_NOTE, order.getId(), true);
+                    shipNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().ORDER_SHIPPING_NOTE, order.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -249,7 +248,7 @@ public class OrderManager implements Serializable, HasAuxDataInt {
         if (customerNotes == null) {
             if (order.getId() != null) {
                 try {
-                    customerNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER_CUSTOMER_NOTE, order.getId(), true);
+                    customerNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().ORDER_CUSTOMER_NOTE, order.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -268,7 +267,7 @@ public class OrderManager implements Serializable, HasAuxDataInt {
         if (internalNotes == null) {
             if (order.getId() != null) {
                 try {
-                    internalNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER, order.getId(), false);
+                    internalNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().ORDER, order.getId(), false);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -289,7 +288,7 @@ public class OrderManager implements Serializable, HasAuxDataInt {
         if (sampleNotes == null) {
             if (order.getId() != null) {
                 try {
-                    sampleNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER_SAMPLE_NOTE, order.getId(), true);
+                    sampleNotes = NoteManager.fetchByRefTableRefIdIsExt(Constants.table().ORDER_SAMPLE_NOTE, order.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -344,7 +343,7 @@ public class OrderManager implements Serializable, HasAuxDataInt {
         if (auxData == null) {
             if (order.getId() != null) {
                 try {
-                    auxData = AuxDataManager.fetchById(order.getId(), ReferenceTable.ORDER);
+                    auxData = AuxDataManager.fetchById(order.getId(), Constants.table().ORDER);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {

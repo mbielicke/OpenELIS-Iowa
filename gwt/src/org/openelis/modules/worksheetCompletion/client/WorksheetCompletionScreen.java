@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.worksheetCompletion.client;
 
 import java.util.ArrayList;
@@ -34,12 +34,12 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
@@ -124,18 +124,19 @@ public class WorksheetCompletionScreen extends Screen {
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
-    private AppButton         lookupWorksheetButton, updateButton, commitButton,
-                              abortButton, editWorksheetButton, loadFromEditButton,
-                              loadFilePopupButton;
-    private NotesTab          noteTab;
-    private TestPrepUtility   testPrepUtil;
-    private TestReflexUtility testReflexUtil;
-    private Tabs              tab;
-    private TabPanel          tabPanel;
-    private TableWidget       table;
+    private AppButton                   lookupWorksheetButton, updateButton,
+                    commitButton, abortButton, editWorksheetButton, loadFromEditButton,
+                    loadFilePopupButton;
+    private NotesTab                    noteTab;
+    private TestPrepUtility             testPrepUtil;
+    private TestReflexUtility           testReflexUtil;
+    private Tabs                        tab;
+    private TabPanel                    tabPanel;
+    private TableWidget                 table;
 
     protected Integer                   userId;
-    protected String                    displayFileDirectory, templateFileDirectory, userName;
+    protected String                    displayFileDirectory, templateFileDirectory,
+                    userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
     protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
@@ -146,7 +147,7 @@ public class WorksheetCompletionScreen extends Screen {
     protected TextBox<Integer>          worksheetId, relatedWorksheetId;
     protected WorksheetFileUploadScreen wFileUploadScreen;
     protected WorksheetLookupScreen     wLookupScreen, wrLookupScreen;
-    
+
     private enum Tabs {
         WORKSHEET, NOTE
     };
@@ -160,7 +161,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
         });
     }
-    
+
     public WorksheetCompletionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
 
@@ -169,7 +170,8 @@ public class WorksheetCompletionScreen extends Screen {
         
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Worksheet Completion Screen");
+            throw new PermissionException("screenPermException",
+                                          "Worksheet Completion Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -177,7 +179,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
         });
     }
-    
+
     /**
      * This method is called to set the initial state of widgets after the
      * screen is attached to the browser. It is usually called in deferred
@@ -185,23 +187,23 @@ public class WorksheetCompletionScreen extends Screen {
      */
     private void postConstructor() {
         ArrayList<SystemVariableDO> list;
-        
+
         closeWindow = false;
-        tab         = Tabs.WORKSHEET;
+        tab = Tabs.WORKSHEET;
 
         try {
             CategoryCache.getBySystemNames("analysis_status",
-                                                         "instrument_type",
-                                                         "type_of_sample", 
-                                                         "test_worksheet_format",
-                                                         "worksheet_status");
-            
+                                           "instrument_type",
+                                           "type_of_sample",
+                                           "test_worksheet_format",
+                                           "worksheet_status");
+
             list = SystemVariableService.get().fetchByName("worksheet_display_directory");
             if (list.size() == 0)
                 throw new Exception(consts.get("worksheetDisplayDirectoryLookupException"));
             else
                 displayFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
-            
+
             list = SystemVariableService.get().fetchByName("worksheet_template_directory");
             if (list.size() == 0)
                 throw new Exception(consts.get("worksheetTemplateDirectoryLookupException"));
@@ -211,11 +213,11 @@ public class WorksheetCompletionScreen extends Screen {
             Window.alert(e.getMessage());
             window.close();
         }
-        
+
         initialize();
 
         setState(State.DEFAULT);
-        if (!isPopup)
+        if ( !isPopup)
             openLookupWindow();
         initializeDropdowns();
     }
@@ -233,8 +235,7 @@ public class WorksheetCompletionScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    userPermission.hasUpdatePermission() &&
-                                    canEditAny());
+                                    userPermission.hasUpdatePermission() && canEditAny());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -244,9 +245,10 @@ public class WorksheetCompletionScreen extends Screen {
         addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 Integer statusId;
-                
+
                 statusId = manager.getWorksheet().getStatusId();
-                if (statusFailedRun.equals(statusId) && !statusFailedRun.equals(origStatus))
+                if (Constants.dictionary().WORKSHEET_FAILED.equals(statusId) &&
+                    !Constants.dictionary().WORKSHEET_FAILED.equals(origStatus))
                     openFailedRunNote();
                 else
                     commit();
@@ -275,10 +277,11 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                worksheetHistory.enable(EnumSet.of(State.DISPLAY)
+                                               .contains(event.getState()));
             }
         });
-                
+
         worksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -308,7 +311,8 @@ public class WorksheetCompletionScreen extends Screen {
         relatedWorksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getRelatedWorksheetId());
         addScreenHandler(relatedWorksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                relatedWorksheetId.setValue(manager.getWorksheet().getRelatedWorksheetId());
+                relatedWorksheetId.setValue(manager.getWorksheet()
+                                                   .getRelatedWorksheetId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -324,11 +328,12 @@ public class WorksheetCompletionScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 Integer statusId;
-                
+
                 if (manager != null && manager.getWorksheet() != null) {
                     statusId = manager.getWorksheet().getStatusId();
-                    lookupWorksheetButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                                 statusWorking.equals(statusId));
+                    lookupWorksheetButton.enable(EnumSet.of(State.UPDATE)
+                                                        .contains(event.getState()) &&
+                                                 Constants.dictionary().WORKSHEET_WORKING.equals(statusId));
                 } else {
                     lookupWorksheetButton.enable(false);
                 }
@@ -341,19 +346,21 @@ public class WorksheetCompletionScreen extends Screen {
                 instrumentId.setSelection(manager.getWorksheet().getInstrumentId(),
                                           manager.getWorksheet().getInstrumentName());
             }
-                
+
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 manager.getWorksheet().setInstrumentId(event.getValue());
-                manager.getWorksheet().setInstrumentName(instrumentId.getTextBoxDisplay());
+                manager.getWorksheet()
+                       .setInstrumentName(instrumentId.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 Integer statusId;
-                
+
                 if (manager != null && manager.getWorksheet() != null) {
                     statusId = manager.getWorksheet().getStatusId();
-                    instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                        statusWorking.equals(statusId));
+                    instrumentId.enable(EnumSet.of(State.UPDATE)
+                                               .contains(event.getState()) &&
+                                        Constants.dictionary().WORKSHEET_WORKING.equals(statusId));
                 } else {
                     instrumentId.enable(false);
                 }
@@ -362,17 +369,17 @@ public class WorksheetCompletionScreen extends Screen {
 
         instrumentId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow>     model;
+                ArrayList<TableDataRow> model;
                 ArrayList<InstrumentViewDO> matches;
-                TableDataRow                row;
-                InstrumentViewDO            iVDO;                
+                TableDataRow row;
+                InstrumentViewDO iVDO;
 
                 try {
                     model = new ArrayList<TableDataRow>();
                     matches = InstrumentService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (int i = 0; i < matches.size(); i++) {
                         iVDO = (InstrumentViewDO)matches.get(i);
-                        
+
                         row = new TableDataRow(5);
                         row.key = iVDO.getId();
                         row.cells.get(0).value = iVDO.getName();
@@ -380,19 +387,19 @@ public class WorksheetCompletionScreen extends Screen {
                         row.cells.get(2).value = iVDO.getTypeId();
                         row.cells.get(3).value = iVDO.getLocation();
                         row.data = iVDO;
-                        
-                        if (!"Y".equals(iVDO.getIsActive()))
+
+                        if ( !"Y".equals(iVDO.getIsActive()))
                             row.enabled = false;
-                        
+
                         model.add(row);
-                    } 
-                    
+                    }
+
                     instrumentId.showAutoMatches(model);
-                        
-                } catch(Exception e) {
-                    Window.alert(e.getMessage());                     
+
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
-            } 
+            }
         });
 
         editWorksheetButton = (AppButton)def.getWidget("editWorksheetButton");
@@ -420,11 +427,12 @@ public class WorksheetCompletionScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 Integer statusId;
-                
+
                 if (manager != null && manager.getWorksheet() != null) {
                     statusId = manager.getWorksheet().getStatusId();
-                    loadFromEditButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                              statusWorking.equals(statusId));
+                    loadFromEditButton.enable(EnumSet.of(State.UPDATE)
+                                                     .contains(event.getState()) &&
+                                              Constants.dictionary().WORKSHEET_WORKING.equals(statusId));
                 } else {
                     loadFromEditButton.enable(false);
                 }
@@ -438,15 +446,16 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-//                Integer statusId;
-//                
-//                if (manager != null && manager.getWorksheet() != null) {
-//                    statusId = manager.getWorksheet().getStatusId();
-//                    loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-//                                               statusWorking.equals(statusId));
-//                } else {
-                    loadFilePopupButton.enable(Boolean.FALSE);
-//                }
+                // Integer statusId;
+                //
+                // if (manager != null && manager.getWorksheet() != null) {
+                // statusId = manager.getWorksheet().getStatusId();
+                // loadFilePopupButton.enable(EnumSet.of(State.UPDATE).contains(event.getState())
+                // &&
+                // statusWorking.equals(statusId));
+                // } else {
+                loadFilePopupButton.enable(Boolean.FALSE);
+                // }
             }
         });
 
@@ -500,14 +509,14 @@ public class WorksheetCompletionScreen extends Screen {
                 noteTab.setState(event.getState());
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 } else {
-                    if (!isPopup && !closeWindow) {
+                    if ( !isPopup && !closeWindow) {
                         event.cancel();
                         openLookupWindow();
                     }
@@ -521,35 +530,27 @@ public class WorksheetCompletionScreen extends Screen {
         ArrayList<DictionaryDO> dictList;
         ArrayList<TableDataRow> model;
 
-        try {
-            statusWorking = DictionaryCache.getIdBySystemName("worksheet_working");
-            statusFailedRun = DictionaryCache.getIdBySystemName("worksheet_failed");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-        
         //
         // load worksheet status dropdown model
         //
-        dictList  = CategoryCache.getBySystemName("worksheet_status");
+        dictList = CategoryCache.getBySystemName("worksheet_status");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         statusId.setModel(model);
 
         //
         // load the instrument type model
         //
-        dictList  = CategoryCache.getBySystemName("instrument_type");
+        dictList = CategoryCache.getBySystemName("instrument_type");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
-            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+            model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         ((Dropdown<Integer>)instrumentId.getColumns().get(2).getColumnWidget()).setModel(model);
     }
-    
+
     protected void fetchById(Integer id) {
         if (id == null) {
             manager = WorksheetManager.getInstance();
@@ -581,14 +582,14 @@ public class WorksheetCompletionScreen extends Screen {
             });
         }
     }
-    
+
     private void drawTabs() {
         switch (tab) {
             case WORKSHEET:
-                if (!tableLoaded)
+                if ( !tableLoaded)
                     table.load(getTableModel());
                 break;
-                
+
             case NOTE:
                 noteTab.draw();
                 break;
@@ -597,7 +598,7 @@ public class WorksheetCompletionScreen extends Screen {
 
     protected void openLookupWindow() {
         ScreenWindow modal;
-        
+
         try {
             if (wLookupScreen == null) {
                 wLookupScreen = new WorksheetLookupScreen();
@@ -605,7 +606,7 @@ public class WorksheetCompletionScreen extends Screen {
                     @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
-                        WorksheetViewDO         wVDO;
+                        WorksheetViewDO wVDO;
 
                         if (event.getAction() == WorksheetLookupScreen.Action.SELECT) {
                             list = (ArrayList<TableDataRow>)event.getData();
@@ -630,7 +631,7 @@ public class WorksheetCompletionScreen extends Screen {
             return;
         }
     }
-    
+
     protected void update() {
         window.setBusy(consts.get("lockForUpdate"));
         final WorksheetCompletionScreen wcs = this;
@@ -651,13 +652,13 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     protected void commit() {
-//        long t0, t1;
-//        AsyncCallback<ReportStatus> cb;
-        
-//        commitDone = false;
+        // long t0, t1;
+        // AsyncCallback<ReportStatus> cb;
+
+        // commitDone = false;
         setFocus(null);
 
-        if (!validate()) {
+        if ( !validate()) {
             Window.alert(consts.get("correctErrors"));
             return;
         }
@@ -671,9 +672,9 @@ public class WorksheetCompletionScreen extends Screen {
                 DataChangeEvent.fire(wcs);
                 window.setDone(consts.get("updatingComplete"));
                 successfulLoad = false;
-//                commitDone = true;
+                // commitDone = true;
             }
-            
+
             public void onFailure(Throwable error) {
                 if (error instanceof ValidationErrorsList) {
                     showErrors((ValidationErrorsList)error);
@@ -681,31 +682,31 @@ public class WorksheetCompletionScreen extends Screen {
                     Window.alert("save(): " + error.getMessage());
                     window.clearStatus();
                 }
-//                commitDone = true;
+                // commitDone = true;
             }
         });
-        
-//        cb = new AsyncCallback<ReportStatus>() {
-//            public void onSuccess(ReportStatus status) {
-//                if (ReportStatus.Status.RUNNING.equals(status.getStatus())) {
-//                    window.setBusy(consts.get("updating")+" - "+status.getPercentComplete()+"%");
-//                    window.setProgress(status.getPercentComplete());
-//                }
-//            }
-//            
-//            public void onFailure(Throwable error) {
-//                window.setBusy(consts.get("updating")+" - ERROR");
-//            }
-//        };
-        
-//        do {
-//            service.call("getUpdateStatus", cb);
-//            t0 = System.currentTimeMillis();
-//            do {
-//                t1 = System.currentTimeMillis();
-//            } while (t1 - t0 > 1000);
-//        } while (!commitDone);
-//        window.setProgress(-1);
+
+        // cb = new AsyncCallback<ReportStatus>() {
+        // public void onSuccess(ReportStatus status) {
+        // if (ReportStatus.Status.RUNNING.equals(status.getStatus())) {
+        // window.setBusy(consts.get("updating")+" - "+status.getPercentComplete()+"%");
+        // window.setProgress(status.getPercentComplete());
+        // }
+        // }
+        //
+        // public void onFailure(Throwable error) {
+        // window.setBusy(consts.get("updating")+" - ERROR");
+        // }
+        // };
+
+        // do {
+        // service.call("getUpdateStatus", cb);
+        // t0 = System.currentTimeMillis();
+        // do {
+        // t1 = System.currentTimeMillis();
+        // } while (t1 - t0 > 1000);
+        // } while (!commitDone);
+        // window.setProgress(-1);
     }
 
     protected void abort() {
@@ -739,29 +740,35 @@ public class WorksheetCompletionScreen extends Screen {
 
     protected void worksheetHistory() {
         IdNameVO hist;
-        
-        hist = new IdNameVO(manager.getWorksheet().getId(), manager.getWorksheet().getId().toString());
-        HistoryScreen.showHistory(consts.get("worksheetHistory"), ReferenceTable.WORKSHEET, hist);        
+
+        hist = new IdNameVO(manager.getWorksheet().getId(), manager.getWorksheet()
+                                                                   .getId()
+                                                                   .toString());
+        HistoryScreen.showHistory(consts.get("worksheetHistory"),
+                                  Constants.table().WORKSHEET,
+                                  hist);
     }
-    
+
     protected void editWorksheet() {
         window.setBusy("Saving worksheet for editing");
         WorkSheetCompletionService.get().saveForEdit(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager wMan) {
                 SystemUserVO userVO;
-                
+
                 userVO = null;
                 try {
-                    userVO = UserCache.getSystemUser(manager.getWorksheet().getSystemUserId());
-                    window.setDone(consts.get("worksheetCompletionEditConfirm")+
-                                   " "+displayFileDirectory+manager.getWorksheet().getId()+
-                                   "_"+userVO.getLoginName()+".xls");
+                    userVO = UserCache.getSystemUser(manager.getWorksheet()
+                                                            .getSystemUserId());
+                    window.setDone(consts.get("worksheetCompletionEditConfirm") + " " +
+                                   displayFileDirectory + manager.getWorksheet().getId() +
+                                   "_" + userVO.getLoginName() + ".xls");
                 } catch (Exception anyE) {
-                    Window.alert("Error retrieving username for worksheet: "+anyE.getMessage());
+                    Window.alert("Error retrieving username for worksheet: " +
+                                 anyE.getMessage());
                     window.clearStatus();
                 }
             }
-            
+
             public void onFailure(Throwable error) {
                 Window.alert("editWorksheet(): " + error.getMessage());
                 window.clearStatus();
@@ -774,20 +781,20 @@ public class WorksheetCompletionScreen extends Screen {
             Window.alert(consts.get("oneWorksheetLoadPerCommit"));
             return;
         }
-        
+
         final WorksheetCompletionScreen wcs = this;
-        
+
         window.setBusy("Loading worksheet from edited file");
         WorkSheetCompletionService.get().loadFromEdit(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager newMan) {
-                int                          i;
-                ArrayList<Object>            tempBundle;
-                ArrayList<ResultViewDO>      reflexResults;
-                ArrayList<SampleDataBundle>  reflexBundles;
+                int i;
+                ArrayList<Object> tempBundle;
+                ArrayList<ResultViewDO> reflexResults;
+                ArrayList<SampleDataBundle> reflexBundles;
                 ArrayList<ArrayList<Object>> bundles;
-                HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap;
-                SampleDataBundle             bundle;
-                
+                HashMap<SampleDataBundle, ArrayList<ResultViewDO>> reflexMap;
+                SampleDataBundle bundle;
+
                 manager = newMan;
                 DataChangeEvent.fire(wcs);
 
@@ -818,13 +825,13 @@ public class WorksheetCompletionScreen extends Screen {
                 }
 
                 testReflexUtil.setScreen(wcs);
-                
+
                 bundles = manager.getReflexBundles();
                 reflexBundles = new ArrayList<SampleDataBundle>();
-                reflexMap = new HashMap<SampleDataBundle,ArrayList<ResultViewDO>>();
-                for (i = 0; i < bundles.size(); i++) {
+                reflexMap = new HashMap<SampleDataBundle, ArrayList<ResultViewDO>>();
+                for (i = 0; i < bundles.size(); i++ ) {
                     tempBundle = bundles.get(i);
-                    bundle = (SampleDataBundle) tempBundle.get(0);
+                    bundle = (SampleDataBundle)tempBundle.get(0);
                     reflexResults = reflexMap.get(bundle);
                     if (reflexResults == null) {
                         reflexResults = new ArrayList<ResultViewDO>();
@@ -837,11 +844,11 @@ public class WorksheetCompletionScreen extends Screen {
                     testReflexUtil.resultsEntered(reflexBundles, reflexMap);
                 } catch (Exception anyE) {
                     Window.alert(anyE.getMessage());
-                }                    
+                }
                 successfulLoad = true;
                 manager.getReflexBundles().clear();
             }
-            
+
             public void onFailure(Throwable error) {
                 if (error instanceof ValidationErrorsList) {
                     showErrors((ValidationErrorsList)error);
@@ -856,7 +863,7 @@ public class WorksheetCompletionScreen extends Screen {
 
     private void openWorksheetLookup() {
         ScreenWindow modal;
-        
+
         try {
             if (wrLookupScreen == null) {
                 final WorksheetCompletionScreen wcs = this;
@@ -865,20 +872,21 @@ public class WorksheetCompletionScreen extends Screen {
                     @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
-                        WorksheetViewDO         wVDO;
+                        WorksheetViewDO wVDO;
 
                         if (event.getAction() == WorksheetLookupScreen.Action.SELECT) {
                             list = (ArrayList<TableDataRow>)event.getData();
                             if (list != null) {
                                 wVDO = (WorksheetViewDO)list.get(0).data;
-                                manager.getWorksheet().setRelatedWorksheetId(wVDO.getId());
+                                manager.getWorksheet()
+                                       .setRelatedWorksheetId(wVDO.getId());
                                 DataChangeEvent.fire(wcs, relatedWorksheetId);
                             }
                         }
                     }
                 });
             }
-            
+
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("worksheetLookup"));
             modal.setContent(wrLookupScreen);
@@ -888,10 +896,10 @@ public class WorksheetCompletionScreen extends Screen {
             return;
         }
     }
-    
+
     protected void openWorksheetFileUpload() {
         ScreenWindow modal;
-        
+
         try {
             if (wFileUploadScreen == null) {
                 final WorksheetCompletionScreen wcs = this;
@@ -903,7 +911,7 @@ public class WorksheetCompletionScreen extends Screen {
                     }
                 });
             }
-            
+
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("worksheetFileUpload"));
             modal.setContent(wFileUploadScreen);
@@ -913,19 +921,20 @@ public class WorksheetCompletionScreen extends Screen {
             return;
         }
     }
-    
+
     protected void openFailedRunNote() {
         ScreenWindow modal;
-        
-        if (editNote == null) {         
+
+        if (editNote == null) {
             userName = UserCache.getPermission().getLoginName();
             userId = UserCache.getPermission().getSystemUserId();
-            try {                
+            try {
                 editNote = new EditNoteScreen();
                 editNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                     public void onAction(ActionEvent<EditNoteScreen.Action> event) {
                         if (event.getAction() == EditNoteScreen.Action.OK) {
-                            if (failedRunNote.getText() == null || failedRunNote.getText().trim().length() == 0) {
+                            if (failedRunNote.getText() == null ||
+                                failedRunNote.getText().trim().length() == 0) {
                                 try {
                                     manager.getNotes().removeEditingNote();
                                 } catch (Exception anyE) {
@@ -964,17 +973,17 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     private boolean canEditAny() {
-        HashMap<Integer,SectionViewDO> sections;
-        Iterator<SectionViewDO>        iter;
-        SectionViewDO                  section;
-        SectionPermission              perm;
+        HashMap<Integer, SectionViewDO> sections;
+        Iterator<SectionViewDO> iter;
+        SectionViewDO section;
+        SectionPermission perm;
 
         try {
             sections = manager.getAnalysisSections();
-            // No sections means it's a QC only worksheet. 
+            // No sections means it's a QC only worksheet.
             if (sections.isEmpty())
                 return true;
-            
+
             iter = sections.values().iterator();
             while (iter.hasNext()) {
                 section = iter.next();
@@ -984,37 +993,38 @@ public class WorksheetCompletionScreen extends Screen {
             }
         } catch (Exception anyE) {
             anyE.printStackTrace();
-            Window.alert("Error loading sections for permission check:" + anyE.getMessage());
+            Window.alert("Error loading sections for permission check:" +
+                         anyE.getMessage());
         }
 
         return false;
     }
 
     private ArrayList<TableDataRow> getTableModel() {
-        int                      i, j, k, l;
-        AnalysisManager          aManager;
-        AnalysisResultManager    arManager;
-        AnalysisViewDO           aVDO;
-        ArrayList<IdNameVO>      headers;
-        ArrayList<TableDataRow>  model;
-        HashMap<Integer,String>  qcLinkMap;
-        QcLotViewDO              qcLotVDO;
-        ResultViewDO             rVDO;
-        SampleDataBundle         bundle;
-        SampleDomainInt          sDomain;
-        SampleManager            sManager;
+        int i, j, k, l;
+        AnalysisManager aManager;
+        AnalysisResultManager arManager;
+        AnalysisViewDO aVDO;
+        ArrayList<IdNameVO> headers;
+        ArrayList<TableDataRow> model;
+        HashMap<Integer, String> qcLinkMap;
+        QcLotViewDO qcLotVDO;
+        ResultViewDO rVDO;
+        SampleDataBundle bundle;
+        SampleDomainInt sDomain;
+        SampleManager sManager;
         SampleOrganizationViewDO soVDO;
-        SamplePrivateWellViewDO  spwVDO;
-        String                   headerLabels[], description, location;
-        TableDataRow             row;
-        WorksheetAnalysisDO      waDO;
+        SamplePrivateWellViewDO spwVDO;
+        String headerLabels[], description, location;
+        TableDataRow row;
+        WorksheetAnalysisDO waDO;
         WorksheetAnalysisManager waManager;
-        WorksheetItemDO          wiDO;
+        WorksheetItemDO wiDO;
         WorksheetQcResultManager wqrManager;
-        WorksheetQcResultViewDO  wqrVDO;
-        WorksheetResultManager   wrManager;
-        WorksheetResultViewDO    wrVDO;
-        
+        WorksheetQcResultViewDO wqrVDO;
+        WorksheetResultManager wrManager;
+        WorksheetResultViewDO wrVDO;
+
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
@@ -1023,89 +1033,100 @@ public class WorksheetCompletionScreen extends Screen {
         try {
             headers = WorkSheetCompletionService.get().getHeaderLabelsForScreen(manager);
         } catch (Exception anyE) {
-            Window.alert("Error loading headers for format; "+anyE.getMessage());
+            Window.alert("Error loading headers for format; " + anyE.getMessage());
             anyE.printStackTrace();
         }
 
         headerLabels = table.view.headers;
         if (headerLabels == null)
             headerLabels = new String[39];
-        for (i = 0; i < headers.size(); i++)
+        for (i = 0; i < headers.size(); i++ )
             headerLabels[i] = headers.get(i).getName();
         table.view.header.setHeaders(headerLabels);
 
-        qcLinkMap = new HashMap<Integer,String>();
+        qcLinkMap = new HashMap<Integer, String>();
         try {
-            for (i = 0; i < manager.getItems().count(); i++) {
+            for (i = 0; i < manager.getItems().count(); i++ ) {
                 wiDO = manager.getItems().getWorksheetItemAt(i);
                 waManager = manager.getItems().getWorksheetAnalysisAt(i);
 
                 row = new TableDataRow(39);
                 row.cells.get(0).value = wiDO.getPosition().toString();
-                for (j = 0; j < waManager.count(); j++) {
+                for (j = 0; j < waManager.count(); j++ ) {
                     waDO = waManager.getWorksheetAnalysisAt(j);
                     qcLinkMap.put(waDO.getId(), waDO.getAccessionNumber());
-                    
+
                     if (j != 0)
                         row.cells.get(0).value = null;
-                    
+
                     row.cells.get(1).value = waDO.getAccessionNumber();
 
                     if (waDO.getAnalysisId() != null) {
                         bundle = waManager.getBundleAt(j);
                         sManager = bundle.getSampleManager();
                         sDomain = sManager.getDomainManager();
-                        aManager = sManager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+                        aManager = sManager.getSampleItems()
+                                           .getAnalysisAt(bundle.getSampleItemIndex());
                         aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
                         arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
 
                         description = "";
-                        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
-                            location = ((SampleEnvironmentalManager)sDomain).getEnvironmental().getLocation();
+                        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(sManager.getSample()
+                                                                                   .getDomain())) {
+                            location = ((SampleEnvironmentalManager)sDomain).getEnvironmental()
+                                                                            .getLocation();
                             if (location != null && location.length() > 0)
-                                description = "[loc]"+location;
+                                description = "[loc]" + location;
                             soVDO = sManager.getOrganizations().getReportTo();
                             if (soVDO != null && soVDO.getOrganizationName() != null &&
                                 soVDO.getOrganizationName().length() > 0) {
                                 if (description.length() > 0)
                                     description += " ";
-                                description += "[rpt]"+soVDO.getOrganizationName();
+                                description += "[rpt]" + soVDO.getOrganizationName();
                             }
-                        } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
-                            location = ((SampleSDWISManager)sDomain).getSDWIS().getLocation();
+                        } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(sManager.getSample()
+                                                                                  .getDomain())) {
+                            location = ((SampleSDWISManager)sDomain).getSDWIS()
+                                                                    .getLocation();
                             if (location != null && location.length() > 0)
-                                description = "[loc]"+location;
+                                description = "[loc]" + location;
                             soVDO = sManager.getOrganizations().getReportTo();
                             if (soVDO != null && soVDO.getOrganizationName() != null &&
                                 soVDO.getOrganizationName().length() > 0) {
                                 if (description.length() > 0)
                                     description += " ";
-                                description += "[rpt]"+soVDO.getOrganizationName();
+                                description += "[rpt]" + soVDO.getOrganizationName();
                             }
-                        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample()
+                                                                                 .getDomain())) {
                             spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
-                            if (spwVDO.getLocation() != null && spwVDO.getLocation().length() > 0)
-                                description = "[loc]"+spwVDO.getLocation();
-                            if (spwVDO.getOrganizationId() != null && spwVDO.getOrganization().getName() != null &&
+                            if (spwVDO.getLocation() != null &&
+                                spwVDO.getLocation().length() > 0)
+                                description = "[loc]" + spwVDO.getLocation();
+                            if (spwVDO.getOrganizationId() != null &&
+                                spwVDO.getOrganization().getName() != null &&
                                 spwVDO.getOrganization().getName().length() > 0) {
                                 if (description.length() > 0)
                                     description += " ";
-                                description += "[rpt]"+spwVDO.getOrganization().getName();
-                            } else if (spwVDO.getReportToName() != null && spwVDO.getReportToName().length() > 0) {
+                                description += "[rpt]" +
+                                               spwVDO.getOrganization().getName();
+                            } else if (spwVDO.getReportToName() != null &&
+                                       spwVDO.getReportToName().length() > 0) {
                                 if (description.length() > 0)
                                     description += " ";
-                                description += "[rpt]"+spwVDO.getReportToName();
+                                description += "[rpt]" + spwVDO.getReportToName();
                             }
                         }
                         row.cells.get(2).value = description;
-                        
+
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
                         row.cells.get(4).value = aVDO.getTestName();
                         row.cells.get(5).value = aVDO.getMethodName();
-                        row.cells.get(6).value = DictionaryCache.getById(aVDO.getStatusId()).getEntry();
+                        row.cells.get(6).value = DictionaryCache.getById(aVDO.getStatusId())
+                                                                .getEntry();
 
                         wrManager = waManager.getWorksheetResultAt(j);
-                        for (k = 0; k < wrManager.count(); k++) {
+                        for (k = 0; k < wrManager.count(); k++ ) {
                             wrVDO = wrManager.getWorksheetResultAt(k);
                             if (k != 0) {
                                 row.cells.get(0).value = "";
@@ -1119,11 +1140,11 @@ public class WorksheetCompletionScreen extends Screen {
                             rVDO = arManager.getResultAt(wrVDO.getResultRow(), 0);
                             row.cells.get(7).value = wrVDO.getAnalyteName();
                             row.cells.get(8).value = rVDO.getIsReportable();
-                            for (l = 0; l < 30; l++)
-                                row.cells.get(9+l).value = wrVDO.getValueAt(l);
+                            for (l = 0; l < 30; l++ )
+                                row.cells.get(9 + l).value = wrVDO.getValueAt(l);
                             model.add((TableDataRow)row.clone());
                         }
-                        
+
                         //
                         // Add the row if there were no analytes
                         //
@@ -1133,7 +1154,7 @@ public class WorksheetCompletionScreen extends Screen {
                         }
                     } else if (waDO.getQcLotId() != null) {
                         qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
-                        
+
                         row.cells.get(2).value = qcLotVDO.getQcName();
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
                         row.cells.get(4).value = "";
@@ -1141,7 +1162,7 @@ public class WorksheetCompletionScreen extends Screen {
                         row.cells.get(6).value = "";
 
                         wqrManager = waManager.getWorksheetQcResultAt(j);
-                        for (k = 0; k < wqrManager.count(); k++) {
+                        for (k = 0; k < wqrManager.count(); k++ ) {
                             if (k != 0) {
                                 row.cells.get(0).value = "";
                                 row.cells.get(1).value = "";
@@ -1154,11 +1175,11 @@ public class WorksheetCompletionScreen extends Screen {
                             wqrVDO = wqrManager.getWorksheetQcResultAt(k);
                             row.cells.get(7).value = wqrVDO.getAnalyteName();
                             row.cells.get(8).value = "";
-                            for (l = 0; l < 30; l++)
-                                row.cells.get(9+l).value = wqrVDO.getValueAt(l);
+                            for (l = 0; l < 30; l++ )
+                                row.cells.get(9 + l).value = wqrVDO.getValueAt(l);
                             model.add((TableDataRow)row.clone());
                         }
-                        
+
                         //
                         // Add the row if there were no analytes
                         //
@@ -1176,12 +1197,12 @@ public class WorksheetCompletionScreen extends Screen {
 
         // Set the QC Link column for each row to the Accession Number for the
         // row to which it is linked
-        for (i = 0; i < model.size(); i++) {
+        for (i = 0; i < model.size(); i++ ) {
             row = model.get(i);
             if (row.cells.get(3).value != null)
                 row.cells.get(3).value = qcLinkMap.get(row.cells.get(3).value);
         }
-        
+
         tableLoaded = true;
         return model;
     }

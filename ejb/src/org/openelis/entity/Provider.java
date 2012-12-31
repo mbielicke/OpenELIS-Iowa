@@ -45,9 +45,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -160,18 +159,18 @@ public class Provider implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.PROVIDER);
+        audit.setReferenceTableId(Constants.table().PROVIDER);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                 .setField("last_name", lastName, original.lastName)
                 .setField("first_name", firstName, original.firstName)
                 .setField("middle_name", middleName, original.middleName)
-                .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
+                .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY)
                 .setField("npi", npi, original.npi);
 
         return audit;

@@ -43,9 +43,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -176,16 +175,16 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.EXCHANGE_EXTERNAL_TERM);
+        audit.setReferenceTableId(Constants.table().EXCHANGE_EXTERNAL_TERM);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("exchange_local_term_id", exchangeLocalTermId, original.exchangeLocalTermId)
-                 .setField("profile_id", profileId, original.profileId, ReferenceTable.DICTIONARY)
+                 .setField("profile_id", profileId, original.profileId, Constants.table().DICTIONARY)
                  .setField("is_active", isActive, original.isActive)
                  .setField("external_term", externalTerm, original.externalTerm)
                  .setField("external_description", externalDescription, original.externalDescription)

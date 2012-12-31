@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.analyteParameter.client;
 
 import java.util.ArrayList;
@@ -32,11 +32,11 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalyteParameterViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -98,38 +98,40 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AnalyteParameterScreen extends Screen {
-    private AnalyteParameterManager manager;   
+    private AnalyteParameterManager manager;
     private ModulePermission        userPermission;
-        
+
     private AnalyteParameterScreen  screen;
     private ScreenNavigator         nav;
-    
+
     private AppButton               queryButton, previousButton, nextButton, addButton,
-                                    updateButton, commitButton, abortButton;
-    
-    private Dropdown<Integer>       referenceTableId, sampleTypeLatest, sampleTypePrevious;
+                    updateButton, commitButton, abortButton;
+
+    private Dropdown<Integer>       referenceTableId, sampleTypeLatest,
+                    sampleTypePrevious;
     private AutoComplete<Integer>   referenceName;
     private TreeWidget              parameterTree;
     private TableWidget             atozTable;    
     
     private ArrayList<TableDataRow> sampleTypeModel;
-    private boolean                 warningShown;   
-    private static final String    LATEST_LEAF = "latest", PREVIOUS_LEAF = "previous"; 
-    
+    private boolean                 warningShown;
+    private static final String     LATEST_LEAF = "latest", PREVIOUS_LEAF = "previous";
+
     public AnalyteParameterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteParameterDef.class));
-        
-        userPermission =  UserCache.getPermission().getModule("analyteparameter");
+
+        userPermission = UserCache.getPermission().getModule("analyteparameter");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Analyte Parameter Screen");
+            throw new PermissionException("screenPermException",
+                                          "Analyte Parameter Screen");
 
         DeferredCommand.addCommand(new Command() {
-            public void execute() { 
+            public void execute() {
                 postConstructor();
             }
         });
     }
-    
+
     /**
      * This method is called to set the initial state of widgets after the
      * screen is attached to the browser. It is usually called in deferred
@@ -137,20 +139,20 @@ public class AnalyteParameterScreen extends Screen {
      */
     private void postConstructor() {
         manager = AnalyteParameterManager.getInstance();
-        
-        try{
-            CategoryCache.getBySystemNames("type_of_sample","analyte_parameter_type");
-        } catch(Exception e){
+
+        try {
+            CategoryCache.getBySystemNames("type_of_sample", "analyte_parameter_type");
+        } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
         }
-        
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
     }
-    
+
     /**
      * Setup state and data change handles for every widget on the screen
      */
@@ -181,7 +183,8 @@ public class AnalyteParameterScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY)
+                                             .contains(event.getState()));
             }
         });
 
@@ -248,25 +251,26 @@ public class AnalyteParameterScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
-        
+
         referenceTableId = (Dropdown)def.getWidget(AnalyteParameterMeta.getReferenceTableId());
         addScreenHandler(referenceTableId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 referenceTableId.setSelection(manager.getReferenceTableId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) { 
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 if (state == State.QUERY)
                     return;
                 manager = AnalyteParameterManager.getInstance();
                 manager.setReferenceTableId(event.getValue());
                 manager.setReferenceId(null);
                 manager.setReferenceName("");
-                DataChangeEvent.fire(screen);                
+                DataChangeEvent.fire(screen);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceTableId.enable(EnumSet.of(State.QUERY,State.ADD).contains(event.getState()));
+                referenceTableId.enable(EnumSet.of(State.QUERY, State.ADD)
+                                               .contains(event.getState()));
                 referenceTableId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -276,13 +280,14 @@ public class AnalyteParameterScreen extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 String name;
                 Integer refId;
-                              
+
                 refId = manager.getReferenceTableId();
-                if (refId == null || ReferenceTable.QC != refId)
+                if (refId == null || Constants.table().QC != refId)
                     name = manager.getReferenceName();
                 else
-                    name = getQcLabel(manager.getReferenceId(), manager.getReferenceName());
-                
+                    name = getQcLabel(manager.getReferenceId(),
+                                      manager.getReferenceName());
+
                 referenceName.setSelection(manager.getReferenceId(), name);
             }
 
@@ -295,22 +300,18 @@ public class AnalyteParameterScreen extends Screen {
                 manager = AnalyteParameterManager.getInstance();
                 manager.setReferenceId(rid);
                 manager.setReferenceTableId(rtid);
-                manager.setReferenceName(referenceName.getTextBoxDisplay());                
+                manager.setReferenceName(referenceName.getTextBoxDisplay());
 
-                if (rid != null && rtid != null) {                    
+                if (rid != null && rtid != null) {
                     window.setBusy(consts.get("fetching"));
                     try {
-                        switch (rtid) {
-                            case ReferenceTable.TEST:
-                                loadFromTest(rid);
-                                break;
-                            case ReferenceTable.QC:                                
-                                loadFromQc(rid);
-                                sampleTypeLatest.setModel(sampleTypeModel);
-                                sampleTypePrevious.setModel(sampleTypeModel);
-                                break;
-                            case ReferenceTable.PROVIDER:
-                                break;
+                        if (Constants.table().TEST.equals(rtid)) {
+                            loadFromTest(rid);
+                        } else if (Constants.table().QC.equals(rtid)) {
+                            loadFromQc(rid);
+                            sampleTypeLatest.setModel(sampleTypeModel);
+                            sampleTypePrevious.setModel(sampleTypeModel);
+                        } else if (Constants.table().PROVIDER.equals(rtid)) {
                         }
                     } catch (NotFoundException e) {
                         // do nothing
@@ -318,97 +319,103 @@ public class AnalyteParameterScreen extends Screen {
                         Window.alert(e.getMessage());
                     }
                     window.clearStatus();
-                }                
+                }
                 DataChangeEvent.fire(screen, parameterTree);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceName.enable(EnumSet.of(State.QUERY,State.ADD).contains(event.getState()));
+                referenceName.enable(EnumSet.of(State.QUERY, State.ADD)
+                                            .contains(event.getState()));
                 referenceName.setQueryMode(event.getState() == State.QUERY);
             }
-        });        
-        
-        referenceName.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {           
-            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {                
+        });
+
+        referenceName.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
+            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
                 if (referenceTableId.getValue() == null) {
-                    Window.alert(consts.get("pleaseSelectType"));                    
+                    Window.alert(consts.get("pleaseSelectType"));
                     event.cancel();
                 }
             }
         });
-        
-        referenceName.addGetMatchesHandler(new GetMatchesHandler() {           
+
+        referenceName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 String search;
-                               
+
                 search = QueryFieldUtil.parseAutocomplete(event.getMatch());
-                switch (referenceTableId.getValue()) {
-                    case ReferenceTable.TEST:  
-                        referenceName.showAutoMatches(getTestModel(search));
-                        break;
-                    case ReferenceTable.QC:    
-                        referenceName.showAutoMatches(getQcModel(search));
-                        break;
-                    case ReferenceTable.PROVIDER:                        
-                        break;
+                if (Constants.table().TEST.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getTestModel(search));
+                else if (Constants.table().QC.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getQcModel(search));
+                else if (Constants.table().PROVIDER.equals(referenceTableId.getValue())) {
+                    referenceName.showAutoMatches(getProviderModel(search));
                 }
             }
         });
-        
+
         parameterTree = (TreeWidget)def.getWidget("parameterTree");
-        sampleTypeLatest = ((Dropdown)parameterTree.getColumns().get(LATEST_LEAF).get(2).getColumnWidget());
-        sampleTypePrevious = ((Dropdown)parameterTree.getColumns().get(PREVIOUS_LEAF).get(2).getColumnWidget());
+        sampleTypeLatest = ((Dropdown)parameterTree.getColumns()
+                                                   .get(LATEST_LEAF)
+                                                   .get(2)
+                                                   .getColumnWidget());
+        sampleTypePrevious = ((Dropdown)parameterTree.getColumns()
+                                                     .get(PREVIOUS_LEAF)
+                                                     .get(2)
+                                                     .getColumnWidget());
 
-        addScreenHandler(parameterTree, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) { 
-                parameterTree.load(getTreeModel());
-            }
+        addScreenHandler(parameterTree,
+                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 parameterTree.load(getTreeModel());
+                             }
 
-            public void onStateChange(StateChangeEvent<State> event) {                
-                parameterTree.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));                                
-            }
-        });       
-        
-        parameterTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>() {           
+                             public void onStateChange(StateChangeEvent<State> event) {
+                                 parameterTree.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                                             .contains(event.getState()));
+                             }
+                         });
+
+        parameterTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>() {
             public void onBeforeSelection(BeforeSelectionEvent<TreeDataItem> event) {
             }
-        });         
-        
-        parameterTree.addBeforeLeafOpenHandler(new BeforeLeafOpenHandler() {    
+        });
+
+        parameterTree.addBeforeLeafOpenHandler(new BeforeLeafOpenHandler() {
             public void onBeforeLeafOpen(BeforeLeafOpenEvent event) {
-                int i,j,index;
+                int i, j, index;
                 TreeDataItem item;
                 ArrayList<AnalyteParameterViewDO> list;
                 AnalyteParameterViewDO data, newData;
                 Query query;
                 QueryData field;
                 ArrayList<QueryData> fields;
-                
+
                 item = event.getItem();
-                if (item.hasChildren() || PREVIOUS_LEAF.equals(item.leafType))                     
+                if (item.hasChildren() || PREVIOUS_LEAF.equals(item.leafType))
                     return;
-                
+
                 query = new Query();
-                fields = new ArrayList<QueryData>();                                 
-                
+                fields = new ArrayList<QueryData>();
+
                 data = (AnalyteParameterViewDO)item.data;
-                
+
                 field = new QueryData();
                 field.query = data.getAnalyteId().toString();
                 field.type = QueryData.Type.INTEGER;
                 fields.add(field);
-                
+
                 field = new QueryData();
                 field.query = manager.getReferenceId().toString();
                 field.type = QueryData.Type.INTEGER;
                 fields.add(field);
-                    
+
                 field = new QueryData();
-                field.query = manager.getReferenceTableId().toString();            
+                field.query = manager.getReferenceTableId().toString();
                 field.type = QueryData.Type.INTEGER;
                 fields.add(field);
-                query.setFields(fields);                
-                
+                query.setFields(fields);
+
                 try {
                     window.setBusy(consts.get("fetching"));
                     list = AnalyteParameterService.get().fetchByAnalyteIdReferenceIdReferenceTableId(query);
@@ -417,82 +424,89 @@ public class AnalyteParameterScreen extends Screen {
                         j = 1;
                     else
                         j = 0;
-                    for (i = 0; i < list.size(); i++) {
+                    for (i = 0; i < list.size(); i++ ) {
                         newData = list.get(i);
-                        if (newData.getId().equals(data.getId())) 
-                            continue;                        
-                        item.addItem(getItem(newData, PREVIOUS_LEAF));                        
-                        manager.addParamaterAt(newData, index+i+j);                             
-                    }                        
+                        if (newData.getId().equals(data.getId()))
+                            continue;
+                        item.addItem(getItem(newData, PREVIOUS_LEAF));
+                        manager.addParamaterAt(newData, index + i + j);
+                    }
                 } catch (NotFoundException ignE) {
                     // do nothing
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                }       
-                
+                }
+
                 item.checkForChildren(item.hasChildren());
                 parameterTree.refresh(true);
                 window.clearStatus();
             }
         });
-        
-        parameterTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {           
+
+        parameterTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int c;
                 TreeDataItem item;
                 AnalyteParameterViewDO data;
-              
+
                 c = event.getCol();
                 if (c < 2) {
                     event.cancel();
                     return;
                 }
-                
+
                 item = parameterTree.getSelection();
                 data = (AnalyteParameterViewDO)item.data;
-                if (state == State.ADD) {                     
+                if (state == State.ADD) {
                     if (data.getId() != null)
                         event.cancel();
                 } else if (state == State.UPDATE) {
-                    if (data.getId() != null && "N".equals(data.getIsActive()) && !warningShown) {
+                    if (data.getId() != null && "N".equals(data.getIsActive()) &&
+                        !warningShown) {
                         Window.alert(consts.get("editPreviousWarning"));
                         warningShown = true;
                     }
-                }      
+                }
             }
         });
-        
-        parameterTree.addCellEditedHandler(new CellEditedHandler() {            
-            public void onCellUpdated(CellEditedEvent event) {                
+
+        parameterTree.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 AnalyteParameterViewDO data, prevData;
                 Object val;
                 ArrayList<TreeDataItem> list;
                 TreeDataItem item, prevItem;
                 Datetime ab, prevae;
-                                
+
                 r = event.getRow();
                 c = event.getCol();
-                item = parameterTree.getSelection();                
+                item = parameterTree.getSelection();
                 data = (AnalyteParameterViewDO)item.data;
                 val = parameterTree.getObject(r, c);
-                
+
                 switch (c) {
                     case 2:
                         data.setTypeOfSampleId((Integer)val);
                         break;
                     case 3:
-                        data.setActiveBegin((Datetime)val);    
+                        data.setActiveBegin((Datetime)val);
                         if (data.getId() != null && val == null) {
-                            parameterTree.setCellException(r, c, new LocalizedException(consts.get("fieldRequiredException")));
-                            return;
-                        }                                           
-                        if (!beginDateValid(item)) {
-                            parameterTree.setCellException(r, c, new LocalizedException(consts.get("beginDateInvalidException")));
+                            parameterTree.setCellException(r,
+                                                           c,
+                                                           new LocalizedException(consts.get("fieldRequiredException")));
                             return;
                         }
-                        if (!endDateValid(data)) {
-                            parameterTree.setCellException(r, c, new LocalizedException(consts.get("endDateInvalidException")));
+                        if ( !beginDateValid(item)) {
+                            parameterTree.setCellException(r,
+                                                           c,
+                                                           new LocalizedException(consts.get("beginDateInvalidException")));
+                            return;
+                        }
+                        if ( !endDateValid(data)) {
+                            parameterTree.setCellException(r,
+                                                           c,
+                                                           new LocalizedException(consts.get("endDateInvalidException")));
                             return;
                         }
                         if (changeActive(data))
@@ -505,15 +519,15 @@ public class AnalyteParameterScreen extends Screen {
                             prevItem = list.get(0);
                             prevData = (AnalyteParameterViewDO)prevItem.data;
                             /*
-                             * we set the end date of the previous entry to be
-                             * a minute before this entry's begin date if the end
-                             * date of the previous entry is not before the begin 
-                             * date of this entry
-                             */                               
+                             * we set the end date of the previous entry to be a
+                             * minute before this entry's begin date if the end
+                             * date of the previous entry is not before the
+                             * begin date of this entry
+                             */
                             prevae = prevData.getActiveEnd();
                             if (prevae.compareTo(ab) >= 0) {
-                                prevae.getDate().setTime(ab.getDate().getTime() - 60000);                                 
-                                prevItem.cells.get(4).setValue(prevae);                                
+                                prevae.getDate().setTime(ab.getDate().getTime() - 60000);
+                                prevItem.cells.get(4).setValue(prevae);
                             }
                             prevData.setIsActive("N");
                             prevItem.cells.get(0).setValue("N");
@@ -523,11 +537,15 @@ public class AnalyteParameterScreen extends Screen {
                     case 4:
                         data.setActiveEnd((Datetime)val);
                         if (data.getId() != null && val == null) {
-                            parameterTree.setCellException(r, c, new LocalizedException(consts.get("fieldRequiredException")));
+                            parameterTree.setCellException(r,
+                                                           c,
+                                                           new LocalizedException(consts.get("fieldRequiredException")));
                             return;
                         }
-                        if (!endDateValid(data)) {
-                            parameterTree.setCellException(r, c, new LocalizedException(consts.get("endDateInvalidException")));
+                        if ( !endDateValid(data)) {
+                            parameterTree.setCellException(r,
+                                                           c,
+                                                           new LocalizedException(consts.get("endDateInvalidException")));
                             return;
                         }
                         if (changeActive(data)) {
@@ -535,7 +553,7 @@ public class AnalyteParameterScreen extends Screen {
                             list = item.getItems();
                             if (list != null && list.size() > 0) {
                                 prevItem = list.get(0);
-                                prevData = (AnalyteParameterViewDO)prevItem.data;                                                                                      
+                                prevData = (AnalyteParameterViewDO)prevItem.data;
                                 prevData.setIsActive("N");
                                 prevItem.cells.get(0).setValue("N");
                                 parameterTree.refreshRow(prevItem);
@@ -545,7 +563,9 @@ public class AnalyteParameterScreen extends Screen {
                     case 5:
                         data.setP1((Double)val);
                         if (data.getId() != null && val == null) {
-                            parameterTree.setCellException(r, c, new LocalizedException(consts.get("fieldRequiredException")));
+                            parameterTree.setCellException(r,
+                                                           c,
+                                                           new LocalizedException(consts.get("fieldRequiredException")));
                             return;
                         }
                         if (changeActive(data)) {
@@ -553,7 +573,7 @@ public class AnalyteParameterScreen extends Screen {
                             list = item.getItems();
                             if (list != null && list.size() > 0) {
                                 prevItem = list.get(0);
-                                prevData = (AnalyteParameterViewDO)prevItem.data;                                                                                      
+                                prevData = (AnalyteParameterViewDO)prevItem.data;
                                 prevData.setIsActive("N");
                                 prevItem.cells.get(0).setValue("N");
                                 parameterTree.refreshRow(prevItem);
@@ -569,9 +589,9 @@ public class AnalyteParameterScreen extends Screen {
                 }
             }
         });
-        
+
         atozTable = (TableWidget)def.getWidget("atozTable");
-        
+
         //
         // left hand navigation panel
         //
@@ -585,20 +605,20 @@ public class AnalyteParameterScreen extends Screen {
                         setQueryResult(result);
                     }
 
-                    public void onFailure(Throwable error) {
-                        setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
-                            setState(State.DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
-                        } else {
-                            Window.alert("Error: Analyte Parameter call query failed; " +
-                                         error.getMessage());
-                            window.setError(consts.get("queryFailed"));
-                        }
-                    }
-                });
+                                     public void onFailure(Throwable error) {
+                                         setQueryResult(null);
+                                         if (error instanceof NotFoundException) {
+                                             window.setDone(consts.get("noRecordsFound"));
+                                             setState(State.DEFAULT);
+                                         } else if (error instanceof LastPageException) {
+                                             window.setError(consts.get("noMoreRecordInDir"));
+                                         } else {
+                                             Window.alert("Error: Analyte Parameter call query failed; " +
+                                                          error.getMessage());
+                                             window.setError(consts.get("queryFailed"));
+                                         }
+                                     }
+                                 });
             }
 
             public boolean fetch(ReferenceIdTableIdNameVO entry) {
@@ -617,46 +637,47 @@ public class AnalyteParameterScreen extends Screen {
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
-                    model = new ArrayList<TableDataRow>();                    
-                    for (ReferenceIdTableIdNameVO entry : result) { 
+                    model = new ArrayList<TableDataRow>();
+                    for (ReferenceIdTableIdNameVO entry : result) {
                         name = null;
-                        switch (entry.getReferenceTableId())  {
-                            case ReferenceTable.QC:
-                                name = getQcLabel(entry.getReferenceId(), entry.getReferenceName());
-                                break;
-                            case ReferenceTable.TEST:
-                                name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(), " , ", entry.getReferenceDescription());
-                                break;
-                            case ReferenceTable.PROVIDER:
-                                break;
-                        }
-                            
-                        model.add(new TableDataRow(entry.getReferenceId(), entry.getReferenceTableId(), name));
+                        if (Constants.table().TEST.equals(entry.getReferenceTableId()))
+                            name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(),
+                                                                    " , ",
+                                                                    entry.getReferenceDescription());
+                        else if (Constants.table().QC.equals(entry.getReferenceTableId()))
+                            name = getQcLabel(entry.getReferenceId(),
+                                              entry.getReferenceName());
+                        else if (Constants.table().PROVIDER.equals(entry.getReferenceTableId()))
+                            name = "";
+                        model.add(new TableDataRow(entry.getReferenceId(),
+                                                   entry.getReferenceTableId(),
+                                                   name));
                     }
                 }
                 return model;
             }
         };
-        
+
         addScreenHandler(atozTable, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
+                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
+                                .contains(event.getState()) &&
                          userPermission.hasSelectPermission();
                 nav.enable(enable);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
             }
         });
-    }    
-    
+    }
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
@@ -667,24 +688,24 @@ public class AnalyteParameterScreen extends Screen {
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             if ("analyte_param_type_test".equals(resultDO.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.TEST, resultDO.getEntry());
+                row = new TableDataRow(Constants.table().TEST, resultDO.getEntry());
                 row.enabled = ("Y".equals(resultDO.getIsActive()));
                 model.add(row);
             } else if ("analyte_param_type_qc".equals(resultDO.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.QC, resultDO.getEntry());
+                row = new TableDataRow(Constants.table().QC, resultDO.getEntry());
                 row.enabled = ("Y".equals(resultDO.getIsActive()));
                 model.add(row);
             } else if ("analyte_param_type_provider".equals(resultDO.getSystemName())) {
-                row = new TableDataRow(ReferenceTable.PROVIDER, resultDO.getEntry());
+                row = new TableDataRow(Constants.table().PROVIDER, resultDO.getEntry());
                 row.enabled = ("Y".equals(resultDO.getIsActive()));
-                model.add(row);                      
+                model.add(row);
             }
-        }        
-        
+        }
+
         referenceTableId.setModel(model);
-        
+
         ((Dropdown)atozTable.getColumnWidget(AnalyteParameterMeta.getReferenceTableId())).setModel(model);
-        
+
         model = new ArrayList<TableDataRow>();
         list = CategoryCache.getBySystemName("type_of_sample");
         model.add(new TableDataRow(null, ""));
@@ -696,30 +717,30 @@ public class AnalyteParameterScreen extends Screen {
         sampleTypeModel = model;
         sampleTypeLatest.setModel(model);
         sampleTypePrevious.setModel(model);
-    }   
-    
+    }
+
     public boolean validate() {
         ArrayList<TableDataRow> sels;
-        
+
         if (state != State.QUERY)
             return super.validate();
-                
+
         sels = referenceTableId.getSelections();
-        
-        if (sels.size() == 0 || sels.get(0).key == null) { 
+
+        if (sels.size() == 0 || sels.get(0).key == null) {
             //
             // type e.g. Test, QC etc. must be specified in query mode
             //
-            referenceTableId.addException(new LocalizedException(consts.get("fieldRequiredException")));            
+            referenceTableId.addException(new LocalizedException(consts.get("fieldRequiredException")));
         } else if (sels.size() > 1) {
             //
             // we don't allow more than one type to be selected
             //
             referenceTableId.addException(new LocalizedException(consts.get("onlyOneTypeSelectionForQueryException")));
-        } 
+        }
         return super.validate();
     }
-    
+
     /*
      * basic button methods
      */
@@ -728,7 +749,7 @@ public class AnalyteParameterScreen extends Screen {
 
         setState(State.QUERY);
         DataChangeEvent.fire(this);
-        
+
         setFocus(referenceTableId);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -754,20 +775,20 @@ public class AnalyteParameterScreen extends Screen {
     protected void update() {
         TestTypeOfSampleManager ttsm;
         ArrayList<TableDataRow> model;
-        
+
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
             manager = manager.fetchForUpdate();
-            if (manager.getReferenceTableId().equals(ReferenceTable.TEST)) {
+            if (manager.getReferenceTableId().equals(Constants.table().TEST)) {
                 ttsm = TestTypeOfSampleManager.fetchByTestId(manager.getReferenceId());
-                model = getSampleTypeModel(ttsm);                
+                model = getSampleTypeModel(ttsm);
             } else {
                 model = sampleTypeModel;
-            }            
+            }
             sampleTypeLatest.setModel(model);
             sampleTypePrevious.setModel(model);
-            
+
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
             setFocus(referenceName);
@@ -780,7 +801,7 @@ public class AnalyteParameterScreen extends Screen {
 
     protected void commit() {
         Query query;
-        
+
         setFocus(null);
 
         if ( !validate()) {
@@ -848,15 +869,16 @@ public class AnalyteParameterScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     private boolean fetchByRefIdRefTableId(Integer refId, Integer refTableId) {
-        if (refId == null || refTableId ==  null) {
+        if (refId == null || refTableId == null) {
             manager = AnalyteParameterManager.getInstance();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                manager = AnalyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
+                manager = AnalyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId,
+                                                                                           refTableId);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchByRefIdRefTableId(null, null);
@@ -878,7 +900,7 @@ public class AnalyteParameterScreen extends Screen {
     private ArrayList<TableDataRow> getTestModel(String search) {
         ArrayList<TableDataRow> model;
         ArrayList<TestMethodVO> list;
-        
+
         model = new ArrayList<TableDataRow>();
         try {
             list  = TestService.get().fetchByName(search);
@@ -887,15 +909,15 @@ public class AnalyteParameterScreen extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
-        
+
         return model;
     }
-    
+
     private ArrayList<TableDataRow> getQcModel(String search) {
         ArrayList<TableDataRow> model;
         ArrayList<QcLotViewDO> list;
         TableDataRow row;
-        
+
         model = new ArrayList<TableDataRow>();
         try {
             list  = QcService.get().fetchActiveByName(search);
@@ -911,13 +933,18 @@ public class AnalyteParameterScreen extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
-        
+
         return model;
-    }   
-    
-    private void loadFromTest(Integer id) throws Exception {        
+    }
+
+    private ArrayList<TableDataRow> getProviderModel(String search) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private void loadFromTest(Integer id) throws Exception {
         int i, j;
-        AnalyteParameterViewDO data; 
+        AnalyteParameterViewDO data;
         TestAnalyteManager tam;
         TestTypeOfSampleManager ttsm;
         ArrayList<TestAnalyteViewDO> list;
@@ -925,97 +952,99 @@ public class AnalyteParameterScreen extends Screen {
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteViewDO ta;
         TestManager tm;
-        
-        tm = TestManager.fetchById(id);                
+
+        tm = TestManager.fetchById(id);
         tam = tm.getTestAnalytes();
         grid = tam.getAnalytes();
         //
-        // load analyte parameters in this AnalyteParameterManager from the test's analytes
+        // load analyte parameters in this AnalyteParameterManager from the
+        // test's analytes
         //
-        for (i = 0; i < grid.size(); i++) {
+        for (i = 0; i < grid.size(); i++ ) {
             list = grid.get(i);
-            for (j = 0; j < list.size(); j++) {
+            for (j = 0; j < list.size(); j++ ) {
                 ta = list.get(j);
                 if ("Y".equals(ta.getIsColumn()))
                     continue;
                 data = new AnalyteParameterViewDO();
-                data.setReferenceId(manager.getReferenceId());    
+                data.setReferenceId(manager.getReferenceId());
                 data.setReferenceTableId(manager.getReferenceTableId());
                 data.setReferenceName(manager.getReferenceName());
                 data.setAnalyteId(ta.getAnalyteId());
-                data.setAnalyteName(ta.getAnalyteName());         
+                data.setAnalyteName(ta.getAnalyteName());
                 data.setIsActive("N");
                 manager.addParamater(data);
             }
         }
-        
-        ttsm = tm.getSampleTypes();        
+
+        ttsm = tm.getSampleTypes();
         //
-        // load the dropdown that shows sample types from the test's sample types
+        // load the dropdown that shows sample types from the test's sample
+        // types
         //
         model = getSampleTypeModel(ttsm);
         sampleTypeLatest.setModel(model);
         sampleTypePrevious.setModel(model);
     }
-    
+
     private void loadFromQc(Integer id) throws Exception {
         int i;
-        AnalyteParameterViewDO data; 
+        AnalyteParameterViewDO data;
         QcAnalyteManager man;
         QcAnalyteViewDO qca;
-                
-        man = QcAnalyteManager.fetchByQcId(id);        
-        for (i = 0; i < man.count(); i++) {
+
+        man = QcAnalyteManager.fetchByQcId(id);
+        for (i = 0; i < man.count(); i++ ) {
             qca = man.getAnalyteAt(i);
             data = new AnalyteParameterViewDO();
-            data.setReferenceId(manager.getReferenceId());    
+            data.setReferenceId(manager.getReferenceId());
             data.setReferenceTableId(manager.getReferenceTableId());
             data.setReferenceName(manager.getReferenceName());
             data.setAnalyteId(qca.getAnalyteId());
-            data.setAnalyteName(qca.getAnalyteName());         
+            data.setAnalyteName(qca.getAnalyteName());
             data.setIsActive("N");
             manager.addParamater(data);
         }
     }
-    
+
     private ArrayList<TreeDataItem> getTreeModel() {
         int i;
         ArrayList<TreeDataItem> model;
         AnalyteParameterViewDO data;
         TreeDataItem item;
         Integer anaId;
-        
-        model = new ArrayList<TreeDataItem>();        
+
+        model = new ArrayList<TreeDataItem>();
         if (manager == null)
             return model;
-      
-        if (state == State.ADD) {                                    
+
+        if (state == State.ADD) {
             anaId = null;
-            for (i = 0; i < manager.count(); i++) {                
+            for (i = 0; i < manager.count(); i++ ) {
                 data = manager.getParameterAt(i);
-                item = getItem(data, LATEST_LEAF);                    
-                item.checkForChildren(true);                    
-                model.add(item);                             
-            }            
+                item = getItem(data, LATEST_LEAF);
+                item.checkForChildren(true);
+                model.add(item);
+            }
         } else if (state == State.DISPLAY || state == State.UPDATE) {
             anaId = null;
-            for (i = 0; i < manager.count(); i++) {                
+            for (i = 0; i < manager.count(); i++ ) {
                 data = manager.getParameterAt(i);
-                if (!data.getAnalyteId().equals(anaId)) {
-                    item = getItem(data, LATEST_LEAF);              
+                if ( !data.getAnalyteId().equals(anaId)) {
+                    item = getItem(data, LATEST_LEAF);
                     item.checkForChildren(true);
-                    model.add(item);                             
+                    model.add(item);
                 }
                 anaId = data.getAnalyteId();
             }
-        }                
+        }
 
         return model;
-    }    
-    
+    }
+
     private TreeDataItem getItem(AnalyteParameterViewDO data, String leaftype) {
         TreeDataItem item;
-        
+
         item = new TreeDataItem(8);
         item.leafType = leaftype;
         item.cells.get(0).setValue(data.getIsActive());
@@ -1027,27 +1056,27 @@ public class AnalyteParameterScreen extends Screen {
         item.cells.get(6).setValue(data.getP2());
         item.cells.get(7).setValue(data.getP3());
         item.data = data;
-        
+
         return item;
-    }      
-    
+    }
+
     private boolean changeActive(AnalyteParameterViewDO data) {
         boolean active;
-        
+
         if (data.getId() != null)
             return false;
         active = (data.getActiveBegin() != null && data.getActiveEnd() != null && data.getP1() != null);
         if (active && "N".equals(data.getIsActive())) {
             data.setIsActive("Y");
             return true;
-        } else if (!active && "Y".equals(data.getIsActive())) {
+        } else if ( !active && "Y".equals(data.getIsActive())) {
             data.setIsActive("N");
             return true;
         }
-        
+
         return false;
     }
-    
+
     private ArrayList<TableDataRow> getSampleTypeModel(TestTypeOfSampleManager man) {
         ArrayList<TableDataRow> model;
         TestTypeOfSampleDO data;
@@ -1067,7 +1096,6 @@ public class AnalyteParameterScreen extends Screen {
 
         return model;
     }
-    
 
     private boolean beginDateValid(TreeDataItem item) {
         int i, index;
@@ -1080,7 +1108,7 @@ public class AnalyteParameterScreen extends Screen {
         ab = data.getActiveBegin();
         if (ab == null)
             return true;
-        
+
         index = -1;
         if (item.parent != null) {
             list = item.parent.getItems();
@@ -1088,38 +1116,40 @@ public class AnalyteParameterScreen extends Screen {
         } else {
             list = item.getItems();
             if (list == null || list.size() == 0)
-                return true;           
+                return true;
         }
-        
+
         //
-        // begin date must be at least a minute after the begin date of each child
+        // begin date must be at least a minute after the begin date of each
+        // child
         //
-        for (i = index+1; i < list.size(); i++) {
+        for (i = index + 1; i < list.size(); i++ ) {
             tmp = list.get(i);
             chData = (AnalyteParameterViewDO)tmp.data;
             chab = chData.getActiveBegin();
-            if (chab != null && (ab.getDate().getTime() - chab.getDate().getTime()) <= 60000)
+            if (chab != null &&
+                (ab.getDate().getTime() - chab.getDate().getTime()) <= 60000)
                 return false;
         }
         return true;
     }
-    
+
     private boolean endDateValid(AnalyteParameterViewDO data) {
         Datetime ab, ae;
-        
+
         ab = data.getActiveBegin();
         ae = data.getActiveEnd();
-        if (ab == null || ae == null) 
-            return true;               
+        if (ab == null || ae == null)
+            return true;
         //
-        // end date must be after begin date 
+        // end date must be after begin date
         //
-        return (ab.compareTo(ae) == -1);        
+        return (ab.compareTo(ae) == -1);
     }
-    
+
     private String getQcLabel(Integer qcId, String qcName) {
         String desc;
-        
+
         if (qcId == null || DataBaseUtil.isEmpty(qcName))
             return null;
         desc = DataBaseUtil.concatWithSeparator("(", qcId.toString(), ")");

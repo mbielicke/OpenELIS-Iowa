@@ -37,7 +37,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.entity.AnalysisReportFlags;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -45,7 +45,6 @@ import org.openelis.gwt.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class AnalysisReportFlagsBean {
 
     @PersistenceContext(unitName = "openelis")
@@ -95,14 +94,14 @@ public class AnalysisReportFlagsBean {
         AnalysisReportFlags entity;
 
         if ( !data.isChanged()) {
-            lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
+            lock.unlock(Constants.table().ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
             return data;
         }
 
         validate(data);
-        
-        lock.validateLock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
-        
+
+        lock.validateLock(Constants.table().ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
+
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(AnalysisReportFlags.class, data.getAnalysisId());
@@ -112,8 +111,8 @@ public class AnalysisReportFlagsBean {
         entity.setBilledAnalytes(data.getBilledAnalytes());
         entity.setBilledZero(data.getBilledZero());
 
-        lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
-        
+        lock.unlock(Constants.table().ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
+
         return data;
     }
 
@@ -122,20 +121,20 @@ public class AnalysisReportFlagsBean {
 
         if (ids.size() == 0)
             return new ArrayList<AnalysisReportFlagsDO>();
-        
+
         query = manager.createNamedQuery("AnalysisReportFlags.FetchBySampleAccessionNumbers");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public AnalysisReportFlagsDO fetchForUpdateByAnalysisId(Integer analysisId) throws Exception {
-        lock.lock(ReferenceTable.ANALYSIS_REPORT_FLAGS, analysisId);
+        lock.lock(Constants.table().ANALYSIS_REPORT_FLAGS, analysisId);
         return fetchByAnalysisId(analysisId);
     }
 
     public AnalysisReportFlagsDO abortUpdate(Integer analysisId) throws Exception {
-        lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, analysisId);
+        lock.unlock(Constants.table().ANALYSIS_REPORT_FLAGS, analysisId);
         return fetchByAnalysisId(analysisId);
     }
 

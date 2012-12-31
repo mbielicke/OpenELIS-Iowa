@@ -32,6 +32,7 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -100,7 +101,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
+public class AnalyteAndResultTab extends Screen
+                                               implements
+                                               GetMatchesHandler,
                                                BeforeGetMatchesHandler,
                                                HasActionHandlers<AnalyteAndResultTab.Action>,
                                                ActionHandler<SampleTypeTab.Action> {
@@ -109,14 +112,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     };
 
     private TestManager                                  manager;
-    
+
     private AnalyteAndResultTab                          screen;
     private TestAnalyteDisplayManager<TestAnalyteViewDO> displayManager;
-
-    private Integer                                      typeDict, typeNumeric, typeTiter,
-                                                         typeDefault, typeDate, typeDateTime,
-                                                         typeTime, typeAlphaLower, typeAlphaUpper,
-                                                         typeAlphaMixed ;
 
     private DictionaryLookupScreen                       dictLookup;
 
@@ -127,13 +125,13 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private CheckBox                                     isReportable;
     private AutoComplete<Integer>                        scriptlet;
     private AppButton                                    addButton, removeButton,
-                                                         addResultTabButton, dictionaryLookUpButton, addTestResultButton,
-                                                         removeTestResultButton;
+                    addResultTabButton, dictionaryLookUpButton, addTestResultButton,
+                    removeTestResultButton;
 
     private ArrayList<GridFieldErrorException>           resultErrorList;
 
     private boolean                                      addAnalyteRow, loaded,
-                                                         headerAddedInTheMiddle, canAddRemoveColumn;
+                    headerAddedInTheMiddle, canAddRemoveColumn;
 
     private int                                          anaSelCol, tempId;
 
@@ -166,40 +164,41 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         rangeNumeric = new ResultRangeNumeric();
         rangeTiter = new ResultRangeTiter();
-        
-        analyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>(){
+
+        analyteTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
                 ArrayList<TableDataRow> selections;
-                TableDataRow row,selRow;             
-                
-                selections = analyteTable.getSelections();  
-                
-                if(state != State.ADD  && state != State.UPDATE) 
+                TableDataRow row, selRow;
+
+                selections = analyteTable.getSelections();
+
+                if (state != State.ADD && state != State.UPDATE)
                     return;
-                
+
                 //
                 // since this table supports multiple selection, we want to make
-                // sure that if the first row selected is an analyte row  then
-                // all the subsequently selected rows are analyte rows and if the
+                // sure that if the first row selected is an analyte row then
+                // all the subsequently selected rows are analyte rows and if
+                // the
                 // first row selected is a header row then all the
                 // subsequently selected rows are header rows, so through this
-                // code we prevent users from selecting the other kind of row 
-                //                
-                selRow = event.getItem().row;               
-                                                
-                if(selections.size() > 0) {
-                    row = selections.get(selections.size()-1);
-                    if(!(row.data.equals(selRow.data))) {                                    
+                // code we prevent users from selecting the other kind of row
+                //
+                selRow = event.getItem().row;
+
+                if (selections.size() > 0) {
+                    row = selections.get(selections.size() - 1);
+                    if ( ! (row.data.equals(selRow.data))) {
                         Window.alert(consts.get("headerCantSelWithAnalytes"));
                         event.cancel();
-                    }        
+                    }
                     addButton.enable(false);
                     removeButton.enable(false);
                 } else {
                     addButton.enable(true);
                     removeButton.enable(true);
-                }                
-            }            
+                }
+            }
         });
 
         analyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
@@ -220,14 +219,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 } else {
                     enableAnalyteWidgets(true);
                 }
-                
+
                 cancel = false;
-                auto = (AutoComplete<Integer>)analyteTable.getColumns().get(c).getColumnWidget();
+                auto = (AutoComplete<Integer>)analyteTable.getColumns()
+                                                          .get(c)
+                                                          .getColumnWidget();
 
                 try {
                     row = analyteTable.getRow(r);
                     if ((Boolean)row.data) {
-                        // 
+                        //
                         // the first two columns of a header row are immutable
                         // and we also don't want to allow a user to be able to
                         // edit a header row column that's beyond the number of
@@ -274,31 +275,34 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             //
                             // we always allow adding or removing of columns at
                             // the third column of a header row
-                            // 
+                            //
                             canAddRemoveColumn = true;
                         }
-                        
+
                         //
                         // send DataChangeEvent to the three widgets to make
                         // them either show the data that corresponds to this
-                        // cell or make them go blank 
+                        // cell or make them go blank
                         //
                         refreshAnalyteWidgets();
                     } else {
                         if (c > displayManager.columnCount(r)) {
                             //
                             // for a header row, we allow editing of the cell
-                            // that's next to last cell that has data in it but in the
+                            // that's next to last cell that has data in it but
+                            // in the
                             // case of a non-header row, i.e. here, we don't;
                             // only cells under those header cells that have
-                            // data in them can be edited; in addition to this, we
-                            // disable the three widgets and disallow adding or removing
+                            // data in them can be edited; in addition to this,
+                            // we
+                            // disable the three widgets and disallow adding or
+                            // removing
                             // columns
                             //
                             event.cancel();
                             cancel = true;
                             enableAnalyteWidgets(false);
-                            canAddRemoveColumn = false;                            
+                            canAddRemoveColumn = false;
                         } else if (c > 0) {
                             if (c == 1) {
                                 prevVal = (TableDataRow)row.cells.get(c - 1).getValue();
@@ -327,7 +331,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                     resultTabPanel.selectTab(key - 1);
                                 }
                             }
-                            // 
+                            //
                             // we disable the three widgets and disallow adding
                             // or removing columns and make the three widget to
                             // show no data
@@ -337,12 +341,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             anaSelCol = -1;
                             auto.setDelay(1);
                         }
-                        
+
                         //
                         // send DataChangeEvent to the three widgets to make
                         // them either show the data that corresponds to this
-                        // cell or make them go blank 
-                        //  
+                        // cell or make them go blank
+                        //
                         refreshAnalyteWidgets();
                     }
                 } catch (Exception ex) {
@@ -359,7 +363,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         analyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int i,r, c, numCol, dindex,rows[];
+                int i, r, c, numCol, dindex, rows[];
                 String name;
                 TableDataRow row, val;
                 TestAnalyteViewDO data;
@@ -373,32 +377,37 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 c = event.getCol();
                 row = analyteTable.getRow(r);
                 val = (TableDataRow)analyteTable.getObject(r, c);
-                if(val != null)
+                if (val != null)
                     key = (Integer)val.key;
-                auto = (AutoComplete<Integer>)analyteTable.getColumns().get(c).getColumnWidget();
+                auto = (AutoComplete<Integer>)analyteTable.getColumns()
+                                                          .get(c)
+                                                          .getColumnWidget();
                 rows = analyteTable.getSelectedRows();
-                
+
                 try {
                     man = manager.getTestAnalytes();
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
-                
+
                 try {
-                    if ((Boolean)row.data) {                        
+                    if ((Boolean)row.data) {
                         numCol = displayManager.columnCount(r);
                         if (numCol < c) {
                             if (key != null) {
                                 //
-                                // we need to add a new column to the data grid if
+                                // we need to add a new column to the data grid
+                                // if
                                 // this column in the table in a sub header was
                                 // edited for the first time and the key set as
                                 // its value is not null
                                 //
                                 dindex = displayManager.getDataRowIndex(r);
-                                man.addColumnAt(dindex, c - 1, key,
-                                                               auto.getTextBoxDisplay());
+                                man.addColumnAt(dindex,
+                                                c - 1,
+                                                key,
+                                                auto.getTextBoxDisplay());
                                 displayManager.setDataGrid(man.getAnalytes());
                             }
                         } else {
@@ -442,16 +451,17 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             // otherwise we need to set the key as the result
                             // group number in the DO
                             //
-                            for(i = 0; i < rows.length; i++) {
+                            for (i = 0; i < rows.length; i++ ) {
                                 data = displayManager.getObjectAt(rows[i], c - 1);
-                                if(data == null)
+                                if (data == null)
                                     continue;
                                 data.setResultGroup(key);
                                 if (key == null)
                                     name = "";
-                                else 
+                                else
                                     name = key.toString();
-                                analyteTable.setCell(rows[i], c, new TableDataRow(key, name));
+                                analyteTable.setCell(rows[i], c, new TableDataRow(key,
+                                                                                  name));
                             }
                         }
                     }
@@ -492,14 +502,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 TestAnalyteManager man;
 
                 man = null;
-                
+
                 try {
                     man = manager.getTestAnalytes();
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
-                
+
                 try {
                     row = event.getRow();
                     index = event.getIndex();
@@ -524,17 +534,21 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         // size of displayManager's index list because the list
                         // corresponding to the new row won't have been added to
                         // the grid maintained by TestAnalyteManager;so if the
-                        // number of rows in the table is more than one (index > 0),
-                        // we try to find dindex for the last row in displayManager's
+                        // number of rows in the table is more than one (index >
+                        // 0),
+                        // we try to find dindex for the last row in
+                        // displayManager's
                         // index list; if prow is a header and has been added in
-                        // the middle of the table, (headerAddedInTheMiddle == true),
+                        // the middle of the table, (headerAddedInTheMiddle ==
+                        // true),
                         // i.e. not at the end, then this means that the list
                         // corresponding to the row above this one which is the
-                        // header row exists neither in TestAnalyteManager nor in
+                        // header row exists neither in TestAnalyteManager nor
+                        // in
                         // displayManager,thus we need to look at the list
                         // corresponding to the row two places above (index-2)
                         // in the table
-                        //                                                
+                        //
                         if ( (dindex == -1 && index > 0) || headerAddedInTheMiddle) {
                             dindex = displayManager.getDataRowIndex(index - 2);
                             headerAddedInTheMiddle = false;
@@ -552,12 +566,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             // existing one
                             // and thus the first boolean argument to addRowAt
                             // is false
-                            //                                                                                    
+                            //
                             if (index + 1 < analyteTable.numRows()) {
                                 nrow = analyteTable.getRow(index + 1);
                                 if ( !(Boolean)nrow.data) {
-                                    man.addRowAt(dindex, false, false,
-                                                                getNextTempId());
+                                    man.addRowAt(dindex, false, false, getNextTempId());
                                     displayManager.setDataGrid(man.getAnalytes());
                                     analyteTable.selectRow(index);
                                     return;
@@ -571,9 +584,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             man.addRowAt(dindex + 1, true, false, getNextTempId());
                         } else {
                             //
-                            // if prow is an analyte row then the newly added row has
+                            // if prow is an analyte row then the newly added
+                            // row has
                             // not been added to a new group and it will have to
-                            // look at row previous to it in the data grid to copy 
+                            // look at row previous to it in the data grid to
+                            // copy
                             // data from look
                             //
                             man.addRowAt(dindex + 1, false, true, getNextTempId());
@@ -584,7 +599,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         //
                         // if the row added is a header row and it's the first
                         // one in the table then an analyte row should be added
-                        // after it if the add button was clicked with "Header" selected
+                        // after it if the add button was clicked with "Header"
+                        // selected
                         //
                         addrow = new TableDataRow(10);
                         addrow.data = new Boolean(false);
@@ -624,7 +640,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
-                
+
                 if ( !(Boolean)row.data) {
                     dindex = displayManager.getDataRowIndex(index);
                     data = man.getAnalyteAt(dindex, 0);
@@ -642,53 +658,56 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             public void onDataChange(DataChangeEvent event) {
                 TestAnalyteViewDO data;
                 int r;
-                
-                r = analyteTable.getSelectedRow();                
-                                
-                if (displayManager != null && r != -1) {                                                                                       
-                        if (anaSelCol == 0)
-                            data = displayManager.getObjectAt(r, anaSelCol);
-                        else
-                            data = displayManager.getObjectAt(r, anaSelCol - 1);
 
-                        if (data != null)
-                            typeId.setSelection(data.getTypeId());
-                        else
-                            typeId.setSelection(null);                        
+                r = analyteTable.getSelectedRow();
+
+                if (displayManager != null && r != -1) {
+                    if (anaSelCol == 0)
+                        data = displayManager.getObjectAt(r, anaSelCol);
+                    else
+                        data = displayManager.getObjectAt(r, anaSelCol - 1);
+
+                    if (data != null)
+                        typeId.setSelection(data.getTypeId());
+                    else
+                        typeId.setSelection(null);
 
                 } else {
                     //
-                    // everytime the data on the screen changes, the model in the analyte
-                    // table gets refreshed; thus there are no rows and columns selected 
-                    // at that point and hence this widget needs to be cleared of any 
+                    // everytime the data on the screen changes, the model in
+                    // the analyte
+                    // table gets refreshed; thus there are no rows and columns
+                    // selected
+                    // at that point and hence this widget needs to be cleared
+                    // of any
                     // previous selection
                     //
-                    if(typeId.getData() != null)
-                        typeId.setSelection(null);   
+                    if (typeId.getData() != null)
+                        typeId.setSelection(null);
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {                
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 TestAnalyteViewDO data;
                 TableDataRow row, nrow;
-                int i,j,index, r[];
+                int i, j, index, r[];
 
                 r = analyteTable.getSelectedRows();
-                if (r != null && anaSelCol != -1) {   
+                if (r != null && anaSelCol != -1) {
                     analyteTable.finishEditing();
                     index = r[0];
-                    row = analyteTable.getRow(index);                    
+                    row = analyteTable.getRow(index);
                     if ((Boolean)row.data) {
-                        for (i = 0; i < r.length; i++) {
+                        for (i = 0; i < r.length; i++ ) {
                             index = r[i];
-                            for (j = index; j < analyteTable.numRows(); j++) {
+                            for (j = index; j < analyteTable.numRows(); j++ ) {
                                 data = displayManager.getObjectAt(j, anaSelCol - 1);
-                                if(data == null)
+                                if (data == null)
                                     continue;
-                                
+
                                 data.setTypeId(event.getValue());
                                 analyteTable.clearCellExceptions(j, anaSelCol);
-                                
+
                                 if (j + 1 < analyteTable.numRows()) {
                                     nrow = analyteTable.getRow(j + 1);
                                     if ((Boolean)nrow.data)
@@ -697,28 +716,31 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             }
                         }
                     } else {
-                        for(j = 0; j < r.length; j++) {
+                        for (j = 0; j < r.length; j++ ) {
                             nrow = analyteTable.getRow(r[j]);
                             if ((Boolean)nrow.data)
                                 break;
                             data = displayManager.getObjectAt(r[j], anaSelCol);
                             data.setTypeId(event.getValue());
                             analyteTable.clearCellExceptions(r[j], anaSelCol);
-                        }                        
-                    }                   
-                }                
+                        }
+                    }
+                }
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {                
+            public void onStateChange(StateChangeEvent<State> event) {
                 //
-                // everytime the state of the screen changes, the model in the analyte
-                // table gets refreshed; thus there are no rows and columns selected 
-                // at that point and hence this widget needs to be cleared of any 
+                // everytime the state of the screen changes, the model in the
+                // analyte
+                // table gets refreshed; thus there are no rows and columns
+                // selected
+                // at that point and hence this widget needs to be cleared of
+                // any
                 // previous selection and disabled
                 //
-                if(typeId.getData() != null)
+                if (typeId.getData() != null)
                     typeId.setSelection(null);
-                
+
                 typeId.enable(false);
             }
         });
@@ -740,40 +762,43 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     if (data != null)
                         isReportable.setValue(data.getIsReportable());
                     else
-                        isReportable.setValue("N");                   
+                        isReportable.setValue("N");
 
-                } else {            
+                } else {
                     //
-                    // everytime the data on the screen changes, the model in the analyte
-                    // table gets refreshed; thus there are no rows and columns selected 
-                    // at that point and hence this widget needs to be cleared of any 
+                    // everytime the data on the screen changes, the model in
+                    // the analyte
+                    // table gets refreshed; thus there are no rows and columns
+                    // selected
+                    // at that point and hence this widget needs to be cleared
+                    // of any
                     // previous affirmative choices made
                     //
-                    isReportable.setValue("N");    
+                    isReportable.setValue("N");
                 }
 
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {                
+            public void onValueChange(ValueChangeEvent<String> event) {
                 TestAnalyteViewDO data;
                 TableDataRow row, nrow;
-                int i,j,index, r[];
+                int i, j, index, r[];
 
                 r = analyteTable.getSelectedRows();
-                if (r != null && anaSelCol != -1) {     
+                if (r != null && anaSelCol != -1) {
                     analyteTable.finishEditing();
                     index = r[0];
-                    row = analyteTable.getRow(index);                    
+                    row = analyteTable.getRow(index);
                     if ((Boolean)row.data) {
-                        for (i = 0; i < r.length; i++) {
+                        for (i = 0; i < r.length; i++ ) {
                             index = r[i];
-                            for (j = index; j < analyteTable.numRows(); j++) {
+                            for (j = index; j < analyteTable.numRows(); j++ ) {
                                 data = displayManager.getObjectAt(j, anaSelCol - 1);
-                                if(data == null)
+                                if (data == null)
                                     continue;
-                                
+
                                 data.setIsReportable(event.getValue());
-                                
+
                                 if (j + 1 < analyteTable.numRows()) {
                                     nrow = analyteTable.getRow(j + 1);
                                     if ((Boolean)nrow.data)
@@ -782,25 +807,28 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             }
                         }
                     } else {
-                        for(j = 0; j < r.length; j++) {
+                        for (j = 0; j < r.length; j++ ) {
                             nrow = analyteTable.getRow(r[j]);
                             if ((Boolean)nrow.data)
                                 break;
                             data = displayManager.getObjectAt(r[j], anaSelCol);
                             data.setIsReportable(event.getValue());
-                        }                        
-                    }                   
-                } 
+                        }
+                    }
+                }
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {                
+            public void onStateChange(StateChangeEvent<State> event) {
                 //
-                // everytime state of the screen changes, the model in the analyte
-                // table gets refreshed; thus there are no rows and columns selected 
-                // at that point and hence this widget needs to be cleared of any 
+                // everytime state of the screen changes, the model in the
+                // analyte
+                // table gets refreshed; thus there are no rows and columns
+                // selected
+                // at that point and hence this widget needs to be cleared of
+                // any
                 // previous affirmative choice made and disabled
                 //
-                isReportable.setValue("N");                
+                isReportable.setValue("N");
                 isReportable.enable(false);
             }
         });
@@ -817,45 +845,48 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     if (anaSelCol == 0)
                         data = displayManager.getObjectAt(r, anaSelCol);
                     else
-                        data = displayManager.getObjectAt(r, anaSelCol - 1);                    
-                                        
+                        data = displayManager.getObjectAt(r, anaSelCol - 1);
+
                     if (data != null)
-                        scriptlet.setSelection(data.getScriptletId(), data.getScriptletName());
+                        scriptlet.setSelection(data.getScriptletId(),
+                                               data.getScriptletName());
                     else
                         scriptlet.setSelection(null, "");
                 } else {
                     //
-                    // everytime the data on the screen changes, the model in the analyte
-                    // table gets refreshed; thus there are no rows and columns selected 
-                    // at that point and hence this widget needs to be cleared of any 
+                    // everytime the data on the screen changes, the model in
+                    // the analyte
+                    // table gets refreshed; thus there are no rows and columns
+                    // selected
+                    // at that point and hence this widget needs to be cleared
+                    // of any
                     // previous selection and disabled
                     //
                     scriptlet.setSelection(null, "");
                 }
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {   
+            public void onValueChange(ValueChangeEvent<Integer> event) {
                 TestAnalyteViewDO data;
                 TableDataRow row, nrow;
-                int i,j,index, r[];
+                int i, j, index, r[];
 
-                
                 r = analyteTable.getSelectedRows();
-                if (r != null && anaSelCol != -1) { 
+                if (r != null && anaSelCol != -1) {
                     analyteTable.finishEditing();
                     index = r[0];
-                    row = analyteTable.getRow(index);                    
+                    row = analyteTable.getRow(index);
                     if ((Boolean)row.data) {
-                        for (i = 0; i < r.length; i++) {
+                        for (i = 0; i < r.length; i++ ) {
                             index = r[i];
-                            for (j = index; j < analyteTable.numRows(); j++) {
+                            for (j = index; j < analyteTable.numRows(); j++ ) {
                                 data = displayManager.getObjectAt(j, anaSelCol - 1);
-                                if(data == null)
+                                if (data == null)
                                     continue;
-                                
+
                                 data.setScriptletId(event.getValue());
                                 data.setScriptletName(scriptlet.getTextBoxDisplay());
-                                
+
                                 if (j + 1 < analyteTable.numRows()) {
                                     nrow = analyteTable.getRow(j + 1);
                                     if ((Boolean)nrow.data)
@@ -864,23 +895,26 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             }
                         }
                     } else {
-                        for(j = 0; j < r.length; j++) {
+                        for (j = 0; j < r.length; j++ ) {
                             nrow = analyteTable.getRow(r[j]);
                             if ((Boolean)nrow.data)
                                 break;
                             data = displayManager.getObjectAt(r[j], anaSelCol);
                             data.setScriptletId(event.getValue());
                             data.setScriptletName(scriptlet.getTextBoxDisplay());
-                        }                        
-                    }                   
-                } 
+                        }
+                    }
+                }
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {                
+            public void onStateChange(StateChangeEvent<State> event) {
                 //
-                // everytime the state of the screen changes, the model in the analyte
-                // table gets refreshed; thus there are no rows and columns selected 
-                // at that point and hence this widget needs to be cleared of any 
+                // everytime the state of the screen changes, the model in the
+                // analyte
+                // table gets refreshed; thus there are no rows and columns
+                // selected
+                // at that point and hence this widget needs to be cleared of
+                // any
                 // previous selection and disabled
                 //
                 scriptlet.setSelection(null, "");
@@ -911,7 +945,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         tableActions = (Dropdown<String>)def.getWidget("tableActions");
         addScreenHandler(tableActions, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
-                tableActions.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                tableActions.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
                 tableActions.setQueryMode(false);
                 if (tableActions.getData() != null &&
                     EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()))
@@ -936,19 +971,20 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                        .contains(event.getState()));
             }
         });
 
         removeButton = (AppButton)def.getWidget("removeButton");
         addScreenHandler(removeButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {                      
+            public void onClick(ClickEvent event) {
                 analyteTable.finishEditing();
-                if ("analyte".equals(tableActions.getValue())) {                    
+                if ("analyte".equals(tableActions.getValue())) {
                     removeAnalyte();
                 } else if ("column".equals(tableActions.getValue())) {
                     removeColumn();
-                } else {                   
+                } else {
                     removeHeader();
                 }
 
@@ -956,7 +992,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                removeButton.enable(EnumSet.of(State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
             }
         });
 
@@ -974,7 +1011,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
-                
+
                 resultTabPanel.clearTabs();
                 numTabs = man.groupCount();
 
@@ -1028,16 +1065,18 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int r, c, group;
 
-                if(state != State.ADD  && state != State.UPDATE) 
+                if (state != State.ADD && state != State.UPDATE)
                     event.cancel();
-                
+
                 r = event.getRow();
                 c = event.getCol();
                 group = resultTabPanel.getTabBar().getSelectedTab();
 
                 switch (c) {
                     case 0:
-                        clearResultCellError(group, r, TestMeta.getResultUnitOfMeasureId());
+                        clearResultCellError(group,
+                                             r,
+                                             TestMeta.getResultUnitOfMeasureId());
                         break;
                     case 1:
                         clearResultCellError(group, r, TestMeta.getResultTypeId());
@@ -1061,7 +1100,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 c = event.getCol();
                 val = resultTable.getObject(r, c);
                 group = resultTabPanel.getTabBar().getSelectedTab();
-                
+
                 man = null;
                 try {
                     man = manager.getTestResults();
@@ -1069,30 +1108,32 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
-                
+
                 data = man.getResultAt(group + 1, r);
 
                 switch (c) {
                     case 0:
-                        if(val != null) 
+                        if (val != null)
                             data.setUnitOfMeasureId((Integer)val);
                         else
                             data.setUnitOfMeasureId(null);
                         break;
                     case 1:
-                        if(val != null) 
+                        if (val != null)
                             data.setTypeId((Integer)val);
-                        else 
+                        else
                             data.setTypeId(null);
-                        
+
                         resultTable.clearCellExceptions(r, 2);
                         try {
                             validateValue(data, (String)resultTable.getObject(r, 2));
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, 2, e);
-                            addToResultErrorList(group, r, TestMeta.getResultValue(),
+                            addToResultErrorList(group,
+                                                 r,
+                                                 TestMeta.getResultValue(),
                                                  e.getMessage());
-                        }                        
+                        }
                         break;
                     case 2:
                         resultTable.clearCellExceptions(r, c);
@@ -1100,25 +1141,27 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             validateValue(data, (String)val);
                         } catch (LocalizedException e) {
                             resultTable.setCellException(r, c, e);
-                            addToResultErrorList(group, r, TestMeta.getResultValue(),
+                            addToResultErrorList(group,
+                                                 r,
+                                                 TestMeta.getResultValue(),
                                                  e.getMessage());
                         }
                         ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
                         break;
                     case 3:
-                        if(val != null) 
+                        if (val != null)
                             data.setFlagsId((Integer)val);
                         else
                             data.setFlagsId(null);
                         break;
                     case 4:
-                        if(val != null) 
+                        if (val != null)
                             data.setSignificantDigits((Integer)val);
                         else
                             data.setSignificantDigits(null);
                         break;
                     case 5:
-                        if(val != null) 
+                        if (val != null)
                             data.setRoundingMethodId((Integer)val);
                         else
                             data.setRoundingMethodId(null);
@@ -1131,7 +1174,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             public void onRowAdded(RowAddedEvent event) {
                 int selTab;
                 TestResultManager man;
-                
+
                 man = null;
                 try {
                     man = manager.getTestResults();
@@ -1153,7 +1196,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 int r, selTab;
                 TestResultViewDO data;
                 TestResultManager man;
-                
+
                 man = null;
                 try {
                     man = manager.getTestResults();
@@ -1177,7 +1220,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             public void onClick(ClickEvent event) {
                 int count;
                 TestResultManager man;
-                
+
                 man = null;
                 try {
                     man = manager.getTestResults();
@@ -1185,7 +1228,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
-                
+
                 count = resultTabPanel.getTabBar().getTabCount();
 
                 resultTabPanel.addTab(String.valueOf(count + 1));
@@ -1254,7 +1297,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                                      .contains(event.getState()));
             }
         });
-        
+
         addAnalyteRow = true;
         anaSelCol = -1;
         screen = this;
@@ -1299,7 +1342,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         try {
             auto = ((AutoComplete)event.getSource());
-            
+
             if (isAnalyteQuery()) {
                 list = AnalyteService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                 model = new ArrayList<TableDataRow>();
@@ -1318,7 +1361,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     }
                 } catch (NumberFormatException e) {
                     model.add(new TableDataRow(null, ""));
-                }                
+                }
             }
             auto.showAutoMatches(model);
         } catch (Exception e) {
@@ -1326,7 +1369,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         }
     }
 
-    public void onBeforeGetMatches(BeforeGetMatchesEvent event) {        
+    public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
     }
 
     public void showTestAnalyteError(GridFieldErrorException error) {
@@ -1372,12 +1415,15 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     public void showTestResultError(GridFieldErrorException error) {
         int tab;
         tab = resultTabPanel.getTabBar().getSelectedTab();
-        if(!errorExistsInList(error.getRowIndex(),error.getColumnIndex(),error.getFieldName(),error.getKey())) {
-            if(resultErrorList == null)
+        if ( !errorExistsInList(error.getRowIndex(),
+                                error.getColumnIndex(),
+                                error.getFieldName(),
+                                error.getKey())) {
+            if (resultErrorList == null)
                 resultErrorList = new ArrayList<GridFieldErrorException>();
             resultErrorList.add(error);
         }
-        if(error.getRowIndex() == tab)
+        if (error.getRowIndex() == tab)
             showErrorsForResultGroup(tab);
     }
 
@@ -1473,14 +1519,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 if (c == 0) {
                     row.cells.get(0).setValue(new TableDataRow(data.getAnalyteId(),
                                                                data.getAnalyteName()));
-                    row.cells.get(1).setValue(new TableDataRow(data.getResultGroup(),
+                    row.cells.get(1)
+                             .setValue(new TableDataRow(data.getResultGroup(),
                                                         String.valueOf(data.getResultGroup())));
                     continue;
                 }
 
                 if ( !headerFilled)
-                    hrow.cells.get(c + 1).setValue(new TableDataRow(data.getAnalyteId(),
-                                                                    data.getAnalyteName()));
+                    hrow.cells.get(c + 1)
+                              .setValue(new TableDataRow(data.getAnalyteId(),
+                                                         data.getAnalyteName()));
 
                 row.cells.get(c + 1)
                          .setValue(new TableDataRow(data.getResultGroup(),
@@ -1536,12 +1584,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void validateValue(TestResultViewDO data, String value) throws LocalizedException {
         IdNameVO dict;
-        
-        if(value == null)
+
+        if (value == null)
             return;
-        
+
         try {
-            if (typeDict.equals(data.getTypeId())) {
+            if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
                 dict = getDictionary((String)value);
                 if (dict != null) {
                     data.setValue(dict.getId().toString());
@@ -1550,16 +1598,19 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     data.setDictionary(null);
                     throw new LocalizedException("test.invalidValue");
                 }
-            } else if (typeNumeric.equals(data.getTypeId())) {
+            } else if (Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(data.getTypeId())) {
                 rangeNumeric.setRange((String)value);
                 data.setValue(rangeNumeric.toString());
-            } else if (typeTiter.equals(data.getTypeId())) {
+            } else if (Constants.dictionary().TEST_RES_TYPE_TITER.equals(data.getTypeId())) {
                 rangeTiter.setRange((String)value);
                 data.setValue(rangeTiter.toString());
-            } else if (typeDefault.equals(data.getTypeId()) || typeDate.equals(data.getTypeId()) ||
-                       typeDateTime.equals(data.getTypeId()) || typeTime.equals(data.getTypeId()) ||
-                       typeAlphaLower.equals(data.getTypeId()) || typeAlphaUpper.equals(data.getTypeId()) || 
-                       typeAlphaMixed.equals(data.getTypeId())) {
+            } else if (Constants.dictionary().TEST_RES_TYPE_DEFAULT.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_DATE.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_TIME.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(data.getTypeId()) ||
+                       Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(data.getTypeId())) {
                 data.setValue((String)value);
             } else {
                 throw new LocalizedException("test.invalidValue");
@@ -1646,22 +1697,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         tableActions.setSelection("analyte");
 
         setUnitsOfMeasure();
-
-        try {
-            typeDict = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
-            typeNumeric = DictionaryCache.getIdBySystemName("test_res_type_numeric");
-            typeTiter = DictionaryCache.getIdBySystemName("test_res_type_titer");
-            typeDefault = DictionaryCache.getIdBySystemName("test_res_type_default");
-            typeDate = DictionaryCache.getIdBySystemName("test_res_type_date");
-            typeDateTime = DictionaryCache.getIdBySystemName("test_res_type_date_time");
-            typeTime = DictionaryCache.getIdBySystemName("test_res_type_time");
-            typeAlphaLower = DictionaryCache.getIdBySystemName("test_res_type_alpha_lower"); 
-            typeAlphaUpper = DictionaryCache.getIdBySystemName("test_res_type_alpha_upper");
-            typeAlphaMixed = DictionaryCache.getIdBySystemName("test_res_type_alpha_mixed");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     private void setUnitsOfMeasure() {
@@ -1686,7 +1721,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 Window.alert(e.getMessage());
                 e.printStackTrace();
             }
-            
+
             for (int i = 0; i < man.count(); i++ ) {
                 data = man.getTypeAt(i);
                 unitId = data.getUnitOfMeasureId();
@@ -1723,10 +1758,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     /**
      * This method adds a BeforeGetMatchesHandler and a GetMatchesHandler to all
-     * the cells in the table showing test analytes. This is done in a method like
-     * this and not through the standard way of adding these handlers to individual
-     * cells because the code for the handlers for multiple cells is the same and
-     * very similar across all the cells in the table   
+     * the cells in the table showing test analytes. This is done in a method
+     * like this and not through the standard way of adding these handlers to
+     * individual cells because the code for the handlers for multiple cells is
+     * the same and very similar across all the cells in the table
      */
     private void addMatchesHandlerToAnalyteCells() {
         AutoComplete<Integer> auto;
@@ -1815,16 +1850,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             cell.clearExceptions();
         } else {
             for (int i = anaSelCol; i < finalIndex; i++ ) {
-                cell = row.cells.get(i);    
+                cell = row.cells.get(i);
                 cell.clearExceptions();
                 if (i == finalIndex - 1) {
-                    cell.setValue(blankrow);                    
+                    cell.setValue(blankrow);
                 } else {
                     ncell = row.cells.get(i + 1);
                     if (ncell.getExceptions() != null) {
                         for (LocalizedException ex : ncell.getExceptions())
                             cell.addException(ex);
-                    }                    
+                    }
                     rrow = (TableDataRow)ncell.getValue();
                     if (rrow == null) {
                         cell.setValue(blankrow);
@@ -1832,12 +1867,12 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     }
                     key = (Integer)rrow.key;
                     name = (String)rrow.cells.get(0).getValue();
-                    
+
                     if (key != null)
                         cell.setValue(new TableDataRow(key, name));
                     else
-                        cell.setValue(blankrow);                    
-                }                
+                        cell.setValue(blankrow);
+                }
             }
         }
     }
@@ -1860,11 +1895,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         TableDataRow row;
         TestResultViewDO data;
         TestResultManager man;
-        
+
         model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
-        
+
         try {
             man = manager.getTestResults();
             size = man.getResultGroupSize(group + 1);
@@ -1873,43 +1908,43 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 row = new TableDataRow(6);
                 row.cells.get(0).setValue(data.getUnitOfMeasureId());
                 row.cells.get(1).setValue(data.getTypeId());
-                if (data.getDictionary() == null) 
+                if (data.getDictionary() == null)
                     row.cells.get(2).setValue(data.getValue());
-                else 
-                    row.cells.get(2).setValue(data.getDictionary());                            
+                else
+                    row.cells.get(2).setValue(data.getDictionary());
                 row.cells.get(3).setValue(data.getFlagsId());
                 row.cells.get(4).setValue(data.getSignificantDigits());
                 row.cells.get(5).setValue(data.getRoundingMethodId());
                 model.add(row);
             }
-         } catch (Exception e) {
-             Window.alert(e.getMessage());
-             e.printStackTrace();
-         }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
 
         return model;
     }
 
     private void showErrorsForResultGroup(int group) {
         GridFieldErrorException error;
-        int i,col;
+        int i, col;
         ArrayList<GridFieldErrorException> list;
         TableDataRow row;
-        
+
         if (resultErrorList == null)
-            return;                       
-        
-        for (i = 0; i < resultErrorList.size(); i++) {
-            error = resultErrorList.get(i);            
+            return;
+
+        for (i = 0; i < resultErrorList.size(); i++ ) {
+            error = resultErrorList.get(i);
             col = error.getColumnIndex();
             row = resultTable.getRow(col);
-            if (error.getRowIndex() == group) {             
-                if(row.data == null) 
-                    row.data = new ArrayList<GridFieldErrorException> ();                                    
-                
+            if (error.getRowIndex() == group) {
+                if (row.data == null)
+                    row.data = new ArrayList<GridFieldErrorException>();
+
                 list = (ArrayList<GridFieldErrorException>)row.data;
-                
-                if(!list.contains(error)) {
+
+                if ( !list.contains(error)) {
                     resultTable.setCellException(col, error.getFieldName(), error);
                     list.add(error);
                 }
@@ -1940,9 +1975,9 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private void addToResultErrorList(int group, int row, String field, String message) {
         GridFieldErrorException error;
 
-        if(!errorExistsInList(group,row,field,message)) {
-            error = new GridFieldErrorException(message,group, row,field,"resultTable");
-            if(resultErrorList == null)
+        if ( !errorExistsInList(group, row, field, message)) {
+            error = new GridFieldErrorException(message, group, row, field, "resultTable");
+            if (resultErrorList == null)
                 resultErrorList = new ArrayList<GridFieldErrorException>();
             resultErrorList.add(error);
         }
@@ -1969,43 +2004,43 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private void removeAnalyte() {
         int r;
         TableDataRow row, nrow, prow;
-        
+
         r = analyteTable.getSelectedRow();
         if (r != -1) {
             row = analyteTable.getRow(r);
-            if(!(Boolean)row.data) {  
+            if ( !(Boolean)row.data) {
                 //
-                // we want to make sure that there are at least 2 analyte rows 
+                // we want to make sure that there are at least 2 analyte rows
                 // in the row group that this row belongs to, if that's not the
                 // case we don't allow this row to be deleted
-                //                 
-                prow = analyteTable.getRow(r-1);                
-                if((Boolean)prow.data) {
+                //
+                prow = analyteTable.getRow(r - 1);
+                if ((Boolean)prow.data) {
                     //
                     // if the row above the current one is a header row then the
-                    // row next to the current one should be an analyte row in 
-                    // order to be able to delete the current row; the current 
-                    // row can also not be deleted in the case that it is the 
-                    // last row in the table 
+                    // row next to the current one should be an analyte row in
+                    // order to be able to delete the current row; the current
+                    // row can also not be deleted in the case that it is the
+                    // last row in the table
                     //
-                    if (r+1 < analyteTable.numRows()) {
-                        nrow = analyteTable.getRow(r+1);
-                        if(!(Boolean)nrow.data) 
+                    if (r + 1 < analyteTable.numRows()) {
+                        nrow = analyteTable.getRow(r + 1);
+                        if ( !(Boolean)nrow.data)
                             analyteTable.deleteRow(r);
-                        else 
-                            Window.alert(consts.get("atleastTwoRowsInRowGroup"));                        
+                        else
+                            Window.alert(consts.get("atleastTwoRowsInRowGroup"));
                     } else {
                         Window.alert(consts.get("atleastTwoRowsInRowGroup"));
                     }
                 } else {
                     //
-                    // if the row above the current one is an analyte row then 
+                    // if the row above the current one is an analyte row then
                     // the current row can be deleted because certainly it's not
-                    // the only row in its row group 
+                    // the only row in its row group
                     //
                     analyteTable.deleteRow(r);
                 }
-                    
+
             }
         }
     }
@@ -2020,7 +2055,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         }
 
         r = analyteTable.getSelectedRow();
-        try {           
+        try {
             if (anaSelCol != -1 && r != -1) {
                 man = manager.getTestAnalytes();
                 index = displayManager.getDataRowIndex(r);
@@ -2036,7 +2071,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
-        }                
+        }
     }
 
     private void removeColumn() {
@@ -2049,7 +2084,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         }
 
         r = analyteTable.getSelectedRow();
-        try {            
+        try {
             if (anaSelCol != -1 && r != -1) {
                 man = manager.getTestAnalytes();
                 removeColumnFromRow(r);
@@ -2066,7 +2101,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
-        }                      
+        }
     }
 
     private void addHeader() {
@@ -2129,8 +2164,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 e.printStackTrace();
                 Window.alert("DictionaryLookup error: " + e.getMessage());
                 return;
-            }                                    
-            
+            }
+
             dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
                 public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
                     int selTab, r;
@@ -2139,7 +2174,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     IdNameVO entry;
                     TestResultManager man;
 
-                    man = null;                       
+                    man = null;
 
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
                     if (event.getAction() == DictionaryLookupScreen.Action.OK) {
@@ -2150,35 +2185,36 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                 window.setError(consts.get("test.noSelectedRow"));
                                 return;
                             }
-                            
+
                             try {
                                 man = manager.getTestResults();
                             } catch (Exception e) {
                                 Window.alert(e.getMessage());
-                                e.printStackTrace();  
+                                e.printStackTrace();
                                 return;
-                            } 
+                            }
 
                             //
-                            // set the first dictionary value in the row that was
-                            // selected when the lookup screen was brought up 
-                            // 
+                            // set the first dictionary value in the row that
+                            // was
+                            // selected when the lookup screen was brought up
+                            //
                             entry = list.get(0);
                             data = man.getResultAt(selTab + 1, r);
                             data.setValue(entry.getId().toString());
                             data.setDictionary(entry.getName());
-                            data.setTypeId(typeDict);
-                            resultTable.setCell(r, 1, typeDict);
+                            data.setTypeId(Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
+                            resultTable.setCell(r, 1, Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
                             resultTable.clearCellExceptions(r, 1);
                             resultTable.setCell(r, 2, data.getDictionary());
                             resultTable.clearCellExceptions(r, 2);
                             clearResultCellError(selTab, r, TestMeta.getResultValue());
                             ActionEvent.fire(screen, Action.RESULT_CHANGED, data);
-                            
+
                             //
-                            // set the rest of the dictionary values in newly 
-                            // added rows at the end of the table 
-                            //                           
+                            // set the rest of the dictionary values in newly
+                            // added rows at the end of the table
+                            //
                             for (int i = 1; i < list.size(); i++ ) {
                                 resultTable.addRow();
                                 entry = list.get(i);
@@ -2186,11 +2222,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                 data = man.getResultAt(selTab + 1, r);
                                 data.setValue(entry.getId().toString());
                                 data.setDictionary(entry.getName());
-                                data.setTypeId(typeDict);
-                                resultTable.setCell(r, 1, typeDict);
+                                data.setTypeId(Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
+                                resultTable.setCell(r, 1, Constants.dictionary().TEST_RES_TYPE_DICTIONARY);
                                 resultTable.setCell(r, 2, data.getDictionary());
                             }
-                           
+
                         }
                     }
                 }
@@ -2213,11 +2249,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private boolean errorExistsInList(int group, int row, String field, String message) {
         GridFieldErrorException ex;
-        
-        if(resultErrorList == null)
+
+        if (resultErrorList == null)
             return false;
-               
-        for(int i = 0; i < resultErrorList.size(); i++) {
+
+        for (int i = 0; i < resultErrorList.size(); i++ ) {
             ex = resultErrorList.get(i);
             if ( (ex.getRowIndex() == group) && (ex.getColumnIndex() == row) &&
                 (ex.getFieldName().equals(field)) && (ex.getKey().equals(message))) {

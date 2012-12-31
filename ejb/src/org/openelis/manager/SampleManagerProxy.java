@@ -31,8 +31,8 @@ import java.util.HashMap;
 
 import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -43,40 +43,6 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.utils.EJBFactory;
 
 public class SampleManagerProxy {
-    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId, anInPrepId,
-                             anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
-                             anErrorInPrepId, anErrorCompletedId, samNotVerifiedId, samLoggedInId,
-                             samCompletedId, samReleasedId, samErrorId;
-
-    public SampleManagerProxy() {
-        DictionaryBean l;
-        if (anLoggedInId == null) {
-            l = EJBFactory.getDictionary();
-
-            try {
-                anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
-                anInitiatedId = l.fetchBySystemName("analysis_initiated").getId();
-                anCompletedId = l.fetchBySystemName("analysis_completed").getId();
-                anReleasedId = l.fetchBySystemName("analysis_released").getId();
-                anInPrepId = l.fetchBySystemName("analysis_inprep").getId();
-                anOnHoldId = l.fetchBySystemName("analysis_on_hold").getId();
-                anRequeueId = l.fetchBySystemName("analysis_requeue").getId();
-                anCancelledId = l.fetchBySystemName("analysis_cancelled").getId();
-                anErrorLoggedInId = l.fetchBySystemName("analysis_error_logged_in").getId();
-                anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
-                anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
-                anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
-                samNotVerifiedId = l.fetchBySystemName("sample_not_verified").getId();
-                samLoggedInId = l.fetchBySystemName("sample_logged_in").getId();
-                samCompletedId = l.fetchBySystemName("sample_completed").getId();
-                samReleasedId = l.fetchBySystemName("sample_released").getId();
-                samErrorId = l.fetchBySystemName("sample_error").getId();
-            } catch (Exception e) {
-                e.printStackTrace();
-                anLoggedInId = null;
-            }
-        }
-    }
 
     public SampleManager fetchById(Integer sampleId) throws Exception {
         SampleDO data;
@@ -132,7 +98,8 @@ public class SampleManagerProxy {
         man.getProjects();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem()
+                                                       .fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -153,7 +120,8 @@ public class SampleManagerProxy {
 
         // fetch analyses
         try {
-            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis().fetchBySampleId(sampleId);
+            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis()
+                                                            .fetchBySampleId(sampleId);
             for (int i = 0; i < analyses.size(); i++ ) {
                 analysis = analyses.get(i);
                 anaMan = anaMap.get(analysis.getSampleItemId());
@@ -165,7 +133,7 @@ public class SampleManagerProxy {
 
         return man;
     }
-    
+
     public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {
         int addedIndex;
         SampleDO data;
@@ -191,7 +159,8 @@ public class SampleManagerProxy {
         man.getAuxData();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem()
+                                                       .fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -212,7 +181,8 @@ public class SampleManagerProxy {
 
         // fetch analysess
         try {
-            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis().fetchBySampleId(sampleId);
+            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis()
+                                                            .fetchBySampleId(sampleId);
             testCache = new HashMap<Integer, TestManager>();
             for (int i = 0; i < analyses.size(); i++ ) {
                 analysis = analyses.get(i);
@@ -233,7 +203,7 @@ public class SampleManagerProxy {
 
         return man;
     }
-    
+
     public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {
         int addedIndex;
         Integer sampleId;
@@ -260,7 +230,8 @@ public class SampleManagerProxy {
         man.getAuxData();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem()
+                                                       .fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -281,7 +252,8 @@ public class SampleManagerProxy {
 
         // fetch analysess
         try {
-            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis().fetchBySampleId(sampleId);
+            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis()
+                                                            .fetchBySampleId(sampleId);
             testCache = new HashMap<Integer, TestManager>();
             for (int i = 0; i < analyses.size(); i++ ) {
                 analysis = analyses.get(i);
@@ -333,19 +305,19 @@ public class SampleManagerProxy {
         }
 
         if (man.auxData != null) {
-            man.getAuxData().setReferenceTableId(ReferenceTable.SAMPLE);
+            man.getAuxData().setReferenceTableId(Constants.table().SAMPLE);
             man.getAuxData().setReferenceId(sampleId);
             man.getAuxData().add();
         }
 
         if (man.sampleInternalNotes != null) {
-            man.getInternalNotes().setReferenceTableId(ReferenceTable.SAMPLE);
+            man.getInternalNotes().setReferenceTableId(Constants.table().SAMPLE);
             man.getInternalNotes().setReferenceId(sampleId);
             man.getInternalNotes().add();
         }
 
         if (man.sampleExternalNote != null) {
-            man.getExternalNote().setReferenceTableId(ReferenceTable.SAMPLE);
+            man.getExternalNote().setReferenceTableId(Constants.table().SAMPLE);
             man.getExternalNote().setReferenceId(sampleId);
             man.getExternalNote().add();
         }
@@ -358,26 +330,27 @@ public class SampleManagerProxy {
         SampleDO data;
 
         data = man.getSample();
-        
+
         /*
          * a sample's status could get set to released because of the status of
-         * the analyses associated with its sample items all getting set to released,
-         * so we need to set the released date for the sample 
+         * the analyses associated with its sample items all getting set to
+         * released, so we need to set the released date for the sample
          */
-        if (samReleasedId.equals(data.getStatusId()) && data.getReleasedDate() == null)
+        if (Constants.dictionary().SAMPLE_RELEASED.equals(data.getStatusId()) &&
+            data.getReleasedDate() == null)
             data.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-            
+
         EJBFactory.getSample().update(man.getSample());
         sampleId = man.getSample().getId();
 
-        if (man.deletedDomainManager != null) 
-            man.getDeletedDomainManager().delete();  
-        
+        if (man.deletedDomainManager != null)
+            man.getDeletedDomainManager().delete();
+
         if (man.domainManager != null) {
             man.getDomainManager().setSampleId(sampleId);
             man.getDomainManager().update();
         }
-        
+
         if (man.sampleItems != null) {
             man.getSampleItems().setSampleId(sampleId);
             man.getSampleItems().update();
@@ -399,19 +372,19 @@ public class SampleManagerProxy {
         }
 
         if (man.auxData != null) {
-            man.getAuxData().setReferenceTableId(ReferenceTable.SAMPLE);
+            man.getAuxData().setReferenceTableId(Constants.table().SAMPLE);
             man.getAuxData().setReferenceId(sampleId);
             man.getAuxData().update();
         }
 
         if (man.sampleInternalNotes != null) {
-            man.getInternalNotes().setReferenceTableId(ReferenceTable.SAMPLE);
+            man.getInternalNotes().setReferenceTableId(Constants.table().SAMPLE);
             man.getInternalNotes().setReferenceId(sampleId);
             man.getInternalNotes().update();
         }
 
         if (man.sampleExternalNote != null) {
-            man.getExternalNote().setReferenceTableId(ReferenceTable.SAMPLE);
+            man.getExternalNote().setReferenceTableId(Constants.table().SAMPLE);
             man.getExternalNote().setReferenceId(sampleId);
             man.getExternalNote().update();
         }
@@ -453,7 +426,9 @@ public class SampleManagerProxy {
                 cal.add(Calendar.HOUR_OF_DAY, data.getCollectionTime().get(Datetime.HOUR));
                 cal.add(Calendar.MINUTE, data.getCollectionTime().get(Datetime.MINUTE));
             }
-            collectionDateTime = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
+            collectionDateTime = new Datetime(Datetime.YEAR,
+                                              Datetime.MINUTE,
+                                              cal.getTime());
         } else {
             collectionDateTime = null;
         }
@@ -462,10 +437,10 @@ public class SampleManagerProxy {
             collectionDateTime.compareTo(data.getReceivedDate()) == 1)
             errorsList.add(new FieldErrorException("collectedDateInvalidError",
                                                    SampleMeta.getReceivedDate()));
-        
+
         if (man.domainManager != null)
             man.getDomainManager().validate(errorsList);
-            
+
         if (man.sampleItems != null)
             man.getSampleItems().validate(errorsList);
 
@@ -493,7 +468,7 @@ public class SampleManagerProxy {
                 errorsList.add(list.get(i));
         }
     }
-    
+
     private void validateOrderId(SampleDO data, ValidationErrorsList errorsList) throws Exception {
         OrderViewDO order;
         if (data.getOrderId() == null)
@@ -501,6 +476,6 @@ public class SampleManagerProxy {
         order = EJBFactory.getOrder().fetchById(data.getOrderId());
         if (order == null || !OrderManager.TYPE_SEND_OUT.equals(order.getType()))
             errorsList.add(new FieldErrorException("orderIdInvalidException",
-                                                       SampleMeta.getOrderId()));                    
+                                                   SampleMeta.getOrderId()));
     }
 }

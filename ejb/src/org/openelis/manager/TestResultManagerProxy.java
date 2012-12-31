@@ -32,8 +32,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.bean.TestResultBean;
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.exception.ParseException;
@@ -49,86 +50,6 @@ import org.openelis.utils.EJBFactory;
 
 public class TestResultManagerProxy {
 
-    private static int typeDict, typeNumeric, typeTiter, typeDefault, typeAlphaLower,
-                       typeAlphaUpper, typeAlphaMixed;
-
-    public TestResultManagerProxy() {
-        DictionaryDO data;
-        DictionaryBean dl;
-
-        dl = EJBFactory.getDictionary();
-
-        if (typeDict == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_dictionary");
-                typeDict = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDict = 0;
-            }
-        }
-
-        if (typeNumeric == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_numeric");
-                typeNumeric = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeNumeric = 0;
-            }
-        }
-
-        if (typeTiter == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_titer");
-                typeTiter = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeTiter = 0;
-            }
-        }
-
-        if (typeDefault == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_default");
-                typeDefault = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDefault = 0;
-            }
-        }
-
-        if (typeAlphaLower == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_alpha_lower");
-                typeAlphaLower = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaLower = 0;
-            }
-        }
-
-        if (typeAlphaUpper == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_alpha_upper");
-                typeAlphaUpper = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaUpper = 0;
-            }
-        }
-
-        if (typeAlphaMixed == 0) {
-            try {
-                data = dl.fetchBySystemName("test_res_type_alpha_mixed");
-                typeAlphaMixed = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaMixed = 0;
-            }
-        }
-    }
-
     public TestResultManager fetchByTestId(Integer testId) throws Exception {
         TestResultManager trm;
         ArrayList<ArrayList<TestResultViewDO>> list;
@@ -141,11 +62,10 @@ public class TestResultManagerProxy {
         return trm;
     }
 
-    public TestResultManager add(TestResultManager man, HashMap<Integer, Integer> idMap)
-                                                                                        throws Exception {
+    public TestResultManager add(TestResultManager man, HashMap<Integer, Integer> idMap) throws Exception {
         int i, j, size, negId;
         TestResultBean rl;
-        TestResultViewDO data;        
+        TestResultViewDO data;
 
         rl = EJBFactory.getTestResult();
 
@@ -165,8 +85,7 @@ public class TestResultManagerProxy {
         return man;
     }
 
-    public TestResultManager update(TestResultManager man, HashMap<Integer, Integer> idMap)
-                                                                                           throws Exception {
+    public TestResultManager update(TestResultManager man, HashMap<Integer, Integer> idMap) throws Exception {
         int i, j, size, negId;
         TestResultBean rl;
         TestResultViewDO data;
@@ -195,14 +114,13 @@ public class TestResultManagerProxy {
         return man;
     }
 
-    public void validate(TestResultManager trm,
-                         TestTypeOfSampleManager ttsm,
+    public void validate(TestResultManager trm, TestTypeOfSampleManager ttsm,
                          HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception {
         int i, j, k, defCount, size;
         boolean alphaPresent, alphaErrorAdded, defErrorAdded;
         ValidationErrorsList list;
         TestResultViewDO data, tmpData;
-        Integer typeId, unitId, entryId;        
+        Integer typeId, unitId, entryId;
         String value, fieldName, unitText;
         ResultRangeNumeric nr;
         ResultRangeTiter tr;
@@ -211,14 +129,14 @@ public class TestResultManagerProxy {
         HashMap<Integer, List<TestResultViewDO>> unitTypeMap;
         List<Integer> dictList;
         List<TestResultViewDO> resDataList, typeDataList;
-        DictionaryBean dl;
+        DictionaryCacheBean dcl;
         TestResultBean rl;
         Set<Integer> set;
         Iterator<Integer> iter;
 
         list = new ValidationErrorsList();
         value = null;
-        dl = EJBFactory.getDictionary();
+        dcl = EJBFactory.getDictionaryCache();
         rl = EJBFactory.getTestResult();
 
         trMap = new HashMap<Integer, List<ResultRangeTiter>>();
@@ -252,11 +170,14 @@ public class TestResultManagerProxy {
                 // their use is dependent on the unit
                 //
                 if ( !unitIsValid(unitId, ttsm.getTypes())) {
-                    unitText = dl.fetchById(unitId).getEntry();
+                    unitText = dcl.getById(unitId).getEntry();
 
-                    list.add(new GridFieldErrorException("illegalUnitOfMeasureException", i, j,
+                    list.add(new GridFieldErrorException("illegalUnitOfMeasureException",
+                                                         i,
+                                                         j,
                                                          TestMeta.getResultUnitOfMeasureId(),
-                                                         "resultTable", unitText));
+                                                         "resultTable",
+                                                         unitText));
                     continue;
                 }
 
@@ -277,15 +198,18 @@ public class TestResultManagerProxy {
                     typeDataList.add(data);
                     unitTypeMap.put(unitId, typeDataList);
 
-                    if (DataBaseUtil.isSame(typeNumeric, typeId)) {
+                    if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_NUMERIC,
+                                            typeId)) {
                         nr = new ResultRangeNumeric();
                         nr.setRange(value);
                         addNumericIfNoOverLap(nrMap, unitId, nr);
-                    } else if (DataBaseUtil.isSame(typeTiter, typeId)) {
+                    } else if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_TITER,
+                                                   typeId)) {
                         tr = new ResultRangeTiter();
                         tr.setRange(value);
                         addTiterIfNoOverLap(trMap, unitId, tr);
-                    } else if (DataBaseUtil.isSame(typeDict, typeId)) {
+                    } else if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DICTIONARY,
+                                                   typeId)) {
                         entryId = Integer.parseInt(value);
                         if (entryId == null)
                             throw new ParseException("illegalDictEntryException");
@@ -301,9 +225,11 @@ public class TestResultManagerProxy {
                             // and not in the table
                             //
                             list.add(new FieldErrorException("testDictEntryNotUniqueException",
-                                                             null, String.valueOf(i + 1)));
+                                                             null,
+                                                             String.valueOf(i + 1)));
                         }
-                    } else if (DataBaseUtil.isSame(typeDefault, typeId)) {
+                    } else if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DEFAULT,
+                                                   typeId)) {
                         //
                         // here we try to check whether this result group
                         // has more than one value of type default for a given
@@ -315,7 +241,8 @@ public class TestResultManagerProxy {
                         size = typeDataList.size();
                         for (k = 0; k < size; k++ ) {
                             tmpData = typeDataList.get(k);
-                            if (DataBaseUtil.isSame(typeDefault, tmpData.getTypeId()))
+                            if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DEFAULT,
+                                                    tmpData.getTypeId()))
                                 defCount++ ;
 
                             if (defCount > 1 && !defErrorAdded) {
@@ -328,16 +255,19 @@ public class TestResultManagerProxy {
                                 // screen
                                 // and not in the table
                                 //
-                                list.add(new FieldErrorException(
-                                                                 "testMoreThanOneDefaultForUnitException",
-                                                                 null, String.valueOf(i + 1)));
+                                list.add(new FieldErrorException("testMoreThanOneDefaultForUnitException",
+                                                                 null,
+                                                                 String.valueOf(i + 1)));
 
                                 defErrorAdded = true;
                             }
                         }
-                    } else if (DataBaseUtil.isSame(typeAlphaLower, typeId) ||
-                               DataBaseUtil.isSame(typeAlphaUpper, typeId) ||
-                               DataBaseUtil.isSame(typeAlphaMixed, typeId)) {
+                    } else if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER,
+                                                   typeId) ||
+                               DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER,
+                                                   typeId) ||
+                               DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED,
+                                                   typeId)) {
                         if (alphaPresent && !alphaErrorAdded) {
                             fieldName = TestMeta.getResultTypeId();
                             //
@@ -348,17 +278,24 @@ public class TestResultManagerProxy {
                             // and not in the table
                             //
                             list.add(new FieldErrorException("testMoreThanOneAlphaTypeException",
-                                                             null, String.valueOf(i + 1)));
+                                                             null,
+                                                             String.valueOf(i + 1)));
                             alphaErrorAdded = true;
                         }
                         alphaPresent = true;
                     }
                 } catch (ParseException ex) {
-                    list.add(new GridFieldErrorException(ex.getKey(), i, j, fieldName,
+                    list.add(new GridFieldErrorException(ex.getKey(),
+                                                         i,
+                                                         j,
+                                                         fieldName,
                                                          "resultTable"));
 
                 } catch (InconsistencyException ex) {
-                    list.add(new GridFieldErrorException(ex.getMessage(), i, j, fieldName,
+                    list.add(new GridFieldErrorException(ex.getMessage(),
+                                                         i,
+                                                         j,
+                                                         fieldName,
                                                          "resultTable"));
 
                 }
@@ -368,12 +305,16 @@ public class TestResultManagerProxy {
             iter = set.iterator();
 
             //
-            // Here we try to check whether for each result group and for a given
+            // Here we try to check whether for each result group and for a
+            // given
             // unit it is the case that there is a value of type default but no
             // value of any other type. We have to do this check here as opposed
-            // to in the loop above because we need to have the information about
-            // the whole result group before making any decision about whether or
-            // not this condition is true and this will be considerably difficult
+            // to in the loop above because we need to have the information
+            // about
+            // the whole result group before making any decision about whether
+            // or
+            // not this condition is true and this will be considerably
+            // difficult
             // to do in the loop above because there we at any moment/ have the
             // information only of the records encountered upto a certain point
             // in the result group.
@@ -384,7 +325,9 @@ public class TestResultManagerProxy {
                 size = typeDataList.size();
                 for (k = 0; k < size; k++ ) {
                     tmpData = typeDataList.get(k);
-                    if (DataBaseUtil.isSame(typeDefault, tmpData.getTypeId()) && size == 1) {
+                    if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DEFAULT,
+                                            tmpData.getTypeId()) &&
+                        size == 1) {
                         tmpData = typeDataList.get(0);
                         list.add(new FieldErrorException("testDefaultWithNoOtherTypeException",
                                                          null,
@@ -400,8 +343,7 @@ public class TestResultManagerProxy {
     }
 
     private void addTiterIfNoOverLap(HashMap<Integer, List<ResultRangeTiter>> trMap,
-                                     Integer unitId,
-                                     ResultRangeTiter tr) throws InconsistencyException {
+                                     Integer unitId, ResultRangeTiter tr) throws InconsistencyException {
         ResultRangeTiter lr;
         List<ResultRangeTiter> trList;
 
@@ -421,8 +363,7 @@ public class TestResultManagerProxy {
     }
 
     private void addNumericIfNoOverLap(HashMap<Integer, List<ResultRangeNumeric>> nrMap,
-                                       Integer unitId,
-                                       ResultRangeNumeric nr) throws InconsistencyException {
+                                       Integer unitId, ResultRangeNumeric nr) throws InconsistencyException {
         ResultRangeNumeric lr;
         List<ResultRangeNumeric> nrList;
 
@@ -445,7 +386,8 @@ public class TestResultManagerProxy {
      * This method checks to see if a unit of measure (resultUnitId) assigned to
      * a test result belongs to the list of units added to the test
      */
-    private boolean unitIsValid(Integer resultUnitId, List<TestTypeOfSampleDO> sampleTypeDOList) {
+    private boolean unitIsValid(Integer resultUnitId,
+                                List<TestTypeOfSampleDO> sampleTypeDOList) {
         int i, numMatch;
         TestTypeOfSampleDO sampleDO;
         Integer unitId;

@@ -45,10 +45,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -206,17 +205,17 @@ public class InventoryLocation implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit(AuditActivity activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.INVENTORY_LOCATION);
+        audit.setReferenceTableId(Constants.table().INVENTORY_LOCATION);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, ReferenceTable.INVENTORY_ITEM)
+                 .setField("inventory_item_id", inventoryItemId, original.inventoryItemId, Constants.table().INVENTORY_ITEM)
                  .setField("lot_number", lotNumber, original.lotNumber)
-                 .setField("storage_location_id", storageLocationId, original.storageLocationId, ReferenceTable.STORAGE_LOCATION)
+                 .setField("storage_location_id", storageLocationId, original.storageLocationId, Constants.table().STORAGE_LOCATION)
                  .setField("quantity_onhand", quantityOnhand, original.quantityOnhand)
                  .setField("expiration_date", expirationDate, original.expirationDate);
 

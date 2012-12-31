@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
@@ -39,6 +40,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.remote.ApplicationRemote;
 
 /**
  * This class provides application level initialization and services.
@@ -46,16 +48,17 @@ import org.openelis.gwt.common.InconsistencyException;
 @Startup
 @Singleton
 @SecurityDomain("openelis")
-public class ApplicationBean {
+public class ApplicationBean implements ApplicationRemote {
 
-    private Constants      constants;
-    private boolean        loaded, errors;
+    private boolean             loaded, errors;
+    private static final Logger log = Logger.getLogger("openelis");
 
     @EJB
-    private DictionaryBean dictionary;
+    private DictionaryBean     dictionary;
 
     public ApplicationBean() {
-        constants = new Constants();
+        log.finest("Starting Application");
+        Constants.setConstants(new Constants());
     }
 
     @PostConstruct
@@ -63,49 +66,54 @@ public class ApplicationBean {
     void atStartup() {
         ArrayList<DictionaryDO> list;
         HashMap<String, Integer> map;
-        String names[] = {"analysis_cancelled", "analysis_completed",
-                        "analysis_error_completed", "analysis_error_initiated",
-                        "analysis_error_inprep", "analysis_error_logged_in",
-                        "analysis_initiated", "analysis_inprep", "analysis_logged_in",
-                        "analysis_on_hold", "analysis_released", "analysis_requeue",
-                        "an_user_ac_completed", "an_user_ac_released", "aux_alpha_lower",
-                        "aux_alpha_mixed", "aux_alpha_upper", "aux_date",
-                        "aux_date_time", "aux_default", "aux_dictionary", "aux_numeric",
-                        "aux_time", "chart_type_dynamic", "chart_type_fixed",
-                        "instrument_log_completed", "instrument_log_pending",
-                        "log_level_error", "log_level_info",
-                        "log_type_data_transmission", "order_recurrence_unit_days",
-                        "order_recurrence_unit_months", "order_recurrence_unit_years",
-                        "order_status_back_ordered", "order_status_pending",
-                        "order_status_processed", "org_bill_to",
-                        "org_finalrep_fax_number", "org_no_finalreport", "org_report_to",
-                        "org_second_report_to", "pos_duplicate", "pos_fixed",
-                        "pos_fixed_always", "pt_sample", "qaevent_internal",
-                        "qaevent_override", "qaevent_warning", "qc_blank",
-                        "qc_duplicate", "qc_spike", "receivable_reportto_email",
-                        "released_reportto_email", "round_int", "round_int_sig_fig",
-                        "round_int_sig_fig_noe", "round_sig_fig", "round_sig_fig_noe",
-                        "sample_completed", "sample_error", "sample_logged_in",
-                        "sample_not_verified", "sample_released", "test_analyte_suplmtl",
-                        "test_res_type_alpha_lower", "test_res_type_alpha_mixed",
-                        "test_res_type_alpha_upper", "test_res_type_date",
-                        "test_res_type_date_time", "test_res_type_default",
-                        "test_res_type_dictionary", "test_res_type_numeric",
-                        "test_res_type_time", "test_res_type_titer",
-                        "test_section_default", "test_section_match", "turnaround_daily",
-                        "turnaround_monthly", "turnaround_weekly", "worksheet_complete",
-                        "worksheet_failed", "worksheet_void", "worksheet_working"};
+        String names[] = {"analysis_cancelled", "analysis_completed", "analysis_error_completed",
+                          "analysis_error_initiated", "analysis_error_inprep", "analysis_error_logged_in",
+                          "analysis_initiated", "analysis_inprep", "analysis_logged_in", 
+                          "analysis_on_hold", "analysis_released", "analysis_requeue",
+                          "an_user_ac_completed", "an_user_ac_released", "aux_alpha_lower",
+                          "aux_alpha_mixed", "aux_alpha_upper", "aux_date", "aux_date_time", 
+                          "aux_default", "aux_dictionary", "aux_numeric", "aux_time",
+                          "chart_type_dynamic", "chart_type_fixed", "instrument_log_completed", 
+                          "instrument_log_pending", "log_level_error", "log_level_info",
+                          "log_type_data_transmission", "micrograms_per_liter", 
+                          "nanograms_per_liter", "nanograms_per_milliliter",
+                          "order_recurrence_unit_days",
+                          "order_recurrence_unit_months", "order_recurrence_unit_years",
+                          "order_status_back_ordered", "order_status_pending", 
+                          "order_status_processed", "order_status_recurring", "order_status_on_hold", 
+                          "order_status_cancelled", "org_bill_to", "org_finalrep_fax_number",
+                          "org_no_finalreport", "org_report_to", "org_second_report_to", 
+                          "pos_duplicate", "pos_fixed", "pos_fixed_always", "pos_random", 
+                          "pos_last_of_subset", "pos_last_of_run", "pos_last_of_subset_and_run", 
+                          "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
+                          "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
+                          "released_reportto_email", "org_hold_sample", "reflex_auto", 
+                          "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
+                          "round_int", "round_int_sig_fig", "round_int_sig_fig_noe",
+                          "round_sig_fig", "round_sig_fig_noe", "sample_completed",
+                          "sample_error", "sample_logged_in", "sample_not_verified",
+                          "sample_released", "sdwis_category_bacterial", "section_mcl_violation_email",
+                          "shipping_status_processed", "shipping_status_shipped",
+                          "test_analyte_req", "test_analyte_suplmtl", "test_analyte_read_only", 
+                          "test_res_type_alpha_lower", "test_res_type_alpha_mixed",
+                          "test_res_type_alpha_upper", "test_res_type_date", "test_res_type_date_time",
+                          "test_res_type_default", "test_res_type_dictionary", "test_res_type_numeric",
+                          "test_res_type_time", "test_res_type_titer", "test_section_default",
+                          "test_section_match", "turnaround_daily", "turnaround_monthly",
+                          "turnaround_weekly", "worksheet_complete", "wf_total",
+                          "worksheet_complete", "worksheet_failed", "worksheet_void",
+                          "worksheet_working"};
 
         try {
             list = dictionary.fetchBySystemNames(Arrays.asList(names));
         } catch (Exception e) {
-            //log.log(Level.SEVERE, "Could not load dictionary constants", e);
+            // log.log(Level.SEVERE, "Could not load dictionary constants", e);
             errors = true;
             return;
         }
         map = new HashMap<String, Integer>();
-        
-        for (DictionaryDO data: list)
+
+        for (DictionaryDO data : list)
             map.put(data.getSystemName(), data.getId());
 
         /*
@@ -141,12 +149,18 @@ public class ApplicationBean {
         Constants.dictionary().LOG_LEVEL_ERROR = dictId(map, "log_level_error");
         Constants.dictionary().LOG_LEVEL_INFO = dictId(map, "log_level_info");
         Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION = dictId(map, "log_type_data_transmission");
+        Constants.dictionary().MICROGRAMS_PER_LITER = dictId(map, "micrograms_per_liter");
+        Constants.dictionary().NANOGRAMS_PER_LITER = dictId(map, "nanograms_per_liter");
+        Constants.dictionary().NANOGRAMS_PER_MILLILITER = dictId(map, "nanograms_per_milliliter");
         Constants.dictionary().ORDER_RECURRENCE_UNIT_DAYS = dictId(map, "order_recurrence_unit_days");
         Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS = dictId(map, "order_recurrence_unit_months");
         Constants.dictionary().ORDER_RECURRENCE_UNIT_YEARS = dictId(map, "order_recurrence_unit_years");
         Constants.dictionary().ORDER_STATUS_BACK_ORDERED = dictId(map, "order_status_back_ordered");
         Constants.dictionary().ORDER_STATUS_PENDING = dictId(map, "order_status_pending");
         Constants.dictionary().ORDER_STATUS_PROCESSED = dictId(map, "order_status_processed");
+        Constants.dictionary().ORDER_STATUS_RECURRING = dictId(map, "order_status_recurring");
+        Constants.dictionary().ORDER_STATUS_ON_HOLD = dictId(map, "order_status_on_hold");
+        Constants.dictionary().ORDER_STATUS_CANCELLED = dictId(map, "order_status_cancelled");
         Constants.dictionary().ORG_BILL_TO = dictId(map, "org_bill_to");
         Constants.dictionary().ORG_FINALREP_FAX_NUMBER = dictId(map, "org_finalrep_fax_number");
         Constants.dictionary().ORG_NO_FINALREPORT = dictId(map, "org_no_finalreport");
@@ -155,6 +169,10 @@ public class ApplicationBean {
         Constants.dictionary().POS_DUPLICATE = dictId(map, "pos_duplicate");
         Constants.dictionary().POS_FIXED = dictId(map, "pos_fixed");
         Constants.dictionary().POS_FIXED_ALWAYS = dictId(map, "pos_fixed_always");
+        Constants.dictionary().POS_RANDOM = dictId(map, "pos_random");
+        Constants.dictionary().POS_LAST_OF_SUBSET = dictId(map, "pos_last_of_subset");
+        Constants.dictionary().POS_LAST_OF_RUN = dictId(map, "pos_last_of_run");
+        Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN = dictId(map, "pos_last_of_subset_and_run");
         Constants.dictionary().PT_SAMPLE = dictId(map, "pt_sample");
         Constants.dictionary().QAEVENT_INTERNAL = dictId(map, "qaevent_internal");
         Constants.dictionary().QAEVENT_OVERRIDE = dictId(map, "qaevent_override");
@@ -164,6 +182,11 @@ public class ApplicationBean {
         Constants.dictionary().QC_SPIKE = dictId(map, "qc_spike");
         Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL = dictId(map, "receivable_reportto_email");
         Constants.dictionary().RELEASED_REPORTTO_EMAIL = dictId(map, "released_reportto_email");
+        Constants.dictionary().ORG_HOLD_SAMPLE = dictId(map, "org_hold_sample");
+        Constants.dictionary().REFLEX_AUTO = dictId(map, "reflex_auto");
+        Constants.dictionary().REFLEX_PROMPT = dictId(map, "reflex_prompt");
+        Constants.dictionary().REFLEX_AUTO_NDUP = dictId(map, "reflex_auto_ndup");
+        Constants.dictionary().REFLEX_PROMPT_NDUP = dictId(map, "reflex_prompt_ndup");
         Constants.dictionary().ROUND_INT = dictId(map, "round_int");
         Constants.dictionary().ROUND_INT_SIG_FIG = dictId(map, "round_int_sig_fig");
         Constants.dictionary().ROUND_INT_SIG_FIG_NOE = dictId(map, "round_int_sig_fig_noe");
@@ -174,7 +197,13 @@ public class ApplicationBean {
         Constants.dictionary().SAMPLE_LOGGED_IN = dictId(map, "sample_logged_in");
         Constants.dictionary().SAMPLE_NOT_VERIFIED = dictId(map, "sample_not_verified");
         Constants.dictionary().SAMPLE_RELEASED = dictId(map, "sample_released");
+        Constants.dictionary().SDWIS_CATEGORY_BACTERIAL = dictId(map, "sdwis_category_bacterial");
+        Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL = dictId(map, "section_mcl_violation_email");
+        Constants.dictionary().SHIPPING_STATUS_PROCESSED = dictId(map, "shipping_status_processed");
+        Constants.dictionary().SHIPPING_STATUS_SHIPPED = dictId(map, "shipping_status_shipped");
+        Constants.dictionary().TEST_ANALYTE_REQ = dictId(map, "test_analyte_req");
         Constants.dictionary().TEST_ANALYTE_SUPLMTL = dictId(map, "test_analyte_suplmtl");
+        Constants.dictionary().TEST_ANALYTE_READ_ONLY = dictId(map, "test_analyte_read_only");
         Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER = dictId(map, "test_res_type_alpha_lower");
         Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED = dictId(map, "test_res_type_alpha_mixed");
         Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER = dictId(map, "test_res_type_alpha_upper");
@@ -190,6 +219,7 @@ public class ApplicationBean {
         Constants.dictionary().TURNAROUND_DAILY = dictId(map, "turnaround_daily");
         Constants.dictionary().TURNAROUND_MONTHLY = dictId(map, "turnaround_monthly");
         Constants.dictionary().TURNAROUND_WEEKLY = dictId(map, "turnaround_weekly");
+        Constants.dictionary().WF_TOTAL = dictId(map, "wf_total");
         Constants.dictionary().WORKSHEET_COMPLETE = dictId(map, "worksheet_complete");
         Constants.dictionary().WORKSHEET_FAILED = dictId(map, "worksheet_failed");
         Constants.dictionary().WORKSHEET_VOID = dictId(map, "worksheet_void");
@@ -203,15 +233,15 @@ public class ApplicationBean {
     public Constants getConstants() throws Exception {
         if ( !loaded || errors)
             throw new InconsistencyException("Could not initialize constants in ApplicationBean");
-        return constants;
+        return Constants.getConstants();
     }
 
     /*
      * fetch by system name
      */
-    private Integer dictId(HashMap<String,Integer> map, String systemName) {
+    private Integer dictId(HashMap<String, Integer> map, String systemName) {
         Integer id;
-        
+
         id = map.get(systemName);
         if (id == null)
             errors = true;
