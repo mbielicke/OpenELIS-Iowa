@@ -448,57 +448,33 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         today = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
 
         row = new StringBuilder();
-        row.append("#HDR") // col 1-4
-           .append(" ")
-           // col 5
-           .append("CREATED")
-           // col 6-12
-           .append(" ")
-           // col 13
-           .append(getPaddedString(ReportUtil.toString(today.getDate(), "MM/dd/yyyy"), 10))
-           // col 14-23
-           .append(" ")
-           // col 24
-           .append("LAB-ID")
-           // col 25-30
-           .append(" ")
-           // col 31
-           .append("     ")
-           // col 32-36
-           .append(" ")
-           // col 37
-           .append("AGENCY")
-           // col 38-43
-           .append(" ")
-           // col 44
-           .append("IA")
-           // col 45-46
-           .append(" ")
-           // col 47
-           .append("PURPOSE")
-           // col 48-54
-           .append(" ")
-           // col 55
-           .append("NEW")
-           // col 56-58
-           .append(" ")
-           // col 59
-           .append("TYPE")
-           // col 60-63
-           .append(" ")
-           // col 64
-           .append("RT")
-           // col 65-66
-           .append(" ")
-           // col 67
-           .append("REFERENCE")
-           // col 68-76
-           .append(" ")
-           // col 77
-           .append("                              "); // col 78-107 TODO:
-                                                      // transaction reference
-                                                      // number
-
+        row.append("#HDR")                                                          // col 1-4
+           .append(" ")                                                             // col 5
+           .append("CREATED")                                                       // col 6-12
+           .append(" ")                                                             // col 13
+           .append(getPaddedString(ReportUtil.toString(today.getDate(),
+                                                       "MM/dd/yyyy"), 10))          // col 14-23
+           .append(" ")                                                             // col 24
+           .append("LAB-ID")                                                        // col 25-30
+           .append(" ")                                                             // col 31
+           .append("     ")                                                         // col 32-36
+           .append(" ")                                                             // col 37
+           .append("AGENCY")                                                        // col 38-43
+           .append(" ")                                                             // col 44
+           .append("IA")                                                            // col 45-46
+           .append(" ")                                                             // col 47
+           .append("PURPOSE")                                                       // col 48-54
+           .append(" ")                                                             // col 55
+           .append("NEW")                                                           // col 56-58
+           .append(" ")                                                             // col 59
+           .append("TYPE")                                                          // col 60-63
+           .append(" ")                                                             // col 64
+           .append("RT")                                                            // col 65-66
+           .append(" ")                                                             // col 67
+           .append("REFERENCE")                                                     // col 68-76
+           .append(" ")                                                             // col 77
+           .append("                              ");                               // col 78-107 TODO: transaction reference number
+        
         writer.println(row.toString());
     }
 
@@ -592,56 +568,38 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         }
 
         row = new StringBuilder();
-        row.append("#SAM") // col 1-4
-           .append(sampCatDO.getCode())
-           // col 5-6
-           .append(sampTypeDO.getCode())
-           // col 7-8
-           .append(getPaddedString(pbType, 3))
-           // col 9-11
-           .append(getPaddedString(ssVDO.getPwsNumber0(), 9))
-           // col 12-20
-           .append(getPaddedString(ssVDO.getFacilityId(), 12))
-           // col 21-32
-           .append(getPaddedString(ssVDO.getSamplePointId(), 11))
-           // col 33-43
-           .append(getPaddedString(ssVDO.getLocation(), 20))
-           // col 44-63
+        row.append("#SAM")                                                          // col 1-4
+           .append(sampCatDO.getCode())                                      // col 5-6
+           .append(sampTypeDO.getCode())                                     // col 7-8
+           .append(getPaddedString(pbType, 3))                                      // col 9-11
+           .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                       // col 12-20
+           .append(getPaddedString(ssVDO.getFacilityId(), 12))                      // col 21-32
+           .append(getPaddedString(ssVDO.getSamplePointId(), 11))                   // col 33-43
+           .append(getPaddedString(ssVDO.getLocation(), 40))                        // col 44-83
            .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionDate(),
-                                                       "yyyyMMdd"), 8))
-           // col 64-71
-           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionTime(), "HHmm"),
-                                   4))
-           // col 72-75
-           .append(getPaddedString(ssVDO.getCollector(), 20))
-           // col 76-95
-           .append(getPaddedString(ReportUtil.toString(sVDO.getReceivedDate(), "yyyyMMdd"),
-                                   8))
-           // col 96-103
-           .append(getPaddedString("OE" + sVDO.getAccessionNumber().toString(), 20)); // col
-                                                                                      // 104-123
-
-        if (origSampleNumber != null && origSampleNumber.length() > 0) // col
-                                                                       // 124-143
-            row.append(getPaddedString("OE" + origSampleNumber, 20));
+                                                       "yyyyMMdd"), 8))             // col 84-91
+           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionTime(),
+                                                       "HHmm"), 4))                 // col 92-95
+           .append(getPaddedString(ssVDO.getCollector(), 20))                       // col 96-115
+           .append(getPaddedString(ReportUtil.toString(sVDO.getReceivedDate(),
+                                                       "yyyyMMdd"), 8))             // col 116-123
+           .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20)); // col 124-143
+        
+        if (origSampleNumber != null && origSampleNumber.length() > 0)              // col 144-163
+            row.append(getPaddedString("OE"+origSampleNumber, 20));
         else
             row.append(getPaddedString("", 20));
-
-        row.append(getPaddedString(repeatCode, 2)) // col 144-145
-           .append(getPaddedString(freeChlorine, 5))
-           // col 146-150
-           .append(getPaddedString(totalChlorine, 5))
-           // col 151-155
-           .append(getPaddedString(compIndicator, 1))
-           // col 156
-           .append(getPaddedString(compLabNumber, 20)); // col 157-176
-
-        if (compDateString != null && compDateString.length() > 0) { // col
-                                                                     // 177-184
+        
+        row.append(getPaddedString(repeatCode, 2))                                  // col 164-165
+           .append(getPaddedString(freeChlorine, 5))                                // col 166-170
+           .append(getPaddedString(totalChlorine, 5))                               // col 171-175
+           .append(getPaddedString(compIndicator, 1))                               // col 176
+           .append(getPaddedString(compLabNumber, 20));                             // col 177-196
+        
+        if (compDateString != null && compDateString.length() > 0) {                // col 197-204
             try {
                 row.append(getPaddedString(ReportUtil.toString(dateDashFormat.parse(compDateString),
-                                                               "yyyyMMdd"),
-                                           8));
+                                                               "yyyyMMdd"), 8));
             } catch (ParseException parE) {
                 throw new Exception("Invalid Composite Date for accession #" +
                                     sVDO.getAccessionNumber() + "; " + parE.getMessage());
@@ -649,16 +607,16 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         } else {
             row.append(getPaddedString(compDateString, 8));
         }
-
-        row.append(getPaddedString(compQuarter, 1)); // col 185
-        row.append(getPaddedString(sampleOverrideString, 1)); // col 186
-
-        if ("-ank".equals(location)) // col 187-191
-            row.append("397  "); // Ankeny DNR ID
+        
+        row.append(getPaddedString(compQuarter, 1));                                // col 205
+        row.append(getPaddedString(sampleOverrideString, 1));                       // col 206
+        
+        if ("-ank".equals(location))                                                // col 207-211
+            row.append("397  ");                                                    // Ankeny DNR ID
         else if ("-ic".equals(location))
-            row.append("027  "); // Iowa City DNR ID
+            row.append("027  ");                                                    // Iowa City DNR ID
         else if ("-lk".equals(location))
-            row.append("393  "); // Lakeside DNR ID
+            row.append("393  ");                                                    // Lakeside DNR ID
         else
             row.append("     ");
 
@@ -740,7 +698,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         while (rowIter.hasNext()) {
             resultRow = rowIter.next();
             rVDO = resultRow.get(0);
-            if ( !"Y".equals(rVDO.getIsReportable()))
+            if (!"Y".equals(rVDO.getIsReportable()))
                 continue;
 
             if (contaminantIds.get(rVDO.getAnalyte()) == null) {
@@ -850,45 +808,29 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
 
         for (i = 0; i < resultData.size(); i++ ) {
             rowData = resultData.get(i);
-
+            
             row = new StringBuilder();
-            row.append("#RES") // col 1-4
-               .append(getPaddedString(rowData.get("contaminantId"), 4))
-               // col 5-8
-               .append(getPaddedString(methodCode, 12))
-               // col 9-20
+            row.append("#RES")                                                                              // col 1-4
+               .append(getPaddedString(rowData.get("contaminantId"), 4))                                    // col 5-8
+               .append(getPaddedString(methodCode, 12))                                                     // col 9-20
                .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(),
-                                                           "yyyyMMdd"), 8))
-               // col 21-28
-               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(), "HHmm"),
-                                       4))
-               // col 29-32
+                                                           "yyyyMMdd"), 8))                                 // col 21-28
+               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(),
+                                                           "HHmm"), 4))                                     // col 29-32
                .append(getPaddedString(ReportUtil.toString(surVO.getCompletedDate(),
-                                                           "yyyyMMdd"), 8))
-               // col 33-40
-               .append(getPaddedString(rowData.get("microbe"), 1))
-               // col 41
-               .append(getPaddedNumber(rowData.get("count"), 5))
-               // col 42-46
-               .append(getPaddedString(rowData.get("countType"), 10))
-               // col 47-56
-               .append(getPaddedString(rowData.get("countUnits"), 9))
-               // col 57-65
-               .append(getPaddedString(rowData.get("ltIndicator"), 1))
-               // col 66
-               .append("MRL")
-               // col 67-69
-               .append(getPaddedString(rowData.get("concentration"), 14))
-               // col 70-83
-               .append(getPaddedString(rowData.get("concentrationUnit"), 9))
-               // col 84-92
-               .append(getPaddedString(rowData.get("detection"), 16))
-               // col 93-108
-               .append(getPaddedString(rowData.get("detectionUnit"), 9))
-               // col 109-117
-               .append(getPaddedString(rowData.get("radMeasureError"), 9)); // col
-                                                                            // 118-126
-
+                                                           "yyyyMMdd"), 8))                                 // col 33-40
+               .append(getPaddedString(rowData.get("microbe"), 1))                                          // col 41
+               .append(getPaddedNumber(rowData.get("count"), 5))                                            // col 42-46
+               .append(getPaddedString(rowData.get("countType"), 10))                                       // col 47-56
+               .append(getPaddedString(rowData.get("countUnits"), 9))                                       // col 57-65
+               .append(getPaddedString(rowData.get("ltIndicator"), 1))                                      // col 66
+               .append("MRL")                                                                               // col 67-69
+               .append(getPaddedString(rowData.get("concentration"), 14))                                   // col 70-83
+               .append(getPaddedString(rowData.get("concentrationUnit"), 9))                                // col 84-92
+               .append(getPaddedString(rowData.get("detection"), 16))                                       // col 93-108
+               .append(getPaddedString(rowData.get("detectionUnit"), 9))                                    // col 109-117
+               .append(getPaddedString(rowData.get("radMeasureError"), 9));                                 // col 118-126
+            
             writer.println(row.toString());
         }
     }
@@ -938,292 +880,292 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
 
     private void initMethodCodes() {
         methodCodes = new HashMap<String, String>();
-
-        methodCodes.put("blue pour plate", "9215B");
-        methodCodes.put("colilert mpn sdwa am", "9223B-QT");
-        methodCodes.put("colilert mpn sdwa pm", "9223B-18QT");
-        methodCodes.put("colilert pa sdwa am", "9223B-PA");
-        methodCodes.put("colilert pa sdwa pm", "9223B-18PA");
-        methodCodes.put("epa 00-02/200.8", "00-02/200.8");
-        methodCodes.put("epa 00-02 including", "00-02");
-        methodCodes.put("epa 200.7 drink", "200.7");
-        methodCodes.put("epa 200.8 drink", "200.8");
-        methodCodes.put("epa 200.8 sdwa pb&cu", "200.8");
-        methodCodes.put("epa 200.8 uranium dw", "200.8");
-        methodCodes.put("epa 200.8 mercury dw", "200.8");
-        methodCodes.put("epa 245.2 mercury dw", "245.2");
-        methodCodes.put("epa 300.0", "300.0");
-        methodCodes.put("epa 300.1", "300.1");
-        methodCodes.put("epa 314.0", "314.0");
-        methodCodes.put("epa 350.1", "350.1");
-        methodCodes.put("epa 353.2 as n", "353.2");
-        methodCodes.put("epa 365.1", "365.1");
-        methodCodes.put("epa 508 chi", "508");
-        methodCodes.put("epa 508a", "508A");
-        methodCodes.put("epa 515.3 acid herbs", "515.3");
-        methodCodes.put("epa 524.2", "524.2");
-        methodCodes.put("epa 524.2 thm", "524.2");
-        methodCodes.put("epa 525.2", "525.2");
-        methodCodes.put("epa 531.1", "531.1");
-        methodCodes.put("epa 547", "547");
-        methodCodes.put("epa 548.1", "548.1");
-        methodCodes.put("epa 549.2", "549.2");
-        methodCodes.put("epa 550", "550");
-        methodCodes.put("epa 551.1 edb, dbcp", "551.1");
-        methodCodes.put("epa 552.2 haa", "552.2");
-        methodCodes.put("epa 900.0/200.8", "900.0/200.8");
-        methodCodes.put("epa 900.0 including", "900.0");
-        methodCodes.put("epa 901.1", "901.1");
-        methodCodes.put("epa 903.0", "903.0");
-        methodCodes.put("epa 903.0/904.0", "903.0/904.0");
-        methodCodes.put("epa 904.0", "904.0");
-        methodCodes.put("epa 905.0", "905.0");
-        methodCodes.put("epa 906.0", "906.0");
-        methodCodes.put("lac 10-107-06-1j", "10-107-06-1J");
-        methodCodes.put("sm 2130 b", "2130B");
-        methodCodes.put("sm 2320 b", "2320B");
-        methodCodes.put("sm 2340 b,total hard", "2340B");
-        methodCodes.put("sm 2340 c,total hard", "2340C");
-        methodCodes.put("sm 2510 b", "2510B");
-        methodCodes.put("sm 2540 c dissolved", "2540C");
-        methodCodes.put("sm 4500 cn e", "4500CN-E");
-        methodCodes.put("sm 4500 f c", "4500F-C");
-        methodCodes.put("sm 4500 h+ b", "4500H-B");
-        methodCodes.put("sm 4500 h+ b ph&alk", "4500H-B");
-        methodCodes.put("sm 4500 no2 b", "4500NO2-B");
-        methodCodes.put("sm 4500 no3 d", "4500NO3-D");
-        methodCodes.put("sm 4500 p e", "4500P-E");
-        methodCodes.put("sm 4500 si d", "4500SI-D");
-        methodCodes.put("sm 5310 b", "5310B");
-        methodCodes.put("sm 5910", "5910B");
-        methodCodes.put("sm 7500 i c 19th", "7500-IC");
+        
+        methodCodes.put("blue pour plate",       "9215B");
+        methodCodes.put("colilert mpn sdwa am",  "9223B-QT");
+        methodCodes.put("colilert mpn sdwa pm",  "9223B-18QT");
+        methodCodes.put("colilert pa sdwa am",   "9223B-PA");
+        methodCodes.put("colilert pa sdwa pm",   "9223B-18PA");
+        methodCodes.put("epa 00-02/200.8",       "00-02/200.8");
+        methodCodes.put("epa 00-02 including",   "00-02");
+        methodCodes.put("epa 200.7 drink",       "200.7");
+        methodCodes.put("epa 200.8 drink",       "200.8");
+        methodCodes.put("epa 200.8 sdwa pb&cu",  "200.8");
+        methodCodes.put("epa 200.8 uranium dw",  "200.8");
+        methodCodes.put("epa 200.8 mercury dw",  "200.8");
+        methodCodes.put("epa 245.2 mercury dw",  "245.2");
+        methodCodes.put("epa 300.0",             "300.0");
+        methodCodes.put("epa 300.1",             "300.1");
+        methodCodes.put("epa 314.0",             "314.0");
+        methodCodes.put("epa 350.1",             "350.1");
+        methodCodes.put("epa 353.2 as n",        "353.2");
+        methodCodes.put("epa 365.1",             "365.1");
+        methodCodes.put("epa 508 chi",           "508");
+        methodCodes.put("epa 508a",              "508A");
+        methodCodes.put("epa 515.3 acid herbs",  "515.3");
+        methodCodes.put("epa 524.2",             "524.2");
+        methodCodes.put("epa 524.2 thm",         "524.2");
+        methodCodes.put("epa 525.2",             "525.2");
+        methodCodes.put("epa 531.1",             "531.1");
+        methodCodes.put("epa 547",               "547");
+        methodCodes.put("epa 548.1",             "548.1");
+        methodCodes.put("epa 549.2",             "549.2");
+        methodCodes.put("epa 550",               "550");
+        methodCodes.put("epa 551.1 edb, dbcp",   "551.1");
+        methodCodes.put("epa 552.2 haa",         "552.2");
+        methodCodes.put("epa 900.0/200.8",       "900.0/200.8");
+        methodCodes.put("epa 900.0 including",   "900.0");
+        methodCodes.put("epa 901.1",             "901.1");
+        methodCodes.put("epa 903.0",             "903.0");
+        methodCodes.put("epa 903.0/904.0",       "903.0/904.0");
+        methodCodes.put("epa 904.0",             "904.0");
+        methodCodes.put("epa 905.0",             "905.0");
+        methodCodes.put("epa 906.0",             "906.0");
+        methodCodes.put("lac 10-107-06-1j",      "10-107-06-1J");
+        methodCodes.put("sm 2130 b",             "2130B");
+        methodCodes.put("sm 2320 b",             "2320B");
+        methodCodes.put("sm 2340 b,total hard",  "2340B");
+        methodCodes.put("sm 2340 c,total hard",  "2340C");
+        methodCodes.put("sm 2510 b",             "2510B");
+        methodCodes.put("sm 2540 c dissolved",   "2540C");
+        methodCodes.put("sm 4500 cn e",          "4500CN-E");
+        methodCodes.put("sm 4500 f c",           "4500F-C");
+        methodCodes.put("sm 4500 h+ b",          "4500H-B");
+        methodCodes.put("sm 4500 h+ b ph&alk",   "4500H-B");
+        methodCodes.put("sm 4500 no2 b",         "4500NO2-B");
+        methodCodes.put("sm 4500 no3 d",         "4500NO3-D");
+        methodCodes.put("sm 4500 p e",           "4500P-E");
+        methodCodes.put("sm 4500 si d",          "4500SI-D");
+        methodCodes.put("sm 5310 b",             "5310B");
+        methodCodes.put("sm 5910",               "5910B");
+        methodCodes.put("sm 7500 i c 19th",      "7500-IC");
     }
 
     private void initContaminantIds() {
         contaminantIds = new HashMap<String, String>();
-
-        contaminantIds.put("1,1,1,2-Tetrachloroethane", "2986");
-        contaminantIds.put("1,1,1-Trichloroethane", "2981");
-        contaminantIds.put("1,1,2,2-Tetrachloroethane", "2988");
-        contaminantIds.put("1,1,2-Trichloroethane", "2985");
-        contaminantIds.put("1,1-Dichloroethane", "2978");
-        contaminantIds.put("1,1-Dichloroethene", "2977");
-        contaminantIds.put("1,1-Dichloropropene", "2410");
-        contaminantIds.put("1,2,3-Trichlorobenzene", "2420");
-        contaminantIds.put("1,2,3-Trichloropropane", "2414");
-        contaminantIds.put("1,2,4-Trichlorobenzene", "2378");
-        contaminantIds.put("1,2,4-Trimethylbenzene", "2418");
-        contaminantIds.put("1,2-Dibromo-3-chloropropane", "2931");
-        contaminantIds.put("1,2-Dibromoethane", "2946");
-        contaminantIds.put("1,2-Dichlorobenzene", "2968");
-        contaminantIds.put("1,2-Dichloroethane", "2980");
-        contaminantIds.put("1,2-Dichloropropane", "2983");
-        contaminantIds.put("1,3,5-Trimethylbenzene", "2424");
-        contaminantIds.put("1,3-Dichlorobenzene", "2967");
-        contaminantIds.put("1,3-Dichloropropane", "2412");
-        contaminantIds.put("1,4-Dichlorobenzene", "2969");
-        contaminantIds.put("2,2-Dichloropropane", "2416");
-        contaminantIds.put("2,4,5-T", "2111");
-        contaminantIds.put("2,4-D", "2105");
-        contaminantIds.put("2,4-Dinitrotoluene", "2270");
-        contaminantIds.put("2,6-Dinitrotoluene", "2266");
-        contaminantIds.put("3-Hydroxycarbofuran", "2066");
-        contaminantIds.put("4,4'-DDE", "2009");
-        contaminantIds.put("Acenaphthene", "2261");
-        contaminantIds.put("Acenaphthylene", "2260");
-        contaminantIds.put("Acetochlor", "2027");
-        contaminantIds.put("Alachlor", "2051");
-        contaminantIds.put("Aldicarb", "2047");
-        contaminantIds.put("Aldicarb sulfone", "2044");
-        contaminantIds.put("Aldicarb sulfoxide", "2043");
-        contaminantIds.put("Aldrin", "2356");
-        contaminantIds.put("Aluminum", "1002");
-        contaminantIds.put("Ammonia nitrogen as N", "1003");
-        contaminantIds.put("AMPA", "2097");
-        contaminantIds.put("Anthracene", "2280");
-        contaminantIds.put("Antimony", "1074");
-        contaminantIds.put("Aroclor 1016", "2388");
-        contaminantIds.put("Aroclor 1221", "2390");
-        contaminantIds.put("Aroclor 1232", "2392");
-        contaminantIds.put("Aroclor 1242", "2394");
-        contaminantIds.put("Aroclor 1248", "2396");
-        contaminantIds.put("Aroclor 1254", "2398");
-        contaminantIds.put("Aroclor 1260", "2400");
-        contaminantIds.put("Arsenic", "1005");
-        contaminantIds.put("Atrazine", "2050");
-        contaminantIds.put("Barium", "1010");
-        contaminantIds.put("Bentazon", "2625");
-        contaminantIds.put("Benzene", "2990");
-        contaminantIds.put("Benzo(a)anthracene", "2300");
-        contaminantIds.put("Benzo(a)pyrene", "2306");
-        contaminantIds.put("Benzo(b)fluoranthene", "2302");
-        contaminantIds.put("Benzo(g,h,i)perylene", "2312");
-        contaminantIds.put("Benzo(k)fluoranthene", "2304");
-        contaminantIds.put("Beryllium", "1075");
-        contaminantIds.put("Bicarbonate alkalinity", "1026");
-        contaminantIds.put("bis(2-Ethylhexyl)adipate", "2035");
-        contaminantIds.put("bis(2-Ethylhexyl)phthalate", "2039");
-        contaminantIds.put("Bromacil", "2098");
-        contaminantIds.put("Bromate", "1011");
-        contaminantIds.put("Bromide", "1004");
-        contaminantIds.put("Bromoacetic acid", "2453");
-        contaminantIds.put("Bromobenzene", "2993");
-        contaminantIds.put("Bromochloromethane", "2430");
-        contaminantIds.put("Bromodichloromethane", "2943");
-        contaminantIds.put("Bromoform", "2942");
-        contaminantIds.put("Bromomethane", "2214");
-        contaminantIds.put("Butachlor", "2076");
-        contaminantIds.put("Butylate", "2053");
-        contaminantIds.put("Cadmium", "1015");
-        contaminantIds.put("Calcium", "1919");
-        contaminantIds.put("Carbaryl", "2021");
-        contaminantIds.put("Carbofuran", "2046");
-        contaminantIds.put("Carbon tetrachloride", "2982");
-        contaminantIds.put("Cesium-134", "4270");
-        contaminantIds.put("Chloramben", "2620");
-        contaminantIds.put("Chlordane", "2959");
-        contaminantIds.put("Chloride", "1017");
-        contaminantIds.put("Chlorite", "1009");
-        contaminantIds.put("Chloroacetic acid", "2450");
-        contaminantIds.put("Chlorobenzene", "2989");
-        contaminantIds.put("Chloroethane", "2216");
-        contaminantIds.put("Chloroform", "2941");
-        contaminantIds.put("Chloromethane", "2210");
-        contaminantIds.put("Chlorpyrifos", "2057");
-        contaminantIds.put("Chlorthal-dimethyl", "2099");
-        contaminantIds.put("Chromium", "1020");
-        contaminantIds.put("Chrysene", "2296");
-        contaminantIds.put("cis-1,2-Dichloroethene", "2380");
-        contaminantIds.put("cis-1,2-Dichloroethylene", "2380");
-        contaminantIds.put("cis-1,3-Dichloropropene", "2228");
-        contaminantIds.put("Combined Radiums", "4010");
-        contaminantIds.put("Copper", "1022");
-        contaminantIds.put("Cyanazine", "2054");
-        contaminantIds.put("Cyanide", "1024");
-        contaminantIds.put("Dalapon", "2031");
-        contaminantIds.put("Desethyl atrazine", "2006");
-        contaminantIds.put("Desisopropyl atrazine", "2007");
-        contaminantIds.put("Diazinon", "2056");
-        contaminantIds.put("Dibenzo(a,h)anthracene", "2310");
-        contaminantIds.put("Dibromoacetic acid", "2454");
-        contaminantIds.put("Dibromochloromethane", "2944");
-        contaminantIds.put("Dibromomethane", "2408");
-        contaminantIds.put("Dicamba", "2440");
-        contaminantIds.put("Dichloroacetic acid", "2451");
-        contaminantIds.put("Dichlorodifluoromethane", "2212");
-        contaminantIds.put("Dichlorprop", "2206");
-        contaminantIds.put("Dieldrin", "2070");
-        contaminantIds.put("Di-n-butyl phthalate", "2290");
-        contaminantIds.put("Dinoseb", "2041");
-        contaminantIds.put("Diquat", "2032");
-        contaminantIds.put("Dissolved Organic Carbon", "2919");
-        contaminantIds.put("Disulfoton", "2102");
-        contaminantIds.put("E.coli", "3014");
-        contaminantIds.put("Endothall", "2033");
-        contaminantIds.put("Endrin", "2005");
-        contaminantIds.put("EPTC", "2052");
-        contaminantIds.put("Ethylbenzene", "2992");
-        contaminantIds.put("Ethylene dibromide", "2946");
-        contaminantIds.put("Fecal Coliform", "3013");
-        contaminantIds.put("Fluoranthene", "2286");
-        contaminantIds.put("Fluorene", "2264");
-        contaminantIds.put("Fluoride", "1025");
-        contaminantIds.put("Fonofos", "2104");
-        contaminantIds.put("Glyphosate", "2034");
-        contaminantIds.put("Gross Alpha excluding Uranium", "4000");
-        contaminantIds.put("Gross Alpha including Uranium", "4002");
-        contaminantIds.put("Gross Beta", "4100");
-        contaminantIds.put("Heptachlor", "2065");
-        contaminantIds.put("Heptachlor epoxide", "2067");
-        contaminantIds.put("Heterotrophic Plate Count", "3001");
-        contaminantIds.put("Hexachlorobenzene", "2274");
-        contaminantIds.put("Hexachlorobutadiene", "2246");
-        contaminantIds.put("Hexachlorocyclopentadiene", "2042");
-        contaminantIds.put("Indeno(1,2,3-cd)pyrene", "2308");
-        contaminantIds.put("Iodine-131", "4264");
-        contaminantIds.put("Iron", "1028");
-        contaminantIds.put("Isopropylbenzene", "2994");
-        contaminantIds.put("Laboratory pH", "1925");
-        contaminantIds.put("Lead", "1030");
-        contaminantIds.put("Lindane", "2010");
-        contaminantIds.put("m & p-Xylenes", "2963");
-        contaminantIds.put("Magnesium", "1031");
-        contaminantIds.put("Manganese", "1032");
-        contaminantIds.put("Mercury", "1035");
-        contaminantIds.put("Methomyl", "2022");
-        contaminantIds.put("Methoxychlor", "2015");
-        contaminantIds.put("Methylene chloride", "2964");
-        contaminantIds.put("Methyl-t-butyl ether (MtBE)", "2251");
-        contaminantIds.put("Metolachlor", "2045");
-        contaminantIds.put("Metribuzin", "2595");
-        contaminantIds.put("Molinate", "2626");
-        contaminantIds.put("Naphthalene", "2248");
-        contaminantIds.put("n-Butylbenzene", "2422");
-        contaminantIds.put("Nickel", "1036");
-        contaminantIds.put("Nitrate nitrogen as N", "1040");
-        contaminantIds.put("Nitrite nitrogen as N", "1041");
-        contaminantIds.put("Nitrobenzene", "2254");
-        contaminantIds.put("n-Propylbenzene", "2998");
-        contaminantIds.put("ortho-Phosphate as P", "1044");
-        contaminantIds.put("Oxamyl", "2036");
-        contaminantIds.put("o-Dichlorobenzene", "2968");
-        contaminantIds.put("o-Xylene", "2997");
-        contaminantIds.put("PCB Total as DCBP", "2383");
-        contaminantIds.put("Pentachlorophenol", "2326");
-        contaminantIds.put("Perchlorate", "1039");
-        contaminantIds.put("Phenanthrene", "2278");
-        contaminantIds.put("Phenolphthalein alkalinity", "1931");
-        contaminantIds.put("Picloram", "2040");
-        contaminantIds.put("p-Dichlorobenzene", "2969");
-        contaminantIds.put("p-Isopropyltoluene", "2030");
-        contaminantIds.put("Potassium", "1042");
-        contaminantIds.put("Prometon", "2029");
-        contaminantIds.put("Propachlor", "2077");
-        contaminantIds.put("Pyrene", "2288");
-        contaminantIds.put("Radium-226", "4020");
-        contaminantIds.put("Radium-228", "4030");
-        contaminantIds.put("sec-Butylbenzene", "2428");
-        contaminantIds.put("Selenium", "1045");
-        contaminantIds.put("Silica as SiO2", "1049");
-        contaminantIds.put("Silver", "1050");
-        contaminantIds.put("Silvex", "2110");
-        contaminantIds.put("Simazine", "2037");
-        contaminantIds.put("Sodium", "1052");
-        contaminantIds.put("Specific Conductance", "1064");
-        contaminantIds.put("Strontium-89", "4172");
-        contaminantIds.put("Strontium-90", "4174");
-        contaminantIds.put("Styrene", "2996");
-        contaminantIds.put("Sulfate", "1055");
-        contaminantIds.put("Terbacil", "2272");
-        contaminantIds.put("Terbufos", "2545");
-        contaminantIds.put("tert-Butylbenzene", "2426");
-        contaminantIds.put("Tetrachloroethene", "2987");
-        contaminantIds.put("Tetrachloroethylene", "2987");
-        contaminantIds.put("Thallium", "1085");
-        contaminantIds.put("Toluene", "2991");
-        contaminantIds.put("Total 1,3-Dichloropropene", "2413");
-        contaminantIds.put("Total Alkalinity", "1927");
-        contaminantIds.put("Total Coliform Bacteria", "3100");
-        contaminantIds.put("Total Dissolved Solids", "1930");
-        contaminantIds.put("Total Haloacetic Acids (HAA5)", "2456");
-        contaminantIds.put("Total Hardness", "1915");
-        contaminantIds.put("Total Organic Carbon", "2920");
-        contaminantIds.put("Total Trihalomethanes", "2950");
-        contaminantIds.put("Total Xylenes", "2955");
-        contaminantIds.put("Toxaphene", "2020");
-        contaminantIds.put("trans-1,2-Dichloroethene", "2979");
-        contaminantIds.put("trans-1,2-Dichloroethylene", "2979");
-        contaminantIds.put("trans-1,3-Dichloropropene", "2224");
-        contaminantIds.put("Trichloroacetic acid", "2452");
-        contaminantIds.put("Trichloroethene", "2984");
-        contaminantIds.put("Trichlorofluoromethane", "2218");
-        contaminantIds.put("Triclopyr", "2107");
-        contaminantIds.put("Trifluralin", "2055");
-        contaminantIds.put("Tritium", "4102");
-        contaminantIds.put("Turbidity", "0100");
-        contaminantIds.put("Uranium", "4006");
-        contaminantIds.put("UV Absorbance at 254 nm", "2922");
-        contaminantIds.put("Vinyl chloride", "2976");
-        contaminantIds.put("Zinc", "1095");
+        
+        contaminantIds.put("1,1,1,2-Tetrachloroethane",             "2986");
+        contaminantIds.put("1,1,1-Trichloroethane",                 "2981");
+        contaminantIds.put("1,1,2,2-Tetrachloroethane",             "2988");
+        contaminantIds.put("1,1,2-Trichloroethane",                 "2985");
+        contaminantIds.put("1,1-Dichloroethane",                    "2978");
+        contaminantIds.put("1,1-Dichloroethene",                    "2977");
+        contaminantIds.put("1,1-Dichloropropene",                   "2410");
+        contaminantIds.put("1,2,3-Trichlorobenzene",                "2420");
+        contaminantIds.put("1,2,3-Trichloropropane",                "2414");
+        contaminantIds.put("1,2,4-Trichlorobenzene",                "2378");
+        contaminantIds.put("1,2,4-Trimethylbenzene",                "2418");
+        contaminantIds.put("1,2-Dibromo-3-chloropropane",           "2931");
+        contaminantIds.put("1,2-Dibromoethane",                     "2946");
+        contaminantIds.put("1,2-Dichlorobenzene",                   "2968");
+        contaminantIds.put("1,2-Dichloroethane",                    "2980");
+        contaminantIds.put("1,2-Dichloropropane",                   "2983");
+        contaminantIds.put("1,3,5-Trimethylbenzene",                "2424");
+        contaminantIds.put("1,3-Dichlorobenzene",                   "2967");
+        contaminantIds.put("1,3-Dichloropropane",                   "2412");
+        contaminantIds.put("1,4-Dichlorobenzene",                   "2969");
+        contaminantIds.put("2,2-Dichloropropane",                   "2416");
+        contaminantIds.put("2,4,5-T",                               "2111");
+        contaminantIds.put("2,4-D",                                 "2105");
+        contaminantIds.put("2,4-Dinitrotoluene",                    "2270");
+        contaminantIds.put("2,6-Dinitrotoluene",                    "2266");
+        contaminantIds.put("3-Hydroxycarbofuran",                   "2066");
+        contaminantIds.put("4,4'-DDE",                              "2009");
+        contaminantIds.put("Acenaphthene",                          "2261");
+        contaminantIds.put("Acenaphthylene",                        "2260");
+        contaminantIds.put("Acetochlor",                            "2027");
+        contaminantIds.put("Alachlor",                              "2051");
+        contaminantIds.put("Aldicarb",                              "2047");
+        contaminantIds.put("Aldicarb sulfone",                      "2044");
+        contaminantIds.put("Aldicarb sulfoxide",                    "2043");
+        contaminantIds.put("Aldrin",                                "2356");
+        contaminantIds.put("Aluminum",                              "1002");
+        contaminantIds.put("Ammonia nitrogen as N",                 "1003");
+        contaminantIds.put("AMPA",                                  "2097");
+        contaminantIds.put("Anthracene",                            "2280");
+        contaminantIds.put("Antimony",                              "1074");
+        contaminantIds.put("Aroclor 1016",                          "2388");
+        contaminantIds.put("Aroclor 1221",                          "2390");
+        contaminantIds.put("Aroclor 1232",                          "2392");
+        contaminantIds.put("Aroclor 1242",                          "2394");
+        contaminantIds.put("Aroclor 1248",                          "2396");
+        contaminantIds.put("Aroclor 1254",                          "2398");
+        contaminantIds.put("Aroclor 1260",                          "2400");
+        contaminantIds.put("Arsenic",                               "1005");
+        contaminantIds.put("Atrazine",                              "2050");
+        contaminantIds.put("Barium",                                "1010");
+        contaminantIds.put("Bentazon",                              "2625");
+        contaminantIds.put("Benzene",                               "2990");
+        contaminantIds.put("Benzo(a)anthracene",                    "2300");
+        contaminantIds.put("Benzo(a)pyrene",                        "2306");
+        contaminantIds.put("Benzo(b)fluoranthene",                  "2302");
+        contaminantIds.put("Benzo(g,h,i)perylene",                  "2312");
+        contaminantIds.put("Benzo(k)fluoranthene",                  "2304");
+        contaminantIds.put("Beryllium",                             "1075");
+        contaminantIds.put("Bicarbonate alkalinity",                "1026");
+        contaminantIds.put("bis(2-Ethylhexyl)adipate",              "2035");
+        contaminantIds.put("bis(2-Ethylhexyl)phthalate",            "2039");
+        contaminantIds.put("Bromacil",                              "2098");
+        contaminantIds.put("Bromate",                               "1011");
+        contaminantIds.put("Bromide",                               "1004");
+        contaminantIds.put("Bromoacetic acid",                      "2453");
+        contaminantIds.put("Bromobenzene",                          "2993");
+        contaminantIds.put("Bromochloromethane",                    "2430");
+        contaminantIds.put("Bromodichloromethane",                  "2943");
+        contaminantIds.put("Bromoform",                             "2942");
+        contaminantIds.put("Bromomethane",                          "2214");
+        contaminantIds.put("Butachlor",                             "2076");
+        contaminantIds.put("Butylate",                              "2053");
+        contaminantIds.put("Cadmium",                               "1015");
+        contaminantIds.put("Calcium",                               "1919");
+        contaminantIds.put("Carbaryl",                              "2021");
+        contaminantIds.put("Carbofuran",                            "2046");
+        contaminantIds.put("Carbon tetrachloride",                  "2982");
+        contaminantIds.put("Cesium-134",                            "4270");
+        contaminantIds.put("Chloramben",                            "2620");
+        contaminantIds.put("Chlordane",                             "2959");
+        contaminantIds.put("Chloride",                              "1017");
+        contaminantIds.put("Chlorite",                              "1009");
+        contaminantIds.put("Chloroacetic acid",                     "2450");
+        contaminantIds.put("Chlorobenzene",                         "2989");
+        contaminantIds.put("Chloroethane",                          "2216");
+        contaminantIds.put("Chloroform",                            "2941");
+        contaminantIds.put("Chloromethane",                         "2210");
+        contaminantIds.put("Chlorpyrifos",                          "2057");
+        contaminantIds.put("Chlorthal-dimethyl",                    "2099");
+        contaminantIds.put("Chromium",                              "1020");
+        contaminantIds.put("Chrysene",                              "2296");
+        contaminantIds.put("cis-1,2-Dichloroethene",                "2380");
+        contaminantIds.put("cis-1,2-Dichloroethylene",              "2380");
+        contaminantIds.put("cis-1,3-Dichloropropene",               "2228");
+        contaminantIds.put("Combined Radiums",                      "4010");
+        contaminantIds.put("Copper",                                "1022");
+        contaminantIds.put("Cyanazine",                             "2054");
+        contaminantIds.put("Cyanide",                               "1024");
+        contaminantIds.put("Dalapon",                               "2031");
+        contaminantIds.put("Desethyl atrazine",                     "2006");
+        contaminantIds.put("Desisopropyl atrazine",                 "2007");
+        contaminantIds.put("Diazinon",                              "2056");
+        contaminantIds.put("Dibenzo(a,h)anthracene",                "2310");
+        contaminantIds.put("Dibromoacetic acid",                    "2454");
+        contaminantIds.put("Dibromochloromethane",                  "2944");
+        contaminantIds.put("Dibromomethane",                        "2408");
+        contaminantIds.put("Dicamba",                               "2440");
+        contaminantIds.put("Dichloroacetic acid",                   "2451");
+        contaminantIds.put("Dichlorodifluoromethane",               "2212");
+        contaminantIds.put("Dichlorprop",                           "2206");
+        contaminantIds.put("Dieldrin",                              "2070");
+        contaminantIds.put("Di-n-butyl phthalate",                  "2290");
+        contaminantIds.put("Dinoseb",                               "2041");
+        contaminantIds.put("Diquat",                                "2032");
+        contaminantIds.put("Dissolved Organic Carbon",              "2919");
+        contaminantIds.put("Disulfoton",                            "2102");
+        contaminantIds.put("E.coli",                                "3014");
+        contaminantIds.put("Endothall",                             "2033");
+        contaminantIds.put("Endrin",                                "2005");
+        contaminantIds.put("EPTC",                                  "2052");
+        contaminantIds.put("Ethylbenzene",                          "2992");
+        contaminantIds.put("Ethylene dibromide",                    "2946");
+        contaminantIds.put("Fecal Coliform",                        "3013");
+        contaminantIds.put("Fluoranthene",                          "2286");
+        contaminantIds.put("Fluorene",                              "2264");
+        contaminantIds.put("Fluoride",                              "1025");
+        contaminantIds.put("Fonofos",                               "2104");
+        contaminantIds.put("Glyphosate",                            "2034");
+        contaminantIds.put("Gross Alpha excluding Uranium",         "4000");
+        contaminantIds.put("Gross Alpha including Uranium",         "4002");
+        contaminantIds.put("Gross Beta",                            "4100");
+        contaminantIds.put("Heptachlor",                            "2065");
+        contaminantIds.put("Heptachlor epoxide",                    "2067");
+        contaminantIds.put("Heterotrophic Plate Count",             "3001");
+        contaminantIds.put("Hexachlorobenzene",                     "2274");
+        contaminantIds.put("Hexachlorobutadiene",                   "2246");
+        contaminantIds.put("Hexachlorocyclopentadiene",             "2042");
+        contaminantIds.put("Indeno(1,2,3-cd)pyrene",                "2308");
+        contaminantIds.put("Iodine-131",                            "4264");
+        contaminantIds.put("Iron",                                  "1028");
+        contaminantIds.put("Isopropylbenzene",                      "2994");
+        contaminantIds.put("Laboratory pH",                         "1925");
+        contaminantIds.put("Lead",                                  "1030");
+        contaminantIds.put("Lindane",                               "2010");
+        contaminantIds.put("m & p-Xylenes",                         "2963");
+        contaminantIds.put("Magnesium",                             "1031");
+        contaminantIds.put("Manganese",                             "1032");
+        contaminantIds.put("Mercury",                               "1035");
+        contaminantIds.put("Methomyl",                              "2022");
+        contaminantIds.put("Methoxychlor",                          "2015");
+        contaminantIds.put("Methylene chloride",                    "2964");
+        contaminantIds.put("Methyl-t-butyl ether (MtBE)",           "2251");
+        contaminantIds.put("Metolachlor",                           "2045");
+        contaminantIds.put("Metribuzin",                            "2595");
+        contaminantIds.put("Molinate",                              "2626");
+        contaminantIds.put("Naphthalene",                           "2248");
+        contaminantIds.put("n-Butylbenzene",                        "2422");
+        contaminantIds.put("Nickel",                                "1036");
+        contaminantIds.put("Nitrate nitrogen as N",                 "1040");
+        contaminantIds.put("Nitrite nitrogen as N",                 "1041");
+        contaminantIds.put("Nitrobenzene",                          "2254");
+        contaminantIds.put("n-Propylbenzene",                       "2998");
+        contaminantIds.put("ortho-Phosphate as P",                  "1044");
+        contaminantIds.put("Oxamyl",                                "2036");
+        contaminantIds.put("o-Dichlorobenzene",                     "2968");
+        contaminantIds.put("o-Xylene",                              "2997");
+        contaminantIds.put("PCB Total as DCBP",                     "2383");
+        contaminantIds.put("Pentachlorophenol",                     "2326");
+        contaminantIds.put("Perchlorate",                           "1039");
+        contaminantIds.put("Phenanthrene",                          "2278");
+        contaminantIds.put("Phenolphthalein alkalinity",            "1931");
+        contaminantIds.put("Picloram",                              "2040");
+        contaminantIds.put("p-Dichlorobenzene",                     "2969");
+        contaminantIds.put("p-Isopropyltoluene",                    "2030");
+        contaminantIds.put("Potassium",                             "1042");
+        contaminantIds.put("Prometon",                              "2029");
+        contaminantIds.put("Propachlor",                            "2077");
+        contaminantIds.put("Pyrene",                                "2288");
+        contaminantIds.put("Radium-226",                            "4020");
+        contaminantIds.put("Radium-228",                            "4030");
+        contaminantIds.put("sec-Butylbenzene",                      "2428");
+        contaminantIds.put("Selenium",                              "1045");
+        contaminantIds.put("Silica as SiO2",                        "1049");
+        contaminantIds.put("Silver",                                "1050");
+        contaminantIds.put("Silvex",                                "2110");
+        contaminantIds.put("Simazine",                              "2037");
+        contaminantIds.put("Sodium",                                "1052");
+        contaminantIds.put("Specific Conductance",                  "1064");
+        contaminantIds.put("Strontium-89",                          "4172");
+        contaminantIds.put("Strontium-90",                          "4174");
+        contaminantIds.put("Styrene",                               "2996");
+        contaminantIds.put("Sulfate",                               "1055");
+        contaminantIds.put("Terbacil",                              "2272");
+        contaminantIds.put("Terbufos",                              "2545");
+        contaminantIds.put("tert-Butylbenzene",                     "2426");
+        contaminantIds.put("Tetrachloroethene",                     "2987");
+        contaminantIds.put("Tetrachloroethylene",                   "2987");
+        contaminantIds.put("Thallium",                              "1085");
+        contaminantIds.put("Toluene",                               "2991");
+        contaminantIds.put("Total 1,3-Dichloropropene",             "2413");
+        contaminantIds.put("Total Alkalinity",                      "1927");
+        contaminantIds.put("Total Coliform Bacteria",               "3100");
+        contaminantIds.put("Total Dissolved Solids",                "1930");
+        contaminantIds.put("Total Haloacetic Acids (HAA5)",         "2456");
+        contaminantIds.put("Total Hardness",                        "1915");
+        contaminantIds.put("Total Organic Carbon",                  "2920");
+        contaminantIds.put("Total Trihalomethanes",                 "2950");
+        contaminantIds.put("Total Xylenes",                         "2955");
+        contaminantIds.put("Toxaphene",                             "2020");
+        contaminantIds.put("trans-1,2-Dichloroethene",              "2979");
+        contaminantIds.put("trans-1,2-Dichloroethylene",            "2979");
+        contaminantIds.put("trans-1,3-Dichloropropene",             "2224");
+        contaminantIds.put("Trichloroacetic acid",                  "2452");
+        contaminantIds.put("Trichloroethene",                       "2984");
+        contaminantIds.put("Trichlorofluoromethane",                "2218");
+        contaminantIds.put("Triclopyr",                             "2107");
+        contaminantIds.put("Trifluralin",                           "2055");
+        contaminantIds.put("Tritium",                               "4102");
+        contaminantIds.put("Turbidity",                             "0100");
+        contaminantIds.put("Uranium",                               "4006");
+        contaminantIds.put("UV Absorbance at 254 nm",               "2922");
+        contaminantIds.put("Vinyl chloride",                        "2976");
+        contaminantIds.put("Zinc",                                  "1095");
     }
 }
