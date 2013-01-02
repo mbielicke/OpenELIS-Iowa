@@ -27,6 +27,7 @@ package org.openelis.web.server;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -49,11 +50,7 @@ import org.w3c.dom.Element;
 public class LoginServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private static Logger     authLog          = Logger.getLogger("org.openelis.auth");
-    private static String     AppRoot;
-    private static int        LOGIN_LOCK_TIME  = 1000 * 60 * 10, // minutes to lock user out
-                              LOGIN_TRY_IP_CNT = 7, // max # of bad ip counts before being locked out
-                              LOGIN_TRY_NM_CNT = 4; // max # of bad name counts before being locked out
+    private static Logger     log          = Logger.getLogger("openelisweb");
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
@@ -79,7 +76,7 @@ public class LoginServlet extends HttpServlet {
         //
         try {
             Document doc;
-            Element session,localeEl;
+            Element session,localeEl,ip;
 
             doc = XMLUtil.createNew("login");
             
@@ -90,6 +87,10 @@ public class LoginServlet extends HttpServlet {
             localeEl = doc.createElement("locale");
             localeEl.appendChild(doc.createTextNode(locale));
             doc.getDocumentElement().appendChild(localeEl);
+            
+            ip = doc.createElement("ip");
+            ip.appendChild(doc.createTextNode(req.getRemoteAddr()));
+            doc.getDocumentElement().appendChild(ip);
             
             if (req.getParameter("error") != null) {
                 Element errorEL = doc.createElement("error");
@@ -103,74 +104,8 @@ public class LoginServlet extends HttpServlet {
             response.getWriter().write(ServiceUtils.getXML(getServletContext().getRealPath("") +
                                                        "/login.xsl", doc,(String)hreq.getSession().getAttribute("locale")));
         } catch (Exception e) {
-            // log.log(Level.SEVERE, e.getMessage(), e);
+            log.log(Level.SEVERE, e.getMessage(), e);
             e.printStackTrace();
-        }
-    }
-
-
-    /*
-     * Simple class to manage login attempts
-     */
-    private static class LoginAttempt {
-        int                                          tries;
-        long                                         lastTime;
-
-        private static HashMap<String, LoginAttempt> failed = new HashMap<String, LoginAttempt>();
-
-        public static boolean isValid(String name, String ipAddress) {
-            long cutoff;
-            LoginAttempt la;
-
-            cutoff = System.currentTimeMillis() - LOGIN_LOCK_TIME;
-
-            la = failed.get(ipAddress);
-            if (la != null && la.lastTime >= cutoff && la.tries >= LOGIN_TRY_IP_CNT)
-                return false;
-
-            la = failed.get(name);
-            if (la != null && la.lastTime >= cutoff && la.tries >= LOGIN_TRY_NM_CNT)
-                return false;
-
-            return true;
-        }
-
-        /**
-         * Clears the failed list for the user and ip address. TODO: need a
-         * sliding window remove for clearing the ip address for better
-         * security.
-         */
-        public static void success(String name, String ipAddress) {
-            failed.remove(ipAddress);
-            failed.remove(name);
-
-            authLog.info("Login attempt for " + name + " - " + ipAddress + " succeeded");
-        }
-
-        public static void fail(String name, String ipAddress) {
-            long now;
-            LoginAttempt li, ln;
-
-            now = System.currentTimeMillis();
-
-            li = failed.get(ipAddress);
-            if (li == null) {
-                li = new LoginAttempt();
-                failed.put(ipAddress, li);
-            }
-            li.lastTime = now;
-            li.tries = Math.min(li.tries + 1, 9999);
-
-            ln = failed.get(name);
-            if (ln == null) {
-                ln = new LoginAttempt();
-                failed.put(name, ln);
-            }
-            ln.lastTime = now;
-            ln.tries = Math.min(ln.tries + 1, 9999);
-
-            authLog.info("Login attempt for " + name + " [" + ln.tries + "]" + " - " + ipAddress +
-                         " [" + li.tries + "] failed ");
         }
     }
 }

@@ -107,7 +107,8 @@ UIRF Software License are applicable instead of those above.
 
 	<body onLoad="focusLogin()">
 		<form method="post" name="login" autocomplete="off" action="j_security_check"
-                    margin="0" onsubmit="document.forms['login'].style.display='none';document.forms['login'].elements['j_username'].value+=';{session};{locale}';">
+                    margin="0" onsubmit="document.forms['login'].elements['j_username'].value=document.forms['login'].elements['username'].value+';{session};{locale};{ip}';">
+          <input type="hidden" name="j_username"/>
 		<table cellspacing="0" cellpadding="0">
 			<tr>
 				<td>
@@ -117,7 +118,7 @@ UIRF Software License are applicable instead of those above.
                     			Username:<!-- <xsl:value-of select="resource:getString($constants,'username')"/> -->
                 			</td>
 			                <td align="right">
-                    			<input type="text" name="j_username" class="inputfield"
+                    			<input type="text" name="username" class="inputfield"
                         			onChange="javascript:this.value=this.value.toLowerCase();"/>
 			                </td>
             			</tr>
