@@ -49,13 +49,14 @@
     <table align="center" id="table" style="position:absolute;left:28%;top:28%;">
         <tr>
             <td>
-                <form method="post" id="login" autocomplete="off" action="j_security_check" onsubmit="document.forms['login'].style.display='none';document.forms['login'].elements['j_username'].value+=';{session};{locale}';" > 
+                <form method="post" id="login" autocomplete="off" action="j_security_check" onsubmit="document.forms['login'].elements['j_username'].value=document.forms['login'].elements['username'].value+';{session};{locale};{ip}';" >
+                   <input type="hidden" name="j_username"/> 
                     <center>
                         <table border="0" cellspacing="5" align='center' class="inputbackground">
                             <tr><td colspan='2' style="height: 130px;"></td></tr>
                             <tr><td align="right" width='140'>
                                 <font face="Arial,Helvetica">Username:</font></td>
-                                <td align="left"><input type="text" name="j_username" class="inputfield" value='' onChange="javascript:this.value=this.value.toLowerCase();"/></td>
+                                <td align="left"><input type="text" name="username" class="inputfield" value='' onChange="javascript:this.value=this.value.toLowerCase();"/></td>
                             </tr>
                             <tr><td align="right" class="ptext"><font face="Arial,Helvetica">Password</font></td> 
                                 <td align="left"><input type="password" name="j_password" class="inputfield"/></td>
