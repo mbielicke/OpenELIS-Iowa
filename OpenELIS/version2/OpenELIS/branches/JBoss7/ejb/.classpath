@@ -17,7 +17,7 @@
 	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/modules/org/jboss/jboss-transaction-spi/main/jboss-transaction-spi-7.0.0.Final.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/modules/org/jboss/ejb3/main/jboss-ejb3-ext-api-2.0.0.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/modules/javax/validation/api/main/validation-api-1.0.0.GA.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/modules/org/picketbox/main/picketbox-4.0.7.Final.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
