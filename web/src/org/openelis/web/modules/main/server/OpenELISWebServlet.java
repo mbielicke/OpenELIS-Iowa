@@ -58,6 +58,8 @@ public class OpenELISWebServlet extends RemoteServiceServlet implements OpenELIS
 
         rpc = new OpenELISRPC();
         rpc.appConstants = getConstants();
+        
+        keepAlive();
 
         return rpc;
     }
