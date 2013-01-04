@@ -60,13 +60,9 @@ UIRF Software License are applicable instead of those above.
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=8" />
 	    <title>OpenELIS Authentication Service</title>
-	    <script>
-	        function submit() {
-	            document.login_form.submit();
-	        }
-	   
+	    <script>	   
 	        function focusLogin() {
-	            document.login_form.username.focus();
+	            document.forms.login.username.focus();
 	        }
 	    </script>
         <style type="text/css">
@@ -107,7 +103,7 @@ UIRF Software License are applicable instead of those above.
 
 	<body onLoad="focusLogin()">
 		<form method="post" name="login" autocomplete="off" action="j_security_check"
-                    margin="0" onsubmit="document.forms['login'].elements['j_username'].value=document.forms['login'].elements['username'].value+';{session};{locale};{ip}';">
+                    margin="0" onsubmit="document.forms.login..j_username.value=document.forms.login.username.value+';{session};{locale};{ip}';">
           <input type="hidden" name="j_username"/>
 		<table cellspacing="0" cellpadding="0">
 			<tr>

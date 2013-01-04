@@ -48,7 +48,6 @@ UIRF Software License are applicable instead of those above.
      <form-login-page>/login</form-login-page>
      <form-error-page>/login?error=true</form-error-page>
    </form-login-config>
-   <realm-name>ApplicationRelam</realm-name>
  </login-config>
 
   <servlet>

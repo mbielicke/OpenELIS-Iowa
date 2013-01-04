@@ -13,7 +13,7 @@
     <script>
    
         function focusLogin() {
-            document.login_form.username.focus();
+            document.forms.login.username.focus();
         }
         
     </script>
@@ -49,7 +49,7 @@
     <table align="center" id="table" style="position:absolute;left:28%;top:28%;">
         <tr>
             <td>
-                <form method="post" id="login" autocomplete="off" action="j_security_check" onsubmit="document.forms['login'].elements['j_username'].value=document.forms['login'].elements['username'].value+';{session};{locale};{ip}';" >
+                <form method="post" id="login" autocomplete="off" action="j_security_check" onsubmit="document.forms.login.j_username.value=document.forms.login..username.value+';{session};{locale};{ip}';" >
                    <input type="hidden" name="j_username"/> 
                     <center>
                         <table border="0" cellspacing="5" align='center' class="inputbackground">
