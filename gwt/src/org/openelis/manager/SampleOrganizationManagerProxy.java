@@ -37,6 +37,10 @@ public class SampleOrganizationManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
     protected ScreenService       service;
 
+    public SampleOrganizationManagerProxy() {
+        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
+    }
+
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
         return service.call("fetchSampleOrganizationsBySampleId", sampleId);
     }

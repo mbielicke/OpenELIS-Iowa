@@ -149,8 +149,6 @@ public class SendoutOrderScreen extends Screen {
     private OrderRequestFormReportScreen requestformReportScreen;
     private TestContainerPopoutUtil      popoutUtil;
 
-    private Integer                      statusCancelledId;
-
     private String                       descQuery;
 
     protected ScreenService              organizationService, shippingService,
@@ -1385,7 +1383,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void update() {
-        if (statusCancelledId.equals(manager.getOrder().getStatusId())) {
+        if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder().getStatusId())) {
             Window.alert(consts.get("cancelledOrderCantBeUpdated"));
             return;
         }
@@ -1395,7 +1393,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             manager = manager.fetchForUpdate();
 
-            if (statusCancelledId.equals(manager.getOrder().getStatusId())) {
+            if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder().getStatusId())) {
                 Window.alert(consts.get("cancelledOrderCantBeUpdated"));
                 manager = manager.abortUpdate();
                 setState(State.DISPLAY);
