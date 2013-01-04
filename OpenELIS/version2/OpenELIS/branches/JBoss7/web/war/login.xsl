@@ -103,7 +103,7 @@ UIRF Software License are applicable instead of those above.
 
 	<body onLoad="focusLogin()">
 		<form method="post" name="login" autocomplete="off" action="j_security_check"
-                    margin="0" onsubmit="document.forms.login..j_username.value=document.forms.login.username.value+';{session};{locale};{ip}';">
+                    margin="0" onsubmit="document.forms.login.j_username.value=document.forms.login.username.value+';{session};{locale};{ip}';">
           <input type="hidden" name="j_username"/>
 		<table cellspacing="0" cellpadding="0">
 			<tr>
