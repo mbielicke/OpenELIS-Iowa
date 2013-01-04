@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
@@ -107,7 +108,7 @@ public class ApplicationBean implements ApplicationRemote {
         try {
             list = dictionary.fetchBySystemNames(Arrays.asList(names));
         } catch (Exception e) {
-            // log.log(Level.SEVERE, "Could not load dictionary constants", e);
+            log.log(Level.SEVERE, "Could not load dictionary constants", e);
             errors = true;
             return;
         }
@@ -243,8 +244,10 @@ public class ApplicationBean implements ApplicationRemote {
         Integer id;
 
         id = map.get(systemName);
-        if (id == null)
+        if (id == null) {
+            log.severe("Could not find id for system_name: "+systemName);
             errors = true;
+        }
 
         return id;
     }

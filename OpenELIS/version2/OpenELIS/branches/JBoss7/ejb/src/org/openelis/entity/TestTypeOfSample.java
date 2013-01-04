@@ -82,7 +82,7 @@ public class TestTypeOfSample implements Auditable, Cloneable {
     private Dictionary       typeDictionary;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_of_sample_id", insertable = false, updatable = false)
+    @JoinColumn(name = "unit_of_measure_id", insertable = false, updatable = false)
     private Dictionary       unitDictionary;
 
     @Transient
