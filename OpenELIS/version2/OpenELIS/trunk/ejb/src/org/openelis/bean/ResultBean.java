@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -65,6 +66,7 @@ public class ResultBean implements ResultLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
+    @EJB
     private DictionaryCacheLocal          dictionaryCache;
 
     private static HashMap<Integer, Type> types;
