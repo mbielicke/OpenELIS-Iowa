@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyte" columnCount="4" printOrder="Horizontal" pageWidth="698" pageHeight="572" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="174" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT a.name
+FROM  analysis an, result r, test_analyte ta, analyte a
+WHERE an.id = $P{ANALYSIS_ID} and r.analysis_id = an.id and r.is_reportable ='Y' and r.test_analyte_id = ta.id and
+      ta.is_column = 'N' and ta.analyte_id = a.id]]>
+	</queryString>
+	<field name="name" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="0" y="0" width="174" height="12" backcolor="#F0F0F0"/>
+				<box leftPadding="1" rightPadding="0">
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineWidth="0.25" lineColor="#C0C0C0"/>
+					<leftPen lineWidth="0.25" lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+					<rightPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="12"/>
+	</columnFooter>
+</jasperReport>

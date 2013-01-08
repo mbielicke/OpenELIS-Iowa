@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+  
+The contents of this file are subject to the UIRF Open-source Based
+Public Software License(the "License"); you may not use this file except
+in compliance with the License. You may obtain a copy of the License at
+openelis.uhl.uiowa.edu
+  
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+  
+The Original Code is OpenELIS code.
+  
+The Initial Developer of the Original Code is The University of Iowa.
+Portions created by The University of Iowa are Copyright 2006-2008. All
+Rights Reserved.
+  
+Contributor(s): ______________________________________.
+  
+Alternatively, the contents of this file marked
+"Separately-Licensed" may be used under the terms of a UIRF Software
+license ("UIRF Software License"), in which case the provisions of a
+UIRF Software License are applicable instead of those above. 
+  -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+  <xs:element name="message">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="header"/>
+        <xs:element ref="sample"/>
+      </xs:sequence>
+      <!-- 
+          The name "Type" is used instead of "type" because "type" is a keyword
+          used by Rhapsody's Symphonia Mapper. "type" is renamed on import by
+          Symphonia otherwise.   
+      -->
+      <xs:attribute name="Type" type="xs:string" use = "required"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="header">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="name" minOccurs="0" type="xs:string"/>
+        <xs:element name="environment" minOccurs="0" type="xs:string"/>
+        <xs:element name="profiles" minOccurs="0" >
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="profile" maxOccurs="unbounded" type="xs:string"/>
+            </xs:sequence>            
+          </xs:complexType>
+        </xs:element> 
+      </xs:sequence>
+      <xs:attribute name="include_all_analyses" type="xs:string" use = "required"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="sample">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="received_by" type = "systemUser"/>
+        <xs:element name="status" type="dictionary"/>
+        <xs:element name="client_reference" minOccurs="0" type="xs:string"/>
+        <!--
+          The type "sampleDomain" used by "sample_domain" is extended by the types 
+          for specific domains like "sampleSDWIS" etc., such that the common fields 
+          among the domains are in "sampleDomain" and the specific fields are in
+          the specific types. This allows the element "sample_domain" to have fields 
+          belonging to different elements at different times and enable the xml 
+          document to stay valid w.r.t the schema. The xml document specifies something 
+          like "xsi:type = 'sampleSDWIS'" to indicate the specific type to use 
+          for validation for the fields specific to a given domain, and the common
+          fields are validated by the type "sampleDomain".         
+         -->        
+        <xs:element name="sample_domain" type="sampleDomain"/>
+        <xs:element ref="sample_item" maxOccurs="unbounded"/>
+        <xs:element ref="sample_project" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="sample_organization" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="note" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="sample_qaevent" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="aux_data" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="id" use = "required" type="xs:integer"/>
+      <xs:attribute name="domain" type="xs:string" use = "required"/>
+      <xs:attribute name="accession_number" type="xs:integer" use = "required"/>
+      <xs:attribute name="revision" type="xs:integer"/>
+      <xs:attribute name="order_id" type="xs:integer"/>
+      <xs:attribute name="entered_date" type="xs:dateTime" use = "required"/>
+      <xs:attribute name="received_date" type="xs:dateTime" use = "required"/>
+      <xs:attribute name="collection_date" type="xs:date" use = "required"/>
+      <xs:attribute name="collection_time" type="xs:time"/>
+      <xs:attribute name="package_id" type="xs:integer"/>
+      <xs:attribute name="released_date" type="xs:dateTime"/>
+    </xs:complexType>
+  </xs:element>    
+  
+  <xs:complexType name="sampleDomain" abstract="true">
+    <xs:attribute name="id" type="xs:integer" use = "required"/>
+    <xs:attribute name="sample_id" type="xs:integer" use = "required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="sampleEnvironmental">
+    <xs:complexContent>
+      <xs:extension base="sampleDomain">
+        <xs:sequence>    
+          <xs:element name="description" minOccurs="0" type="xs:string"/>
+          <xs:element name="collector" minOccurs="0" type="xs:string"/>      
+          <xs:element name="collector_phone" minOccurs="0" type="xs:string"/>
+          <xs:element name="location" minOccurs="0" type="xs:string"/>
+          <xs:element name="location_address" minOccurs="0" type="address"/>            
+        </xs:sequence>
+        <xs:attribute name="is_hazardous" type="xs:string" use = "required"/>
+        <xs:attribute name="priority" type="xs:integer"/>
+      </xs:extension>
+    </xs:complexContent>    
+  </xs:complexType>
+  
+  <xs:complexType name="samplePrivateWell"> 
+    <xs:complexContent>
+      <xs:extension base="sampleDomain">     
+        <xs:sequence>    
+          <xs:choice>
+            <xs:element ref="organization"/>
+            <xs:element name="report_to">          
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="name" minOccurs="0" type="xs:string"/>
+                  <xs:element name="attention" minOccurs="0" type="xs:string"/>
+                  <xs:element name="address" type="address"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element> 
+          </xs:choice>
+          <xs:element name="owner" minOccurs="0" type="xs:string"/>
+          <xs:element name="collector" minOccurs="0" type="xs:string"/>
+          <xs:element name="well_number" minOccurs="0" type="xs:string"/>
+          <xs:element name="location" minOccurs="0" type="xs:string"/>
+          <xs:element name="location_address" type="address" minOccurs="0"/>            
+        </xs:sequence>    
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <xs:complexType name="sampleSDWIS">
+    <xs:complexContent>
+      <xs:extension base="sampleDomain">
+        <xs:sequence>
+          <xs:element ref="pws"/>
+          <xs:element name="facility_id" minOccurs="0" type="xs:string"/>                 
+          <xs:element name="sample_type" type="dictionary"/> 
+          <xs:element name="sample_category" type="dictionary"/>         
+          <xs:element name="sample_point_id" type="xs:string"/>
+          <xs:element name="location" minOccurs="0" type="xs:string"/>
+          <xs:element name="collector" minOccurs="0" type="xs:string"/>        
+        </xs:sequence>
+        <xs:attribute name="state_lab_id" type="xs:integer"/> 
+      </xs:extension>
+    </xs:complexContent> 
+  </xs:complexType>    
+  
+  <xs:element name="pws">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="number0" type="xs:string"/>    
+        <xs:element name="alternate_st_num" minOccurs="0" type="xs:string"/> 
+        <xs:element name="name" type="xs:string"/>                 
+        <xs:element name="activity_status_cd" minOccurs="0" type="xs:string"/>          
+        <xs:element name="d_prin_city_svd_nm" minOccurs="0" type="xs:string"/>
+        <xs:element name="d_prin_cnty_svd_nm" minOccurs="0" type="xs:string"/>
+        <xs:element name="d_population_count" minOccurs="0" type="xs:string"/>
+        <xs:element name="d_pws_st_type_cd" minOccurs="0" type="xs:string"/>          
+        <xs:element name="activity_rsn_txt" minOccurs="0" type="xs:string"/>           
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="tinwsys_is_number" type="xs:integer" use = "required"/>       
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="sample_item">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="type_of_sample" type="dictionary"/>
+        <xs:element name="source_of_sample" minOccurs="0" type="dictionary"/>
+        <xs:element name="source_other" minOccurs="0" type="xs:string" />
+        <xs:element name="container" minOccurs="0" type="dictionary"/>
+        <xs:element name="unit_of_measure" minOccurs="0" type="dictionary"/>
+        <xs:element ref="analysis" maxOccurs="unbounded"/>       
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="sample_id" type="xs:integer" use = "required"/>
+      <xs:attribute name="sample_item_id" type="xs:integer" />
+      <xs:attribute name="item_sequence" type="xs:integer" />
+      <xs:attribute name="quantity" type="xs:decimal" />
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="sample_project">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element ref="project"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="sample_id" type="xs:integer" use = "required"/>
+      <xs:attribute name="is_permanent" type="xs:string" use = "required"/>      
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="project">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="name" type="xs:string"/>          
+        <xs:element name="description" type="xs:string"/>          
+        <xs:element name="reference_to" minOccurs="0" type="xs:string"/>
+        <xs:element name="owner" minOccurs="0" type = "systemUser"/>
+      </xs:sequence>
+      <xs:attribute name="id" use = "required" type="xs:integer"/>
+      <xs:attribute name="started_date" type="xs:date" use = "required"/>
+      <xs:attribute name="completed_date" type="xs:date" use = "required"/>
+      <xs:attribute name="is_active" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="sample_organization">
+    <xs:complexType>
+      <xs:sequence>    
+        <!-- 
+            The name "Type" is used instead of "type" because "type" is a keyword
+            used by Rhapsody's Symphonia Mapper. "type" is renamed on import by
+            Symphonia otherwise.   
+        -->
+        <xs:element name="Type" type="dictionary"/>
+        <xs:element ref="organization"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="sample_id" type="xs:integer" use = "required"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="organization">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="name" type="xs:string"/>          
+        <xs:element name="attention" minOccurs="0" type="xs:string"/>          
+        <xs:element name="address" type="address"/>
+        <xs:element ref="translation" minOccurs = "0"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="parent_organization_id" type="xs:integer"/>
+      <xs:attribute name="is_active" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>  
+  
+  <xs:element name="analysis">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element ref="test" />          
+        <xs:element ref="section" />          
+        <xs:element name="unit_of_measure" minOccurs="0" type="dictionary"/>
+        <xs:element name="status" type="dictionary"/>
+        <xs:element ref="analysis_qaevent" minOccurs="0" maxOccurs="unbounded"/>   
+        <xs:element ref="result" maxOccurs="unbounded"/>
+        <xs:element ref="analysis_user" minOccurs="0" maxOccurs="unbounded"/>    
+        <xs:element ref="note" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="id" use = "required" type="xs:integer" />
+      <xs:attribute name="sample_item_id" type="xs:integer" use = "required" />
+      <xs:attribute name="revision" type="xs:integer" use = "required" />
+      <xs:attribute name="pre_analysis_id" type="xs:integer" />
+      <xs:attribute name="parent_result_id" type="xs:integer" />
+      <xs:attribute name="is_reportable" type="xs:string" use = "required"/>
+      <xs:attribute name="available_date" type="xs:dateTime"/>
+      <xs:attribute name="started_date" type="xs:dateTime"/>
+      <xs:attribute name="completed_date" type="xs:dateTime"/>
+      <xs:attribute name="released_date" type="xs:dateTime"/>
+      <xs:attribute name="printed_date" type="xs:dateTime"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="test">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="name" type="xs:string"/>
+        <xs:element name="description" type="xs:string"/>
+        <xs:element name="reporting_description" type="xs:string"/>
+        <xs:element ref="method"/>
+        <xs:element name="test_format" type="dictionary"/>          
+        <xs:element name="revision_method" minOccurs = "0" type="dictionary"/>          
+        <xs:element name="reporting_method" type="dictionary"/>          
+        <xs:element name="sorting_method" type="dictionary"/>          
+        <xs:element ref="test_trailer" minOccurs = "0"/>          
+        <xs:element ref="translation" minOccurs = "0"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="is_active" type="xs:string" use = "required"/>
+      <xs:attribute name="active_begin" type="xs:date"/>
+      <xs:attribute name="active_end" type="xs:date"/>
+      <xs:attribute name="is_reportable" type="xs:string" use = "required" />
+      <xs:attribute name="time_transit" type="xs:integer" use = "required"/>
+      <xs:attribute name="time_holding" type="xs:integer" use = "required"/>
+      <xs:attribute name="time_ta_average" type="xs:integer" use = "required"/>
+      <xs:attribute name="time_ta_warning" type="xs:integer" use = "required"/>
+      <xs:attribute name="time_ta_max" type="xs:integer" use = "required"/>
+      <xs:attribute name="reporting_sequence" type="xs:integer"/>
+   </xs:complexType>
+ </xs:element>
+  
+ <xs:element name="method">       
+   <xs:complexType>
+     <xs:sequence>    
+       <xs:element name="name" type="xs:string"/> 
+       <xs:element name="description" type="xs:string"/>                 
+       <xs:element name="reporting_description" type="xs:string"/>
+       <xs:element ref="translation" minOccurs = "0"/>
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:integer" use = "required"/>
+     <xs:attribute name="is_active" type="xs:string" use = "required"/>
+     <xs:attribute name="active_begin" type="xs:date" use = "required"/>
+     <xs:attribute name="active_end" type="xs:date" use = "required"/>
+   </xs:complexType>
+ </xs:element>
+ 
+ <xs:element name="section">       
+   <xs:complexType>
+     <xs:sequence>    
+       <xs:element name="name" type="xs:string"/> 
+       <xs:element name="description" type="xs:string"/>                 
+       <xs:element ref="organization" minOccurs = "0"/>
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:integer" use = "required"/>
+     <xs:attribute name="parent_section_id" type="xs:integer"/>
+     <xs:attribute name="is_external" type="xs:string" use = "required"/>
+   </xs:complexType>
+ </xs:element>
+ 
+ <xs:element name="test_trailer">       
+   <xs:complexType>
+     <xs:sequence>    
+       <xs:element name="name" type="xs:string"/>                 
+       <xs:element name="description" type="xs:string"/>
+       <xs:element name="text" type="xs:string"/>
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:integer" use = "required"/>
+   </xs:complexType>
+ </xs:element>
+ 
+ <xs:element name="analysis_qaevent">       
+   <xs:complexType>
+     <xs:sequence>    
+       <xs:element ref="qaevent"/> 
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" type="dictionary"/>          
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:integer" use = "required"/>
+     <xs:attribute name="analysis_id" type="xs:integer" use = "required"/>
+     <xs:attribute name="is_billable" type="xs:string" use = "required"/>
+   </xs:complexType>
+ </xs:element>
+ 
+  <xs:element name="qaevent">       
+   <xs:complexType>
+     <xs:sequence>    
+       <xs:element name="name" type="xs:string"/>                 
+       <xs:element name="description" type="xs:string" minOccurs="0"/>
+       <xs:element ref="test" minOccurs="0"/>
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper.  "type" is renamed on import by
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" type="dictionary"/>          
+       <xs:element name="reporting_text" type="xs:string"/>
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:integer" use = "required"/>
+     <xs:attribute name="is_billable" type="xs:string" use = "required"/>
+     <xs:attribute name="reporting_sequence" type="xs:integer"/>
+   </xs:complexType>
+ </xs:element>
+ 
+ <xs:element name="result">
+   <xs:complexType>
+     <xs:sequence>    
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" minOccurs="0" type="dictionary"/>
+       <xs:element name="value" minOccurs="0" type="xs:string"/>
+       <xs:element name="dictionary" minOccurs="0" type="dictionary"/>
+       <xs:element ref="analyte" minOccurs="0"/>
+     </xs:sequence>
+     <xs:attribute name="id" use = "required" type="xs:integer" />
+     <xs:attribute name="analysis_id" use = "required" type="xs:integer" />
+     <xs:attribute name="test_analyte_id" use = "required" type="xs:integer" />
+     <xs:attribute name="test_result_id" type="xs:integer" />
+     <xs:attribute name="is_column" type="xs:string" use = "required"/>
+     <xs:attribute name="sort_order" type="xs:integer"/>
+     <xs:attribute name="is_reportable" type="xs:string" use = "required"/>
+   </xs:complexType>
+ </xs:element>
+  
+  <xs:element name="analysis_user">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="system_user" type = "systemUser"/>
+        <xs:element name="action" minOccurs="0" type="dictionary"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="analysis_id" type="xs:integer" use = "required"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="note">
+    <xs:complexType>
+      <xs:sequence>   
+        <xs:element name="system_user" type = "systemUser"/> 
+        <xs:element name="subject" minOccurs="0" type="xs:string"/>                 
+        <xs:element name="text" minOccurs="0" type="xs:string"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="reference_id" type="xs:integer" use = "required"/>
+      <xs:attribute name="reference_table_id" type="xs:integer" use = "required"/>
+      <xs:attribute name="timestamp" type="xs:dateTime" use = "required"/>
+      <xs:attribute name="is_external" type="xs:string" use = "required"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="systemUser">
+    <xs:sequence>    
+      <xs:element name="external_id" minOccurs="0" type="xs:string"/>                 
+      <xs:element name="login_name" type="xs:string"/>
+      <xs:element name="last_name" minOccurs="0" type="xs:string"/>
+      <xs:element name="first_name" minOccurs="0" type="xs:string"/>
+      <xs:element name="initials" minOccurs="0" type="xs:string"/>        
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:integer" use = "required"/>
+  </xs:complexType>
+  
+  <xs:element name="sample_qaevent">       
+   <xs:complexType>
+     <xs:sequence>    
+       <xs:element ref="qaevent"/> 
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" type="dictionary"/>          
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:integer" use = "required"/>
+     <xs:attribute name="sample_id" type="xs:integer" use = "required"/>
+     <xs:attribute name="is_billable" type="xs:string" use = "required"/>
+   </xs:complexType>
+ </xs:element>
+ 
+ <xs:element name="aux_data">
+   <xs:complexType>
+     <xs:sequence>    
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" minOccurs="0" type="dictionary"/>
+       <xs:element name="value" minOccurs="0" type="xs:string"/>
+       <xs:element name="dictionary" minOccurs="0" type="dictionary"/>
+       <xs:element ref="analyte"/>
+     </xs:sequence>
+     <xs:attribute name="id" type="xs:integer" use = "required"/>
+     <xs:attribute name="sort_order" type="xs:integer" use = "required"/>
+     <xs:attribute name="aux_field_id" type="xs:integer" use = "required"/>
+     <xs:attribute name="reference_id" type="xs:integer" use = "required"/>
+     <xs:attribute name="reference_table_id" type="xs:integer" use = "required"/>
+     <xs:attribute name="is_reportable" type="xs:string" use = "required"/>
+   </xs:complexType>
+ </xs:element>
+   
+ <xs:complexType name="dictionary">
+   <xs:sequence>    
+     <xs:element name="system_name" minOccurs="0" type="xs:string"/>
+     <xs:element name="entry" type="xs:string"/>                 
+     <xs:element ref="translation" minOccurs="0"/>
+   </xs:sequence>
+   <xs:attribute name="id" type="xs:integer" use = "required"/>
+ </xs:complexType>
+ 
+ <xs:complexType name="address">
+   <xs:sequence>    
+     <xs:element name="multiple_unit" minOccurs="0" type="xs:string"/>          
+     <xs:element name="street_address" minOccurs="0" type="xs:string"/>  
+     <xs:element name="city" minOccurs="0" type="xs:string"/>  
+     <xs:element name="state" minOccurs="0" type="xs:string"/>  
+     <xs:element name="zip_code" minOccurs="0" type="xs:string"/>  
+     <xs:element name="home_phone" minOccurs="0" type="xs:string"/>  
+     <xs:element name="cell_phone" minOccurs="0" type="xs:string"/>  
+     <xs:element name="fax_phone" minOccurs="0" type="xs:string"/>
+     <xs:element name="email" minOccurs="0" type="xs:string"/>
+     <xs:element name="country" minOccurs="0" type="xs:string"/>
+   </xs:sequence>
+   <xs:attribute name="id" type="xs:integer" use = "required"/>
+ </xs:complexType>
+  
+  <xs:element name="analyte">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="name" type="xs:string"/>                 
+        <xs:element name="external_id" minOccurs="0" type="xs:string"/>
+        <xs:element ref="translation" minOccurs="0"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="is_active" use = "required" type="xs:string"/>
+      <xs:attribute name="parent_analyte_id" type="xs:integer"/>
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:element name="translation">
+    <xs:complexType>
+      <xs:sequence>    
+        <xs:element name="profile" type="xs:string"/>                 
+        <xs:element name="code" type="xs:string"/>
+        <xs:element name="description" type="xs:string"/>                 
+        <xs:element name="coding_system" type="xs:string"/>
+        <xs:element name="version" type="xs:string"/>
+      </xs:sequence>
+      <xs:attribute name="id" type="xs:integer" use = "required"/>
+      <xs:attribute name="reference_id" type="xs:integer" use = "required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
