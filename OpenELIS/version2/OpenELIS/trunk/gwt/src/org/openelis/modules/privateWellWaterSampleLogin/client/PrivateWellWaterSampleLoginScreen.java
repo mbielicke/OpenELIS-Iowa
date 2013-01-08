@@ -115,7 +115,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PrivateWellWaterSampleLoginScreen extends Screen implements
                                                              HasActionHandlers {
-    private boolean                           quickUpdate;
+    private boolean                          quickUpdate;
     private SampleManager                     manager, previousManager;
     protected Tabs                            tab;
     private PrivateWellWaterSampleLoginScreen screen;
@@ -1665,6 +1665,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             }
 
             errors = wellOrderImport.importOrderInfo(orderId, manager);
+            
+            if (quickEntryMan != null)
+                SampleMergeUtility.mergeTests(manager, quickEntryMan);
 
             setDataInTabs();
             DataChangeEvent.fire(screen);

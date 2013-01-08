@@ -111,7 +111,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private SampleManager                 manager;
     private ModulePermission              userPermission, unreleasePermission,
-                    changeDomainPermission;
+                                           changeDomainPermission;
     private SampleTrackingScreen          trackingScreen;
     protected SampleItemsPopoutTreeLookup treePopout;
     private EnvironmentalTab              environmentalTab;
