@@ -35,6 +35,9 @@ import org.openelis.modules.sample.client.SampleService;
 
 public class SampleOrganizationManagerProxy {
     
+    public SampleOrganizationManagerProxy() {
+    }
+
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
         return SampleService.get().fetchSampleOrganizationsBySampleId(sampleId);
     }

@@ -36,7 +36,6 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.StorageManager;
-import org.openelis.manager.TestManager;
 
 public class SampleMergeUtility {
 
@@ -149,7 +148,6 @@ public class SampleMergeUtility {
                              */
                             orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex);
                             setAnalysisInfo(j, orderAnaIndex, qeAnaMan, orderAnaMan);
-                            orderAna.setId(qeAna.getId());
                             analysisFound = true;
                             break;
                         }
@@ -170,10 +168,8 @@ public class SampleMergeUtility {
                         sequence = 0;
 
                     orderAnaMan = fromOrderItemMan.getAnalysisAt(sequence);
-                    orderAnaIndex = addAnalysis(orderAnaMan, qeAnaMan.getTestAt(j));
-                    orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex); 
+                    orderAnaIndex = orderAnaMan.addAnalysis();
                     setAnalysisInfo(j, orderAnaIndex, qeAnaMan, orderAnaMan);
-                    orderAna.setId(qeAna.getId());
                 }
             }
         }
@@ -182,7 +178,35 @@ public class SampleMergeUtility {
 
     private static void setAnalysisInfo(int qeAnaIndex, int orderAnaIndex,
                                           AnalysisManager qeAnaMan,  AnalysisManager orderAnaMan) throws Exception {
-        orderAnaMan.setQAEventAt(qeAnaMan.getQAEventAt(qeAnaIndex), qeAnaIndex);
+        AnalysisViewDO orderAna, qeAna;
+        
+        qeAna = qeAnaMan.getAnalysisAt(qeAnaIndex);
+        orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex); 
+        
+        orderAna.setId(qeAna.getId());
+        orderAna.setTestId(qeAna.getTestId());
+        orderAna.setTestName(qeAna.getTestName());
+        orderAna.setTestReportingDescription(qeAna.getTestReportingDescription());
+        orderAna.setMethodId(qeAna.getMethodId());
+        orderAna.setMethodName(qeAna.getMethodName());
+        orderAna.setMethodReportingDescription(qeAna.getMethodReportingDescription());
+        orderAna.setSectionId(qeAna.getSectionId());
+        orderAna.setSectionName(qeAna.getSectionName());
+        orderAna.setPreAnalysisId(qeAna.getPreAnalysisId());
+        orderAna.setPreAnalysisTest(qeAna.getPreAnalysisTest());
+        orderAna.setPreAnalysisMethod(qeAna.getPreAnalysisMethod());
+        orderAna.setParentAnalysisId(qeAna.getParentAnalysisId());
+        orderAna.setParentResultId(qeAna.getParentResultId());
+        orderAna.setIsReportable(qeAna.getIsReportable());
+        orderAna.setUnitOfMeasureId(qeAna.getUnitOfMeasureId());
+        orderAna.setStatusId(qeAna.getStatusId());
+        orderAna.setAvailableDate(qeAna.getAvailableDate());
+        orderAna.setStartedDate(qeAna.getStartedDate());
+        orderAna.setCompletedDate(qeAna.getCompletedDate());
+                
+        orderAnaMan.setTestManagerAt(qeAnaMan.getTestAt(qeAnaIndex), orderAnaIndex);
+        orderAnaMan.setAnalysisResultAt(qeAnaMan.getAnalysisResultAt(qeAnaIndex), orderAnaIndex);
+        orderAnaMan.setQAEventAt(qeAnaMan.getQAEventAt(qeAnaIndex), orderAnaIndex);
         orderAnaMan.setInternalNotes(qeAnaMan.getInternalNotesAt(qeAnaIndex), orderAnaIndex);
         orderAnaMan.setExternalNoteAt(qeAnaMan.getExternalNoteAt(qeAnaIndex), orderAnaIndex);
         orderAnaMan.setStorageAt(qeAnaMan.getStorageAt(qeAnaIndex), orderAnaIndex);
@@ -201,20 +225,6 @@ public class SampleMergeUtility {
                 return i;            
         }
         return -1;
-    }
-    
-    private static int addAnalysis(AnalysisManager orderAnaMan, TestManager testMan) throws Exception {
-        int anaIndex;
-        
-        anaIndex = orderAnaMan.addAnalysis();
-
-        /*
-         * set the defaults e.g. section and unit and load the
-         * results
-         */
-        orderAnaMan.setTestAt(testMan, anaIndex, false);
-        
-        return anaIndex;
     }
     
     private static void duplicateStorage(StorageManager orderItemStorageMan, StorageManager qeItemStorageMan) throws Exception {
