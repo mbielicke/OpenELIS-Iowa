@@ -156,12 +156,15 @@ UIRF Software License are applicable instead of those above.
                 <col header="{resource:getString($constants,'externalTerm')}" key = "{meta:getExternalTermExternalTerm()}" width="120" >
                   <textbox field="String" required = "true"/>
                 </col>
-                <col header="{resource:getString($constants,'externalDescription')}" key = "{meta:getExternalTermExternalDescription()}" width="190">
+                <col header="{resource:getString($constants,'externalDescription')}" key = "{meta:getExternalTermExternalDescription()}" width="150">
                   <textbox field="String" />
                 </col>
-                <col  header="{resource:getString($constants,'externalCodingSystem')}" key = "{meta:getExternalTermExternalCodingSystem()}" width="190" >
+                <col  header="{resource:getString($constants,'externalCodingSystem')}" key = "{meta:getExternalTermExternalCodingSystem()}" width="150" >
                   <textbox field="String" />
                 </col>
+                <col  header="{resource:getString($constants,'version')}" key = "{meta:getExternalTermVersion()}" width="140" >
+                  <textbox field="String" />
+                </col>                
             </table>
             <HorizontalPanel>
               <HorizontalPanel>

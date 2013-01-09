@@ -1222,6 +1222,9 @@ UIRF Software License are applicable instead of those above.
       <xsl:attribute name="reference_id">
         <xsl:value-of select="@reference_id" />
       </xsl:attribute>
+      <xsl:attribute name="is_active">
+        <xsl:value-of select="@is_active" />
+      </xsl:attribute>
       <profile>
         <xsl:value-of select="profile" />
       </profile>
@@ -1234,9 +1237,11 @@ UIRF Software License are applicable instead of those above.
       <coding_system>
         <xsl:value-of select="coding_system" />
       </coding_system>
-      <version>
-        <xsl:value-of select="version" />
-      </version>
+      <xsl:if test="version[.!= '']">
+        <version>
+          <xsl:value-of select="version" />
+        </version>
+      </xsl:if>
     </translation>
   </xsl:template>
 </xsl:stylesheet>

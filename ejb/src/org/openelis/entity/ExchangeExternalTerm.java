@@ -52,11 +52,11 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "ExchangeExternalTerm.FetchByExchangeLocalTermId",
                 query = "select new org.openelis.domain.ExchangeExternalTermDO(et.id, et.exchangeLocalTermId," +
-                        "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem)"
+                        "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem, et.version)"
                       + " from ExchangeExternalTerm et where et.exchangeLocalTermId = :id"),                         
     @NamedQuery( name = "ExchangeExternalTerm.FetchByReferenceTableIdReferenceIdsProfileIds",
                 query = "select new org.openelis.domain.ExchangeExternalTermViewDO(et.id, et.exchangeLocalTermId," +
-                        "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem," +
+                        "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem, et.version," +
                         "e.referenceTableId, e.referenceId)"
                       + " from ExchangeExternalTerm et left join et.exchangeLocalTerm e where e.referenceTableId = :referenceTableId"
                       + " and e.referenceId in (:referenceIds) and et.profileId in (:profileIds)")})                  
@@ -88,6 +88,9 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
 
     @Column(name = "external_coding_system")
     private String               externalCodingSystem;
+    
+    @Column(name = "version")
+    private String               version;
     
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exchange_local_term_id", insertable = false, updatable = false)
@@ -158,6 +161,15 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(externalCodingSystem, this.externalCodingSystem))
             this.externalCodingSystem = externalCodingSystem;
     }
+    
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        if (DataBaseUtil.isDifferent(version, this.version))
+            this.version = version;
+    }
 
     public ExchangeLocalTerm getExchangeLocalTerm() {
         return exchangeLocalTerm;
@@ -188,7 +200,8 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
                  .setField("is_active", isActive, original.isActive)
                  .setField("external_term", externalTerm, original.externalTerm)
                  .setField("external_description", externalDescription, original.externalDescription)
-                 .setField("external_coding_system", externalCodingSystem, original.externalCodingSystem);
+                 .setField("external_coding_system", externalCodingSystem, original.externalCodingSystem)
+                 .setField("version", version, original.version);
 
         return audit;
     }

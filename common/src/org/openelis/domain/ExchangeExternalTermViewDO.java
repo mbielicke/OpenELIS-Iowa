@@ -43,10 +43,11 @@ public class ExchangeExternalTermViewDO extends ExchangeExternalTermDO {
 
     public ExchangeExternalTermViewDO(Integer id, Integer exchangeLocalTermId, Integer profileId,
                                   String isActive, String externalTerm, String externalDescription,
-                                  String externalCodingSystem, Integer exchangeLocalTermReferenceTableId,
+                                  String externalCodingSystem, String version,
+                                  Integer exchangeLocalTermReferenceTableId,
                                   Integer exchangeLocalTermReferenceId) {
         super(id, exchangeLocalTermId, profileId, isActive, externalTerm, externalDescription,
-                                   externalCodingSystem);
+                                   externalCodingSystem, version);
         setExchangeLocalTermReferenceTableId(exchangeLocalTermReferenceTableId);
         setExchangeLocalTermReferenceId(exchangeLocalTermReferenceId);
     }
