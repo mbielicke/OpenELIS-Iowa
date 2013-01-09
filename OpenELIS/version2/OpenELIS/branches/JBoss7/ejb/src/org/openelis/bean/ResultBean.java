@@ -59,7 +59,7 @@ import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
-public class ResultBean { //implements ResultLocal {
+public class ResultBean { 
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
