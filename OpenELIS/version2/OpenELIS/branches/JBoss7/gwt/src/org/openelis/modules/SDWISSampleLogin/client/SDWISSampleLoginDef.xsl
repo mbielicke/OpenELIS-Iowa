@@ -191,7 +191,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
-                <textbox key="{meta:getSDWISLocation()}" case="LOWER" width="215" max="20" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
+                <textbox key="{meta:getSDWISLocation()}" case="LOWER" width="215" max="40" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
