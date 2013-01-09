@@ -131,11 +131,6 @@ public class SampleManager implements Serializable, HasAuxDataInt {
         updateSampleStatus();
         return proxy().update(this);
     }
-    
-
-    public void updateCache() {
-        proxy().updateCache(this);      
-    }
 
     public SampleManager fetchForUpdate() throws Exception {
         return proxy().fetchForUpdate(sample.getId());
