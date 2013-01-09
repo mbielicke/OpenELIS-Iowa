@@ -426,7 +426,7 @@ public class AnalysisManager implements Serializable {
         ValidationErrorsList errorsList;
         SampleManager man;
         SystemUserPermission perm;
-        NoteManager intenotes, samNotes;
+        NoteManager intenotes;
         AnalysisListItem item;
 
         item = getItemAt(index);
@@ -792,6 +792,21 @@ public class AnalysisManager implements Serializable {
 
     public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
         getItemAt(i).analysisResult = analysisResult;
+    }
+    
+    /**
+     * In the case of merging the analyses added through quick entry with the tests
+     * added to an order, all the analyses added through quick entry are preserved
+     * in the new sample manager, even if their sample item changes. So for those,
+     * the test manager can simply be set from the analyses with the same id in 
+     * the old sample manager rather than being fetched or duplicated. This method
+     * is separate from "setTestAt(TestManager testMan, int index, boolean forOrderImport)"
+     * because in this case the side effects of that method are either unneccessary
+     * or error-prone. This method must not be used if the functionality in the 
+     * latter is desired, i.e. loading the additional data associated with the test.             
+     */
+    public void setTestManagerAt(TestManager tests, int i) {
+        getItemAt(i).tests = tests;
     }
 
     // test
