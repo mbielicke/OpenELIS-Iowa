@@ -35,7 +35,7 @@ import org.openelis.cache.SectionCacheServiceInt;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.server.RemoteServlet;
 
-@WebServlet("/openleis/sectionCache")
+@WebServlet("/openelis/sectionCache")
 public class SectionCacheServlet extends RemoteServlet implements SectionCacheServiceInt {
     
     private static final long serialVersionUID = 1L;
