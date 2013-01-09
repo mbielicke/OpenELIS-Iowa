@@ -432,6 +432,9 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     case 4:
                         data.setExternalCodingSystem((String)val);
                         break;
+                    case 5:
+                        data.setVersion((String)val);
+                        break;
                 }
             }
         });
@@ -830,12 +833,13 @@ public class ExchangeVocabularyMapScreen extends Screen {
             for (int i = 0; i < man.count(); i++ ) {
                 data = man.getExternalTermAt(i);
 
-                row = new TableDataRow(5);
+                row = new TableDataRow(6);
                 row.cells.get(0).setValue(data.getIsActive());
                 row.cells.get(1).setValue(data.getProfileId());
                 row.cells.get(2).setValue(data.getExternalTerm());
                 row.cells.get(3).setValue(data.getExternalDescription());
                 row.cells.get(4).setValue(data.getExternalCodingSystem());
+                row.cells.get(5).setValue(data.getVersion());
                 model.add(row);
             }
         } catch (Exception e) {

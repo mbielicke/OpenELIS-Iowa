@@ -36,14 +36,15 @@ public class ExchangeExternalTermDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, exchangeLocalTermId, profileId;
-    protected String          isActive, externalTerm, externalDescription, externalCodingSystem;
+    protected String          isActive, externalTerm, externalDescription, 
+                               externalCodingSystem, version;
     
     public ExchangeExternalTermDO() {
     }
     
     public ExchangeExternalTermDO(Integer id, Integer exchangeLocalTermId, Integer profileId,
                                   String isActive, String externalTerm, String externalDescription,
-                                  String externalCodingSystem) {
+                                  String externalCodingSystem, String version) {
         setId(id);
         setExchangeLocalTermId(exchangeLocalTermId);
         setProfileId(profileId);
@@ -51,6 +52,7 @@ public class ExchangeExternalTermDO extends DataObject {
         setExternalTerm(externalTerm);
         setExternalDescription(externalDescription);
         setExternalCodingSystem(externalCodingSystem);
+        setVersion(version);
         _changed = false;
     }
 
@@ -114,6 +116,15 @@ public class ExchangeExternalTermDO extends DataObject {
 
     public void setExternalCodingSystem(String externalCodingSystem) {
         this.externalCodingSystem = DataBaseUtil.trim(externalCodingSystem);
+        _changed = true;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = DataBaseUtil.trim(version);
         _changed = true;
     }
 }
