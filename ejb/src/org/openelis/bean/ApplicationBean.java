@@ -41,7 +41,6 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.remote.ApplicationRemote;
 
 /**
  * This class provides application level initialization and services.
@@ -49,7 +48,7 @@ import org.openelis.remote.ApplicationRemote;
 @Startup
 @Singleton
 @SecurityDomain("openelis")
-public class ApplicationBean implements ApplicationRemote {
+public class ApplicationBean {
 
     private boolean             loaded, errors;
     private static final Logger log = Logger.getLogger("openelis");
