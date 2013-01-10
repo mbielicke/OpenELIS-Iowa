@@ -643,11 +643,11 @@ public class SampleBean implements SampleLocal, SampleRemote {
         // that by the time we insert it will still be unique, and will
         // slow us down.
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
-            e.add(new FormErrorException("accessionNumberNotPositiveException",
+            e.add(new FormErrorException("sample.accessionNumberNotPositiveException",
                                          data.getAccessionNumber()));
 
         if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
-            e.add(new FormErrorException("accessionNumberNotInUse",
+            e.add(new FormErrorException("sample.accessionNumberNotInUse",
                                          data.getAccessionNumber()));
 
         // domain
@@ -659,21 +659,21 @@ public class SampleBean implements SampleLocal, SampleRemote {
              !Constants.domain().NEWBORN.equals(d) &&
              !Constants.domain().PRIVATEWELL.equals(d) &&
              !Constants.domain().PT.equals(d) && !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
-            e.add(new FormErrorException("noDomainException", data.getAccessionNumber()));
+            e.add(new FormErrorException("sample.noDomainException", data.getAccessionNumber()));
         // dates
         ent = data.getEnteredDate();
         rec = data.getReceivedDate();
         minEnt = null;
         if (ent == null)
-            e.add(new FormErrorException("enteredDateRequiredException",
+            e.add(new FormErrorException("sample.enteredDateRequiredException",
                                          data.getAccessionNumber()));
         else
             minEnt = ent.add( -180);
         if (rec == null)
-            e.add(new FormErrorException("receivedDateRequiredException",
+            e.add(new FormErrorException("sample.receivedDateRequiredException",
                                          data.getAccessionNumber()));
         else if (rec.before(minEnt) && !ignoreWarning)
-            e.add(new FormErrorWarning("receivedTooOldWarning", data.getAccessionNumber()));
+            e.add(new FormErrorWarning("sample.receivedTooOldWarning", data.getAccessionNumber()));
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
             cal = Calendar.getInstance();
@@ -684,10 +684,10 @@ public class SampleBean implements SampleLocal, SampleRemote {
         }
         if (col != null) {
             if (col.after(rec))
-                e.add(new FormErrorException("collectedDateInvalidError",
+                e.add(new FormErrorException("sample.collectedDateInvalidError",
                                              data.getAccessionNumber()));
             if (col.before(minEnt) && !ignoreWarning)
-                e.add(new FormErrorException("collectedTooOldWarning",
+                e.add(new FormErrorException("sample.collectedTooOldWarning",
                                              data.getAccessionNumber()));
         }
 

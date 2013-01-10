@@ -658,12 +658,13 @@ public class ResultBean implements ResultLocal {
         ValidationErrorsList e;
 
         e = new ValidationErrorsList();
-
+        
         if ( !DataBaseUtil.isEmpty(data.getValue())) {
             if (tm != null) {
                 test = tm.getTest().getName();
                 method = tm.getTest().getMethodName();
-                e.add(new FormErrorException("oneOrMoreResultValuesInvalid"));
+                e.add(new FormErrorException("sample.oneOrMoreResultValuesInvalid", 
+                                             accession, test, method));
             }
         }
 
