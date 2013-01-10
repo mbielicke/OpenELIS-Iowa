@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyses" pageWidth="550" pageHeight="572" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<import value="org.openelis.report.finalreport.ResultDataSource"/>
+	<import value="org.openelis.report.finalreport.NoteDataSource"/>
+	<import value="org.openelis.report.finalreport.SectionLocationUtil"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_TYPE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT 1 sorting_method, t.reporting_sequence, t.test_trailer_id,
+     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
+     u.entry unit_name, u.id unit_id,
+     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
+     pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
+FROM
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary u
+WHERE
+     si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
+     a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
+     a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
+     t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
+UNION
+SELECT 2 sorting_method, t.reporting_sequence, t.test_trailer_id,
+     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
+     u.entry unit_name, u.id unit_id,
+     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
+     pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
+FROM
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary u
+WHERE
+     si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
+     a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
+     a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
+     t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
+ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
+	</queryString>
+	<field name="sorting_method" class="java.lang.Integer"/>
+	<field name="reporting_sequence" class="java.lang.Integer"/>
+	<field name="test_trailer_id" class="java.lang.Integer"/>
+	<field name="t_reporting_description" class="java.lang.String"/>
+	<field name="m_reporting_description" class="java.lang.String"/>
+	<field name="test_format" class="java.lang.String"/>
+	<field name="unit_name" class="java.lang.String"/>
+	<field name="unit_id" class="java.lang.Integer"/>
+	<field name="a_id" class="java.lang.Integer"/>
+	<field name="a_released_date" class="java.sql.Timestamp"/>
+	<field name="a_started_date" class="java.sql.Timestamp"/>
+	<field name="a_revision" class="java.lang.Integer"/>
+	<field name="s_name" class="java.lang.String"/>
+	<field name="pat_reporting_description" class="java.lang.String"/>
+	<field name="pam_reporting_description" class="java.lang.String"/>
+	<variable name="RESULT_DATASOURCE" class="org.openelis.report.finalreport.ResultDataSource" resetType="Group" resetGroup="analysisGroup" calculation="System">
+		<variableExpression><![CDATA[$V{RESULT_DATASOURCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[ResultDataSource.getInstance($P{SAMPLE_ID},$F{a_id}, false)]]></initialValueExpression>
+	</variable>
+	<variable name="NOTE_DATASOURCE" class="org.openelis.report.finalreport.NoteDataSource" resetType="Group" resetGroup="analysisGroup" calculation="System">
+		<variableExpression><![CDATA[$V{NOTE_DATASOURCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[NoteDataSource.getInstance($P{SAMPLE_ID},$F{a_id},$F{test_trailer_id})]]></initialValueExpression>
+	</variable>
+	<group name="analysisGroup">
+		<groupExpression><![CDATA[$F{a_id}]]></groupExpression>
+		<groupFooter>
+			<band height="12" splitType="Stretch"/>
+		</groupFooter>
+	</group>
+	<detail>
+		<band height="60" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="120" y="0" width="310" height="12" backcolor="#C0C0C0"/>
+				<textElement textAlignment="Center">
+					<font isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="40" y="24" width="90" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Units]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="40" y="36" width="90" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Date Analyzed]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="40" y="48" width="90" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Analyst]]></text>
+			</staticText>
+			<line>
+				<reportElement x="135" y="24" width="1" height="36"/>
+			</line>
+			<staticText>
+				<reportElement x="289" y="24" width="71" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Analyzed In]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="289" y="36" width="71" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Date Verified]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="289" y="48" width="71" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Verifier]]></text>
+			</staticText>
+			<line>
+				<reportElement x="365" y="24" width="1" height="36"/>
+			</line>
+			<textField isBlankWhenNull="true">
+				<reportElement x="140" y="24" width="149" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="140" y="36" width="149" height="12">
+					<printWhenExpression><![CDATA[$V{NOTE_DATASOURCE}.hasOverride() == false]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="140" y="48" width="149" height="12">
+					<printWhenExpression><![CDATA[$V{NOTE_DATASOURCE}.hasOverride() == false]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="ANALYSIS_ID">
+					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analyst.jasper"]]></subreportExpression>
+			</subreport>
+			<textField isBlankWhenNull="false">
+				<reportElement x="370" y="24" width="180" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[SectionLocationUtil.getLocation($F{s_name})]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="370" y="36" width="109" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_released_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="452" y="36" width="98" height="12">
+					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{a_revision}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="370" y="48" width="180" height="12"/>
+				<subreportParameter name="ANALYSIS_ID">
+					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SYSTEM_NAME">
+					<subreportParameterExpression><![CDATA["an_user_ac_released"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisVerifier.jasper"]]></subreportExpression>
+			</subreport>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="12" width="163" height="0"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Boolean"><![CDATA[$P{UNIT_LIST}.add($F{unit_id})]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12" splitType="Stretch">
+			<printWhenExpression><![CDATA[$F{pat_reporting_description} != null]]></printWhenExpression>
+			<staticText>
+				<reportElement x="40" y="0" width="90" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Analysis Prep]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="140" y="0" width="410" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{pat_reporting_description},", ", $F{pam_reporting_description})]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="135" y="0" width="1" height="12"/>
+			</line>
+		</band>
+		<band height="12" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_two_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "twoColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_three_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "threeColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_four_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fourColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_four_column_1w".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fourColumn1W.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_five_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_five_column_1w".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn1W.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="12">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ANALYSIS_ID">
+					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<dataSourceExpression><![CDATA[$V{NOTE_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

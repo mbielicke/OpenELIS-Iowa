@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleProject" pageWidth="142" pageHeight="572" orientation="Landscape" columnWidth="142" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT first 1
+     d1.entry type_of_sample, d2.entry source_of_sample, si.source_other
+FROM
+     sample_item si, dictionary d1, outer dictionary d2
+WHERE
+     si.type_of_sample_id = d1.id and
+     si.source_of_sample_id = d2.id and
+     si.item_sequence = 0 and
+     si.sample_id = $P{SAMPLE_ID}]]>
+	</queryString>
+	<field name="type_of_sample" class="java.lang.String"/>
+	<field name="source_of_sample" class="java.lang.String"/>
+	<field name="source_other" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="142" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$F{source_other} == null && $F{source_of_sample} == null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="142" height="12">
+					<printWhenExpression><![CDATA[$F{source_other} == null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_of_sample}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="142" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_other}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
