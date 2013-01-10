@@ -270,7 +270,7 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
              * empty unit
              */
             if (data.getUnitOfMeasureId() == null && tm.getSampleTypes().hasEmptyUnit())
-                e.add(new FormErrorException("analysisUnitRequired", accession, sequence,
+                e.add(new FormErrorException("sample.analysisUnitRequired", accession, sequence,
                                              test, method));
             /*
              * validate unit & sample type
@@ -278,26 +278,26 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
             if (data.getUnitOfMeasureId() != null && item != null && !ignoreWarning && 
                 !tm.getSampleTypes().hasUnit(data.getUnitOfMeasureId(),
                                              item.getTypeOfSampleId()))
-                e.add(new FormErrorWarning("analysisUnitInvalid", accession, sequence,
+                e.add(new FormErrorWarning("sample.analysisUnitInvalid", accession, sequence,
                                            test, method));
         } else {
             test = null;
             method = null;
         }
         if (data.getTestId() == null)
-            e.add(new FormErrorException("analysisTestIdMissing", accession, sequence));
+            e.add(new FormErrorException("sample.analysisTestIdMissing", accession, sequence));
 
         if (data.getSectionId() == null)
-            e.add(new FormErrorException("analysisSectionIdMissing", accession, sequence,
-                                         test, method));
+            e.add(new FormErrorException("sample.analysisSectionIdMissing", accession, 
+                                         sequence, test, method));
 
         if (data.getStartedDate() != null && data.getCompletedDate() != null &&
             data.getStartedDate().compareTo(data.getCompletedDate()) == 1)
-            e.add(new FormErrorException("startedDateInvalidError", accession, sequence,
-                                         test, method));
+            e.add(new FormErrorException("sample.startedDateInvalidError", accession,
+                                         sequence, test, method));
         if (data.getCompletedDate() != null && data.getReleasedDate() != null &&
             data.getCompletedDate().compareTo(data.getReleasedDate()) == 1)
-            e.add(new FormErrorException("completedDateInvalidError", accession,
+            e.add(new FormErrorException("sample.completedDateInvalidError", accession,
                                          sequence, test, method));
         if (e.size() > 0)
             throw e;

@@ -61,6 +61,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -166,6 +168,8 @@ public class SampleManager1Bean implements SampleManager1Remote {
 
     @EJB
     private SystemVariableLocal      systemVariable;
+    
+    private static final Logger     log = Logger.getLogger("openelis");
 
     /**
      * Returns a sample manager for specified primary id and requested load
@@ -732,8 +736,8 @@ public class SampleManager1Bean implements SampleManager1Remote {
             sys = systemVariable.fetchByName("last_accession_number");
             maxAccession = Integer.valueOf(sys.getValue());
         } catch (Exception any) {
-            // TODO log the error
-            throw new FormErrorException("Missing/invalid system variable 'last_accession_number'");
+            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", e);
+            throw new FormErrorException("systemVariable.missingInvalidSystemVariable", "last_accession_number");
         }
 
         for (SampleManager1 sm : sms) {
@@ -767,14 +771,14 @@ public class SampleManager1Bean implements SampleManager1Remote {
                         cnt++ ;
             }
             if (cnt != 1 && !ignoreWarning)
-                e.add(new FormErrorException("must have one report to", accession));
+                e.add(new FormErrorException("sample.moreThanOneReportToException", accession));
 
             /*
              * at least one sample item and items must have sample type
              */
             si.clear();
             if (getItems(sm) == null || getItems(sm).size() < 1) {
-                e.add(new FormErrorException("minOneSampleItemException", accession));
+                e.add(new FormErrorException("sample.minOneSampleItemException", accession));
             } else {
                 for (SampleItemViewDO data : getItems(sm)) {
                     si.put(data.getId(), data);
@@ -845,29 +849,26 @@ public class SampleManager1Bean implements SampleManager1Remote {
          */
         acc = data.getAccessionNumber();
         if (acc == null || acc <= 0)
-            throw new FieldErrorException("accessionNumberNotPositiveException",
-                                          SampleMeta.getAccessionNumber());
+            throw new FormErrorException("sample.accessionNumberNotValidException",
+                                          data.getAccessionNumber());
 
         try {
             sys = systemVariable.fetchByName("last_accession_number");
             if (acc.compareTo(Integer.valueOf(sys.getValue())) > 0)
-                throw new FieldErrorException("accessionNumberNotInUse",
-                                              SampleMeta.getAccessionNumber());
+                throw new FormErrorException("sample.accessionNumberNotInUse",
+                                              data.getAccessionNumber());
         } catch (Exception any) {
-            // TODO log the error
+            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
             throw any;
         }
 
         try {
             dup = sample.fetchByAccessionNumber(acc);
             if ( !dup.getId().equals(data.getId()))
-                throw new FieldErrorException("accessionNumberDuplicate",
-                                              SampleMeta.getAccessionNumber());
+                throw new FormErrorException("sample.accessionNumberDuplicate",
+                                              data.getAccessionNumber());
         } catch (NotFoundException nf) {
             // ok if no other sample with the same accession number
-        } catch (Exception any) {
-            // TODO log the error
-            throw any;
         }
     }
 
