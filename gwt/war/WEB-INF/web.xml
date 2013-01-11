@@ -61,6 +61,12 @@ UIRF Software License are applicable instead of those above.
     <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
+  
+  <servlet>
+    <servlet-name>CalendarServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.CalendarServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
    
   <servlet-mapping>
     <servlet-name>FileServlet</servlet-name>
@@ -71,6 +77,11 @@ UIRF Software License are applicable instead of those above.
     <!-- we need to define this again because FF uses "/report" and GC uses "/openelis/report" -->
     <servlet-name>ReportServlet</servlet-name>
     <url-pattern>/openelis/report</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>CalendarServlet</servlet-name>
+    <url-pattern>/openelis/calendar</url-pattern>
   </servlet-mapping>
   
   <session-config>
