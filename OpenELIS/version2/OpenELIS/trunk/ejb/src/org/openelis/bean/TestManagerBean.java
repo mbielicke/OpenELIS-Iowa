@@ -25,6 +25,8 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
@@ -60,6 +62,17 @@ public class TestManagerBean implements TestManagerRemote {
 
     public TestManager fetchById(Integer id) throws Exception {
         return TestManager.fetchById(id);
+    }
+    
+    public ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        ArrayList<TestManager> managers;
+        
+        managers = new ArrayList<TestManager>();
+        
+        for (Integer id : ids)
+            managers.add(TestManager.fetchById(id));
+        
+        return managers;
     }
 
     public TestManager fetchWithSampleTypes(Integer id) throws Exception {

@@ -1,5 +1,7 @@
 package org.openelis.remote;
 
+import java.util.ArrayList;
+
 import javax.ejb.Remote;
 
 import org.openelis.manager.TestAnalyteManager;
@@ -13,6 +15,8 @@ import org.openelis.manager.TestWorksheetManager;
 @Remote
 public interface TestManagerRemote {
     public TestManager fetchById(Integer testId) throws Exception;
+    
+    public ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception;
 
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception;
 
@@ -43,5 +47,4 @@ public interface TestManagerRemote {
     public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception;
 
     public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception;
-
 }
