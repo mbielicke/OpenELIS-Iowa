@@ -47,6 +47,7 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
                                   EXT_TERM_EXTERNAL_TERM = "_exchangeExternalTerm.externalTerm",
                                   EXT_TERM_EXTERNAL_DESCRIPTION = "_exchangeExternalTerm.externalDescription",
                                   EXT_TERM_EXTERNAL_CODING_SYSTEM = "_exchangeExternalTerm.externalCodingSystem",
+                                  EXT_TERM_VERSION = "_exchangeExternalTerm.version",
                                   REFERENCE_NAME = "referenceName",
                                   ANALYTE_NAME = "_analyte.name",
                                   METHOD_NAME = "_method.name",
@@ -65,8 +66,9 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
                                                   EXT_TERM_PROFILE_IS_ACTIVE, EXT_TERM_EXTERNAL_TERM,
                                                   EXT_TERM_EXTERNAL_DESCRIPTION,
                                                   EXT_TERM_EXTERNAL_CODING_SYSTEM,
-                                                  REFERENCE_NAME , ANALYTE_NAME, METHOD_NAME,
-                                                  TEST_NAME, TEST_METHOD_NAME, ORGANIZATION_NAME,
+                                                  EXT_TERM_VERSION, REFERENCE_NAME ,
+                                                  ANALYTE_NAME, METHOD_NAME, TEST_NAME,
+                                                  TEST_METHOD_NAME, ORGANIZATION_NAME,
                                                   DICTIONARY_ENTRY, DICTIONARY_CATEGORY_NAME));
     }    
 
@@ -108,6 +110,10 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
 
     public static String getExternalTermExternalCodingSystem() {
         return EXT_TERM_EXTERNAL_CODING_SYSTEM;
+    }
+    
+    public static String getExternalTermVersion() {
+        return EXT_TERM_VERSION;
     }
 
     public static String getReferenceName() {
