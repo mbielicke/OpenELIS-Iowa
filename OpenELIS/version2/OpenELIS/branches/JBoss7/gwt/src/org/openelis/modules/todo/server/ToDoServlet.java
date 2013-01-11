@@ -28,6 +28,7 @@ package org.openelis.modules.todo.server;
 import java.util.ArrayList;
 
 import javax.ejb.EJB;
+import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.ToDoBean;
 import org.openelis.domain.AnalysisViewVO;
@@ -36,9 +37,7 @@ import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.todo.client.ToDoServiceInt;
 
-import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-
-@RemoteServiceRelativePath("/openelis/todo")
+@WebServlet("/openelis/todo")
 public class ToDoServlet extends RemoteServlet implements ToDoServiceInt {
 
     private static final long serialVersionUID = 1L;
