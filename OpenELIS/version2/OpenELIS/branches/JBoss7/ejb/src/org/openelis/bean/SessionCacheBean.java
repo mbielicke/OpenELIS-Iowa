@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.HashMap;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
@@ -51,7 +52,8 @@ public class SessionCacheBean {
 
     private Cache          cache;
 
-    public SessionCacheBean() {
+    @PostConstruct
+    public void init() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();

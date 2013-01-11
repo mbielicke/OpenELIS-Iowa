@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
 import javax.print.DocFlavor;
@@ -28,10 +29,8 @@ public class PrinterCacheBean {
     
     private static final Logger       log = Logger.getLogger("openelis");
 
-    /**
-     * Constructor
-     */
-    public PrinterCacheBean() {
+    @PostConstruct
+    public void init() {
         printerList = new ArrayList<Printer>();
         printerHash = new HashMap<String, Printer>();
         refresh();
