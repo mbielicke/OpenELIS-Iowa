@@ -529,10 +529,11 @@ UIRF Software License are applicable instead of those above.
         <xs:element name="code" type="xs:string"/>
         <xs:element name="description" type="xs:string"/>                 
         <xs:element name="coding_system" type="xs:string"/>
-        <xs:element name="version" type="xs:string"/>
+        <xs:element name="version" minOccurs="0" type="xs:string"/>
       </xs:sequence>
       <xs:attribute name="id" type="xs:integer" use = "required"/>
       <xs:attribute name="reference_id" type="xs:integer" use = "required"/>
+      <xs:attribute name="is_active" type="xs:string" use = "required"/>
     </xs:complexType>
   </xs:element>
 </xs:schema>

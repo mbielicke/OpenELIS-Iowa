@@ -139,7 +139,7 @@ public class DataExchangeXMLMapperBean  {
 
     private static SimpleDateFormat   dateFormat, timeFormat;
 
-    private static final String       VERSION = "2.1.8", MESSAGE_TYPE = "result-out";
+    private static final String       MESSAGE_TYPE = "result-out";
 
     private static final Logger       log     = Logger.getLogger("openelis");
 
@@ -610,8 +610,7 @@ public class DataExchangeXMLMapperBean  {
                                    dictIds,
                                    "dictionary_translations",
                                    doc,
-                                   root,
-                                   VERSION);
+                                   root);
 
             if (testIds.size() > 0)
                 createTranslations(Constants.table().TEST,
@@ -619,8 +618,7 @@ public class DataExchangeXMLMapperBean  {
                                    testIds,
                                    "test_translations",
                                    doc,
-                                   root,
-                                   VERSION);
+                                   root);
 
             if (methodIds.size() > 0)
                 createTranslations(Constants.table().METHOD,
@@ -628,8 +626,7 @@ public class DataExchangeXMLMapperBean  {
                                    methodIds,
                                    "method_translations",
                                    doc,
-                                   root,
-                                   VERSION);
+                                   root);
 
             if (analyteIds.size() > 0)
                 createTranslations(Constants.table().ANALYTE,
@@ -637,8 +634,7 @@ public class DataExchangeXMLMapperBean  {
                                    analyteIds,
                                    "analyte_translations",
                                    doc,
-                                   root,
-                                   VERSION);
+                                   root);
 
             if (orgIds.size() > 0)
                 createTranslations(Constants.table().ORGANIZATION,
@@ -646,8 +642,7 @@ public class DataExchangeXMLMapperBean  {
                                    orgIds,
                                    "organization_translations",
                                    doc,
-                                   root,
-                                   VERSION);
+                                   root);
         }
 
         return doc;
@@ -1576,7 +1571,7 @@ public class DataExchangeXMLMapperBean  {
     public ArrayList<Element> getExternalTerms(Integer refTableId,
                                                HashSet<Integer> refIds,
                                                ArrayList<Integer> profileIds,
-                                               Document document, String version) throws Exception {
+                                               Document document) throws Exception {
         ArrayList<Element> elements;
         ArrayList<ExchangeExternalTermViewDO> externalTerms;
 
@@ -1591,7 +1586,7 @@ public class DataExchangeXMLMapperBean  {
             elements = new ArrayList<Element>();
 
             for (ExchangeExternalTermViewDO extTerm : externalTerms)
-                elements.add(getExternalTerm(document, extTerm, version));
+                elements.add(getExternalTerm(document, extTerm));
 
             return elements;
         } catch (NotFoundException e) {
@@ -1600,7 +1595,7 @@ public class DataExchangeXMLMapperBean  {
     }
 
     public Element getExternalTerm(Document document,
-                                   ExchangeExternalTermViewDO externalTerm, String version) {
+                                   ExchangeExternalTermViewDO externalTerm) {
         Element parent, child;
         DictionaryDO dict;
 
@@ -1611,6 +1606,7 @@ public class DataExchangeXMLMapperBean  {
         parent.setAttribute("id", externalTerm.getId().toString());
         parent.setAttribute("reference_id",
                             externalTerm.getExchangeLocalTermReferenceId().toString());
+        parent.setAttribute("is_active", externalTerm.getIsActive());
 
         try {
             dict = dictionaryCache.getById(externalTerm.getProfileId());
@@ -1634,9 +1630,11 @@ public class DataExchangeXMLMapperBean  {
         child.setTextContent(externalTerm.getExternalCodingSystem());
         parent.appendChild(child);
 
-        child = document.createElement("version");
-        child.setTextContent(version);
-        parent.appendChild(child);
+        if (externalTerm.getVersion() != null) {
+            child = document.createElement("version");
+            child.setTextContent(externalTerm.getVersion());
+            parent.appendChild(child);
+        }
 
         return parent;
     }
@@ -1657,15 +1655,14 @@ public class DataExchangeXMLMapperBean  {
 
     private void createTranslations(int referenceTable, ArrayList<Integer> profileIds,
                                     HashSet<Integer> referenceIds, String nodeName,
-                                    Document doc, Element root, String version) throws Exception {
+                                    Document doc, Element root) throws Exception {
         Element translations;
         ArrayList<Element> externalTerms;
 
         externalTerms = getExternalTerms(referenceTable,
                                          referenceIds,
                                          profileIds,
-                                         doc,
-                                         version);
+                                         doc);
 
         if (externalTerms != null) {
             translations = doc.createElement(nodeName);

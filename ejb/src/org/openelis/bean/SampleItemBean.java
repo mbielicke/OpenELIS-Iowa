@@ -162,6 +162,6 @@ public class SampleItemBean {
 
     public void validate(SampleItemViewDO data, Integer accession) throws Exception {
         if (data.getTypeOfSampleId() == null)
-            new FormErrorException("sampleItemTypeMissing", accession, data.getItemSequence());
+            new FormErrorException("sample.sampleItemTypeMissing", accession, data.getItemSequence());
     }
 }
