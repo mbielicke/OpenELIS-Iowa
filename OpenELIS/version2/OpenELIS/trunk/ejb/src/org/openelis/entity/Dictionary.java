@@ -93,7 +93,7 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select type_id as DICTIONARY_ID from qc where type_id = :id " +
                           "UNION " +
-                          "select prepared_unit_id as DICTIONARY_ID from qc where prepared_unit_id = :id " +
+                          "select prepared_unit_id as DICTIONARY_ID from qc_lot where prepared_unit_id = :id " +
                           "UNION " +
                           "select type_id as DICTIONARY_ID from qc_analyte where type_id = :id " +
                           "UNION " +
@@ -213,7 +213,15 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select relation_id as DICTIONARY_ID from patient_relation where relation_id = :id "+
                           "UNION " +
-                          "select type_id as DICTIONARY_ID from standard_note where type_id = :id ",                          
+                          "select type_id as DICTIONARY_ID from standard_note where type_id = :id "+  
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from event_log where type_id = :id "+
+                          "UNION " +
+                          "select level_id as DICTIONARY_ID from event_log where level_id = :id "+
+                          "UNION " +
+                          "select profile_id as DICTIONARY_ID from exchange_external_term where profile_id = :id "+
+                          "UNION " +
+                          "select environment_id as DICTIONARY_ID from exchange_criteria where environment_id = :id ",
                   resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
                   @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
                               query = "select value as VALUE from test_result tr,dictionary d where value = :value and " +
