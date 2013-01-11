@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
@@ -57,13 +56,12 @@ public class ApplicationBean {
     private DictionaryBean     dictionary;
 
     public ApplicationBean() {
-        log.finest("Starting Application");
-        Constants.setConstants(new Constants());
+        log.info("in Application constructor; loaded = "+loaded);
     }
 
     @PostConstruct
-    @Asynchronous
     void atStartup() {
+        Constants.setConstants(new Constants());
         ArrayList<DictionaryDO> list;
         HashMap<String, Integer> map;
         String names[] = {"analysis_cancelled", "analysis_completed", "analysis_error_completed",
@@ -111,10 +109,14 @@ public class ApplicationBean {
             errors = true;
             return;
         }
+        
+        log.info("fetched "+list.size()+" from dictionary");
+        
         map = new HashMap<String, Integer>();
 
-        for (DictionaryDO data : list)
+        for (DictionaryDO data : list) {
             map.put(data.getSystemName(), data.getId());
+        }
 
         /*
          * load the dictionary constants

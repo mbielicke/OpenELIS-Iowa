@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
@@ -46,7 +47,8 @@ public class InventoryItemCacheBean {
 
     private Cache              cache;
 
-    public InventoryItemCacheBean() {
+    @PostConstruct
+    public void init() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();

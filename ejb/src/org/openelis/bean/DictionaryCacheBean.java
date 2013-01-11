@@ -25,6 +25,7 @@
 */
 package org.openelis.bean;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
@@ -45,7 +46,8 @@ public class DictionaryCacheBean {
 
     private Cache           cache;
     
-    public DictionaryCacheBean() {
+    @PostConstruct
+    public void init() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();

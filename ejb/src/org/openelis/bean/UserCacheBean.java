@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
@@ -57,7 +58,8 @@ public class UserCacheBean  {
     
     private Cache          cache, permCache;
 
-    public UserCacheBean() {
+    @PostConstruct
+    public void init() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();
