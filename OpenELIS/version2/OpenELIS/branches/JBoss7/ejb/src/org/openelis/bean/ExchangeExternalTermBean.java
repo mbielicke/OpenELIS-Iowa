@@ -143,6 +143,7 @@ public class ExchangeExternalTermBean {
         entity.setExternalTerm(data.getExternalTerm());
         entity.setExternalDescription(data.getExternalDescription());
         entity.setExternalCodingSystem(data.getExternalCodingSystem());
+        entity.setVersion(data.getVersion());
         
         manager.persist(entity);
         data.setId(entity.getId());
@@ -165,6 +166,7 @@ public class ExchangeExternalTermBean {
         entity.setExternalTerm(data.getExternalTerm());
         entity.setExternalDescription(data.getExternalDescription());
         entity.setExternalCodingSystem(data.getExternalCodingSystem());
+        entity.setVersion(data.getVersion());
         
         return data;
     }
