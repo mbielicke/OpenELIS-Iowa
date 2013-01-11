@@ -185,6 +185,10 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select status_id as DICTIONARY_ID from shipping where status_id = :id "+
                           "UNION " +
+                          "select shipped_from_id as DICTIONARY_ID from shipping where shipped_from_id = :id "+
+                          "UNION " +
+                          "select shipped_method_id as DICTIONARY_ID from shipping where shipped_method_id = :id "+
+                          "UNION " +
                           "select test_format_id as DICTIONARY_ID from test where test_format_id = :id "+
                           "UNION " +
                           "select revision_method_id as DICTIONARY_ID from test where revision_method_id = :id "+
@@ -200,10 +204,16 @@ import org.openelis.utils.Auditable;
                           "select status_id as DICTIONARY_ID from order where status_id = :id "+
                           "UNION " +
                           "select cost_center_id as DICTIONARY_ID from order where cost_center_id = :id "+
+                          "UNION " +                        
+                          "select ship_from_id as DICTIONARY_ID from order where ship_from_id = :id "+
                           "UNION " +
                           "select container_id as DICTIONARY_ID from order_container where container_id = :id "+
                           "UNION " +
                           "select type_of_sample_id as DICTIONARY_ID from order_container where type_of_sample_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from order_organization where type_id = :id "+
+                          "UNION " +
+                          "select unit_id as DICTIONARY_ID from order_recurrence where unit_id = :id "+
                           "UNION " +
                           "select gender_id as DICTIONARY_ID from patient where gender_id = :id "+
                           "UNION " +
@@ -221,7 +231,13 @@ import org.openelis.utils.Auditable;
                           "UNION " +
                           "select profile_id as DICTIONARY_ID from exchange_external_term where profile_id = :id "+
                           "UNION " +
-                          "select environment_id as DICTIONARY_ID from exchange_criteria where environment_id = :id ",
+                          "select profile_id as DICTIONARY_ID from exchange_profile where profile_id = :id "+
+                          "UNION " +
+                          "select environment_id as DICTIONARY_ID from exchange_criteria where environment_id = :id "+
+                          "UNION " +
+                          "select type_of_sample_id as DICTIONARY_ID from analyte_parameter where type_of_sample_id = :id "+
+                          "UNION " +
+                          "select type_id as DICTIONARY_ID from section_parameter where type_id = :id ",
                   resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
                   @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
                               query = "select value as VALUE from test_result tr,dictionary d where value = :value and " +
