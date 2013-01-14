@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18" isSummaryWithPageHeaderAndFooter="true">
+	<property name="com.jasperassistant.designer.DataSource" value="phims"/>
+	<property name="com.jasperassistant.designer.Units" value="Pixels"/>
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.report.qasummary.CounterDataSource"/>
+	<import value="org.openelis.utils.Counter"/>
+	<reportFont name="times" isDefault="true" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BEGIN_ENTERED" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="END_ENTERED" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TEST" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SECTION" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="STYLE" class="java.lang.String">
+		<defaultValueExpression><![CDATA["Summaries"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT unique o.name o_name, o.id o_id, ad.city, ad.state,s.accession_number, s.id s_id
+FROM sample s, sample_item si, analysis a, test t, section se,
+         outer(organization o, sample_organization so, address ad, dictionary d), analysis_qaevent aq
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and  s.domain != 'W' and
+      s.id = so.sample_id and so.organization_id = o.id and so.type_id = d.id and
+      d.system_name = 'org_report_to' and si.sample_id =s.id and a.sample_item_id = si.id and
+      a.test_id = t.id and a.section_id = se.id and
+      aq.analysis_id = a.id and o.address_id = ad.id
+      $P!{TEST} $P!{SECTION}
+UNION
+SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
+FROM sample s, sample_item si, analysis a, test t, section se,
+         outer(organization o, sample_organization so, address ad, dictionary d), sample_qaevent aq
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and  s.domain != 'W' and
+      s.id = so.sample_id and so.organization_id = o.id and so.type_id = d.id and
+      d.system_name = 'org_report_to' and si.sample_id =s.id and a.sample_item_id = si.id and
+      a.test_id = t.id and a.section_id = se.id and
+      aq.sample_id = s.id and o.address_id = ad.id
+      $P!{TEST} $P!{SECTION}
+
+UNION
+SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
+FROM sample s, sample_item si, analysis a, test t, section se,
+         organization o, sample_private_well so, address ad, analysis_qaevent aq
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
+      s.id = so.sample_id and so.organization_id = o.id and si.sample_id =s.id and
+      a.sample_item_id = si.id and a.test_id = t.id and a.section_id = se.id and
+      aq.analysis_id = a.id and o.address_id = ad.id
+      $P!{TEST} $P!{SECTION}
+UNION
+SELECT unique o.name o_name, o.id o_id, ad.city, ad.state, s.accession_number, s.id s_id
+FROM sample s, sample_item si, analysis a, test t, section se,
+         organization o, sample_private_well so, address ad, sample_qaevent aq
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
+      s.id = so.sample_id and so.organization_id = o.id and si.sample_id =s.id and
+      a.sample_item_id = si.id and a.test_id = t.id and a.section_id = se.id and
+      aq.sample_id = s.id and o.address_id = ad.id
+      $P!{TEST} $P!{SECTION}
+UNION
+SELECT unique 'private',so.organization_id o_id, 'pvt_city', 'pvt_state', s.accession_number, s.id s_id
+FROM sample s, sample_item si, analysis a, test t, section se, test_section ts,
+         sample_private_well so, address ad, analysis_qaevent aq
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED} and s.domain = 'W' and
+      s.id = so.sample_id and si.sample_id =s.id and a.sample_item_id = si.id and
+      a.test_id = t.id and a.section_id = se.id and
+      aq.analysis_id = a.id and so.report_to_address_id = ad.id
+      $P!{TEST} $P!{SECTION}
+UNION
+SELECT unique 'private',so.organization_id o_id,'pvt_city', 'pvt_state', s.accession_number, s.id s_id
+FROM sample s, sample_item si, analysis a, test t, section se,
+         sample_private_well so, address ad, sample_qaevent aq
+WHERE s.entered_date BETWEEN $P{BEGIN_ENTERED} and $P{END_ENTERED}  and s.domain = 'W' and
+      s.id = so.sample_id and si.sample_id =s.id and a.sample_item_id = si.id and
+      a.test_id = t.id and a.section_id = se.id and
+      aq.sample_id = s.id and so.report_to_address_id = ad.id
+      $P!{TEST} $P!{SECTION}
+
+ORDER BY o_id, s.accession_number]]>
+	</queryString>
+	<field name="o_name" class="java.lang.String"/>
+	<field name="o_id" class="java.lang.Integer"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="state" class="java.lang.String"/>
+	<field name="accession_number" class="java.lang.Integer"/>
+	<field name="s_id" class="java.lang.Integer"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<variable name="sampleTotal" class="org.openelis.utils.Counter" resetType="Group" resetGroup="ORG_ID" calculation="System">
+		<variableExpression><![CDATA[$V{sampleTotal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="analysesTotal" class="org.openelis.utils.Counter" resetType="Group" resetGroup="ORG_ID" calculation="System">
+		<variableExpression><![CDATA[$V{analysesTotal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="qaeventsTotal" class="org.openelis.utils.Counter" resetType="Group" resetGroup="ORG_ID" calculation="System">
+		<variableExpression><![CDATA[$V{qaeventsTotal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="analysesGrandTotal" class="org.openelis.utils.Counter" calculation="System">
+		<variableExpression><![CDATA[$V{analysesGrandTotal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="sampleGrandTotal" class="org.openelis.utils.Counter" calculation="System">
+		<variableExpression><![CDATA[$V{sampleGrandTotal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="qaeventsGrandTotal" class="org.openelis.utils.Counter" calculation="System">
+		<variableExpression><![CDATA[$V{qaeventsGrandTotal}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="sampleIdCounter" class="org.openelis.utils.Counter" resetType="Group" resetGroup="ORG_ID">
+		<variableExpression><![CDATA[$V{sampleIdCounter}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.utils.Counter()]]></initialValueExpression>
+	</variable>
+	<variable name="totalQAEvents" class="java.lang.Integer">
+		<variableExpression><![CDATA[$V{totalQAEvents}]]></variableExpression>
+		<initialValueExpression><![CDATA[$V{qaeventsGrandTotal}.getKeys().size()]]></initialValueExpression>
+	</variable>
+	<group name="ORG_ID">
+		<groupExpression><![CDATA[$F{o_id}]]></groupExpression>
+		<groupHeader>
+			<band height="12">
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="background" positionType="Float" mode="Opaque" x="0" y="0" width="576" height="12" backcolor="#CDCDCD">
+						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+				</textField>
+				<textField pattern="" isBlankWhenNull="false">
+					<reportElement key="facilityName" positionType="Float" x="0" y="0" width="192" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[(($F{o_name} != null)&&(!"private".equals($F{o_name}.trim()))) ? $F{o_name} : "UNKNOWN ORGANIZATION"]]></textFieldExpression>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="cityState" positionType="Float" x="384" y="0" width="192" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[(($F{city} != null)&&(!"pvt_city".equals($F{city}.trim())))? $F{city}.trim()+", "+$F{state}.trim() : null]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="36">
+				<staticText>
+					<reportElement positionType="Float" x="0" y="12" width="61" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
+					</reportElement>
+					<textElement/>
+					<text><![CDATA[Totals:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="addToQaeventsGrandTotal" positionType="Float" x="315" y="24" width="86" height="0">
+						<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$V{qaeventsGrandTotal}).add($V{qaeventsTotal})]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="addToAnalysesGrandTotal" positionType="Float" x="130" y="24" width="56" height="0">
+						<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$V{analysesGrandTotal}).add($V{analysesTotal})]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="sampleTotal" positionType="Float" x="125" y="12" width="61" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="ORG_ID"/>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[!"Totals".equals($P{STYLE}) ? " "+$V{sampleTotal}.getTotal()+"  Sample(s)" : null]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+					<reportElement key="qaeventsTotal" positionType="Float" x="354" y="12" width="116" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="ORG_ID"/>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[!"Totals".equals($P{STYLE}) ? $V{qaeventsTotal}.toString().trim() : null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement positionType="Float" x="125" y="0" width="61" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA[Boolean.valueOf("Details".equals($P{STYLE}))]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[==========]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="354" y="0" width="116" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA[Boolean.valueOf("Details".equals($P{STYLE}))]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[===================]]></text>
+				</staticText>
+				<staticText>
+					<reportElement positionType="Float" x="205" y="0" width="120" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA[Boolean.valueOf("Details".equals($P{STYLE}))]]></printWhenExpression>
+					</reportElement>
+					<textElement textAlignment="Center"/>
+					<text><![CDATA[============================]]></text>
+				</staticText>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="addToSpecimensGrandTotal" positionType="Float" x="210" y="24" width="71" height="0">
+						<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$V{sampleGrandTotal}).add($V{sampleTotal})]]></printWhenExpression>
+					</reportElement>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+				</textField>
+				<textField pattern="" isBlankWhenNull="true">
+					<reportElement key="analysesTotal" positionType="Float" x="205" y="12" width="120" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="ORG_ID"/>
+					<textElement>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					</textElement>
+					<textFieldExpression class="java.lang.String"><![CDATA[!"Totals".equals($P{STYLE}) ? " "+$V{analysesTotal}.getTotal()+"  Analyses" : null]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<pageHeader>
+		<band height="38" splitType="Stretch">
+			<textField pattern="MMM dd, yyyy">
+				<reportElement key="headerDate" mode="Transparent" x="0" y="0" width="114" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement key="headerTime" mode="Transparent" x="0" y="12" width="114" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="headerTitle1" mode="Transparent" x="174" y="0" width="227" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[QA Summary Report]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement key="headerPageNo" mode="Transparent" x="446" y="0" width="116" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="">
+				<reportElement key="headerPageNoLast" mode="Transparent" x="566" y="0" width="10" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="headerUserName" mode="Transparent" x="483" y="12" width="93" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="beginEntered.label" mode="Transparent" x="174" y="12" width="30" height="12" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+				</textElement>
+				<text><![CDATA[From]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd HH:mm">
+				<reportElement key="beginEntered" mode="Transparent" x="200" y="12" width="100" height="12" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom">
+					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[java.sql.Timestamp.valueOf($P{BEGIN_ENTERED})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="endEntered.label" mode="Transparent" x="300" y="12" width="15" height="12" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+				</textElement>
+				<text><![CDATA[to]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd HH:mm">
+				<reportElement key="endEntered" mode="Transparent" x="315" y="12" width="100" height="12" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom">
+					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[java.sql.Timestamp.valueOf($P{END_ENTERED})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="12">
+			<subreport isUsingCache="false">
+				<reportElement key="sample" isPrintRepeatedValues="false" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<subreportParameter name="qaeventsGrandTotal">
+					<subreportParameterExpression><![CDATA[$V{qaeventsGrandTotal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="analysesGrandTotal">
+					<subreportParameterExpression><![CDATA[$V{analysesGrandTotal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sampleGrandTotal">
+					<subreportParameterExpression><![CDATA[$V{sampleGrandTotal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="qaeventsTotal">
+					<subreportParameterExpression><![CDATA[$V{qaeventsTotal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SECTION">
+					<subreportParameterExpression><![CDATA[$P{SECTION}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TO_ENTERED">
+					<subreportParameterExpression><![CDATA[$P{END_ENTERED}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="STYLE">
+					<subreportParameterExpression><![CDATA[$P{STYLE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="TEST">
+					<subreportParameterExpression><![CDATA[$P{TEST}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="FROM_ENTERED">
+					<subreportParameterExpression><![CDATA[$P{BEGIN_ENTERED}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="analysesTotal">
+					<subreportParameterExpression><![CDATA[$V{analysesTotal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="sampleTotal">
+					<subreportParameterExpression><![CDATA[$V{sampleTotal}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"sample.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="36" splitType="Stretch">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="0" width="61" height="12"/>
+				<textElement/>
+				<text><![CDATA[Grand Totals:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement key="analysesGrandTotal" isPrintRepeatedValues="false" mode="Opaque" x="205" y="0" width="120" height="12"/>
+				<textElement>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" "+$V{analysesGrandTotal}.getTotal()+"  Analyses"]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement key="specimensGrandTotal" isPrintRepeatedValues="false" x="125" y="0" width="61" height="12"/>
+				<textElement>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[" "+$V{sampleGrandTotal}.getTotal()+" Sample(s)"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
+				<reportElement key="qaeventsGrandTotal" x="354" y="0" width="116" height="12"/>
+				<textElement>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{qaeventsGrandTotal}.toString().trim()]]></textFieldExpression>
+			</textField>
+			<subreport isUsingCache="false">
+				<reportElement key="drawchart" positionType="Float" x="0" y="24" width="576" height="12" isPrintWhenDetailOverflows="true"/>
+				<dataSourceExpression><![CDATA[CounterDataSource.getInstance($V{qaeventsGrandTotal})]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"chart.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>
