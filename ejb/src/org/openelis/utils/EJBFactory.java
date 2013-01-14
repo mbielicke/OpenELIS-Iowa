@@ -524,7 +524,7 @@ public class EJBFactory {
         return lookup("java:global/security/security.jar/SystemUserPermissionBean!org.openelis.security.remote.SystemUserPermissionRemote");
     }
 
-    private static <T> T lookup(String bean) {
+    public static <T> T lookup(String bean) {
         InitialContext ctx;
         
         if (!bean.startsWith("java"))
