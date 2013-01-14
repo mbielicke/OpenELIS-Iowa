@@ -54,6 +54,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.CronMeta;
 import org.openelis.util.QueryBuilderV2;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.FixedPeriodCron;
 
 @Stateless
@@ -246,7 +247,7 @@ public class CronBean {
             list.add(new FieldErrorException("fieldRequiredException", CronMeta.getBean()));
         else {
             try {
-                bean = ctx.lookup(data.getBean());
+                bean = EJBFactory.lookup(data.getBean());
             } catch (Exception e) {
                 list.add(new FieldErrorException("invalidBeanPath", CronMeta.getBean()));
             }
