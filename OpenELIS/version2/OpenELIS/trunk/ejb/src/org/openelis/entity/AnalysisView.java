@@ -55,15 +55,16 @@ import org.openelis.gwt.common.Datetime;
                         "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.analysisId," +
                         "av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
                         "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
-                      + " from AnalysisView av, Dictionary d where av.analysisStatusId = d.id and"
-                      + " d.systemName not in ('analysis_logged_in', 'analysis_initiated', 'analysis_completed', 'analysis_released', 'analysis_cancelled')) order by av.accessionNumber"),
+                      + " from AnalysisView av where av.analysisStatusId not in (select id from Dictionary d where d.systemName in ('analysis_logged_in', 'analysis_initiated',"
+                      + " 'analysis_completed', 'analysis_released', 'analysis_cancelled')) order by av.accessionNumber"),
     @NamedQuery( name = "AnalysisView.FetchReleased",
                 query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber," +
                         "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription," +
                         "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.analysisId," +
                         "av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
                         "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
-                      + " from AnalysisView av, Dictionary d where av.analysisStatusId = d.id and d.systemName = 'analysis_released' and av.releasedDate >= :releasedDate order by av.accessionNumber")})
+                      + " from AnalysisView av where av.releasedDate >= :releasedDate and av.analysisStatusId = (select id from Dictionary d where d.systemName = 'analysis_released')"
+                      + " order by av.accessionNumber")})
 @Entity
 @Table(name = "analysis_view")
 public class AnalysisView  {
