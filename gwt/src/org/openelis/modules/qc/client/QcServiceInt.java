@@ -24,6 +24,8 @@ public interface QcServiceInt extends RemoteService {
     ArrayList<QcLotViewDO> fetchActiveByName(Query query) throws Exception;
 
     ArrayList<QcLotViewDO> fetchActiveByName(String search) throws Exception;
+    
+    ArrayList<QcLotViewDO> fetchActiveByExactName(String search) throws Exception;
 
     QcManager fetchWithAnalytes(Integer id) throws Exception;
 
