@@ -41,7 +41,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DataExchangeReportScreen extends ReportScreen<Query> {
 
-    public DataExchangeReportScreen(ScreenWindowInt window) throws Exception { 
+    String reportMethod; 
+    
+    public DataExchangeReportScreen(String reportMethod, ScreenWindowInt window) throws Exception {
+        this.reportMethod = reportMethod;
         this.window = window;
     }
     
@@ -60,6 +63,7 @@ public class DataExchangeReportScreen extends ReportScreen<Query> {
 
     @Override
     public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
-        DataExchangeReportService.get().exportToLocation(query, callback);        
+        if(reportMethod.equals("exportToLocation"))
+            DataExchangeReportService.get().exportToLocation(query, callback);        
     }
 }

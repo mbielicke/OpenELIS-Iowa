@@ -808,9 +808,10 @@ public class DataViewScreen extends Screen {
             }
             
             if (reportScreen == null) {
-                reportScreen = new DataViewReportScreen(window, "DataView.xml");                
+                reportScreen = new DataViewReportScreen("saveQuery",window, "DataView.xml");                
             } else {
                 reportScreen.setWindow(window);
+                reportScreen.setRunReportInterface("saveQuery");
                 reportScreen.setAttachmentName("DataView.xml");
             }
             //
@@ -935,9 +936,10 @@ public class DataViewScreen extends Screen {
         try {
             if (excludeResults && excludeAuxData) {
                 if (reportScreen == null) {
-                    reportScreen = new DataViewReportScreen(window, null);
+                    reportScreen = new DataViewReportScreen("runReport",window, null);
                 } else {
                     reportScreen.setWindow(window);
+                    reportScreen.setRunReportInterface("runReport");
                     reportScreen.setAttachmentName(null);
                 }
                         

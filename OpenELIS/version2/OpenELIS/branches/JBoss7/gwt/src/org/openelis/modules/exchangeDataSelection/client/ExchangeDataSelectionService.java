@@ -22,7 +22,7 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
         if (instance == null)
             instance = new ExchangeDataSelectionService();
         
-        return null;
+        return instance;
     }
     
     private ExchangeDataSelectionService() {

@@ -83,6 +83,7 @@
 		</fileset>
 		<fileset dir=".">
 			<include name="lib/openelis-lib.jar" />
+			<include name="lib/commons-collections-3.2.1.jar"/>
 			<include name="lib/poi-3.6-20091214.jar" />
 			<include name="lib/iText-2.1.7.jar" />
 			<include name="lib/jcommon-1.0.15.jar" />
