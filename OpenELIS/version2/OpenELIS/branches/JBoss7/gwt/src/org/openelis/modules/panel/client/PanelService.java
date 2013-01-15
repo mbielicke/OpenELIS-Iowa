@@ -165,6 +165,7 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
         
         callback = new Callback<Void>();
         service.delete(man, callback);
+        callback.getResult();
     }
 
     @Override

@@ -119,6 +119,7 @@ public class AnalyteService implements AnalyteServiceInt, AnalyteServiceIntAsync
         
         callback = new Callback<Void>();
         service.delete(data,callback);
+        callback.getResult();
     }
 
     @Override

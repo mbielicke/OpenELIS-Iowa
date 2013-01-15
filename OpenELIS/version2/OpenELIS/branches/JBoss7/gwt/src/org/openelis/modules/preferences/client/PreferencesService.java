@@ -62,6 +62,7 @@ public class PreferencesService implements PreferencesServiceInt, PreferencesSer
         
         callback = new Callback<Void>();
         service.flush(prefs, callback);
+        callback.getResult();
     }
 
 }

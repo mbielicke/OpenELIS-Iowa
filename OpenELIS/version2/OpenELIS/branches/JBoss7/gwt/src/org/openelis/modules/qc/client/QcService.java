@@ -256,4 +256,18 @@ public class QcService implements QcServiceInt, QcServiceIntAsync {
         return callback.getResult();
     }
 
+    @Override
+    public void fetchActiveByExactName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback) {
+        service.fetchActiveByExactName(search, callback);
+    }
+
+    @Override
+    public ArrayList<QcLotViewDO> fetchActiveByExactName(String search) throws Exception {
+        Callback<ArrayList<QcLotViewDO>> callback;
+        
+        callback = new Callback<ArrayList<QcLotViewDO>>();
+        service.fetchActiveByExactName(search, callback);
+        return callback.getResult();
+    }
+
 }

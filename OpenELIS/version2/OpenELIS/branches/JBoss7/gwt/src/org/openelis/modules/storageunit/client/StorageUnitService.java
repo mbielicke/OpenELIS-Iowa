@@ -128,6 +128,7 @@ public class StorageUnitService implements StorageUnitServiceInt, StorageUnitSer
         
         callback = new Callback<Void>();
         service.delete(data, callback);
+        callback.getResult();
     }
 
     @Override

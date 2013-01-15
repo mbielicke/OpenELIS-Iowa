@@ -127,6 +127,7 @@ public class TestTrailerService implements TestTrailerServiceInt, TestTrailerSer
         
         callback = new Callback<Void>();
         service.delete(data, callback);
+        callback.getResult();
     }
 
     @Override

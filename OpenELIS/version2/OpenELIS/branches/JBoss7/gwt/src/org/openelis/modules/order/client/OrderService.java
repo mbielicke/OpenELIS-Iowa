@@ -452,6 +452,7 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
         
         callback = new Callback<Void>();
         service.recurOrders(callback);
+        callback.getResult();
     }
 
     @Override

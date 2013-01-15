@@ -129,6 +129,7 @@ public class SystemVariableService implements SystemVariableServiceInt,
         
         callback = new Callback<Void>();
         service.delete(data, callback);
+        callback.getResult();
     }
 
     @Override

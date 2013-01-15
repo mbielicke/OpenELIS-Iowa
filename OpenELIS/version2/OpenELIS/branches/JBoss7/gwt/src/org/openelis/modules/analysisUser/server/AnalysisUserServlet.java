@@ -29,11 +29,12 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.AnalysisUserManagerBean;
+import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AnalysisUserManager;
 import org.openelis.modules.analysisUser.client.AnalysisUserServiceInt;
 
 @WebServlet("/openelis/analysisUser")
-public class AnalysisUserServlet implements AnalysisUserServiceInt {
+public class AnalysisUserServlet extends RemoteServlet implements AnalysisUserServiceInt {
     
     @EJB
     AnalysisUserManagerBean analysisUserManager;

@@ -173,6 +173,7 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
         
         callback = new Callback<Void>();
         service.delete(man, callback);
+        callback.getResult();
     }
 
     @Override

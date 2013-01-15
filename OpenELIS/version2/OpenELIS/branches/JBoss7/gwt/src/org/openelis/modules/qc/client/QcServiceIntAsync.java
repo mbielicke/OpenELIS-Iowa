@@ -47,4 +47,6 @@ public interface QcServiceIntAsync {
 
     void validateForDelete(QcLotViewDO data, AsyncCallback<QcLotDO> callback);
 
+    void fetchActiveByExactName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback);
+
 }
