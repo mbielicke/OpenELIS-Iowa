@@ -42,10 +42,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class DataViewReportScreen extends ReportScreen<DataViewVO> {
 
-    public DataViewReportScreen(ScreenWindowInt window, String attachment) throws Exception {
+    String reportMethod;
+    
+    public DataViewReportScreen(String reportMethod, ScreenWindowInt window, String attachment) throws Exception {
         this.window = window;
         if (!DataBaseUtil.isEmpty(attachment))
             setAttachmentName(attachment);
+    }
+    
+    public void setRunReportInterface(String reportMethod) {
+        this.reportMethod = reportMethod;
     }
     
     /**
@@ -63,6 +69,9 @@ public class DataViewReportScreen extends ReportScreen<DataViewVO> {
 
     @Override
     public void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback) {
-        DataViewReportService.get().runReport(data, callback);
+        if(reportMethod.equals("runReport"))
+            DataViewReportService.get().runReport(data, callback);
+        else if(reportMethod.equals("saveQuery"))
+            DataViewReportService.get().saveQuery(data, callback);
     }
 }

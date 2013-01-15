@@ -1590,7 +1590,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         
         try {
             if (dataExchangeReportScreen == null) 
-                dataExchangeReportScreen = new DataExchangeReportScreen(window);  
+                dataExchangeReportScreen = new DataExchangeReportScreen("exportToLocation",window);  
             else
                 dataExchangeReportScreen.setWindow(window);
             

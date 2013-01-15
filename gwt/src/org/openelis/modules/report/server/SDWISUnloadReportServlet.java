@@ -37,7 +37,7 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.SDWISUnloadReportServiceInt;
 
-@WebServlet("/openleis/sdwisUnloadReport")
+@WebServlet("/openelis/sdwisUnloadReport")
 public class SDWISUnloadReportServlet extends RemoteServlet implements SDWISUnloadReportServiceInt {    
     
     private static final long serialVersionUID = 1L;

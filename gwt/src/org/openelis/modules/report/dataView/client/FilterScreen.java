@@ -538,7 +538,7 @@ public class FilterScreen extends Screen {
         
         try {
             if (reportScreen == null) 
-                reportScreen = new DataViewReportScreen(window, null);  
+                reportScreen = new DataViewReportScreen("runReport",window, null);  
             else
             	/*
             	 * Since a FilterScreen screen can be reused by DataView Screen in showFilter() 

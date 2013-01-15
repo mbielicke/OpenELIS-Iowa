@@ -43,26 +43,21 @@ public class OrderRecurrenceReportScreen extends ReportScreen<Query> {
         setName(consts.get("orderRecurrence"));
     }
     
-    protected void runReport() {
-        window.setBusy(consts.get("genReportMessage"));
-        try {
-            OrderService.get().recurOrders();
-            window.setDone(consts.get("recurredOrders"));
-        } catch (Exception e) {
-            window.setError("Failed");
-            Window.alert(e.getMessage());
-        }
-    }
-
     @Override
     protected ArrayList<Prompt> getPrompts() throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        return OrderService.get().getPrompts();
     }
 
     @Override
     public void runReport(Query rpc, AsyncCallback<ReportStatus> callback) {
-        // TODO Auto-generated method stub
+        try  {
+            OrderService.get().recurOrders();
+        }catch(Exception e) {
+            window.setError("Failed");
+            Window.alert(e.getMessage());
+        }
+        window.setDone(consts.get("recurredOrders"));
+
         
     }
 }
