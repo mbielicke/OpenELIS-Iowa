@@ -246,11 +246,12 @@ public class CronBean {
         if (DataBaseUtil.isEmpty(data.getBean()))
             list.add(new FieldErrorException("fieldRequiredException", CronMeta.getBean()));
         else {
-            try {
-                bean = EJBFactory.lookup(data.getBean());
-            } catch (Exception e) {
+            
+             bean = EJBFactory.lookup(data.getBean());
+            
+             if(bean == null) 
                 list.add(new FieldErrorException("invalidBeanPath", CronMeta.getBean()));
-            }
+            
         }
 
         if (DataBaseUtil.isEmpty(data.getMethod()))

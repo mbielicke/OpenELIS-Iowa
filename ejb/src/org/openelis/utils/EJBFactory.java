@@ -533,9 +533,9 @@ public class EJBFactory {
         try {
             ctx = new InitialContext();
             return (T)ctx.lookup(bean);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        }catch(Exception e) {
             return null;
         }
+
     }
 }
