@@ -21,8 +21,7 @@ where si.shipping_id = $P{SHIPPING_ID} and
       si.reference_id = o.id and
       o.order_id = n.reference_id and
       n.reference_table_id = $P{ORDER_SHIPPING_NOTE_REFERENCE_TABLE_ID} and
-      n.text is not null
-]]>
+      n.text is not null]]>
 	</queryString>
 	<field name="text" class="java.lang.String"/>
 	<title>
@@ -30,7 +29,7 @@ where si.shipping_id = $P{SHIPPING_ID} and
 			<staticText>
 				<reportElement x="0" y="8" width="126" height="12"/>
 				<textElement>
-					<font fontName="Arial" pdfFontName="Helvetica"/>
+					<font pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[SPECIAL INSTRUCTIONS:]]></text>
 			</staticText>
@@ -41,7 +40,7 @@ where si.shipping_id = $P{SHIPPING_ID} and
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="18" y="0" width="558" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Arial" size="8" isUnderline="false" pdfFontName="Helvetica"/>
+					<font size="8" isUnderline="false" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{text}]]></textFieldExpression>
 			</textField>
