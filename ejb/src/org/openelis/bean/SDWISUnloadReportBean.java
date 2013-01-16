@@ -161,6 +161,7 @@ public class SDWISUnloadReportBean {
                                                                   .setRequired(true));
 
             prn = printers.getListByType("pdf");
+            prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
