@@ -55,10 +55,6 @@ public class ApplicationBean {
     @EJB
     private DictionaryBean     dictionary;
 
-    public ApplicationBean() {
-        log.info("in Application constructor; loaded = "+loaded);
-    }
-
     @PostConstruct
     void atStartup() {
         Constants.setConstants(new Constants());
@@ -109,9 +105,7 @@ public class ApplicationBean {
             errors = true;
             return;
         }
-        
-        log.info("fetched "+list.size()+" from dictionary");
-        
+                
         map = new HashMap<String, Integer>();
 
         for (DictionaryDO data : list) {
