@@ -7,7 +7,7 @@ import org.openelis.gwt.common.OptionListItem;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-@RemoteServiceRelativePath("/printer")
+@RemoteServiceRelativePath("printer")
 public interface PrinterServiceInt extends RemoteService {
 
     ArrayList<OptionListItem> getPrinters(String type);

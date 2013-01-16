@@ -45,6 +45,7 @@ public class DataViewReportScreen extends ReportScreen<DataViewVO> {
     String reportMethod;
     
     public DataViewReportScreen(String reportMethod, ScreenWindowInt window, String attachment) throws Exception {
+        this.reportMethod = reportMethod;
         this.window = window;
         if (!DataBaseUtil.isEmpty(attachment))
             setAttachmentName(attachment);
