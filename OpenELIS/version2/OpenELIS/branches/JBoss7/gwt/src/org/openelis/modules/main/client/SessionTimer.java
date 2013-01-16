@@ -105,7 +105,7 @@ public class SessionTimer {
         OpenELISService.get().getLastAccess(new AsyncCallback<Datetime>() {
             public void onSuccess(Datetime result) {
                 Datetime check;
-
+                
                 check = Datetime.getInstance(Datetime.YEAR,
                                              Datetime.MINUTE,
                                              new Date(new Date().getTime() - SESSION_TIMEOUT));
