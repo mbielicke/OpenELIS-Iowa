@@ -19,7 +19,7 @@ where order_id = $P{ORDER_ID}]]>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="116" height="12"/>
 				<textElement markup="none">
-					<font fontName="Arial" size="10" isUnderline="false" pdfFontName="Helvetica"/>
+					<font size="10" isUnderline="false" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Containers in Order: "+$F{n_container}]]></textFieldExpression>
 			</textField>

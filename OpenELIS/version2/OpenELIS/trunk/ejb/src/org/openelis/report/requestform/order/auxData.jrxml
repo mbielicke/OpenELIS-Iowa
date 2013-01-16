@@ -67,7 +67,7 @@ ORDER BY aux_data.sort_order]]>
 			<staticText>
 				<reportElement key="" mode="Opaque" x="116" y="0" width="258" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement textAlignment="Center">
-					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Complete or correct the following information]]></text>
 			</staticText>
@@ -78,14 +78,14 @@ ORDER BY aux_data.sort_order]]>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="85" height="12" isPrintWhenDetailOverflows="true"/>
 				<textElement textAlignment="Right" markup="styled">
-					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
+					<font size="8" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()+":"]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="88" y="0" width="155" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement markup="styled">
-					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
+					<font size="8" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{aux_data_value}]]></textFieldExpression>
 			</textField>
@@ -98,7 +98,7 @@ ORDER BY aux_data.sort_order]]>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="88" y="12" width="155" height="9" forecolor="#999999"/>
 				<textElement markup="styled">
-					<font fontName="Arial" size="7" pdfFontName="Helvetica"/>
+					<font size="7" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field_description}]]></textFieldExpression>
 			</textField>
