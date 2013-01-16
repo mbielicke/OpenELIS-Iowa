@@ -2328,17 +2328,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                 }
 
                                 /*
-                                 * since samples of domain sdwis don't have
-                                 * projects, we need to make sure that the ones
-                                 * added to the sample, if any, before the
-                                 * domain got changed to sdwis, get removed
-                                 */
-                                spjm = manager.getProjects();
-                                i = 0;
-                                while (i < spjm.count())
-                                    spjm.removeProjectAt(i);
-
-                                /*
                                  * reload the tab and refresh its data if the
                                  * sample's node is selected
                                  */
