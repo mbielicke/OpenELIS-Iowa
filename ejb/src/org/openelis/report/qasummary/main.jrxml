@@ -8,7 +8,6 @@
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.report.qasummary.CounterDataSource"/>
 	<import value="org.openelis.utils.Counter"/>
-	<reportFont name="times" isDefault="true" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 	<parameter name="USER_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>

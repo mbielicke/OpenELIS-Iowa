@@ -31,7 +31,7 @@ WHERE
 			<textField>
 				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
 				<textElement>
-					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+					<font size="8" pdfFontName="Courier"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{ATTENTION}]]></textFieldExpression>
 			</textField>
@@ -40,28 +40,28 @@ WHERE
 			<textField>
 				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
 				<textElement>
-					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+					<font size="8" pdfFontName="Courier"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement positionType="Float" x="0" y="12" width="250" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+					<font size="8" pdfFontName="Courier"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{multiple_unit}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="0" y="24" width="250" height="12"/>
 				<textElement>
-					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+					<font size="8" pdfFontName="Courier"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="0" y="36" width="250" height="12"/>
 				<textElement>
-					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+					<font size="8" pdfFontName="Courier"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{city},", ",JasperUtil.concatWithSeparator($F{state}, " ", $F{zip_code}))]]></textFieldExpression>
 			</textField>
