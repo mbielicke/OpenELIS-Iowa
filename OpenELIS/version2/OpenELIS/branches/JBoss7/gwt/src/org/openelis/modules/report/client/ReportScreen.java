@@ -313,7 +313,7 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
      */
     public abstract void runReport(T rpc, AsyncCallback<ReportStatus> callback);
     
-    protected void runReport(T query) {
+    public void runReport(T query) {
         window.setBusy(consts.get("genReportMessage"));
 
         runReport(query, new AsyncCallback<ReportStatus>() {

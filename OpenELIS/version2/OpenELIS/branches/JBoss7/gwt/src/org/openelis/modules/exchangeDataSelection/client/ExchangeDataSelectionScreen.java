@@ -1594,21 +1594,7 @@ public class ExchangeDataSelectionScreen extends Screen {
             else
                 dataExchangeReportScreen.setWindow(window);
             
-            dataExchangeReportScreen.runReport(query,new AsyncCallback<ReportStatus>() {
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    // TODO Auto-generated method stub
-                    
-                }
-
-                @Override
-                public void onSuccess(ReportStatus result) {
-                    // TODO Auto-generated method stub
-                    
-                }
-                
-            });
+            dataExchangeReportScreen.runReport(query);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
