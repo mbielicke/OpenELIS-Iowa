@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 
@@ -50,7 +51,6 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Singleton
-
 public class UserCacheBean  {
 
     @Resource
@@ -85,12 +85,27 @@ public class UserCacheBean  {
      * we concat username, sessionId, and locale on initial login and you will need a special
      * login class for JBOSS to parse the username.
      */
+    //TODO
+    /*
+     * This method has been altered to work for jboss 7 bug where the unauthenticatedIdentity is 
+     * always being set to anonymous instead of the configured value of 'system'.  We change the 
+     * user name to 'system' so that cron jobs that call managers or access beens that use 
+     * OpenELIS security checks will work properly.  More info can found at these two links
+     * 
+     *  https://community.jboss.org/thread/175405
+     *  
+     *  https://issues.jboss.org/browse/AS7-3154
+     */
     public String getName() {
         String parts[];
         
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
-        if (parts.length > 0)
-            return parts[0];
+        if (parts.length > 0) {
+            if(parts[0].equals("anonymous"))
+                return "system";
+            else 
+                return parts[0];
+        }
 
         return null;
     }
