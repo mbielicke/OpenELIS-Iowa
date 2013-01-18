@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportToName" language="groovy" printOrder="Horizontal" pageWidth="72" pageHeight="572" orientation="Landscape" columnWidth="72" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[SELECT o.name report_to_name
+  FROM sample s, sample_organization so, organization o
+ WHERE so.sample_id = s.id and
+       so.organization_id = o.id and
+       so.type_id = (select id from dictionary where system_name = 'org_report_to') and
+       s.domain != 'W' and
+       s.id = $P{SAMPLE_ID}
+UNION
+SELECT o.name report_to_name
+  FROM sample s, sample_private_well spw, organization o
+ WHERE spw.sample_id = s.id and
+       spw.organization_id = o.id and
+       s.id = $P{SAMPLE_ID}
+UNION
+SELECT spw.report_to_name
+  FROM sample s, sample_private_well spw
+ WHERE spw.sample_id = s.id and
+       spw.organization_id is null and
+       s.id = $P{SAMPLE_ID}]]>
+	</queryString>
+	<field name="report_to_name" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="0" y="0" width="72" height="12" backcolor="#F0F0F0"/>
+				<box leftPadding="1" rightPadding="0">
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineWidth="0.25" lineColor="#C0C0C0"/>
+					<leftPen lineWidth="0.25" lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
+					<rightPen lineWidth="0.25" lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
