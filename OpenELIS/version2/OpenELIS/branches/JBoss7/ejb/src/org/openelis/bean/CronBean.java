@@ -270,16 +270,16 @@ public class CronBean {
             }
             methods = bean.getClass().getMethods();
             for (Method mthd : methods) {
-                if (mthd.getName().equals(data.getMethod().trim())) {
+                if (mthd.getName().equals(data.getMethod().trim()) &&
+                    mthd.getParameterTypes().length == params.length) {
                     method = mthd;
                     break;
                 }
             }
-            if (method == null)
+            if (method == null) {
                 list.add(new FieldErrorException("invalidMethod", CronMeta.getMethod()));
-            else if (method.getParameterTypes().length != params.length)
-                list.add(new FieldErrorException("invalidNumParams",
-                                                 CronMeta.getParameters()));
+                list.add(new FieldErrorException("invalidNumParams", CronMeta.getParameters()));
+            }
         }
 
         if (list.size() > 0)
