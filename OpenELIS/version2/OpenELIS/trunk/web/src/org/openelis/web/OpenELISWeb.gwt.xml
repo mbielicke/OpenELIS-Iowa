@@ -39,11 +39,10 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.web.modules.notificationPreference.NotificationPreference"/>
     <inherits name="org.openelis.web.modules.sampleStatusReport.SampleStatusReport"/>
     <inherits name="org.openelis.web.modules.finalReport.FinalReport"/>
-    <inherits name="org.openelis.web.modules.dataView.DataView"/>
-    <inherits name="org.openelis.ELISCommon"/>  
-    <inherits name="org.openelis.Cache"/> 
+    <inherits name="org.openelis.web.modules.dataView.DataView"/> 
+    <inherits name="org.openelis.ELISCommonWeb"/>
     <source path = "util"/>
-    <source path = "org/openelis/cache"/> 
+    <source path = "cache"/>
 	<stylesheet src="CSS/web.css"/>
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.web.modules.main.client.OpenELISEntry'/>
@@ -54,5 +53,5 @@ UIRF Software License are applicable instead of those above.
     
     <define-property name="props" values="org_openelis_web_modules_main_server_constants_OpenELISConstants"/>
     <set-property name="props" value="org_openelis_web_modules_main_server_constants_OpenELISConstants"/>
-	<!--  <set-property name="user.agent" value="gecko1_8" /> --> 
+    <set-property name="user.agent" value="gecko1_8" />  
 </module>

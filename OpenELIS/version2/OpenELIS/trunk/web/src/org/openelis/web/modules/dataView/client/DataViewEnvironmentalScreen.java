@@ -28,7 +28,7 @@ package org.openelis.web.modules.dataView.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.UserCache;
+import org.openelis.web.cache.UserCache;
 import org.openelis.domain.AuxDataDataViewVO;
 import org.openelis.domain.AuxFieldDataViewVO;
 import org.openelis.domain.DataViewVO;
@@ -48,7 +48,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
@@ -110,7 +109,6 @@ public class DataViewEnvironmentalScreen extends Screen {
      */
     public DataViewEnvironmentalScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DataViewEnvironmentalDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.dataView.server.DataViewReportService");
 
         userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
         if (userPermission == null)
@@ -1096,7 +1094,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         try {
-            list = service.callList("fetchEnvironmentalProjectListForWeb");
+            list = DataViewReportService.get().fetchEnvironmentalProjectListForWeb();
             for (IdNameVO data :  list) {
                 row = new TableDataRow(data.getId(), data.getName());
                 model.add(row);
@@ -1159,7 +1157,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         window.setBusy(consts.get("querying"));
 
         try {
-            temp = service.call("fetchAnalyteAndAuxFieldForWebEnvironmental", data);
+            temp = DataViewReportService.get().fetchAnalyteAndAuxFieldForWebEnvironmental(data);
             data.setAnalytes(temp.getTestAnalytes());
             data.setAuxFields(temp.getAuxFields());
             loadDeck();
@@ -1237,7 +1235,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         }
         try {
             window.setBusy(consts.get("genReportMessage"));
-            st = service.call("runReportForWebEnvironmental", data);
+            st = DataViewReportService.get().runReportForWebEnvironmental(data);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
                 Window.open(URL.encode(url), "FinalReport", null);
