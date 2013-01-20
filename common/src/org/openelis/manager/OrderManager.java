@@ -25,13 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class OrderManager implements RPC, HasAuxDataInt {
+public class OrderManager implements Serializable, HasAuxDataInt {
 
     private static final long                    serialVersionUID = 1L;
 

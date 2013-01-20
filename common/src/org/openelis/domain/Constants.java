@@ -25,7 +25,7 @@
  */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.RPC;
+import java.io.Serializable;
 
 /**
  * The class provides application wide constants that are used in the EJB and
@@ -34,7 +34,7 @@ import org.openelis.gwt.common.RPC;
  * an instance variable rather than static final. Additionally, the dictionary
  * constants are not immutable.
  */
-public class Constants implements RPC {
+public class Constants implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private static Constants  constants;
@@ -89,7 +89,7 @@ public class Constants implements RPC {
      * The class is used for table reference id. Table reference ids are used
      * for common tables such as notes to link to other tables-records.
      */
-    public static class Table implements RPC {
+    public static class Table implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final Integer      PERSON           = 1, PATIENT = 2,
@@ -138,7 +138,7 @@ public class Constants implements RPC {
      * The class represents all the sample domains that can be used in sample
      * record
      */
-    public static class Domain implements RPC {
+    public static class Domain implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final String       QUICKENTRY       = "Q", ENVIRONMENTAL = "E",
@@ -150,7 +150,7 @@ public class Constants implements RPC {
      * The class represents all the operations that can be performed for
      * auditing.
      */
-    public static class Audit implements RPC {
+    public static class Audit implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final Integer      ADD              = 1, UPDATE = 2, DELETE = 3, VIEW = 4;
@@ -161,7 +161,7 @@ public class Constants implements RPC {
      * the program. The constants are not final; they are loaded at server load
      * time because the value is the dictionary entry id.
      */
-    public static class Dictionary implements RPC {
+    public static class Dictionary implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public Integer            ANALYSIS_CANCELLED, ANALYSIS_COMPLETED,

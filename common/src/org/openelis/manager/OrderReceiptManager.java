@@ -25,14 +25,13 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.InventoryXPutViewDO;
-import org.openelis.domain.InventoryXPutViewDO;
-import org.openelis.gwt.common.RPC;
 
 
-public class OrderReceiptManager implements RPC {
+public class OrderReceiptManager implements Serializable {
 
     private static final long                           serialVersionUID = 1L;
 

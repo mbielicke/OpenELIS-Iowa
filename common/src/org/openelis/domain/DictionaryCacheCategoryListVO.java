@@ -26,15 +26,14 @@
 
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-
-import org.openelis.gwt.common.RPC;
 
 /**
  * Class is used to send and receive number of category dictionary entries for
  * dictionary cache.
  */
-public class DictionaryCacheCategoryListVO implements RPC {
+public class DictionaryCacheCategoryListVO implements Serializable {
     private static final long                      serialVersionUID = 1L;
 
     protected ArrayList<CategoryCacheVO> list;

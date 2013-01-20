@@ -26,12 +26,11 @@
 
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-
-import org.openelis.gwt.common.RPC;
 
 /**
  * The class is used to carry the fields in history table and some additional
@@ -39,7 +38,7 @@ import org.openelis.gwt.common.RPC;
  * the database.
  */
 
-public class HistoryVO implements RPC {
+public class HistoryVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

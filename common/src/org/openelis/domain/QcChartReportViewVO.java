@@ -25,13 +25,13 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 
-public class QcChartReportViewVO implements RPC {
+public class QcChartReportViewVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public enum ReportType {SPIKE_CONC, SPIKE_PERCENT};
@@ -76,7 +76,7 @@ public class QcChartReportViewVO implements RPC {
         this.qcList = qcList;
     }
     
-    public static class Value implements RPC {
+    public static class Value implements Serializable {
         private static final long serialVersionUID = 1L;
         
         protected Integer         qcId, wId, analyteId;

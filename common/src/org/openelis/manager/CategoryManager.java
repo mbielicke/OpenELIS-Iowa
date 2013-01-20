@@ -25,11 +25,12 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.CategoryDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class CategoryManager implements RPC {
+public class CategoryManager implements Serializable {
 
     private static final long                       serialVersionUID = 1L;
 

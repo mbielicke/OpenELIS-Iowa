@@ -25,9 +25,10 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.common.RPC;
+import java.io.Serializable;
 
-public class SampleDataBundle implements RPC {
+
+public class SampleDataBundle implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public enum Type {

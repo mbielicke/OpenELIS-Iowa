@@ -25,18 +25,18 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 
 /**
  * Class contains several fields from test and method. It is used for
  * display/view only.
  */
 
-public class TestMethodVO implements RPC {
+public class TestMethodVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

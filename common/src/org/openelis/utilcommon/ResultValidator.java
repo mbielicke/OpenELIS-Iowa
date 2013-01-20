@@ -25,17 +25,17 @@
  */
 package org.openelis.utilcommon;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.RPC;
 
 /**
  * This class implements a validator for a result group or auxiliary data.
  */
-public class ResultValidator implements RPC {
+public class ResultValidator implements Serializable {
     private static final long                 serialVersionUID = 1L;
 
     private HashMap<Integer, ArrayList<Item>> units;
@@ -353,7 +353,7 @@ public class ResultValidator implements RPC {
     /**
      * Class to hold all our result validator objects
      */
-    static class Item implements RPC {
+    static class Item implements Serializable {
         private static final long serialVersionUID = 1L;
 
         Integer                   id, significantDigits;

@@ -25,13 +25,13 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetQcResultViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class WorksheetQcResultManager implements RPC {
+public class WorksheetQcResultManager implements Serializable {
     
     private static final long                    serialVersionUID = 1L;
     protected Integer                            worksheetAnalysisId;

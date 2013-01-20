@@ -25,12 +25,12 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.PWSAddressDO;
-import org.openelis.gwt.common.RPC;
 
-public class PWSAddressManager implements RPC {
+public class PWSAddressManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

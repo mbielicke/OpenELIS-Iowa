@@ -25,10 +25,11 @@
  */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
+import java.io.Serializable;
 
-public class PanelVO implements RPC {
+import org.openelis.gwt.common.DataBaseUtil;
+
+public class PanelVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id;

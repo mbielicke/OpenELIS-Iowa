@@ -25,14 +25,15 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserPermission;
 
-public class TestManager implements RPC {
+public class TestManager implements Serializable {
 
     private static final long                   serialVersionUID = 1L;
 
