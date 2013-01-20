@@ -25,29 +25,30 @@
  */
 package org.openelis.web.server;
 
-import java.util.Properties;
+import java.util.ArrayList;
 
-import javax.naming.InitialContext;
+import javax.ejb.EJB;
+import javax.servlet.annotation.WebServlet;
 
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.remote.UserCacheRemote;
+import org.openelis.bean.CategoryCacheBean;
+import org.openelis.domain.CategoryCacheVO;
+import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.web.cache.CategoryCacheServiceInt;
 
-public class HostedFilter extends org.openelis.gwt.server.HostedFilter {
+@WebServlet("/openelisweb/categoryCache")
+public class CategoryCacheServlet extends RemoteServlet implements CategoryCacheServiceInt {
+    
+    private static final long serialVersionUID = 1L;
+    
+    @EJB
+    CategoryCacheBean categoryCache;
 
-    protected void login(Properties props) throws Exception {
-        InitialContext remotectx;
-        UserCacheRemote remote;
-        SystemUserPermission perm;
-        
-        remotectx = new InitialContext(props);
-        remote = (UserCacheRemote)remotectx.lookup("openelis/openelis.jar/UserCacheBean!org.openelis.remote.UserCacheRemote");
-        perm = remote.login(); 
-
-        //
-        // check to see if she has connect permission
-        //
-        if (!perm.hasConnectPermission())
-          throw new PermissionException("NoPermission.html");
+    public CategoryCacheVO getBySystemName(String systemName) throws Exception {
+        return categoryCache.getBySystemName(systemName);
     }
+
+    public ArrayList<CategoryCacheVO> getBySystemNames(String... systemNames) throws Exception {        
+        return categoryCache.getBySystemNames(systemNames);
+    }
+
 }

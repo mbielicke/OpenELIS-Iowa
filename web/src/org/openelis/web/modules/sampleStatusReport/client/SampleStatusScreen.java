@@ -29,7 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 
-import org.openelis.cache.UserCache;
+import org.openelis.web.cache.DictionaryCache;
+import org.openelis.web.cache.UserCache;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
@@ -45,7 +46,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.DeckPanel;
@@ -97,7 +97,6 @@ public class SampleStatusScreen extends Screen {
      */
     public SampleStatusScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleStatusDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.SampleStatusReportService");
 
         userPermission = UserCache.getPermission().getModule("w_status");
         if (userPermission == null)
@@ -355,7 +354,7 @@ public class SampleStatusScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         try {
-            list = service.callList("getSampleStatusProjectList");
+            list = SampleStatusReportService.get().getSampleStatusProjectList();
             for (int counter = 0; counter < list.size(); counter++ ) {
                 row = new TableDataRow(list.get(counter).getId(), list.get(counter)
                                                                       .getName());
@@ -391,7 +390,7 @@ public class SampleStatusScreen extends Screen {
         window.setBusy(consts.get("retrSamples"));
 
         try {
-            list = service.callList("getSampleListForSampleStatusReport", query);
+            list = SampleStatusReportService.get().getSampleListForSampleStatusReport(query);
             if (list.size() > 0) {
                 loadDeck(list);
             } else {

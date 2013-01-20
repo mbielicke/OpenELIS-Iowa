@@ -25,29 +25,28 @@
  */
 package org.openelis.web.server;
 
-import java.util.Properties;
+import javax.ejb.EJB;
+import javax.servlet.annotation.WebServlet;
 
-import javax.naming.InitialContext;
+import org.openelis.bean.DictionaryCacheBean;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.web.cache.DictionaryCacheServiceInt;
 
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.remote.UserCacheRemote;
+@WebServlet("/openelisweb/dictionaryCache")
+public class DictionaryCacheServlet extends RemoteServlet implements DictionaryCacheServiceInt {
 
-public class StaticFilter extends org.openelis.gwt.server.StaticFilter {
+    private static final long serialVersionUID = 1L;
+    
+    @EJB
+    DictionaryCacheBean dictionaryCache;
 
-    protected void login(Properties props) throws Exception {
-        InitialContext remotectx;
-        UserCacheRemote remote;
-        SystemUserPermission perm;
-
-        remotectx = new InitialContext(props);
-        remote = (UserCacheRemote)remotectx.lookup("openelis/openelis.jar/UserCacheBean!org.openelis.remote.UserCacheRemote");
-        perm = remote.login();
-
-        //
-        // check to see if she has connect permission
-        //
-        if ( !perm.hasConnectPermission())
-            throw new PermissionException("NoPermission.html");
+    public DictionaryDO getBySystemName(String systemName) throws Exception {
+        return dictionaryCache.getBySystemName(systemName);
     }
+
+    public DictionaryDO getById(Integer id) throws Exception {
+        return dictionaryCache.getById(id);
+    }
+
 }

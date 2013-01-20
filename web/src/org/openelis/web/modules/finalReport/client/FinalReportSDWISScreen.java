@@ -28,8 +28,8 @@ package org.openelis.web.modules.finalReport.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.CategoryCache;
-import org.openelis.cache.UserCache;
+import org.openelis.web.cache.CategoryCache;
+import org.openelis.web.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
@@ -45,7 +45,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.DeckPanel;
@@ -99,7 +98,6 @@ public class FinalReportSDWISScreen extends Screen {
      */
     public FinalReportSDWISScreen() throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportSDWISDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
         
         userPermission = UserCache.getPermission().getModule("w_final_sdwis");
         if (userPermission == null)
@@ -473,7 +471,7 @@ public class FinalReportSDWISScreen extends Screen {
         model.add(new TableDataRow(null, ""));
 
         try {
-            projects = service.callList("getSDWISProjectList");
+            projects = FinalReportService.get().getSDWISProjectList();
             for (IdNameVO p : projects) {
                 row = new TableDataRow(p.getId(), p.getName());
                 model.add(row);
@@ -517,7 +515,7 @@ public class FinalReportSDWISScreen extends Screen {
         window.setBusy(consts.get("retrSamples"));
 
         try {
-            list = service.callList("getSampleSDWISList", query);
+            list = FinalReportService.get().getSampleSDWISList(query);
             if (list.size() > 0) {
                 loadDeck(list);
                 setResults(list);
@@ -608,7 +606,7 @@ public class FinalReportSDWISScreen extends Screen {
         }
         try {
             window.setBusy(consts.get("genReportMessage"));
-            st = service.call("runReportForWeb", query);
+            st = FinalReportService.get().runReportForWeb(query);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
                 Window.open(URL.encode(url), "FinalReport", null);

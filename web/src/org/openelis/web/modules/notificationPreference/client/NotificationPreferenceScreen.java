@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.cache.UserCache;
+import org.openelis.web.cache.DictionaryCache;
+import org.openelis.web.cache.UserCache;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -47,7 +47,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -56,8 +55,9 @@ import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.manager.OrganizationManager;
-import org.openelis.manager.OrganizationParameterManager;
+//import org.openelis.manager.OrganizationManager;
+//import org.openelis.manager.OrganizationParameterManager;
+import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.web.modules.notificationPreference.client.AddEditEmailScreen.Action;
 
 import com.google.gwt.core.client.GWT;
@@ -70,7 +70,7 @@ import com.google.gwt.user.client.Window;
 
 public class NotificationPreferenceScreen extends Screen {
 
-    private ArrayList<OrganizationManager> managerList;    
+    private ArrayList                      managerList;    
     private ModulePermission               userPermission;
     private Integer                        receivableReportToId, releasedReportToId;
     private AppButton                      addButton, editButton, removeButton;
@@ -84,7 +84,6 @@ public class NotificationPreferenceScreen extends Screen {
      */
     public NotificationPreferenceScreen() throws Exception {
         super((ScreenDefInt)GWT.create(NotificationPreferenceDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         userPermission = UserCache.getPermission().getModule("w_notify");
         if (userPermission == null)
@@ -155,7 +154,7 @@ public class NotificationPreferenceScreen extends Screen {
                  * set to the default values 
                  */
                 if (row  == null) {
-                    data.setOrganizationId(managerList.get(0).getOrganization().getId());
+                   // data.setOrganizationId(managerList.get(0).getOrganization().getId());
                 } else {
                     list = (ArrayList<OrganizationParameterDO>)row.data;       
                     par = list.get(0);                                                    
@@ -227,10 +226,12 @@ public class NotificationPreferenceScreen extends Screen {
         }
 
         model = new ArrayList<TableDataRow>();
+        /*
         for (OrganizationManager man : managerList) {
             data = man.getOrganization();            
             model.add(new TableDataRow(data.getId(), data.getName()));
         }
+        */
 
         org = ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget());
         org.setModel(model);
@@ -242,7 +243,7 @@ public class NotificationPreferenceScreen extends Screen {
         Integer ind;
         String email;
         OrganizationParameterDO data;
-        OrganizationParameterManager man;
+        //OrganizationParameterManager man;
         ArrayList<TableDataRow> model;
         TableDataRow row;
         HashMap<String, Integer> emIndMap;
@@ -254,6 +255,7 @@ public class NotificationPreferenceScreen extends Screen {
 
         try {
             j = -1;
+            /*
             for (OrganizationManager manager : managerList) {
                 man = manager.getParameters();
                 emIndMap = new HashMap<String, Integer>();
@@ -269,7 +271,7 @@ public class NotificationPreferenceScreen extends Screen {
                      * keep track of the index where the email was first added in
                      * the model and update that row appropriately if we encounter
                      * the email again 
-                     */
+                     
                     email = data.getValue();
                     ind = emIndMap.get(email);
                     if (ind != null) {    
@@ -289,7 +291,7 @@ public class NotificationPreferenceScreen extends Screen {
                          * that if this email has been added for only one type
                          * and thus isn't found again, the checkbox for the missing
                          * type will show up (correctly) unchecked.                          
-                         */
+                         
                         row = new TableDataRow(4);
                         row.key = data.getId();
                         row.cells.get(0).setValue(manager.getOrganization().getId());                    
@@ -308,11 +310,12 @@ public class NotificationPreferenceScreen extends Screen {
                         row.cells.get(3).setValue("Y");                      
                 }                                
             }
+            */
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-
+        
         return model;
     }  
 
@@ -330,7 +333,7 @@ public class NotificationPreferenceScreen extends Screen {
         }
         window.setBusy(consts.get("fetching"));
         try {
-            managerList = service.callList("fetchByIdList", idList);
+           // managerList = OrganizationService.get().fetchByIdList(idList);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -402,18 +405,19 @@ public class NotificationPreferenceScreen extends Screen {
     
     private void add(AddEditEmailVO data) {
         String msg, prevMsg;
-        OrganizationManager oman;
-        OrganizationParameterManager pman;
+        //OrganizationManager oman;
+        //OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
 
         window.setBusy(consts.get("adding"));
+        /*
         for (int i = 0; i < managerList.size(); i++ ) {
-            oman = managerList.get(i);
-            try {
+            //oman = managerList.get(i);
+           // try {
                 //
                 // we try to lock the manager on the screen to be updated and
                 // commit its data
-                //
+                /*
                 if (oman.getOrganization().getId().equals(data.getOrganizationId())) {
                     oman = oman.fetchForUpdate();
                     pman = oman.getParameters();
@@ -423,12 +427,13 @@ public class NotificationPreferenceScreen extends Screen {
                      * AddEditEmailScreen is specified to belong to and each of
                      * those DO's is added to the OrganizationParameterManager
                      * in this OrganizationManager
-                     */
+                     
                     for (int j = 0; j < list.size(); j++ )
                         pman.addParameter(list.get(j));
                     managerList.set(i, oman.updateForNotify());
                     break;
                 }
+                
             } catch (EntityLockedException e) {
                 Window.alert(consts.get("recordNotAvailableLockException"));
             } catch (ValidationErrorsList e) {
@@ -441,13 +446,13 @@ public class NotificationPreferenceScreen extends Screen {
                      * then the list will contain two errors with exactly the same
                      * message. So we check the message before showing the alert
                      * so that the user doesn't see identical messages repeated.
-                     */
+                     
                     if (!msg.equals(prevMsg))
                         Window.alert(msg);
                     prevMsg = msg;
                 }
                 try {
-                    oman.abortUpdate();
+                   // oman.abortUpdate();
                 } catch (Exception e1) {
                     Window.alert(e1.getMessage());
                     e1.printStackTrace();
@@ -457,6 +462,7 @@ public class NotificationPreferenceScreen extends Screen {
                 e.printStackTrace();
             }
         }
+        */
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
         window.setDone(consts.get("addingComplete"));
@@ -464,8 +470,8 @@ public class NotificationPreferenceScreen extends Screen {
     
     private void update(AddEditEmailVO data) {
         String msg, prevMsg;
-        OrganizationManager oman;
-        OrganizationParameterManager pman;
+        //OrganizationManager oman;
+        //OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
         OrganizationParameterDO par;
         TableDataRow row;
@@ -473,6 +479,7 @@ public class NotificationPreferenceScreen extends Screen {
         window.setBusy(consts.get("updating"));
         row = table.getSelection();
         list = (ArrayList<OrganizationParameterDO>)row.data;
+        /*
         for (int i = 0; i < managerList.size(); i++ ) {
             oman = managerList.get(i);
             try {
@@ -487,7 +494,7 @@ public class NotificationPreferenceScreen extends Screen {
                      * all the DO's in the fetched manager corresponding to the
                      * ones linked to this row are tried to be found and their
                      * values are set to data's email
-                     */
+                     
                     for (int j = 0; j < pman.count(); j++ ) {
                         par = pman.getParameterAt(j);
                         for (int k = 0; k < list.size(); k++ ) {
@@ -512,7 +519,7 @@ public class NotificationPreferenceScreen extends Screen {
                      * then the list will contain two errors with exactly the same
                      * message. So we check the message before showing the alert
                      * so that the user doesn't see identical messages repeated.
-                     */
+                     
                     if (!msg.equals(prevMsg))
                         Window.alert(msg);
                     prevMsg = msg;
@@ -528,6 +535,7 @@ public class NotificationPreferenceScreen extends Screen {
                 e.printStackTrace();
             }
         }
+        */
 
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
@@ -535,8 +543,8 @@ public class NotificationPreferenceScreen extends Screen {
     }
     
     private void delete() {
-        OrganizationManager oman;
-        OrganizationParameterManager pman;
+        //OrganizationManager oman;
+        //OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
         OrganizationParameterDO data, par;
         TableDataRow row;
@@ -544,6 +552,7 @@ public class NotificationPreferenceScreen extends Screen {
         window.setBusy(consts.get("deleting"));
         row = table.getSelection();
         list = (ArrayList<OrganizationParameterDO>)row.data;
+        /*
         for (int i = 0; i < managerList.size(); i++ ) {
             oman = managerList.get(i);
             try {
@@ -558,7 +567,7 @@ public class NotificationPreferenceScreen extends Screen {
                      * all the DO's in the fetched OrganizationParameterManager
                      * that have the same ids as the ones linked to the row
                      * being deleted are searched for and removed if found
-                     */
+                     
                     for (int j = 0; j < list.size(); j++ ) {
                         data = list.get(j);
                         for (int k = 0; k < pman.count(); k++ ) {
@@ -580,12 +589,13 @@ public class NotificationPreferenceScreen extends Screen {
                 e.printStackTrace();
             }
         }
-
+        */
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
         window.setDone(consts.get("deleteComplete"));
     }
     
+    /*
     private ArrayList<OrganizationParameterDO> createParameters(OrganizationParameterManager man, AddEditEmailVO data) {        
         boolean addRec, addRel;        
         ArrayList<OrganizationParameterDO> list;
@@ -602,7 +612,7 @@ public class NotificationPreferenceScreen extends Screen {
          * "forReleased" set to "Y", the request is ignored. If however the email
          * can't be found in the manager, a DO is created for each type that has 
          * the field corresponding to it in "data" set to "Y".  
-         */
+         
         for (int i = 0; i < man.count(); i++) {
             par = man.getParameterAt(i);
             if (par.getValue().equals(data.getEmail())) {
@@ -631,4 +641,5 @@ public class NotificationPreferenceScreen extends Screen {
         
         return list;
     }
+    */
 }
