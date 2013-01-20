@@ -1,16 +1,16 @@
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
 import com.google.gwt.user.client.Window;
 
-public class AuxFieldManager implements RPC {
+public class AuxFieldManager implements Serializable {
 
     private static final long                             serialVersionUID = 1L;
 
@@ -216,7 +216,7 @@ public class AuxFieldManager implements RPC {
         return deleted.get(i);
     }
 
-    static class AuxFieldListItem implements RPC {
+    static class AuxFieldListItem implements Serializable {
         private static final long serialVersionUID = 1L;
 
         AuxFieldViewDO            field;

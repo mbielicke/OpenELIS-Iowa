@@ -1,11 +1,12 @@
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class AuxFieldGroupManager implements RPC {
+public class AuxFieldGroupManager implements Serializable {
 
     private static final long                             serialVersionUID = 1L;
 

@@ -25,12 +25,13 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
 
-public class InstrumentManager implements RPC {
+public class InstrumentManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

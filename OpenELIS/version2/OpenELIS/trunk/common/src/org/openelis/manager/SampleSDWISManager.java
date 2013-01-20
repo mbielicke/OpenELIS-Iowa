@@ -1,10 +1,11 @@
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class SampleSDWISManager implements RPC, SampleDomainInt {
+public class SampleSDWISManager implements Serializable, SampleDomainInt {
     private static final long                          serialVersionUID = 1L;
     protected Integer                                  sampleId;
     protected SampleSDWISViewDO                        sdwis;

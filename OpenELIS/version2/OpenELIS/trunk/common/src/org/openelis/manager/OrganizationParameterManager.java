@@ -25,13 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 
-public class OrganizationParameterManager implements RPC {
+public class OrganizationParameterManager implements Serializable {
 
     private static final long                                  serialVersionUID = 1L;
 

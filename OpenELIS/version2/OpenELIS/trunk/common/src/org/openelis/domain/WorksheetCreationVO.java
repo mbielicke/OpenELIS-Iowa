@@ -25,13 +25,13 @@
 */
 package org.openelis.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.RPC;
 
-public class WorksheetCreationVO implements RPC {
+public class WorksheetCreationVO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     protected Boolean  hasQaOverride;

@@ -25,8 +25,9 @@
 */
 package org.openelis.domain;
 
+import java.io.Serializable;
+
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 
 /**
  * This class is used in the queries executed in DataViewBean to fetch the data
@@ -35,7 +36,7 @@ import org.openelis.gwt.common.RPC;
  * to passed to a constructor of a more generic class with more fields. 
  */
 
-public class DataViewAuxDataFetchVO implements RPC {
+public class DataViewAuxDataFetchVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

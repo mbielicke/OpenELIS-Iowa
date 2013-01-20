@@ -28,7 +28,6 @@ UIRF Software License are applicable instead of those above.
   <source path="constants"/>
   <source path="domain"/>
   <source path="exception"/>
-  <source path="manager"/>
   <source path="meta"/>
   <source path="utilcommon"/>
 </module>

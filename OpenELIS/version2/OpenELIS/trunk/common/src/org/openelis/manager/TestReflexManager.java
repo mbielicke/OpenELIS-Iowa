@@ -25,15 +25,15 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultViewDO;
-import org.openelis.gwt.common.RPC;
 
-public class TestReflexManager implements RPC {
+public class TestReflexManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

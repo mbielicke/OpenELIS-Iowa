@@ -25,12 +25,12 @@
  */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.gwt.common.RPC;
 
-public class InstrumentLogManager implements RPC {
+public class InstrumentLogManager implements Serializable {
 
     private static final long                            serialVersionUID = 1L;
 

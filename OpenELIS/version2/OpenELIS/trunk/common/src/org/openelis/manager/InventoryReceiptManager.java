@@ -25,13 +25,13 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class InventoryReceiptManager implements RPC{
+public class InventoryReceiptManager implements Serializable {
 
     private static final long                               serialVersionUID = 1L;
 

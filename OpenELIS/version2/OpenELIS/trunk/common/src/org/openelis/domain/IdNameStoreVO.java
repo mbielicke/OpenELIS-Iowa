@@ -25,8 +25,9 @@
  */
 package org.openelis.domain;
 
+import java.io.Serializable;
+
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 
 /**
  * The class is used to carry id, name, and store id fields for query returns, for left 
@@ -34,7 +35,7 @@ import org.openelis.gwt.common.RPC;
  * and do not get committed to the database.
  */
 
-public class IdNameStoreVO implements RPC {
+public class IdNameStoreVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
     protected Integer         id, store;

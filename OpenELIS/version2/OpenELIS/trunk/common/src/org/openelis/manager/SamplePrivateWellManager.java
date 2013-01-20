@@ -1,10 +1,11 @@
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class SamplePrivateWellManager implements RPC, SampleDomainInt {
+public class SamplePrivateWellManager implements Serializable, SampleDomainInt {
 
     private static final long                                serialVersionUID = 1L;
     protected Integer                                        sampleId;

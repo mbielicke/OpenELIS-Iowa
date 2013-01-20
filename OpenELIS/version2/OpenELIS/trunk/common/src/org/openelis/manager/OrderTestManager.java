@@ -25,14 +25,14 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
 
-public class OrderTestManager implements RPC {
+public class OrderTestManager implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
@@ -267,7 +267,7 @@ public class OrderTestManager implements RPC {
         return proxy;
     }
     
-    static class OrderTestListItem implements RPC {
+    static class OrderTestListItem implements Serializable {
         private static final long serialVersionUID = 1L;
         
         OrderTestViewDO         test;

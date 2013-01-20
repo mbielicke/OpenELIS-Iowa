@@ -25,13 +25,14 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
+
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleHumanDO;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-public class SampleHumanManager implements RPC, SampleDomainInt {
+public class SampleHumanManager implements Serializable, SampleDomainInt {
 
     private static final long                    serialVersionUID = 1L;
 

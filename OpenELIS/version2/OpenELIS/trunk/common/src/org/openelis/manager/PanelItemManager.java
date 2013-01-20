@@ -25,13 +25,13 @@
 */
 package org.openelis.manager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.PanelItemDO;
-import org.openelis.gwt.common.RPC;
 
 
-public class PanelItemManager implements RPC {
+public class PanelItemManager implements Serializable {
 
     private static final long serialVersionUID = 1L;
     
