@@ -38,7 +38,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.MCLViolationReportVO;
@@ -52,13 +52,11 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalysisLocal;
 import org.openelis.manager.TestManager;
-import org.openelis.remote.AnalysisRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
+public class AnalysisBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

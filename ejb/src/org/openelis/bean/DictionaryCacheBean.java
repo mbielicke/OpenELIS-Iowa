@@ -25,16 +25,15 @@
 */
 package org.openelis.bean;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.remote.DictionaryCacheRemote;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -43,11 +42,12 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Singleton
-public class DictionaryCacheBean implements DictionaryCacheLocal, DictionaryCacheRemote {
+public class DictionaryCacheBean {
 
     private Cache           cache;
     
-    public DictionaryCacheBean() {
+    @PostConstruct
+    public void init() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();

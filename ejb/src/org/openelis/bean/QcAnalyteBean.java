@@ -35,7 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.entity.QcAnalyte;
@@ -44,13 +44,12 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.QcAnalyteLocal;
 import org.openelis.meta.QcMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class QcAnalyteBean implements QcAnalyteLocal {
+public class QcAnalyteBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;

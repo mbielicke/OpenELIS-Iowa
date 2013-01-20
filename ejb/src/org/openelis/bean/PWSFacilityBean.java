@@ -34,17 +34,16 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.PWSFacilityDO;
 import org.openelis.entity.PWSFacility;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.PWSFacilityLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class PWSFacilityBean implements PWSFacilityLocal {
+public class PWSFacilityBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;

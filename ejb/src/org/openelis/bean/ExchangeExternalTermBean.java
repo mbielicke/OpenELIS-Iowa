@@ -37,7 +37,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ExchangeExternalTermDO;
 import org.openelis.domain.ExchangeExternalTermViewDO;
 import org.openelis.entity.ExchangeExternalTerm;
@@ -45,13 +45,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ExchangeExternalTermLocal;
 import org.openelis.meta.ExchangeLocalTermMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ExchangeExternalTermBean implements ExchangeExternalTermLocal {
+public class ExchangeExternalTermBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;

@@ -35,7 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.WorksheetDO;
@@ -51,22 +51,21 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.InstrumentLogLocal;
-import org.openelis.local.WorksheetLocal;
 import org.openelis.meta.WorksheetCompletionMeta;
-import org.openelis.remote.WorksheetRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
+public class WorksheetBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                        manager;
 
     @EJB
-    private InstrumentLogLocal                   instrumentLog;
+    private InstrumentLogBean                  instrumentLog;
+    
+    @EJB
+    private UserCacheBean                      userCache;
 
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
 
@@ -101,8 +100,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             for (i = 0; i < data.size(); i++ ) {
                 worksheet = data.get(i);
                 if (worksheet.getSystemUserId() != null) {
-                    user = EJBFactory.getUserCache()
-                                     .getSystemUser(worksheet.getSystemUserId());
+                    user = userCache.getSystemUser(worksheet.getSystemUserId());
                     if (user != null)
                         worksheet.setSystemUser(user.getLoginName());
                 }
@@ -153,8 +151,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             worksheet = list.get(i);
 
             if (worksheet.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache()
-                                 .getSystemUser(worksheet.getSystemUserId());
+                user = userCache.getSystemUser(worksheet.getSystemUserId());
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }

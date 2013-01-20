@@ -34,10 +34,11 @@ import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.openelis.domain.Constants;
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.DictionaryCacheBean;
+import org.openelis.bean.ResultBean;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.ResultLocal;
 import org.openelis.utils.EJBFactory;
 
 public class ResultDataSource implements JRRewindableDataSource {
@@ -46,8 +47,8 @@ public class ResultDataSource implements JRRewindableDataSource {
 	private HashMap<String, String> currentRow;
 	private Iterator<HashMap<String, String>> iter;
 	private HashMap<Integer, String> dictValueMap;
-	private ResultLocal rl;
-	private DictionaryCacheLocal dcl;
+	private ResultBean rl;
+	private DictionaryCacheBean dcl;
 	
 	private ResultDataSource() {
 	}

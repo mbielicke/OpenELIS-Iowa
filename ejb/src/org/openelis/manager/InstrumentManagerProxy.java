@@ -25,16 +25,16 @@
 */
 package org.openelis.manager;
 
+import org.openelis.bean.InstrumentBean;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InstrumentLocal;
 import org.openelis.utils.EJBFactory;
 
 public class InstrumentManagerProxy {
 
     public InstrumentManager fetchById(Integer id) throws Exception {
-        InstrumentLocal il;
+        InstrumentBean il;
         InstrumentViewDO data;
         InstrumentManager m;
         
@@ -58,7 +58,7 @@ public class InstrumentManagerProxy {
     
     public InstrumentManager add(InstrumentManager man) throws Exception {
         Integer id;
-        InstrumentLocal il;
+        InstrumentBean il;
         
         il = EJBFactory.getInstrument();
         il.add(man.getInstrument());
@@ -72,7 +72,7 @@ public class InstrumentManagerProxy {
     
     public InstrumentManager update(InstrumentManager man) throws Exception {
         Integer id;
-        InstrumentLocal il;
+        InstrumentBean il;
         
         il = EJBFactory.getInstrument();
         il.update(man.getInstrument());

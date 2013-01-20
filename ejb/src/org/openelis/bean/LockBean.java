@@ -32,27 +32,24 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolationException;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.entity.Lock;
 import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.local.LockLocal;
-import org.openelis.local.UserCacheLocal;
 
 @Stateless
 @SecurityDomain("openelis")
-public class LockBean implements LockLocal {
+public class LockBean {
 
     @PersistenceContext
     private EntityManager  manager;
 
     @EJB
-    private UserCacheLocal userCache;
+    private UserCacheBean userCache;
 
     private static int     DEFAULT_LOCK_TIME = 15 * 60 * 1000, // 15 M * 60 S *
                            GRACE_LOCK_TIME = 2 * 60 * 1000; // 1000 Millis

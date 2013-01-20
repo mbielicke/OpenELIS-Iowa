@@ -34,7 +34,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.entity.AuxField;
@@ -43,12 +43,11 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxFieldLocal;
 import org.openelis.meta.AuxFieldGroupMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxFieldBean implements AuxFieldLocal {
+public class AuxFieldBean { //implements AuxFieldLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;

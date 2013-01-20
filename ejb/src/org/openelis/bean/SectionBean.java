@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
@@ -48,21 +48,18 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.SectionLocal;
 import org.openelis.meta.SectionMeta;
-import org.openelis.remote.SectionRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-public class SectionBean implements SectionRemote, SectionLocal {
+public class SectionBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
 
     @EJB
-    private SectionCacheLocal        secCache;
+    private SectionCacheBean         secCache;
 
     private static final SectionMeta meta = new SectionMeta();
 

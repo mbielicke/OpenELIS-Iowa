@@ -37,7 +37,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.Constants;
@@ -51,8 +51,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.manager.TestManager;
 import org.openelis.utilcommon.ResultValidator;
@@ -61,13 +59,13 @@ import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
-public class ResultBean implements ResultLocal {
+public class ResultBean { 
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
     @EJB
-    private DictionaryCacheLocal          dictionaryCache;
+    private DictionaryCacheBean           dictionaryCache;
 
     private static HashMap<Integer, Type> types;
 

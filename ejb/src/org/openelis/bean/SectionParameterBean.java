@@ -34,20 +34,19 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.entity.SectionParameter;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SectionParameterLocal;
 import org.openelis.meta.SectionMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SectionParameterBean implements SectionParameterLocal {
+public class SectionParameterBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;

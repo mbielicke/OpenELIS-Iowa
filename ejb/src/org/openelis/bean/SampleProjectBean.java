@@ -34,18 +34,17 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.entity.SampleProject;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.SampleProjectLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleProjectBean implements SampleProjectLocal {
+public class SampleProjectBean  {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    

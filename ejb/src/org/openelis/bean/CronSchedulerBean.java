@@ -37,10 +37,10 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.Timer;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.entity.Cron;
-import org.openelis.local.CronLocal;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.FixedPeriodCron;
 
 @Stateless
@@ -51,7 +51,7 @@ public class CronSchedulerBean {
     private SessionContext       ctx;
 
     @EJB
-    private CronLocal            cron;
+    private CronBean             cron;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -119,7 +119,7 @@ public class CronSchedulerBean {
         Object[] params;
         Class[] classes;
         
-        beanInst = ctx.lookup(cronTab.getBean());
+        beanInst = EJBFactory.lookup(cronTab.getBean());
 
         if (cronTab.getParameters() != null) {
             params = cronTab.getParameters().split(";");

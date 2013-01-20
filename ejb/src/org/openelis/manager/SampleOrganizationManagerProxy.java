@@ -28,11 +28,12 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.Constants;
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.SampleOrganizationBean;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SampleOrganizationLocal;
 import org.openelis.utils.EJBFactory;
 
 public class SampleOrganizationManagerProxy {
@@ -52,7 +53,7 @@ public class SampleOrganizationManagerProxy {
 
     public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {
         SampleOrganizationViewDO data;
-        SampleOrganizationLocal l;
+        SampleOrganizationBean l;
 
         l = EJBFactory.getSampleOrganization();
         for (int i = 0; i < man.count(); i++ ) {
@@ -68,7 +69,7 @@ public class SampleOrganizationManagerProxy {
     public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
         int i;
         SampleOrganizationViewDO data;
-        SampleOrganizationLocal l;
+        SampleOrganizationBean l;
 
         l = EJBFactory.getSampleOrganization();
         for (i = 0; i < man.deleteCount(); i++ ) {

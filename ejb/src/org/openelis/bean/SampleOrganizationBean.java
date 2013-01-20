@@ -35,19 +35,18 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.entity.SampleOrganization;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.SampleOrganizationLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleOrganizationBean implements SampleOrganizationLocal {
+public class SampleOrganizationBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    

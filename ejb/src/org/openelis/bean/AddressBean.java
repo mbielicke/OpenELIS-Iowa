@@ -32,19 +32,17 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.entity.Address;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AddressLocal;
-import org.openelis.remote.AddressRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class AddressBean implements AddressRemote, AddressLocal {
+public class AddressBean {
 
     @PersistenceContext(unitName = "openelis")
     EntityManager manager;

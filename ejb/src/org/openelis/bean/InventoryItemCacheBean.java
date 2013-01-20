@@ -25,16 +25,15 @@
 */
 package org.openelis.bean;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.local.InventoryItemCacheLocal;
-import org.openelis.remote.InventoryItemCacheRemote;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -44,11 +43,12 @@ import org.openelis.utils.EJBFactory;
 @SecurityDomain("openelis")
 @Singleton
 
-public class InventoryItemCacheBean implements InventoryItemCacheLocal, InventoryItemCacheRemote {
+public class InventoryItemCacheBean {
 
     private Cache              cache;
 
-    public InventoryItemCacheBean() {
+    @PostConstruct
+    public void init() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();

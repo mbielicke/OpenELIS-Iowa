@@ -35,7 +35,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
@@ -50,9 +50,6 @@ import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
-import org.openelis.local.OrderManagerLocal;
-import org.openelis.local.UserCacheLocal;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
@@ -63,22 +60,19 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.remote.OrderManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
-
+public class OrderManagerBean {
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lock;
+    private LockBean      lock;
 
     @EJB
-    private UserCacheLocal userCache;
+    private UserCacheBean userCache;
 
     public OrderManager fetchById(Integer id) throws Exception {
         return OrderManager.fetchById(id);
@@ -237,7 +231,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("order", flag);
+        userCache.applyPermission("order", flag);
     }
 
     private void duplicateOrder(OrderManager oldMan, OrderManager newMan,

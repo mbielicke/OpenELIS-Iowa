@@ -52,13 +52,12 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleDO;
@@ -67,23 +66,10 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.ResultLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SampleSDWISLocal;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.remote.SDWISUnloadReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.report.sdwisunload.StatusDataSource;
 import org.openelis.utils.Counter;
 import org.openelis.utils.ReportUtil;
@@ -94,36 +80,35 @@ import org.openelis.utils.ReportUtil;
           type = DataSource.class,
           authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
           mappedName = "java:/OpenELISDS")
-public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
+public class SDWISUnloadReportBean {          
+    @EJB
+    private SessionCacheBean                   session;
 
     @EJB
-    private SessionCacheLocal                  session;
+    private PrinterCacheBean                   printers;
 
     @EJB
-    private PrinterCacheLocal                  printers;
-
+    AnalysisBean                              analysis;
     @EJB
-    AnalysisLocal                              analysis;
+    AnalysisQAEventBean                       analysisQA;
     @EJB
-    AnalysisQAEventLocal                       analysisQA;
+    AnalyteBean                               analyte;
     @EJB
-    AnalyteLocal                               analyte;
+    AuxDataBean                               auxData;
     @EJB
-    AuxDataLocal                               auxData;
+    DictionaryCacheBean                        dictionaryCache;
     @EJB
-    DictionaryCacheLocal                       dictionaryCache;
+    ResultBean                                result;
     @EJB
-    ResultLocal                                result;
+    SampleBean                                 sample;
     @EJB
-    SampleLocal                                sample;
+    SampleQAEventBean                          sampleQA;
     @EJB
-    SampleQAEventLocal                         sampleQA;
+    SampleSDWISBean                            sampleSdwis;
     @EJB
-    SampleSDWISLocal                           sampleSdwis;
+    SectionCacheBean                           sectionCache;
     @EJB
-    SectionCacheLocal                          sectionCache;
-    @EJB
-    UserCacheLocal                             userCache;
+    UserCacheBean                              userCache;
     
     private static HashMap<String, String>    methodCodes, contaminantIds;
 

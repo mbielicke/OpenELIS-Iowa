@@ -38,7 +38,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.Constants;
@@ -49,19 +49,17 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxFieldValueLocal;
-import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.meta.AuxFieldGroupMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxFieldValueBean implements AuxFieldValueLocal {
+public class AuxFieldValueBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager        manager;
 
     @EJB
-    private DictionaryCacheLocal dictionaryCache;
+    private DictionaryCacheBean dictionaryCache;
     
     private static final Logger log = Logger.getLogger("openelis");
 

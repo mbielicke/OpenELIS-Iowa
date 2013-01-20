@@ -34,28 +34,24 @@ import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.OrderManagerLocal;
-import org.openelis.local.OrderRecurrenceLocal;
-import org.openelis.local.OrderRecurrenceReportLocal;
-import org.openelis.remote.OrderRecurrenceReportRemote;
-import org.openelis.report.Prompt;
+import org.openelis.gwt.common.Prompt;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, OrderRecurrenceReportRemote {
+public class OrderRecurrenceReportBean {
     
     @EJB
-    private OrderRecurrenceLocal  orderRecurrence;
+    private OrderRecurrenceBean  orderRecurrence;
 
     @EJB
-    private OrderManagerLocal     orderManager;
+    private OrderManagerBean     orderManager;
 
     private static final Logger log = Logger.getLogger("openelis");
     

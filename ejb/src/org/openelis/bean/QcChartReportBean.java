@@ -22,7 +22,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.Constants;
@@ -37,33 +37,26 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalyteParameterLocal;
-import org.openelis.local.CategoryCacheLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
-import org.openelis.remote.QcChartReportRemote;
 import org.openelis.report.qcchart.QcChartDataSource;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class QcChartReportBean implements QcChartReportRemote {
+public class QcChartReportBean {
     @EJB
-    private SessionCacheLocal      session;
+    private SessionCacheBean      session;
 
     @EJB
-    private WorksheetAnalysisLocal worksheetAnalysis;
+    private WorksheetAnalysisBean worksheetAnalysis;
+    
+    @EJB
+    private CategoryCacheBean      categoryCache;
 
     @EJB
-    private CategoryCacheLocal     categoryCache;
-
+    private AnalyteParameterBean   analyteParameter;
+    
     @EJB
-    private AnalyteParameterLocal  analyteParameter;
-
-    @EJB
-    private UserCacheLocal         userCache;
+    private UserCacheBean          userCache;
 
     private static final Logger    log = Logger.getLogger("openelis");
 
@@ -284,7 +277,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             userName = userCache.getName();
 
             jparam = new HashMap<String, Object>();
-            jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
+            jparam.put("LOGNAME", userCache.getName());
             jparam.put("QCNAME", qcName);
             jparam.put("USER_NAME", userName);
 

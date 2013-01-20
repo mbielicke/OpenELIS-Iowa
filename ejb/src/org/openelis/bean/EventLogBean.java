@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.EventLog;
@@ -46,21 +46,18 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.EventLogLocal;
-import org.openelis.local.UserCacheLocal;
 import org.openelis.meta.EventLogMeta;
-import org.openelis.remote.EventLogRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-public class EventLogBean implements EventLogLocal, EventLogRemote {
+public class EventLogBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager             manager;
 
     @EJB
-    private UserCacheLocal            userCache;
+    private UserCacheBean            userCache;
 
     private static final EventLogMeta meta = new EventLogMeta();
 

@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openelis.bean.AuxFieldBean;
+import org.openelis.bean.AuxFieldValueBean;
+import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
@@ -37,8 +40,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxFieldLocal;
-import org.openelis.local.AuxFieldValueLocal;
 import org.openelis.manager.AuxFieldManager.AuxFieldListItem;
 import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.utilcommon.ResultRangeNumeric;
@@ -47,7 +48,7 @@ import org.openelis.utils.EJBFactory;
 public class AuxFieldManagerProxy {
 
     public AuxFieldManager fetchById(Integer id) throws Exception {
-        AuxFieldLocal l;
+        AuxFieldBean l;
         AuxFieldViewDO data;
         AuxFieldManager m;
 
@@ -61,7 +62,7 @@ public class AuxFieldManagerProxy {
     }
 
     public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
-        AuxFieldLocal l;
+        AuxFieldBean l;
         ArrayList<AuxFieldViewDO> data;
         AuxFieldManager m;
 
@@ -78,8 +79,8 @@ public class AuxFieldManagerProxy {
 
     public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception {
         int fieldId;
-        AuxFieldLocal l;
-        AuxFieldValueLocal vl;
+        AuxFieldBean l;
+        AuxFieldValueBean vl;
         AuxFieldViewDO data;
         ArrayList<AuxFieldViewDO> fields;
         ArrayList<AuxFieldValueViewDO> values, tmpValue;
@@ -125,7 +126,7 @@ public class AuxFieldManagerProxy {
     public AuxFieldManager add(AuxFieldManager man) throws Exception {
         Integer id;
         AuxFieldViewDO data;
-        AuxFieldLocal l;
+        AuxFieldBean l;
 
         l = EJBFactory.getAuxField();
         for (int i = 0; i < man.count(); i++ ) {
@@ -145,8 +146,8 @@ public class AuxFieldManagerProxy {
     public AuxFieldManager update(AuxFieldManager man) throws Exception {
         Integer id;
         AuxFieldViewDO data;
-        AuxFieldLocal l;
-        AuxFieldValueLocal vl;
+        AuxFieldBean l;
+        AuxFieldValueBean vl;
         AuxFieldListItem item;
 
         l = EJBFactory.getAuxField();
@@ -179,8 +180,8 @@ public class AuxFieldManagerProxy {
 
     public void validate(AuxFieldManager man, ValidationErrorsList list) throws Exception {
         int numDefault, count;
-        AuxFieldLocal al;
-        AuxFieldValueLocal vl;
+        AuxFieldBean al;
+        AuxFieldValueBean vl;
         AuxFieldValueManager vm;
         AuxFieldValueViewDO data;
         List<ResultRangeNumeric> nrList;

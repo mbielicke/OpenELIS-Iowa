@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
@@ -45,23 +45,20 @@ import org.openelis.entity.SamplePrivateWell;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.SamplePrivateWellLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SamplePrivateWellBean implements SamplePrivateWellLocal {
+public class SamplePrivateWellBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     @EJB
-    private AddressLocal address;
+    private AddressBean address;
     
     @EJB
-    private OrganizationLocal organization;
+    private OrganizationBean organization;
 
     public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;

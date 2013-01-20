@@ -10,27 +10,25 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.entity.ProviderLocation;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.ProviderLocationLocal;
 import org.openelis.meta.ProviderMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ProviderLocationBean implements ProviderLocationLocal {
+public class ProviderLocationBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                manager;
 
     @EJB
-    private AddressLocal                 addressBean;
+    private AddressBean                 addressBean;
 
     @SuppressWarnings("unchecked")
     public ArrayList<ProviderLocationDO> fetchByProviderId(Integer id) throws Exception {

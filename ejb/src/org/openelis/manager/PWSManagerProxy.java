@@ -25,14 +25,14 @@
 */
 package org.openelis.manager;
 
+import org.openelis.bean.PWSBean;
 import org.openelis.domain.PWSDO;
-import org.openelis.local.PWSLocal;
 import org.openelis.utils.EJBFactory;
 
 public class PWSManagerProxy {
 
     public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        PWSLocal pl;
+        PWSBean pl;
         PWSDO data;
         PWSManager m;
         

@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.OrderContainerBean;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderContainerLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderContainerManagerProxy {
@@ -48,7 +48,7 @@ public class OrderContainerManagerProxy {
     }
 
     public OrderContainerManager add(OrderContainerManager man) throws Exception {
-        OrderContainerLocal cl;
+        OrderContainerBean cl;
         OrderContainerDO data;
 
         cl = EJBFactory.getOrderContainer();
@@ -62,7 +62,7 @@ public class OrderContainerManagerProxy {
     }
 
     public OrderContainerManager update(OrderContainerManager man) throws Exception {
-        OrderContainerLocal cl;
+        OrderContainerBean cl;
         OrderContainerDO data;
 
         cl = EJBFactory.getOrderContainer();
@@ -85,7 +85,7 @@ public class OrderContainerManagerProxy {
     
     public void validate(OrderContainerManager man) throws Exception {
         ValidationErrorsList list;
-        OrderContainerLocal cl;
+        OrderContainerBean cl;
 
         cl = EJBFactory.getOrderContainer();
         list = new ValidationErrorsList();

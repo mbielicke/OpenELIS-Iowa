@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -58,40 +58,32 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.InventoryItemLocal;
-import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.InventoryReceiptLocal;
-import org.openelis.local.InventoryXPutLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.local.OrganizationLocal;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
-import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-public class InventoryReceiptBean implements InventoryReceiptRemote,
-                                 InventoryReceiptLocal {
+public class InventoryReceiptBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                     manager;
 
     @EJB
-    private LockLocal                         lock;
+    private LockBean                         lock;
+    
+    @EJB
+    private OrganizationBean                  organization;
 
     @EJB
-    private OrganizationLocal                 organization;
+    private InventoryItemBean                inventoryItem;
 
     @EJB
-    private InventoryItemLocal                inventoryItem;
+    private InventoryLocationBean            inventoryLocation;
 
     @EJB
-    private InventoryLocationLocal            inventoryLocation;
-
-    @EJB
-    private InventoryXPutLocal                inventoryXPut;
+    private InventoryXPutBean                inventoryXPut;
 
     private static final InventoryReceiptMeta meta = new InventoryReceiptMeta();
 

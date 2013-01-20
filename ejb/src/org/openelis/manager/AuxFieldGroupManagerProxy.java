@@ -25,15 +25,15 @@
 */
 package org.openelis.manager;
 
+import org.openelis.bean.AuxFieldGroupBean;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxFieldGroupLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AuxFieldGroupManagerProxy {
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
-        AuxFieldGroupLocal l;
+        AuxFieldGroupBean l;
         AuxFieldGroupDO data;
         AuxFieldGroupManager m;
 
@@ -57,7 +57,7 @@ public class AuxFieldGroupManagerProxy {
     
     public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {
         Integer id;
-        AuxFieldGroupLocal l;
+        AuxFieldGroupBean l;
 
         l = EJBFactory.getAuxFieldGroup();
         l.add(man.getGroup());
@@ -73,7 +73,7 @@ public class AuxFieldGroupManagerProxy {
     
     public AuxFieldGroupManager update(AuxFieldGroupManager man) throws Exception {
         Integer id;
-        AuxFieldGroupLocal l;
+        AuxFieldGroupBean l;
 
         l = EJBFactory.getAuxFieldGroup();
         l.update(man.getGroup());

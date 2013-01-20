@@ -11,34 +11,31 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.SampleProjectLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.remote.FinalReportWebRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-public class FinalReportWebBean implements FinalReportWebRemote {
+public class FinalReportWebBean {
+    @EJB
+    private SessionCacheBean          session;
 
     @EJB
-    private SessionCacheLocal          session;
+    private SampleProjectBean         sampleProject;
 
     @EJB
-    private SampleProjectLocal         sampleProject;
-
+    private ProjectBean                project;
+    
     @EJB
-    private ProjectLocal               project;
-
+    private UserCacheBean              userCache;
+    
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
 
@@ -59,10 +56,9 @@ public class FinalReportWebBean implements FinalReportWebRemote {
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
          */
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_final_environmental")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_final_environmental")
+                          .getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds and projIds are empty or not.
@@ -168,10 +164,9 @@ public class FinalReportWebBean implements FinalReportWebRemote {
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
          */
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_final_privatewell")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_final_privatewell")
+                          .getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds is empty or not.
@@ -264,10 +259,9 @@ public class FinalReportWebBean implements FinalReportWebRemote {
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
          */
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_final_sdwis")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_final_sdwis")
+                          .getClause();
 
         if (clause == null)
             return new ArrayList<FinalReportWebVO>();
@@ -350,10 +344,9 @@ public class FinalReportWebBean implements FinalReportWebRemote {
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {
         String clause;
 
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_final_environmental")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_final_environmental")
+                          .getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not. We only return the
@@ -368,10 +361,9 @@ public class FinalReportWebBean implements FinalReportWebRemote {
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {
         String clause;
 
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_final_privatewell")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_final_privatewell")
+                          .getClause();
 
         /*
          * if clause is null, then the previous method returns an empty HashMap,
@@ -386,10 +378,9 @@ public class FinalReportWebBean implements FinalReportWebRemote {
     public ArrayList<IdNameVO> getSDWISProjectList() throws Exception {
         String clause;
 
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_final_sdwis")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_final_sdwis")
+                          .getClause();
 
         /*
          * if clause is null, then the previous method returns an empty HashMap,

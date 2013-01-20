@@ -39,7 +39,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
@@ -51,19 +51,18 @@ import org.openelis.entity.AuxData;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.remote.AuxDataRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
-
+public class AuxDataBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager        manager;
 
     @EJB
-    private DictionaryCacheLocal dictionaryCache;
+    private DictionaryCacheBean dictionaryCache;
+    
+    @EJB
+    private DictionaryBean      dictionary;
 
     private static final Logger  log = Logger.getLogger("openelis");
 

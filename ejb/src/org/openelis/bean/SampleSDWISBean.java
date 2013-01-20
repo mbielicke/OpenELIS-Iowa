@@ -35,8 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.PWSDO;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.entity.SampleSDWIS;
@@ -45,20 +44,18 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.PWSLocal;
-import org.openelis.local.SampleSDWISLocal;
 import org.openelis.meta.SampleMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleSDWISBean implements SampleSDWISLocal {
+public class SampleSDWISBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     @EJB
-    private PWSLocal pws;
+    private PWSBean pws;
     
     public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;

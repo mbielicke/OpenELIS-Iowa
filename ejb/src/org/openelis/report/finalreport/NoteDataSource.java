@@ -31,24 +31,25 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
 
+import org.openelis.bean.AnalysisQAEventBean;
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.NoteBean;
+import org.openelis.bean.SampleQAEventBean;
+import org.openelis.bean.TestTrailerBean;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.NoteLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.TestTrailerLocal;
 import org.openelis.utils.EJBFactory;
 
 public class NoteDataSource implements JRRewindableDataSource {
 
-	private NoteLocal nl;
-    private SampleQAEventLocal sl;
-    private AnalysisQAEventLocal al;
-    private TestTrailerLocal tl;
+	private NoteBean nl;
+    private SampleQAEventBean sl;
+    private AnalysisQAEventBean al;
+    private TestTrailerBean tl;
     private String qas, notes, trailer;
     private boolean aOverride, sOverride, hasNext;
 	

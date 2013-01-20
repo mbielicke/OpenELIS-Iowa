@@ -27,9 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.StorageBean;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.StorageLocal;
 import org.openelis.utils.EJBFactory;
 
 public class StorageManagerProxy {
@@ -48,7 +48,7 @@ public class StorageManagerProxy {
     }
 
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {
-        StorageLocal sl;
+        StorageBean sl;
         ArrayList<StorageViewDO> list;
         StorageManager sm;
 
@@ -73,7 +73,7 @@ public class StorageManagerProxy {
 
     public StorageManager add(StorageManager man) throws Exception {
         StorageViewDO data;
-        StorageLocal l;
+        StorageBean l;
         
         l = EJBFactory.getStorage();
         for (int i = 0; i < man.count(); i++ ) {
@@ -96,7 +96,7 @@ public class StorageManagerProxy {
 
     public StorageManager update(StorageManager man) throws Exception {
         StorageViewDO data;
-        StorageLocal l;
+        StorageBean l;
         
         l = EJBFactory.getStorage();
         for (int i = 0; i < man.count(); i++ ) {
