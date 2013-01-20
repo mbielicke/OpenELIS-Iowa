@@ -28,7 +28,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.domain.TurnAroundReportViewVO.PlotValue;
@@ -40,39 +40,32 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.TurnaroundStatisticReportRemote;
 import org.openelis.report.turnaroundstatistic.TurnaroundDataSource;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportRemote {
+public class TurnaroundStatisticReportBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
     
     @EJB
-    private SessionCacheLocal       session;
+    private SessionCacheBean       session;
 
     @EJB
-    private DictionaryCacheLocal    dictionaryCache;
+    private DictionaryCacheBean    dictionaryCache;
     
     @EJB
-    private SampleQAEventLocal      sampleQAEvent;
+    private SampleQAEventBean      sampleQAEvent;
 
     @EJB
-    private AnalysisQAEventLocal    analysisQAEvent;
+    private AnalysisQAEventBean    analysisQAEvent;
 
     @EJB
-    private UserCacheLocal          userCache;
+    private UserCacheBean          userCache;
 
     private static final SampleMeta meta = new SampleMeta();
 
@@ -617,7 +610,7 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
         userName = userCache.getName();
         
         jparam = new HashMap<String, Object>();
-        jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
+        jparam.put("LOGNAME", userCache.getName());
         jparam.put("SUBREPORT_DIR", dir);
         jparam.put("FROM_DATE", fromDate);
         jparam.put("TO_DATE", toDate);

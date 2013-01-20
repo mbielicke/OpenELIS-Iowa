@@ -34,7 +34,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OrderOrganizationDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.entity.OrderOrganization;
@@ -42,13 +42,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderOrganizationLocal;
 import org.openelis.meta.OrderMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderOrganizationBean implements OrderOrganizationLocal {
+public class OrderOrganizationBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    

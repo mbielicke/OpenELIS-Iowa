@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.TestReflexBean;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultViewDO;
@@ -36,7 +38,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestReflexLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -55,7 +56,7 @@ public class TestReflexManagerProxy {
     public TestReflexManager add(TestReflexManager man,
                                  HashMap<Integer,Integer> analyteMap,
                                  HashMap<Integer,Integer> resultMap) throws Exception {
-        TestReflexLocal tl;
+        TestReflexBean tl;
         TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
@@ -83,7 +84,7 @@ public class TestReflexManagerProxy {
     public TestReflexManager update(TestReflexManager man,
                                     HashMap<Integer,Integer> analyteMap,
                                     HashMap<Integer,Integer> resultMap) throws Exception {
-        TestReflexLocal tl;
+        TestReflexBean tl;
         TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
@@ -127,7 +128,7 @@ public class TestReflexManagerProxy {
         String fieldName;
         ArrayList<TestReflexViewDO> testReflexDOList;
         ValidationErrorsList list;
-        TestReflexLocal rl;
+        TestReflexBean rl;
         Integer testId, anaId, resultId, typeId;
 
         fieldName = null;

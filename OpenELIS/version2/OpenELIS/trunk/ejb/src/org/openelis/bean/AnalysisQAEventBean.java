@@ -34,18 +34,17 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.entity.AnalysisQaevent;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AnalysisQAEventLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class AnalysisQAEventBean implements AnalysisQAEventLocal {
+public class AnalysisQAEventBean  {//implements AnalysisQAEventLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

@@ -35,7 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.entity.OrderRecurrence;
@@ -45,13 +45,12 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderRecurrenceLocal;
 import org.openelis.meta.OrderMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderRecurrenceBean implements OrderRecurrenceLocal {
+public class OrderRecurrenceBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;

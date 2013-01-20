@@ -35,24 +35,22 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.SampleEnvironmentalLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
+public class SampleEnvironmentalBean  {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
     @EJB
-    private AddressLocal  addressBean;
+    private AddressBean  addressBean;
 
     public SampleEnvironmentalDO fetchBySampleId(Integer id) throws Exception {
         Query query;

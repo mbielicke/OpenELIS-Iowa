@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.ToDoWorksheetVO;
@@ -49,19 +49,17 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.meta.WorksheetCompletionMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
+public class WorksheetAnalysisBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
     @EJB
-    private UserCacheLocal       userCache;
+    private UserCacheBean       userCache;
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception {

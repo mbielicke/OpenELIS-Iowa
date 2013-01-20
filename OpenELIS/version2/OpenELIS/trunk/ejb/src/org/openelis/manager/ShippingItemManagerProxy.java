@@ -27,11 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.ShippingItemBean;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ShippingItemLocal;
 import org.openelis.utils.EJBFactory;
 
 public class ShippingItemManagerProxy {
@@ -49,7 +49,7 @@ public class ShippingItemManagerProxy {
     }
     
     public ShippingItemManager add(ShippingItemManager man) throws Exception {
-        ShippingItemLocal tl; 
+        ShippingItemBean tl; 
         ShippingItemDO item;
     
         tl = EJBFactory.getShippingItem();
@@ -65,7 +65,7 @@ public class ShippingItemManagerProxy {
     
     public ShippingItemManager update(ShippingItemManager man) throws Exception {
         int i;
-        ShippingItemLocal tl; 
+        ShippingItemBean tl; 
         ShippingItemDO item;
     
         tl = EJBFactory.getShippingItem();
@@ -90,7 +90,7 @@ public class ShippingItemManagerProxy {
     public void validate(ShippingItemManager man) throws Exception {
         int count;
         ValidationErrorsList list;
-        ShippingItemLocal il;
+        ShippingItemBean il;
         
         list = new ValidationErrorsList();
         il = EJBFactory.getShippingItem();

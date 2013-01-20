@@ -58,8 +58,8 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
-import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
@@ -92,27 +92,7 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.AnalysisUserLocal;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.CategoryCacheLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.PWSLocal;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.ResultLocal;
-import org.openelis.local.SampleEnvironmentalLocal;
-import org.openelis.local.SampleItemLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleOrganizationLocal;
-import org.openelis.local.SamplePrivateWellLocal;
-import org.openelis.local.SampleProjectLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SampleSDWISLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.remote.DataViewRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.util.UTFResource;
 import org.openelis.utils.EJBFactory;
@@ -120,64 +100,67 @@ import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class DataViewBean implements DataViewRemote {
+public class DataViewBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                   manager;
 
     @EJB
-    private SessionCacheLocal               session;
+    private SessionCacheBean               session;
 
     @EJB
-    private ProjectLocal                    project;
+    private ProjectBean                     project;
 
     @EJB
-    private SampleProjectLocal              sampleProject;
+    private SampleProjectBean              sampleProject;
 
     @EJB
-    private SampleQAEventLocal              sampleQaEvent;
+    private SampleQAEventBean              sampleQaEvent;
 
     @EJB
-    private AnalysisQAEventLocal            analysisQaEvent;
+    private AnalysisQAEventBean             analysisQaEvent;
 
     @EJB
-    private ResultLocal                     result;
+    private ResultBean                      result;
 
     @EJB
-    private AuxDataLocal                    auxData;
+    private AuxDataBean                     auxData;
 
     @EJB
-    private SampleLocal                     sample;
+    private DictionaryBean                  dictionary;
+    
+    @EJB
+    private SampleBean                      sample;
 
     @EJB
-    private SampleOrganizationLocal         sampleOrganization;
+    private SampleOrganizationBean          sampleOrganization;
 
     @EJB
-    private SampleItemLocal                 sampleItem;
+    private SampleItemBean                  sampleItem;
 
     @EJB
-    private AnalysisLocal                   analysis;
+    private AnalysisBean                    analysis;
 
     @EJB
-    private AnalysisUserLocal               analysisUser;
+    private AnalysisUserBean                analysisUser;
 
     @EJB
-    private SampleEnvironmentalLocal        sampleEnvironmental;
+    private SampleEnvironmentalBean         sampleEnvironmental;
 
     @EJB
-    private SamplePrivateWellLocal          samplePrivateWell;
+    private SamplePrivateWellBean           samplePrivateWell;
 
     @EJB
-    private SampleSDWISLocal                sampleSDWIS;
+    private SampleSDWISBean                sampleSDWIS;
 
     @EJB
-    private PWSLocal                        pws;
+    private PWSBean                         pws;
 
     @EJB
-    private DictionaryCacheLocal            dictionaryCache;
+    private DictionaryCacheBean             dictionaryCache;
 
     @EJB
-    private UserCacheLocal                  userCache;
+    private UserCacheBean                   userCache;
 
     private static final SampleWebMeta      meta = new SampleWebMeta();
 
@@ -192,7 +175,7 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<DictionaryDO> list;
         CategoryCacheVO cat;
         String locale;
-        CategoryCacheLocal ccl;
+        CategoryCacheBean ccl;
 
         ccl = EJBFactory.getCategoryCache();
         try {
@@ -227,7 +210,7 @@ public class DataViewBean implements DataViewRemote {
         try {
             if (resource == null) {
                 try {
-                    locale = EJBFactory.getUserCache().getLocale();
+                    locale = userCache.getLocale();
                 } catch (Exception e) {
                     locale = "en";
                 }
@@ -243,10 +226,9 @@ public class DataViewBean implements DataViewRemote {
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
         String clause;
 
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_dataview_environmental")
-                           .getClause();
+        clause = userCache.getPermission()
+                          .getModule("w_dataview_environmental")
+                          .getClause();
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not. We only return the
@@ -1717,7 +1699,7 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<ResultDataViewVO> resddList;
         HashMap<Integer, TestAnalyteDataViewVO> anaMap;
         HashMap<String, String> resMap;
-        DictionaryCacheLocal dcl;
+        DictionaryCacheBean dcl;
 
         if (resList == null)
             return null;
@@ -1727,7 +1709,6 @@ public class DataViewBean implements DataViewRemote {
         anaddList = new ArrayList<TestAnalyteDataViewVO>();
         anaMap = new HashMap<Integer, TestAnalyteDataViewVO>();
         resMap = null;
-        dcl = EJBFactory.getDictionaryCache();
         /*
          * a TestAnalyteDataViewVO is created for an analyte only once, no
          * matter how many times it appears in the list of ResultViewDOs
@@ -1753,7 +1734,7 @@ public class DataViewBean implements DataViewRemote {
             value = res.getValue();
             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(value);
-                value = dcl.getById(dictId).getEntry();
+                value = dictionaryCache.getById(dictId).getEntry();
             }
 
             /*
@@ -1781,7 +1762,6 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<AuxDataDataViewVO> resddList;
         HashMap<Integer, AuxFieldDataViewVO> anaMap;
         HashMap<String, String> resMap;
-        DictionaryCacheLocal dcl;
 
         if (valList == null)
             return null;
@@ -1791,7 +1771,7 @@ public class DataViewBean implements DataViewRemote {
         anaddList = new ArrayList<AuxFieldDataViewVO>();
         anaMap = new HashMap<Integer, AuxFieldDataViewVO>();
         resMap = null;
-        dcl = EJBFactory.getDictionaryCache();
+
         /*
          * an AuxFieldDataViewVO is created for an analyte only once, no matter
          * how many times it appears in the list of AuxDataViewDOs
@@ -1818,7 +1798,7 @@ public class DataViewBean implements DataViewRemote {
 
             if (Constants.dictionary().AUX_DICTIONARY.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(value);
-                value = dcl.getById(dictId).getEntry();
+                value = dictionaryCache.getById(dictId).getEntry();
             }
 
             /*

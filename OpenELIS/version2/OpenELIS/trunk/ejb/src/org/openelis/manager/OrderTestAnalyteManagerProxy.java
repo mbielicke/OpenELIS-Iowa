@@ -30,11 +30,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openelis.domain.Constants;
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.OrderTestAnalyteBean;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderTestAnalyteLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderTestAnalyteManagerProxy {
@@ -86,7 +87,7 @@ public class OrderTestAnalyteManagerProxy {
     
     public OrderTestAnalyteManager add(OrderTestAnalyteManager man) throws Exception {
         int i;
-        OrderTestAnalyteLocal tal;
+        OrderTestAnalyteBean tal;
         OrderTestAnalyteViewDO data;
 
         tal = EJBFactory.getOrderTestAnalyte();
@@ -102,7 +103,7 @@ public class OrderTestAnalyteManagerProxy {
 
     public OrderTestAnalyteManager update(OrderTestAnalyteManager man) throws Exception {
         int i;
-        OrderTestAnalyteLocal tal;
+        OrderTestAnalyteBean tal;
         OrderTestAnalyteViewDO data;
 
         tal = EJBFactory.getOrderTestAnalyte();
@@ -125,7 +126,7 @@ public class OrderTestAnalyteManagerProxy {
     public void validate(OrderTestAnalyteManager man, OrderTestViewDO test, int index) throws Exception {
         ValidationErrorsList list;
         OrderTestAnalyteViewDO data;        
-        OrderTestAnalyteLocal al;
+        OrderTestAnalyteBean al;
         
         list = new ValidationErrorsList();
         al = EJBFactory.getOrderTestAnalyte();

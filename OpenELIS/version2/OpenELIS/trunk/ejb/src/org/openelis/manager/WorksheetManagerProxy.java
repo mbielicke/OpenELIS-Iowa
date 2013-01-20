@@ -27,13 +27,14 @@ package org.openelis.manager;
 
 import java.util.Iterator;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.LockBean;
+import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.Constants;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.LockLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetManagerProxy {
@@ -105,7 +106,7 @@ public class WorksheetManagerProxy {
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         Integer id;
         Iterator<SampleManager> iter;
-        LockLocal lock;
+        LockBean lock;
         SampleManager sManager;
 
         EJBFactory.getWorksheet().add(manager.getWorksheet());
@@ -143,10 +144,10 @@ public class WorksheetManagerProxy {
         int sManIndex, sManCount;
         Integer id;
         Iterator<SampleManager> iter;
-        LockLocal lock;
+        LockBean lock;
         ReportStatus status;
         SampleManager sManager;
-        SessionCacheLocal session;
+        SessionCacheBean session;
 
         session = EJBFactory.getSessionCache();
 

@@ -36,7 +36,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderDO;
@@ -49,22 +50,19 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.OrderLocal;
-import org.openelis.local.OrganizationLocal;
 import org.openelis.meta.OrderMeta;
-import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderBean implements OrderRemote, OrderLocal {
+public class OrderBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
     @EJB
-    private  OrganizationLocal       organization;
+    private  OrganizationBean       organization;
 
     private static final OrderMeta meta = new OrderMeta();
     

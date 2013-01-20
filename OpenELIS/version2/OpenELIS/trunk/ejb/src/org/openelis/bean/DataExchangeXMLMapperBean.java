@@ -38,7 +38,7 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
@@ -76,18 +76,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.DataExchangeXMLMapperLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.ExchangeExternalTermLocal;
-import org.openelis.local.MethodLocal;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.PWSLocal;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.QaeventLocal;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.TestTrailerLocal;
-import org.openelis.local.UserCacheLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -113,40 +101,39 @@ import org.w3c.dom.Node;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
+public class DataExchangeXMLMapperBean  {
+    @EJB
+    private UserCacheBean             systemUserCache;
 
     @EJB
-    private UserCacheLocal            systemUserCache;
+    private DictionaryCacheBean      dictionaryCache;
+    
+    @EJB
+    private MethodBean               method;
 
     @EJB
-    private DictionaryCacheLocal      dictionaryCache;
+    private ProjectBean               project;
 
     @EJB
-    private MethodLocal               method;
+    private OrganizationBean          organization;
 
     @EJB
-    private ProjectLocal              project;
+    private PWSBean                   pws;
 
     @EJB
-    private OrganizationLocal         organization;
+    private QaEventBean               qaevent;
 
     @EJB
-    private PWSLocal                  pws;
+    private AnalyteBean               analyte;
 
     @EJB
-    private QaeventLocal              qaevent;
+    private ExchangeExternalTermBean  exchangeExternalTerm;
 
     @EJB
-    private AnalyteLocal              analyte;
+    private TestTrailerBean           testTrailer;
 
     @EJB
-    private ExchangeExternalTermLocal exchangeExternalTerm;
-
-    @EJB
-    private TestTrailerLocal          testTrailer;
-
-    @EJB
-    private SectionCacheLocal         sectionCache;
+    private SectionCacheBean          sectionCache;
 
 
     private static SimpleDateFormat   dateFormat, timeFormat;

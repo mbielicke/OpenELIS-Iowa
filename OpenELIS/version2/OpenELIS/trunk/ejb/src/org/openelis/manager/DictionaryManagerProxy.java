@@ -27,13 +27,13 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -53,7 +53,7 @@ public class DictionaryManagerProxy {
 
     public DictionaryManager add(DictionaryManager man) throws Exception {
         DictionaryViewDO data;
-        DictionaryLocal dl;
+        DictionaryBean dl;
 
         dl = EJBFactory.getDictionary();
 
@@ -70,7 +70,7 @@ public class DictionaryManagerProxy {
     public DictionaryManager update(DictionaryManager man) throws Exception {
         int i;
         DictionaryViewDO data;
-        DictionaryLocal dl;
+        DictionaryBean dl;
 
         dl = EJBFactory.getDictionary();
 
@@ -120,7 +120,7 @@ public class DictionaryManagerProxy {
         ArrayList<String> systemNames, entries;
         DictionaryViewDO data;
         DictionaryDO dictionary;
-        DictionaryLocal dl;
+        DictionaryBean dl;
 
         systemNames = new ArrayList<String>();
         entries = new ArrayList<String>();

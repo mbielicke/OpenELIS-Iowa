@@ -34,7 +34,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.CompleteReleaseVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
@@ -45,13 +45,12 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.CompleteReleaseMeta;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.CompleteReleaseRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class CompleteReleaseBean implements CompleteReleaseRemote {
+public class CompleteReleaseBean {
 
 	@PersistenceContext(unitName = "openelis")
 	private EntityManager manager;

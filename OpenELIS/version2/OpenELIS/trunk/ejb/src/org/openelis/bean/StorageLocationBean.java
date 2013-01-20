@@ -35,7 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.domain.StorageLocationViewDO;
@@ -47,15 +47,13 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.StorageLocationLocal;
 import org.openelis.meta.StorageLocationMeta;
-import org.openelis.remote.StorageLocationRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class StorageLocationBean implements StorageLocationRemote, StorageLocationLocal {
+public class StorageLocationBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                       manager;

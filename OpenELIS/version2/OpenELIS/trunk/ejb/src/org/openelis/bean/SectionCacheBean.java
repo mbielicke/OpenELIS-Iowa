@@ -27,16 +27,15 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.remote.SectionCacheRemote;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -46,11 +45,12 @@ import org.openelis.utils.EJBFactory;
 @SecurityDomain("openelis")
 @Singleton
 
-public class SectionCacheBean implements SectionCacheLocal, SectionCacheRemote {
+public class SectionCacheBean {
 
     private Cache        cache;
 
-    public SectionCacheBean() {
+    @PostConstruct
+    public void init() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();

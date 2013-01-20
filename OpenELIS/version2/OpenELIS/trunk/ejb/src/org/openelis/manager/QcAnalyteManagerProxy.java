@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.QcAnalyteBean;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.QcAnalyteLocal;
 import org.openelis.utils.EJBFactory;
 
 public class QcAnalyteManagerProxy {
@@ -48,7 +48,7 @@ public class QcAnalyteManagerProxy {
     }
 
     public QcAnalyteManager add(QcAnalyteManager man) throws Exception {
-        QcAnalyteLocal cl;
+        QcAnalyteBean cl;
         QcAnalyteViewDO analyte;
 
         cl = EJBFactory.getQcAnalyte();
@@ -63,7 +63,7 @@ public class QcAnalyteManagerProxy {
     }
 
     public QcAnalyteManager update(QcAnalyteManager man) throws Exception {
-        QcAnalyteLocal cl;
+        QcAnalyteBean cl;
         QcAnalyteViewDO analyte;
 
         cl = EJBFactory.getQcAnalyte();
@@ -86,7 +86,7 @@ public class QcAnalyteManagerProxy {
 
     public void validate(QcAnalyteManager man) throws Exception {
         ValidationErrorsList list;
-        QcAnalyteLocal cl;
+        QcAnalyteBean cl;
 
         cl = EJBFactory.getQcAnalyte();
         list = new ValidationErrorsList();

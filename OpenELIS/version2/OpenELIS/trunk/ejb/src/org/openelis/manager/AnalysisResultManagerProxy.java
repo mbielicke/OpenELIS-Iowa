@@ -28,6 +28,9 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.DictionaryCacheBean;
+import org.openelis.bean.ResultBean;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.Constants;
@@ -38,8 +41,6 @@ import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utils.EJBFactory;
@@ -143,7 +144,7 @@ public class AnalysisResultManagerProxy {
         ArrayList<ArrayList<ResultViewDO>> grid;
         ResultViewDO data;
         int i, j, so;
-        ResultLocal l;
+        ResultBean l;
 
         grid = man.getResults();
         so = 0;
@@ -168,7 +169,7 @@ public class AnalysisResultManagerProxy {
         ArrayList<ArrayList<ResultViewDO>> grid;
         ResultViewDO data;
         int i, j, so;
-        ResultLocal l;
+        ResultBean l;
 
         grid = man.getResults();
         l = EJBFactory.getResult();
@@ -350,7 +351,7 @@ public class AnalysisResultManagerProxy {
                                  ArrayList<ArrayList<ResultViewDO>> newGrid) throws Exception {
         String val;
         ResultViewDO rnew, rold;
-        DictionaryCacheLocal dcl;
+        DictionaryCacheBean dcl;
         
         /*
          * we go through each row in the new test's grid of analytes and find the 

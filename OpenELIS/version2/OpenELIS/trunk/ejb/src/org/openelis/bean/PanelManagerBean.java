@@ -33,26 +33,26 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
-import org.openelis.remote.PanelManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class PanelManagerBean implements PanelManagerRemote {
+public class PanelManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
 
+	@EJB
+    private UserCacheBean  userCache;
+    
     public PanelManager fetchById(Integer id) throws Exception {
         return PanelManager.fetchById(id);
     }
@@ -150,7 +150,7 @@ public class PanelManagerBean implements PanelManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("panel", flag);
+        userCache.applyPermission("panel", flag);
     }
 
 }

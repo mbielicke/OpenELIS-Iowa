@@ -27,14 +27,14 @@ package org.openelis.bean;
 
 import javax.ejb.Stateless;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.manager.AnalysisResultManager;
-import org.openelis.remote.ResultManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ResultManagerBean implements ResultManagerRemote {
+public class ResultManagerBean { //implements ResultManagerRemote {
+    
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         return AnalysisResultManager.fetchByAnalysisIdForDisplay(analysisId);
     }

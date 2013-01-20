@@ -35,7 +35,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -44,13 +44,12 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InstrumentLogLocal;
 import org.openelis.meta.InstrumentMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InstrumentLogBean implements InstrumentLogLocal {
+public class InstrumentLogBean {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;

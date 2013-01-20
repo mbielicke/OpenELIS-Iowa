@@ -28,16 +28,16 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.bean.InventoryXUseBean;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryXUseLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderFillManagerProxy {
 
     public OrderFillManager fetchByOrderId(Integer id) throws Exception {
-        InventoryXUseLocal ul;
+        InventoryXUseBean ul;
         OrderFillManager m;
         ArrayList<InventoryXUseViewDO> list;
 
@@ -51,7 +51,7 @@ public class OrderFillManagerProxy {
     }
 
     public OrderFillManager add(OrderFillManager man) throws Exception {
-        InventoryXUseLocal ul;
+        InventoryXUseBean ul;
         InventoryXUseViewDO fill; 
 
         ul = EJBFactory.getInventoryXUse();
@@ -64,7 +64,7 @@ public class OrderFillManagerProxy {
     }
 
     public OrderFillManager update(OrderFillManager man) throws Exception {
-        InventoryXUseLocal ul;
+        InventoryXUseBean ul;
         InventoryXUseViewDO fill;        
 
         ul = EJBFactory.getInventoryXUse();

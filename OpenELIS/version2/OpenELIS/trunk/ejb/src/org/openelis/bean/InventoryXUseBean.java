@@ -34,7 +34,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.InventoryXUseDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
@@ -44,12 +44,11 @@ import org.openelis.entity.InventoryXUse;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.InventoryXUseLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryXUseBean implements InventoryXUseLocal {
+public class InventoryXUseBean {
 
     @PersistenceContext(unitName = "openelis")
     EntityManager          manager;

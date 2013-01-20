@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotViewDO;
@@ -49,22 +49,19 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.QcLocal;
-import org.openelis.local.QcLotLocal;
 import org.openelis.meta.QcMeta;
-import org.openelis.remote.QcRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class QcBean implements QcRemote, QcLocal {
+public class QcBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
 
     @EJB
-    private QcLotLocal          qcLot;
+    private QcLotBean           qcLot;
 
     private static final QcMeta meta = new QcMeta();
 

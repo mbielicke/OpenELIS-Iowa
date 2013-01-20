@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.OrganizationParameterBean;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrganizationParameterLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrganizationParameterManagerProxy {
@@ -48,7 +48,7 @@ public class OrganizationParameterManagerProxy {
     }
 
     public OrganizationParameterManager add(OrganizationParameterManager man) throws Exception {
-        OrganizationParameterLocal cl;
+        OrganizationParameterBean cl;
         OrganizationParameterDO parameter;
 
         cl = EJBFactory.getOrganizationParameter();
@@ -62,7 +62,7 @@ public class OrganizationParameterManagerProxy {
     }
 
     public OrganizationParameterManager update(OrganizationParameterManager man) throws Exception {
-        OrganizationParameterLocal cl;
+        OrganizationParameterBean cl;
         OrganizationParameterDO parameter;
 
         cl = EJBFactory.getOrganizationParameter();
@@ -85,7 +85,7 @@ public class OrganizationParameterManagerProxy {
     
     public void validate(OrganizationParameterManager man) throws Exception {
         ValidationErrorsList list;
-        OrganizationParameterLocal cl;
+        OrganizationParameterBean cl;
 
         cl = EJBFactory.getOrganizationParameter();
         list = new ValidationErrorsList();

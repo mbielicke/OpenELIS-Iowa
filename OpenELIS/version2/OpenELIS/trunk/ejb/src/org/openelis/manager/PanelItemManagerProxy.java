@@ -27,11 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.PanelItemBean;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.PanelItemLocal;
 import org.openelis.utils.EJBFactory;
 
 public class PanelItemManagerProxy {
@@ -49,7 +49,7 @@ public class PanelItemManagerProxy {
     } 
     
     public PanelItemManager add(PanelItemManager man) throws Exception {
-        PanelItemLocal pl;
+        PanelItemBean pl;
         PanelItemDO data;
         
         pl = EJBFactory.getPanelItem();
@@ -64,7 +64,7 @@ public class PanelItemManagerProxy {
     }
     
     public PanelItemManager update(PanelItemManager man) throws Exception {
-        PanelItemLocal pl;
+        PanelItemBean pl;
         PanelItemDO data;
         
         pl = EJBFactory.getPanelItem();
@@ -87,7 +87,7 @@ public class PanelItemManagerProxy {
     }
     
     public PanelItemManager delete(PanelItemManager man) throws Exception {
-        PanelItemLocal pl;
+        PanelItemBean pl;
         PanelItemDO data;
         
         pl = EJBFactory.getPanelItem();
@@ -106,7 +106,7 @@ public class PanelItemManagerProxy {
     
     public void validate(PanelItemManager man) throws Exception {        
         ValidationErrorsList list;
-        PanelItemLocal pl;
+        PanelItemBean pl;
         int count;
         
         pl = EJBFactory.getPanelItem();

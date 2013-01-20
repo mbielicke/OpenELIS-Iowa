@@ -34,20 +34,19 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.entity.TestWorksheetAnalyte;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
+public class TestWorksheetAnalyteBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;

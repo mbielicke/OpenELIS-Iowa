@@ -31,33 +31,23 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.FinalReportWebVO;
-import org.openelis.domain.OptionListItem;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.FinalReportLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.local.OrganizationParameterLocal;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.remote.FinalReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.OrganizationPrintDataSource;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -66,28 +56,31 @@ import org.openelis.utils.ReportUtil;
           type = DataSource.class,
           authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
           mappedName = "java:/OpenELISDS")
-public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
+public class FinalReportBean {
 
     @EJB
-    private SessionCacheLocal          session;
+    private SessionCacheBean          session;
+    
+    @EJB
+    private SampleBean                 sample;
 
     @EJB
-    private SampleLocal                sample;
+    private LockBean                  lock;
 
     @EJB
-    private LockLocal                  lock;
+    private AnalysisBean               analysis;
 
     @EJB
-    private AnalysisLocal              analysis;
+    private PrinterCacheBean           printer;
 
     @EJB
-    private PrinterCacheLocal          printer;
+    private AuxDataBean                auxData;
 
     @EJB
-    private AuxDataLocal               auxData;
-
+    private OrganizationParameterBean organizationParameter;
+    
     @EJB
-    private OrganizationParameterLocal organizationParameter;
+    private UserCacheBean              userCache;
 
     @Resource
     private SessionContext             ctx;
@@ -767,7 +760,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             jparam = new HashMap<String, Object>();
             jparam.put("REPORT_TYPE", reportType);
             jparam.put("SUBREPORT_DIR", dir);
-            jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
+            jparam.put("LOGNAME", userCache.getName());
             jparam.put("CONNECTION", con);
 
             /*
@@ -796,7 +789,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                     faxEmail = null;
                 }
             } else {
-                faxOwner = EJBFactory.getUserCache().getSystemUser().getLoginName();
+                faxOwner = userCache.getSystemUser().getLoginName();
                 faxEmail = faxOwner;
             }
             for (OrganizationPrint o : orgPrintList) {

@@ -36,7 +36,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationViewDO;
@@ -50,22 +51,19 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.ShippingLocal;
 import org.openelis.meta.ShippingMeta;
-import org.openelis.remote.ShippingRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ShippingBean implements ShippingRemote, ShippingLocal{
+public class ShippingBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager             manager;
 
     @EJB
-    private OrganizationLocal         organizationBean;   
+    private OrganizationBean         organizationBean;   
 
     private static final ShippingMeta meta = new ShippingMeta();
 

@@ -36,7 +36,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.NoResultException;
 import javax.transaction.UserTransaction;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
@@ -45,10 +45,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.LockLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleManagerLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleItemManager;
@@ -56,25 +52,26 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.SampleManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class SampleManagerBean implements SampleManagerRemote, SampleManagerLocal {
+public class SampleManagerBean {
 
     @Resource
     private SessionContext      ctx;
 
     @EJB
-    private LockLocal           lock;
+    private LockBean           lock;
 
     @EJB
-    private SystemVariableLocal systemVariable;
+    private SystemVariableBean systemVariable;
 
     @EJB
-    private SampleLocal         sample;
+    private SampleBean         sample;
+    
+    @EJB
+    private UserCacheBean      userCache;
 
     public SampleManager fetchById(Integer id) throws Exception {
         return SampleManager.fetchById(id);
@@ -258,6 +255,6 @@ public class SampleManagerBean implements SampleManagerRemote, SampleManagerLoca
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("sample", flag);
+        userCache.applyPermission("sample", flag);
     }
 }

@@ -27,17 +27,16 @@ package org.openelis.bean;
 
 import javax.ejb.Stateless;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
-import org.openelis.remote.PWSManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class PWSManagerBean implements PWSManagerRemote {
+public class PWSManagerBean {
 
     public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {        
         return PWSManager.fetchByTinwsysIsNumber(tinwsysIsNumber);

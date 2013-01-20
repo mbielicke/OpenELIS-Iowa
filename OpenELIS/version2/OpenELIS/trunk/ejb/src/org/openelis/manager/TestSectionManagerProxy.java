@@ -29,20 +29,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.domain.Constants;
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.TestSectionBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestSectionLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
 public class TestSectionManagerProxy {
 
     public TestSectionManager add(TestSectionManager man) throws Exception {
-        TestSectionLocal tl;
+        TestSectionBean tl;
         TestSectionViewDO data;
 
         tl = EJBFactory.getTestSection();
@@ -58,7 +59,7 @@ public class TestSectionManagerProxy {
     }
 
     public TestSectionManager update(TestSectionManager man) throws Exception {
-        TestSectionLocal tl;
+        TestSectionBean tl;
         TestSectionViewDO data;
 
         tl = EJBFactory.getTestSection();
@@ -83,7 +84,7 @@ public class TestSectionManagerProxy {
         ValidationErrorsList list;
         List<TestSectionViewDO> sectionList;
         TestSectionViewDO data;
-        TestSectionLocal sl;
+        TestSectionBean sl;
         Integer flagId, sectId;
         List<Integer> idList;
         int numDef, numMatch, numBlank, i;

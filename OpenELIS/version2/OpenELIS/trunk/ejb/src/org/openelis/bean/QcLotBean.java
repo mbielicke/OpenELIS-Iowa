@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.entity.QcLot;
@@ -46,25 +46,21 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.QcLotLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.meta.QcMeta;
-import org.openelis.remote.QcLotRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class QcLotBean implements QcLotLocal, QcLotRemote {
+public class QcLotBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
     
     @EJB
-    private UserCacheLocal     userCache;
+    private UserCacheBean     userCache;
     
     @EJB
-    private WorksheetAnalysisLocal worksheetAnalysis;
+    private WorksheetAnalysisBean worksheetAnalysis;
 
     public QcLotViewDO fetchById(Integer lotId) throws Exception {
         QcLotViewDO data;

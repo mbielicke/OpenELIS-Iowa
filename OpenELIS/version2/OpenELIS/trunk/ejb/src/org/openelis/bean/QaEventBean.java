@@ -37,7 +37,8 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
@@ -52,22 +53,20 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.LockLocal;
-import org.openelis.local.QaeventLocal;
 import org.openelis.meta.QaEventMeta;
-import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-public class QaEventBean implements QaEventRemote, QaeventLocal {
-
+public class QaEventBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
 
     @EJB
-    private LockLocal                lock;
+    private LockBean                   lock;
+    
+    @EJB
+    private UserCacheBean               userCache;
 
     private static final QaEventMeta meta = new QaEventMeta();
 
@@ -291,6 +290,6 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("qaevent", flag);
+        userCache.applyPermission("qaevent", flag);
     }
 }

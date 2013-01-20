@@ -27,12 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.ExchangeProfileBean;
 import org.openelis.domain.ExchangeProfileDO;
-import org.openelis.domain.PanelItemDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ExchangeProfileLocal;
-import org.openelis.local.PanelItemLocal;
 import org.openelis.utils.EJBFactory;
 
 public class ExchangeProfileManagerProxy {
@@ -50,7 +48,7 @@ public class ExchangeProfileManagerProxy {
     }
 
     public ExchangeProfileManager add(ExchangeProfileManager man) throws Exception {
-        ExchangeProfileLocal cl;
+        ExchangeProfileBean cl;
         ExchangeProfileDO data;
 
         cl = EJBFactory.getExchangeProfile();
@@ -66,7 +64,7 @@ public class ExchangeProfileManagerProxy {
 
     public ExchangeProfileManager update(ExchangeProfileManager man) throws Exception {
         int i;
-        ExchangeProfileLocal cl;
+        ExchangeProfileBean cl;
         ExchangeProfileDO data;
 
         cl = EJBFactory.getExchangeProfile();
@@ -89,7 +87,7 @@ public class ExchangeProfileManagerProxy {
     
     public void delete(ExchangeProfileManager man) throws Exception {
         int i;
-        ExchangeProfileLocal pl;
+        ExchangeProfileBean pl;
         ExchangeProfileDO data;
         
         pl = EJBFactory.getExchangeProfile();
@@ -108,7 +106,7 @@ public class ExchangeProfileManagerProxy {
     
     public void validate(ExchangeProfileManager man) throws Exception {
         ValidationErrorsList list;
-        ExchangeProfileLocal cl;
+        ExchangeProfileBean cl;
 
         cl = EJBFactory.getExchangeProfile();
         list = new ValidationErrorsList();

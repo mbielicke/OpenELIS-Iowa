@@ -27,13 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
+import org.openelis.bean.ProviderLocationBean;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ProviderLocationLocal;
-import org.openelis.manager.ProviderLocationManager;
 import org.openelis.utils.EJBFactory;
 
 public class ProviderLocationManagerProxy {
@@ -51,7 +48,7 @@ public class ProviderLocationManagerProxy {
     }
 
     public ProviderLocationManager add(ProviderLocationManager man) throws Exception {
-        ProviderLocationLocal pl;
+        ProviderLocationBean pl;
         ProviderLocationDO location;
 
         pl = EJBFactory.getProviderLocation();
@@ -65,7 +62,7 @@ public class ProviderLocationManagerProxy {
     }
 
     public ProviderLocationManager update(ProviderLocationManager man) throws Exception {
-        ProviderLocationLocal pl;
+        ProviderLocationBean pl;
         ProviderLocationDO location;
 
         pl = EJBFactory.getProviderLocation();
@@ -88,7 +85,7 @@ public class ProviderLocationManagerProxy {
 
     public void validate(ProviderLocationManager man) throws Exception {
         ValidationErrorsList list;
-        ProviderLocationLocal cl;
+        ProviderLocationBean cl;
 
         cl = EJBFactory.getProviderLocation();
         list = new ValidationErrorsList();

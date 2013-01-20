@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.Category;
@@ -47,21 +47,18 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.CategoryCacheLocal;
-import org.openelis.local.CategoryLocal;
 import org.openelis.meta.CategoryMeta;
-import org.openelis.remote.CategoryRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-public class CategoryBean implements CategoryRemote, CategoryLocal {
+public class CategoryBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
 
     @EJB
-    private CategoryCacheLocal  catCache;
+    private CategoryCacheBean  catCache;
 
     private static CategoryMeta meta = new CategoryMeta();
 

@@ -27,6 +27,8 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.InventoryLocationBean;
+import org.openelis.bean.InventoryReceiptBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
@@ -34,8 +36,6 @@ import org.openelis.domain.OrderItemViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.InventoryReceiptLocal;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -61,8 +61,8 @@ public class InventoryReceiptManagerProxy {
         int i;
         Integer qtyRec, invLocId;
         ArrayList<Integer> invLocIdList;
-        InventoryReceiptLocal rl;
-        InventoryLocationLocal il;
+        InventoryReceiptBean rl;
+        InventoryLocationBean il;
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
 
@@ -111,8 +111,8 @@ public class InventoryReceiptManagerProxy {
         int sumQRec, sumQReq, i;
         Integer qtyRec, invLocId;
         ArrayList<Integer> invLocIdList;
-        InventoryReceiptLocal rl;
-        InventoryLocationLocal il;
+        InventoryReceiptBean rl;
+        InventoryLocationBean il;
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
         OrderManager orderMan;
@@ -209,7 +209,7 @@ public class InventoryReceiptManagerProxy {
     public void validate(InventoryReceiptManager man) throws Exception {
         Integer qtyReceived, qtyOrdered, itemId, prevItemId;
         ValidationErrorsList list;
-        InventoryReceiptLocal cl;
+        InventoryReceiptBean cl;
         InventoryReceiptViewDO data;
         OrderManager orderMan;
 

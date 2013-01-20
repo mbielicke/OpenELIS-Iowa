@@ -37,7 +37,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestResultDO;
@@ -46,21 +46,19 @@ import org.openelis.entity.TestResult;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.TestResultLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestResultBean implements TestResultLocal {
+public class TestResultBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager   manager;
 
     @EJB
-    private DictionaryCacheLocal dictionaryCache;
+    private DictionaryCacheBean dictionaryCache;
 
     private static HashMap<Integer, Type> types;
     

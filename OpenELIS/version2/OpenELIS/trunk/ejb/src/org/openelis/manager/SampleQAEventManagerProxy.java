@@ -27,9 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.SampleQAEventBean;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SampleQAEventLocal;
 import org.openelis.utils.EJBFactory;
 
 public class SampleQAEventManagerProxy {
@@ -48,7 +48,7 @@ public class SampleQAEventManagerProxy {
     
     public SampleQaEventManager add(SampleQaEventManager man) throws Exception {
         SampleQaEventViewDO data;
-        SampleQAEventLocal l;
+        SampleQAEventBean l;
         
         l = EJBFactory.getSampleQAEvent();
         for(int i=0; i<man.count(); i++){
@@ -64,7 +64,7 @@ public class SampleQAEventManagerProxy {
     public SampleQaEventManager update(SampleQaEventManager man) throws Exception {
         int i;
         SampleQaEventViewDO data;
-        SampleQAEventLocal l;
+        SampleQAEventBean l;
         
         l = EJBFactory.getSampleQAEvent();
         for(i=0; i<man.deleteCount(); i++)

@@ -33,27 +33,28 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.domain.Constants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.ExchangeProfileDO;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
-import org.openelis.remote.ExchangeCriteriaManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class ExchangeCriteriaManagerBean implements ExchangeCriteriaManagerRemote {
+public class ExchangeCriteriaManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lock;
+    private LockBean      lock;
+    
+    @EJB
+    private UserCacheBean  userCache;
 
     public ExchangeCriteriaManager fetchById(Integer id) throws Exception {
         return ExchangeCriteriaManager.fetchById(id);
@@ -202,6 +203,6 @@ public class ExchangeCriteriaManagerBean implements ExchangeCriteriaManagerRemot
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("exchangedataselection", flag);
+        userCache.applyPermission("exchangedataselection", flag);
     }
 }

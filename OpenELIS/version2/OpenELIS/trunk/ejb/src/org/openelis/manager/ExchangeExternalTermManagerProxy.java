@@ -27,11 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.ExchangeExternalTermBean;
 import org.openelis.domain.ExchangeExternalTermDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ExchangeExternalTermLocal;
 import org.openelis.meta.ExchangeLocalTermMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -50,7 +50,7 @@ public class ExchangeExternalTermManagerProxy {
     }
     
     public ExchangeExternalTermManager add(ExchangeExternalTermManager man) throws Exception {
-        ExchangeExternalTermLocal tl;
+        ExchangeExternalTermBean tl;
         ExchangeExternalTermDO data;
         
         tl = EJBFactory.getExchangeExternalTerm();
@@ -65,7 +65,7 @@ public class ExchangeExternalTermManagerProxy {
     
     public ExchangeExternalTermManager update(ExchangeExternalTermManager man) throws Exception {
         int i;
-        ExchangeExternalTermLocal tl;
+        ExchangeExternalTermBean tl;
         ExchangeExternalTermDO data;
         
         tl = EJBFactory.getExchangeExternalTerm();
@@ -91,7 +91,7 @@ public class ExchangeExternalTermManagerProxy {
         String active;
         ArrayList<Integer> profiles;
         ExchangeExternalTermDO data;
-        ExchangeExternalTermLocal tl;   
+        ExchangeExternalTermBean tl;   
         ValidationErrorsList list;
 
         tl = EJBFactory.getExchangeExternalTerm();

@@ -33,7 +33,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.entity.TestWorksheet;
@@ -41,13 +41,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestWorksheetLocal;
 import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestWorksheetBean implements TestWorksheetLocal {
+public class TestWorksheetBean {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;

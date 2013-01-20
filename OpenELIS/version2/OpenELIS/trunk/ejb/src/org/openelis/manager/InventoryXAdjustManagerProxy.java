@@ -27,13 +27,13 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.InventoryItemCacheBean;
+import org.openelis.bean.InventoryLocationBean;
+import org.openelis.bean.InventoryXAdjustBean;
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryItemCacheLocal;
-import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -55,9 +55,9 @@ public class InventoryXAdjustManagerProxy {
         int i;
         Integer invLocId;
         ArrayList<Integer> invLocIdList;
-        InventoryXAdjustLocal cl;
+        InventoryXAdjustBean cl;
         InventoryXAdjustViewDO data;
-        InventoryLocationLocal il;
+        InventoryLocationBean il;
 
         cl = EJBFactory.getInventoryXAdjust();
         il = EJBFactory.getInventoryLocation();
@@ -84,9 +84,9 @@ public class InventoryXAdjustManagerProxy {
         int i;
         Integer invLocId;
         ArrayList<Integer> invLocIdList;
-        InventoryXAdjustLocal cl;
+        InventoryXAdjustBean cl;
         InventoryXAdjustViewDO data;
-        InventoryLocationLocal il;
+        InventoryLocationBean il;
 
         cl = EJBFactory.getInventoryXAdjust();
         il = EJBFactory.getInventoryLocation();
@@ -120,9 +120,9 @@ public class InventoryXAdjustManagerProxy {
         Integer storeId, prevStoreId, locationId;
         ArrayList<Integer> locationIdList;
         ValidationErrorsList list;
-        InventoryXAdjustLocal cl;
+        InventoryXAdjustBean cl;
         InventoryXAdjustViewDO data;
-        InventoryItemCacheLocal il;
+        InventoryItemCacheBean il;
 
         cl = EJBFactory.getInventoryXAdjust();
         il = EJBFactory.getInventoryItemCache();

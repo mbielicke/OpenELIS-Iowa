@@ -27,8 +27,8 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.NoteBean;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.local.NoteLocal;
 import org.openelis.utils.EJBFactory;
 
 public class NoteManagerProxy {
@@ -71,7 +71,7 @@ public class NoteManagerProxy {
 
     public NoteManager update(NoteManager man) throws Exception {
         NoteViewDO data;
-        NoteLocal nl;
+        NoteBean nl;
 
         nl = EJBFactory.getNote();
         for (int j = 0; j < man.deleteCount(); j++)
