@@ -44,7 +44,7 @@ UIRF Software License are applicable instead of those above.
     <screen id="WorksheetFileUpload" name="{resource:getString($constants,'worksheetFileUpload')}">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-          <fileUpload key="loadFile" service="org.openelis.modules.worksheet.server.WorksheetService"/>
+          <fileUpload key="loadFile" service="org.openelis.modules.worksheet.server.WorksheetServlet"/>
         </VerticalPanel>
 
 <!--button panel code-->

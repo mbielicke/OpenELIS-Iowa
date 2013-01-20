@@ -25,43 +25,39 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.qc.client.QcService;
 
 public class QcManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.qc.server.QcService";
-    protected ScreenService       service;
-
     public QcManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public QcManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return QcService.get().fetchById(id);
     }
 
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
-        return service.call("fetchWithAnalytes", id);
+        return QcService.get().fetchWithAnalytes(id);
     }
     
     public QcManager fetchWithLots(Integer id) throws Exception {
-        return service.call("fetchWithLots", id);
+        return QcService.get().fetchWithLots(id);
     }
 
     public QcManager add(QcManager man) throws Exception {
-        return service.call("add", man);
+        return QcService.get().add(man);
     }
 
     public QcManager update(QcManager man) throws Exception {
-        return service.call("update", man);
+        return QcService.get().update(man);
     }
 
     public QcManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return QcService.get().fetchForUpdate(id);
     }
 
     public QcManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return QcService.get().abortUpdate(id);
     }
 
     @SuppressWarnings("unused")

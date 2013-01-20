@@ -66,7 +66,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -97,6 +96,9 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.test.client.TestService;
+import org.openelis.modules.worksheet.client.WorksheetService;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -138,14 +140,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected SampleItemViewDO                          sampleItem;
 
     private Confirm                                     changeTestConfirm;
-    protected ScreenService                             panelService, testService,
-                                                        worksheetService;
 
     public AnalysisTab(ScreenDefInt def, ScreenWindowInt window) {
-        service = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
-        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         setDefinition(def);
         setWindow(window);
@@ -251,7 +247,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
                         row = new TableDataRow(3);
                         if ("t".equals(flag)) {
-                            tMan = testService.call("fetchById", testPanelId);
+                            tMan = TestService.get().fetchById(testPanelId);
                             tVDO = tMan.getTest();
                             ttosMan = tMan.getSampleTypes();
                             for (i = 0; i < ttosMan.count(); i++) {
@@ -272,7 +268,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                 Window.alert(feE.getMessage());
                             }
                         } else if ("p".equals(flag)) {
-                            pMan = panelService.call("fetchById", testPanelId);
+                            pMan = PanelService.get().fetchById(testPanelId);
                             pDO = pMan.getPanel();
                             row.key = pDO.getId();
                             row.cells.get(0).value = pDO.getName();
@@ -329,7 +325,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 query.setRowsPerPage(100);
 
                 try {
-                    autoList = panelService.callList("fetchByNameSampleTypeWithTests", query);
+                    autoList = PanelService.get().fetchByNameSampleTypeWithTests(query);
                     model = new ArrayList<TableDataRow>();
 
                     for (TestMethodVO autoDO : autoList) {                     
@@ -1059,7 +1055,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         anDO = manager.getAnalysisAt(bundle.getAnalysisIndex());
         if (anDO.getId() > 0) {
             try {
-                worksheets = worksheetService.callList("fetchByAnalysisId", anDO.getId());
+                worksheets = WorksheetService.get().fetchByAnalysisId(anDO.getId());
 
                 for (int i = 0; i < worksheets.size(); i++ ) {
                     wksht = worksheets.get(i);

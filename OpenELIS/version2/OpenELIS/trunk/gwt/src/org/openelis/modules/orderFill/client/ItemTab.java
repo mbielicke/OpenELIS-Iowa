@@ -52,8 +52,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -77,8 +75,7 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.OrderMeta;
-import org.openelis.modules.order.client.TestContainerPopoutLookup;
-import org.openelis.modules.order.client.TestTab.Action;
+import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -98,12 +95,10 @@ public class ItemTab extends Screen {
 
     private boolean                        loaded;
     private HashMap<Integer, OrderManager> combinedMap;
-    private ScreenService                  inventoryLocationService;
     private AppButton                      popoutButton;
     private ItemTreePopoutLookup           popoutLookup;
 
     public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -494,8 +489,7 @@ public class ItemTab extends Screen {
                 window.setBusy();
                 try {
 
-                    list = inventoryLocationService.callList("fetchByLocationNameInventoryItemId",
-                                                             query);
+                    list = InventoryLocationService.get().fetchByLocationNameInventoryItemId(query);
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

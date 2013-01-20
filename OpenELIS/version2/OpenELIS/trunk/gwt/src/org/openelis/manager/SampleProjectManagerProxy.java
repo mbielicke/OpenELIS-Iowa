@@ -26,18 +26,15 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.sample.client.SampleService;
 
 public class SampleProjectManagerProxy {
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService       service;
 
     public SampleProjectManagerProxy() {
-        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
     }
 
     public SampleProjectManager fetchBySampleId(Integer sampleId) throws Exception {
-        return service.call("fetchSampleprojectsBySampleId", sampleId);
+        return SampleService.get().fetchSampleprojectsBySampleId(sampleId);
     }
 
     public SampleProjectManager add(SampleProjectManager man) throws Exception {

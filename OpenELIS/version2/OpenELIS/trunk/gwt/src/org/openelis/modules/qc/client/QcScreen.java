@@ -41,7 +41,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -55,7 +54,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -72,6 +70,7 @@ import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.inventoryItem.client.InventoryItemService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -102,16 +101,12 @@ public class QcScreen extends Screen {
     private CheckBox              isActive;
     private TabPanel              tabPanel;
 
-    private ScreenService         inventoryService;
-
     private enum Tabs {
         ANALYTE, LOT
     };
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         userPermission = UserCache.getPermission().getModule("qc");
         if (userPermission == null)
@@ -361,8 +356,7 @@ public class QcScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = inventoryService.callList("fetchActiveByName",
-                                                     QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = InventoryItemService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (InventoryItemDO data : list) {
@@ -453,12 +447,12 @@ public class QcScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                QcService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -478,8 +472,8 @@ public class QcScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -683,7 +677,7 @@ public class QcScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
 
-            manager = service.call("duplicate", manager.getQc().getId());
+            manager = QcService.get().duplicate(manager.getQc().getId());
 
             analyteTab.setManager(manager);
             lotTab.setManager(manager);

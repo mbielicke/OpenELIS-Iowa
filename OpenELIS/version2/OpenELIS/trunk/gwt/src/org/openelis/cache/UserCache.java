@@ -30,7 +30,6 @@ import java.util.HashMap;
 
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.services.ScreenService;
 
 /**
  * Class provides cache service handling for front end GWT classes. Cache
@@ -42,12 +41,8 @@ public class UserCache {
 
     protected static SystemUserPermission          perm;
     protected static HashMap<Integer, SystemUserVO> users;
-    protected static final String                  SERVICE_URL;
-    protected static ScreenService                 service;
     
     static {
-        SERVICE_URL = "org.openelis.server.UserCacheService";
-        service = new ScreenService("controller?service=" + SERVICE_URL);
         users = new HashMap<Integer, SystemUserVO>();        
     }
     
@@ -66,7 +61,7 @@ public class UserCache {
         
         data = users.get(id);
         if (data == null) {
-            data = service.call("getSystemUser", id);
+            data = UserCacheService.get().getSystemUser(id);
             if (data != null) 
                 users.put(id, data);            
         } 
@@ -74,18 +69,19 @@ public class UserCache {
     }
 
     public static ArrayList<SystemUserVO> getSystemUsers(String name) throws Exception {
-        return service.callList("getSystemUsers",name);
+        return UserCacheService.get().getSystemUsers(name);
     } 
     
     public static ArrayList<SystemUserVO> getEmployees(String name) throws Exception {
-        return service.callList("getEmployees",name);
+        return UserCacheService.get().getEmployees(name);
     }      
 
     public static SystemUserPermission getPermission() {
         try {
             if (perm == null)
-                perm = service.call("getPermission");
-        } catch (Exception e) {           
+                perm = UserCacheService.get().getPermission();
+        } catch (Exception e) {        
+            e.printStackTrace();
             perm = new SystemUserPermission();
         }
         return perm;

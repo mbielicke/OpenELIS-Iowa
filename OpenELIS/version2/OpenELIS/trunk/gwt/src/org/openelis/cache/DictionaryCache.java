@@ -28,7 +28,6 @@ package org.openelis.cache;
 import java.util.HashMap;
 
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.services.ScreenService;
 
 /**
  * Class provides cache service handling for front end GWT classes. Cache
@@ -39,13 +38,9 @@ import org.openelis.gwt.services.ScreenService;
 
 public class DictionaryCache {    
     protected static HashMap<Object, DictionaryDO> cache;
-    protected static final String                  SERVICE_URL;
-    protected static ScreenService                 service;
     
     static {
         cache = new HashMap<Object, DictionaryDO>();
-        SERVICE_URL = "org.openelis.server.DictionaryCacheService";
-        service = new ScreenService("controller?service=" + SERVICE_URL);
     }
     
     public static DictionaryDO getById(Integer id) throws Exception {
@@ -54,7 +49,7 @@ public class DictionaryCache {
         data = cache.get(id);
         if (data == null) {
             try {
-                data = (DictionaryDO)service.call("getById", id);
+                data = (DictionaryDO)DictionaryCacheService.get().getById(id);
                 add(data);
             } catch (Exception e) {
                 throw new Exception("DictionaryCache.getEntryFromId: id \"" + id +
@@ -83,7 +78,7 @@ public class DictionaryCache {
             return data;
 
         try {
-            data = (DictionaryDO)service.call("getBySystemName", systemName);
+            data = (DictionaryDO)DictionaryCacheService.get().getBySystemName(systemName);
             add(data);
         } catch (Exception e) {
             throw new Exception("DictionaryCache.getBySystemNameInt: System name \"" + systemName +

@@ -25,18 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionService;
 
 public class ExchangeProfileManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.exchangeDataSelection.server.ExchangeDataSelectionService";
-    protected ScreenService       service;
 
     public ExchangeProfileManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public ExchangeProfileManager fetchByExchangeCriteriaId(Integer id) throws Exception {
-        return service.call("fetchProfileByExchangeCriteriaId", id);
+        return ExchangeDataSelectionService.get().fetchProfileByExchangeCriteriaId(id);
     }
 
     public ExchangeProfileManager add(ExchangeProfileManager man) throws Exception {

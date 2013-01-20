@@ -25,18 +25,15 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.inventoryItem.client.InventoryItemService;
 
 public class InventoryComponentManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.inventoryItem.server.InventoryItemService";
-    protected ScreenService       service;
 
     public InventoryComponentManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public InventoryComponentManager fetchByInventoryItemId(Integer orgId) throws Exception {
-        return service.call("fetchComponentByInventoryItemId", orgId);
+        return InventoryItemService.get().fetchComponentByInventoryItemId(orgId);
     }
 
     public InventoryComponentManager add(InventoryComponentManager man) throws Exception {

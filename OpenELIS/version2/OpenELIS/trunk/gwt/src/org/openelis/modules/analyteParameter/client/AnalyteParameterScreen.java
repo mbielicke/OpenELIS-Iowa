@@ -47,7 +47,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -63,7 +62,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -86,6 +84,8 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.AnalyteParameterMeta;
+import org.openelis.modules.qc.client.QcService;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -113,17 +113,12 @@ public class AnalyteParameterScreen extends Screen {
     private TreeWidget              parameterTree;
     private TableWidget             atozTable;
 
-    private ScreenService           testService, qcService;
     private ArrayList<TableDataRow> sampleTypeModel;
     private boolean                 warningShown;
     private static final String     LATEST_LEAF = "latest", PREVIOUS_LEAF = "previous";
 
     public AnalyteParameterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteParameterDef.class));
-
-        service = new ScreenService("controller?service=org.openelis.modules.analyteParameter.server.AnalyteParameterService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
         userPermission = UserCache.getPermission().getModule("analyteparameter");
         if (userPermission == null)
@@ -423,8 +418,7 @@ public class AnalyteParameterScreen extends Screen {
 
                 try {
                     window.setBusy(consts.get("fetching"));
-                    list = service.callList("fetchByAnalyteIdReferenceIdReferenceTableId",
-                                            query);
+                    list = AnalyteParameterService.get().fetchByAnalyteIdReferenceIdReferenceTableId(query);
                     index = manager.indexOf(data);
                     if (data.getId() == null || index == 0)
                         j = 1;
@@ -601,17 +595,15 @@ public class AnalyteParameterScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<ReferenceIdTableIdNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(18);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<ReferenceIdTableIdNameVO>>() {
-                                     public void onSuccess(ArrayList<ReferenceIdTableIdNameVO> result) {
-                                         setQueryResult(result);
-                                     }
+                AnalyteParameterService.get().query(query, new AsyncCallback<ArrayList<ReferenceIdTableIdNameVO>>() {
+                    public void onSuccess(ArrayList<ReferenceIdTableIdNameVO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -629,14 +621,11 @@ public class AnalyteParameterScreen extends Screen {
                                  });
             }
 
-            public boolean fetch(RPC entry) {
-                ReferenceIdTableIdNameVO data;
+            public boolean fetch(ReferenceIdTableIdNameVO entry) {
                 if (entry == null) {
                     return fetchByRefIdRefTableId(null, null);
                 } else {
-                    data = (ReferenceIdTableIdNameVO)entry;
-                    return fetchByRefIdRefTableId(data.getReferenceId(),
-                                                  data.getReferenceTableId());
+                    return fetchByRefIdRefTableId(entry.getReferenceId(), entry.getReferenceTableId());
                 }
             }
 
@@ -914,11 +903,9 @@ public class AnalyteParameterScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = testService.callList("fetchByName", search);
-            for (TestMethodVO data : list)
-                model.add(new TableDataRow(data.getTestId(),
-                                           data.getTestName(),
-                                           data.getMethodName()));
+            list  = TestService.get().fetchByName(search);
+            for (TestMethodVO data: list) 
+                model.add(new TableDataRow(data.getTestId(), data.getTestName(), data.getMethodName()));            
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -933,8 +920,8 @@ public class AnalyteParameterScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = qcService.callList("fetchActiveByName", search);
-            for (QcLotViewDO data : list) {
+            list  = QcService.get().fetchActiveByName(search);
+            for (QcLotViewDO data: list) {
                 row = new TableDataRow(2);
                 row.key = data.getQcId();
                 row.cells.get(0).setValue(getQcLabel(data.getQcId(), data.getQcName()));

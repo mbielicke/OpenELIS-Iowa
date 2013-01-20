@@ -43,7 +43,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -59,7 +58,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -91,7 +89,9 @@ import org.openelis.modules.sample.client.SampleMergeUtility;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.SampleSDWISImportOrder;
+import org.openelis.modules.sample.client.SampleService;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.standardnote.client.StandardNoteService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -150,7 +150,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     private SampleSDWISImportOrder    sdwisOrderImport;
     private SendoutOrderScreen        sendoutOrderScreen;
     private StandardNoteDO            autoNote;
-    private ScreenService             standardNoteService;
 
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE,
@@ -159,8 +158,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
     public SDWISSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SDWISSampleLoginDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
-        standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
         userPermission = UserCache.getPermission().getModule("samplesdwis");
         if (userPermission == null)
@@ -997,17 +994,15 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         });
 
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdAccessionVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(5);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<IdAccessionVO>>() {
-                                     public void onSuccess(ArrayList<IdAccessionVO> result) {
-                                         setQueryResult(result);
-                                     }
+                SampleService.get().query(query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
+                    public void onSuccess(ArrayList<IdAccessionVO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -1025,8 +1020,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                                  });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdAccessionVO)entry).getId());
+            public boolean fetch(IdAccessionVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -1436,8 +1431,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         }
 
         try {
-            autoNote = standardNoteService.call("fetchBySystemVariableName",
-                                                "auto_comment_sdwis");
+            autoNote = StandardNoteService.get().fetchBySystemVariableName("auto_comment_sdwis");
         } catch (NotFoundException nfE) {
             // ignore not found exceptions since this domain may not have a
             // default note

@@ -25,19 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.buildKits.client.BuildKitsService;
 
 public class BuildKitManagerProxy {
-    
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.buildKits.server.BuildKitsService";
-    protected ScreenService       service;
-    
+        
     public BuildKitManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public BuildKitManager add(BuildKitManager man) throws Exception {
-        return service.call("add", man);
+        return BuildKitsService.get().add(man);
     }
     
     public void validate(BuildKitManager man) throws Exception {

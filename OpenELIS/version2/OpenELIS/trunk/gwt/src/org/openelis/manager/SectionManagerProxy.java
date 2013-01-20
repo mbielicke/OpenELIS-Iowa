@@ -25,39 +25,35 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.section.client.SectionService;
 
 public class SectionManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.section.server.SectionService";
-    protected ScreenService       service;
-
     public SectionManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public SectionManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return SectionService.get().fetchById(id);
     }
 
     public SectionManager fetchWithParameters(Integer id) throws Exception {
-        return service.call("fetchWithParameters", id);
+        return SectionService.get().fetchWithParameters(id);
     }
 
     public SectionManager add(SectionManager man) throws Exception {
-        return service.call("add", man);
+        return SectionService.get().add(man);
     }
 
     public SectionManager update(SectionManager man) throws Exception {
-        return service.call("update", man);
+        return SectionService.get().update(man);
     }
 
     public SectionManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return SectionService.get().fetchForUpdate(id);
     }
 
     public SectionManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return SectionService.get().abortUpdate(id);
     }
 
     @SuppressWarnings("unused")

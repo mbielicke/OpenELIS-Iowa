@@ -26,18 +26,15 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.worksheet.client.WorksheetService;
 
 public class WorksheetResultManagerProxy {
-    protected static final String WORKSHEET_MANAGER_SERVICE_URL = "org.openelis.modules.worksheet.server.WorksheetService";
-    protected ScreenService service;
     
     public WorksheetResultManagerProxy(){
-        service = new ScreenService("controller?service="+WORKSHEET_MANAGER_SERVICE_URL);
     }
 
     public WorksheetResultManager fetchByWorksheetAnalysisId(Integer worksheetAnalysisId) throws Exception {
-        return service.call("fetchWorksheeetResultByWorksheetAnalysisId", worksheetAnalysisId);
+        return WorksheetService.get().fetchWorksheeetResultByWorksheetAnalysisId(worksheetAnalysisId);
     }
 
     public WorksheetResultManager add(WorksheetResultManager manager) throws Exception {

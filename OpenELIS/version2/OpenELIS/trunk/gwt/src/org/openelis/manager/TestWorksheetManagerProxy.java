@@ -27,19 +27,16 @@ package org.openelis.manager;
 
 import java.util.HashMap;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.test.client.TestService;
 
 public class TestWorksheetManagerProxy {
 
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service;
 
     public TestWorksheetManagerProxy() {
-        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestWorksheetManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchWorksheetByTestId", testId);
+        return TestService.get().fetchWorksheetByTestId(testId);
     }
 
     public TestWorksheetManager add(TestWorksheetManager man, HashMap<Integer, Integer> anaIdMap)

@@ -27,6 +27,7 @@
 package org.openelis.modules.orderFill.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -61,11 +62,10 @@ import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.Dropdown;
@@ -90,10 +90,12 @@ import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.order.client.CustomerNoteTab;
+import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.order.client.ShipNoteTab;
 import org.openelis.modules.report.client.ShippingReportScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingScreen.Action;
+import org.openelis.modules.shipping.client.ShippingService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -130,7 +132,6 @@ public class OrderFillScreen extends Screen {
     private HashMap<TableDataRow, OrderViewDO> orderMap;
     private HashMap<Integer, OrderManager>     combinedMap;
 
-    private ScreenService                      shippingService;
     private String                             defaultPrinter, defaultBarcodePrinter;
 
     private enum Tabs {
@@ -139,8 +140,6 @@ public class OrderFillScreen extends Screen {
 
     public OrderFillScreen() throws Exception {
         super((ScreenDefInt)GWT.create(OrderFillDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
 
         userPermission = UserCache.getPermission().getModule("fillorder");
         if (userPermission == null)
@@ -420,7 +419,7 @@ public class OrderFillScreen extends Screen {
                         custNoteTab.setState(State.DISPLAY);
                         now = null;
                         try {
-                            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
                         } catch (Exception e) {
                             Window.alert("OrderFill Datetime: " + e.getMessage());
                         }
@@ -725,8 +724,7 @@ public class OrderFillScreen extends Screen {
 
             window.setBusy(consts.get("fetching"));
 
-            shippingService.call("fetchByOrderId",
-                                 data.getId(),
+            ShippingService.get().fetchByOrderId(data.getId(),
                                  new SyncCallback<ShippingViewDO>() {
                                      public void onSuccess(ShippingViewDO result) {
                                          try {
@@ -878,28 +876,24 @@ public class OrderFillScreen extends Screen {
     private void executeQuery(Query query) {
         window.setBusy(consts.get("querying"));
 
-        service.callList("queryOrderFill",
-                         query,
-                         new AsyncCallback<ArrayList<OrderViewDO>>() {
-                             public void onSuccess(ArrayList<OrderViewDO> result) {
-                                 ArrayList<TableDataRow> model;
-                                 Datetime now;
-                                 TableDataRow row;
+        OrderService.get().queryOrderFill(query, new AsyncCallback<ArrayList<OrderViewDO>>() {
+            public void onSuccess(ArrayList<OrderViewDO> result) {
+                ArrayList<TableDataRow> model;
+                Datetime now;
+                TableDataRow row;
 
                                  orderTable.setQueryMode(false);
                                  model = null;
 
                                  now = null;
 
-                                 if (result != null) {
-                                     model = new ArrayList<TableDataRow>();
-                                     try {
-                                         now = Calendar.getCurrentDatetime(Datetime.YEAR,
-                                                                           Datetime.DAY);
-                                     } catch (Exception e) {
-                                         Window.alert("Order Fill Datetime: " +
-                                                      e.getMessage());
-                                     }
+                if (result != null) {
+                    model = new ArrayList<TableDataRow>();
+                    try {
+                        now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+                    } catch (Exception e) {
+                        Window.alert("Order Fill Datetime: " + e.getMessage());
+                    }
 
                                      orderMap = new HashMap<TableDataRow, OrderViewDO>();
 
@@ -984,7 +978,7 @@ public class OrderFillScreen extends Screen {
         now = null;
 
         try {
-            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
             Window.alert("OrderFill Datetime: " + e.getMessage());
             return;

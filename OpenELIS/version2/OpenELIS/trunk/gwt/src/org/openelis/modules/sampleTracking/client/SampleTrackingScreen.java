@@ -44,7 +44,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -75,6 +74,7 @@ import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -150,8 +150,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private Query                         query;
 
-    private ScreenService                 finalReportService;
-
     protected AccessionNumberUtility      accessionNumUtil;
 
     private ChangeDomainScreen            changeDomainScreen;
@@ -163,9 +161,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
-
-        service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
-        finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
         userPermission = UserCache.getPermission().getModule("sampletracking");
         if (userPermission == null)
@@ -1737,7 +1732,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         window.setBusy(consts.get("querying"));
 
         query.setRowsPerPage(14);
-        service.callList("query", query, new AsyncCallback<ArrayList<SampleManager>>() {
+        SampleTrackingService.get().query(query, new AsyncCallback<ArrayList<SampleManager>>() {
             public void onSuccess(ArrayList<SampleManager> result) {
                 manager = null;
 
@@ -2194,11 +2189,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         window.setBusy(consts.get("genReportMessage"));
 
-        finalReportService.call("runReportForSingle",
-                                query,
-                                new AsyncCallback<ReportStatus>() {
-                                    public void onSuccess(ReportStatus status) {
-                                        String url;
+        FinalReportService.get().runReportForSingle(query, new AsyncCallback<ReportStatus>() {
+            public void onSuccess(ReportStatus status) {
+                String url;
 
                                         url = "report?file=" + status.getMessage();
                                         Window.open(URL.encode(url), "FinalReport", null);

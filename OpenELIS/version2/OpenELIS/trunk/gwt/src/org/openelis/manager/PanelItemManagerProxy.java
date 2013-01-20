@@ -25,18 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.panel.client.PanelService;
 
 public class PanelItemManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.panel.server.PanelService";
-    protected ScreenService       service;
 
     public PanelItemManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public PanelItemManager fetchByPanelId(Integer id) throws Exception {
-        return service.call("fetchItemByPanelId", id);
+        return PanelService.get().fetchItemByPanelId(id);
     }
 
     public PanelItemManager add(PanelItemManager man) throws Exception {

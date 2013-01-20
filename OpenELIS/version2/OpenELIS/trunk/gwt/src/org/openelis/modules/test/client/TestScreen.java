@@ -60,7 +60,6 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -78,7 +77,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -111,6 +109,10 @@ import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.meta.TestMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.label.client.LabelService;
+import org.openelis.modules.method.client.MethodService;
+import org.openelis.modules.scriptlet.client.ScriptletService;
+import org.openelis.modules.testTrailer.client.TestTrailerService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -154,23 +156,12 @@ public class TestScreen extends Screen {
     private CheckBox                 isActive, isReportable;
     private CalendarLookUp           activeBegin, activeEnd;
 
-    private ScreenService            methodService, scriptletService, trailerService,
-                    labelService, analyteService, qcService, dictionaryService;
-
     private enum Tabs {
         DETAILS, SAMPLE_TYPES, ANALYTES_RESULTS, PREPS_REFLEXES, WORKSHEET
     };
 
     public TestScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
-        methodService = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService");
-        trailerService = new ScreenService("controller?service=org.openelis.modules.testTrailer.server.TestTrailerService");
-        labelService = new ScreenService("controller?service=org.openelis.modules.label.server.LabelService");
-        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
         userPermission = UserCache.getPermission().getModule("test");
         if (userPermission == null)
@@ -509,8 +500,7 @@ public class TestScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = methodService.callList("fetchByName",
-                                                  QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = MethodService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (MethodDO data : list)
@@ -724,8 +714,7 @@ public class TestScreen extends Screen {
                 ArrayList<LabelDO> list;
 
                 try {
-                    list = labelService.callList("fetchByName",
-                                                 QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = LabelService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (LabelDO data : list)
@@ -1000,8 +989,7 @@ public class TestScreen extends Screen {
                 ArrayList<IdNameVO> list;
 
                 try {
-                    list = trailerService.callList("fetchByName",
-                                                   QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = TestTrailerService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list)
                         model.add(new TableDataRow(data.getId(), data.getName()));
@@ -1059,8 +1047,7 @@ public class TestScreen extends Screen {
                 ArrayList<IdNameVO> list;
 
                 try {
-                    list = scriptletService.callList("fetchByName",
-                                                     QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = ScriptletService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list) {
                         model.add(new TableDataRow(data.getId(), data.getName()));
@@ -1106,12 +1093,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        analyteAndResultTab = new AnalyteAndResultTab(def,
-                                                      window,
-                                                      service,
-                                                      scriptletService,
-                                                      analyteService,
-                                                      dictionaryService);
+        analyteAndResultTab = new AnalyteAndResultTab(def,window);
         sampleTypeTab.addActionHandler(analyteAndResultTab);
 
         addScreenHandler(analyteAndResultTab, new ScreenEventHandler<Object>() {
@@ -1126,7 +1108,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        prepAndReflexTab = new PrepTestAndReflexTestTab(def, window, service);
+        prepAndReflexTab = new PrepTestAndReflexTestTab(def,window);
         addScreenHandler(prepAndReflexTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 prepAndReflexTab.setManager(manager);
@@ -1141,11 +1123,7 @@ public class TestScreen extends Screen {
 
         analyteAndResultTab.addActionHandler(prepAndReflexTab);
 
-        worksheetLayoutTab = new WorksheetLayoutTab(def,
-                                                    window,
-                                                    service,
-                                                    scriptletService,
-                                                    qcService);
+        worksheetLayoutTab = new WorksheetLayoutTab(def,window);
         addScreenHandler(worksheetLayoutTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetLayoutTab.setManager(manager);
@@ -1163,17 +1141,15 @@ public class TestScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<TestMethodVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(26);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<TestMethodVO>>() {
-                                     public void onSuccess(ArrayList<TestMethodVO> result) {
-                                         setQueryResult(result);
-                                     }
+                TestService.get().query(query, new AsyncCallback<ArrayList<TestMethodVO>>() {
+                    public void onSuccess(ArrayList<TestMethodVO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -1191,8 +1167,8 @@ public class TestScreen extends Screen {
                                  });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((TestMethodVO)entry).getTestId());
+            public boolean fetch(TestMethodVO entry) {
+                return fetchById((entry == null)?null:entry.getTestId());
             }
 
             public ArrayList<TableDataRow> getModel() {

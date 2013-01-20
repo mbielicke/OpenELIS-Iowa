@@ -48,8 +48,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
@@ -73,6 +71,8 @@ import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.manager.TestManager;
+import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -94,17 +94,11 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     private ArrayList<String>         names;
     private TestContainerPopoutUtil   popoutUtil;
     
-    protected ScreenService           analysisService, panelService, testService;
-
     public enum Action {
         ADD_AUX, REFRESH_AUX
     };
 
     public TestTab(ScreenDefInt def, ScreenWindowInt window, TestContainerPopoutUtil popoutUtil) {
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
-        panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
-        testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         this.popoutUtil = popoutUtil;
         setDefinition(def);
@@ -313,7 +307,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                         row = new TableDataRow(3);
                         tmData = new TestMethodVO();
                         if ("t".equals(flag)) {
-                            tMan = testService.call("fetchById", testPanelId);
+                            tMan = TestService.get().fetchById(testPanelId);
                             tVDO = tMan.getTest();
                             row.key = tVDO.getId();
                             tmData.setTestId(tVDO.getId());
@@ -325,7 +319,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                             row.cells.get(2).value = tVDO.getDescription();
                             tmData.setTestDescription(tVDO.getDescription());
                         } else if ("p".equals(flag)) {
-                            pMan = panelService.call("fetchById", testPanelId);
+                            pMan = PanelService.get().fetchById(testPanelId);
                             pDO = pMan.getPanel();
                             row.key = pDO.getId();
                             tmData.setTestId(pDO.getId());
@@ -356,8 +350,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 TestMethodVO            data;
 
                 try {
-                    autoList = panelService.callList("fetchByNameWithTests", 
-                                                     QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
+                    autoList = PanelService.get().fetchByNameWithTests(QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < autoList.size(); i++ ) {
                         data = autoList.get(i);
@@ -584,7 +577,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         TreeDataItem newRow;
 
         try {
-            tests = testService.callList("fetchByPanelId", panelId);   
+            tests = TestService.get().fetchByPanelId(panelId);   
             index = row.childIndex;
             if (tests != null && tests.size() > 0) {                
                 tree.deleteRow(row);

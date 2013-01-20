@@ -25,18 +25,15 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.test.client.TestService;
 
 public class TestTypeOfSampleManagerProxy {
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService       service;
 
     public TestTypeOfSampleManagerProxy() {
-        service = new ScreenService("controller?service=" + TEST_MANAGER_SERVICE_URL);
     }
 
     public TestTypeOfSampleManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchSampleTypeByTestId", testId);
+        return TestService.get().fetchSampleTypeByTestId(testId);
     }
 
     public TestTypeOfSampleManager add(TestTypeOfSampleManager man) throws Exception {

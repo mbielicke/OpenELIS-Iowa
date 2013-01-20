@@ -25,18 +25,15 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.qc.client.QcService;
 
 public class QcLotManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.qc.server.QcService";
-    protected ScreenService       service;
 
     public QcLotManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public QcLotManager fetchByQcId(Integer qcId) throws Exception {
-        return service.call("fetchLotByQcId", qcId);
+        return QcService.get().fetchLotByQcId(qcId);
     }
 
     @SuppressWarnings("unused")

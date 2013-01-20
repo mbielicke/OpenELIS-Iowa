@@ -25,18 +25,15 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.project.client.ProjectService;
 
 public class ProjectParameterManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.project.server.ProjectService";
-    protected ScreenService       service;
 
     public ProjectParameterManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public ProjectParameterManager fetchByProjectId(Integer id) throws Exception {
-        return service.call("fetchParameterByProjectId", id);
+        return ProjectService.get().fetchParameterByProjectId(id);
     }
 
     public ProjectParameterManager add(ProjectParameterManager man) throws Exception {

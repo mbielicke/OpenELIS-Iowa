@@ -25,51 +25,48 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.organization.client.OrganizationService;
 
 public class OrganizationManagerProxy {
 
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.organization.server.OrganizationService";
-    protected ScreenService       service;
 
     public OrganizationManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
     public OrganizationManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return OrganizationService.get().fetchById(id);
     }
 
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
-        return service.call("fetchWithContacts", id);
+        return OrganizationService.get().fetchWithContacts(id);
     }
 
     public OrganizationManager fetchWithNotes(Integer id) throws Exception {
-        return service.call("fetchWithNotes", id);
+        return OrganizationService.get().fetchWithNotes(id);
     }
 
     public OrganizationManager fetchWithParameters(Integer id) throws Exception {
-        return service.call("fetchWithParameters", id);
+        return OrganizationService.get().fetchWithParameters(id);
     }
 
     public OrganizationManager add(OrganizationManager man) throws Exception {
-        return service.call("add", man);
+        return OrganizationService.get().add(man);
     }
 
     public OrganizationManager update(OrganizationManager man) throws Exception {
-        return service.call("update", man);
+        return OrganizationService.get().update(man);
     }
 
     public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
-        return service.call("updateForNotify", man);
+        return OrganizationService.get().updateForNotify(man);
     }
 
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return OrganizationService.get().fetchForUpdate(id);
     }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return OrganizationService.get().abortUpdate(id);
     }
 
     public void validate(OrganizationManager man) throws Exception {

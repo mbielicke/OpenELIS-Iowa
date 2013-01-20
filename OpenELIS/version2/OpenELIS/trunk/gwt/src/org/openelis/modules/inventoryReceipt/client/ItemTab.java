@@ -31,7 +31,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.StorageLocationViewDO;
@@ -48,18 +47,17 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryReceiptMeta;
+import org.openelis.modules.storage.client.StorageService;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -78,17 +76,12 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
     private CheckBox                              addToExisting;
     private int                                   index;
     private boolean                               loaded;
-    
-    private ScreenService                         inventoryLocationService, storageService;
-    
+        
     public enum Action {
         STORAGE_LOCATION_CHANGED, LOT_NUMBER_CHANGED 
     }
     
     public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");                      
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
-        storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         
         setDefinition(def);
         setWindow(window);
@@ -393,7 +386,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         fields.add(field);
 
                         query.setFields(fields);
-                        invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
+                        invLocList = InventoryLocationService.get().fetchByLocationNameInventoryItemId(query);
                         for (i = 0; i < invLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             invLoc = invLocList.get(i);
@@ -412,7 +405,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                             model.add(row);
                         }
                     } else {
-                        storLocList = storageService.callList("fetchAvailableByName", param);
+                        storLocList = StorageService.get().fetchAvailableByName(param);
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);

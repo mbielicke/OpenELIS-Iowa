@@ -40,7 +40,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -57,6 +56,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrderManager;
+import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -70,12 +70,8 @@ public class OrganizationTab extends Screen {
     private AppButton             removeOrganizationButton, addOrganizationButton;
     
     private boolean               loaded;
-
-    protected ScreenService       organizationService;
     
     public OrganizationTab(ScreenDefInt def, ScreenWindowInt window) {
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
         setDefinition(def);
         setWindow(window);
@@ -113,7 +109,7 @@ public class OrganizationTab extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (OrganizationDO data : list) {
                         row = new TableDataRow(4);
