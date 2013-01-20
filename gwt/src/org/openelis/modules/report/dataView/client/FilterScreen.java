@@ -33,12 +33,12 @@ import org.openelis.domain.AuxFieldDataViewVO;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.TestAnalyteDataViewVO;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -53,6 +53,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 public class FilterScreen extends Screen {
@@ -72,7 +73,6 @@ public class FilterScreen extends Screen {
     
     public FilterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(FilterDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.dataView.server.DataViewReportService");        
         
         initialize();
         
@@ -538,7 +538,7 @@ public class FilterScreen extends Screen {
         
         try {
             if (reportScreen == null) 
-                reportScreen = new DataViewReportScreen("runReport", window, null);  
+                reportScreen = new DataViewReportScreen("runReport",window, null);  
             else
             	/*
             	 * Since a FilterScreen screen can be reused by DataView Screen in showFilter() 
@@ -546,7 +546,20 @@ public class FilterScreen extends Screen {
             	 */
             	reportScreen.setWindow(window);
             
-            reportScreen.runReport(data);
+            reportScreen.runReport(data, new AsyncCallback<ReportStatus>() {
+                
+                @Override
+                public void onSuccess(ReportStatus result) {
+                    // TODO Auto-generated method stub
+                    
+                }
+                
+                @Override
+                public void onFailure(Throwable caught) {
+                    // TODO Auto-generated method stub
+                    
+                }
+            });
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

@@ -37,7 +37,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
@@ -56,6 +55,7 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
+import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -70,13 +70,11 @@ public class ItemTab extends Screen {
     private OrderManager       orderManager;
     private TableWidget        itemTable, trackingTable;
     private AppButton          addItemButton, removeItemButton, addTrackingButton,
-                    removeTrackingButton, lookupItemButton;
-    private ScreenService      orderService;
+                               removeTrackingButton, lookupItemButton;
     private SendoutOrderScreen sendoutOrderScreen;
     private boolean            loaded;
 
     public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
-        this.orderService = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         setDefinition(def);
         setWindow(window);
 
@@ -397,33 +395,29 @@ public class ItemTab extends Screen {
 
         try {
             window.setBusy(consts.get("fetching"));
-            orderService.call("fetchByShippingItemId",
-                              data.getId(),
-                              new SyncCallback<OrderViewDO>() {
-                                  public void onSuccess(OrderViewDO result) {
-                                      try {
-                                          if (result != null)
-                                              orderManager = OrderManager.fetchById(result.getId());
-                                          else
-                                              orderManager = null;
-                                      } catch (Throwable e) {
-                                          orderManager = null;
-                                          e.printStackTrace();
-                                          Window.alert(e.getMessage());
-                                          window.clearStatus();
-                                      }
-                                  }
-
-                                  public void onFailure(Throwable error) {
-                                      orderManager = null;
-                                      error.printStackTrace();
-                                      Window.alert("Error: Fetch failed; " +
-                                                   error.getMessage());
-                                      window.clearStatus();
-                                  }
-                              });
-
-            if (orderManager != null) {
+            OrderService.get().fetchByShippingItemId(data.getId(), new SyncCallback<OrderViewDO>() {
+                public void onSuccess(OrderViewDO result) {                                    
+                    try {
+                        if(result != null)
+                            orderManager = OrderManager.fetchById(result.getId());
+                        else
+                            orderManager = null;
+                    } catch (Throwable e) {
+                        orderManager = null;
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                        window.clearStatus();
+                    }                                        
+                }
+                public void onFailure(Throwable error) {    
+                    orderManager = null;
+                    error.printStackTrace();
+                    Window.alert("Error: Fetch failed; " + error.getMessage());                    
+                    window.clearStatus();
+                }
+            });    
+            
+            if(orderManager != null) {
                 modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
                 modal.setName(consts.get("sendoutOrder"));
                 if (sendoutOrderScreen == null)

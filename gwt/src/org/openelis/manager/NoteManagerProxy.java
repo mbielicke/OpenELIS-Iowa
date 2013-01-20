@@ -27,15 +27,12 @@ package org.openelis.manager;
 
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.meta.NoteMeta;
+import org.openelis.modules.note.client.NoteService;
 
 public class NoteManagerProxy {
-    protected static final String SERVICE_URL = "org.openelis.modules.note.server.NoteService";
-    protected ScreenService service;
     
     public NoteManagerProxy(){
-        service = new ScreenService("controller?service="+SERVICE_URL);
     }
     
     public NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
@@ -62,7 +59,7 @@ public class NoteManagerProxy {
         field.query = isExternal;
         query.setFields(field);
 
-        return service.call("fetchByRefTableRefIdIsExt", query);
+        return NoteService.get().fetchByRefTableRefIdIsExt(query);
     }
 
     public NoteManager add(NoteManager man) throws Exception {

@@ -25,19 +25,15 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.inventoryTransfer.client.InventoryTransferService;
 
 public class InventoryTransferManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.inventoryTransfer.server.InventoryTransferService";
-    protected ScreenService       service;
     
     public InventoryTransferManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public InventoryTransferManager add(InventoryTransferManager man) throws Exception {
-        return service.call("add", man);
+        return InventoryTransferService.get().add(man);
     }
     
     public void validate(InventoryTransferManager man) throws Exception {

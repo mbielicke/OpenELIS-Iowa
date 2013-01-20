@@ -43,7 +43,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -53,12 +52,11 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -85,6 +83,7 @@ import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -114,12 +113,9 @@ public class InventoryAdjustmentScreen extends Screen {
     protected MenuItem                 inventoryAdjustmentHistory,
                     inventoryAdjustmentLocationHistory;
     private TableWidget                adjustmentTable;
-    private ScreenService              inventoryLocationService;
 
     public InventoryAdjustmentScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryAdjustmentDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService");
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
 
         userPermission = UserCache.getPermission().getModule("inventoryadjustment");
         if (userPermission == null)
@@ -481,7 +477,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 }
 
                 try {
-                    data = inventoryLocationService.call("fetchById", id);
+                    data = InventoryLocationService.get().fetchById(id);
 
                     row = new TableDataRow(7);
                     row.key = data.getId();
@@ -548,8 +544,7 @@ public class InventoryAdjustmentScreen extends Screen {
                 query.setFields(field);
 
                 try {
-                    list = inventoryLocationService.callList("fetchByInventoryItemNameStoreId",
-                                                             query);
+                    list = InventoryLocationService.get().fetchByInventoryItemNameStoreId(query);
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -614,17 +609,15 @@ public class InventoryAdjustmentScreen extends Screen {
             }
         });
 
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<InventoryAdjustmentDO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(19);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<InventoryAdjustmentDO>>() {
-                                     public void onSuccess(ArrayList<InventoryAdjustmentDO> result) {
-                                         setQueryResult(result);
-                                     }
+                InventoryAdjustmentService.get().query(query, new AsyncCallback<ArrayList<InventoryAdjustmentDO>>() {
+                    public void onSuccess(ArrayList<InventoryAdjustmentDO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -642,8 +635,8 @@ public class InventoryAdjustmentScreen extends Screen {
                                  });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((InventoryAdjustmentDO)entry).getId());
+            public boolean fetch(InventoryAdjustmentDO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -740,7 +733,7 @@ public class InventoryAdjustmentScreen extends Screen {
         Datetime now;
         InventoryAdjustmentViewDO data;
         try {
-            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
             Window.alert("Inventory Adjustment Datetime: " + e.getMessage());
             return;

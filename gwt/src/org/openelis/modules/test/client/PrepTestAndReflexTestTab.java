@@ -48,7 +48,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -95,11 +94,9 @@ public class PrepTestAndReflexTestTab extends Screen
     private AutoComplete<Integer> prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
     private Label<String>         prepMethodName, reflexMethodName;
 
-    public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindowInt window,
-                                    ScreenService service) {
+    public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
-        this.service = service;
 
         initialize();
         initializeDropdowns();
@@ -198,8 +195,7 @@ public class PrepTestAndReflexTestTab extends Screen
 
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByName",
-                                            QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
@@ -400,8 +396,7 @@ public class PrepTestAndReflexTestTab extends Screen
 
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByName",
-                                            QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);

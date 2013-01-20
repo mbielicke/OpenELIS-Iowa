@@ -25,39 +25,35 @@
  */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.instrument.client.InstrumentService;
 
 public class InstrumentManagerProxy {
 
-    protected static final String INSTRUMENT_MANAGER_SERVICE_URL = "org.openelis.modules.instrument.server.InstrumentService";
-    protected ScreenService       service;
-
     public InstrumentManagerProxy() {
-        service = new ScreenService("controller?service=" + INSTRUMENT_MANAGER_SERVICE_URL);
     }
 
     public InstrumentManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return InstrumentService.get().fetchById(id);
     }
 
     public InstrumentManager fetchWithLogs(Integer id) throws Exception {
-        return service.call("fetchWithLogs", id);
+        return InstrumentService.get().fetchWithLogs(id);
     }
 
     public InstrumentManager add(InstrumentManager man) throws Exception {
-        return service.call("add", man);
+        return InstrumentService.get().add(man);
     }
 
     public InstrumentManager update(InstrumentManager man) throws Exception {
-        return service.call("update", man);
+        return InstrumentService.get().update(man);
     }
 
     public InstrumentManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return InstrumentService.get().fetchForUpdate(id);
     }
 
     public InstrumentManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return InstrumentService.get().abortUpdate(id);
     }
 
     public void validate(InstrumentManager man) throws Exception {

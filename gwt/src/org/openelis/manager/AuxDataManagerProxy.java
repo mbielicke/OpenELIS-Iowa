@@ -27,14 +27,11 @@ package org.openelis.manager;
 
 import org.openelis.domain.AuxDataDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.auxData.client.AuxDataService;
 
 public class AuxDataManagerProxy {
-    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
-    protected ScreenService service;
     
     public AuxDataManagerProxy(){
-        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
@@ -44,7 +41,7 @@ public class AuxDataManagerProxy {
         auxData.setReferenceId(referenceId);
         auxData.setReferenceTableId(referenceTableId);
         
-        return service.call("fetchById", auxData);
+        return AuxDataService.get().fetchById(auxData);
     }
     
     public AuxDataManager add(AuxDataManager man) throws Exception {

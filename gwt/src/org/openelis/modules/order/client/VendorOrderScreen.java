@@ -41,7 +41,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -51,12 +50,11 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -73,6 +71,7 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.organization.client.OrganizationService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -110,16 +109,12 @@ public class VendorOrderScreen extends Screen {
     private MenuItem          duplicate, orderHistory, itemHistory;
     private TabPanel          tabPanel;
 
-    protected ScreenService   organizationService;
-
     private enum Tabs {
         ITEM, FILL, SHIP_NOTE
     };
 
     public VendorOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(VendorOrderDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         userPermission = UserCache.getPermission().getModule("vendororder");
         if (userPermission == null)
@@ -405,7 +400,7 @@ public class VendorOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -674,7 +669,7 @@ public class VendorOrderScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(Query query) {
                 QueryData field;
 
@@ -687,7 +682,7 @@ public class VendorOrderScreen extends Screen {
                 query.setFields(field);
 
                 query.setRowsPerPage(22);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                OrderService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -707,8 +702,8 @@ public class VendorOrderScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -826,7 +821,7 @@ public class VendorOrderScreen extends Screen {
         OrderViewDO data;
 
         try {
-            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
             Window.alert("OrderAdd Datetime: " + e.getMessage());
             return;
@@ -944,7 +939,7 @@ public class VendorOrderScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
             
-            manager = service.call("duplicate", manager.getOrder().getId());
+            manager = OrderService.get().duplicate(manager.getOrder().getId());
 
             itemTab.setManager(manager);
             shipNoteTab.setManager(manager);

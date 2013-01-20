@@ -25,14 +25,29 @@
 */
 package org.openelis.modules.report.client;
 
-import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
 
-public class VerificationReportScreen extends ReportScreen {
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.screen.ScreenDef;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+public class VerificationReportScreen extends ReportScreen<Query> {
 
     public VerificationReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
         setName(consts.get("verificationReport"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.VerificationReportService");
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return VerificationReportService.get().getPrompts();
+    }
+
+    @Override
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        VerificationReportService.get().runReport(query, callback);
     }
 }

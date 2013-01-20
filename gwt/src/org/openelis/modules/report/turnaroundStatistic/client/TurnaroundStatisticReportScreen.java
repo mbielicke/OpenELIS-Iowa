@@ -25,21 +25,26 @@
  */
 package org.openelis.modules.report.turnaroundStatistic.client;
 
+import java.util.ArrayList;
+
+import org.openelis.domain.TurnAroundReportViewVO;
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't
  * implement ReportScreen like TurnaroundStatisticScreen
  */
-public class TurnaroundStatisticReportScreen extends ReportScreen {
+public class TurnaroundStatisticReportScreen extends ReportScreen<TurnAroundReportViewVO> {
 
     public TurnaroundStatisticReportScreen(ScreenWindowInt window) throws Exception {
         drawScreen(new ScreenDef());
         this.window = window;
-        service = new ScreenService("controller?service=org.openelis.modules.report.turnaroundStatistic.server.TurnaroundStatisticReportService");
     }
 
     /**
@@ -48,5 +53,15 @@ public class TurnaroundStatisticReportScreen extends ReportScreen {
      * this class won't get prompts
      */
     protected void getReportParameters() {
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return null;
+    }
+
+    @Override
+    public void runReport(TurnAroundReportViewVO rpc, AsyncCallback<ReportStatus> callback) {
+        TurnaroundStatisticReportService.get().runReport(rpc, callback);
     }
 }

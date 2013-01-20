@@ -42,7 +42,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.event.ActionEvent;
@@ -54,12 +53,11 @@ import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -76,6 +74,7 @@ import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.report.client.ShippingReportScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -120,8 +119,6 @@ public class ShippingScreen extends Screen implements
     private ShippingReportScreen  shippingReportScreen;
     private boolean               openedFromMenu;
 
-    protected ScreenService       organizationService;
-
     private enum Tabs {
         ITEM, SHIP_NOTE
     };
@@ -144,8 +141,6 @@ public class ShippingScreen extends Screen implements
     }
 
     private void ShippingScreenImpl(boolean fromMenu) throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         userPermission = UserCache.getPermission().getModule("shipping");
         if (userPermission == null)
@@ -531,8 +526,7 @@ public class ShippingScreen extends Screen implements
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName",
-                                                        QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -774,17 +768,15 @@ public class ShippingScreen extends Screen implements
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(12);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<IdNameVO>>() {
-                                     public void onSuccess(ArrayList<IdNameVO> result) {
-                                         setQueryResult(result);
-                                     }
+                ShippingService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -802,8 +794,8 @@ public class ShippingScreen extends Screen implements
                                  });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById((entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -916,7 +908,7 @@ public class ShippingScreen extends Screen implements
         Datetime now;
 
         try {
-            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
             Window.alert("Shipping Add Datetime: " + e.getMessage());
             return;
@@ -1330,7 +1322,7 @@ public class ShippingScreen extends Screen implements
     }
 
     private void setProcessShippingData(ShippingViewDO data) throws Exception {
-        data.setShippedDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
+        data.setShippedDate(CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
         data.setStatusId(Constants.dictionary().SHIPPING_STATUS_SHIPPED);
     }
 }

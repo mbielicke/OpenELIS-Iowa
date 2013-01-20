@@ -29,18 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
-import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -48,8 +38,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -60,8 +48,8 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -76,7 +64,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Confirm;
@@ -106,10 +93,24 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCreationMeta;
+import org.openelis.modules.analysis.client.AnalysisService;
+import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.qc.client.QcLookupScreen;
+import org.openelis.modules.qc.client.QcService;
+import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
+import org.openelis.modules.worksheet.client.WorksheetService;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetCreationScreen1 extends Screen {
 
@@ -117,8 +118,6 @@ public class WorksheetCreationScreen1 extends Screen {
     private int                                tempId, qcStartIndex;
     private String                             typeLastBothString, typeLastRunString,
                                                typeLastSubsetString, typeRandString;
-    private ScreenService                      analysisService, instrumentService,
-                                               qcService, testService, worksheetService;
     private ModulePermission                   userPermission;
     private WorksheetManager                   manager;
 
@@ -151,13 +150,6 @@ public class WorksheetCreationScreen1 extends Screen {
     
     public WorksheetCreationScreen1() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef1.class));
-
-        service           = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-        analysisService   = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
-        instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
-        qcService         = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        testService       = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        worksheetService  = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
@@ -281,7 +273,7 @@ public class WorksheetCreationScreen1 extends Screen {
 
                 try {
                     model = new ArrayList<TableDataRow>();
-                    matches = instrumentService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    matches = InstrumentService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (int i = 0; i < matches.size(); i++) {
                         iVDO = (InstrumentViewDO)matches.get(i);
                         
@@ -383,7 +375,7 @@ public class WorksheetCreationScreen1 extends Screen {
 
                 query.setFields(fields);
                 try {
-                    list = testService.callList("fetchUnitsForWorksheetAutocomplete", query);
+                    list = TestService.get().fetchUnitsForWorksheetAutocomplete(query);
                     for (IdNameVO unitVO : list)
                         model.add(new TableDataRow(unitVO.getId(),unitVO.getName()));
                     unitOfMeasureId.showAutoMatches(model);
@@ -695,7 +687,7 @@ public class WorksheetCreationScreen1 extends Screen {
         formatColumnNames = new HashMap<Integer,HashMap<Integer,String>>();
 
         try {
-            columnNameVOs = service.callList("getColumnNames", formatId.getValue());
+            columnNameVOs = WorksheetCreationService.get().getColumnNames(formatId.getValue());
             toColumnNames = new HashMap<String,Integer>();
             for (i = 0; i < columnNameVOs.size(); i++) {
                 columnNameVO = columnNameVOs.get(i);
@@ -775,7 +767,7 @@ public class WorksheetCreationScreen1 extends Screen {
                         fromColumnNames = formatColumnNames.get(fromFormatId);
                         if (fromColumnNames == null) {
                             try {
-                                columnNameVOs = service.callList("getColumnNames", fromFormatId);
+                                columnNameVOs = WorksheetCreationService.get().getColumnNames(fromFormatId);
                                 fromColumnNames = new HashMap<Integer,String>();
                                 for (j = 0; j < columnNameVOs.size(); j++) {
                                     columnNameVO = columnNameVOs.get(j);
@@ -856,7 +848,7 @@ public class WorksheetCreationScreen1 extends Screen {
         }
         
         final WorksheetCreationScreen1 wcs = this;
-        worksheetService.call("add", manager, new AsyncCallback<WorksheetManager>() {
+        WorksheetService.get().add(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager newMan) {
                 manager = newMan;
 
@@ -975,7 +967,7 @@ public class WorksheetCreationScreen1 extends Screen {
                 twiDO = twManager.getItemAt(i);
                 try {
                     if (!Constants.dictionary().POS_DUPLICATE.equals(twiDO.getTypeId())) {
-                        list = qcService.callList("fetchActiveByName", twiDO.getQcName());
+                        list = QcService.get().fetchActiveByName(twiDO.getQcName());
                         if (list.size() == 0) {
                             if (Constants.dictionary().POS_RANDOM.equals(twiDO.getTypeId())) {
                                 qcErrors.put(-1, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeRandString));
@@ -1372,8 +1364,8 @@ public class WorksheetCreationScreen1 extends Screen {
                                                             newRow = new TableDataRow(11);
                                                             try {
                                                                 if (waDO.getAnalysisId() != null) {
-                                                                    aVDO = analysisService.call("fetchById", waDO.getAnalysisId());
-                                                                    wrManager = worksheetService.call("fetchWorksheeetResultByWorksheetAnalysisId", waDO.getId());
+                                                                    aVDO = AnalysisService.get().fetchById(waDO.getAnalysisId());
+                                                                    wrManager = WorksheetService.get().fetchWorksheeetResultByWorksheetAnalysisId(waDO.getId());
                                                                     
                                                                     newRow.key = getNextTempId();
                                                                     newRow.cells.get(1).value = waDO.getAccessionNumber();
@@ -1387,8 +1379,8 @@ public class WorksheetCreationScreen1 extends Screen {
                                                                     dataList.add(fromFormatId);
                                                                     newRow.data = dataList;
                                                                 } else if (waDO.getQcLotId() != null) {
-                                                                    qcLotVDO = qcService.call("fetchLotById", waDO.getQcLotId());
-                                                                    wqrManager = worksheetService.call("fetchWorksheeetQcResultByWorksheetAnalysisId", waDO.getId());
+                                                                    qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
+                                                                    wqrManager = WorksheetService.get().fetchWorksheeetQcResultByWorksheetAnalysisId(waDO.getId());
                                                                     
                                                                     newRow.cells.get(1).value = waDO.getAccessionNumber();
                                                                     newRow.cells.get(2).value = qcLotVDO.getQcName();

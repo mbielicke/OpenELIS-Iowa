@@ -48,7 +48,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -61,12 +61,11 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -89,10 +88,12 @@ import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.report.orderRequestForm.client.OrderRequestFormReportScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.shipping.client.ShippingScreen;
+import org.openelis.modules.shipping.client.ShippingService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -151,9 +152,6 @@ public class SendoutOrderScreen extends Screen {
 
     private String                       descQuery;
 
-    protected ScreenService              organizationService, shippingService,
-                    panelService;
-
     private enum Tabs {
         ORGANIZATION, AUX_DATA, TEST, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE,
         INTERNAL_NOTE, SAMPLE_NOTE, RECURRENCE, FILL
@@ -173,10 +171,6 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void SendoutOrderScreenImpl() throws Exception {
-        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
-        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
 
         userPermission = UserCache.getPermission();
         userModulePermission = userPermission.getModule("sendoutorder");
@@ -577,8 +571,7 @@ public class SendoutOrderScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName",
-                                                        QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -904,8 +897,7 @@ public class SendoutOrderScreen extends Screen {
                     model.add(row);
 
                     if (descQuery == null || ( ! (match.indexOf(descQuery) == 0))) {
-                        dataList = service.callList("fetchByDescription",
-                                                    QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                        dataList = OrderService.get().fetchByDescription(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                         matchList = new ArrayList<String>();
                         for (int i = 0; i < dataList.size(); i++ ) {
                             data = dataList.get(i);
@@ -1133,7 +1125,7 @@ public class SendoutOrderScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(Query query) {
                 QueryData field;
 
@@ -1146,12 +1138,10 @@ public class SendoutOrderScreen extends Screen {
                 query.setFields(field);
 
                 query.setRowsPerPage(23);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<IdNameVO>>() {
-                                     public void onSuccess(ArrayList<IdNameVO> result) {
-                                         setQueryResult(result);
-                                     }
+                OrderService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -1169,8 +1159,8 @@ public class SendoutOrderScreen extends Screen {
                                  });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -1362,7 +1352,7 @@ public class SendoutOrderScreen extends Screen {
         OrderViewDO data;
 
         try {
-            now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
+            now = CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
         } catch (Exception e) {
             Window.alert("OrderAdd Datetime: " + e.getMessage());
             return;
@@ -1636,7 +1626,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
 
-            manager = service.call("duplicate", manager.getOrder().getId());
+            manager = OrderService.get().duplicate(manager.getOrder().getId());
 
             organizationTab.setManager(manager);
             auxDataTab.setManager(manager);
@@ -1670,8 +1660,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
 
-            shippingService.call("fetchByOrderId",
-                                 manager.getOrder().getId(),
+            ShippingService.get().fetchByOrderId(manager.getOrder().getId(),
                                  new SyncCallback<ShippingViewDO>() {
                                      public void onSuccess(ShippingViewDO result) {
                                          try {

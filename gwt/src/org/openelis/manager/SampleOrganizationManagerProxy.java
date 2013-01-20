@@ -30,19 +30,16 @@ import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.sample.client.SampleService;
 
 public class SampleOrganizationManagerProxy {
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService       service;
 
     public SampleOrganizationManagerProxy() {
-        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
     }
 
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
-        return service.call("fetchSampleOrganizationsBySampleId", sampleId);
+        return SampleService.get().fetchSampleOrganizationsBySampleId(sampleId);
     }
 
     public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {

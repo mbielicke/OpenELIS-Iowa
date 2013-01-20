@@ -41,7 +41,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
@@ -78,7 +77,6 @@ public class ToBeVerifiedTab extends Screen {
     public ToBeVerifiedTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
-        service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");        
         initialize();        
         initializeDropdowns();
     }
@@ -152,7 +150,7 @@ public class ToBeVerifiedTab extends Screen {
                 refreshChart();
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getToBeVerified", new AsyncCallback<ArrayList<ToDoSampleViewVO>>() {
+            ToDoService.get().getToBeVerified(new AsyncCallback<ArrayList<ToDoSampleViewVO>>() {
                 public void onSuccess(ArrayList<ToDoSampleViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     

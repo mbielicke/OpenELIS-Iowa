@@ -38,18 +38,16 @@ import org.openelis.domain.IdVO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
+import org.openelis.modules.panel.client.PanelService;
 import org.openelis.utilcommon.ResultValidator;
 
 public class AuxDataUtil {
     
-    private static ScreenService panelService;
     private static HashMap<Integer, ResultValidator.Type> types;
     
     static {
-        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
     } 
     
     private static void initialize() throws Exception {
@@ -73,7 +71,7 @@ public class AuxDataUtil {
     public static ValidationErrorsList addAuxGroupsFromPanel(Integer panelId, AuxDataManager auxMan) throws Exception {
         ArrayList<IdVO> auxIds;
 
-        auxIds = panelService.callList("fetchAuxIdsByPanelId", panelId);
+        auxIds = PanelService.get().fetchAuxIdsByPanelId(panelId);
      
         return addAuxGroupsFromAuxIds(auxIds, auxMan);
     }

@@ -26,14 +26,10 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 
 public class SampleSDWISManagerProxy {
-    protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService       service;
 
     public SampleSDWISManagerProxy() {
-        service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
     }
     
     public SampleSDWISManager fetchBySampleId(Integer sampleId) throws Exception {

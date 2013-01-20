@@ -44,7 +44,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -58,7 +57,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -124,7 +122,6 @@ public class InventoryItemScreen extends Screen {
 
     public InventoryItemScreen() throws Exception {
         super((ScreenDefInt)GWT.create(InventoryItemDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         userPermission = UserCache.getPermission().getModule("inventoryitem");
         if (userPermission == null)
@@ -661,7 +658,7 @@ public class InventoryItemScreen extends Screen {
                 DictionaryDO store, units;
 
                 try {
-                    list = service.callList("fetchActiveByName", event.getMatch());
+                    list = InventoryItemService.get().fetchActiveByName(event.getMatch());
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -818,17 +815,15 @@ public class InventoryItemScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameStoreVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(23);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<IdNameStoreVO>>() {
-                                     public void onSuccess(ArrayList<IdNameStoreVO> result) {
-                                         setQueryResult(result);
-                                     }
+                InventoryItemService.get().query(query, new AsyncCallback<ArrayList<IdNameStoreVO>>() {
+                    public void onSuccess(ArrayList<IdNameStoreVO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -846,7 +841,7 @@ public class InventoryItemScreen extends Screen {
                                  });
             }
 
-            public boolean fetch(RPC entry) {
+            public boolean fetch(IdNameStoreVO entry) {
                 return fetchById( (entry == null) ? null : ((IdNameStoreVO)entry).getId());
             }
 

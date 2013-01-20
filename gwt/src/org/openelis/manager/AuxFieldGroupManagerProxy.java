@@ -26,38 +26,35 @@
 package org.openelis.manager;
 
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
 
 public class AuxFieldGroupManagerProxy {
-    protected static final String AUXILIARY_SERVICE_URL = "org.openelis.modules.auxiliary.server.AuxiliaryService";
-    protected ScreenService service;
     
     public AuxFieldGroupManagerProxy(){
-        service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
-        return service.call("fetchGroupById", id);
+        return AuxiliaryService.get().fetchGroupById(id);
     }
     
     public AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception{
-        return service.call("fetchGroupByIdWithFields", id);
+        return AuxiliaryService.get().fetchGroupByIdWithFields(id);
     }
     
     public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {
-        return service.call("add", man);
+        return AuxiliaryService.get().add(man);
     }
     
     public AuxFieldGroupManager update(AuxFieldGroupManager man) throws Exception {
-        return service.call("update", man);
+        return AuxiliaryService.get().update(man);
     }
     
     public AuxFieldGroupManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return AuxiliaryService.get().fetchForUpdate(id);
     }
     
     public AuxFieldGroupManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return AuxiliaryService.get().abortUpdate(id);
     }
     
     public void validate(AuxFieldGroupManager man, ValidationErrorsList errorsList) throws Exception {

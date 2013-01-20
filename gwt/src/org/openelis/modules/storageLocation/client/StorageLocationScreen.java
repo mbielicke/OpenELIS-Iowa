@@ -36,7 +36,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -50,7 +49,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -74,6 +72,7 @@ import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.StorageLocationMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.storageunit.client.StorageUnitService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -97,12 +96,8 @@ public class StorageLocationScreen extends Screen {
     private ScreenNavigator        nav;
     private TableWidget            childStorageLocsTable;
 
-    private ScreenService          storageUnitService;
-
     public StorageLocationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(StorageLocationDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.storageLocation.server.StorageLocationService");
-        storageUnitService = new ScreenService("controller?service=org.openelis.modules.storageunit.server.StorageUnitService");
 
         userPermission = UserCache.getPermission().getModule("storagelocation");
         if (userPermission == null)
@@ -308,7 +303,7 @@ public class StorageLocationScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = storageUnitService.callList("fetchByDescription", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = StorageUnitService.get().fetchByDescription(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -431,7 +426,7 @@ public class StorageLocationScreen extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = storageUnitService.callList("fetchByDescription", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = StorageUnitService.get().fetchByDescription(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -497,12 +492,12 @@ public class StorageLocationScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(18);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                StorageLocationService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -523,8 +518,8 @@ public class StorageLocationScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -798,6 +793,6 @@ public class StorageLocationScreen extends Screen {
     private void validateForDelete(StorageLocationViewDO data) throws Exception {
         if (data.getId() == null)
             return;
-        service.call("validateForDelete", data);
+        StorageLocationService.get().validateForDelete(data);
     }
 }

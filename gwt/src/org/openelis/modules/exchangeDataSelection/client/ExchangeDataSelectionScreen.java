@@ -50,7 +50,7 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -64,7 +64,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
@@ -97,8 +96,11 @@ import org.openelis.meta.EventLogMeta;
 import org.openelis.meta.ExchangeCriteriaMeta;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.report.dataExchange.client.DataExchangeReportScreen;
+import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -137,14 +139,8 @@ public class ExchangeDataSelectionScreen extends Screen {
     private ExchangeDataSelectionScreen screen;
     private DataExchangeReportScreen    dataExchangeReportScreen; 
     
-    private ScreenService               testService, organizationService, eventLogService;
-
     public ExchangeDataSelectionScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeDataSelectionDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.exchangeDataSelection.server.ExchangeDataSelectionService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        eventLogService = new ScreenService("controller?service=org.openelis.modules.eventLog.server.EventLogService");
 
         userPermission = UserCache.getPermission().getModule("exchangedataselection");
         if (userPermission == null)
@@ -701,7 +697,7 @@ public class ExchangeDataSelectionScreen extends Screen {
 
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -859,12 +855,12 @@ public class ExchangeDataSelectionScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(20);
-                service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                ExchangeDataSelectionService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
@@ -885,8 +881,8 @@ public class ExchangeDataSelectionScreen extends Screen {
                 });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -1003,7 +999,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         domain.setModel(model);
         
         try {
-            tests = testService.callList("fetchList");
+            tests = TestService.get().fetchList();
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
             for (TestMethodVO n : tests) {
@@ -1022,7 +1018,7 @@ public class ExchangeDataSelectionScreen extends Screen {
             
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
-            params = organizationService.callList("fetchParametersByDictionarySystemName",  "org_electronic_format");
+            params = OrganizationService.get().fetchParametersByDictionarySystemName("org_electronic_format");
             values = new HashSet<String>();
             for (OrganizationParameterDO p : params) {
                 /*
@@ -1252,7 +1248,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         try {
             window.setBusy(consts.get("fetching"));
             
-            manager = service.call("duplicate", manager.getExchangeCriteria().getId());
+            manager = ExchangeDataSelectionService.get().duplicate(manager.getExchangeCriteria().getId());
 
             setState(State.ADD);
             DataChangeEvent.fire(this);
@@ -1321,7 +1317,7 @@ public class ExchangeDataSelectionScreen extends Screen {
              * fetch the names of the organizations selected by the user in the 
              * past since they are not stored with the ids in the query   
              */
-            orgList = organizationService.callList("query", query);
+            orgList = OrganizationService.get().query(query);
             
             for (IdNameVO org: orgList) {
                 row = new TableDataRow(org.getId(), org.getName());
@@ -1395,7 +1391,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         try {           
             window.setBusy(consts.get("fetching"));                      
             
-            logs = eventLogService.callList("query", query); 
+            logs = EventLogService.get().query(query); 
             
             for (EventLogDO log : logs) {
                 row = new TableDataRow(1);
@@ -1450,7 +1446,7 @@ public class ExchangeDataSelectionScreen extends Screen {
              * run the query, get the list of samples and show the accession numbers
              */
             window.setBusy(consts.get("fetching"));
-            samples = service.callList("dataExchangeQuery", query);
+            samples = ExchangeDataSelectionService.get().dataExchangeQuery(query);
             list = new ArrayList<String>();
             for (IdAccessionVO s : samples) 
                 list.add(s.getAccessionNumber().toString());
@@ -1594,7 +1590,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         
         try {
             if (dataExchangeReportScreen == null) 
-                dataExchangeReportScreen = new DataExchangeReportScreen("exportToLocation", window);  
+                dataExchangeReportScreen = new DataExchangeReportScreen("exportToLocation",window);  
             else
                 dataExchangeReportScreen.setWindow(window);
             

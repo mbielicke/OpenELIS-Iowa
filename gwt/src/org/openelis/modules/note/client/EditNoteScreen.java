@@ -45,7 +45,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextArea;
@@ -55,6 +54,7 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.LeafOpenedEvent;
 import org.openelis.gwt.widget.tree.event.LeafOpenedHandler;
 import org.openelis.meta.StandardNoteMeta;
+import org.openelis.modules.standardnote.client.StandardNoteService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +82,6 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
     public EditNoteScreen() throws Exception {
         super((ScreenDefInt)GWT.create(EditNoteDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
         initialize();
         setState(State.DEFAULT);
@@ -265,7 +264,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         window.setBusy("querying");
 
-        service.callList("fetchByNameOrDescription", query, new AsyncCallback<ArrayList<StandardNoteDO>>() {
+        StandardNoteService.get().fetchByNameOrDescription(query, new AsyncCallback<ArrayList<StandardNoteDO>>() {
             public void onSuccess(ArrayList<StandardNoteDO> result) {
                 buildTree(result);
                 window.clearStatus();
@@ -288,7 +287,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     private void find(final TreeDataItem row, Integer typeId) {
         window.setBusy("querying");
 
-        service.callList("fetchByType", typeId, new AsyncCallback<ArrayList<StandardNoteDO>>() {
+        StandardNoteService.get().fetchByType(typeId, new AsyncCallback<ArrayList<StandardNoteDO>>() {
             public void onSuccess(ArrayList<StandardNoteDO> result) {
                 buildTree(row, result);
                 window.clearStatus();

@@ -1,18 +1,14 @@
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.provider.client.ProviderService;
 
 public class ProviderLocationManagerProxy {
     
-	protected static final String SERVICE_URL = "org.openelis.modules.provider.server.ProviderService";
-    protected ScreenService       service;
-
     public ProviderLocationManagerProxy() {
-        service = new ScreenService("controller?service=" + SERVICE_URL);
     }
 
     public ProviderLocationManager fetchByProviderId(Integer orgId) throws Exception {
-        return service.call("fetchLocationByProviderId", orgId);
+        return ProviderService.get().fetchLocationByProviderId(orgId);
     }
 
     public ProviderLocationManager add(ProviderLocationManager man) throws Exception {

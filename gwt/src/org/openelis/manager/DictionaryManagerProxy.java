@@ -25,20 +25,16 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.dictionary.client.DictionaryService;
 
 
 public class DictionaryManagerProxy {
-    
-    protected static final String DICTIONARY_MANAGER_SERVICE_URL = "org.openelis.modules.dictionary.server.DictionaryService";
-    protected ScreenService service;
-    
+        
     public DictionaryManagerProxy() {
-        service = new ScreenService("controller?service="+DICTIONARY_MANAGER_SERVICE_URL);
     }
     
     public DictionaryManager fetchByCategoryId(Integer categoryId)throws Exception {
-        return service.call("fetchEntryByCategoryId", categoryId);
+        return DictionaryService.get().fetchEntryByCategoryId(categoryId);
     }
     
     public DictionaryManager add(DictionaryManager man) throws Exception {

@@ -42,7 +42,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -61,6 +60,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
+import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -76,16 +76,13 @@ public class AnalyteTab extends Screen {
     private TableWidget                 table;
 
     private DictionaryLookupScreen      dictLookup;
-    private ScreenService               analyteService;
 
     private boolean                     loaded;
 
     public AnalyteTab(ScreenDefInt def, ScreenWindowInt window) {        
         setDefinition(def);
         setWindow(window);
-        
-        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        
+                
         initialize();
         initializeDropdowns();
     }
@@ -180,7 +177,7 @@ public class AnalyteTab extends Screen {
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = analyteService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = AnalyteService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {

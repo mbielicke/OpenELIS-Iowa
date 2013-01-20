@@ -26,6 +26,7 @@
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.openelis.domain.AnalysisViewDO;
@@ -39,9 +40,8 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
@@ -49,6 +49,7 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.modules.auxData.client.AuxDataUtil;
+import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
 
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -66,11 +67,10 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     protected Screen                               screen;
 
     private ArrayList<SampleDataBundle>            bundles, analysisDataBundles;
-    private ScreenService                          panelService;
     private ValidationErrorsList                   errorsList;
 
     public TestPrepUtility() {
-        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
+
     }
 
     public Screen getScreen() {
@@ -119,8 +119,8 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
         // we need to expand a panel to test ids
         if (type == Type.PANEL) {
-            testIds = panelService.callList("fetchTestIdsByPanelId", id);
-            auxIds = panelService.callList("fetchAuxIdsByPanelId", id);
+            testIds = PanelService.get().fetchTestIdsByPanelId(id);
+            auxIds = PanelService.get().fetchAuxIdsByPanelId(id);
         } else {
             testIds = new ArrayList<IdVO>(1);
             testIds.add(new IdVO(id));
@@ -355,7 +355,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prepDO.getStatusId()) ||
                     Constants.dictionary().ANALYSIS_RELEASED.equals(prepDO.getStatusId())) {
                     anDO.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN); 
-                    anDO.setAvailableDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+                    anDO.setAvailableDate(CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
                 } else {
                     anDO.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
                     anDO.setAvailableDate(null);

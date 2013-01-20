@@ -25,17 +25,14 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.pws.client.PWSService;
 
 public class PWSFacilityManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.pws.server.PWSService";
-    protected ScreenService       service;
     
     public PWSFacilityManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public PWSFacilityManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        return service.call("fetchFacilityByTinwsysIsNumber", tinwsysIsNumber);
+        return PWSService.get().fetchFacilityByTinwsysIsNumber(tinwsysIsNumber);
     }    
 }

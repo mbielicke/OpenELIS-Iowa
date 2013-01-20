@@ -25,15 +25,11 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.test.client.TestService;
 
 public class TestPrepManagerProxy {
-
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService service;
     
     public TestPrepManagerProxy() {
-        service = new ScreenService("controller?service="+TEST_MANAGER_SERVICE_URL);
     }
     
     public TestPrepManager add(TestPrepManager man) throws Exception {
@@ -45,7 +41,7 @@ public class TestPrepManagerProxy {
     }
     
     public TestPrepManager fetchByTestId(Integer testId) throws Exception {
-        return service.call("fetchPrepTestsByTestId", testId);
+        return TestService.get().fetchPrepTestsByTestId(testId);
     } 
     
     public void validate(TestPrepManager man) throws Exception {        

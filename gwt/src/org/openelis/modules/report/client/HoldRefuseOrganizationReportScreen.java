@@ -25,14 +25,30 @@
 */
 package org.openelis.modules.report.client;
 
-import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
 
-public class HoldRefuseOrganizationReportScreen extends ReportScreen {
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.screen.ScreenDef;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
+public class HoldRefuseOrganizationReportScreen extends ReportScreen<Query> {
 
     public HoldRefuseOrganizationReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
         setName(consts.get("holdRefuseOrganization"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.HoldRefuseOrganizationReportService");
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return HoldRefuseOrganizationReportService.get().getPrompts();
+    }
+
+    @Override
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        HoldRefuseOrganizationReportService.get().runReport((Query)query, callback);
+        
     }
 }

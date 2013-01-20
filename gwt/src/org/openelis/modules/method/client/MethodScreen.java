@@ -37,7 +37,6 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -49,7 +48,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
@@ -86,7 +84,6 @@ public class MethodScreen extends Screen {
 
     public MethodScreen() throws Exception {
         super((ScreenDefInt)GWT.create(MethodDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService");
 
         userPermission = UserCache.getPermission().getModule("method");
         if (userPermission == null)
@@ -322,17 +319,15 @@ public class MethodScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator(def) {
+        nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(9);
-                service.callList("query",
-                                 query,
-                                 new AsyncCallback<ArrayList<IdNameVO>>() {
-                                     public void onSuccess(ArrayList<IdNameVO> result) {
-                                         setQueryResult(result);
-                                     }
+                MethodService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
+                        setQueryResult(result);
+                    }
 
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
@@ -350,8 +345,8 @@ public class MethodScreen extends Screen {
                                  });
             }
 
-            public boolean fetch(RPC entry) {
-                return fetchById( (entry == null) ? null : ((IdNameVO)entry).getId());
+            public boolean fetch(IdNameVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
@@ -435,7 +430,7 @@ public class MethodScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            data = MethodService.get().fetchForUpdate(data.getId());
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -463,7 +458,7 @@ public class MethodScreen extends Screen {
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
-                data = service.call("add", data);
+                data = MethodService.get().add(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -477,7 +472,7 @@ public class MethodScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                data = service.call("update", data);
+                data = MethodService.get().update(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -486,19 +481,6 @@ public class MethodScreen extends Screen {
                 showErrors(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
-                window.clearStatus();
-            }
-        } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
-            try {
-                service.call("delete", data.getId());
-
-                fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitDelete(): " + e.getMessage());
                 window.clearStatus();
             }
         }
@@ -517,7 +499,7 @@ public class MethodScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                data = MethodService.get().abortUpdate(data.getId());
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -525,16 +507,6 @@ public class MethodScreen extends Screen {
                 fetchById(null);
             }
             window.setDone(consts.get("updateAborted"));
-        } else if (state == State.DELETE) {
-            try {
-                data = service.call("abortUpdate", data.getId());
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                fetchById(null);
-            }
-            window.setDone(consts.get("deleteAborted"));
         } else {
             window.clearStatus();
         }
@@ -556,7 +528,7 @@ public class MethodScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                data = service.call("fetchById", id);
+                data = MethodService.get().fetchById(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);

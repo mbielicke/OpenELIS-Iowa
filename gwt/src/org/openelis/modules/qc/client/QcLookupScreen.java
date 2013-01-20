@@ -42,7 +42,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
@@ -58,8 +57,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -78,7 +75,6 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
 
     public QcLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcLookupDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");        
         
         // Setup link between Screen and widget Handlers
         initialize();
@@ -269,7 +265,7 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
 
         window.setBusy(consts.get("querying"));
 
-        service.callList("fetchActiveByName", query, new AsyncCallback<ArrayList<QcLotViewDO>>() {
+        QcService.get().fetchActiveByName(query, new AsyncCallback<ArrayList<QcLotViewDO>>() {
             public void onSuccess(ArrayList<QcLotViewDO> result) {
                 setQueryResult(result);
             }

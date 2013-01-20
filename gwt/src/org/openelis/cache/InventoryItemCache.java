@@ -28,17 +28,12 @@ package org.openelis.cache;
 import java.util.HashMap;
 
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.gwt.services.ScreenService;
 
 public class InventoryItemCache {   
     protected static HashMap<Integer, InventoryItemDO> cache;
-    protected static final String                      SERVICE_URL;
-    protected static ScreenService                     service;
     
     static {
         cache = new HashMap<Integer, InventoryItemDO>();
-        SERVICE_URL = "org.openelis.server.InventoryItemCacheService";
-        service = new ScreenService("controller?service="+SERVICE_URL);
     }
     
     public static InventoryItemDO getById(Integer id) throws Exception {
@@ -47,7 +42,7 @@ public class InventoryItemCache {
         data = cache.get(id);
         if(data == null) {
             try{
-                data = (InventoryItemDO)service.call("getById", id);
+                data = (InventoryItemDO)InventoryItemCacheService.get().getById(id);
                 
                 if(data != null)
                     cache.put(data.getId(), data);

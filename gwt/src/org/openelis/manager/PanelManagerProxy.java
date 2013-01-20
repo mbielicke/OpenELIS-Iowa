@@ -25,43 +25,39 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.panel.client.PanelService;
 
 public class PanelManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.panel.server.PanelService";
-    protected ScreenService       service;
     
     public PanelManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
     public PanelManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
+        return PanelService.get().fetchById(id);
     }
     
     public PanelManager fetchWithItems(Integer id) throws Exception {
-        return service.call("fetchWithItems", id);
+        return PanelService.get().fetchWithItems(id);
     }
     
     public PanelManager add(PanelManager man) throws Exception {
-        return service.call("add", man);
+        return PanelService.get().add(man);
     }
     
     public PanelManager update(PanelManager man) throws Exception {
-        return service.call("update", man);
+        return PanelService.get().update(man);
     }
     
     public void delete(PanelManager man) throws Exception {
-        service.call("delete", man);
+        PanelService.get().delete(man);
     }
     
     public PanelManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
+        return PanelService.get().fetchForUpdate(id);
     }
     
     public PanelManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+        return PanelService.get().abortUpdate(id);
     }
     
     @SuppressWarnings("unused")

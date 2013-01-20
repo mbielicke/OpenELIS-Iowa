@@ -25,19 +25,24 @@
  */
 package org.openelis.modules.report.client;
 
+import java.util.ArrayList;
+
+import org.openelis.gwt.common.Prompt;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't
  * implement ReportScreen like Shipping and Fill Order
  */
-public class ShippingReportScreen extends ReportScreen {
+public class ShippingReportScreen extends ReportScreen<Query> {
 
     public ShippingReportScreen() throws Exception {
         drawScreen(new ScreenDef());
         setName(consts.get("print"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.ShippingReportService");
     }
     
     public void runReport() {
@@ -45,5 +50,15 @@ public class ShippingReportScreen extends ReportScreen {
             "Y".equals((String)getFieldValue("REQUESTFORM")) || "Y".equals((String)getFieldValue("INSTRUCTION")))
             super.runReport();
         window.close();
+    }
+
+    @Override
+    protected ArrayList<Prompt> getPrompts() throws Exception {
+        return ShippingReportService.get().getPrompts();
+    }
+
+    @Override
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        ShippingReportService.get().runReport(query, callback);
     }
 }

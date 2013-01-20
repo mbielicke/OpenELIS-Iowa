@@ -40,7 +40,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -71,7 +70,6 @@ public class HistoryScreen extends Screen {
     
     protected HistoryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(HistoryDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.history.server.HistoryService");
         
         initialize();
         setState(State.DEFAULT);
@@ -224,7 +222,7 @@ public class HistoryScreen extends Screen {
 
         window.setBusy(consts.get("fetching"));
         try {
-            list = service.callList("fetchByReferenceIdAndTable", query);
+            list = HistoryService.get().fetchByReferenceIdAndTable(query);
             for (HistoryVO data : list) {
                 item = new TreeDataItem(3);
                 item.leafType = "historyItem";
