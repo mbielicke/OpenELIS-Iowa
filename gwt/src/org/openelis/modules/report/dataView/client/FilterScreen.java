@@ -546,20 +546,8 @@ public class FilterScreen extends Screen {
             	 */
             	reportScreen.setWindow(window);
             
-            reportScreen.runReport(data, new AsyncCallback<ReportStatus>() {
+            reportScreen.runReport(data);
                 
-                @Override
-                public void onSuccess(ReportStatus result) {
-                    // TODO Auto-generated method stub
-                    
-                }
-                
-                @Override
-                public void onFailure(Throwable caught) {
-                    // TODO Auto-generated method stub
-                    
-                }
-            });
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
