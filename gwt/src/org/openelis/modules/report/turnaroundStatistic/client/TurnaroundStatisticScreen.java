@@ -692,20 +692,7 @@ public class TurnaroundStatisticScreen extends Screen {
             plotData.setToDate(data.getReleasedDateTo().getDate());
             plotData.setIntervalId(data.getPlotIntervalId());
             plotData.setPrinter(data.getPrinter());
-            turnaroundReportScreen.runReport(plotData, new AsyncCallback<ReportStatus>() {
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    // TODO Auto-generated method stub
-                    
-                }
-
-                @Override
-                public void onSuccess(ReportStatus result) {
-                    // TODO Auto-generated method stub
-                    
-                }
-            });
+            turnaroundReportScreen.runReport(plotData);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
