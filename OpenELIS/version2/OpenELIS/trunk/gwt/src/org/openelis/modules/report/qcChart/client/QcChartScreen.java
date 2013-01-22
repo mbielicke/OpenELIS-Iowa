@@ -602,20 +602,7 @@ public class QcChartScreen extends Screen {
                 qcChartReportScreen.setWindow(window);
 
             results.setQcName(data.getName());
-            qcChartReportScreen.runReport(results, new AsyncCallback<ReportStatus>() {
-
-                @Override
-                public void onFailure(Throwable caught) {
-                    // TODO Auto-generated method stub
-                    
-                }
-
-                @Override
-                public void onSuccess(ReportStatus result) {
-                    // TODO Auto-generated method stub
-                    
-                }
-            });
+            qcChartReportScreen.runReport(results);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
