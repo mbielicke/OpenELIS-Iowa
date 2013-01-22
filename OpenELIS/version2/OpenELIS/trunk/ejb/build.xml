@@ -102,6 +102,8 @@
 			<include name="lib/commons-fileupload-1.2.1.jar"/>
 		</fileset>
 	</ear>
+	
+	<copy file="build/openelis.ear" todir="/usr/local/java/jboss-as-7.1.1.Final/standalone/deployments"/>
 
 </project>
 
