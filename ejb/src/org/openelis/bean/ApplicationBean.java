@@ -56,12 +56,11 @@ public class ApplicationBean {
     private DictionaryBean     dictionary;
 
     public ApplicationBean() {
-        log.finest("Starting Application");
-        Constants.setConstants(new Constants());
     }
 
     @PostConstruct
     void atStartup() {
+    	Constants.setConstants(new Constants());
         ArrayList<DictionaryDO> list;
         HashMap<String, Integer> map;
         String names[] = {"analysis_cancelled", "analysis_completed", "analysis_error_completed",
