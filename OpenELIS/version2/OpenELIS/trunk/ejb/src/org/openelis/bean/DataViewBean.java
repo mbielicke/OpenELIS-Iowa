@@ -1699,7 +1699,6 @@ public class DataViewBean {
         ArrayList<ResultDataViewVO> resddList;
         HashMap<Integer, TestAnalyteDataViewVO> anaMap;
         HashMap<String, String> resMap;
-        DictionaryCacheBean dcl;
 
         if (resList == null)
             return null;

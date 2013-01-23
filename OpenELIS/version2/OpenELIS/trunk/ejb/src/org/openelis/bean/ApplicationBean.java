@@ -60,7 +60,6 @@ public class ApplicationBean {
 
     @PostConstruct
     void atStartup() {
-    	Constants.setConstants(new Constants());
         ArrayList<DictionaryDO> list;
         HashMap<String, Integer> map;
         String names[] = {"analysis_cancelled", "analysis_completed", "analysis_error_completed",
@@ -100,6 +99,8 @@ public class ApplicationBean {
                           "turnaround_weekly", "worksheet_complete", "wf_total",
                           "worksheet_complete", "worksheet_failed", "worksheet_void",
                           "worksheet_working"};
+        
+        Constants.setConstants(new Constants());
 
         try {
             list = dictionary.fetchBySystemNames(Arrays.asList(names));
