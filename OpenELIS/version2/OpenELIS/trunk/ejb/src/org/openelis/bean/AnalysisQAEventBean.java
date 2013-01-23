@@ -44,7 +44,7 @@ import org.openelis.gwt.common.NotFoundException;
 @Stateless
 @SecurityDomain("openelis")
 
-public class AnalysisQAEventBean  {//implements AnalysisQAEventLocal {
+public class AnalysisQAEventBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

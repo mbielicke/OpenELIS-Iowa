@@ -25,6 +25,9 @@
  */
 package org.openelis.utils;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.naming.InitialContext;
 
 import org.openelis.bean.AnalysisBean;
@@ -131,6 +134,8 @@ import org.openelis.security.remote.SystemUserPermissionRemote;
  */
 
 public class EJBFactory {
+	
+	private static Logger log = Logger.getLogger("openelis");
     
     public static AnalysisBean getAnalysis() {
         return lookup("AnalysisBean");
@@ -528,12 +533,13 @@ public class EJBFactory {
         InitialContext ctx;
         
         if (!bean.startsWith("java"))
-            bean = "java:app/openelis.jar/" + bean; 
+            bean = "java:global/openelis/openelis.jar/" + bean; 
             
         try {
             ctx = new InitialContext();
             return (T)ctx.lookup(bean);
         }catch(Exception e) {
+        	log.log(Level.SEVERE,e.getMessage(),e);
             return null;
         }
 
