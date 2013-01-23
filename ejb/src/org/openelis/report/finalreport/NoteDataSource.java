@@ -65,9 +65,9 @@ public class NoteDataSource implements JRRewindableDataSource {
 	    Integer overrideId;
 
 		try {
-			javax.naming.InitialContext ctx;
+			//javax.naming.InitialContext ctx;
 
-			ctx = new javax.naming.InitialContext();
+			//ctx = new javax.naming.InitialContext();
             /*dl = (DictionaryLocal) ctx.lookup("openelis/DictionaryBean/local");
             sl = (SampleQAEventLocal) ctx.lookup("openelis/SampleQAEventBean/local");
             nl = (NoteLocal) ctx.lookup("openelis/NoteBean/local");
