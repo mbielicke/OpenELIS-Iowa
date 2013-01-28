@@ -10,7 +10,7 @@
 		<exclude name="WEB-INF/classes/org/openelis/manager/*"/>
 	</war>
 	
-	<delete file="build/openleisweb.war"/>
+	<delete file="build/openelisweb.war"/>
 	<war destFile="build/openelisweb.war" baseDir="../OpenELIS-Web/war">
 	    <exclude name="WEB-INF/lib/gwt-servlet.jar" />
 	    <exclude name="WEB-INF/classes/org/openelis/manager/*"/>
