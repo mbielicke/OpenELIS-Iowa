@@ -18,7 +18,7 @@ TD{
     background: #343434;
 }
 .spinnerIcon {
-    background: url("../Images/OSXspinnerGIF.gif") no-repeat white;
+    background: url("/openelisweb/Images/OSXspinnerGIF.gif") no-repeat white;
 }
 .ConfirmWindow .middleLeft,
 .ConfirmWindow .middleRight,
@@ -87,14 +87,14 @@ TD{
     width:0;
 }
 .Hover .ButtonContent, .Hover .ButtonPanelButton .ButtonContent .ScreenPanel{ 
-    background: url("../Images/webbuttonbg.gif") repeat-x;
+    background: url("/openelisweb/Images/webbuttonbg.gif") repeat-x;
     color:#333;
 }
 .ButtonContent, .disabled .ButtonContent, .ButtonPanelButton .ButtonContent{
     height:20px;
     color:#7D88DA;
     border: 1px solid #CCCCCC;    
-    background: url("../Images/webbuttonbg.gif") repeat-x;
+    background: url("/openelisweb/Images/webbuttonbg.gif") repeat-x;
     padding: 4px 8px;
     margin-left:4px;
 }
@@ -104,11 +104,11 @@ TD{
 }
 
 .header-nav {
-    background: url("../Images/webheader.gif") repeat-x 0 6px;
+    background: url("/openelisweb/Images/webheader.gif") repeat-x 0 6px;
     width: 100%;
 }
 .header-logo {
-    background: url("../Images/shl-logo.gif") no-repeat;
+    background: url("/openelisweb/Images/shl-logo.gif") no-repeat;
     height: 134px;
     margin: -6px 0 0 8px;
     width: 230px;
@@ -119,7 +119,7 @@ TD{
     vertical-align: top;
 }
 .header-nav .header-section {
-    background: url("../Images/webheaderdivider.gif") no-repeat;
+    background: url("/openelisweb/Images/webheaderdivider.gif") no-repeat;
     margin-left: 8px;
     margin-top: 6px;
     height:110px;
@@ -185,7 +185,7 @@ TD{
     font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
 	font-size : 12px;
     color:gray;
-    	background: #EFEFEF url('../Images/row-over.gif') repeat-x scroll left top;
+    	background: #EFEFEF url('/openelisweb/Images/row-over.gif') repeat-x scroll left top;
 margin:8px;
     border:1px solid gray;
 }
@@ -209,7 +209,7 @@ margin:8px;
 .WelcomeLogout{
     width:900px;
     height:56px;
-    background:url("../Images/title.png") no-repeat 27px 2px;   
+    background:url("/openelisweb/Images/title.png") no-repeat 27px 2px;   
 }
 .WelcomeLogout .webLabel{
     color:gray;
@@ -218,7 +218,7 @@ margin:8px;
 }
 .WelcomeLogout .clickable{
 width:58px;
-    background:url("../Images/clickable.jpg") no-repeat right 10px;
+    background:url("/openelisweb/Images/clickable.jpg") no-repeat right 10px;
 }
 .crumbline {
     margin:2px 0 0 8px;
@@ -232,7 +232,7 @@ width:58px;
     padding:0 0 0 6px;
 }
 .Links {
-    background: url("../Images/links.jpg") no-repeat;
+    background: url("/openelisweb/Images/links.jpg") no-repeat;
     width:60px;
     height:750px;
     padding:26px 4px 0 0;
@@ -257,15 +257,15 @@ width:58px;
 }
 .LinkPop .ErrorWindow .middleLeft{
     width:24px;
-    background: url("../Images/errorwindowleft.png") no-repeat;
+    background: url("/openelisweb/Images/errorwindowleft.png") no-repeat;
 }
 .LinkPop .ErrorWindow .middleCenter{
 height:47px;
-    background: url("../Images/errorwindowcenter.png") repeat-x;
+    background: url("/openelisweb/Images/errorwindowcenter.png") repeat-x;
 }
 .LinkPop .ErrorWindow .middleRight{
 width:6px;
-    background: url("../Images/errorwindowright.png") no-repeat;
+    background: url("/openelisweb/Images/errorwindowright.png") no-repeat;
 }
 .LinkPop .screenlable{
     background:none;
@@ -333,34 +333,34 @@ width:6px;
 	width : 54px;
 }
 .homeIcon{
-	background:url(../Images/home.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/home.jpg) no-repeat center center;
 }
 .finalReportEnvironmentalIcon{
-	background:url(../Images/finalReportEnvironmentalIcon.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/finalReportEnvironmentalIcon.jpg) no-repeat center center;
 }
 .finalReportPrivateWellIcon{
-	background:url(../Images/finalReportPrivateWellIcon.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/finalReportPrivateWellIcon.jpg) no-repeat center center;
 }
 .finalReportSDWISIcon{
-	background:url(../Images/finalReportSDWISIcon.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/finalReportSDWISIcon.jpg) no-repeat center center;
 }
 .statusReportIcon{
-	background:url(../Images/statusReportIcon.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/statusReportIcon.jpg) no-repeat center center;
 }
 .dataDumpEnvironmentalIcon{
-	background:url(../Images/dataDumpEnvironmentalIcon.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/dataDumpEnvironmentalIcon.jpg) no-repeat center center;
 }
 .dataDumpPrivateWellIcon{
-	background:url(../Images/dataDumpPrivateWellIcon.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/dataDumpPrivateWellIcon.jpg) no-repeat center center;
 }
 .dataDumpSDWISIcon{
-	background:url(../Images/dataDumpSDWISIcon.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/dataDumpSDWISIcon.jpg) no-repeat center center;
 }
 .notificationPrefIcon{
-	background:url(../Images/notification.jpg) no-repeat center center;
+	background:url(/openelisweb/Images/notification.jpg) no-repeat center center;
 }
 .changePasswordIcon{
-    background:url(../Images/changepassword.jpg) no-repeat center center;
+    background:url(/openelisweb/Images/changepassword.jpg) no-repeat center center;
 }
 
 .webLabel {
