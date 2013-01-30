@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="QcChart" pageWidth="791" pageHeight="612" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="755" leftMargin="18" rightMargin="18" topMargin="24" bottomMargin="18">
+	<property name="com.jasperassistant.designer.GridWidth" value="6"/>
+	<property name="com.jasperassistant.designer.GridHeight" value="12"/>
+	<property name="com.jasperassistant.designer.DataSource" value="phims"/>
+	<property name="com.jasperassistant.designer.SnapToGrid" value="true"/>
+	<property name="com.jasperassistant.designer.Grid" value="true"/>
+	<property name="ireport.zoom" value="1.8181818181818181"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<reportFont name="FieldData" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="FieldLabel" isDefault="false" size="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="SectionHeaderLabel" isDefault="false" size="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="ColumnHeading" isDefault="false" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Qaevent" isDefault="false" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Comment" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Trailer" isDefault="false" size="8" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="USER_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="QCNAME" class="java.lang.String" isForPrompting="false"/>
+	<field name="ACCESSION_NUMBER" class="java.lang.String"/>
+	<field name="PAGES" class="java.lang.Integer"/>
+	<field name="LOT_NUMBER" class="java.lang.String"/>
+	<field name="VALUE_1" class="java.lang.String"/>
+	<field name="VALUE_2" class="java.lang.String"/>
+	<field name="PLOT_VALUE" class="java.lang.Double"/>
+	<field name="CREATED_DATE" class="java.util.Date"/>
+	<field name="ANALYTE_NAME" class="java.lang.String"/>
+	<field name="UCL" class="java.lang.Double"/>
+	<field name="LCL" class="java.lang.Double"/>
+	<field name="UWL" class="java.lang.Double"/>
+	<field name="LWL" class="java.lang.Double"/>
+	<field name="label" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="MEAN" class="java.lang.Double"/>
+	<field name="SD" class="java.lang.Double"/>
+	<field name="WORKSHEET_NUMBER" class="java.lang.Integer"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<variable name="NUMBER_OF_PAGES" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{PAGES}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="TVALUE_LIST" class="org.openelis.report.qcchart.TValueList" calculation="System">
+		<variableExpression><![CDATA[$V{TVALUE_LIST}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="yMin" class="java.lang.Double" resetType="Group" resetGroup="AnalyteGroupHeader" calculation="Lowest">
+		<variableExpression><![CDATA[$F{PLOT_VALUE} > $F{LCL} ? $F{LCL} : $F{PLOT_VALUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="yMax" class="java.lang.Double" resetType="Group" resetGroup="AnalyteGroupHeader" calculation="Highest">
+		<variableExpression><![CDATA[$F{PLOT_VALUE} < $F{UCL} ? $F{UCL} : $F{PLOT_VALUE}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<group name="AnalyteGroupHeader" isStartNewPage="true" keepTogether="true">
+		<groupExpression><![CDATA[$F{ANALYTE_NAME}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+	</group>
+	<pageHeader>
+		<band height="258" splitType="Stretch">
+			<textField pattern="MMM dd, yyyy">
+				<reportElement x="0" y="0" width="100" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement x="0" y="12" width="100" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="">
+				<reportElement x="168" y="12" width="419" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ANALYTE_NAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="650" y="0" width="77" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of"]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="headerUserName" mode="Opaque" x="652" y="12" width="100" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="">
+				<reportElement x="730" y="0" width="22" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="headerTitle1" positionType="Float" mode="Opaque" x="587" y="73" width="163" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Statistics]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="mean" positionType="Float" x="560" y="84" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[Plot Mean]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="uwl" positionType="Float" x="560" y="120" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[UWL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="ucl" positionType="Float" x="560" y="108" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[UCL]]></text>
+			</staticText>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="84" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+					<printWhenExpression><![CDATA[$F{MEAN} != null]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{MEAN}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="108" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+					<printWhenExpression><![CDATA[$F{UCL} != null]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{UCL}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="120" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+					<printWhenExpression><![CDATA[$F{UWL} != null]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($F{UWL})]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="132" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+					<printWhenExpression><![CDATA[$F{LWL} != null]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LWL})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="lwl" positionType="Float" x="560" y="132" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[LWL]]></text>
+			</staticText>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="144" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+					<printWhenExpression><![CDATA[$F{LCL} != null]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LCL})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="lcl" positionType="Float" x="560" y="144" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[LCL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="concBias" positionType="Float" x="560" y="96" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[Conc Bias]]></text>
+			</staticText>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="96" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+					<printWhenExpression><![CDATA[$F{MEAN}!=null]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{MEAN} - 100]]></textFieldExpression>
+			</textField>
+			<xyLineChart>
+				<chart evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" customizerClass="org.openelis.report.qcchart.QCChartCustomizer">
+					<reportElement isPrintRepeatedValues="false" x="0" y="48" width="587" height="190" printWhenGroupChanges="AnalyteGroupHeader">
+						<property name="IntegerTickUnits" value="true"/>
+					</reportElement>
+					<chartTitle position="Top"/>
+					<chartSubtitle/>
+					<chartLegend position="Right"/>
+				</chart>
+				<xyDataset>
+					<dataset resetType="Group" resetGroup="AnalyteGroupHeader"/>
+					<xySeries>
+						<seriesExpression><![CDATA["Plot Value"]]></seriesExpression>
+						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{PLOT_VALUE}]]></yValueExpression>
+					</xySeries>
+					<xySeries>
+						<seriesExpression><![CDATA["UCL"]]></seriesExpression>
+						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{UCL}]]></yValueExpression>
+					</xySeries>
+					<xySeries>
+						<seriesExpression><![CDATA["LCL"]]></seriesExpression>
+						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{LCL}]]></yValueExpression>
+					</xySeries>
+					<xySeries>
+						<seriesExpression><![CDATA["UWL"]]></seriesExpression>
+						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{UWL}]]></yValueExpression>
+					</xySeries>
+					<xySeries>
+						<seriesExpression><![CDATA["LWL"]]></seriesExpression>
+						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{LWL}]]></yValueExpression>
+					</xySeries>
+					<xySeries>
+						<seriesExpression><![CDATA["Mean"]]></seriesExpression>
+						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{MEAN}]]></yValueExpression>
+					</xySeries>
+				</xyDataset>
+				<linePlot isShowShapes="true">
+					<plot/>
+					<categoryAxisLabelExpression><![CDATA["Data points"]]></categoryAxisLabelExpression>
+					<categoryAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA["Value"]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+					<rangeAxisMinValueExpression><![CDATA[$V{yMin} - 5]]></rangeAxisMinValueExpression>
+					<rangeAxisMaxValueExpression><![CDATA[$V{yMax} + 5]]></rangeAxisMaxValueExpression>
+				</linePlot>
+			</xyLineChart>
+			<line>
+				<reportElement x="587" y="84" width="163" height="1" forecolor="#C0C0C0"/>
+			</line>
+			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="">
+				<reportElement x="168" y="0" width="419" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["QC Chart for " + $P{QCNAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement key="number" positionType="Float" x="0" y="0" width="31" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[#]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="accessionNumber" positionType="Float" x="31" y="0" width="83" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[    Accession #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="lotNumber" positionType="Float" x="201" y="0" width="204" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[Lot #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="date" positionType="Float" x="405" y="0" width="60" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="value1" positionType="Float" x="465" y="0" width="74" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[Final]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="value2" positionType="Float" x="539" y="0" width="60" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[Expected]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="plotValue" positionType="Float" x="599" y="0" width="60" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[% Recov]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="lotNumber" positionType="Float" x="114" y="0" width="87" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+				<text><![CDATA[Worksheet #]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField>
+				<reportElement positionType="Float" x="40" y="0" width="74" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ACCESSION_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="201" y="0" width="204" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{LOT_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd">
+				<reportElement positionType="Float" x="405" y="0" width="60" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$F{CREATED_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="465" y="0" width="74" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{VALUE_1}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="539" y="0" width="60" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{VALUE_2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00####" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="599" y="0" width="60" height="10"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{PLOT_VALUE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="31" height="10"/>
+				<textElement textAlignment="Right" rotation="None">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="114" y="0" width="87" height="10"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{WORKSHEET_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
