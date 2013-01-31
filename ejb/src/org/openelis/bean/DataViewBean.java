@@ -1918,7 +1918,7 @@ public class DataViewBean {
         if ("Y".equals(data.getAnalysisUnitOfMeasureId()))
             headers.add(resource.getString("unit"));
         if ("Y".equals(data.getAnalysisQaName()))
-            headers.add(resource. getString("QAEvent"));
+            headers.add(resource.getString("QAEvent"));
         if ("Y".equals(data.getAnalysisCompletedDate()))
             headers.add(resource.getString("completedDate"));
         if ("Y".equals(data.getAnalysisCompletedBy()))
