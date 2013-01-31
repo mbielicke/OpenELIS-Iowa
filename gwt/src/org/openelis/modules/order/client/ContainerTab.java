@@ -243,11 +243,11 @@ public class ContainerTab extends Screen {
                 
                 r = table.numRows();
                 row = new TableDataRow(3);
+                row.cells.get(0).setValue(r);
                 if (r > 0) {
                     try {
                         man = manager.getContainers();
                         prevData = man.getContainerAt(r-1);
-                        row.cells.get(0).setValue(r);
                         row.cells.get(2).setValue(prevData.getTypeOfSampleId());
                     } catch (Exception e) {
                         Window.alert(e.getMessage());

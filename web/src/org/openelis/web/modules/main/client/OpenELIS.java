@@ -26,6 +26,7 @@
 package org.openelis.web.modules.main.client;
 
 
+import org.openelis.domain.Constants;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -82,6 +83,7 @@ public class OpenELIS extends Screen {
         rpc = OpenELISWebService.get().initialData();
 
         consts = rpc.appConstants;
+        Constants.setConstants(rpc.constants);
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
         window = new WebWindow();

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
@@ -20,16 +21,19 @@ public interface OrganizationServiceIntAsync {
 
     void fetchById(Integer id, AsyncCallback<OrganizationManager> callback);
 
-    void fetchByIdList(Query query, AsyncCallback<ArrayList<OrganizationManager>> callback);
+    void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<OrganizationViewDO>> callback);
 
     void fetchByIdOrName(String search, AsyncCallback<ArrayList<OrganizationDO>> callback);
 
     void fetchContactByOrganizationId(Integer id, AsyncCallback<OrganizationContactManager> callback);
 
     void fetchForUpdate(Integer id, AsyncCallback<OrganizationManager> callback);
-
+    
     void fetchParameterByOrganizationId(Integer id,
                                         AsyncCallback<OrganizationParameterManager> callback);
+    
+    void fetchParametersByOrganizationId(Integer id,
+                                         AsyncCallback<ArrayList<OrganizationParameterDO>> callback);
 
     void fetchParametersByDictionarySystemName(String systemName,
                                                AsyncCallback<ArrayList<OrganizationParameterDO>> callback);
@@ -44,6 +48,6 @@ public interface OrganizationServiceIntAsync {
 
     void update(OrganizationManager man, AsyncCallback<OrganizationManager> callback);
 
-    void updateForNotify(OrganizationManager man, AsyncCallback<OrganizationManager> callback);
+    void updateForNotify(ArrayList<OrganizationParameterDO> parameters, AsyncCallback<ArrayList<OrganizationParameterDO>> callback);
 
 }

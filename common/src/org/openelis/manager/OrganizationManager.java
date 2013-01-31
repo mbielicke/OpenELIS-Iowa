@@ -98,10 +98,6 @@ public class OrganizationManager implements Serializable, HasNotesInt {
         return proxy().update(this);
     }
 
-    public OrganizationManager updateForNotify() throws Exception {
-        return proxy().updateForNotify(this);
-    }
-
     public OrganizationManager fetchForUpdate() throws Exception {
         return proxy().fetchForUpdate(organization.getId());
     }

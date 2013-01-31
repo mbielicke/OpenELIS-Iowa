@@ -40,7 +40,6 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Organization;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -122,10 +121,6 @@ public class OrganizationBean {
         query.setMaxResults(max);
 
         return DataBaseUtil.toArrayList(query.getResultList());
-    }
-    
-    public ArrayList<OrganizationParameterDO> fetchParametersByDictionarySystemName(String systemName) throws Exception {
-        return organizationParameter.fetchByDictionarySystemName(systemName);
     }
 
     @SuppressWarnings("unchecked")

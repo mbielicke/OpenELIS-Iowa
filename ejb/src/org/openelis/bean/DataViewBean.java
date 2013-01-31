@@ -125,9 +125,6 @@ public class DataViewBean {
 
     @EJB
     private AuxDataBean                     auxData;
-
-    @EJB
-    private DictionaryBean                  dictionary;
     
     @EJB
     private SampleBean                      sample;
@@ -1921,7 +1918,7 @@ public class DataViewBean {
         if ("Y".equals(data.getAnalysisUnitOfMeasureId()))
             headers.add(resource.getString("unit"));
         if ("Y".equals(data.getAnalysisQaName()))
-            headers.add(resource.getString("QAEvent"));
+            headers.add(resource. getString("QAEvent"));
         if ("Y".equals(data.getAnalysisCompletedDate()))
             headers.add(resource.getString("completedDate"));
         if ("Y".equals(data.getAnalysisCompletedBy()))
@@ -2275,6 +2272,13 @@ public class DataViewBean {
             if (analysis != null)
                 cell.setCellValue(analysis.getRevision());
         }
+        if ("Y".equals(data.getAnalysisIsReportableHeader())) {
+            cell = row.createCell(startCol++ );
+            if (analysis != null) {
+                isRep = "Y".equals(analysis.getIsReportable());
+                cell.setCellValue(isRep ? resource.getString("yes") : resource.getString("no"));
+            }
+        }
         if ("Y".equals(data.getAnalysisUnitOfMeasureId())) {
             cell = row.createCell(startCol++ );
             if (analysis != null) {
@@ -2289,13 +2293,6 @@ public class DataViewBean {
                                 e);
                     }
                 }
-            }
-        }
-        if ("Y".equals(data.getAnalysisIsReportableHeader())) {
-            cell = row.createCell(startCol++ );
-            if (analysis != null) {
-                isRep = "Y".equals(analysis.getIsReportable());
-                cell.setCellValue(isRep ? resource.getString("yes") : resource.getString("no"));
             }
         }
         if ("Y".equals(data.getAnalysisQaName())) {
