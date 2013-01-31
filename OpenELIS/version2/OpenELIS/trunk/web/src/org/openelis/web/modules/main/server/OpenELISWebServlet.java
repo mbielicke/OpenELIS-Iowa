@@ -33,9 +33,9 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
+import org.openelis.bean.ApplicationBean;
 import org.openelis.bean.UserCacheBean;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.util.UTFResource;
 import org.openelis.web.modules.main.client.OpenELISRPC;
 import org.openelis.web.modules.main.client.OpenELISWebServiceInt;
@@ -51,13 +51,21 @@ public class OpenELISWebServlet extends RemoteServiceServlet implements OpenELIS
     private static final long serialVersionUID = 1L;
     
     @EJB
-    UserCacheBean userCache;
+    private UserCacheBean userCache;
+    
+    @EJB
+    private ApplicationBean application;
 
     public OpenELISRPC initialData() {
         OpenELISRPC rpc;
 
         rpc = new OpenELISRPC();
         rpc.appConstants = getConstants();
+        try {
+            rpc.constants = application.getConstants();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         
         keepAlive();
 

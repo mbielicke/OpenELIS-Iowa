@@ -28,6 +28,8 @@ package org.openelis.web.modules.main.client;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import org.openelis.domain.Constants;
+
 /**
  * This class is used to set initial data to the web client from the server.
  *
@@ -40,4 +42,5 @@ public class OpenELISRPC implements Serializable {
      * Map of string literals used in the Application
      */
     public HashMap<String,String> appConstants;
+    public Constants constants;
 }

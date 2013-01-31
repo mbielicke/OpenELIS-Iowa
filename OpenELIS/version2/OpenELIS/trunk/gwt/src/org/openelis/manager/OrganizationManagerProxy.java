@@ -57,10 +57,6 @@ public class OrganizationManagerProxy {
         return OrganizationService.get().update(man);
     }
 
-    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
-        return OrganizationService.get().updateForNotify(man);
-    }
-
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
         return OrganizationService.get().fetchForUpdate(id);
     }

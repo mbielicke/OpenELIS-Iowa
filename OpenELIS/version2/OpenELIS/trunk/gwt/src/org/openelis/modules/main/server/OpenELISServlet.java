@@ -64,6 +64,8 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
             e.printStackTrace();
         }
 
+        keepAlive();
+        
         return rpc;
     }
 

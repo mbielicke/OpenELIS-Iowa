@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.OrganizationContactManager;
@@ -46,8 +47,8 @@ public class OrganizationService implements OrganizationServiceInt, Organization
     }
 
     @Override
-    public void fetchByIdList(Query query, AsyncCallback<ArrayList<OrganizationManager>> callback) {
-        service.fetchByIdList(query, callback);
+    public void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<OrganizationViewDO>> callback) {
+        service.fetchByIds(ids, callback);
     }
 
     @Override
@@ -79,6 +80,13 @@ public class OrganizationService implements OrganizationServiceInt, Organization
         service.fetchParametersByDictionarySystemName(systemName, callback);
         
     }
+    
+    @Override
+    public void fetchParametersByOrganizationId(Integer id,
+                                                      AsyncCallback<ArrayList<OrganizationParameterDO>> callback) {
+        service.fetchParametersByOrganizationId(id, callback);
+        
+    }
 
     @Override
     public void fetchWithContacts(Integer id, AsyncCallback<OrganizationManager> callback) {
@@ -108,8 +116,9 @@ public class OrganizationService implements OrganizationServiceInt, Organization
     }
 
     @Override
-    public void updateForNotify(OrganizationManager man, AsyncCallback<OrganizationManager> callback) {
-        service.updateForNotify(man, callback);
+    public void updateForNotify(ArrayList<OrganizationParameterDO> parameters,
+                                AsyncCallback<ArrayList<OrganizationParameterDO>> callback) {
+        service.updateForNotify(parameters, callback);
     }
 
     @Override
@@ -122,11 +131,11 @@ public class OrganizationService implements OrganizationServiceInt, Organization
     }
 
     @Override
-    public ArrayList<OrganizationManager> fetchByIdList(Query query) throws Exception {
-        Callback<ArrayList<OrganizationManager>> callback;
+    public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        Callback<ArrayList<OrganizationViewDO>> callback;
         
-        callback = new Callback<ArrayList<OrganizationManager>>();
-        service.fetchByIdList(query, callback);
+        callback = new Callback<ArrayList<OrganizationViewDO>>();
+        service.fetchByIds(ids, callback);
         return callback.getResult();
     }
 
@@ -145,6 +154,15 @@ public class OrganizationService implements OrganizationServiceInt, Organization
         
         callback = new Callback<ArrayList<OrganizationParameterDO>>();
         service.fetchParametersByDictionarySystemName(systemName, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public ArrayList<OrganizationParameterDO> fetchParametersByOrganizationId(Integer id) throws Exception {
+        Callback<ArrayList<OrganizationParameterDO>> callback;
+        
+        callback = new Callback<ArrayList<OrganizationParameterDO>>();
+        service.fetchParametersByOrganizationId(id, callback);
         return callback.getResult();
     }
 
@@ -203,11 +221,11 @@ public class OrganizationService implements OrganizationServiceInt, Organization
     }
 
     @Override
-    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
-        Callback<OrganizationManager> callback;
+    public ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception {
+        Callback<ArrayList<OrganizationParameterDO>> callback;
         
-        callback = new Callback<OrganizationManager>();
-        service.updateForNotify(man, callback);
+        callback = new Callback<ArrayList<OrganizationParameterDO>>();
+        service.updateForNotify(parameters, callback);
         return callback.getResult();
     }
 
@@ -246,5 +264,4 @@ public class OrganizationService implements OrganizationServiceInt, Organization
         service.fetchParameterByOrganizationId(id, callback);
         return callback.getResult();
     }
-
 }

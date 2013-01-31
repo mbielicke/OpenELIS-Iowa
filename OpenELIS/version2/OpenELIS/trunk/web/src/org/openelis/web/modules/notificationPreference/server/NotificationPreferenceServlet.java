@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.organization.server;
+package org.openelis.web.modules.notificationPreference.server;
 
 import java.util.ArrayList;
 
@@ -41,17 +41,10 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
-import org.openelis.manager.OrganizationContactManager;
-import org.openelis.manager.OrganizationManager;
-import org.openelis.manager.OrganizationParameterManager;
-import org.openelis.modules.organization.client.OrganizationServiceInt;
+import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceServiceInt;
 
-/*
- * This class provides service for OrganizationManager and
- * OrganizationContactManager.
- */
-@WebServlet("/openelis/organization")
-public class OrganizationServlet extends RemoteServlet implements OrganizationServiceInt {
+@WebServlet("/openelisweb/notificationPreference")
+public class NotificationPreferenceServlet extends RemoteServlet implements NotificationPreferenceServiceInt {
 
     private static final long       serialVersionUID = 1L;
 
@@ -63,10 +56,6 @@ public class OrganizationServlet extends RemoteServlet implements OrganizationSe
 
     @EJB
     private OrganizationParameterBean organizationParameter;
-    
-    public OrganizationManager fetchById(Integer id) throws Exception {
-        return organizationManager.fetchById(id);
-    }
 
     public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
         return organization.fetchByIds(ids);
@@ -98,52 +87,13 @@ public class OrganizationServlet extends RemoteServlet implements OrganizationSe
         return organizationParameter.fetchByOrganizationId(id);
     }
 
-    public OrganizationManager fetchWithContacts(Integer id) throws Exception {
-        return organizationManager.fetchWithContacts(id);
-    }
-
-    public OrganizationManager fetchWithNotes(Integer id) throws Exception {
-        return organizationManager.fetchWithNotes(id);
-    }
-
-    public OrganizationManager fetchWithParameters(Integer id) throws Exception {
-        return organizationManager.fetchWithParameters(id);
-    }
-
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         return organization.query(query.getFields(),
                                                   query.getPage() * query.getRowsPerPage(),
                                                   query.getRowsPerPage());
     }
 
-    public OrganizationManager add(OrganizationManager man) throws Exception {
-        return organizationManager.add(man);
-    }
-
-    public OrganizationManager update(OrganizationManager man) throws Exception {
-        return organizationManager.update(man);
-    }
-
     public ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception {
         return organizationManager.updateForNotify(parameters);
-    }
-
-    public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        return organizationManager.fetchForUpdate(id);
-    }
-
-    public OrganizationManager abortUpdate(Integer id) throws Exception {
-        return organizationManager.abortUpdate(id);
-    }
-
-    //
-    // support for OrganizationContactManager and OrganizationParameterManager
-    //
-    public OrganizationContactManager fetchContactByOrganizationId(Integer id) throws Exception {
-        return organizationManager.fetchContactByOrganizationId(id);
-    }
-
-    public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception {
-        return organizationManager.fetchParameterByOrganizationId(id);
     }
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
@@ -18,10 +19,12 @@ public interface OrganizationServiceInt extends RemoteService {
 
     OrganizationManager fetchById(Integer id) throws Exception;
 
-    ArrayList<OrganizationManager> fetchByIdList(Query query) throws Exception;
+    ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception;
 
     ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception;
 
+    ArrayList<OrganizationParameterDO> fetchParametersByOrganizationId(Integer id) throws Exception;
+    
     ArrayList<OrganizationParameterDO> fetchParametersByDictionarySystemName(String systemName) throws Exception;
 
     OrganizationManager fetchWithContacts(Integer id) throws Exception;
@@ -36,7 +39,7 @@ public interface OrganizationServiceInt extends RemoteService {
 
     OrganizationManager update(OrganizationManager man) throws Exception;
 
-    OrganizationManager updateForNotify(OrganizationManager man) throws Exception;
+    ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception;
 
     OrganizationManager fetchForUpdate(Integer id) throws Exception;
 

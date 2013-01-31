@@ -28,6 +28,7 @@ package org.openelis.web.modules.notificationPreference.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
@@ -43,7 +44,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-//import org.openelis.manager.OrganizationManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -53,7 +53,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 public class AddEditEmailScreen extends Screen implements
                                                  HasActionHandlers<AddEditEmailScreen.Action> {
 
-    private ArrayList managerList;
+    private ArrayList<OrganizationViewDO>  organizationList;
     private AddEditEmailVO                 data;
     private Dropdown<Integer>              organization;
     private TextBox                        email;
@@ -64,10 +64,10 @@ public class AddEditEmailScreen extends Screen implements
         OK, CANCEL
     };
     
-    public AddEditEmailScreen(ArrayList managerList) throws Exception {
+    public AddEditEmailScreen(ArrayList<OrganizationViewDO> organizationList) throws Exception {
         super((ScreenDefInt)GWT.create(AddEditEmailDef.class));
         
-        this.managerList = managerList;
+        this.organizationList = organizationList;
         // Setup link between Screen and widget Handlers
         initialize();
         initializeDropdowns(); 
@@ -165,18 +165,11 @@ public class AddEditEmailScreen extends Screen implements
     }
     
     private void initializeDropdowns() {
-        Integer id;
-        //OrganizationManager man;
         ArrayList<TableDataRow> model;        
 
         model = new ArrayList<TableDataRow>();
-        /*
-        for (int i = 0; i < managerList.size(); i++) {            
-            man = managerList.get(i); 
-            id = man.getOrganization().getId();
-            model.add(new TableDataRow(id, man.getOrganization().getName()));
-        }
-        */
+        for (OrganizationViewDO org : organizationList)            
+            model.add(new TableDataRow(org.getId(), org.getName()));        
 
         organization.setModel(model);
     }
