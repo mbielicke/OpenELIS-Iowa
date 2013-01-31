@@ -61,6 +61,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -86,15 +87,14 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
-import org.openelis.meta.SampleMeta;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -104,7 +104,7 @@ public class SampleManager1Bean {
     private LockBean                lock;
 
     @EJB
-    private SampleBean               sample;
+    private SampleBean              sample;
 
     @EJB
     private SampleEnvironmentalBean sampleEnvironmental;
@@ -125,7 +125,7 @@ public class SampleManager1Bean {
     private SampleQAEventBean       sampleQA;
 
     @EJB
-    private AuxDataBean              auxdata;
+    private AuxDataBean             auxdata;
 
     @EJB
     private NoteBean                note;
@@ -134,23 +134,26 @@ public class SampleManager1Bean {
     private SampleItemBean          item;
 
     @EJB
-    private StorageBean              storage;
+    private StorageBean             storage;
 
     @EJB
-    private AnalysisBean             analysis;
+    private AnalysisBean            analysis;
 
     @EJB
-    private AnalysisQAEventBean      analysisQA;
+    private AnalysisQAEventBean     analysisQA;
 
     @EJB
-    private AnalysisUserBean         user;
+    private AnalysisUserBean        user;
 
     @EJB
-    private ResultBean               result;
+    private ResultBean              result;
+
+    @EJB
+    private TestManagerBean         test;
 
     @EJB
     private SystemVariableBean      systemVariable;
-    
+
     private static final Logger     log = Logger.getLogger("openelis");
 
     /**
@@ -689,16 +692,94 @@ public class SampleManager1Bean {
      * Adds the sample and all related records into the database. All the
      * records within the manager are validated before the insertion.
      */
-    public SampleManager1 add(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
-        return sm;
+    public ArrayList<SampleManager1> add(ArrayList<SampleManager1> sms,
+                                         boolean ignoreWarnings) throws Exception {
+        int dep, ldep;
+        boolean addit;
+        Integer tid;
+        HashSet<Integer> ids;
+        ArrayList<TestManager> tms;
+        HashMap<Integer, Integer> idmap;
+
+        // build a list of test ids
+        ids = new HashSet<Integer>();
+        for (SampleManager1 sm : sms) {
+            for (AnalysisViewDO an : getAnalyses(sm))
+                ids.add(an.getTestId());
+        }
+        tms = test.fetchByIds(new ArrayList<Integer>(ids));
+
+        validate(sms, tms, ignoreWarnings);
+        tms = null;
+
+        /*
+         * the front code uses negative ids (temporary ids) to link sample items
+         * and analysis, analysis and results. The negative ids are mapped to
+         * actual database ids through idmap
+         */
+        idmap = new HashMap<Integer, Integer>();
+        for (SampleManager1 sm : sms) {
+            idmap.clear();
+            // add sample
+            // add sample domain
+            // add sample items
+            for (SampleItemViewDO data : getItems(sm)) {
+                tid = data.getId();
+                item.add(data);
+                idmap.put(tid, data.getId());
+            }
+
+            /*
+             * some analysis can be dependent on other analysis for prep or for
+             * reflex. Additionally an analysis maybe dependent on a result that
+             * triggered the reflex. This code tries to resolve those
+             * dependencies by alternating between adding analysis and result
+             * until all the records have been added
+             */
+            dep = ldep = 0;
+            do {
+                ldep = dep;
+                dep = 0;
+                // add analysis
+                for (AnalysisViewDO data : getAnalyses(sm)) {
+                    if (data.getId() < 0) {
+                        addit = true;
+                        if (data.getParentAnalysisId() != null &&
+                            data.getParentAnalysisId() < 0) {
+                            tid = idmap.get(data.getParentAnalysisId());
+                            if (tid != null)
+                                data.setParentAnalysisId(tid);
+                            else
+                                addit = false;
+                        }
+
+                        if (addit) {
+                            // add it
+                            idmap.put(tid, data.getId());
+                        } else {
+                            dep++;
+                        }
+                    }
+                }
+                // add results
+                for (ResultViewDO data : getResults(sm)) {
+                }
+
+            } while (dep > 0 && ldep != dep);
+
+            if (dep > 0 && ldep == dep)
+                throw new InconsistencyException("Infinate loop");
+        }
+
+        return sms;
     }
 
     /**
      * Validates the sample manager for add or update. The routine throws a list
      * of exceptions/warnings listing all the problems for each sample.
      */
-    protected void validate(ArrayList<SampleManager1> sms,
-                            HashMap<Integer, TestManager> tms, boolean ignoreWarning) throws Exception {
+    protected void validate(ArrayList<SampleManager1> sms, ArrayList<TestManager> tms,
+                            boolean ignoreWarning) throws Exception {
         int cnt;
         AnalysisViewDO ana;
         SystemVariableDO sys;
@@ -718,8 +799,11 @@ public class SampleManager1Bean {
             sys = systemVariable.fetchByName("last_accession_number");
             maxAccession = Integer.valueOf(sys.getValue());
         } catch (Exception any) {
-            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", e);
-            throw new FormErrorException("systemVariable.missingInvalidSystemVariable", "last_accession_number");
+            log.log(Level.SEVERE,
+                    "Missing/invalid system variable 'last_accession_number'",
+                    e);
+            throw new FormErrorException("systemVariable.missingInvalidSystemVariable",
+                                         "last_accession_number");
         }
 
         for (SampleManager1 sm : sms) {
@@ -753,14 +837,16 @@ public class SampleManager1Bean {
                         cnt++ ;
             }
             if (cnt != 1 && !ignoreWarning)
-                e.add(new FormErrorException("sample.moreThanOneReportToException", accession));
+                e.add(new FormErrorException("sample.moreThanOneReportToException",
+                                             accession));
 
             /*
              * at least one sample item and items must have sample type
              */
             si.clear();
             if (getItems(sm) == null || getItems(sm).size() < 1) {
-                e.add(new FormErrorException("sample.minOneSampleItemException", accession));
+                e.add(new FormErrorException("sample.minOneSampleItemException",
+                                             accession));
             } else {
                 for (SampleItemViewDO data : getItems(sm)) {
                     si.put(data.getId(), data);
@@ -832,15 +918,17 @@ public class SampleManager1Bean {
         acc = data.getAccessionNumber();
         if (acc == null || acc <= 0)
             throw new FormErrorException("sample.accessionNumberNotValidException",
-                                          data.getAccessionNumber());
+                                         data.getAccessionNumber());
 
         try {
             sys = systemVariable.fetchByName("last_accession_number");
             if (acc.compareTo(Integer.valueOf(sys.getValue())) > 0)
                 throw new FormErrorException("sample.accessionNumberNotInUse",
-                                              data.getAccessionNumber());
+                                             data.getAccessionNumber());
         } catch (Exception any) {
-            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
+            log.log(Level.SEVERE,
+                    "Missing/invalid system variable 'last_accession_number'",
+                    any);
             throw any;
         }
 
@@ -848,7 +936,7 @@ public class SampleManager1Bean {
             dup = sample.fetchByAccessionNumber(acc);
             if ( !dup.getId().equals(data.getId()))
                 throw new FormErrorException("sample.accessionNumberDuplicate",
-                                              data.getAccessionNumber());
+                                             data.getAccessionNumber());
         } catch (NotFoundException nf) {
             // ok if no other sample with the same accession number
         }
