@@ -496,14 +496,14 @@ Phone # 319-335-4500 or
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" x="372" y="161" width="53" height="10"/>
+				<reportElement positionType="Float" x="372" y="161" width="100" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Helvetica"/>
 				</textElement>
-				<text><![CDATA[Temperature:]]></text>
+				<text><![CDATA[Temperature ( Celsius ):]]></text>
 			</staticText>
 			<line>
-				<reportElement key="" positionType="Float" mode="Transparent" x="422" y="171" width="152" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
+				<reportElement key="" positionType="Float" mode="Transparent" x="461" y="171" width="113" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
@@ -543,14 +543,12 @@ Phone # 319-335-4500 or
 				</textElement>
 				<text><![CDATA[/         /                    :]]></text>
 			</staticText>
-			<rectangle>
-				<reportElement key="facilityMessage.box" mode="Transparent" x="85" y="199" width="489" height="69"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineStyle="Solid"/>
-				</graphicElement>
-			</rectangle>
 			<staticText>
-				<reportElement key="" positionType="Float" mode="Opaque" x="425" y="222" width="149" height="24" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement key="" positionType="Float" mode="Opaque" x="425" y="222" width="149" height="24" forecolor="#999999" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
