@@ -25,37 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.addAnalysis;
-import static org.openelis.manager.SampleManager1Accessor.addAnalysisNote;
-import static org.openelis.manager.SampleManager1Accessor.addAnalysisQA;
-import static org.openelis.manager.SampleManager1Accessor.addAuxilliary;
-import static org.openelis.manager.SampleManager1Accessor.addItem;
-import static org.openelis.manager.SampleManager1Accessor.addOrganization;
-import static org.openelis.manager.SampleManager1Accessor.addProject;
-import static org.openelis.manager.SampleManager1Accessor.addResult;
-import static org.openelis.manager.SampleManager1Accessor.addSampleNote;
-import static org.openelis.manager.SampleManager1Accessor.addSampleQA;
-import static org.openelis.manager.SampleManager1Accessor.addStorage;
-import static org.openelis.manager.SampleManager1Accessor.addUser;
-import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
-import static org.openelis.manager.SampleManager1Accessor.getItems;
-import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
-import static org.openelis.manager.SampleManager1Accessor.getResults;
-import static org.openelis.manager.SampleManager1Accessor.getSample;
-import static org.openelis.manager.SampleManager1Accessor.setAnalysisNotes;
-import static org.openelis.manager.SampleManager1Accessor.setAnalysisQAs;
-import static org.openelis.manager.SampleManager1Accessor.setAuxilliary;
-import static org.openelis.manager.SampleManager1Accessor.setOrganizations;
-import static org.openelis.manager.SampleManager1Accessor.setProjects;
-import static org.openelis.manager.SampleManager1Accessor.setResults;
-import static org.openelis.manager.SampleManager1Accessor.setSample;
-import static org.openelis.manager.SampleManager1Accessor.setSampleEnvironmental;
-import static org.openelis.manager.SampleManager1Accessor.setSampleNotes;
-import static org.openelis.manager.SampleManager1Accessor.setSamplePrivateWell;
-import static org.openelis.manager.SampleManager1Accessor.setSampleQAs;
-import static org.openelis.manager.SampleManager1Accessor.setSampleSDWIS;
-import static org.openelis.manager.SampleManager1Accessor.setStorages;
-import static org.openelis.manager.SampleManager1Accessor.setUsers;
+import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +44,7 @@ import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
@@ -278,8 +249,7 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids2,
-                                                         Constants.table().SAMPLE_ITEM)) {
+            for (StorageViewDO data : storage.fetchByIds(ids2, Constants.table().SAMPLE_ITEM)) {
                 sm = map2.get(data.getReferenceId());
                 addStorage(sm, data);
             }
@@ -385,8 +355,7 @@ public class SampleManager1Bean {
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByIds(ids2,
-                                                         Constants.table().SAMPLE_ITEM)) {
+            for (StorageViewDO data : storage.fetchByIds(ids2, Constants.table().SAMPLE_ITEM)) {
                 sm = map2.get(data.getReferenceId());
                 addStorage(sm, data);
             }
@@ -519,8 +488,7 @@ public class SampleManager1Bean {
      * Returns a sample manager for specified accession number and requested
      * load elements
      */
-    public SampleManager1 fetchByAccession(Integer accessionNumber,
-                                           SampleManager1.Load... elements) throws Exception {
+    public SampleManager1 fetchByAccession(Integer accessionNumber, SampleManager1.Load... elements) throws Exception {
         return null;
     }
 
@@ -528,8 +496,7 @@ public class SampleManager1Bean {
      * Returns a sample manager based on the specified query and requested load
      * elements
      */
-    public ArrayList<SampleManager1> fetchByQuery(Query query,
-                                                  SampleManager1.Load... elements) throws Exception {
+    public ArrayList<SampleManager1> fetchByQuery(Query query, SampleManager1.Load... elements) throws Exception {
         return null;
     }
 
@@ -552,8 +519,7 @@ public class SampleManager1Bean {
      * Returns a locked sample manager with specified sample id and requested
      * load elements
      */
-    public SampleManager1 fetchForUpdate(Integer sampleId,
-                                         SampleManager1.Load... elements) throws Exception {
+    public SampleManager1 fetchForUpdate(Integer sampleId, SampleManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
         ArrayList<SampleManager1> sms;
 
@@ -644,8 +610,7 @@ public class SampleManager1Bean {
             for (SampleItemViewDO data : getItems(sm))
                 ids.add(data.getId());
             setStorages(sm, null);
-            for (StorageViewDO data : storage.fetchByIds(ids,
-                                                         Constants.table().SAMPLE_ITEM))
+            for (StorageViewDO data : storage.fetchByIds(ids, Constants.table().SAMPLE_ITEM))
                 addStorage(sm, data);
         }
 
@@ -692,8 +657,7 @@ public class SampleManager1Bean {
      * Adds the sample and all related records into the database. All the
      * records within the manager are validated before the insertion.
      */
-    public ArrayList<SampleManager1> add(ArrayList<SampleManager1> sms,
-                                         boolean ignoreWarnings) throws Exception {
+    public ArrayList<SampleManager1> add(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
         int dep, ldep;
         boolean addit;
         Integer tid;
@@ -720,14 +684,60 @@ public class SampleManager1Bean {
         idmap = new HashMap<Integer, Integer>();
         for (SampleManager1 sm : sms) {
             idmap.clear();
+
             // add sample
+            sample.add(getSample(sm));
+            
             // add sample domain
+            if (getSampleEnvironmental(sm) != null) {
+                getSampleEnvironmental(sm).setSampleId(getSample(sm).getId());
+                sampleEnvironmental.add(getSampleEnvironmental(sm));
+            } else if (getSamplePrivateWell(sm) != null) {
+                getSamplePrivateWell(sm).setSampleId(getSample(sm).getId());
+                samplePrivate.add(getSamplePrivateWell(sm));
+            } else if (getSampleSDWIS(sm) != null) {
+                getSampleSDWIS(sm).setSampleId(getSample(sm).getId());
+                sampleSDWIS.add(getSampleSDWIS(sm));
+            }
+            
+            // add sample organizations
+            for (SampleOrganizationViewDO data: getOrganizations(sm)) {
+                data.setSampleId(getSample(sm).getId());
+                sampleOrganization.add(data);
+            }
+            
+            // add sample projects
+            for (SampleProjectViewDO data: getProjects(sm)) {
+                data.setSampleId(getSample(sm).getId());
+                sampleProject.add(data);
+            }
+            
+            // add sample qa events
+            for (SampleQaEventViewDO data: getSampleQAs(sm)) {
+                data.setSampleId(getSample(sm).getId());
+                sampleQA.add(data);
+            }
+            
+            // add aux data
+            for (AuxDataViewDO data: getAuxilliary(sm)) {
+                data.setReferenceTableId(Constants.table().SAMPLE);
+                data.setReferenceId(getSample(sm).getId());
+                auxdata.add(data);
+            }
+            
+            // add sample notes
+            for (NoteViewDO data: getSampleNotes(sm)) {
+                data.setReferenceTableId(Constants.table().SAMPLE);
+                data.setReferenceId(getSample(sm).getId());
+                note.add(data);
+            }
+
             // add sample items
             for (SampleItemViewDO data : getItems(sm)) {
                 tid = data.getId();
                 item.add(data);
-                idmap.put(tid, data.getId());
-            }
+                idmap.put(tid, data.getId());                
+            }                        
 
             /*
              * some analysis can be dependent on other analysis for prep or for
@@ -744,8 +754,16 @@ public class SampleManager1Bean {
                 for (AnalysisViewDO data : getAnalyses(sm)) {
                     if (data.getId() < 0) {
                         addit = true;
-                        if (data.getParentAnalysisId() != null &&
-                            data.getParentAnalysisId() < 0) {
+
+                        if (data.getPreAnalysisId() != null && data.getPreAnalysisId() < 0) {
+                            tid = idmap.get(data.getPreAnalysisId());
+                            if (tid != null)
+                                data.setPreAnalysisId(tid);
+                            else
+                                addit = false;
+                        }
+
+                        if (data.getParentAnalysisId() != null && data.getParentAnalysisId() < 0) {
                             tid = idmap.get(data.getParentAnalysisId());
                             if (tid != null)
                                 data.setParentAnalysisId(tid);
@@ -753,22 +771,318 @@ public class SampleManager1Bean {
                                 addit = false;
                         }
 
+                        if (data.getParentResultId() != null && data.getParentResultId() < 0) {
+                            tid = idmap.get(data.getParentResultId());
+                            if (tid != null)
+                                data.setParentResultId(tid);
+                            else
+                                addit = false;
+                        }
+
                         if (addit) {
-                            // add it
+                            tid = data.getId();
+                            data.setSampleItemId(idmap.get(data.getSampleItemId()));
+                            analysis.add(data);
                             idmap.put(tid, data.getId());
                         } else {
-                            dep++;
+                            dep++ ;
                         }
                     }
                 }
+
                 // add results
                 for (ResultViewDO data : getResults(sm)) {
+                    if (data.getId() < 0) {
+                        tid = idmap.get(data.getAnalysisId());
+                        if (tid != null) {
+                            data.setAnalysisId(tid);
+                            tid = data.getId();
+                            result.add(data);
+                            idmap.put(tid, data.getId());
+                        }
+                    }
                 }
 
             } while (dep > 0 && ldep != dep);
 
             if (dep > 0 && ldep == dep)
-                throw new InconsistencyException("Infinate loop");
+                throw new InconsistencyException("Infinite loop");
+            
+            // add analysis notes
+            for (NoteViewDO data: getAnalysisNotes(sm)) {
+                data.setReferenceTableId(Constants.table().ANALYSIS);
+                data.setReferenceId(idmap.get(data.getReferenceId()));
+                note.add(data);
+            }
+            
+            // add analysis qa events
+            for (AnalysisQaEventViewDO data: getAnalysisQAs(sm)) {
+                data.setAnalysisId(idmap.get(data.getAnalysisId()));
+                analysisQA.add(data);
+            }
+            
+            // add analysis users
+            for (AnalysisUserViewDO data: getUsers(sm)) {
+                data.setAnalysisId(idmap.get(data.getAnalysisId()));
+                user.add(data);
+            }
+            
+            // add storage
+            for (StorageViewDO data: getStorages(sm)) {
+                data.setReferenceId(idmap.get(data.getReferenceId()));
+                storage.add(data);
+            }
+            
+        }
+
+        return sms;
+    }
+    
+    /**
+     * Adds the sample and all related records into the database. All the
+     * records within the manager are validated before the insertion.
+     */
+    public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
+        int dep, ldep;
+        boolean addit;
+        Integer tid;
+        HashSet<Integer> ids;
+        ArrayList<TestManager> tms;
+        HashMap<Integer, Integer> idmap;
+
+        // build a list of test ids
+        ids = new HashSet<Integer>();
+        for (SampleManager1 sm : sms) {
+            for (AnalysisViewDO an : getAnalyses(sm))
+                ids.add(an.getTestId());
+        }
+        tms = test.fetchByIds(new ArrayList<Integer>(ids));
+
+        validate(sms, tms, ignoreWarnings);
+        tms = null;
+        
+        /*
+         * the front code uses negative ids (temporary ids) to link sample items
+         * and analysis, analysis and results. The negative ids are mapped to
+         * actual database ids through idmap
+         */
+        idmap = new HashMap<Integer, Integer>();
+        for (SampleManager1 sm : sms) {
+            // remove records  
+            for (DataObject data : getRemoved(sm)) {
+                if (data instanceof SampleEnvironmentalDO)
+                    sampleEnvironmental.delete(((SampleEnvironmentalDO)data));
+                else if (data instanceof SampleSDWISViewDO)
+                    sampleSDWIS.delete(((SampleSDWISViewDO)data));
+                else  if (data instanceof SamplePrivateWellViewDO)
+                    samplePrivate.delete(((SamplePrivateWellViewDO)data));
+                else  if (data instanceof SampleOrganizationViewDO)
+                    sampleOrganization.delete(((SampleOrganizationViewDO)data));
+                else  if (data instanceof SampleProjectViewDO)
+                    sampleProject.delete(((SampleProjectViewDO)data));
+                else  if (data instanceof SampleQaEventViewDO)
+                    sampleQA.delete(((SampleQaEventViewDO)data));
+                else  if (data instanceof AuxDataViewDO)
+                    auxdata.delete(((AuxDataViewDO)data));
+                else  if (data instanceof NoteViewDO)
+                    note.delete(((NoteViewDO)data));
+                else  if (data instanceof SampleItemViewDO)
+                    item.delete(((SampleItemViewDO)data));
+                else  if (data instanceof AnalysisViewDO)
+                    analysis.delete(((AnalysisViewDO)data));
+                else  if (data instanceof AnalysisQaEventViewDO)
+                    analysisQA.delete(((AnalysisQaEventViewDO)data));
+                else  if (data instanceof StorageViewDO)
+                    storage.delete(((StorageViewDO)data));
+                else  if (data instanceof AnalysisUserViewDO)
+                    user.delete(((AnalysisUserViewDO)data));
+                else  if (data instanceof ResultViewDO)
+                    result.delete(((ResultViewDO)data));
+            }
+            
+            idmap.clear();
+
+            // update sample
+            sample.update(getSample(sm));
+            
+            // update sample domain
+            if (getSampleEnvironmental(sm) != null && getSampleEnvironmental(sm).isChanged())
+                sampleEnvironmental.update(getSampleEnvironmental(sm));
+            else if (getSampleSDWIS(sm) != null && getSampleSDWIS(sm).isChanged())
+                sampleSDWIS.update(getSampleSDWIS(sm));   
+            else if (getSamplePrivateWell(sm) != null && getSamplePrivateWell(sm).isChanged())
+                samplePrivate.update(getSamplePrivateWell(sm));
+            
+            // add/update sample organizations
+            for (SampleOrganizationViewDO data: getOrganizations(sm)) {
+                if (data.getId() == null) {
+                    data.setSampleId(getSample(sm).getId());
+                    sampleOrganization.add(data);
+                } else if (data.isChanged()) {
+                    sampleOrganization.update(data);
+                }
+            }
+            
+            // add/update sample projects
+            for (SampleProjectViewDO data: getProjects(sm)) {
+                if (data.getId() == null) {
+                    data.setSampleId(getSample(sm).getId());
+                    sampleProject.add(data);
+                } else if (data.isChanged()) {
+                    sampleProject.update(data);
+                }
+            }
+            
+            // add/update sample qa events
+            for (SampleQaEventViewDO data: getSampleQAs(sm)) {
+                if (data.getId() == null) {
+                    data.setSampleId(getSample(sm).getId());
+                    sampleQA.add(data);
+                } else if (data.isChanged()) {
+                    sampleQA.update(data);
+                }
+            }
+            
+            // add/update aux data
+            for (AuxDataViewDO data: getAuxilliary(sm)) {
+                if (data.getId() == null) {
+                    data.setReferenceTableId(Constants.table().SAMPLE);
+                    data.setReferenceId(getSample(sm).getId());
+                    auxdata.add(data);
+                } else if (data.isChanged()) {
+                    auxdata.update(data);
+                }
+            }
+            
+            // add/update sample notes
+            for (NoteViewDO data : getSampleNotes(sm)) {
+                if (data.getId() == null) {
+                    data.setReferenceTableId(Constants.table().SAMPLE);
+                    data.setReferenceId(getSample(sm).getId());
+                    note.add(data);
+                } else if (data.isChanged()) {
+                    note.update(data);
+                }
+            }
+
+            // add/update sample items
+            for (SampleItemViewDO data : getItems(sm)) {
+                tid = data.getId();
+                item.add(data);
+                idmap.put(tid, data.getId());                
+            }                        
+
+            /*
+             * some analysis can be dependent on other analysis for prep or for
+             * reflex. Additionally an analysis maybe dependent on a result that
+             * triggered the reflex. This code tries to resolve those
+             * dependencies by alternating between adding analysis and result
+             * until all the records have been added
+             */
+            dep = ldep = 0;
+            do {
+                ldep = dep;
+                dep = 0;
+                // add analysis
+                for (AnalysisViewDO data : getAnalyses(sm)) {
+                    if (data.getId() < 0) {
+                        addit = true;
+
+                        if (data.getPreAnalysisId() != null && data.getPreAnalysisId() < 0) {
+                            tid = idmap.get(data.getPreAnalysisId());
+                            if (tid != null)
+                                data.setPreAnalysisId(tid);
+                            else
+                                addit = false;
+                        }
+
+                        if (data.getParentAnalysisId() != null && data.getParentAnalysisId() < 0) {
+                            tid = idmap.get(data.getParentAnalysisId());
+                            if (tid != null)
+                                data.setParentAnalysisId(tid);
+                            else
+                                addit = false;
+                        }
+
+                        if (data.getParentResultId() != null && data.getParentResultId() < 0) {
+                            tid = idmap.get(data.getParentResultId());
+                            if (tid != null)
+                                data.setParentResultId(tid);
+                            else
+                                addit = false;
+                        }
+
+                        if (addit) {
+                            tid = data.getId();
+                            data.setSampleItemId(idmap.get(data.getSampleItemId()));
+                            analysis.add(data);
+                            idmap.put(tid, data.getId());
+                            
+                        } else {
+                            dep++ ;
+                        }
+                    }
+                }
+
+                // add results
+                for (ResultViewDO data : getResults(sm)) {
+                    if (data.getId() < 0) {
+                        tid = idmap.get(data.getAnalysisId());
+                        if (tid != null) {
+                            data.setAnalysisId(tid);
+                            tid = data.getId();
+                            result.add(data);
+                            idmap.put(tid, data.getId());
+                        }
+                    }
+                }
+
+            } while (dep > 0 && ldep != dep);
+
+            if (dep > 0 && ldep == dep)
+                throw new InconsistencyException("Infinite loop");
+            
+            // add/update analysis notes
+            for (NoteViewDO data: getAnalysisNotes(sm)) {
+                if (data.getId() == null) {
+                    data.setReferenceTableId(Constants.table().ANALYSIS);
+                    data.setReferenceId(idmap.get(data.getReferenceId()));
+                    note.add(data);
+                } else if (data.isChanged()) {
+                    note.update(data);
+                }
+            }
+            
+            // add/update analysis qa events
+            for (AnalysisQaEventViewDO data: getAnalysisQAs(sm)) {
+                if (data.getId() == null) {
+                    data.setAnalysisId(idmap.get(data.getAnalysisId()));
+                    analysisQA.add(data);
+                } else if (data.isChanged()) {
+                    analysisQA.update(data);
+                }
+            }
+            
+            // add/update analysis users
+            for (AnalysisUserViewDO data: getUsers(sm)) {
+                if (data.getId() == null) {
+                    data.setAnalysisId(idmap.get(data.getAnalysisId()));
+                    user.add(data);
+                } else if (data.isChanged()) {
+                    user.update(data);
+                }
+            }
+            
+            // add/update storage
+            for (StorageViewDO data: getStorages(sm)) {
+                if (data.getId() == null) {
+                    data.setReferenceId(idmap.get(data.getReferenceId()));
+                    storage.add(data);
+                } else if (data.isChanged()) {
+                    storage.update(data);
+                }
+            }
+            
         }
 
         return sms;
@@ -799,9 +1113,7 @@ public class SampleManager1Bean {
             sys = systemVariable.fetchByName("last_accession_number");
             maxAccession = Integer.valueOf(sys.getValue());
         } catch (Exception any) {
-            log.log(Level.SEVERE,
-                    "Missing/invalid system variable 'last_accession_number'",
-                    e);
+            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", e);
             throw new FormErrorException("systemVariable.missingInvalidSystemVariable",
                                          "last_accession_number");
         }
@@ -837,16 +1149,14 @@ public class SampleManager1Bean {
                         cnt++ ;
             }
             if (cnt != 1 && !ignoreWarning)
-                e.add(new FormErrorException("sample.moreThanOneReportToException",
-                                             accession));
+                e.add(new FormErrorException("sample.moreThanOneReportToException", accession));
 
             /*
              * at least one sample item and items must have sample type
              */
             si.clear();
             if (getItems(sm) == null || getItems(sm).size() < 1) {
-                e.add(new FormErrorException("sample.minOneSampleItemException",
-                                             accession));
+                e.add(new FormErrorException("sample.minOneSampleItemException", accession));
             } else {
                 for (SampleItemViewDO data : getItems(sm)) {
                     si.put(data.getId(), data);
@@ -926,9 +1236,7 @@ public class SampleManager1Bean {
                 throw new FormErrorException("sample.accessionNumberNotInUse",
                                              data.getAccessionNumber());
         } catch (Exception any) {
-            log.log(Level.SEVERE,
-                    "Missing/invalid system variable 'last_accession_number'",
-                    any);
+            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
             throw any;
         }
 
