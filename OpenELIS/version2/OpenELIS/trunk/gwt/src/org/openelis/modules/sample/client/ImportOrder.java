@@ -387,6 +387,13 @@ public abstract class ImportOrder {
             return;
         }
 
+        /*
+         * We need to wipe the id of the AuxDataViewDO so that the manager
+         * treats it as a new record and sets the new reference id and reference
+         * table id
+         */
+        auxData.setId(null);
+        
         auxfData = auxFieldGroupMan.getFields().getAuxFieldAt(lastAuxFieldIndex);
         /*
          * find out if the aux field in the aux group at this index is the same
