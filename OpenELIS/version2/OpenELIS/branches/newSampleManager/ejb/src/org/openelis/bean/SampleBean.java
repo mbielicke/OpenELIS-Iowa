@@ -142,7 +142,8 @@ public class SampleBean {
                       sampleWhere + privateWellWhere + builder.getOrderBy();
 
         query = manager.createQuery(queryString);
-        query.setMaxResults(first + max);
+        if (max > 0)
+            query.setMaxResults(first + max);
 
         // add the well fields we created
         fields.addAll(wellFields);
