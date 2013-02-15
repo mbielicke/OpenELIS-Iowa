@@ -101,57 +101,55 @@ import org.w3c.dom.Node;
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
-public class DataExchangeXMLMapperBean  {
+public class DataExchangeXMLMapperBean {
     @EJB
-    private UserCacheBean             systemUserCache;
+    private UserCacheBean            systemUserCache;
 
     @EJB
     private DictionaryCacheBean      dictionaryCache;
-    
+
     @EJB
     private MethodBean               method;
 
     @EJB
-    private ProjectBean               project;
+    private ProjectBean              project;
 
     @EJB
-    private OrganizationBean          organization;
+    private OrganizationBean         organization;
 
     @EJB
-    private PWSBean                   pws;
+    private PWSBean                  pws;
 
     @EJB
-    private QaEventBean               qaevent;
+    private QaEventBean              qaevent;
 
     @EJB
-    private AnalyteBean               analyte;
+    private AnalyteBean              analyte;
 
     @EJB
-    private ExchangeExternalTermBean  exchangeExternalTerm;
+    private ExchangeExternalTermBean exchangeExternalTerm;
 
     @EJB
-    private TestTrailerBean           testTrailer;
+    private TestTrailerBean          testTrailer;
 
     @EJB
-    private SectionCacheBean          sectionCache;
+    private SectionCacheBean         sectionCache;
 
+    private static SimpleDateFormat  dateFormat, timeFormat;
 
-    private static SimpleDateFormat   dateFormat, timeFormat;
+    private static final String      MESSAGE_TYPE = "result-out";
 
-    private static final String       MESSAGE_TYPE = "result-out";
-
-    private static final Logger       log     = Logger.getLogger("openelis");
+    private static final Logger      log          = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
-        if (dateFormat == null) {            
+        if (dateFormat == null) {
             dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             timeFormat = new SimpleDateFormat("HH:mm:ss");
         }
     }
 
-    public Document getXML(SampleManager manager,
-                           ExchangeCriteriaManager exchangeCriteriaMan) throws Exception {
+    public Document getXML(SampleManager manager, ExchangeCriteriaManager exchangeCriteriaMan) throws Exception {
         int i, j, k, l;
         boolean sampleOverridden, analysisOverridden, showValue;
         Integer typeId, dictId;
@@ -353,19 +351,21 @@ public class DataExchangeXMLMapperBean  {
                 root.appendChild(getAnalysis(doc, analysis));
 
                 testDO = anaMan.getTestAt(j).getTest();
-                root.appendChild(getTest(doc, testDO));
+                if ( !testIds.contains(testDO.getId())) {
+                    root.appendChild(getTest(doc, testDO));
 
-                dictIds.add(testDO.getTestFormatId());
-                if (testDO.getRevisionMethodId() != null)
-                    dictIds.add(testDO.getRevisionMethodId());
-                dictIds.add(testDO.getReportingMethodId());
-                dictIds.add(testDO.getSortingMethodId());
+                    dictIds.add(testDO.getTestFormatId());
+                    if (testDO.getRevisionMethodId() != null)
+                        dictIds.add(testDO.getRevisionMethodId());
+                    dictIds.add(testDO.getReportingMethodId());
+                    dictIds.add(testDO.getSortingMethodId());
+
+                    if (testDO.getTestTrailerId() != null)
+                        trailerIds.add(testDO.getTestTrailerId());
+                }
 
                 testIds.add(analysis.getTestId());
                 methodIds.add(analysis.getMethodId());
-
-                if (testDO.getTestTrailerId() != null)
-                    trailerIds.add(testDO.getTestTrailerId());
 
                 if (analysis.getUnitOfMeasureId() != null)
                     dictIds.add(analysis.getUnitOfMeasureId());
@@ -390,8 +390,9 @@ public class DataExchangeXMLMapperBean  {
                          * qa event(s) or the status is something other than
                          * released
                          */
-                        showValue = !sampleOverridden && !analysisOverridden &&
-                                        Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId());
+                        showValue = !sampleOverridden &&
+                                    !analysisOverridden &&
+                                    Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId());
 
                         root.appendChild(getResult(doc, result, showValue));
 
@@ -404,7 +405,8 @@ public class DataExchangeXMLMapperBean  {
                         if ( !showValue)
                             continue;
 
-                        if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(typeId) && result.getValue() != null) {
+                        if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(typeId) &&
+                            result.getValue() != null) {
                             dictId = Integer.valueOf(result.getValue());
                             dictIds.add(dictId);
                             /*
@@ -498,7 +500,8 @@ public class DataExchangeXMLMapperBean  {
             dictIds.add(auxData.getTypeId());
             analyteIds.add(auxData.getAnalyteId());
 
-            if (Constants.dictionary().AUX_DICTIONARY.equals(auxData.getTypeId()) && auxData.getValue() != null) {
+            if (Constants.dictionary().AUX_DICTIONARY.equals(auxData.getTypeId()) &&
+                auxData.getValue() != null) {
                 dictId = Integer.valueOf(auxData.getValue());
                 dictIds.add(dictId);
                 /*
@@ -722,19 +725,16 @@ public class DataExchangeXMLMapperBean  {
             parent.setAttribute("order_id", sample.getOrderId().toString());
 
         parent.setAttribute("entered_date", getDatetimeForSchema(sample.getEnteredDate()));
-        parent.setAttribute("received_date",
-                            getDatetimeForSchema(sample.getReceivedDate()));
+        parent.setAttribute("received_date", getDatetimeForSchema(sample.getReceivedDate()));
         parent.setAttribute("received_by_id", sample.getReceivedById().toString());
 
         if (sample.getCollectionDate() != null)
-            parent.setAttribute("collection_date",
-                                getDatetimeForSchema(sample.getCollectionDate()));
+            parent.setAttribute("collection_date", getDatetimeForSchema(sample.getCollectionDate()));
 
         parent.setAttribute("status_id", sample.getStatusId().toString());
 
         if (sample.getCollectionTime() != null)
-            parent.setAttribute("collection_time",
-                                getDatetimeForSchema(sample.getCollectionTime()));
+            parent.setAttribute("collection_time", getDatetimeForSchema(sample.getCollectionTime()));
 
         if (sample.getPackageId() != null)
             parent.setAttribute("package_id", sample.getPackageId().toString());
@@ -746,14 +746,12 @@ public class DataExchangeXMLMapperBean  {
         }
 
         if (sample.getReleasedDate() != null)
-            parent.setAttribute("released_date",
-                                getDatetimeForSchema(sample.getReleasedDate()));
+            parent.setAttribute("released_date", getDatetimeForSchema(sample.getReleasedDate()));
 
         return parent;
     }
 
-    public Element getSampleEnviromental(Document document,
-                                         SampleEnvironmentalDO environmental) {
+    public Element getSampleEnviromental(Document document, SampleEnvironmentalDO environmental) {
         Element parent, child;
 
         if (document == null || environmental == null)
@@ -794,8 +792,7 @@ public class DataExchangeXMLMapperBean  {
         return parent;
     }
 
-    public Element getSamplePrivateWell(Document document,
-                                        SamplePrivateWellViewDO privateWell) {
+    public Element getSamplePrivateWell(Document document, SamplePrivateWellViewDO privateWell) {
         Element parent, child;
 
         if (document == null || privateWell == null)
@@ -805,8 +802,7 @@ public class DataExchangeXMLMapperBean  {
         parent.setAttribute("id", privateWell.getId().toString());
         parent.setAttribute("sample_id", privateWell.getSampleId().toString());
         if (privateWell.getOrganizationId() != null)
-            parent.setAttribute("organization_id", privateWell.getOrganizationId()
-                                                              .toString());
+            parent.setAttribute("organization_id", privateWell.getOrganizationId().toString());
         if (privateWell.getReportToName() != null) {
             child = document.createElement("report_to_name");
             child.setTextContent(privateWell.getReportToName());
@@ -965,12 +961,10 @@ public class DataExchangeXMLMapperBean  {
         if (sampleItem.getSampleItemId() != null)
             parent.setAttribute("sample_item_id", sampleItem.getSampleItemId().toString());
         parent.setAttribute("item_sequence", sampleItem.getItemSequence().toString());
-        parent.setAttribute("type_of_sample_id", sampleItem.getTypeOfSampleId()
-                                                           .toString());
+        parent.setAttribute("type_of_sample_id", sampleItem.getTypeOfSampleId().toString());
 
         if (sampleItem.getSourceOfSampleId() != null)
-            parent.setAttribute("source_of_sample_id", sampleItem.getSourceOfSampleId()
-                                                                 .toString());
+            parent.setAttribute("source_of_sample_id", sampleItem.getSourceOfSampleId().toString());
 
         if (sampleItem.getSourceOther() != null) {
             child = document.createElement("source_other");
@@ -984,8 +978,7 @@ public class DataExchangeXMLMapperBean  {
             parent.setAttribute("quantity", sampleItem.getQuantity().toString());
 
         if (sampleItem.getUnitOfMeasureId() != null)
-            parent.setAttribute("unit_of_measure_id", sampleItem.getUnitOfMeasureId()
-                                                                .toString());
+            parent.setAttribute("unit_of_measure_id", sampleItem.getUnitOfMeasureId().toString());
 
         return parent;
     }
@@ -1007,36 +1000,35 @@ public class DataExchangeXMLMapperBean  {
             parent.setAttribute("pre_analysis_id", analysis.getPreAnalysisId().toString());
 
         if (analysis.getParentAnalysisId() != null)
-            parent.setAttribute("parent_analysis_id", analysis.getParentAnalysisId()
-                                                              .toString());
+            parent.setAttribute("parent_analysis_id", analysis.getParentAnalysisId().toString());
 
         parent.setAttribute("is_reportable", analysis.getIsReportable());
 
         if (analysis.getUnitOfMeasureId() != null)
-            parent.setAttribute("unit_of_measure_id", analysis.getUnitOfMeasureId()
-                                                              .toString());
+            parent.setAttribute("unit_of_measure_id", analysis.getUnitOfMeasureId().toString());
 
         parent.setAttribute("status_id", analysis.getStatusId().toString());
 
         if (analysis.getAvailableDate() != null)
-            parent.setAttribute("available_date",
-                                getDatetimeForSchema(analysis.getAvailableDate()));
+            parent.setAttribute("available_date", getDatetimeForSchema(analysis.getAvailableDate()));
 
         if (analysis.getStartedDate() != null)
-            parent.setAttribute("started_date",
-                                getDatetimeForSchema(analysis.getStartedDate()));
+            parent.setAttribute("started_date", getDatetimeForSchema(analysis.getStartedDate()));
 
         if (analysis.getCompletedDate() != null)
-            parent.setAttribute("completed_date",
-                                getDatetimeForSchema(analysis.getCompletedDate()));
+            parent.setAttribute("completed_date", getDatetimeForSchema(analysis.getCompletedDate()));
 
         if (analysis.getReleasedDate() != null)
-            parent.setAttribute("released_date",
-                                getDatetimeForSchema(analysis.getReleasedDate()));
+            parent.setAttribute("released_date", getDatetimeForSchema(analysis.getReleasedDate()));
 
         if (analysis.getPrintedDate() != null)
-            parent.setAttribute("printed_date",
-                                getDatetimeForSchema(analysis.getPrintedDate()));
+            parent.setAttribute("printed_date", getDatetimeForSchema(analysis.getPrintedDate()));
+        
+        if (analysis.getPanelId() != null)
+            parent.setAttribute("panel_id", analysis.getPanelId().toString());
+        
+        if (analysis.getIsPreliminary() != null)
+            parent.setAttribute("is_preliminary", analysis.getIsPreliminary());
 
         return parent;
     }
@@ -1080,19 +1072,16 @@ public class DataExchangeXMLMapperBean  {
             parent.setAttribute("test_format_id", test.getTestFormatId().toString());
 
         if (test.getRevisionMethodId() != null)
-            parent.setAttribute("revision_method_id", test.getRevisionMethodId()
-                                                          .toString());
+            parent.setAttribute("revision_method_id", test.getRevisionMethodId().toString());
 
         if (test.getReportingMethodId() != null)
-            parent.setAttribute("reporting_method_id", test.getReportingMethodId()
-                                                           .toString());
+            parent.setAttribute("reporting_method_id", test.getReportingMethodId().toString());
 
         if (test.getSortingMethodId() != null)
             parent.setAttribute("sorting_method_id", test.getSortingMethodId().toString());
 
         if (test.getReportingSequence() != null)
-            parent.setAttribute("reporting_sequence", test.getReportingSequence()
-                                                          .toString());
+            parent.setAttribute("reporting_sequence", test.getReportingSequence().toString());
 
         return parent;
     }
@@ -1143,8 +1132,7 @@ public class DataExchangeXMLMapperBean  {
         parent.appendChild(child);
 
         if (method.getParentSectionId() != null)
-            parent.setAttribute("parent_section_id", method.getParentSectionId()
-                                                           .toString());
+            parent.setAttribute("parent_section_id", method.getParentSectionId().toString());
 
         parent.setAttribute("is_external", method.getIsExternal());
 
@@ -1226,10 +1214,8 @@ public class DataExchangeXMLMapperBean  {
         child.setTextContent(project.getDescription());
         parent.appendChild(child);
 
-        parent.setAttribute("started_date",
-                            getDatetimeForSchema(project.getStartedDate()));
-        parent.setAttribute("completed_date",
-                            getDatetimeForSchema(project.getCompletedDate()));
+        parent.setAttribute("started_date", getDatetimeForSchema(project.getStartedDate()));
+        parent.setAttribute("completed_date", getDatetimeForSchema(project.getCompletedDate()));
         parent.setAttribute("is_active", project.getIsActive());
 
         if (project.getReferenceTo() != null) {
@@ -1255,8 +1241,7 @@ public class DataExchangeXMLMapperBean  {
 
         parent.setAttribute("id", sampleOrganization.getId().toString());
         parent.setAttribute("sample_id", sampleOrganization.getSampleId().toString());
-        parent.setAttribute("organization_id", sampleOrganization.getOrganizationId()
-                                                                 .toString());
+        parent.setAttribute("organization_id", sampleOrganization.getOrganizationId().toString());
         if (sampleOrganization.getOrganizationAttention() != null) {
             child = document.createElement("organization_attention");
             child.setTextContent(sampleOrganization.getOrganizationAttention());
@@ -1277,8 +1262,8 @@ public class DataExchangeXMLMapperBean  {
 
         parent.setAttribute("id", organization.getId().toString());
         if (organization.getParentOrganizationId() != null)
-            parent.setAttribute("parent_organization_id",
-                                organization.getParentOrganizationId().toString());
+            parent.setAttribute("parent_organization_id", organization.getParentOrganizationId()
+                                                                      .toString());
 
         child = document.createElement("name");
         child.setTextContent(organization.getName());
@@ -1407,8 +1392,7 @@ public class DataExchangeXMLMapperBean  {
         parent.setAttribute("sort_order", auxData.getSortOrder().toString());
         parent.setAttribute("aux_field_id", auxData.getAuxFieldId().toString());
         parent.setAttribute("reference_id", auxData.getReferenceId().toString());
-        parent.setAttribute("reference_table_id", auxData.getReferenceTableId()
-                                                         .toString());
+        parent.setAttribute("reference_table_id", auxData.getReferenceTableId().toString());
         parent.setAttribute("is_reportable", auxData.getIsReportable().toString());
         parent.setAttribute("analyte_id", auxData.getAnalyteId().toString());
         parent.setAttribute("type_id", auxData.getTypeId().toString());
@@ -1422,8 +1406,7 @@ public class DataExchangeXMLMapperBean  {
         return parent;
     }
 
-    public Element getAnalysisQaEvent(Document document,
-                                      AnalysisQaEventViewDO sampleQaEvent) {
+    public Element getAnalysisQaEvent(Document document, AnalysisQaEventViewDO sampleQaEvent) {
         Element parent;
 
         if (document == null || sampleQaEvent == null)
@@ -1465,8 +1448,7 @@ public class DataExchangeXMLMapperBean  {
         parent.setAttribute("type_id", qaEvent.getTypeId().toString());
         parent.setAttribute("is_billable", qaEvent.getIsBillable());
         if (qaEvent.getReportingSequence() != null)
-            parent.setAttribute("reporting_sequence", qaEvent.getReportingSequence()
-                                                             .toString());
+            parent.setAttribute("reporting_sequence", qaEvent.getReportingSequence().toString());
 
         child = document.createElement("reporting_text");
         child.setTextContent(qaEvent.getReportingText());
@@ -1491,8 +1473,7 @@ public class DataExchangeXMLMapperBean  {
 
         parent.setAttribute("is_active", analyte.getIsActive());
         if (analyte.getParentAnalyteId() != null)
-            parent.setAttribute("parent_analyte_id", analyte.getParentAnalyteId()
-                                                            .toString());
+            parent.setAttribute("parent_analyte_id", analyte.getParentAnalyteId().toString());
 
         if (analyte.getExternalId() != null) {
             child = document.createElement("external_id");
@@ -1567,15 +1548,12 @@ public class DataExchangeXMLMapperBean  {
         return parent;
     }
 
-    public ArrayList<Element> getExternalTerms(Integer refTableId,
-                                               HashSet<Integer> refIds,
-                                               ArrayList<Integer> profileIds,
-                                               Document document) throws Exception {
+    public ArrayList<Element> getExternalTerms(Integer refTableId, HashSet<Integer> refIds,
+                                               ArrayList<Integer> profileIds, Document document) throws Exception {
         ArrayList<Element> elements;
         ArrayList<ExchangeExternalTermViewDO> externalTerms;
 
-        if (document == null || refTableId == null || refIds == null ||
-            profileIds == null)
+        if (document == null || refTableId == null || refIds == null || profileIds == null)
             return null;
 
         try {
@@ -1593,8 +1571,7 @@ public class DataExchangeXMLMapperBean  {
         }
     }
 
-    public Element getExternalTerm(Document document,
-                                   ExchangeExternalTermViewDO externalTerm) {
+    public Element getExternalTerm(Document document, ExchangeExternalTermViewDO externalTerm) {
         Element parent, child;
         DictionaryDO dict;
 
@@ -1603,8 +1580,8 @@ public class DataExchangeXMLMapperBean  {
 
         parent = document.createElement("translation");
         parent.setAttribute("id", externalTerm.getId().toString());
-        parent.setAttribute("reference_id",
-                            externalTerm.getExchangeLocalTermReferenceId().toString());
+        parent.setAttribute("reference_id", externalTerm.getExchangeLocalTermReferenceId()
+                                                        .toString());
         parent.setAttribute("is_active", externalTerm.getIsActive());
 
         try {
@@ -1638,8 +1615,8 @@ public class DataExchangeXMLMapperBean  {
         return parent;
     }
 
-    private Element getResultAuxDictionary(Document document, String name,
-                                           Integer resultId, Integer dictionaryId) {
+    private Element getResultAuxDictionary(Document document, String name, Integer resultId,
+                                           Integer dictionaryId) {
         Element parent;
 
         if (document == null || resultId == null || dictionaryId == null)
@@ -1653,15 +1630,12 @@ public class DataExchangeXMLMapperBean  {
     }
 
     private void createTranslations(int referenceTable, ArrayList<Integer> profileIds,
-                                    HashSet<Integer> referenceIds, String nodeName,
-                                    Document doc, Element root) throws Exception {
+                                    HashSet<Integer> referenceIds, String nodeName, Document doc,
+                                    Element root) throws Exception {
         Element translations;
         ArrayList<Element> externalTerms;
 
-        externalTerms = getExternalTerms(referenceTable,
-                                         referenceIds,
-                                         profileIds,
-                                         doc);
+        externalTerms = getExternalTerms(referenceTable, referenceIds, profileIds, doc);
 
         if (externalTerms != null) {
             translations = doc.createElement(nodeName);

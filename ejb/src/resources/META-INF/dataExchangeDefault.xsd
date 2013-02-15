@@ -262,6 +262,8 @@ UIRF Software License are applicable instead of those above.
     <xs:attribute name="completed_date" type="xs:dateTime"/>
     <xs:attribute name="released_date" type="xs:dateTime"/>
     <xs:attribute name="printed_date" type="xs:dateTime"/>
+    <xs:attribute name="panel_id" type="xs:integer" />
+    <xs:attribute name="is_preliminary" type="xs:string"/>
   </xs:complexType>
   
   <xs:complexType name="test">
