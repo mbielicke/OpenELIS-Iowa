@@ -72,49 +72,49 @@
 			<textField pattern="">
 				<reportElement key="headerUserName" mode="Opaque" x="652" y="12" width="100" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMM dd, yyyy">
 				<reportElement x="0" y="0" width="100" height="12"/>
 				<textElement>
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
 				<reportElement x="0" y="12" width="100" height="12"/>
 				<textElement>
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement x="650" y="0" width="77" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
 				<reportElement x="730" y="0" width="22" height="12"/>
 				<textElement>
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="">
 				<reportElement x="168" y="12" width="419" height="12"/>
 				<textElement textAlignment="Center">
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ANALYTE_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="headerTitle1" mode="Opaque" x="587" y="72" width="163" height="12"/>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Statistics]]></text>
 			</staticText>
@@ -131,7 +131,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Plot Mean]]></text>
 			</staticText>
@@ -146,7 +146,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{MEAN}]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -159,7 +161,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Mean % Recovery]]></text>
 			</staticText>
@@ -174,7 +176,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{MEAN_RECOVERY}]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -187,7 +191,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Mean - Expected]]></text>
 			</staticText>
@@ -202,7 +206,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getConcentrationBias($F{MEAN}, $F{VALUE_1})]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -215,7 +221,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[%  Recovery - 100]]></text>
 			</staticText>
@@ -230,7 +236,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{MEAN_RECOVERY} - 100]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -243,7 +251,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[%  Relative SD]]></text>
 			</staticText>
@@ -258,7 +266,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getRelativeSD($V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}),$F{MEAN})]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -271,7 +281,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[SD]]></text>
 			</staticText>
@@ -286,7 +296,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL})]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -299,7 +311,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[UCL]]></text>
 			</staticText>
@@ -314,7 +326,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{UCL}]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -327,7 +341,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[UWL]]></text>
 			</staticText>
@@ -342,7 +356,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{UWL})]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -355,7 +371,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[LWL]]></text>
 			</staticText>
@@ -370,7 +386,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LWL})]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -383,7 +401,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[LCL]]></text>
 			</staticText>
@@ -398,7 +416,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LCL})]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -411,7 +431,7 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[SD * t-value]]></text>
 			</staticText>
@@ -426,7 +446,9 @@
 					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{TVALUE_LIST}.getTValue($V{AnalyteGroupHeader_COUNT}, $V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}))]]></textFieldExpression>
 			</textField>
 			<xyLineChart>
@@ -434,9 +456,15 @@
 					<reportElement isPrintRepeatedValues="false" x="0" y="48" width="587" height="190" printWhenGroupChanges="AnalyteGroupHeader">
 						<property name="IntegerTickUnits" value="true"/>
 					</reportElement>
-					<chartTitle position="Top"/>
-					<chartSubtitle/>
-					<chartLegend position="Right"/>
+					<chartTitle position="Top">
+						<font fontName="Times New Roman"/>
+					</chartTitle>
+					<chartSubtitle>
+						<font fontName="Times New Roman"/>
+					</chartSubtitle>
+					<chartLegend position="Right">
+						<font fontName="Times New Roman"/>
+					</chartLegend>
 				</chart>
 				<xyDataset>
 					<dataset resetType="Group" resetGroup="AnalyteGroupHeader"/>
@@ -476,15 +504,23 @@
 					<categoryAxisLabelExpression><![CDATA["Data points"]]></categoryAxisLabelExpression>
 					<categoryAxisFormat>
 						<axisFormat>
-							<labelFont/>
-							<tickLabelFont/>
+							<labelFont>
+								<font fontName="Times New Roman"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="Times New Roman"/>
+							</tickLabelFont>
 						</axisFormat>
 					</categoryAxisFormat>
 					<valueAxisLabelExpression><![CDATA["Value"]]></valueAxisLabelExpression>
 					<valueAxisFormat>
 						<axisFormat>
-							<labelFont/>
-							<tickLabelFont/>
+							<labelFont>
+								<font fontName="Times New Roman"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="Times New Roman"/>
+							</tickLabelFont>
 						</axisFormat>
 					</valueAxisFormat>
 					<rangeAxisMinValueExpression><![CDATA[$V{yMin} - $V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL})]]></rangeAxisMinValueExpression>
@@ -494,7 +530,7 @@
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="">
 				<reportElement x="168" y="0" width="419" height="12"/>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["QC Chart for " + $P{QCNAME}]]></textFieldExpression>
 			</textField>
@@ -511,7 +547,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[#]]></text>
 			</staticText>
@@ -524,7 +560,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement>
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[    Accession #]]></text>
 			</staticText>
@@ -537,7 +573,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement>
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Lot #]]></text>
 			</staticText>
@@ -550,7 +586,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement>
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Date]]></text>
 			</staticText>
@@ -563,7 +599,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Expected]]></text>
 			</staticText>
@@ -576,7 +612,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[% Recovery]]></text>
 			</staticText>
@@ -589,7 +625,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Final Value]]></text>
 			</staticText>
@@ -602,7 +638,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement>
-					<font reportFont="FieldLabel" isBold="true" pdfFontName="Times-BoldItalic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
 				<text><![CDATA[Worksheet #]]></text>
 			</staticText>
@@ -613,56 +649,56 @@
 			<textField>
 				<reportElement positionType="Float" x="40" y="0" width="74" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ACCESSION_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="201" y="0" width="204" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{LOT_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd">
 				<reportElement positionType="Float" x="405" y="0" width="60" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{CREATED_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="465" y="0" width="60" height="10"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{VALUE_1}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="525" y="0" width="60" height="10"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{VALUE_2}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="585" y="0" width="74" height="10"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{PLOT_VALUE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="0" y="0" width="31" height="10"/>
 				<textElement textAlignment="Right" rotation="None">
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="114" y="0" width="87" height="10"/>
 				<textElement>
-					<font size="8"/>
+					<font fontName="Times New Roman" size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{WORKSHEET_NUMBER}]]></textFieldExpression>
 			</textField>

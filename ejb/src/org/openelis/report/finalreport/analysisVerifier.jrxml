@@ -21,7 +21,7 @@ WHERE
 			<textField>
 				<reportElement x="0" y="0" width="100" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[ReportUtil.getInitialsForUserId($F{system_user_id})]]></textFieldExpression>
 			</textField>

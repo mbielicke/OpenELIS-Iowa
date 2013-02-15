@@ -19,14 +19,14 @@
 				<textField>
 					<reportElement mode="Opaque" x="0" y="12" width="275" height="12" isPrintInFirstWholeBand="true" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header0}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement mode="Opaque" x="275" y="12" width="275" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header1}]]></textFieldExpression>
 				</textField>
@@ -38,14 +38,14 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="275" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field0}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="275" y="0" width="275" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field1}]]></textFieldExpression>
 			</textField>

@@ -25,7 +25,7 @@ WHERE
 					<printWhenExpression><![CDATA[$F{source_other} == null && $F{source_of_sample} == null]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
 			</textField>
@@ -34,14 +34,14 @@ WHERE
 					<printWhenExpression><![CDATA[$F{source_other} == null]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_of_sample}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="142" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_other}]]></textFieldExpression>
 			</textField>

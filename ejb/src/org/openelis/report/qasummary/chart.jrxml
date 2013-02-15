@@ -42,11 +42,13 @@
 				<chart isShowLegend="false" evaluationTime="Report" customizerClass="org.openelis.report.qasummary.QAChartCustomizerLogYAxis" renderType="draw">
 					<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="576" height="240"/>
 					<chartTitle>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</chartTitle>
-					<chartSubtitle/>
+					<chartSubtitle>
+						<font fontName="Times New Roman"/>
+					</chartSubtitle>
 					<chartLegend position="Top">
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</chartLegend>
 				</chart>
 				<categoryDataset>
@@ -60,16 +62,16 @@
 				<bar3DPlot isShowLabels="true">
 					<plot labelRotation="90.0"/>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF">
-						<font size="4" pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" size="4" pdfFontName="Times-Roman"/>
 					</itemLabel>
 					<categoryAxisLabelExpression><![CDATA[]]></categoryAxisLabelExpression>
 					<categoryAxisFormat labelRotation="90.0">
 						<axisFormat verticalTickLabels="false">
 							<labelFont>
-								<font size="4" pdfFontName="Times-Roman"/>
+								<font fontName="Times New Roman" size="4" pdfFontName="Times-Roman"/>
 							</labelFont>
 							<tickLabelFont>
-								<font size="6" pdfFontName="Times-Roman"/>
+								<font fontName="Times New Roman" size="6" pdfFontName="Times-Roman"/>
 							</tickLabelFont>
 						</axisFormat>
 					</categoryAxisFormat>
@@ -77,10 +79,10 @@
 					<valueAxisFormat>
 						<axisFormat verticalTickLabels="false">
 							<labelFont>
-								<font size="4" pdfFontName="Times-Roman"/>
+								<font fontName="Times New Roman" size="4" pdfFontName="Times-Roman"/>
 							</labelFont>
 							<tickLabelFont>
-								<font size="6" pdfFontName="Times-Roman"/>
+								<font fontName="Times New Roman" size="6" pdfFontName="Times-Roman"/>
 							</tickLabelFont>
 						</axisFormat>
 					</valueAxisFormat>

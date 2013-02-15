@@ -38,7 +38,7 @@ SELECT spw.report_to_name
 					<rightPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="9" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="9" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_name}]]></textFieldExpression>
 			</textField>

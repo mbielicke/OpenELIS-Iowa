@@ -38,7 +38,7 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 			<staticText>
 				<reportElement key="header-top" x="139" y="0" width="437" height="47"/>
 				<textElement textAlignment="Left">
-					<font size="33" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="33" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[State Hygienic Laboratory]]></text>
 			</staticText>
@@ -57,42 +57,42 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 			<staticText>
 				<reportElement key="header-bottom" x="148" y="53" width="248" height="28" backcolor="#E7E4E4"/>
 				<textElement textAlignment="Left">
-					<font size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="22" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[The University of Iowa]]></text>
 			</staticText>
 			<textField pattern="MMM dd, yyyy">
 				<reportElement x="2" y="100" width="100" height="12"/>
 				<textElement>
-					<font size="10" isUnderline="false" pdfFontName="Helvetica"/>
+					<font fontName="Arial" size="10" isUnderline="false" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="199" y="95" width="179" height="17"/>
 				<textElement textAlignment="Center">
-					<font size="14" isBold="true" pdfFontName="Helvetica"/>
+					<font fontName="Arial" size="14" isBold="true" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[SHIPPING MANIFEST]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="388" y="100" width="158" height="12"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Helvetica"/>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report">
 				<reportElement x="546" y="100" width="27" height="12"/>
 				<textElement>
-					<font pdfFontName="Helvetica"/>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[" "+$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="128" width="295" height="12" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Center">
-					<font isBold="true" pdfFontName="Helvetica"/>
+					<font fontName="Arial" isBold="true" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[SHIP TO]]></text>
 			</staticText>
@@ -113,28 +113,28 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 			<staticText>
 				<reportElement mode="Transparent" x="306" y="128" width="72" height="12" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right">
-					<font isBold="true" pdfFontName="Helvetica"/>
+					<font fontName="Arial" isBold="true" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[Ship From:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Transparent" x="306" y="140" width="72" height="12" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right">
-					<font isBold="true" pdfFontName="Helvetica"/>
+					<font fontName="Arial" isBold="true" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[Shipping Id:]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="381" y="128" width="195" height="12"/>
 				<textElement>
-					<font pdfFontName="Helvetica"/>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ship_from_location}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="381" y="140" width="71" height="12"/>
 				<textElement>
-					<font pdfFontName="Helvetica"/>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["SH"+$F{id}]]></textFieldExpression>
 			</textField>
@@ -182,91 +182,91 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 			<staticText>
 				<reportElement x="2" y="8" width="118" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="8" width="175" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[University of Iowa Research Park]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="295" y="8" width="142" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Lakeside Laboratory]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="437" y="8" width="139" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="18" width="118" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Michael A. Pentella, Ph.D.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="18" width="175" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[2490 Crosspark Road, Coralville, Iowa 52241-4721]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="295" y="18" width="142" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[1838 Highway 86, Milford, IA 51351]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="437" y="18" width="139" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[2220 S. Ankeny Blvd, Ankeny, IA  50023 ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="28" width="118" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Associate Directors]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="28" width="175" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="295" y="28" width="142" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[712/337-3669  ext. 6 Fax: 712/337-0227]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="437" y="28" width="139" height="10"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="2" y="38" width="118" height="10"/>
 				<textElement>
-					<font size="8" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="8" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[http://www.uhl.uiowa.edu]]></text>
 			</staticText>

@@ -40,7 +40,7 @@ WHERE
 			<staticText>
 				<reportElement x="284" y="0" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Date Sample Finalized]]></text>
 			</staticText>
@@ -53,14 +53,14 @@ WHERE
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="434" y="0" width="142" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{released_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="12" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Date Received]]></text>
 			</staticText>
@@ -69,42 +69,42 @@ WHERE
 					<printWhenExpression><![CDATA[$V{PAGE_NUMBER} == 1]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{received_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="24" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Date Collected]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
 				<reportElement x="434" y="24" width="80" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{collection_date}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="483" y="24" width="49" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Time"><![CDATA[$F{collection_time}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="48" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Collector]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="48" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
 			</textField>
@@ -127,112 +127,112 @@ WHERE
 			<staticText>
 				<reportElement x="284" y="60" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[PWS ID]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="60" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{number0}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="72" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[PWS Name]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="72" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="84" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Facility ID]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="84" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{facility_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="96" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Sample Type]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="96" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sdwis_sample_type}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="108" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Sample Category]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="108" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sdwis_sample_category}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="120" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Sampling Point ID]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="120" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_point_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="132" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Collection Site]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="132" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="144" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Client Reference]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="144" width="180" height="12"/>
 				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
 			</textField>
@@ -250,7 +250,7 @@ WHERE
 			<staticText>
 				<reportElement x="284" y="36" width="140" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Sample Source]]></text>
 			</staticText>

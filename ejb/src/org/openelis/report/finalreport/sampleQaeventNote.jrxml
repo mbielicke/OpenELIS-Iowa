@@ -16,14 +16,14 @@
 			<staticText>
 				<reportElement x="0" y="12" width="30" height="12"/>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="30" y="12" width="520" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
 				<textElement markup="styled">
-					<font isBold="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{styled_text}]]></textFieldExpression>
 			</textField>

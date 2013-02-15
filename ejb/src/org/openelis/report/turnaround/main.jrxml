@@ -86,217 +86,289 @@ order by 1, 2]]>
 			<band height="84">
 				<textField>
 					<reportElement positionType="Float" x="0" y="0" width="85" height="12"/>
-					<textElement/>
+					<textElement>
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{tst_name}]]></textFieldExpression>
 				</textField>
 				<textField>
 					<reportElement positionType="Float" x="95" y="0" width="80" height="12"/>
-					<textElement/>
+					<textElement>
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{mth_name}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement positionType="Float" x="185" y="0" width="30" height="12"/>
-					<textElement textAlignment="Center"/>
+					<textElement textAlignment="Center">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Integer"><![CDATA[$V{REC_REL}.getCount()]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="225" y="0" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getMin()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getMin())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="275" y="0" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getMax()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getMax())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="325" y="0" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getAverage()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getAverage().intValue())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="375" y="0" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getMedian()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getMedian())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="425" y="0" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getSD()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getSD())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="225" y="12" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getMin()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getMin())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="275" y="12" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getMax()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getMax())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="325" y="12" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getAverage()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getAverage().intValue())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="375" y="12" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getMedian()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getMedian())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="425" y="12" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getSD()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getSD())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00">
 					<reportElement positionType="Float" x="225" y="24" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getMin()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getMin())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="275" y="24" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getMax()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getMax())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="325" y="24" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getAverage()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getAverage())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="375" y="24" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getMedian()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getMedian())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="425" y="24" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getSD()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getSD())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="225" y="36" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getMin()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getMin())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="275" y="36" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getMax()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getMax())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="325" y="36" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getAverage()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getAverage())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="375" y="36" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getMedian()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getMedian())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="425" y="36" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getSD()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getSD())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="225" y="48" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getMin()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getMin())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="275" y="48" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getMax()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getMax())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="325" y="48" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getAverage()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getAverage())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="375" y="48" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getMedian()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getMedian())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="425" y="48" width="40" height="12"/>
-					<textElement textAlignment="Right"/>
+					<textElement textAlignment="Right">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getSD()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getSD())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="225" y="60" width="40" height="12"/>
-					<textElement textAlignment="Right" markup="none"/>
+					<textElement textAlignment="Right" markup="none">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getMin()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getMin())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="275" y="60" width="40" height="12"/>
-					<textElement textAlignment="Right" markup="none"/>
+					<textElement textAlignment="Right" markup="none">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getMax()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getMax())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="325" y="60" width="40" height="12"/>
-					<textElement textAlignment="Right" markup="none"/>
+					<textElement textAlignment="Right" markup="none">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getAverage()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getAverage())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="375" y="60" width="40" height="12"/>
-					<textElement textAlignment="Right" markup="none"/>
+					<textElement textAlignment="Right" markup="none">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getMedian()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getMedian())):null]]></textFieldExpression>
 				</textField>
 				<textField pattern="###0.00" isBlankWhenNull="true">
 					<reportElement positionType="Float" x="425" y="60" width="40" height="12"/>
-					<textElement textAlignment="Right" markup="none"/>
+					<textElement textAlignment="Right" markup="none">
+						<font fontName="Times New Roman"/>
+					</textElement>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getSD()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getSD())):null]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement x="475" y="0" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Col-Rel]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="475" y="12" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Rel]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="475" y="24" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Cmp]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="475" y="36" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Cmp-Rel]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="475" y="48" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Rdy-Cmp]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="475" y="60" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Col-Rec]]></text>
 				</staticText>
 				<bar3DChart>
 					<chart isShowLegend="false" renderType="draw">
 						<reportElement mode="Opaque" x="530" y="2" width="221" height="70"/>
-						<chartTitle/>
-						<chartSubtitle/>
-						<chartLegend textColor="#000000"/>
+						<chartTitle>
+							<font fontName="Times New Roman"/>
+						</chartTitle>
+						<chartSubtitle>
+							<font fontName="Times New Roman"/>
+						</chartSubtitle>
+						<chartLegend textColor="#000000">
+							<font fontName="Times New Roman"/>
+						</chartLegend>
 					</chart>
 					<categoryDataset>
 						<dataset resetType="Group" resetGroup="test_method"/>
@@ -339,24 +411,26 @@ order by 1, 2]]>
 					</categoryDataset>
 					<bar3DPlot isShowLabels="false">
 						<plot/>
-						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF">
+							<font fontName="Times New Roman"/>
+						</itemLabel>
 						<categoryAxisFormat>
 							<axisFormat verticalTickLabels="true">
 								<labelFont>
-									<font size="10"/>
+									<font fontName="Times New Roman" size="10"/>
 								</labelFont>
 								<tickLabelFont>
-									<font size="0"/>
+									<font fontName="Times New Roman" size="0"/>
 								</tickLabelFont>
 							</axisFormat>
 						</categoryAxisFormat>
 						<valueAxisFormat>
 							<axisFormat verticalTickLabels="true">
 								<labelFont>
-									<font size="10"/>
+									<font fontName="Times New Roman" size="10"/>
 								</labelFont>
 								<tickLabelFont>
-									<font size="5"/>
+									<font fontName="Times New Roman" size="5"/>
 								</tickLabelFont>
 							</axisFormat>
 						</valueAxisFormat>
@@ -365,42 +439,42 @@ order by 1, 2]]>
 				<staticText>
 					<reportElement x="530" y="72" width="33" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Col-Rel]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="563" y="72" width="33" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Rel]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="596" y="72" width="37" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Cmp]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="633" y="72" width="35" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Cmp-Rel]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="668" y="72" width="38" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Rdy-Cmp]]></text>
 				</staticText>
 				<staticText>
 					<reportElement x="706" y="72" width="35" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
-						<font size="8"/>
+						<font fontName="Times New Roman" size="8"/>
 					</textElement>
 					<text><![CDATA[Col-Rec]]></text>
 				</staticText>
@@ -412,49 +486,49 @@ order by 1, 2]]>
 			<textField pattern="MMM dd, yyyy">
 				<reportElement key="headerDate" mode="Transparent" x="0" y="0" width="100" height="12"/>
 				<textElement>
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
 				<reportElement key="headerTime" mode="Transparent" x="0" y="12" width="100" height="12"/>
 				<textElement>
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="headerTitle1" mode="Opaque" x="278" y="0" width="227" height="12"/>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Turnaround Report]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" pattern="">
 				<reportElement key="headerPageNo" mode="Opaque" x="621" y="0" width="116" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="">
 				<reportElement key="headerPageNoLast" mode="Opaque" x="737" y="0" width="10" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement key="headerUserName" mode="Opaque" x="654" y="12" width="93" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement key="headerTime" mode="Opaque" x="278" y="12" width="240" height="12"/>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{FROM_DATE}+" to "+$P{TO_DATE}]]></textFieldExpression>
 			</textField>
@@ -465,56 +539,56 @@ order by 1, 2]]>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Test name]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="90" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Method name]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="180" y="0" width="40" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[# tested]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="220" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement textAlignment="Right">
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Min]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="270" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement textAlignment="Right">
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Max]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="320" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement textAlignment="Right">
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Average]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="370" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement textAlignment="Right">
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[Median]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" mode="Opaque" x="420" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement textAlignment="Right">
-					<font reportFont="times"/>
+					<font reportFont="times" fontName="Times New Roman"/>
 				</textElement>
 				<text><![CDATA[1 SD]]></text>
 			</staticText>
@@ -524,7 +598,9 @@ order by 1, 2]]>
 		<band height="12">
 			<staticText>
 				<reportElement x="0" y="0" width="752" height="12"/>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<text><![CDATA[* All values are in days and hours. i.e., 4.09 is 4 days and 9 hours]]></text>
 			</staticText>
 		</band>
