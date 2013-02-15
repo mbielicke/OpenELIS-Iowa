@@ -1,33 +1,33 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.entity;
 
 /**
-  * Analysis Entity POJO for database 
-  */
+ * Analysis Entity POJO for database
+ */
 
 import java.util.Collection;
 import java.util.Date;
@@ -54,11 +54,12 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+//@formatter:off  
 @NamedQueries( {
     @NamedQuery( name = "Analysis.FetchById", 
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
                         "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
                       + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.test t"
                       +	"  where a.id = :id"),
@@ -67,7 +68,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Analysis.FetchBySampleId",
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
                         "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
                         " LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.test t where si.sampleId = :id order by  si.itemSequence, t.name, t.method.name "),                       
@@ -78,14 +79,14 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Analysis.FetchBySampleItemId",
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
                         "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section s LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam"
                       +	" LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchBySampleItemIds",
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
                         "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section s LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam"
                       + " LEFT JOIN a.test t where a.sampleItemId in (:ids) order by si.sampleId, si.itemSequence, t.name, t.method.name "),          
@@ -94,6 +95,7 @@ import org.openelis.utils.Auditable;
                       + " from Analysis a, SampleItem si, Sample s, SampleSDWIS ss, PWS p, SampleOrganization so, Organization o, Test t, Section se, Dictionary d1, Dictionary d2, Dictionary d3"
                       + " where a.sampleItemId = si.id and si.sampleId = s.id and ss.sampleId = s.id and ss.pwsId = p.id and ss.sampleTypeId = d1.id and so.sampleId = s.id and so.organizationId = o.id and a.testId = t.id and a.sectionId = se.id and a.unitOfMeasureId = d2.id and"
                       + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate order by s.accessionNumber, a.releasedDate")})
+//@formatter:on
 @Entity
 @Table(name = "analysis")
 @EntityListeners({AuditUtil.class})
@@ -148,6 +150,12 @@ public class Analysis implements Auditable, Cloneable {
 
     @Column(name = "printed_date")
     private Date                        printedDate;
+
+    @Column(name = "panel_id")
+    private Integer                     panelId;
+
+    @Column(name = "is_preliminary")
+    private String                      isPreliminary;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_item_id", insertable = false, updatable = false)
@@ -321,6 +329,24 @@ public class Analysis implements Auditable, Cloneable {
             this.printedDate = DataBaseUtil.toDate(printedDate);
     }
 
+    public Integer getPanelId() {
+        return panelId;
+    }
+
+    public void setPanelId(Integer panelId) {
+        if (DataBaseUtil.isDifferent(panelId, this.panelId))
+            this.panelId = panelId;
+    }
+
+    public String getIsPreliminary() {
+        return isPreliminary;
+    }
+
+    public void setIsPreliminary(String isPreliminary) {
+        if (DataBaseUtil.isDifferent(isPreliminary, this.isPreliminary))
+            this.isPreliminary = isPreliminary;
+    }
+
     public SampleItem getSampleItem() {
         return sampleItem;
     }
@@ -377,7 +403,7 @@ public class Analysis implements Auditable, Cloneable {
         }
     }
 
-  public Audit getAudit(Integer activity) {
+    public Audit getAudit(Integer activity) {
         Audit audit;
 
         audit = new Audit(activity);
@@ -385,15 +411,30 @@ public class Analysis implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_item_id", sampleItemId, original.sampleItemId, Constants.table().SAMPLE_ITEM)
+                 .setField("sample_item_id",
+                           sampleItemId,
+                           original.sampleItemId,
+                           Constants.table().SAMPLE_ITEM)
                  .setField("revision", revision, original.revision)
                  .setField("test_id", testId, original.testId, Constants.table().TEST)
                  .setField("section_id", sectionId, original.sectionId, Constants.table().SECTION)
-                 .setField("pre_analysis_id", preAnalysisId, original.preAnalysisId, Constants.table().ANALYSIS)
-                 .setField("parent_analysis_id", parentAnalysisId, original.parentAnalysisId, Constants.table().ANALYSIS)
-                 .setField("parent_result_id", parentResultId, original.parentResultId, Constants.table().RESULT)
+                 .setField("pre_analysis_id",
+                           preAnalysisId,
+                           original.preAnalysisId,
+                           Constants.table().ANALYSIS)
+                 .setField("parent_analysis_id",
+                           parentAnalysisId,
+                           original.parentAnalysisId,
+                           Constants.table().ANALYSIS)
+                 .setField("parent_result_id",
+                           parentResultId,
+                           original.parentResultId,
+                           Constants.table().RESULT)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, Constants.table().DICTIONARY)
+                 .setField("unit_of_measure_id",
+                           unitOfMeasureId,
+                           original.unitOfMeasureId,
+                           Constants.table().DICTIONARY)
                  .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("available_date", availableDate, original.availableDate)
                  .setField("started_date", startedDate, original.startedDate)
@@ -403,4 +444,4 @@ public class Analysis implements Auditable, Cloneable {
 
         return audit;
     }
-}   
+}
