@@ -37,6 +37,9 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
+import org.openelis.domain.OrganizationParameterDO;
+import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
@@ -48,13 +51,16 @@ import org.openelis.manager.OrganizationParameterManager;
 public class OrganizationManagerBean {
 
     @Resource
-    private SessionContext ctx;
+    private SessionContext            ctx;
 
     @EJB
-    private LockBean      lockBean;
-    
+    private LockBean                  lockBean;
+
     @EJB
-    private UserCacheBean  userCache;
+    private UserCacheBean             userCacheBean;
+
+    @EJB
+    private OrganizationParameterBean organizationParameterBean;
 
     public OrganizationManager fetchById(Integer id) throws Exception {
         return OrganizationManager.fetchById(id);
@@ -68,7 +74,7 @@ public class OrganizationManagerBean {
         return OrganizationManager.fetchWithParameters(id);
     }
 
-    public ArrayList<OrganizationManager> fetchByIdList(ArrayList<Integer> ids) throws Exception {
+    public ArrayList<OrganizationManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
         ArrayList<OrganizationManager> list;
 
         list = new ArrayList<OrganizationManager>();
@@ -125,28 +131,53 @@ public class OrganizationManagerBean {
 
         return man;
     }
-
-    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
-        UserTransaction ut;
+    
+    public ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception {
+        Integer orgId;
+        ArrayList<OrganizationParameterDO> returnParameters;
+        ValidationErrorsList list;
 
         checkSecurityForNotify(ModuleFlags.SELECT);
 
-        man.getParameters().validate();
-
-        ut = ctx.getUserTransaction();
-        try {
-            ut.begin();
-            lockBean.validateLock(Constants.table().ORGANIZATION, man.getOrganization()
-                                                                     .getId());
-            man.updateForNotify();
-            lockBean.unlock(Constants.table().ORGANIZATION, man.getOrganization().getId());
-            ut.commit();
-        } catch (Exception e) {
-            ut.rollback();
-            throw e;
+        list = new ValidationErrorsList();
+        for (OrganizationParameterDO param : parameters) {
+            /*
+             * existing parameters (id != null) with null values are not
+             * validated because they are to be deleted
+             */
+            if (param.getId() != null && param.getValue() == null)
+                continue;
+            try {
+                organizationParameterBean.validate(param);
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e);
+            }
         }
 
-        return man;
+        if (list.size() > 0)
+            throw list;
+
+        orgId = parameters.get(0).getOrganizationId();
+        lockBean.lock(Constants.table().ORGANIZATION, orgId);
+
+        returnParameters = new ArrayList<OrganizationParameterDO>();
+        for (OrganizationParameterDO param : parameters) {
+
+            if (param.getId() != null) {
+                /*
+                 * delete existing parameters with null values
+                 */
+                if (param.getValue() == null)
+                    organizationParameterBean.delete(param);
+                else
+                    returnParameters.add(organizationParameterBean.update(param));
+            } else if (param.getValue() != null) {
+                returnParameters.add(organizationParameterBean.add(param));
+            }
+        }
+        lockBean.unlock(Constants.table().ORGANIZATION, orgId);
+
+        return returnParameters;
     }
 
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
@@ -180,10 +211,10 @@ public class OrganizationManagerBean {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        userCache.applyPermission("organization", flag);
+        userCacheBean.applyPermission("organization", flag);
     }
 
     private void checkSecurityForNotify(ModuleFlags flag) throws Exception {
-        userCache.applyPermission("w_notify", flag);
+        userCacheBean.applyPermission("w_notify", flag);
     }
 }

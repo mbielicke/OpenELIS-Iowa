@@ -125,9 +125,6 @@ public class DataViewBean {
 
     @EJB
     private AuxDataBean                     auxData;
-
-    @EJB
-    private DictionaryBean                  dictionary;
     
     @EJB
     private SampleBean                      sample;
@@ -2275,6 +2272,13 @@ public class DataViewBean {
             if (analysis != null)
                 cell.setCellValue(analysis.getRevision());
         }
+        if ("Y".equals(data.getAnalysisIsReportableHeader())) {
+            cell = row.createCell(startCol++ );
+            if (analysis != null) {
+                isRep = "Y".equals(analysis.getIsReportable());
+                cell.setCellValue(isRep ? resource.getString("yes") : resource.getString("no"));
+            }
+        }
         if ("Y".equals(data.getAnalysisUnitOfMeasureId())) {
             cell = row.createCell(startCol++ );
             if (analysis != null) {
@@ -2289,13 +2293,6 @@ public class DataViewBean {
                                 e);
                     }
                 }
-            }
-        }
-        if ("Y".equals(data.getAnalysisIsReportableHeader())) {
-            cell = row.createCell(startCol++ );
-            if (analysis != null) {
-                isRep = "Y".equals(analysis.getIsReportable());
-                cell.setCellValue(isRep ? resource.getString("yes") : resource.getString("no"));
             }
         }
         if ("Y".equals(data.getAnalysisQaName())) {

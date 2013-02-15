@@ -51,7 +51,7 @@ import org.openelis.manager.WorksheetResultManager;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class WorksheetManagerBean {
     @Resource
-    private SessionContext    ctx;
+    private SessionContext   ctx;
 
     @EJB
     private SessionCacheBean session;
@@ -61,9 +61,6 @@ public class WorksheetManagerBean {
     
     @EJB
     private UserCacheBean    userCache;
-
-    public WorksheetManagerBean() {
-    }
 
     public WorksheetManager fetchById(Integer id) throws Exception {
         return WorksheetManager.fetchById(id);

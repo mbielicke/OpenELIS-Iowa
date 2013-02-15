@@ -76,12 +76,9 @@ public class WorksheetCreationBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
-    private static final Logger      log = Logger.getLogger("openelis");
+    private static final Logger                log  = Logger.getLogger("openelis");
     private static final WorksheetCreationMeta meta = new WorksheetCreationMeta();
     
-    public WorksheetCreationBean() {
-    }
-
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetCreationVO> query(ArrayList<QueryData> fields, 
                                                 int first, int max) throws Exception {
@@ -119,7 +116,7 @@ public class WorksheetCreationBean {
                           WorksheetCreationMeta.getAnalysisTestTimeHolding()+", " +
                           WorksheetCreationMeta.getAnalysisTestTimeTaAverage()+", " +
                           WorksheetCreationMeta.getAnalysisSectionId()+", "+
-                          WorksheetCreationMeta.getAnalysisPreAnalysisId()+", "+
+                          WorksheetCreationMeta.getAnalysisPreAnalysisId()+", " +
                           WorksheetCreationMeta.getAnalysisStatusId()+", " +
                           WorksheetCreationMeta.getAnalysisUnitOfMeasureId()+", " +
                           WorksheetCreationMeta.getTestWorksheetFormatId()+") ");
@@ -235,7 +232,7 @@ public class WorksheetCreationBean {
 
         return (ArrayList<WorksheetCreationVO>)list;
     }
-    
+
     /*
      * Compute the number of days before the analysis is expected to be finshed
      */
