@@ -38,28 +38,28 @@ ORDER BY t_description, m_description]]>
 			<textField>
 				<reportElement key="testMethodDescription.title" mode="Transparent" x="0" y="12" width="752" height="12" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Center">
-					<font isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Bold"/>
+					<font fontName="Times New Roman" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Bold"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_description},", ", $F{m_description})]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="status.label" x="210" y="36" width="40" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Status:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="status" x="255" y="36" width="120" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="revision.label" x="385" y="36" width="50" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Revision:]]></text>
 			</staticText>
@@ -68,56 +68,56 @@ ORDER BY t_description, m_description]]>
 					<printWhenExpression><![CDATA[$F{revision} > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{revision}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="reportable.label" x="485" y="36" width="60" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Reportable:]]></text>
 			</staticText>
 			<textField>
 				<reportElement key="reportable" x="550" y="36" width="10" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{is_reportable}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="section.label" x="200" y="48" width="50" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Section:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="section" x="255" y="48" width="120" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{section_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="unit.label" x="375" y="48" width="60" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Unit:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="unit" x="440" y="48" width="312" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="analysisQaevent.label" x="-10" y="72" width="60" height="12" isRemoveLineWhenBlank="true" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[QA Events:]]></text>
 			</staticText>

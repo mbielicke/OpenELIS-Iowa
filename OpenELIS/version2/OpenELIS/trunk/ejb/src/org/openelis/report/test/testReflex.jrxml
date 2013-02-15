@@ -38,35 +38,35 @@ WHERE t.id = $P{TEST_ID} and
 			<staticText>
 				<reportElement mode="Opaque" x="60" y="0" width="55" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Method]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="115" y="0" width="150" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="265" y="0" width="185" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="450" y="0" width="72" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Flag]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="0" y="0" width="60" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Reflex Test]]></text>
 			</staticText>
@@ -80,7 +80,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{xt_name}]]></textFieldExpression>
 			</textField>
@@ -90,7 +90,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{m_name}]]></textFieldExpression>
 			</textField>
@@ -102,7 +102,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{tr_value}]]></textFieldExpression>
 			</textField>
@@ -112,7 +112,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}]]></textFieldExpression>
 			</textField>
@@ -122,7 +122,7 @@ WHERE t.id = $P{TEST_ID} and
 					<bottomPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>

@@ -25,35 +25,35 @@
 				<textField isBlankWhenNull="true">
 					<reportElement mode="Opaque" x="0" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header0}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement mode="Opaque" x="110" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header1}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement mode="Opaque" x="220" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header2}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement mode="Opaque" x="330" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header3}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
 					<reportElement mode="Opaque" x="440" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
-						<font pdfFontName="Times-Roman"/>
+						<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header4}]]></textFieldExpression>
 				</textField>
@@ -65,35 +65,35 @@
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="110" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field0}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="110" y="0" width="110" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field1}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="220" y="0" width="110" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field2}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="330" y="0" width="110" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field3}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="440" y="0" width="110" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field4}]]></textFieldExpression>
 			</textField>

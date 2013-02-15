@@ -22,7 +22,7 @@ WHERE
 			<staticText>
 				<reportElement mode="Opaque" x="112" y="0" width="310" height="12" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Center">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Description of Units used within this report]]></text>
 			</staticText>
@@ -33,14 +33,14 @@ WHERE
 			<textField isBlankWhenNull="true">
 				<reportElement x="0" y="0" width="210" height="12"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="220" y="0" width="338" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_description}]]></textFieldExpression>
 			</textField>
@@ -48,7 +48,9 @@ WHERE
 				<reportElement x="212" y="0" width="8" height="12">
 					<printWhenExpression><![CDATA[$F{unit_description} != null]]></printWhenExpression>
 				</reportElement>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<text><![CDATA[=]]></text>
 			</staticText>
 		</band>

@@ -22,7 +22,7 @@ ORDER BY p.name]]>
 			<textField isBlankWhenNull="true">
 				<reportElement key="projectName" x="0" y="0" width="250" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>

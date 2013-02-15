@@ -36,14 +36,14 @@ WHERE $P{REF_TYPE} = "P" and
 			<staticText>
 				<reportElement mode="Opaque" x="330" y="0" width="322" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement>
-					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Unit of measure]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="130" y="0" width="200" height="12" forecolor="#000000" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Justified">
-					<font size="10" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Sample type]]></text>
 			</staticText>
@@ -60,14 +60,14 @@ WHERE $P{REF_TYPE} = "P" and
 			<textField isBlankWhenNull="true">
 				<reportElement x="330" y="0" width="322" height="12"/>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_entry}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="130" y="0" width="195" height="12"/>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_entry}]]></textFieldExpression>
 			</textField>

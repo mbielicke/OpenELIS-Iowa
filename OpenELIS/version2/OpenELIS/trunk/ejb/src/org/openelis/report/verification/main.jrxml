@@ -50,56 +50,56 @@ ORDER BY
 			<textField pattern="MMM dd, yyyy">
 				<reportElement key="headerDate" mode="Transparent" x="0" y="0" width="75" height="12"/>
 				<textElement verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="title" mode="Transparent" x="319" y="0" width="115" height="12"/>
 				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font size="10" isBold="true" pdfFontName="Times-Bold" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" size="10" isBold="true" pdfFontName="Times-Bold" pdfEncoding="Cp1252"/>
 				</textElement>
 				<text><![CDATA[Verification Report]]></text>
 			</staticText>
 			<textField pattern="">
 				<reportElement key="pageNumber" mode="Transparent" x="657" y="0" width="75" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
 				<reportElement key="pageTotal" mode="Transparent" x="732" y="0" width="20" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER}.toString()]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
 				<reportElement key="headerTime" mode="Transparent" x="0" y="12" width="75" height="12"/>
 				<textElement verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement key="headerUserName" mode="Transparent" x="702" y="12" width="50" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="userNames.label" mode="Transparent" x="273" y="12" width="20" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[For]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="userNames" mode="Transparent" x="298" y="12" width="215" height="12"/>
 				<textElement verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAMES}]]></textFieldExpression>
 			</textField>
@@ -128,14 +128,14 @@ ORDER BY
 			<staticText>
 				<reportElement key="accessionNumber.label" mode="Transparent" x="-10" y="0" width="100" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Accession Number:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="accessionNumber" mode="Transparent" x="95" y="0" width="60" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
@@ -148,7 +148,7 @@ ORDER BY
 			<staticText>
 				<reportElement key="revision.label" mode="Transparent" x="225" y="0" width="50" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Revision:]]></text>
 			</staticText>
@@ -157,14 +157,14 @@ ORDER BY
 					<printWhenExpression><![CDATA[$F{revision} > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{revision}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="orderNumber.label" mode="Transparent" x="389" y="0" width="40" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Order#:]]></text>
 			</staticText>
@@ -173,70 +173,70 @@ ORDER BY
 					<printWhenExpression><![CDATA[]]></printWhenExpression>
 				</reportElement>
 				<textElement verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{order_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="collectionDateTime.label" mode="Transparent" x="464" y="0" width="120" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Collection Date/Time:]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
 				<reportElement key="collectionDate" mode="Transparent" x="589" y="0" width="65" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{collection_date}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
 				<reportElement key="collectionTime" mode="Transparent" x="639" y="0" width="30" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Time"><![CDATA[$F{collection_time}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="receivedDateTime.label" mode="Transparent" x="-20" y="12" width="110" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Received Date/Time:]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement key="receivedDateTime" mode="Transparent" x="95" y="12" width="100" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{received_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="status.label" mode="Transparent" x="235" y="12" width="40" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Status:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="status" mode="Transparent" x="280" y="12" width="60" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
-					<font isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
+					<font fontName="Times New Roman" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_status}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="clientReference.label" mode="Transparent" x="329" y="12" width="100" height="12" forecolor="#404040" backcolor="#FFFFFF"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font size="10" isBold="false" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Client Reference:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="clientReference" mode="Transparent" x="435" y="12" width="120" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
-					<font size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isStrikeThrough="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
 			</textField>
@@ -300,7 +300,7 @@ ORDER BY
 			<staticText>
 				<reportElement key="note.label" positionType="Float" x="-10" y="48" width="60" height="12" isRemoveLineWhenBlank="true" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Notes:]]></text>
 			</staticText>

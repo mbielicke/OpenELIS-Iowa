@@ -50,14 +50,14 @@ order by t_name, s_no]]>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="sampleNumber" isPrintRepeatedValues="false" mode="Opaque" x="125" y="0" width="61" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Left">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Details".equals($P{STYLE}) ? " "+$F{s_no} : null]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="testName" isPrintRepeatedValues="false" mode="Opaque" x="205" y="0" width="120" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Details".equals($P{STYLE}) ? " "+JasperUtil.concatWithSeparator($F{t_name},", ",$F{m_name}) : null]]></textFieldExpression>
 			</textField>
@@ -66,7 +66,7 @@ order by t_name, s_no]]>
 					<printWhenExpression><![CDATA[Boolean.valueOf("Details".equals($P{STYLE}))]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[" "+$F{q_name}.trim()]]></textFieldExpression>
 			</textField>

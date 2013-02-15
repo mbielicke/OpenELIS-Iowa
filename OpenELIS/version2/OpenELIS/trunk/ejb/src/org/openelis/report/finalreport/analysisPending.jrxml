@@ -33,7 +33,7 @@ WHERE
 				<reportElement positionType="Float" x="0" y="5" width="550" height="14"/>
 				<box bottomPadding="0"/>
 				<textElement textAlignment="Center">
-					<font size="12" isBold="true" pdfFontName="Times-Bold"/>
+					<font fontName="Times New Roman" size="12" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Pending Analyses]]></text>
 			</staticText>
@@ -44,7 +44,7 @@ WHERE
 			<textField>
 				<reportElement mode="Transparent" x="87" y="0" width="463" height="12" backcolor="#FFFFFF"/>
 				<textElement>
-					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.JasperUtil.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
