@@ -1237,7 +1237,7 @@ public class DataViewEnvironmentalScreen extends Screen {
             window.setBusy(consts.get("genReportMessage"));
             st = DataViewReportService.get().runReportForWebEnvironmental(data);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
-                url = "openelisweb/report?file=" + st.getMessage();
+                url = "/openelisweb/openelisweb/report?file=" + st.getMessage();
                 Window.open(URL.encode(url), "FinalReport", null);
             }
         } catch (Exception e) {

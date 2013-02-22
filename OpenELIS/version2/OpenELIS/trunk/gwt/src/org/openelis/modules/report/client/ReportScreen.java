@@ -321,7 +321,7 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
                 String url;
 
                 if (status.getStatus() == ReportStatus.Status.SAVED) {
-                    url = "report?file=" + status.getMessage();
+                    url = "/openelis/openelis/report?file=" + status.getMessage();
                     if (attachmentName != null)
                         url += "&attachment=" + attachmentName;
 
