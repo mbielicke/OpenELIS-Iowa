@@ -61,6 +61,7 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -138,6 +139,43 @@ public class SampleManager1Bean {
     private UserCacheBean           userCache;
 
     private static final Logger    log = Logger.getLogger("openelis");
+
+    /**
+     * Returns a new instance of sample manager with pre-initailized sample and other
+     * structures.
+     */
+    public SampleManager1 getInstance(String domain) {
+        SampleManager1 sm;
+        Datetime now;
+        SampleDO s;
+        
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+        sm = new SampleManager1();
+
+        // sample
+        s = new SampleDO();
+        s.setNextItemSequence(0);
+        s.setRevision(0);
+        s.setEnteredDate(now);
+        s.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
+        setSample(sm, s);
+
+        // set the domain
+        if (Constants.domain().QUICKENTRY.equals(domain)) {
+            s.setDomain(domain);
+        } else if (Constants.domain().ENVIRONMENTAL.equals(domain)) {
+            SampleEnvironmentalDO se;
+
+            se = new SampleEnvironmentalDO();
+            se.
+            setSampleEnvironmental(sm, se);
+
+            s.setDomain(domain);
+        } else if (Constants.domain().PRIVATEWELL.equals(domain)) {
+        } else if (Constants.domain().SDWIS.equals(domain)) {
+        } else if (Constants.domain().NEONATAL.equals(domain)) {
+        }
+    }
 
     /**
      * Returns a sample manager for specified primary id and requested load

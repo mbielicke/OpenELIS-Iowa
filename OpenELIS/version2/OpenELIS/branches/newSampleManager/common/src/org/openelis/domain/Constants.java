@@ -142,7 +142,7 @@ public class Constants implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final String       QUICKENTRY       = "Q", ENVIRONMENTAL = "E",
-                        SDWIS = "S", PRIVATEWELL = "W", NEWBORN = "N", HUMAN = "H",
+                        SDWIS = "S", PRIVATEWELL = "W", NEONATAL = "N", HUMAN = "H",
                         ANIMAL = "A", PT = "P";
     }
 
