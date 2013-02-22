@@ -83,21 +83,21 @@ public class SampleNeonatalBean {
         entity = new SampleNeonatal();
         entity.setSampleId(data.getSampleId());
         entity.setPatientId(data.getPatientId());
+        entity.setBirthOrder(data.getBirthOrder());
+        entity.setGestationalAge(data.getGestationalAge());
         entity.setNextOfKinId(data.getNextOfKinId());
         entity.setNextOfKinRelationId(data.getNextOfKinRelationId());
+        entity.setIsRepeat(data.getIsRepeat());
         entity.setIsNicu(data.getIsNicu());
-        entity.setBirthOrderId(data.getBirthOrderId());
-        entity.setGestationalAge(data.getGestationalAge());
         entity.setFeedingId(data.getFeedingId());
+        entity.setWeightSign(data.getWeightSign());
         entity.setWeight(data.getWeight());
         entity.setIsTransfused(data.getIsTransfused());
         entity.setTransfusionDate(data.getTransfusionDate());
-        entity.setTransfusionAge(data.getTransfusionAge());
-        entity.setIsRepeat(data.getIsRepeat());
         entity.setCollectionAge(data.getCollectionAge());
         entity.setIsCollectionValid(data.getIsCollectionValid());
         entity.setProviderId(data.getProviderId());
-        entity.setBarcodeNumber(data.getBarcodeNumber());
+        entity.setFormNumber(data.getFormNumber());
         
         manager.persist(entity);
         
@@ -117,21 +117,21 @@ public class SampleNeonatalBean {
         entity = manager.find(SampleNeonatal.class, data.getId());
         entity.setSampleId(data.getSampleId());
         entity.setPatientId(data.getPatientId());
+        entity.setBirthOrder(data.getBirthOrder());
+        entity.setGestationalAge(data.getGestationalAge());
         entity.setNextOfKinId(data.getNextOfKinId());
         entity.setNextOfKinRelationId(data.getNextOfKinRelationId());
+        entity.setIsRepeat(data.getIsRepeat());
         entity.setIsNicu(data.getIsNicu());
-        entity.setBirthOrderId(data.getBirthOrderId());
-        entity.setGestationalAge(data.getGestationalAge());
         entity.setFeedingId(data.getFeedingId());
+        entity.setWeightSign(data.getWeightSign());
         entity.setWeight(data.getWeight());
         entity.setIsTransfused(data.getIsTransfused());
         entity.setTransfusionDate(data.getTransfusionDate());
-        entity.setTransfusionAge(data.getTransfusionAge());
-        entity.setIsRepeat(data.getIsRepeat());
         entity.setCollectionAge(data.getCollectionAge());
         entity.setIsCollectionValid(data.getIsCollectionValid());
         entity.setProviderId(data.getProviderId());
-        entity.setBarcodeNumber(data.getBarcodeNumber());
+        entity.setFormNumber(data.getFormNumber());
         
         return data;
     }

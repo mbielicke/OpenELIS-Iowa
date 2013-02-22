@@ -130,21 +130,21 @@ public class SampleMeta implements Meta, MetaMap {
                     NEO_ID = "_sampleNeonatal.id",
                     NEO_SAMPLE_ID = "_sampleNeonatal.sampleId",
                     NEO_PATIENT_ID = "_sampleNeonatal.patientId",
+                    NEO_BIRTH_ORDER = "_sampleNeonatal.birthOrder",
+                    NEO_GESTATIONAL_AGE = "_sampleNeonatal.gestationalAge",
                     NEO_NEXT_OF_KIN_ID = "_sampleNeonatal.nextOfKinId",
                     NEO_NEXT_OF_KIN_RELATION_ID = "_sampleNeonatal.nextOfKinRelationId",
+                    NEO_IS_REPEAT = "_sampleNeonatal.isRepeat",
                     NEO_IS_NICU = "_sampleNeonatal.isNicu",
-                    NEO_BIRTH_ORDER_ID = "_sampleNeonatal.birthOrderId",
-                    NEO_GESTATIONAL_AGE = "_sampleNeonatal.gestationalAge",
                     NEO_FEEDING_ID = "_sampleNeonatal.feedingId",
+                    NEO_WEIGHT_SIGN = "_sampleNeonatal.weightSign",
                     NEO_WEIGHT = "_sampleNeonatal.weight",
                     NEO_IS_TRANSFUSED = "_sampleNeonatal.isTransfused",
                     NEO_TRANSFUSION_DATE = "_sampleNeonatal.transfusionDate",
-                    NEO_TRANSFUSION_AGE = "_sampleNeonatal.transfusionAge",
-                    NEO_IS_REPEAT = "_sampleNeonatal.isRepeat",
-                    NEO_COLLECTION_AGE = "_sampleNeonatal.collectionAge",
                     NEO_IS_COLLECTION_VALID = "_sampleNeonatal.isCollectionValid",
+                    NEO_COLLECTION_AGE = "_sampleNeonatal.collectionAge",
                     NEO_PROVIDER_ID = "_sampleNeonatal.providerId",
-                    NEO_BARCODE_NUMBER = "_sampleNeonatal.barcodeNumber",
+                    NEO_FORM_NUMBER = "_sampleNeonatal.formNumber",
                     
                     NEO_PATIENT_LAST_NAME = "_neonatalPatient.lastName",
                     NEO_PATIENT_FIRST_NAME = "_neonatalPatient.firstName",
@@ -347,12 +347,12 @@ public class SampleMeta implements Meta, MetaMap {
                                                   SDWIS_PWS_NUMBER0, NEO_ID, NEO_SAMPLE_ID,
                                                   NEO_PATIENT_ID, NEO_NEXT_OF_KIN_ID,
                                                   NEO_NEXT_OF_KIN_RELATION_ID, NEO_IS_NICU,
-                                                  NEO_BIRTH_ORDER_ID, NEO_GESTATIONAL_AGE,
+                                                  NEO_BIRTH_ORDER, NEO_GESTATIONAL_AGE,
                                                   NEO_FEEDING_ID, NEO_WEIGHT,
                                                   NEO_IS_TRANSFUSED, NEO_TRANSFUSION_DATE,
-                                                  NEO_TRANSFUSION_AGE, NEO_IS_REPEAT,
+                                                  NEO_IS_REPEAT,
                                                   NEO_COLLECTION_AGE, NEO_IS_COLLECTION_VALID,
-                                                  NEO_PROVIDER_ID, NEO_BARCODE_NUMBER,
+                                                  NEO_PROVIDER_ID, NEO_FORM_NUMBER,
                                                   NEO_PATIENT_LAST_NAME, NEO_PATIENT_FIRST_NAME,
                                                   NEO_PATIENT_MIDDLE_NAME, NEO_PATIENT_ADDRESS_ID,
                                                   NEO_PATIENT_BIRTH_DATE, NEO_PATIENT_BIRTH_TIME,
@@ -754,28 +754,36 @@ public class SampleMeta implements Meta, MetaMap {
         return NEO_PATIENT_ID;
     }
 
-    public static String getNeoNOKId() {
+    public static String getNeoBirthOrder() {
+        return NEO_BIRTH_ORDER;
+    }
+    
+    public static String getNeoGestationalAge() {
+        return NEO_GESTATIONAL_AGE;
+    }
+
+    public static String getNeoNextOfKinId() {
         return NEO_NEXT_OF_KIN_ID;
     }
 
     public static String getNeoNextOfKinRelationId() {
         return NEO_NEXT_OF_KIN_RELATION_ID;
     }
+    
+    public static String getNeoIsRepeat() {
+        return NEO_IS_REPEAT;
+    }
 
     public static String getNeoIsNicu() {
         return NEO_IS_NICU;
     }
 
-    public static String getNeoBirthOrderId() {
-        return NEO_BIRTH_ORDER_ID;
-    }
-
-    public static String getNeoGestationalAge() {
-        return NEO_GESTATIONAL_AGE;
-    }
-
     public static String getNeoFeedingId() {
         return NEO_FEEDING_ID;
+    }
+    
+    public static String getNeoWeightSign() {
+        return NEO_WEIGHT_SIGN;
     }
 
     public static String getNeoWeight() {
@@ -790,28 +798,20 @@ public class SampleMeta implements Meta, MetaMap {
         return NEO_TRANSFUSION_DATE;
     }
 
-    public static String getNeoTransfusionAge() {
-        return NEO_TRANSFUSION_AGE;
-    }
-
-    public static String getNeoIsRepeat() {
-        return NEO_IS_REPEAT;
+    public static String getNeoIsCollectionValid() {
+        return NEO_IS_COLLECTION_VALID;
     }
 
     public static String getNeoCollectionAge() {
         return NEO_COLLECTION_AGE;
     }
 
-    public static String getNeoIsCollectionValid() {
-        return NEO_IS_COLLECTION_VALID;
-    }
-
     public static String getNeoProviderId() {
         return NEO_PROVIDER_ID;
     }
 
-    public static String getNeoBarcodeNumber() {
-        return NEO_BARCODE_NUMBER;
+    public static String getNeoFormNumber() {
+        return NEO_FORM_NUMBER;
     }
     
     public static String getNeoPatientLastName() {

@@ -808,7 +808,7 @@ private CheckBox neoIsNicu;
             }
         });
 
-        birthOrderId = (Dropdown)def.getWidget(SampleMeta.getNeoBirthOrderId());
+        birthOrderId = (Dropdown)def.getWidget(SampleMeta.getNeoBirthOrder());
         addScreenHandler(birthOrderId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 //neoNextOfKinAddressZipCode.setSelection(DO.getNeoNextOfKinAddressZipCode());
@@ -904,7 +904,7 @@ private CheckBox neoIsNicu;
             }
         });
 
-        transfusionAge = (TextBox)def.getWidget(SampleMeta.getNeoTransfusionAge());
+        transfusionAge = (TextBox)def.getWidget("transfusionAge");
         addScreenHandler(transfusionAge, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 //neoTransfusionAge.setValue(DO.getNeoTransfusionAge());
@@ -1073,7 +1073,7 @@ private CheckBox neoIsNicu;
             }
         });
 
-        barcode = (TextBox)def.getWidget(SampleMeta.getNeoBarcodeNumber());
+        barcode = (TextBox)def.getWidget(SampleMeta.getNeoFormNumber());
         addScreenHandler(barcode, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
             }
