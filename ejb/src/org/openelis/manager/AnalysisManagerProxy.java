@@ -116,13 +116,9 @@ public class AnalysisManagerProxy {
 
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
         AnalysisListItem item;
-        AnalysisReportFlagsDO arfDO;
 
         analysisDO.setSampleItemId(man.getSampleItemId());
         EJBFactory.getAnalysis().add(analysisDO);
-
-        arfDO = new AnalysisReportFlagsDO(analysisDO.getId(), "N", "N", null, 0, "N");
-        EJBFactory.getAnalysisReportFlags().add(arfDO);
 
         item = man.getItemAt(i);
 

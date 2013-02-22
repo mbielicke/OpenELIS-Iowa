@@ -63,6 +63,18 @@ public class SampleMeta implements Meta, MetaMap {
                     ENV_LOCATION = "_sampleEnvironmental.location",
                     ENV_LOCATION_ADDRESS_ID = "_sampleEnvironmental.locationAddressId",
                     
+                    LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
+                    LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress", 
+                    LOCATION_ADDR_CITY = "_locationAddress.city",
+                    LOCATION_ADDR_STATE = "_locationAddress.state", 
+                    LOCATION_ADDR_ZIP_CODE = "_locationAddress.zipCode",
+                    LOCATION_ADDR_WORK_PHONE = "_locationAddress.workPhone", 
+                    LOCATION_ADDR_HOME_PHONE = "_locationAddress.homePhone",
+                    LOCATION_ADDR_CELL_PHONE = "_locationAddress.cellPhone", 
+                    LOCATION_ADDR_FAX_PHONE = "_locationAddress.faxPhone",
+                    LOCATION_ADDR_EMAIL = "_locationAddress.email", 
+                    LOCATION_ADDR_COUNTRY = "_locationAddress.country",
+                    
                     // sample private well
                     WELL_ID = "_samplePrivateWell.id",
                     WELL_SAMPLE_ID = "_samplePrivateWell.sampleId",
@@ -113,20 +125,73 @@ public class SampleMeta implements Meta, MetaMap {
                     SDWIS_COLLECTOR = "_sampleSDWIS.collector",
                     
                     SDWIS_PWS_NUMBER0 = "_sampleSDWIS.pws.number0",
-
-                    LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
-                    LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress", 
-                    LOCATION_ADDR_CITY = "_locationAddress.city",
-                    LOCATION_ADDR_STATE = "_locationAddress.state", 
-                    LOCATION_ADDR_ZIP_CODE = "_locationAddress.zipCode",
-                    LOCATION_ADDR_WORK_PHONE = "_locationAddress.workPhone", 
-                    LOCATION_ADDR_HOME_PHONE = "_locationAddress.homePhone",
-                    LOCATION_ADDR_CELL_PHONE = "_locationAddress.cellPhone", 
-                    LOCATION_ADDR_FAX_PHONE = "_locationAddress.faxPhone",
-                    LOCATION_ADDR_EMAIL = "_locationAddress.email", 
-                    LOCATION_ADDR_COUNTRY = "_locationAddress.country",
                     
-                    ITEM_ID = "_sampleItem.id", ITEM_SAMPLE_ID = "_sampleItem.sampleId",
+                    //sample neonatal
+                    NEO_ID = "_sampleNeonatal.id",
+                    NEO_SAMPLE_ID = "_sampleNeonatal.sampleId",
+                    NEO_PATIENT_ID = "_sampleNeonatal.patientId",
+                    NEO_NEXT_OF_KIN_ID = "_sampleNeonatal.nextOfKinId",
+                    NEO_NEXT_OF_KIN_RELATION_ID = "_sampleNeonatal.nextOfKinRelationId",
+                    NEO_IS_NICU = "_sampleNeonatal.isNicu",
+                    NEO_BIRTH_ORDER_ID = "_sampleNeonatal.birthOrderId",
+                    NEO_GESTATIONAL_AGE = "_sampleNeonatal.gestationalAge",
+                    NEO_FEEDING_ID = "_sampleNeonatal.feedingId",
+                    NEO_WEIGHT = "_sampleNeonatal.weight",
+                    NEO_IS_TRANSFUSED = "_sampleNeonatal.isTransfused",
+                    NEO_TRANSFUSION_DATE = "_sampleNeonatal.transfusionDate",
+                    NEO_TRANSFUSION_AGE = "_sampleNeonatal.transfusionAge",
+                    NEO_IS_REPEAT = "_sampleNeonatal.isRepeat",
+                    NEO_COLLECTION_AGE = "_sampleNeonatal.collectionAge",
+                    NEO_IS_COLLECTION_VALID = "_sampleNeonatal.isCollectionValid",
+                    NEO_PROVIDER_ID = "_sampleNeonatal.providerId",
+                    NEO_BARCODE_NUMBER = "_sampleNeonatal.barcodeNumber",
+                    
+                    NEO_PATIENT_LAST_NAME = "_neonatalPatient.lastName",
+                    NEO_PATIENT_FIRST_NAME = "_neonatalPatient.firstName",
+                    NEO_PATIENT_MIDDLE_NAME = "_neonatalPatient.middleName",
+                    NEO_PATIENT_ADDRESS_ID = "_neonatalPatient.addressId",
+                    NEO_PATIENT_BIRTH_DATE = "_neonatalPatient.birthDate",
+                    NEO_PATIENT_BIRTH_TIME = "_neonatalPatient.birthTime",
+                    NEO_PATIENT_GENDER_ID = "_neonatalPatient.genderId",
+                    NEO_PATIENT_RACE_ID = "_neonatalPatient.raceId",
+                    NEO_PATIENT_ETHNICITY_ID = "_neonatalPatient.ethnicityId",
+                    
+                    NEO_PATIENT_ADDR_MULTIPLE_UNIT = "_neonatalPatientAddress.multipleUnit",
+                    NEO_PATIENT_ADDR_STREET_ADDRESS = "_neonatalPatientAddress.streetAddress", 
+                    NEO_PATIENT_ADDR_CITY = "_neonatalPatientAddress.city",
+                    NEO_PATIENT_ADDR_STATE = "_neonatalPatientAddress.state", 
+                    NEO_PATIENT_ADDR_ZIP_CODE = "_neonatalPatientAddress.zipCode",
+                    NEO_PATIENT_ADDR_WORK_PHONE = "_neonatalPatientAddress.workPhone", 
+                    NEO_PATIENT_ADDR_HOME_PHONE = "_neonatalPatientAddress.homePhone",
+                    NEO_PATIENT_ADDR_CELL_PHONE = "_neonatalPatientAddress.cellPhone", 
+                    NEO_PATIENT_ADDR_FAX_PHONE = "_neonatalPatientAddress.faxPhone",
+                    NEO_PATIENT_ADDR_EMAIL = "_neonatalPatientAddress.email", 
+                    NEO_PATIENT_ADDR_COUNTRY = "_neonatalPatientAddress.country",
+                    
+                    NEO_NEXT_OF_KIN_LAST_NAME = "_neonatalNextOfKin.lastName",
+                    NEO_NEXT_OF_KIN_FIRST_NAME = "_neonatalNextOfKin.firstName",
+                    NEO_NEXT_OF_KIN_MIDDLE_NAME = "_neonatalNextOfKin.middleName",
+                    NEO_NEXT_OF_KIN_ADDRESS_ID = "_neonatalNextOfKin.addressId",
+                    NEO_NEXT_OF_KIN_BIRTH_DATE = "_neonatalNextOfKin.birthDate",
+                    NEO_NEXT_OF_KIN_BIRTH_TIME = "_neonatalNextOfKin.birthTime",
+                    NEO_NEXT_OF_KIN_GENDER_ID = "_neonatalNextOfKin.genderId",
+                    NEO_NEXT_OF_KIN_RACE_ID = "_neonatalNextOfKin.raceId",
+                    NEO_NEXT_OF_KIN_ETHNICITY_ID = "_neonatalNextOfKin.ethnicityId",
+                    
+                    NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT = "_neonatalNextOfKinAddress.multipleUnit",
+                    NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS = "_neonatalNextOfKinAddress.streetAddress", 
+                    NEO_NEXT_OF_KIN_ADDR_CITY = "_neonatalNextOfKinAddress.city",
+                    NEO_NEXT_OF_KIN_ADDR_STATE = "_neonatalNextOfKinAddress.state", 
+                    NEO_NEXT_OF_KIN_ADDR_ZIP_CODE = "_neonatalNextOfKinAddress.zipCode",
+                    NEO_NEXT_OF_KIN_ADDR_WORK_PHONE = "_neonatalNextOfKinAddress.workPhone", 
+                    NEO_NEXT_OF_KIN_ADDR_HOME_PHONE = "_neonatalNextOfKinAddress.homePhone",
+                    NEO_NEXT_OF_KIN_ADDR_CELL_PHONE = "_neonatalNextOfKinAddress.cellPhone", 
+                    NEO_NEXT_OF_KIN_ADDR_FAX_PHONE = "_neonatalNextOfKinAddress.faxPhone",
+                    NEO_NEXT_OF_KIN_ADDR_EMAIL = "_neonatalNextOfKinAddress.email", 
+                    NEO_NEXT_OF_KIN_ADDR_COUNTRY = "_neonatalNextOfKinAddress.country",
+                    
+                    ITEM_ID = "_sampleItem.id",
+                    ITEM_SAMPLE_ID = "_sampleItem.sampleId",
                     ITEM_SAMPLE_ITEM_ID = "_sampleItem.sampleItemId",
                     ITEM_ITEM_SEQUENCE = "_sampleItem.itemSequence",
                     ITEM_TYPE_OF_SAMPLE_ID = "_sampleItem.typeOfSampleId",
@@ -229,6 +294,9 @@ public class SampleMeta implements Meta, MetaMap {
                     AUX_DATA_IS_REPORTABLE = "_auxData.isReportable",
                     AUX_DATA_TYPE_ID = "_auxData.typeId",
                     AUX_DATA_VALUE = "_auxData.value",
+                    
+                    NEO_PROVIDER_LAST_NAME = "_neonatalProvider.lastName",
+                    NEO_PROVIDER_FIRST_NAME = "_neonatalProvider.firstName",
 
                     ANALYSIS_TEST_NAME = "_test.name", 
                     ANALYSIS_TEST_METHOD_ID = "_test.methodId",
@@ -276,7 +344,35 @@ public class SampleMeta implements Meta, MetaMap {
                                                   SDWIS_PWS_ID, SDWIS_STATE_LAB_ID, SDWIS_FACILITY_ID,
                                                   SDWIS_SAMPLE_TYPE_ID, SDWIS_SAMPLE_CATEGORY_ID,
                                                   SDWIS_SAMPLE_POINT_ID, SDWIS_LOCATION, SDWIS_COLLECTOR,
-                                                  SDWIS_PWS_NUMBER0,
+                                                  SDWIS_PWS_NUMBER0, NEO_ID, NEO_SAMPLE_ID,
+                                                  NEO_PATIENT_ID, NEO_NEXT_OF_KIN_ID,
+                                                  NEO_NEXT_OF_KIN_RELATION_ID, NEO_IS_NICU,
+                                                  NEO_BIRTH_ORDER_ID, NEO_GESTATIONAL_AGE,
+                                                  NEO_FEEDING_ID, NEO_WEIGHT,
+                                                  NEO_IS_TRANSFUSED, NEO_TRANSFUSION_DATE,
+                                                  NEO_TRANSFUSION_AGE, NEO_IS_REPEAT,
+                                                  NEO_COLLECTION_AGE, NEO_IS_COLLECTION_VALID,
+                                                  NEO_PROVIDER_ID, NEO_BARCODE_NUMBER,
+                                                  NEO_PATIENT_LAST_NAME, NEO_PATIENT_FIRST_NAME,
+                                                  NEO_PATIENT_MIDDLE_NAME, NEO_PATIENT_ADDRESS_ID,
+                                                  NEO_PATIENT_BIRTH_DATE, NEO_PATIENT_BIRTH_TIME,
+                                                  NEO_PATIENT_GENDER_ID, NEO_PATIENT_RACE_ID,
+                                                  NEO_PATIENT_ETHNICITY_ID, NEO_PATIENT_ADDR_MULTIPLE_UNIT,
+                                                  NEO_PATIENT_ADDR_STREET_ADDRESS, NEO_PATIENT_ADDR_CITY,
+                                                  NEO_PATIENT_ADDR_STATE, NEO_PATIENT_ADDR_ZIP_CODE,
+                                                  NEO_PATIENT_ADDR_WORK_PHONE, NEO_PATIENT_ADDR_HOME_PHONE,
+                                                  NEO_PATIENT_ADDR_CELL_PHONE, NEO_PATIENT_ADDR_FAX_PHONE,
+                                                  NEO_PATIENT_ADDR_EMAIL, NEO_PATIENT_ADDR_COUNTRY,
+                                                  NEO_NEXT_OF_KIN_LAST_NAME, NEO_NEXT_OF_KIN_FIRST_NAME,
+                                                  NEO_NEXT_OF_KIN_MIDDLE_NAME, NEO_NEXT_OF_KIN_ADDRESS_ID,
+                                                  NEO_NEXT_OF_KIN_BIRTH_DATE, NEO_NEXT_OF_KIN_BIRTH_TIME,
+                                                  NEO_NEXT_OF_KIN_GENDER_ID, NEO_NEXT_OF_KIN_RACE_ID,
+                                                  NEO_NEXT_OF_KIN_ETHNICITY_ID, NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT,
+                                                  NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS, NEO_NEXT_OF_KIN_ADDR_CITY,
+                                                  NEO_NEXT_OF_KIN_ADDR_STATE, NEO_NEXT_OF_KIN_ADDR_ZIP_CODE,
+                                                  NEO_NEXT_OF_KIN_ADDR_WORK_PHONE, NEO_NEXT_OF_KIN_ADDR_HOME_PHONE,
+                                                  NEO_NEXT_OF_KIN_ADDR_CELL_PHONE, NEO_NEXT_OF_KIN_ADDR_FAX_PHONE,
+                                                  NEO_NEXT_OF_KIN_ADDR_EMAIL, NEO_NEXT_OF_KIN_ADDR_COUNTRY,
                                                   ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
                                                   ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER,
@@ -324,7 +420,10 @@ public class SampleMeta implements Meta, MetaMap {
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID,
                                                   AUX_DATA_REFERENCE_ID, AUX_DATA_REFERENCE_TABLE_ID,
                                                   AUX_DATA_IS_REPORTABLE, AUX_DATA_TYPE_ID,
-                                                  AUX_DATA_VALUE, ANALYSIS_TEST_NAME, ANALYSIS_TEST_METHOD_ID, ANALYSIS_METHOD_NAME, ANALYSIS_METHOD_ID, ANALYSIS_TEST_IS_ACTIVE,
+                                                  AUX_DATA_VALUE, NEO_PROVIDER_LAST_NAME,
+                                                  NEO_PROVIDER_FIRST_NAME, ANALYSIS_TEST_NAME, 
+                                                  ANALYSIS_TEST_METHOD_ID, ANALYSIS_METHOD_NAME, 
+                                                  ANALYSIS_METHOD_ID, ANALYSIS_TEST_IS_ACTIVE,
                                                   ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
                                                   ORG_PARAM_VALUE));
     }
@@ -643,6 +742,238 @@ public class SampleMeta implements Meta, MetaMap {
         return SDWIS_PWS_NUMBER0;
     }
     
+    public static String getNeoId() {
+        return NEO_ID;
+    }
+
+    public static String getNeoSampleId() {
+        return NEO_SAMPLE_ID;
+    }
+
+    public static String getNeoPatientId() {
+        return NEO_PATIENT_ID;
+    }
+
+    public static String getNeoNOKId() {
+        return NEO_NEXT_OF_KIN_ID;
+    }
+
+    public static String getNeoNextOfKinRelationId() {
+        return NEO_NEXT_OF_KIN_RELATION_ID;
+    }
+
+    public static String getNeoIsNicu() {
+        return NEO_IS_NICU;
+    }
+
+    public static String getNeoBirthOrderId() {
+        return NEO_BIRTH_ORDER_ID;
+    }
+
+    public static String getNeoGestationalAge() {
+        return NEO_GESTATIONAL_AGE;
+    }
+
+    public static String getNeoFeedingId() {
+        return NEO_FEEDING_ID;
+    }
+
+    public static String getNeoWeight() {
+        return NEO_WEIGHT;
+    }
+
+    public static String getNeoIsTransfused() {
+        return NEO_IS_TRANSFUSED;
+    }
+
+    public static String getNeoTransfusionDate() {
+        return NEO_TRANSFUSION_DATE;
+    }
+
+    public static String getNeoTransfusionAge() {
+        return NEO_TRANSFUSION_AGE;
+    }
+
+    public static String getNeoIsRepeat() {
+        return NEO_IS_REPEAT;
+    }
+
+    public static String getNeoCollectionAge() {
+        return NEO_COLLECTION_AGE;
+    }
+
+    public static String getNeoIsCollectionValid() {
+        return NEO_IS_COLLECTION_VALID;
+    }
+
+    public static String getNeoProviderId() {
+        return NEO_PROVIDER_ID;
+    }
+
+    public static String getNeoBarcodeNumber() {
+        return NEO_BARCODE_NUMBER;
+    }
+    
+    public static String getNeoPatientLastName() {
+        return NEO_PATIENT_LAST_NAME;
+    }
+    
+    public static String getNeoPatientFirstName() {
+        return NEO_PATIENT_FIRST_NAME;
+    }
+    
+    public static String getNeoPatientMiddleName() {
+        return NEO_PATIENT_MIDDLE_NAME;
+    }
+    
+    public static String getNeoPatientAddressId() {
+        return NEO_PATIENT_ADDRESS_ID;
+    }
+
+    public static String getNeoPatientBirthDate() {
+        return NEO_PATIENT_BIRTH_DATE;
+    }
+    
+    public static String getNeoPatientBirthTime() {
+        return NEO_PATIENT_BIRTH_TIME;
+    }
+    
+    public static String getNeoPatientGenderId() {
+        return NEO_PATIENT_GENDER_ID;
+    }
+    
+    public static String getNeoPatientRaceId() {
+        return NEO_PATIENT_RACE_ID;
+    }
+    
+    public static String getNeoPatientEthnicityId() {
+        return NEO_PATIENT_ETHNICITY_ID;
+    }
+
+    public static String getNeoPatientAddrMultipleUnit() {
+        return NEO_PATIENT_ADDR_MULTIPLE_UNIT;
+    }
+
+    public static String getNeoPatientAddrStreetAddress() {
+        return NEO_PATIENT_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getNeoPatientAddrCity() {
+        return NEO_PATIENT_ADDR_CITY;
+    }
+
+    public static String getNeoPatientAddrState() {
+        return NEO_PATIENT_ADDR_STATE;
+    }
+
+    public static String getNeoPatientAddrZipCode() {
+        return NEO_PATIENT_ADDR_ZIP_CODE;
+    }
+
+    public static String getNeoPatientAddrWorkPhone() {
+        return NEO_PATIENT_ADDR_WORK_PHONE;
+    }
+
+    public static String getNeoPatientAddrHomePhone() {
+        return NEO_PATIENT_ADDR_HOME_PHONE;
+    }
+
+    public static String getNeoPatientAddrCellPhone() {
+        return NEO_PATIENT_ADDR_CELL_PHONE;
+    }
+
+    public static String getNeoPatientAddrFaxPhone() {
+        return NEO_PATIENT_ADDR_FAX_PHONE;
+    }
+
+    public static String getNeoPatientAddrEmail() {
+        return NEO_PATIENT_ADDR_EMAIL;
+    }
+
+    public static String getNeoPatientAddrCountry() {
+        return NEO_PATIENT_ADDR_COUNTRY;
+    }
+
+    public static String getNeoNextOfKinLastName() {
+        return NEO_NEXT_OF_KIN_LAST_NAME;
+    }
+
+    public static String getNeoNextOfKinFirstName() {
+        return NEO_NEXT_OF_KIN_FIRST_NAME;
+    }
+
+    public static String getNeoNextOfKinMiddleName() {
+        return NEO_NEXT_OF_KIN_MIDDLE_NAME;
+    }
+
+    public static String getNeoNextOfKinAddressId() {
+        return NEO_NEXT_OF_KIN_ADDRESS_ID;
+    }
+
+    public static String getNeoNextOfKinBirthDate() {
+        return NEO_NEXT_OF_KIN_BIRTH_DATE;
+    }
+
+    public static String getNeoNextOfKinBirthTime() {
+        return NEO_NEXT_OF_KIN_BIRTH_TIME;
+    }
+
+    public static String getNeoNextOfKinGenderId() {
+        return NEO_NEXT_OF_KIN_GENDER_ID;
+    }
+
+    public static String getNeoNextOfKinRaceId() {
+        return NEO_NEXT_OF_KIN_RACE_ID;
+    }
+
+    public static String getNeoNextOfKinEthnicityId() {
+        return NEO_NEXT_OF_KIN_ETHNICITY_ID;
+    }
+
+    public static String getNeoNextOfKinAddrMultipleUnit() {
+        return NEO_NEXT_OF_KIN_ADDR_MULTIPLE_UNIT;
+    }
+
+    public static String getNeoNextOfKinAddrStreetAddress() {
+        return NEO_NEXT_OF_KIN_ADDR_STREET_ADDRESS;
+    }
+
+    public static String getNeoNextOfKinAddrCity() {
+        return NEO_NEXT_OF_KIN_ADDR_CITY;
+    }
+
+    public static String getNeoNextOfKinAddrState() {
+        return NEO_NEXT_OF_KIN_ADDR_STATE;
+    }
+
+    public static String getNeoNextOfKinAddrZipCode() {
+        return NEO_NEXT_OF_KIN_ADDR_ZIP_CODE;
+    }
+
+    public static String getNeoNextOfKinAddrWorkPhone() {
+        return NEO_NEXT_OF_KIN_ADDR_WORK_PHONE;
+    }
+
+    public static String getNeoNextOfKinAddrHomePhone() {
+        return NEO_NEXT_OF_KIN_ADDR_HOME_PHONE;
+    }
+
+    public static String getNeoNextOfKinAddrCellPhone() {
+        return NEO_NEXT_OF_KIN_ADDR_CELL_PHONE;
+    }
+
+    public static String getNeoNextOfKinAddrFaxPhone() {
+        return NEO_NEXT_OF_KIN_ADDR_FAX_PHONE;
+    }
+
+    public static String getNeoNextOfKinAddrEmail() {
+        return NEO_NEXT_OF_KIN_ADDR_EMAIL;
+    }
+
+    public static String getNeoNextOfKinAddrCountry() {
+        return NEO_NEXT_OF_KIN_ADDR_COUNTRY;
+    }
+
     public static String getItemId() {
         return ITEM_ID;
     }
@@ -1027,6 +1358,14 @@ public class SampleMeta implements Meta, MetaMap {
         return AUX_DATA_VALUE;
     }
 
+    public static String getNeoProviderLastName() {
+        return NEO_PROVIDER_LAST_NAME;
+    }
+
+    public static String getNeoProviderFirstName() {
+        return NEO_PROVIDER_FIRST_NAME;
+    }
+
     public static String getAnalysisTestName() {
         return ANALYSIS_TEST_NAME;
     }
@@ -1035,7 +1374,6 @@ public class SampleMeta implements Meta, MetaMap {
         return ANALYSIS_TEST_METHOD_ID;
     }
     
-
     public static String getAnalysisMethodName() {
         return ANALYSIS_METHOD_NAME;
     }
@@ -1084,8 +1422,29 @@ public class SampleMeta implements Meta, MetaMap {
             from += ", IN (_samplePrivateWell.locationAddress) _wellLocationAddress ";
         
         //sample sdwis
-        if(where.indexOf("sampleSDWIS.") > -1)
+        if (where.indexOf("sampleSDWIS.") > -1)
             from += ", IN (_sample.sampleSDWIS) _sampleSDWIS ";
+        
+        //sample neonatal
+        if (where.indexOf("sampleNeonatal.") > -1 || where.indexOf("neonatalPatient.") > -1 ||
+            where.indexOf("neonatalPatientAddress.") > -1 || where.indexOf("neonatalNextOfKin.") > -1 ||
+            where.indexOf("neonatalNextOfKinAddress.") > -1 || where.indexOf("neonatalProvider.") > -1)
+            from += ", IN (_sample.sampleNeonatal) _sampleNeonatal ";
+        
+        if (where.indexOf("neonatalPatient.") > -1 || where.indexOf("neonatalPatientAddress.") > -1)
+            from += " LEFT JOIN (_sampleNeonatal.patient) _neonatalPatient ";
+        
+        if (where.indexOf("neonatalPatientAddress.") > -1)
+            from += " LEFT JOIN (_neonatalPatient.address) _neonatalPatientAddress ";
+        
+        if (where.indexOf("neonatalNextOfKin.") > -1 || where.indexOf("neonatalNextOfKinAddress.") > -1)
+            from += " LEFT JOIN (_sampleNeonatal.nextOfKin) _neonatalNextOfKin ";
+        
+        if (where.indexOf("neonatalNextOfKinAddress.") > -1)
+            from += " LEFT JOIN (_neonatalNextOfKin.address) _neonatalNextOfKinAddress ";
+        
+        if (where.indexOf("neonatalProvider.") > -1)
+            from += " LEFT JOIN (_sampleNeonatal.provider) _neonatalProvider ";        
             
         //common sample fields
         if (where.indexOf("project.") > -1){

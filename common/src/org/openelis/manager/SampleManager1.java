@@ -43,6 +43,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -70,6 +71,7 @@ public class SampleManager1 implements Serializable {
     protected SampleEnvironmentalDO               sampleEnvironmental;
     protected SampleSDWISViewDO                   sampleSDWIS;
     protected SamplePrivateWellViewDO             samplePrivateWell;
+    protected SampleNeonatalDO                    sampleNeonatal; 
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
@@ -90,7 +92,7 @@ public class SampleManager1 implements Serializable {
 
     // TODO move all these to application level global flags
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
-                    HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
+                    HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEONATAL_DOMAIN_FLAG = "N",
                     PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
                     QUICK_ENTRY = "Q";
 
@@ -113,13 +115,17 @@ public class SampleManager1 implements Serializable {
     public SampleEnvironmentalDO getSampleEnvironmental() {
         return sampleEnvironmental;
     }
+    
+    public SampleSDWISViewDO getSampleSDWIS() {
+        return sampleSDWIS;
+    }
 
     public SamplePrivateWellViewDO getSamplePrivateWell() {
         return samplePrivateWell;
     }
-
-    public SampleSDWISViewDO getSampleSDWIS() {
-        return sampleSDWIS;
+    
+    public SampleNeonatalDO getSampleNeonatal() {
+        return sampleNeonatal;
     }
 
     /**
