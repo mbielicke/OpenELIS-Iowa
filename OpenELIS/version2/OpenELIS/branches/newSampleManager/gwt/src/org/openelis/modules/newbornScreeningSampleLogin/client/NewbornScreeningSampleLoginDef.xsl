@@ -143,200 +143,194 @@ UIRF Software License are applicable instead of those above.
            
             <HorizontalPanel padding = "0">
               <VerticalPanel style="subform">
-                <text style="FormTitle">Patient</text>  
+                <text style="FormTitle"><xsl:value-of select="resource:getString($constants,'patient')" />:</text>  
                 <TablePanel style="Form">
                   <row>                
-                    <text style="Prompt">
-                      Last:
-                    </text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.last')" />:</text>
                     <widget colspan="3">
-                      <textbox key="{meta:getEnvCollector()}" width="222" case="LOWER" max="30" field="String" />
+                      <textbox key="{meta:getNeoPatientLastName()}" width="222" case="LOWER" max="30" field="String" />
                     </widget>                    
                   </row>
                   <row>                
-                    <text style="Prompt">
-                      First:
-                    </text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.first')" />:</text>
                     <widget colspan="3">
-                      <textbox key="{meta:getEnvCollectorPhone()}" width="222" max="20" field="String" />
+                      <textbox key="{meta:getNeoPatientFirstName()}" width="222" max="20" field="String" />
                     </widget>
                   </row>
                   <row>
-                    <text style="Prompt">
-                      Gender:
-                    </text>
-                    <dropdown key="{meta:getEnvLocation()}" width="60" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />                  
-                    <text style="Prompt">Race:</text>
-                    <dropdown key="{meta:getEnvLocation()}" width="65" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'gender')" />:</text>
+                    <dropdown key="{meta:getNeoPatientGenderId()}" width="60" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />                  
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'race')" />:</text>
+                    <dropdown key="{meta:getNeoPatientRaceId()}" width="65" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                   </row>
                   <row>
-                    <text style="Prompt">Ethnicity:</text>
-                    <dropdown key="{meta:getEnvLocation()}" width="80" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.ethnicity')" />:</text>
+                    <dropdown key="{meta:getNeoPatientEthnicityId()}" width="80" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                   </row>
                   <row>
-                    <text style="Prompt">Birth (D,T):</text>
-                    <calendar begin="0" end="2" key="birth" width="90"/>    
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.birthDT')" />:</text>
+                    <calendar begin="0" end="2" key="{meta:getNeoPatientBirthDate()}" width="90"/>    
                     <widget colspan="3">
-                      <textbox field = "Date" key="birthtime" begin="3" end="5" width="60" mask="{resource:getString($constants,'timeMask')}" pattern="{resource:getString($constants,'timePattern')}"/>
+                      <textbox field = "Date" key="{meta:getNeoPatientBirthTime()}" begin="3" end="5" width="60" mask="{resource:getString($constants,'timeMask')}" pattern="{resource:getString($constants,'timePattern')}"/>
                     </widget>                
                   </row>
                   <row>
-                    <text style="Prompt">Apt/Suite#:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'aptSuite')" />:</text>
                     <widget colspan="5">
-                      <textbox field = "String" key="mult" width="222"/>      
+                      <textbox field = "String" key="{meta:getNeoPatientAddrMultipleUnit()}" width="222"/>      
                     </widget>          
                   </row>
                   <row>
-                     <text style="Prompt">Address:</text>
+                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'address')" />:</text>
                      <widget colspan="5">
-                         <textbox field = "String" key="mult" width="222"/>
+                         <textbox field = "String" key="{meta:getNeoPatientAddrStreetAddress()}" width="222"/>
                      </widget>
                  </row>
                  <row>
-                     <text style="Prompt">City:</text>         
+                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'city')" />:</text>         
                      <widget colspan="3">            
-                       <textbox key="city" field = "String" width="100"/>
+                       <textbox key="{meta:getNeoPatientAddrCity()}" field = "String" width="100"/>
                       </widget>
                  </row>
                  <row>
-                     <text style="Prompt">State:</text>                     
-                     <dropdown key="state" field = "String" width="40"/>
+                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'state')" />:</text>                     
+                     <dropdown key="{meta:getNeoPatientAddrState()}" field = "String" width="40"/>
                  </row>
                  <row>
-                     <text style="Prompt">Zip Code:</text>                     
-                     <textbox key="zipcode" field = "String" width="70"/>
+                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'zipcode')" />:</text>                     
+                     <textbox key="{meta:getNeoPatientAddrZipCode()}" field = "String" width="70"/>
                  </row>
                 </TablePanel>
               </VerticalPanel>
               <VerticalPanel style="subform">
-                <text style="FormTitle">Next Of Kin</text>
+                <text style="FormTitle"><xsl:value-of select="resource:getString($constants,'sample.nextOfKin')" /></text>
                 <TablePanel style="Form">
                   <row>
-                    <text style="Prompt">Last:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.last')" />:</text>
                     <widget colspan="5">
-                      <textbox key="{meta:getEnvCollector()}" width="222" case="LOWER" max="30" field="String" />
+                      <textbox key="{meta:getNeoNextOfKinLastName()}" width="222" case="LOWER" max="30" field="String" />
                     </widget>
                   </row>
                   <row>
-                    <text style="Prompt">Maiden:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.maiden')" />:</text>
                     <widget colspan="5">
-                      <textbox key="{meta:getEnvCollector()}" width="222" case="LOWER" max="30" field="String" />
+                      <textbox key="{meta:getNeoNextOfKinMiddleName()}" width="222" case="LOWER" max="30" field="String" />
                     </widget>
                   </row>
                   <row>
-                    <text style="Prompt">First:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.first')" />:</text>
                     <widget colspan="5">
-                      <textbox key="{meta:getEnvCollector()}" width="222" case="LOWER" max="30" field="String" />
+                      <textbox key="{meta:getNeoNextOfKinFirstName()}" width="222" case="LOWER" max="30" field="String" />
                     </widget>
                   </row>
                   <row>
-                    <text style="Prompt">Relation: </text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.relation')" />:</text>
                     <widget colspan="5">
-                     <dropdown key="{meta:getEnvLocation()}" width="80" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                     <dropdown key="{meta:getNeoNextOfKinRelationId()}" width="80" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                     </widget>  
                   </row>
                   <row>               
-                    <text style="Prompt">Gender: </text>
-                    <dropdown key="{meta:getEnvLocation()}" width="60" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />                  
-                    <text style="Prompt">Race:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'gender')" />:</text>
+                    <dropdown key="{meta:getNeoNextOfKinGenderId()}" width="60" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />                  
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'race')" />:</text>
                     <widget colspan="2">
-                      <dropdown key="{meta:getEnvLocation()}" width="65" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                      <dropdown key="{meta:getNeoNextOfKinRaceId()}" width="65" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                     </widget>                    
                   </row>
                   <row>
-                    <text style="Prompt">Ethnicity:</text>
-                    <dropdown key="{meta:getEnvLocation()}" width="65" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.ethnicity')" />:</text>
+                    <dropdown key="{meta:getNeoNextOfKinEthnicityId()}" width="65" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                     <text style="Prompt">Birth:</text>
                     <widget colspan="5">
-                      <calendar begin="0" end="2" key="birth" width="90"/>    
+                      <calendar begin="0" end="2" key="{meta:getNeoNextOfKinBirthDate()}" width="90"/>    
                     </widget>                                           
                   </row>
                   <row>
-                    <text style="Prompt">Phone #:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'phone')" />:</text>
                     <widget colspan="3">
-                      <textbox field = "Date" key="birthtime" begin="3" end="5" width="120" mask="{resource:getString($constants,'timeMask')}" pattern="{resource:getString($constants,'timePattern')}"/>
+                      <textbox field = "Date" key="{meta:getNeoNextOfKinAddrHomePhone()}" begin="3" end="5" width="120" mask="{resource:getString($constants,'timeMask')}" pattern="{resource:getString($constants,'timePattern')}"/>
                     </widget>   
                   </row>
                   <row>
-                    <text style="Prompt">Apt/Suite#:</text>
+                    <text style="Prompt"><xsl:value-of select="resource:getString($constants,'aptSuite')" />:</text>
                     <widget colspan="5">
-                      <textbox field = "String" key="mult" width="222"/>      
+                      <textbox field = "String" key="{meta:getNeoNextOfKinAddrMultipleUnit()}" width="222"/>      
                     </widget>          
                   </row>
                   <row>
-                     <text style="Prompt">Address:</text>
+                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'address')" />:</text>
                      <widget colspan="5">
-                         <textbox field = "String" key="mult" width="222"/>
+                         <textbox field = "String" key="{meta:getNeoNextOfKinAddrtreetAddress()}" width="222"/>
                      </widget>
                  </row>
                  <row>
-                     <text style="Prompt">City, State, Zip:</text>  
+                     <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.cityStateZip')" />:</text>  
                      <widget colspan="2">
-                       <textbox key="city" field = "String" width="100"/>
+                       <textbox key="{meta:getNeoNextOfKinAddrCity()}" field = "String" width="100"/>
                      </widget>
-                     <dropdown key="state" field = "String" width="40"/>
-                     <textbox key="zipcode" field = "String" width="70"/>
+                     <dropdown key="{meta:getNeoNextOfKinAddrState()}" field = "String" width="40"/>
+                     <textbox key="{meta:getNeoNextOfKinAddrZipCode()}" field = "String" width="70"/>
                  </row>
                 </TablePanel>
               </VerticalPanel>        
               <VerticalPanel style="subform">
-                <text style="FormTitle">Other</text>
+                <text style="FormTitle"><xsl:value-of select="resource:getString($constants,'other')" /></text>
                 <TablePanel style="Form">
                     <row>  
-                       <text style="Prompt">NICU:</text>
-                       <check key="tpn"/>
+                       <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.nicu')" />:</text>
+                       <check key="{meta:getNeoIsNicu()}"/>
                     </row> 
                     <row>   
-                       <text style="Prompt">Birth Order:</text>
+                       <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.birthOrder')" />:</text>
                        <widget colspan="4">
-                         <dropdown field = "Integer" key="feeding" width="35"/>
+                         <dropdown field = "Integer" key="{meta:getNeoBirthOrderId()}" width="35"/>
                        </widget>
                     </row> 
                     <row>                       
-                        <text style="Prompt">Gest Age:</text>
-                        <textbox field = "Integer" key="gestage" width="25"/>                                        
+                        <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.gestAge')" />:</text>
+                        <textbox field = "Integer" key="{meta:getNeoGestationalAge()}" width="25"/>                                        
                     </row>
                     <row>
-                      <text style="Prompt">Feeding:</text>
+                      <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.feeding')" />:</text>
                       <widget colspan="3">
-                        <dropdown field = "Integer" key="feeding" width="75px"/>
+                        <dropdown field = "Integer" key="{meta:getNeoFeedingId()}" width="75"/>
                       </widget>                  
                     </row> 
                     <row>
-                       <text style="Prompt">Weight:</text>
+                       <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.weight')" />:</text>
                        <widget colspan="5">
-                         <textbox field = "Integer" key="weight" width="50"/>
+                         <textbox field = "Integer" key="{meta:getNeoWeight()}" width="50"/>
                        </widget>  
                     </row>
                     <row>
-                      <text style="Prompt">Transfused:</text>
-                      <check key="repeat"/>
+                      <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.transfused')" />:</text>
+                      <check key="{meta:getNeoIsTransfused()}"/>
                     </row>
                     <row>
-                      <text style="Prompt">Trans Date:</text>
+                      <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.transDate')" />:</text>
                       <widget colspan="3">
-                         <calendar begin="0" end="2" key="data" width="90"/>  
+                         <calendar begin="0" end="2" key="{meta:getNeoTransfusionDate()}" width="90"/>  
                       </widget>
                     </row>
                     <row>                                         
-                      <text style="Prompt">Trans Age:</text>
+                      <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.transAge')" />:</text>
                       <widget colspan="5">
-                        <textbox field = "Integer" key="weight" width="50"/>
+                        <textbox field = "Integer" key="{meta:getNeoTransfusionAge()}" width="50"/>
                       </widget> 
                     </row>         
                     <row>
-                      <text style="Prompt">Repeat:</text>
-                      <check key="repeat"/>
+                      <text style="Prompt"><xsl:value-of select="resource:getString($constants,'repeat')" />:</text>
+                      <check key="{meta:getNeoIsRepeat()}"/>
                     </row>       
                     <row>
-                      <text style="Prompt">Collect Age:</text>
+                      <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.collectAge')" />:</text>
                       <widget colspan="5">
-                        <textbox field = "Integer" key="age" width="50"/>
+                        <textbox field = "Integer" key="{meta:getNeoCollectionAge()}" width="50"/>
                       </widget>
                     </row>
                     <row>  
-                        <text style="Prompt">Collect Valid:</text>
-                        <check key="tpn"/>                        
+                        <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.collectValid')" />:</text>
+                        <check key="{meta:getNeoIsCollectionValid()}"/>                        
                     </row>                      
                 </TablePanel>
                 <VerticalPanel height = "3"/>
@@ -420,10 +414,10 @@ UIRF Software License are applicable instead of those above.
               <TablePanel style="Form">
                 <row>
                     <text style="Prompt">
-                      Provider (L,F):
+                      <xsl:value-of select="resource:getString($constants,'sample.providerLF')" />:
                     </text>
-                    <textbox key="{meta:getEnvCollector()}" width="150" case="LOWER" max="30" field="String" />
-                    <textbox key="{meta:getEnvCollectorPhone()}" width="130" max="20" field="String" />
+                    <textbox key="{meta:getNeoProviderLastName()}" width="150" case="LOWER" max="30" field="String" />
+                    <textbox key="{meta:getNeoProviderFirstName()}" width="130" max="20" field="String" />
                   </row>
                 <row>
                   <text style="Prompt">
@@ -461,7 +455,7 @@ UIRF Software License are applicable instead of those above.
                 </row>
                 <row>
                   <text style="Prompt">
-                    Birth Hospital:
+                    <xsl:value-of select="resource:getString($constants,'sample.birthHospital')" />:
                   </text>
                   <widget colspan="3">
                     <HorizontalPanel>
@@ -478,9 +472,9 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </row>
                 <row>
-                      <text style="Prompt">Barcode #:</text>
+                      <text style="Prompt"><xsl:value-of select="resource:getString($constants,'barcode')" />:</text>
                       <widget colspan="3">
-                        <textbox field = "Integer" key="barcode" width="150"/>
+                        <textbox field = "Integer" key="{meta:getNeoBarcodeNumber()}" width="150"/>
                       </widget>
                       </row>
               </TablePanel>
