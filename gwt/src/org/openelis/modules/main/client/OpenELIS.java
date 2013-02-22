@@ -100,8 +100,6 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
-import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen1;
-//import org.openelis.modules.sampleManagerTest.client.SampleManagerTestScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -305,7 +303,7 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("newbornScreeningSampleLogin", "sampletracking", new ClickHandler() {
+        addClickHandler("newbornScreeningSampleLogin", "samplenewborn", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -405,27 +403,6 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        
-//        addClickHandler("testSampleManager", "sampleprivatewell", new ClickHandler() {
-//            public void onClick(ClickEvent event) {
-//                GWT.runAsync(new RunAsyncCallback() {
-//                    public void onSuccess() {
-//                        try {
-//                            browser.addScreen(new SampleManagerTestScreen(),
-//                                              "Test Sample Manager");
-//                        } catch (Throwable e) {
-//                            e.printStackTrace();
-//                            Window.alert(e.getMessage());
-//                        }
-//                    }
-//
-//                    public void onFailure(Throwable caught) {
-//                        caught.printStackTrace();
-//                        Window.alert(caught.getMessage());
-//                    }
-//                });
-//            }
-//        });
 
         addClickHandler("project", "project", new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -495,27 +472,6 @@ public class OpenELIS extends Screen {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new WorksheetCreationScreen(), "worksheetCreation");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("worksheetCreation1", "worksheet", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new WorksheetCreationScreen1(), "worksheetCreation1");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1658,7 +1614,7 @@ public class OpenELIS extends Screen {
             public void onFailure(Throwable caught) {
             }
         });
-        Window.open("OpenELIS.html", "_self", null);
+        Window.open("/openelis/OpenELIS.html", "_self", null);
     }
 
     /**
