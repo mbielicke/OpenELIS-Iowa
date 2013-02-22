@@ -283,7 +283,7 @@ UIRF Software License are applicable instead of those above.
                     <row>   
                        <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.birthOrder')" />:</text>
                        <widget colspan="4">
-                         <dropdown field = "Integer" key="{meta:getNeoBirthOrderId()}" width="35"/>
+                         <dropdown field = "Integer" key="{meta:getNeoBirthOrder()}" width="35"/>
                        </widget>
                     </row> 
                     <row>                       
@@ -315,7 +315,7 @@ UIRF Software License are applicable instead of those above.
                     <row>                                         
                       <text style="Prompt"><xsl:value-of select="resource:getString($constants,'sample.transAge')" />:</text>
                       <widget colspan="5">
-                        <textbox field = "Integer" key="{meta:getNeoTransfusionAge()}" width="50"/>
+                        <textbox field = "Integer" key="transfusionAge" width="50"/>
                       </widget> 
                     </row>         
                     <row>

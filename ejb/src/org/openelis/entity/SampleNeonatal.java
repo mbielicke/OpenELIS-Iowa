@@ -54,14 +54,16 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "SampleNeonatal.FetchBySampleId",
-                query = "select new org.openelis.domain.SampleNeonatalDO(s.id, s.sampleId, s.patientId, s.nextOfKinId," +
-                		"s.nextOfKinRelationId, s.isNicu, s.birthOrderId, s.gestationalAge, s.feedingId, s.weight, s.isTransfused," +
-                		"s.transfusionDate, s.transfusionAge, s.isRepeat, s.collectionAge, s.isCollectionValid, s.providerId, s.barcodeNumber)"
+                query = "select new org.openelis.domain.SampleNeonatalDO(s.id, s.sampleId, s.patientId," +
+                		"s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId," +
+                		"s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused," +
+                		"s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber)"
                       + " from SampleNeonatal s where s.sampleId = :id"),
     @NamedQuery( name = "SampleNeonatal.FetchBySampleIds",
-                query = "select new org.openelis.domain.SampleNeonatalDO(s.id, s.sampleId, s.patientId, s.nextOfKinId," +
-                        "s.nextOfKinRelationId, s.isNicu, s.birthOrderId, s.gestationalAge, s.feedingId, s.weight, s.isTransfused," +
-                        "s.transfusionDate, s.transfusionAge, s.isRepeat, s.collectionAge, s.isCollectionValid, s.providerId, s.barcodeNumber)"
+                query = "select new org.openelis.domain.SampleNeonatalDO(s.id, s.sampleId, s.patientId," +
+                        "s.birthOrder, s.gestationalAge, s.nextOfKinId, s.nextOfKinRelationId," +
+                        "s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused," +
+                        "s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber)"
                       + " from SampleNeonatal s where s.sampleId in (:ids)")})
 @Entity
 @Table(name = "sample_neonatal")
@@ -79,23 +81,29 @@ public class SampleNeonatal implements Auditable, Cloneable {
     @Column(name = "patient_id")
     private Integer             patientId;
     
+    @Column(name = "birth_order")
+    private Integer             birthOrder;
+    
+    @Column(name = "gestational_age")
+    private Integer             gestationalAge;
+    
     @Column(name = "next_of_kin_id")
     private Integer             nextOfKinId;
     
     @Column(name = "next_of_kin_relation_id")
     private Integer             nextOfKinRelationId;
     
+    @Column(name = "is_repeat")
+    private String              isRepeat;
+    
     @Column(name = "is_nicu")
     private String              isNicu;
     
-    @Column(name = "birth_order_id")
-    private Integer             birthOrderId;
-    
-    @Column(name = "gestational_age")
-    private Integer             gestationalAge;
-    
     @Column(name = "feeding_id")
     private Integer             feedingId;
+    
+    @Column(name = "weight_sign")
+    private String              weightSign;
     
     @Column(name = "weight")
     private Integer             weight;
@@ -106,23 +114,17 @@ public class SampleNeonatal implements Auditable, Cloneable {
     @Column(name = "transfusion_date")
     private Date                transfusionDate;
     
-    @Column(name = "transfusion_age")
-    private Integer             transfusionAge;
-    
-    @Column(name = "is_repeat")
-    private String              isRepeat;
+    @Column(name = "is_collection_valid")
+    private String             isCollectionValid;
     
     @Column(name = "collection_age")
     private Integer             collectionAge;
     
-    @Column(name = "is_collection_valid")
-    private String             isCollectionValid;
-    
     @Column(name = "provider_id")
     private Integer             providerId;
     
-    @Column(name = "barcode_number")
-    private String              barcodeNumber;
+    @Column(name = "form_number")
+    private String              formNumber;
     
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
@@ -169,6 +171,24 @@ public class SampleNeonatal implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(patientId, this.patientId))
             this.patientId = patientId;
     }
+    
+    public Integer getBirthOrder() {
+        return birthOrder;
+    }
+
+    public void setBirthOrder(Integer birthOrder) {
+        if (DataBaseUtil.isDifferent(birthOrder, this.birthOrder))
+            this.birthOrder = birthOrder;
+    }
+
+    public Integer getGestationalAge() {
+        return gestationalAge;
+    }
+
+    public void setGestationalAge(Integer gestationalAge) {
+        if (DataBaseUtil.isDifferent(gestationalAge, this.gestationalAge))
+            this.gestationalAge = gestationalAge;
+    }
 
     public Integer getNextOfKinId() {
         return nextOfKinId;
@@ -188,6 +208,15 @@ public class SampleNeonatal implements Auditable, Cloneable {
             this.nextOfKinRelationId = nextOfKinRelationId;
     }
 
+    public String getIsRepeat() {
+        return isRepeat;
+    }
+
+    public void setIsRepeat(String isRepeat) {
+        if (DataBaseUtil.isDifferent(isRepeat, this.isRepeat))
+            this.isRepeat = isRepeat;
+    }
+
     public String getIsNicu() {
         return isNicu;
     }
@@ -197,24 +226,6 @@ public class SampleNeonatal implements Auditable, Cloneable {
             this.isNicu = isNicu;
     }
 
-    public Integer getBirthOrderId() {
-        return birthOrderId;
-    }
-
-    public void setBirthOrderId(Integer birthOrderId) {
-        if (DataBaseUtil.isDifferent(birthOrderId, this.birthOrderId))
-            this.birthOrderId = birthOrderId;
-    }
-
-    public Integer getGestationalAge() {
-        return gestationalAge;
-    }
-
-    public void setGestationalAge(Integer gestationalAge) {
-        if (DataBaseUtil.isDifferent(gestationalAge, this.gestationalAge))
-            this.gestationalAge = gestationalAge;
-    }
-
     public Integer getFeedingId() {
         return feedingId;
     }
@@ -222,6 +233,15 @@ public class SampleNeonatal implements Auditable, Cloneable {
     public void setFeedingId(Integer feedingId) {
         if (DataBaseUtil.isDifferent(feedingId, this.feedingId))
             this.feedingId = feedingId;
+    }
+    
+    public String getWeightSign() {
+        return weightSign;
+    }
+
+    public void setWeightSign(String weightSign) {
+        if (DataBaseUtil.isDifferent(weightSign, this.weightSign))
+            this.weightSign = weightSign;
     }
 
     public Integer getWeight() {
@@ -243,41 +263,18 @@ public class SampleNeonatal implements Auditable, Cloneable {
     }
 
     public Datetime getTransfusionDate() {
-        return DataBaseUtil.toYM(transfusionDate);
+        return DataBaseUtil.toYD(transfusionDate);
     }
 
     public void setTransfusionDate(Datetime transfusionDate) {
-        if (DataBaseUtil.isDifferentYM(transfusionDate, this.transfusionDate))
+        if (DataBaseUtil.isDifferentYD(transfusionDate, this.transfusionDate))
             this.transfusionDate = DataBaseUtil.toDate(transfusionDate);
     }
-
-    public Integer getTransfusionAge() {
-        return transfusionAge;
-    }
-
-    public void setTransfusionAge(Integer transfusionAge) {
-        if (DataBaseUtil.isDifferent(transfusionAge, this.transfusionAge))
-            this.transfusionAge = transfusionAge;
-    }
-
-    public String getIsRepeat() {
-        return isRepeat;
-    }
-
-    public void setIsRepeat(String isRepeat) {
-        if (DataBaseUtil.isDifferent(isRepeat, this.isRepeat))
-            this.isRepeat = isRepeat;
-    }
-
+    
     public Integer getCollectionAge() {
         return collectionAge;
     }
-
-    public void setCollectionAge(Integer collectionAge) {
-        if (DataBaseUtil.isDifferent(collectionAge, this.collectionAge))
-            this.collectionAge = collectionAge;
-    }
-
+    
     public String getIsCollectionValid() {
         return isCollectionValid;
     }
@@ -285,6 +282,11 @@ public class SampleNeonatal implements Auditable, Cloneable {
     public void setIsCollectionValid(String isCollectionValid) {
         if (DataBaseUtil.isDifferent(isCollectionValid, this.isCollectionValid))
             this.isCollectionValid = isCollectionValid;
+    }
+
+    public void setCollectionAge(Integer collectionAge) {
+        if (DataBaseUtil.isDifferent(collectionAge, this.collectionAge))
+            this.collectionAge = collectionAge;
     }
 
     public Integer getProviderId() {
@@ -296,13 +298,13 @@ public class SampleNeonatal implements Auditable, Cloneable {
             this.providerId = providerId;
     }
 
-    public String getBarcodeNumber() {
-        return barcodeNumber;
+    public String getFormNumber() {
+        return formNumber;
     }
 
-    public void setBarcodeNumber(String barcodeNumber) {
-        if (DataBaseUtil.isDifferent(barcodeNumber, this.barcodeNumber))
-            this.barcodeNumber = barcodeNumber;
+    public void setFormNumber(String formNumber) {
+        if (DataBaseUtil.isDifferent(formNumber, this.formNumber))
+            this.formNumber = formNumber;
     }
     
     public Sample getSample() {
@@ -355,21 +357,21 @@ public class SampleNeonatal implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("sample_id", sampleId, original.sampleId, Constants.table().SAMPLE)
                  .setField("patient_id", patientId, original.patientId)
+                 .setField("birth_order", birthOrder, original.birthOrder)
+                 .setField("gestational_age", gestationalAge, original.gestationalAge)
                  .setField("next_of_kin_id", nextOfKinId, original.nextOfKinId)
                  .setField("next_of_kin_relation_id", nextOfKinRelationId, original.nextOfKinRelationId)
+                 .setField("is_repeat", isRepeat, original.isRepeat)  
                  .setField("is_nicu", isNicu, original.isNicu)
-                 .setField("birth_order_id", birthOrderId, original.birthOrderId, Constants.table().DICTIONARY)
-                 .setField("gestational_age", gestationalAge, original.gestationalAge)
                  .setField("feeding_id", feedingId, original.feedingId, Constants.table().DICTIONARY)
+                 .setField("weight_sign", weightSign, original.weightSign)
                  .setField("weight", weight, original.weight)
                  .setField("is_transfused", isTransfused, original.isTransfused)
                  .setField("transfusion_date", transfusionDate, original.transfusionDate)
-                 .setField("transfusion_age", transfusionAge, original.transfusionAge)
-                 .setField("is_repeat", isRepeat, original.isRepeat)
-                 .setField("collection_age", collectionAge, original.collectionAge)
                  .setField("is_collection_valid", isCollectionValid, original.isCollectionValid)
+                 .setField("collection_age", collectionAge, original.collectionAge)
                  .setField("provider_id", providerId, original.providerId)
-                 .setField("barcode_number", barcodeNumber, original.barcodeNumber);
+                 .setField("form_number", formNumber, original.formNumber);
 
         return audit;
     }
