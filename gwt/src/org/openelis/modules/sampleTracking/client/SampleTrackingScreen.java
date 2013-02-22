@@ -2209,7 +2209,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private void changeDomain() {
         ScreenWindow modal;
-        String domain;
 
         if (changeDomainScreen == null) {
             try {
@@ -2222,14 +2221,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             changeDomainScreen.addActionHandler(new ActionHandler<ChangeDomainScreen.Action>() {
                 public void onAction(ActionEvent<ChangeDomainScreen.Action> event) {
-                    int i;
                     String oldDomain,newDomain;
                     TreeDataItem selectedRow;
                     SampleDO sample;
                     SampleOrganizationManager som;
                     SampleEnvironmentalManager sem;
                     SamplePrivateWellManager spm;
-                    SampleProjectManager spjm;
 
                     selectedRow = trackingTree.getSelection();
                     newDomain = (String)event.getData();
