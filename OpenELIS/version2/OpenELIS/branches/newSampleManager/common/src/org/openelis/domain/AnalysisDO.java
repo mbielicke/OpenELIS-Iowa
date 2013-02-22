@@ -38,10 +38,11 @@ public class AnalysisDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, sampleItemId, revision, testId, sectionId, preAnalysisId,
-                              parentAnalysisId, parentResultId, unitOfMeasureId, statusId;
-    protected String          isReportable;
-    protected Datetime        availableDate, startedDate, completedDate, releasedDate, printedDate;
+    protected Integer        id, sampleItemId, revision, testId, sectionId, preAnalysisId,
+                              parentAnalysisId, parentResultId, unitOfMeasureId,
+                              statusId, panelId;
+    protected String         isReportable, isPreliminary;
+    protected Datetime       availableDate, startedDate, completedDate, releasedDate, printedDate;
 
     public AnalysisDO() {
     }
@@ -50,7 +51,7 @@ public class AnalysisDO extends DataObject {
                       Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId,
                       Integer parentResultId, String isReportable, Integer unitOfMeasureId,
                       Integer statusId, Date availableDate, Date startedDate, Date completedDate,
-                      Date releasedDate, Date printedDate) {
+                      Date releasedDate, Date printedDate, Integer panelId, String isPreliminary) {
         setId(id);
         setSampleItemId(sampleItemId);
         setRevision(revision);
@@ -67,6 +68,8 @@ public class AnalysisDO extends DataObject {
         setCompletedDate(DataBaseUtil.toYM(completedDate));
         setReleasedDate(DataBaseUtil.toYM(releasedDate));
         setPrintedDate(DataBaseUtil.toYM(printedDate));
+        setPanelId(panelId);
+        setIsPreliminary(isPreliminary);
         _changed = false;
     }
 
@@ -211,6 +214,24 @@ public class AnalysisDO extends DataObject {
 
     public void setPrintedDate(Datetime printedDate) {
         this.printedDate = DataBaseUtil.toYM(printedDate);
+        _changed = true;
+    }
+
+    public Integer getPanelId() {
+        return panelId;
+    }
+
+    public void setPanelId(Integer panelId) {
+        this.panelId = panelId;
+        _changed = true;
+    }
+
+    public String getIsPreliminary() {
+        return isPreliminary;
+    }
+
+    public void setIsPreliminary(String isPreliminary) {
+        this.isPreliminary = DataBaseUtil.trim(isPreliminary);
         _changed = true;
     }
 }

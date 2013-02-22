@@ -46,8 +46,8 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.xml.transform.stream.StreamResult;
 
-import org.jboss.security.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
@@ -63,7 +63,6 @@ import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.util.UTFResource;
 import org.openelis.util.XMLUtil;
-import org.openelis.utils.EJBFactory;
 import org.w3c.dom.Document;
 
 @Stateless
@@ -81,9 +80,6 @@ public class DataExchangeReportBean {
     @EJB
     private EventLogBean               eventLog;
     
-    @EJB
-    private DictionaryBean             dictionary;
-
     @EJB
     private DataExchangeXMLMapperBean dataExchangeXMLMapper;
     

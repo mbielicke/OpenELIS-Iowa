@@ -34,11 +34,14 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -50,9 +53,13 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "Patient.PatientById",
-                query = "select new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName, p.middleName, p.addressId, " +
-                        "p.birthDate, p.birthTime, p.genderId, p.raceId, p.ethnicityId)"
+    @NamedQuery(name = "Patient.FetchById",
+                query = "select new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName," +
+                		"p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
+                		"p.ethnicityId, p.address.multipleUnit, p.address.streetAddress," +
+                        "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
+                        "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
+                        "p.address.country)"
                       + " from Patient p where p.id = :id")})
 @Entity
 @Table(name = "patient")
@@ -90,6 +97,10 @@ public class Patient implements Auditable, Cloneable {
 
     @Column(name = "ethnicity_id")
     private Integer ethnicityId;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", insertable = false, updatable = false)
+    private Address address;
 
     @Transient
     private Patient original;
@@ -182,6 +193,10 @@ public class Patient implements Auditable, Cloneable {
     public void setEthnicityId(Integer ethnicityId) {
         if (DataBaseUtil.isDifferent(ethnicityId, this.ethnicityId))
             this.ethnicityId = ethnicityId;
+    }
+    
+    public Address getAddress() {
+        return address;
     }
     
     public void setClone() {

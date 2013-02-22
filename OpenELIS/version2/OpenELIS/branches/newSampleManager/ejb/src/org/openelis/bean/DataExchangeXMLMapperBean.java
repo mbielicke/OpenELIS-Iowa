@@ -327,7 +327,7 @@ public class DataExchangeXMLMapperBean {
                 /*
                  * the data for an analysis is not shown in the xml if it is
                  * cancelled or its test id was not included in the query
-                 * defined in the exchange criteria the flag for not including
+                 * defined in the exchange criteria, if the flag for not including
                  * all analyses was true
                  */
                 if (Constants.dictionary().ANALYSIS_CANCELLED.equals(analysis.getStatusId()) ||

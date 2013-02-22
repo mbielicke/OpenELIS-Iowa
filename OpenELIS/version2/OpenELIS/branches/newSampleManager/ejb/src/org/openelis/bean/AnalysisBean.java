@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -40,6 +41,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisDO;
+import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
@@ -60,6 +62,9 @@ public class AnalysisBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+    
+    @EJB
+    private AnalysisReportFlagsBean analysisReportFlags;
 
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception {
         List returnList;
@@ -146,6 +151,7 @@ public class AnalysisBean {
 
     public AnalysisDO add(AnalysisDO data) throws Exception {
         Analysis entity;
+        AnalysisReportFlagsDO arf;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -168,7 +174,10 @@ public class AnalysisBean {
 
         manager.persist(entity);
         data.setId(entity.getId());
-
+        
+        arf = new AnalysisReportFlagsDO(data.getId(), "N", "N", null, 0, "N");
+        analysisReportFlags.add(arf);
+        
         return data;
     }
 

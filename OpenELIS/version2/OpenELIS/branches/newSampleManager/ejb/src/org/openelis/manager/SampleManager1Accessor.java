@@ -37,6 +37,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -81,6 +82,14 @@ public class SampleManager1Accessor {
     
     public static void setSamplePrivateWell(SampleManager1 sm, SamplePrivateWellViewDO samplePrivateWell) {
         sm.samplePrivateWell = samplePrivateWell;
+    }
+    
+    public static SampleNeonatalDO getSampleNeonatal(SampleManager1 sm) {
+        return sm.sampleNeonatal;
+    }
+    
+    public static void setSampleNeonatal(SampleManager1 sm, SampleNeonatalDO sampleNeonatal) {
+        sm.sampleNeonatal = sampleNeonatal;
     }
     
     public static ArrayList<SampleOrganizationViewDO> getOrganizations(SampleManager1 sm) {

@@ -52,6 +52,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -68,7 +69,6 @@ import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -91,6 +91,9 @@ public class SampleManager1Bean {
 
     @EJB
     private SamplePrivateWellBean   samplePrivate;
+    
+    @EJB
+    private SampleNeonatalBean      sampleNeonatal;
 
     @EJB
     private SampleOrganizationBean  sampleOrganization;
@@ -134,7 +137,7 @@ public class SampleManager1Bean {
     @EJB
     private UserCacheBean           userCache;
 
-    private static final Logger     log = Logger.getLogger("openelis");
+    private static final Logger    log = Logger.getLogger("openelis");
 
     /**
      * Returns a sample manager for specified primary id and requested load
@@ -204,7 +207,12 @@ public class SampleManager1Bean {
             sm = map1.get(data.getSampleId());
             setSamplePrivateWell(sm, data);
         }
-
+        
+        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleNeonatal(sm, data);
+        }
+        
         /*
          * various lists for each sample
          */
@@ -394,6 +402,11 @@ public class SampleManager1Bean {
         for (SamplePrivateWellViewDO data : samplePrivate.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSamplePrivateWell(sm, data);
+        }
+        
+        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleNeonatal(sm, data);
         }
 
         /*
@@ -749,6 +762,9 @@ public class SampleManager1Bean {
             } else if (getSampleSDWIS(sm) != null) {
                 getSampleSDWIS(sm).setSampleId(getSample(sm).getId());
                 sampleSDWIS.add(getSampleSDWIS(sm));
+            } else if (getSampleNeonatal(sm) != null) {
+                getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
+                sampleNeonatal.add(getSampleNeonatal(sm));
             }
 
             // add top level items/lists
@@ -978,6 +994,8 @@ public class SampleManager1Bean {
                         sampleSDWIS.delete( ((SampleSDWISViewDO)data));
                     else if (data instanceof SamplePrivateWellViewDO)
                         samplePrivate.delete( ((SamplePrivateWellViewDO)data));
+                    else if (data instanceof SampleNeonatalDO)
+                        sampleNeonatal.delete( ((SampleNeonatalDO)data));
                     else if (data instanceof SampleOrganizationViewDO)
                         sampleOrganization.delete( ((SampleOrganizationViewDO)data));
                     else if (data instanceof SampleProjectViewDO)
@@ -1029,6 +1047,13 @@ public class SampleManager1Bean {
                     samplePrivate.add(getSamplePrivateWell(sm));
                 } else {
                     samplePrivate.update(getSamplePrivateWell(sm));
+                }
+            } else if (getSampleNeonatal(sm) != null) {
+                if (getSampleNeonatal(sm).getId() == null) {
+                    getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
+                    sampleNeonatal.add(getSampleNeonatal(sm));
+                } else {
+                    sampleNeonatal.update(getSampleNeonatal(sm));
                 }
             }
 
@@ -1183,7 +1208,7 @@ public class SampleManager1Bean {
             } while (dep > 0 && ldep != dep);
 
             if (dep > 0 && ldep == dep)
-                throw new InconsistencyException("Infinite loop");
+                throw new InconsistencyException("sample.unresolvedAnalyses");
 
             // add/update analysis notes
             for (NoteViewDO data : getAnalysisNotes(sm)) {
