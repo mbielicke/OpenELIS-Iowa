@@ -1,6 +1,6 @@
 package org.openelis.modules.note.client;
 
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.NoteManager;
 

@@ -28,11 +28,12 @@ package org.openelis.modules.report.turnaroundStatistic.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.TurnAroundReportViewVO;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -42,7 +43,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class TurnaroundStatisticReportScreen extends ReportScreen<TurnAroundReportViewVO> {
 
-    public TurnaroundStatisticReportScreen(ScreenWindowInt window) throws Exception {
+    public TurnaroundStatisticReportScreen(WindowInt window) throws Exception {
         drawScreen(new ScreenDef());
         this.window = window;
     }

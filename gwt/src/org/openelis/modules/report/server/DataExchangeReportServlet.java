@@ -31,11 +31,11 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.DataExchangeReportBean;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.dataExchange.client.DataExchangeReportServiceInt;
 
@@ -62,11 +62,11 @@ public class DataExchangeReportServlet extends RemoteServlet implements DataExch
         
         for (QueryData qd : query.getFields()) {            
             if ("EXCHANGE_CRITERIA_ID".equals(qd.getKey()))
-                idQuery = qd.query;
+                idQuery = qd.getQuery();
             else if ("ACCESSION_NUMBERS".equals(qd.getKey())) 
-                numQuery = qd.query;
+                numQuery = qd.getQuery();
             else if ("DESTINATION_URI".equals(qd.getKey()))
-                uriQuery = qd.query;
+                uriQuery = qd.getQuery();
         }
         
         accList = null;

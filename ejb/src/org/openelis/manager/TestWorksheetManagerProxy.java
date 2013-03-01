@@ -33,14 +33,15 @@ import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.TestWorksheetAnalyteBean;
 import org.openelis.bean.TestWorksheetBean;
 import org.openelis.bean.TestWorksheetItemBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.TestWorksheetViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class TestWorksheetManagerProxy {
@@ -282,19 +283,19 @@ public class TestWorksheetManagerProxy {
 
             if (position != null) {
                 if (position <= 0) {
-                    list.add(new TableFieldErrorException("posMoreThanZeroException",
+                    list.add(new TableFieldErrorException(Messages.get().posMoreThanZeroException(),
                                                           i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;
                 } else if (bc != null && position > bc) {
-                    list.add(new TableFieldErrorException("posExcSubsetCapacityException",
+                    list.add(new TableFieldErrorException(Messages.get().posExcSubsetCapacityException(),
                                                           i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;
                 } else if (tc != null && position > tc) {
-                    list.add(new TableFieldErrorException("posExcTotalCapacityException",
+                    list.add(new TableFieldErrorException(Messages.get().posExcTotalCapacityException(),
                                                           i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
@@ -303,7 +304,7 @@ public class TestWorksheetManagerProxy {
                     if ( !posList.contains(position)) {
                         posList.add(position);
                     } else {
-                        list.add(new TableFieldErrorException("duplicatePosForQCsException",
+                        list.add(new TableFieldErrorException(Messages.get().duplicatePosForQCsException(),
                                                               i,
                                                               TestMeta.getWorksheetItemPosition(),
                                                               "worksheetTable"));
@@ -314,7 +315,7 @@ public class TestWorksheetManagerProxy {
 
             if (checkPosition) {
                 if (duplicateAfterFixed(currDO, prevDO)) {
-                    list.add(new TableFieldErrorException("duplPosAfterFixedPosException",
+                    list.add(new TableFieldErrorException(Messages.get().duplPosAfterFixedPosException(),
                                                           i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
@@ -349,7 +350,7 @@ public class TestWorksheetManagerProxy {
             if ( !idlist.contains(anaId)) {
                 idlist.add(anaId);
             } else {
-                list.add(new TableFieldErrorException("duplicateWSAnalyteException",
+                list.add(new TableFieldErrorException(Messages.get().duplicateWSAnalyteException(),
                                                       i,
                                                       TestMeta.getWorksheetAnalyteAnalyteId(),
                                                       "worksheetAnalyteTable"));

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

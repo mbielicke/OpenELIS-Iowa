@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.analysis.client.AnalysisServiceInt
+path: 5D2538AD92B9993E1E8F44F72D58A74C.gwt.rpc

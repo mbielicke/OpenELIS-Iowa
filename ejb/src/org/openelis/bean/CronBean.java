@@ -40,19 +40,20 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.Constants;
 import org.openelis.entity.Cron;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.CronMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.FixedPeriodCron;
@@ -230,32 +231,32 @@ public class CronBean {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", CronMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), CronMeta.getName()));
 
         if (DataBaseUtil.isEmpty(data.getCronTab()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              CronMeta.getCronTab()));
         else {
             try {
                 new FixedPeriodCron(data.getCronTab().trim());
             } catch (Exception e) {
-                list.add(new FieldErrorException("invalidCronTab", CronMeta.getCronTab()));
+                list.add(new FieldErrorException(Messages.get().invalidCronTab(), CronMeta.getCronTab()));
             }
         }
 
         if (DataBaseUtil.isEmpty(data.getBean()))
-            list.add(new FieldErrorException("fieldRequiredException", CronMeta.getBean()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), CronMeta.getBean()));
         else {
             
              bean = EJBFactory.lookup(data.getBean());
             
              if(bean == null) 
-                list.add(new FieldErrorException("invalidBeanPath", CronMeta.getBean()));
+                list.add(new FieldErrorException(Messages.get().invalidBeanPath(), CronMeta.getBean()));
             
         }
 
         if (DataBaseUtil.isEmpty(data.getMethod()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              CronMeta.getMethod()));
         else if (bean != null) {
             if ( !DataBaseUtil.isEmpty(data.getParameters())) {
@@ -277,8 +278,8 @@ public class CronBean {
                 }
             }
             if (method == null) {
-                list.add(new FieldErrorException("invalidMethod", CronMeta.getMethod()));
-                list.add(new FieldErrorException("invalidNumParams", CronMeta.getParameters()));
+                list.add(new FieldErrorException(Messages.get().invalidMethod(), CronMeta.getMethod()));
+                list.add(new FieldErrorException(Messages.get().invalidNumParams(), CronMeta.getParameters()));
             }
         }
 

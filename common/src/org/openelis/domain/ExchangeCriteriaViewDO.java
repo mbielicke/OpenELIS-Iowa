@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.QueryData;
 
 /**
  * The class extends exchange criteria DO and adds a list of query data. The

@@ -25,14 +25,11 @@
  */
 package org.openelis.modules.main.client;
 
+import java.util.HashMap;
+
 import org.openelis.cache.UserCache;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.widget.CollapsePanel;
-import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
@@ -44,7 +41,6 @@ import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
 import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionScreen;
 import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapScreen;
-import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
 import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
@@ -100,38 +96,68 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.screen.Screen;
+import org.openelis.ui.widget.Browser;
+import org.openelis.ui.widget.MenuItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 
 public class OpenELIS extends Screen {
+    
+    @UiTemplate("OpenELIS.ui.xml")
+    interface OpenELISUiBinder extends UiBinder<Widget,OpenELIS>{};
+    private static OpenELISUiBinder uiBinder = GWT.create(OpenELISUiBinder.class);
 
-    protected static WindowBrowser browser;
-    protected CollapsePanel        favoritesCollapse;
+    @UiField
+    protected static Browser browser;
+    //protected CollapsePanel        favoritesCollapse;
+    OpenELISConstants msg = GWT.create(OpenELISConstants.class);
+    
+    @UiField
+    protected MenuItem                   preference, logout, sampleLoginLabelReport,
+                    sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
+                    environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
+                    clinicalSampleLogin, newbornScreeningSampleLogin, animalSampleLogin,
+                    ptSampleLogin, testSampleManager, project, provider, organization,
+                    worksheetCreation, worksheetCreation1, worksheetCompletion, addOrCancel,
+                    reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
+                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
+                    inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
+                    testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
+                    billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
+                    sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
+                    turnAroundStatisticReport, sdwisUnloadReport, dataView, qcChart, finalReport,
+                    orderRecurrence, finalReportBatch, finalReportBatchReprint, test, method,
+                    panel, QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
+                    exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
+                    trailerForTest, storageUnit, storageLocation, instrument, scriptlet,
+                    systemVariable, pws, cron;
 
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
         VerticalPanel vp;
 
         rpc = OpenELISService.get().initialData();
-        consts = rpc.appConstants;
         Constants.setConstants(rpc.constants);
 
-        drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
+        //drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
+        
+        initWidget(uiBinder.createAndBindUi(this));
 
         // resize browser will move the collapse handle to the middle
-        browser = (WindowBrowser)def.getWidget("browser");
+        /*
         favoritesCollapse = (CollapsePanel)def.getWidget("favoritesCollapse");
         Window.addResizeHandler(new ResizeHandler() {
             public void onResize(ResizeEvent event) {
@@ -144,38 +170,47 @@ public class OpenELIS extends Screen {
                 browser.resize();
             }
         });
-
+        */
+        
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {
             public void run() {
             }
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
+        /*
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 favoritesCollapse.setHeight(Window.getClientHeight() + "px");
                 browser.resize();
             }
         });
+        */
 
         initialize();
 
         // load the favorite's panel
+        /*
         vp = (VerticalPanel)def.getWidget("favoritesPanel");
         try {
             vp.add(new FavoritesScreen(def));
         } catch (Throwable t) {
             Window.alert("Can't initalize the favorite panel; " + t.getMessage());
         }
+        */
     }
 
     protected void initialize() {
-        addClickHandler("preference", "openelis", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        addCommand(preference, "openelis", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new PreferencesScreen(), "preference");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.preference());
+                            window.setContent(new PreferencesScreen(window));
+                            browser.addWindow(window, "preference");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -189,9 +224,10 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-
-        addClickHandler("logout", "openelis", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        
+        
+        addCommand(logout, "openelis", new Command() {
+            public void execute() {
                 try {
                     logout();
                 } catch (Throwable e) {
@@ -201,12 +237,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("quickEntry", "quickentry", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(quickEntry, "quickentry", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new QuickEntryScreen(), "quickEntry");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.quickEntry());
+                            window.setContent(new QuickEntryScreen(window));
+                            browser.addWindow(window, "quickEntry");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -221,12 +260,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("verification", "verification", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(verification, "verification", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new VerificationScreen(), "verification");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.verification());
+                            window.setContent(new VerificationScreen(window));
+                            browser.addWindow(window, "verification");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -241,12 +283,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("tracking", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(tracking, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SampleTrackingScreen(), "tracking");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.tracking());
+                            window.setContent(new SampleTrackingScreen(window));
+                            browser.addWindow(window, "tracking");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -261,13 +306,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("environmentalSampleLogin", "sampleenvironmental", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(environmentalSampleLogin, "sampleenvironmental", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new EnvironmentalSampleLoginScreen(),
-                                              "environmentalSampleLogin");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.environmentalSampleLogin());
+                            window.setContent(new EnvironmentalSampleLoginScreen(window));
+                            browser.addWindow(window,"environmentalSampleLogin");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -282,8 +329,8 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("clinicalSampleLogin", "sampleclinical", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(clinicalSampleLogin, "sampleclinical", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -303,12 +350,15 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("newbornScreeningSampleLogin", "samplenewborn", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(newbornScreeningSampleLogin, "samplenewborn", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new NewbornScreeningSampleLoginScreen(), "newbornScreeningSampleLogin");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.newbornScreeningSampleLogin());
+                            window.setContent(new NewbornScreeningSampleLoginScreen(window));
+                            browser.addWindow(window, "newbornScreeningSampleLogin");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -323,8 +373,8 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("animalSampleLogin", "sampleanimal", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(animalSampleLogin, "sampleanimal", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -343,8 +393,8 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("ptSampleLogin", "samplept", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(ptSampleLogin, "samplept", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
@@ -363,12 +413,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("sdwisSampleLogin", "samplesdwis", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(sdwisSampleLogin, "samplesdwis", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SDWISSampleLoginScreen(), "sdwisSampleLogin");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.sdwisSampleLogin());
+                            window.setContent(new SDWISSampleLoginScreen(window));
+                            browser.addWindow(window, "sdwisSampleLogin");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -383,13 +436,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("privateWellWaterSampleLogin", "sampleprivatewell", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(privateWellWaterSampleLogin, "sampleprivatewell", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new PrivateWellWaterSampleLoginScreen(),
-                                              "privateWellWaterSampleLogin");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.privateWellWaterSampleLogin());
+                            window.setContent(new PrivateWellWaterSampleLoginScreen(window));
+                            browser.addWindow(window,"privateWellWaterSampleLogin");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -404,12 +459,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("project", "project", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(project, "project", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ProjectScreen(), "project");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.project());
+                            window.setContent(new ProjectScreen(window));
+                            browser.addWindow(window, "project");
                         } catch (Throwable caught) {
                             caught.printStackTrace();
                             Window.alert(caught.getMessage());
@@ -424,12 +482,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("provider", "provider", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(provider, "provider", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ProviderScreen(), "provider");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.provider());
+                            window.setContent(new ProviderScreen(window));
+                            browser.addWindow(window, "provider");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -444,13 +505,16 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("organization", "organization", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(organization, "organization", new Command() {
+            public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new OrganizationScreen(), "organization");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.organization());
+                            window.setContent(new OrganizationScreen(window));
+                            browser.addWindow(window, "organization");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -465,13 +529,16 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("worksheetCreation", "worksheet", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(worksheetCreation, "worksheet", new Command() {
+            public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new WorksheetCreationScreen(), "worksheetCreation");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.worksheetCreation());
+                            window.setContent(new WorksheetCreationScreen(window));
+                            browser.addWindow(window, "worksheetCreation");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -486,14 +553,16 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("worksheetCompletion", "worksheet", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(worksheetCompletion, "worksheet", new Command() {
+            public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new WorksheetCompletionScreen(),
-                                              "worksheetCompletion");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.worksheetCompletion());
+                            window.setContent(new WorksheetCompletionScreen(window));
+                            browser.addWindow(window,"worksheetCompletion");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -508,18 +577,21 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("addOrCancel", null, new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(addOrCancel, null, new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
 
-        addClickHandler("reviewAndRelease", "samplecompleterelease", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(reviewAndRelease, "samplecompleterelease", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new CompleteReleaseScreen(), "reviewAndRelease");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.reviewAndRelease());
+                            window.setContent(new CompleteReleaseScreen(window));
+                            browser.addWindow(window, "reviewAndRelease");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -534,13 +606,16 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("storage", "storage", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(storage, "storage", new Command() {
+            public void execute() {
 
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new StorageScreen(), "storage");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.storage());
+                            window.setContent(new StorageScreen(window));
+                            browser.addWindow(window, "storage");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -555,12 +630,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("toDo", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(toDo, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ToDoScreen(), "toDo");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.toDo());
+                            window.setContent(new ToDoScreen(window));
+                            browser.addWindow(window, "toDo");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -575,18 +653,21 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("labelFor", null, new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(labelFor, null, new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
 
-        addClickHandler("storageLocation", "storagelocation", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(storageLocation, "storagelocation", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new StorageLocationScreen(), "storageLocation");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.storageLocation());
+                            window.setContent(new StorageLocationScreen(window));
+                            browser.addWindow(window, "storageLocation");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -601,12 +682,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("QC", "qc", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(QC, "qc", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new QcScreen(), "QC");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.QC());
+                            window.setContent(new QcScreen(window));
+                            browser.addWindow(window, "QC");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -621,12 +705,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("analyteParameter", "analyteparameter", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(analyteParameter, "analyteparameter", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new AnalyteParameterScreen(), "analyteParameter");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.analyteParameter());
+                            window.setContent(new AnalyteParameterScreen(window));
+                            browser.addWindow(window, "analyteParameter");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -641,12 +728,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("internalOrder", "internalorder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(internalOrder, "internalorder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new InternalOrderScreen(), "internalOrder");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.internalOrder());
+                            window.setContent(new InternalOrderScreen(window));
+                            browser.addWindow(window, "internalOrder");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -661,12 +751,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("vendorOrder", "vendororder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(vendorOrder, "vendororder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new VendorOrderScreen(), "vendorOrder");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.vendorOrder());
+                            window.setContent(new VendorOrderScreen(window));
+                            browser.addWindow(window, "vendorOrder");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -681,12 +774,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("sendoutOrder", "sendoutorder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(sendoutOrder, "sendoutorder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SendoutOrderScreen(), "sendoutOrder");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.sendoutOrder());
+                            window.setContent(new SendoutOrderScreen(window));
+                            browser.addWindow(window, "sendoutOrder");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -701,12 +797,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("fillOrder", "fillorder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(fillOrder, "fillorder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new OrderFillScreen(), "fillOrder");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.fillOrder());
+                            window.setContent(new OrderFillScreen(window));
+                            browser.addWindow(window,"fillOrder");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -721,12 +820,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("shipping", "shipping", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(shipping, "shipping", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ShippingScreen(), "shipping");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.shipping());
+                            window.setContent(new ShippingScreen(window));
+                            browser.addWindow(window, "shipping");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -741,12 +843,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("buildKits", "buildkits", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(buildKits, "buildkits", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new BuildKitsScreen(), "buildKits");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.buildKits());
+                            window.setContent(new BuildKitsScreen(window));
+                            browser.addWindow(window, "buildKits");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -761,12 +866,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("inventoryReceipt", "inventoryreceipt", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(inventoryReceipt, "inventoryreceipt", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new InventoryReceiptScreen(), "inventoryReceipt");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.inventoryReceipt());
+                            window.setContent(new InventoryReceiptScreen(window));
+                            browser.addWindow(window, "inventoryReceipt");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -781,12 +889,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("inventoryTransfer", "inventorytransfer", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(inventoryTransfer, "inventorytransfer", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new InventoryTransferScreen(), "inventoryTransfer");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.inventoryTransfer());
+                            window.setContent(new InventoryTransferScreen(window));
+                            browser.addWindow(window, "inventoryTransfer");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -801,13 +912,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("inventoryAdjustment", "inventoryadjustment", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(inventoryAdjustment, "inventoryadjustment", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new InventoryAdjustmentScreen(),
-                                              "inventoryAdjustment");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.inventoryAdjustment());
+                            window.setContent(new InventoryAdjustmentScreen(window));
+                            browser.addWindow(window,"inventoryAdjustment");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -822,12 +935,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("inventoryItem", "inventoryitem", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(inventoryItem, "inventoryitem", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new InventoryItemScreen(), "inventoryItem");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.inventoryItem());
+                            window.setContent(new InventoryItemScreen(window));
+                            browser.addWindow(window, "inventoryItem");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -842,12 +958,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("instrument", "instrument", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(instrument, "instrument", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new InstrumentScreen(), "instrument");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.instrument());
+                            window.setContent(new InstrumentScreen(window));
+                            browser.addWindow(window, "instrument");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -862,132 +981,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("test", "test", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(test, "test", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new TestScreen(), "test");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("method", "method", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new MethodScreen(), "method");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("panel", "panel", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new PanelScreen(), "panel");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("QAEvent", "qaevent", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new QaEventScreen(), "QAEvent");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("labSection", "section", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new SectionScreen(), "labSection");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("analyte", "analyte", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new AnalyteScreen(), "analyte");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("dictionary", "dictionary", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new DictionaryScreen(), "dictionary");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.test());
+                            window.setContent(new TestScreen(window));
+                            browser.addWindow(window, "test");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1002,12 +1004,16 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("exchangeVocabularyMap", "exchangevocabularymap", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(method, "method", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ExchangeVocabularyMapScreen(), "exchangeVocabularyMap");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
+                            window.setName(msg.method());
+                            window.setSize("862px", "432px");
+                            window.setContent(new MethodScreen(window));
+                            browser.addWindow(window, "method");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1022,12 +1028,15 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("exchangeDataSelection", "exchangedataselection", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(panel, "panel", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ExchangeDataSelectionScreen(), "exchangeDataSelection");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.panel());
+                            window.setContent(new PanelScreen(window));
+                            browser.addWindow(window, "panel");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1042,12 +1051,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("auxiliaryPrompt", "auxiliary", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(QAEvent, "qaevent", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new AuxiliaryScreen(), "auxiliaryPrompt");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.QAEvent());
+                            window.setContent(new QaEventScreen(window));
+                            browser.addWindow(window, "QAEvent");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1062,12 +1074,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("label", "label", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(labSection, "section", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new LabelScreen(), "label");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.labSection());
+                            window.setContent(new SectionScreen(window));
+                            browser.addWindow(window, "labSection");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1082,12 +1097,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("standardNote", "standardnote", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(analyte, "analyte", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new StandardNoteScreen(), "standardNote");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.analyte());
+                            window.setContent(new AnalyteScreen(window));
+                            browser.addWindow(window, "analyte");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1102,12 +1120,61 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("trailerForTest", "testtrailer", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(dictionary, "dictionary", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new TestTrailerScreen(), "trailerForTest");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.dictionary());
+                            window.setContent(new DictionaryScreen(window));
+                            browser.addWindow(window, "dictionary");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addCommand(exchangeVocabularyMap, "exchangevocabularymap", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.exchangeVocabularyMap());
+                            window.setContent(new ExchangeVocabularyMapScreen(window));
+                            browser.addWindow(window, "exchangeVocabularyMap");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addCommand(exchangeDataSelection, "exchangedataselection", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.exchangeDataSelection());
+                            window.setContent(new ExchangeDataSelectionScreen(window));
+                            browser.addWindow(window, "exchangeDataSelection");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1122,12 +1189,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("storageUnit", "storageunit", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(auxiliaryPrompt, "auxiliary", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new StorageUnitScreen(), "storageUnit");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.auxiliaryPrompt());
+                            window.setContent(new AuxiliaryScreen(window));
+                            browser.addWindow(window, "auxiliaryPrompt");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1142,18 +1212,113 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("scriptlet", "scriptlet", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(label, "label", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.label());
+                            window.setContent(new LabelScreen(window));
+                            browser.addWindow(window, "label");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(standardNote, "standardnote", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.standardNote());
+                            window.setContent(new StandardNoteScreen(window));
+                            browser.addWindow(window, "standardNote");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(trailerForTest, "testtrailer", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.trailerForTest());
+                            window.setContent(new TestTrailerScreen(window));
+                            browser.addWindow(window, "trailerForTest");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(storageUnit, "storageunit", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.storageUnit());
+                            window.setContent(new StorageUnitScreen(window));
+                            browser.addWindow(window, "storageUnit");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(scriptlet, "scriptlet", new Command() {
+            public void execute() {
                 // browser.addScreen(new )
             }
         });
 
-        addClickHandler("systemVariable", "systemvariable", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(systemVariable, "systemvariable", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SystemVariableScreen(), "systemVariable");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.systemVariable());
+                            window.setContent(new SystemVariableScreen(window));
+                            browser.addWindow(window, "systemVariable");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1168,12 +1333,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("pws", "pws", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(pws, "pws", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new PWSScreen(), "pws");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.pwsName());
+                            window.setContent(new PWSScreen(window));
+                            browser.addWindow(window, "pws");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1188,12 +1356,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("cron", "cron", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(cron, "cron", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new CronScreen(), "cron");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.cron());
+                            window.setContent(new CronScreen(window));
+                            browser.addWindow(window, "cron");
                         } catch (Exception e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1208,12 +1379,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("testReport", "test", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(testReport, "test", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new TestReportScreen(), "testReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.testReport());
+                            window.setContent(new TestReportScreen(window));
+                            browser.addWindow(window, "testReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1228,13 +1402,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("sampleLoginLabelReport", "r_loginlabel", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(sampleLoginLabelReport, "r_loginlabel", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SampleLoginLabelReportScreen(),
-                                              "sampleLoginLabelReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.sampleLogin());
+                            window.setContent(new SampleLoginLabelReportScreen(window));
+                            browser.addWindow(window,"sampleLoginLabelReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1249,13 +1425,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("sampleLoginLabelAdditionalReport", "r_loginlabel", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(sampleLoginLabelAdditionalReport, "r_loginlabel", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SampleLoginLabelAdditionalReportScreen(),
-                                              "sampleLoginLabelAdditionalReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.sampleLogin());
+                            window.setContent(new SampleLoginLabelAdditionalReportScreen(window));
+                            browser.addWindow(window,"sampleLoginLabelAdditionalReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1270,12 +1448,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("dataView", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(dataView, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new DataViewScreen(), "dataView");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.dataView());
+                            window.setContent(new DataViewScreen(window));
+                            browser.addWindow(window, "dataView");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1290,12 +1471,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("finalReport", "r_final", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(finalReport, "r_final", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new FinalReportSingleReprintScreen(), "finalReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.finalReport());
+                            window.setContent(new FinalReportSingleReprintScreen(window));
+                            browser.addWindow(window, "finalReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1310,12 +1494,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("finalReportBatch", "r_finalbatch", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(finalReportBatch, "r_finalbatch", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new FinalReportBatchScreen(), "finalReportBatch");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.finalReport());
+                            window.setContent(new FinalReportBatchScreen(window));
+                            browser.addWindow(window, "finalReportBatch");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1330,13 +1517,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("finalReportBatchReprint", "r_finalbatch", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(finalReportBatchReprint, "r_finalbatch", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new FinalReportBatchReprintScreen(),
-                                              "finalReportBatchReprint");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.finalReport());
+                            window.setContent(new FinalReportBatchReprintScreen(window));
+                            browser.addWindow(window,"finalReportBatchReprint");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1351,12 +1540,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("verificationReport", "verification", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(verificationReport, "verification", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new VerificationReportScreen(), "verificationReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.verificationReport());
+                            window.setContent(new VerificationReportScreen(window));
+                            browser.addWindow(window, "verificationReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1371,12 +1563,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("orderRequestForm", "sendoutorder", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(orderRequestForm, "sendoutorder", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new RequestformReportScreen(), "orderRequestForm");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.orderRequestForm());
+                            window.setContent(new RequestformReportScreen(window));
+                            browser.addWindow(window, "orderRequestForm");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1391,13 +1586,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("sampleInhouseReport", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(sampleInhouseReport, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SampleInhouseReportScreen(),
-                                              "sampleInhouseReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.sampleInhouseReport());
+                            window.setContent(new SampleInhouseReportScreen(window));
+                            browser.addWindow(window,"sampleInhouseReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1412,12 +1609,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("volumeReport", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(volumeReport, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new VolumeReportScreen(), "volumeReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.volumeReport());
+                            window.setContent(new VolumeReportScreen(window));
+                            browser.addWindow(window, "volumeReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1432,12 +1632,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("turnaround", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(turnaround, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new TurnaroundReportScreen(), "turnaround");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.volumeReport());
+                            window.setContent(new TurnaroundReportScreen(window));
+                            browser.addWindow(window, "turnaround");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1452,12 +1655,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("QASummaryReport", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(QASummaryReport, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new QASummaryReportScreen(), "QASummaryReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.QASummaryReport());
+                            window.setContent(new QASummaryReportScreen(window));
+                            browser.addWindow(window, "QASummaryReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1472,12 +1678,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("sdwisUnloadReport", "samplesdwis", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(sdwisUnloadReport, "samplesdwis", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SDWISUnloadReportScreen(), "sdwisUnloadReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.sdwisUnloadReport());
+                            window.setContent(new SDWISUnloadReportScreen(window));
+                            browser.addWindow(window, "sdwisUnloadReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1492,72 +1701,15 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("orderRecurrence", "system", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(orderRecurrence, "system", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new OrderRecurrenceReportScreen(), "orderRecurrence");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-        
-        addClickHandler("qcChart", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new QcChartScreen(), "qcChart");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-        
-        addClickHandler("toDoAnalyteReport", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new ToDoAnalyteReportScreen(), "toDoAnalyteReport");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-        
-        addClickHandler("turnAroundStatisticReport", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new TurnaroundStatisticScreen(), "turnAroundStatisticReport");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.orderRecurrence());
+                            window.setContent(new OrderRecurrenceReportScreen(window));
+                            browser.addWindow(window, "orderRecurrence");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1572,12 +1724,15 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addClickHandler("holdRefuseOrganization", "sampletracking", new ClickHandler() {
-            public void onClick(ClickEvent event) {
+        addCommand(qcChart, "sampletracking", new Command() {
+            public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new HoldRefuseOrganizationReportScreen(), "holdRefuseOrganization");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.qcChart());
+                            window.setContent(new QcChartScreen(window));
+                            browser.addWindow(window, "qcChart");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1591,12 +1746,83 @@ public class OpenELIS extends Screen {
                 });
             }
         });
+        
+        addCommand(toDoAnalyteReport, "sampletracking", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.toDoAnalyteReport());
+                            window.setContent(new ToDoAnalyteReportScreen(window));
+                            browser.addWindow(window, "toDoAnalyteReport");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addCommand(turnAroundStatisticReport, "sampletracking", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.turnAroundStatisticReport());
+                            window.setContent(new TurnaroundStatisticScreen(window));
+                            browser.addWindow(window, "turnAroundStatisticReport");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addCommand(holdRefuseOrganization, "sampletracking", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.holdRefuseOrganization());
+                            window.setContent(new HoldRefuseOrganizationReportScreen(window));
+                            browser.addWindow(window, "holdRefuseOrganization");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
     }
+    
 
     /**
      * Returns the browser associated with this application.
      */
-    public static WindowBrowser getBrowser() {
+    public static Browser getBrowser() {
         return browser;
     }
 
@@ -1619,8 +1845,8 @@ public class OpenELIS extends Screen {
 
     /**
      * register a click handler
-     */
-    private void addClickHandler(String screenName, String modulePermission, ClickHandler handler) {
+     
+    private void addCommand(String screenName, String modulePermission, ClickHandler handler) {
         MenuItem item;
         ModulePermission perm;
 
@@ -1629,8 +1855,23 @@ public class OpenELIS extends Screen {
             perm = UserCache.getPermission().getModule(modulePermission);
             if (perm != null && perm.hasSelectPermission()) {
                 item.enable(true);
-                item.addClickHandler(handler);
+                item.addCommand(handler);
             }
         }
     }
+    */
+    
+    private void addCommand(MenuItem item, String modulePermission, Command handler) {
+        ModulePermission perm;
+
+        if (item != null && modulePermission != null) {
+            perm = UserCache.getPermission().getModule(modulePermission);
+            if (perm != null && perm.hasSelectPermission()) {
+                item.setEnabled(true);
+                item.addCommand(handler);
+            }
+        }
+    }
+    
+    
 }

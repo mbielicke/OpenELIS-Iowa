@@ -28,15 +28,16 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.InventoryLocationBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class InventoryTransferManagerProxy {
@@ -154,34 +155,34 @@ public class InventoryTransferManagerProxy {
         for (int i = 0; i < man.count(); i++ ) {
             onHandQ = null;
             if (DataBaseUtil.isEmpty(man.getFromInventoryItemAt(i))) {
-                list.add(new TableFieldErrorException("fieldRequiredException", i, "fromItemName",
+                list.add(new TableFieldErrorException(Messages.get().fieldRequiredException(), i, "fromItemName",
                                                       "receiptTable"));
                 onHandQ = null;
             }
 
             if (DataBaseUtil.isEmpty(man.getFromInventoryLocationAt(i)))
-                list.add(new TableFieldErrorException("fieldRequiredException", i, "fromLoc",
+                list.add(new TableFieldErrorException(Messages.get().fieldRequiredException(), i, "fromLoc",
                                                       "receiptTable"));
             else
                 onHandQ = man.getFromInventoryLocationAt(i).getQuantityOnhand();
 
             if (DataBaseUtil.isEmpty(man.getToInventoryItemAt(i)))
-                list.add(new TableFieldErrorException("fieldRequiredException", i, "toItemName",
+                list.add(new TableFieldErrorException(Messages.get().fieldRequiredException(), i, "toItemName",
                                                       "receiptTable"));
 
             if (DataBaseUtil.isEmpty(man.getToInventoryLocationAt(i)))
-                list.add(new TableFieldErrorException("fieldRequiredException", i, "toLoc",
+                list.add(new TableFieldErrorException(Messages.get().fieldRequiredException(), i, "toLoc",
                                                       "receiptTable"));
 
             receivedQ = man.getQuantityAt(i);
             if (DataBaseUtil.isEmpty(receivedQ)) {
-                list.add(new TableFieldErrorException("fieldRequiredException", i, "qtyReceived",
+                list.add(new TableFieldErrorException(Messages.get().fieldRequiredException(), i, "qtyReceived",
                                                       "receiptTable"));
             } else if (receivedQ < 1) {
-                list.add(new TableFieldErrorException("qtyRecMoreThanZeroException", i,
+                list.add(new TableFieldErrorException(Messages.get().qtyRecMoreThanZeroException(), i,
                                                       "qtyReceived", "receiptTable"));
             } else if ( !DataBaseUtil.isEmpty(onHandQ) && onHandQ < receivedQ) {
-                list.add(new TableFieldErrorException("qtyOnHandLessThanQtyRecException", i,
+                list.add(new TableFieldErrorException(Messages.get().qtyOnHandLessThanQtyRecException(), i,
                                                       "qtyReceived", "receiptTable"));
             }
         }

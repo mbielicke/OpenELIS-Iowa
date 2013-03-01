@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.OptionListItem;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -17,16 +16,16 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.Preferences;
 import org.openelis.meta.PreferencesMeta;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class PreferencesScreen extends Screen {
@@ -36,18 +35,10 @@ public class PreferencesScreen extends Screen {
 	Dropdown<Integer> location;
 	Preferences       prefs;
 	
-	public PreferencesScreen() throws Exception {
+	public PreferencesScreen(WindowInt window) throws Exception {
 		super((ScreenDefInt)GWT.create(PreferencesDef.class));
-        
-        DeferredCommand.addCommand(new Command() {			
-			@Override
-			public void execute() {
-				postConstructor();
-			}
-		});
-	}
-	
-	private void postConstructor() {
+        setWindow(window);
+
 		try {
 			prefs = Preferences.userRoot();
 		}catch(Exception e) {
@@ -135,11 +126,11 @@ public class PreferencesScreen extends Screen {
         	}
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -202,17 +193,17 @@ public class PreferencesScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
         if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
             	prefs.flush();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -225,7 +216,7 @@ public class PreferencesScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.UPDATE) {
             try {
@@ -235,7 +226,7 @@ public class PreferencesScreen extends Screen {
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }

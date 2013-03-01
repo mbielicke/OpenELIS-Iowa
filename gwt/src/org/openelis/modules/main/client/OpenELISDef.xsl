@@ -32,7 +32,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:locale="xalan://java.util.Locale"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:service="xalan://org.openelis.gwt.server.ServiceUtils"
-  xmlns:so="xalan://org.openelis.gwt.common.ModulePermission"
+  xmlns:so="xalan://org.openelis.ui.common.ModulePermission"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -49,7 +49,7 @@ UIRF Software License are applicable instead of those above.
     <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.server.ServiceUtils" />
   </xalan:component>
   <xalan:component prefix="so">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.gwt.common.ModulePermission" />
+    <xalan:script lang="javaclass" src="xalan://org.openelis.ui.common.ModulePermission" />
   </xalan:component>
   <xsl:variable name="language">
     <xsl:value-of select="doc/locale" />

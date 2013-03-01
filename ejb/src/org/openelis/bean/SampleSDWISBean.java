@@ -36,15 +36,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.entity.SampleSDWIS;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.SampleMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -152,20 +153,20 @@ public class SampleSDWISBean {
             try {
                 pws.fetchById(id);
             } catch (NotFoundException e) {
-                list.add(new FieldErrorException("invalidPwsException", SampleMeta.getSDWISPwsNumber0()));
+                list.add(new FieldErrorException(Messages.get().invalidPwsException(), SampleMeta.getSDWISPwsNumber0()));
             }
         } else {
-            list.add(new FieldErrorException("pwsIdRequiredException", SampleMeta.getSDWISPwsNumber0()));
+            list.add(new FieldErrorException(Messages.get().pwsIdRequiredException(), SampleMeta.getSDWISPwsNumber0()));
         }
         
         if (data.getSampleTypeId() == null)
-            list.add(new FieldErrorException("sampleTypeRequiredException", SampleMeta.getSDWISSampleTypeId()));
+            list.add(new FieldErrorException(Messages.get().sampleTypeRequiredException(), SampleMeta.getSDWISSampleTypeId()));
         
         if (data.getSamplePointId() == null)
-            list.add(new FieldErrorException("samplePtIdRequiredException", SampleMeta.getSDWISSamplePointId()));
+            list.add(new FieldErrorException(Messages.get().samplePtIdRequiredException(), SampleMeta.getSDWISSamplePointId()));
         
         if (data.getSampleCategoryId() == null)
-            list.add(new FieldErrorException("sampleCatRequiredException", SampleMeta.getSDWISSampleCategoryId()));
+            list.add(new FieldErrorException(Messages.get().sampleCatRequiredException(), SampleMeta.getSDWISSampleCategoryId()));
         
         if (list.size() > 0)
             throw list;

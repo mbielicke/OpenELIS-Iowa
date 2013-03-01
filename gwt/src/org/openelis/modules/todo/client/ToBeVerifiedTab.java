@@ -32,10 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ToDoSampleViewVO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -51,6 +52,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.FilterEvent;
 import org.openelis.gwt.widget.table.event.FilterHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -74,7 +76,7 @@ public class ToBeVerifiedTab extends Screen {
     private ColumnChart                 chart;
     private Options                     options;
     
-    public ToBeVerifiedTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ToBeVerifiedTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();        
@@ -109,13 +111,13 @@ public class ToBeVerifiedTab extends Screen {
         loadBySection = "N";
         
         ranges = new ArrayList<String>();
-        ranges.add(consts.get("today"));
-        ranges.add(consts.get("yesterday"));
-        ranges.add(consts.get("twoDays"));
-        ranges.add(consts.get("threeDays"));
-        ranges.add(consts.get("fourToSevenDays"));
-        ranges.add(consts.get("eightToTenDays"));
-        ranges.add(consts.get("moreThenTenDays"));
+        ranges.add(Messages.get().today());
+        ranges.add(Messages.get().yesterday());
+        ranges.add(Messages.get().twoDays());
+        ranges.add(Messages.get().threeDays());
+        ranges.add(Messages.get().fourToSevenDays());
+        ranges.add(Messages.get().eightToTenDays());
+        ranges.add(Messages.get().moreThenTenDays());
     }
     
     private void initializeDropdowns() {
@@ -149,7 +151,7 @@ public class ToBeVerifiedTab extends Screen {
             if (refreshChart)
                 refreshChart();
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             ToDoService.get().getToBeVerified(new AsyncCallback<ArrayList<ToDoSampleViewVO>>() {
                 public void onSuccess(ArrayList<ToDoSampleViewVO> result) {
                     ArrayList<TableDataRow> model;         
@@ -165,7 +167,7 @@ public class ToBeVerifiedTab extends Screen {
 
                 public void onFailure(Throwable error) {
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert(error.getMessage());
                         error.printStackTrace();
@@ -383,7 +385,7 @@ public class ToBeVerifiedTab extends Screen {
         ops.setLegend(LegendPosition.NONE);                      
         
         aops = AxisOptions.create();
-        aops.setTitle(consts.get("numSamples"));
+        aops.setTitle(Messages.get().numSamples());
         ops.setVAxisOptions(aops);
         
         aops = AxisOptions.create();
@@ -395,7 +397,7 @@ public class ToBeVerifiedTab extends Screen {
         ops.setHAxisOptions(aops);                  
         ops.setWidth(625);
         ops.setHeight(215);        
-        ops.setTitle(consts.get("timeSinceSamplesReceived")); 
+        ops.setTitle(Messages.get().timeSinceSamplesReceived()); 
         return ops;      
     }
 }

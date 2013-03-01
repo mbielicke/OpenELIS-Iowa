@@ -30,11 +30,12 @@ import java.util.ArrayList;
 import org.openelis.bean.InventoryItemCacheBean;
 import org.openelis.bean.InventoryLocationBean;
 import org.openelis.bean.InventoryXAdjustBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryXAdjustViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.InventoryAdjustmentMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class InventoryXAdjustManagerProxy {
@@ -140,7 +141,7 @@ public class InventoryXAdjustManagerProxy {
             
             locationId = data.getInventoryLocationId();            
             if (locationId != null && locationIdList.contains(locationId)) {
-                list.add(new TableFieldErrorException("fieldUniqueOnlyException",i,
+                list.add(new TableFieldErrorException(Messages.get().fieldUniqueOnlyException(),i,
                                                       InventoryAdjustmentMeta.getInventoryLocationInventoryItemName(),
                                                       "adjustmentTable"));
             } else {
@@ -154,7 +155,7 @@ public class InventoryXAdjustManagerProxy {
             }
             
             if (!storeId.equals(prevStoreId)) 
-                list.add(new TableFieldErrorException("allItemsSameStoreException",i,
+                list.add(new TableFieldErrorException(Messages.get().allItemsSameStoreException(),i,
                                                       InventoryAdjustmentMeta.getInventoryLocationInventoryItemName(),
                                                       "adjustmentTable"));            
             prevStoreId = storeId;

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class OrderOrganizationManager implements Serializable {
     private static final long                                serialVersionUID = 1L;

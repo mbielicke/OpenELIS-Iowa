@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.bean.SampleQAEventBean;
 import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class SampleQAEventManagerProxy {

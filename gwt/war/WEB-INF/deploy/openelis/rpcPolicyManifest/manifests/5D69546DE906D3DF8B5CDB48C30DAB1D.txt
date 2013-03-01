@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.eventLog.client.EventLogServiceInt
+path: A773C35C2A74AFFE5B7A3AC9B0BF289E.gwt.rpc

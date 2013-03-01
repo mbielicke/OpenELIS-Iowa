@@ -2,9 +2,11 @@ package org.openelis.modules.main.client;
 
 import java.util.Date;
 
-import org.openelis.gwt.common.Datetime;
+import org.openelis.constants.OpenELISConstants;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.widget.Confirm;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -22,6 +24,7 @@ public class SessionTimer {
                                 CHECK_TIMEOUT = 1000 * 60 * 5;    // How often to poll the server for last access
     
     private HandlerRegistration closeHandler;
+    private OpenELISConstants consts = GWT.create(OpenELISConstants.class);
 
     public static void start() {
         new SessionTimer();
@@ -32,10 +35,10 @@ public class SessionTimer {
          * add session timeout dialog box and timers
          */
         timeoutPopup = new Confirm(Confirm.Type.WARN,
-                                   OpenELIS.consts.get("timeoutHeader"),
-                                   OpenELIS.consts.get("timeoutWarning"),
-                                   OpenELIS.consts.get("timeoutExtendTime"),
-                                   OpenELIS.consts.get("timeoutLogout"));
+                                   consts.timeoutHeader(),
+                                   consts.timeoutWarning(),
+                                   consts.timeoutExtendTime(),
+                                   consts.timeoutLogout());
         timeoutPopup.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 if (event.getSelectedItem() == 0) {
@@ -118,7 +121,7 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(OpenELIS.consts.get("couldNotCall"));
+                Window.alert(caught.getMessage());//consts.couldNotCall());
                 //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
             }
         });
@@ -134,7 +137,7 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(OpenELIS.consts.get("couldNotCall"));
+                Window.alert(caught.getMessage());//OpenELIS.Messages.get().couldNotCall"));
                 //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
             }
         });

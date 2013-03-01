@@ -36,13 +36,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.entity.SampleItem;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -162,6 +163,6 @@ public class SampleItemBean {
 
     public void validate(SampleItemViewDO data, Integer accession) throws Exception {
         if (data.getTypeOfSampleId() == null)
-            new FormErrorException("sample.sampleItemTypeMissing", accession, data.getItemSequence());
+            new FormErrorException(Messages.get().sample_sampleItemTypeMissing(DataBaseUtil.asString(accession), DataBaseUtil.asString(data.getItemSequence())));
     }
 }

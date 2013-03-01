@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.qaevent.client.QAEventServiceInt
+path: 06B4261414DA99DDA73BB12E4E1ECC55.gwt.rpc

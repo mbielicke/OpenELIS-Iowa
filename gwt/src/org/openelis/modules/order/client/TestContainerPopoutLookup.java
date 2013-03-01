@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.order.client;
 
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -38,6 +38,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.OrderManager;
 import org.openelis.modules.auxData.client.AuxDataUtil;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,7 +58,7 @@ public class TestContainerPopoutLookup extends Screen implements
         OK
     };
     
-    public TestContainerPopoutLookup(ScreenWindowInt window) throws Exception {
+    public TestContainerPopoutLookup(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(TestContainerPopoutDef.class));           
         
         /*

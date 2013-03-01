@@ -28,10 +28,11 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.ShippingItemBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ShippingItemDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class ShippingItemManagerProxy {
@@ -97,7 +98,7 @@ public class ShippingItemManagerProxy {
         count = man.count();
         
         if(count == 0) {
-            list.add(new FieldErrorException("noShippingItemsException", null));
+            list.add(new FieldErrorException(Messages.get().noShippingItemsException(), null));
         } else {
             for (int i = 0; i < count; i++ ) {
                 try {

@@ -33,8 +33,8 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class WorksheetAnalysisManager implements Serializable {
     

@@ -28,15 +28,16 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
@@ -108,16 +109,16 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
                     if (getDictionaryByEntry(data.getValue(), "state") != null)
                         locAddr.setState(data.getValue());
                     else if (data.getValue() != null)
-                        errors.add(new FormErrorException("orderImportError", "state",
-                                                              data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError("state",
+                                                              data.getValue())));
                 } else if (analyteId.equals("loc_zip_code")) {
                     locAddr.setZipCode(data.getValue());
                 } else if ("loc_country".equals(analyteId)) {
                     if (getDictionaryByEntry(data.getValue(), "country") != null)
                         locAddr.setCountry(data.getValue());
                     else if (data.getValue() != null)
-                        errors.add(new FormErrorException("orderImportError", "country",
-                                                              data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError("country",
+                                                              data.getValue())));
                 } else if ("priority".equals(analyteId)) {
                     env.setPriority(new Integer(data.getValue()));
                 } else if ("collector_phone".equals(analyteId)) {
@@ -136,8 +137,8 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
                         manager.getProjects().addFirstPermanentProject(smplProj);
 
                     } else {
-                        errors.add(new FormErrorException("orderImportError", "project",
-                                                              data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError("project",
+                                                              data.getValue())));
                     }
                 }
 

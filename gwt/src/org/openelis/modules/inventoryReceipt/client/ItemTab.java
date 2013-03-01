@@ -34,9 +34,9 @@ import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -58,6 +58,7 @@ import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.modules.storage.client.StorageService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -81,7 +82,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         STORAGE_LOCATION_CHANGED, LOT_NUMBER_CHANGED 
     }
     
-    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ItemTab(ScreenDefInt def, WindowInt window) {
         
         setDefinition(def);
         setWindow(window);
@@ -378,11 +379,11 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         query = new Query();                                                                                                     
                         
                         field = new QueryData();
-                        field.query = param;
+                        field.setQuery(param);
                         fields.add(field);
 
                         field = new QueryData();
-                        field.query = Integer.toString(itemId);
+                        field.setQuery(Integer.toString(itemId));
                         fields.add(field);
 
                         query.setFields(fields);

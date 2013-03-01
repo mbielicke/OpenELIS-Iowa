@@ -35,7 +35,7 @@ import org.openelis.bean.CategoryManagerBean;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;

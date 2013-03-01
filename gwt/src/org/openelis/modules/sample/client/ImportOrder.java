@@ -32,6 +32,7 @@ import java.util.HashSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -50,12 +51,12 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.exception.MultipleNoteException;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -248,11 +249,11 @@ public abstract class ImportOrder {
         fields = new ArrayList<QueryData>();
 
         testField = new QueryData();
-        testField.type = QueryData.Type.STRING;
+        testField.setType(QueryData.Type.STRING);
         fields.add(testField);
 
         methodField = new QueryData();
-        methodField.type = QueryData.Type.STRING;
+        methodField.setType(QueryData.Type.STRING);
         fields.add(methodField);
 
         query.setFields(fields);
@@ -264,8 +265,8 @@ public abstract class ImportOrder {
              * find one with the same name and method that is active
              */
             if ("N".equals(orderTest.getIsActive())) {
-                testField.query = orderTest.getTestName();
-                methodField.query = orderTest.getMethodName();
+                testField.setQuery(orderTest.getTestName());
+                methodField.setQuery(orderTest.getMethodName());
 
                 try {
                     test = TestService.get().fetchActiveByNameMethodName(query);
@@ -275,9 +276,9 @@ public abstract class ImportOrder {
                     /*
                      * add an error if such a test couldn't be found
                      */
-                    errors.add(new FormErrorException("inactiveTestOnOrderException",
+                    errors.add(new FormErrorException(Messages.get().inactiveTestOnOrderException(
                                                       orderTest.getTestName(),
-                                                      orderTest.getMethodName()));
+                                                      orderTest.getMethodName())));
                     continue;
                 } catch (Exception anyE) {
                     anyE.printStackTrace();
@@ -314,7 +315,7 @@ public abstract class ImportOrder {
         note.setIsExternal("N");
         note.setSystemUserId(UserCache.getId());
         note.setSystemUser(UserCache.getName());
-        note.setSubject(Screen.consts.get("orderNoteSubject"));
+        note.setSubject(Messages.get().orderNoteSubject());
         note.setText(ordNoteMan.getNoteAt(0).getText());
 
         try {
@@ -328,7 +329,7 @@ public abstract class ImportOrder {
              * by this method then the whole process of importing the order
              * could be abandoned.
              */
-            errors.add(new FormErrorException("multipleInternalNoteException"));
+            errors.add(new FormErrorException(Messages.get().multipleInternalNoteException()));
         }
     }
 
@@ -382,8 +383,8 @@ public abstract class ImportOrder {
         afman = auxFieldGroupMan.getFields();
 
         if (afman.count() < lastAuxFieldIndex) {
-            errors.add(new FormErrorException("orderAuxDataNotFoundError",
-                                              auxData.getAnalyteName()));
+            errors.add(new FormErrorException(Messages.get().orderAuxDataNotFoundError(
+                                              auxData.getAnalyteName())));
             return;
         }
 
@@ -425,8 +426,8 @@ public abstract class ImportOrder {
             }
         }
 
-        errors.add(new FormErrorException("orderAuxDataNotFoundError",
-                                          auxData.getAnalyteName()));
+        errors.add(new FormErrorException(Messages.get().orderAuxDataNotFoundError(
+                                          auxData.getAnalyteName())));
     }
 
     protected SampleOrganizationViewDO createSampleOrganization(OrderOrganizationViewDO org,

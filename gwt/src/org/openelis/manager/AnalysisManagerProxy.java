@@ -30,14 +30,16 @@ import java.util.HashMap;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormErrorWarning;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.services.CalendarService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 import org.openelis.modules.analysis.client.AnalysisService;
@@ -88,41 +90,41 @@ public class AnalysisManagerProxy {
             //
             if (analysisDO.isChanged()) {
                 if (analysisDO.getTestId() == null)
-                    errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
+                    errorsList.add(new FormErrorException(Messages.get().analysisTestIdMissing(sampleItemSequence)));
     
                 if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
-                    errorsList.add(new FormErrorException("analysisSectionIdMissing",
+                    errorsList.add(new FormErrorException(Messages.get().analysisSectionIdMissing(
                                                           analysisDO.getTestName(),
-                                                          analysisDO.getMethodName()));
+                                                          analysisDO.getMethodName())));
     
                 // validate the sample type
                 if (analysisDO.getTestId() != null &&
                     !testMan.getSampleTypes().hasType(sampleTypeId))
-                    errorsList.add(new FormErrorWarning("sampleTypeInvalid", analysisDO.getTestName(),
-                                                        analysisDO.getMethodName()));
+                    errorsList.add(new FormErrorWarning(Messages.get().sampleTypeInvalid(analysisDO.getTestName(),
+                                                        analysisDO.getMethodName())));
     
                 // if unit is not null, it needs to be validated
                 if (analysisDO.getTestId() != null &&
                     analysisDO.getUnitOfMeasureId() != null &&
                     !testMan.getSampleTypes().hasUnit(analysisDO.getUnitOfMeasureId(), sampleTypeId))
-                    errorsList.add(new FormErrorWarning("analysisUnitInvalid",
+                    errorsList.add(new FormErrorWarning(Messages.get().analysisUnitInvalid(
                                                         analysisDO.getTestName(),
-                                                        analysisDO.getMethodName()));
+                                                        analysisDO.getMethodName())));
                 
                 // if unit is null, check the test definition to see if all sample types
                 // have units defined. if so, require the user to enter units
                 if (analysisDO.getTestId() != null &&
                     analysisDO.getUnitOfMeasureId() == null &&
                     !testMan.getSampleTypes().hasEmptyUnit())
-                    errorsList.add(new FormErrorException("analysisUnitRequired",
+                    errorsList.add(new FormErrorException(Messages.get().analysisUnitRequired(
                                                           analysisDO.getTestName(),
-                                                          analysisDO.getMethodName()));
+                                                          analysisDO.getMethodName())));
     
                 if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
                     analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
-                    errorsList.add(new FormErrorException("startedDateInvalidError",
+                    errorsList.add(new FormErrorException(Messages.get().startedDateInvalidError(
                                                           analysisDO.getTestName(),
-                                                          analysisDO.getMethodName()));
+                                                          analysisDO.getMethodName())));
             }
             
             item = man.getItemAt(i);

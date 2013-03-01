@@ -1,6 +1,6 @@
 package org.openelis.modules.main.client;
 
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;

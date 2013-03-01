@@ -28,12 +28,13 @@ package org.openelis.modules.qc.client;
 import java.util.ArrayList;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -244,26 +245,26 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         fields = new ArrayList<QueryData>();
 
         field = new QueryData();
-        field.key = QcMeta.getName();
-        field.type = QueryData.Type.STRING;
-        field.query = pattern;
+        field.setKey(QcMeta.getName());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(pattern);
         fields.add(field);
         
         field = new QueryData();
-        field.key = QcMeta.getIsActive();
-        field.type = QueryData.Type.STRING;
-        field.query = "Y";
+        field.setKey(QcMeta.getIsActive());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery("Y");
         fields.add(field);
         
         field = new QueryData();
-        field.key = QcMeta.getQcLotIsActive();
-        field.type = QueryData.Type.STRING;
-        field.query = "Y";
+        field.setKey(QcMeta.getQcLotIsActive());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery("Y");
         fields.add(field);
         
         query.setFields(fields);
 
-        window.setBusy(consts.get("querying"));
+        window.setBusy(Messages.get().querying());
 
         QcService.get().fetchActiveByName(query, new AsyncCallback<ArrayList<QcLotViewDO>>() {
             public void onSuccess(ArrayList<QcLotViewDO> result) {
@@ -273,10 +274,10 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
             public void onFailure(Throwable error) {
                 setQueryResult(null);
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));                   
+                    window.setDone(Messages.get().noRecordsFound());                   
                 } else {
                     Window.alert("Error: Query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }               
             }
         });                        
@@ -309,7 +310,7 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         
         qcTable.load(model);
         
-        window.setDone(consts.get("done"));
+        window.setDone(Messages.get().loadCompleteMessage());
     }
 
     public void enableMultiSelect(boolean multi) {

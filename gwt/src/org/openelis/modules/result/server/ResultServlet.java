@@ -34,9 +34,9 @@ import org.openelis.bean.AnalyteBean;
 import org.openelis.bean.ResultManagerBean;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.modules.result.client.ResultServiceInt;
@@ -97,7 +97,7 @@ public class ResultServlet extends RemoteServlet implements ResultServiceInt {
         ArrayList<QueryData> fields = query.getFields();
         
         for(int i=0; i<fields.size(); i++)
-            ids.add(new Integer(fields.get(i).query));
+            ids.add(new Integer(fields.get(i).getQuery()));
         
         return analyte.getAlias(ids);
     }

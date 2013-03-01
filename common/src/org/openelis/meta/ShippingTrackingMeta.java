@@ -32,7 +32,7 @@ package org.openelis.meta;
 
 import java.util.HashSet;
 
-import org.openelis.gwt.common.Meta;
+import org.openelis.ui.common.Meta;
 
 public class ShippingTrackingMeta implements Meta {
   	protected String path = "";

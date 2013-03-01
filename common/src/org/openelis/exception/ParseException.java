@@ -25,14 +25,12 @@
 */
 package org.openelis.exception;
 
-import org.openelis.gwt.common.LocalizedException;
-
 /**
  * This exception is thrown when the range for a numeric or titer value is invalid.
  * Valid numeric ranges are of the format min,max such as 5,20; and valid titer
  * ranges are of the format min:max where min and max are arbitrary concentrations. 
  */
-public class ParseException extends LocalizedException {
+public class ParseException extends Exception {
 
     private static final long serialVersionUID = 1L;    
     
@@ -40,7 +38,4 @@ public class ParseException extends LocalizedException {
         super(arg);
     }
     
-    public ParseException(String key, String... params) {
-        super(key,params);
-    }
 }

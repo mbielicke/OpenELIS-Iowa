@@ -27,13 +27,14 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.OrderOrganizationBean;
 import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class OrderOrganizationManagerProxy {
@@ -117,10 +118,10 @@ public class OrderOrganizationManagerProxy {
         }
 
         if (numReportTo > 1)
-            list.add(new FieldErrorException("multipleReportToException", null));
+            list.add(new FieldErrorException(Messages.get().multipleReportToException(), null));
         
         if (numBillTo > 1)
-            list.add(new FieldErrorException("multipleBillToException", null));
+            list.add(new FieldErrorException(Messages.get().multipleBillToException(), null));
 
         if (list.size() > 0)
             throw list;

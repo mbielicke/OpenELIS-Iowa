@@ -26,6 +26,7 @@
 
 package org.openelis.utilcommon;
 
+import org.openelis.constants.Messages;
 import org.openelis.exception.ParseException;
 
 public class ResultRangeTime implements ResultRange {
@@ -46,7 +47,7 @@ public class ResultRangeTime implements ResultRange {
         try {
             st = time.split(":");
             if (st.length != 2)
-            	throw new ParseException("illegalTimeValueException");
+            	throw new ParseException(Messages.get().illegalTimeValueException());
             
             if (st[0].length() > 2)
                 st[0] = st[0].substring(st[0].length()-2, st[0].length());
@@ -57,11 +58,11 @@ public class ResultRangeTime implements ResultRange {
             min = Integer.parseInt(st[1]);            
             
             if (hrs < 0 || hrs > 23 || min < 0 || min > 59) 
-            	throw new ParseException("illegalTimeValueException");
+            	throw new ParseException(Messages.get().illegalTimeValueException());
 
             this.time = d2(hrs) + ":" + d2(min); 
         } catch (IllegalArgumentException ex) {
-            throw new ParseException("illegalTimeValueException");
+            throw new ParseException(Messages.get().illegalTimeValueException());
         }
     }
 

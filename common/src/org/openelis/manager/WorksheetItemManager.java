@@ -32,8 +32,8 @@ import java.util.HashMap;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class WorksheetItemManager implements Serializable {
     

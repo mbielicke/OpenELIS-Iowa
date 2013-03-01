@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
@@ -42,21 +43,22 @@ import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -163,9 +165,9 @@ public class SendoutOrderScreen extends Screen {
         SendoutOrderScreenImpl();
     }
 
-    public SendoutOrderScreen(ScreenWindow window) throws Exception {
+    public SendoutOrderScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(SendoutOrderDef.class));
-        this.window = window;
+        setWindow(window);
 
         SendoutOrderScreenImpl();
     }
@@ -175,25 +177,9 @@ public class SendoutOrderScreen extends Screen {
         userPermission = UserCache.getPermission();
         userModulePermission = userPermission.getModule("sendoutorder");
         if (userModulePermission == null)
-            throw new PermissionException("screenPermException", "Send-out Order Screen");
+            throw new PermissionException(Messages.get().screenPermException("Send-out Order Screen"));
 
-        /*
-         * this is done here in order to make sure that if the screen is brought
-         * up from some other screen then its widgets are initialized before the
-         * constructor ends execution
-         */
-        if (window != null) {
-            postConstructor();
-        } else {
-            DeferredCommand.addCommand(new Command() {
-                public void execute() {
-                    postConstructor();
-                }
-            });
-        }
-    }
 
-    private void postConstructor() {
         tab = Tabs.ORGANIZATION;
         manager = OrderManager.getInstance();
 
@@ -421,7 +407,7 @@ public class SendoutOrderScreen extends Screen {
         id = (TextBox)def.getWidget(OrderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                id.setValue(manager.getOrder().getId());
+                id.setFieldValue(manager.getOrder().getId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -437,7 +423,7 @@ public class SendoutOrderScreen extends Screen {
         neededInDays = (TextBox)def.getWidget(OrderMeta.getNeededInDays());
         addScreenHandler(neededInDays, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                neededInDays.setValue(manager.getOrder().getNeededInDays());
+                neededInDays.setFieldValue(manager.getOrder().getNeededInDays());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -454,7 +440,7 @@ public class SendoutOrderScreen extends Screen {
         numberOfForms = (TextBox)def.getWidget(OrderMeta.getNumberOfForms());
         addScreenHandler(numberOfForms, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                numberOfForms.setValue(manager.getOrder().getNumberOfForms());
+                numberOfForms.setFieldValue(manager.getOrder().getNumberOfForms());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -612,7 +598,7 @@ public class SendoutOrderScreen extends Screen {
                         manager.getOrder().setStatusId(event.getValue());
                     } else {
                         status.setValue(manager.getOrder().getStatusId());
-                        Window.alert(consts.get("onlyProcessOrdersWithNoItems"));
+                        Window.alert(Messages.get().onlyProcessOrdersWithNoItems());
                     }
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -1129,12 +1115,12 @@ public class SendoutOrderScreen extends Screen {
             public void executeQuery(Query query) {
                 QueryData field;
 
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
                 // this screen should only query for send-out orders
                 field = new QueryData();
-                field.key = OrderMeta.getType();
-                field.query = OrderManager.TYPE_SEND_OUT;
-                field.type = QueryData.Type.STRING;
+                field.setKey(OrderMeta.getType());
+                field.setQuery(OrderManager.TYPE_SEND_OUT);
+                field.setType(QueryData.Type.STRING);
                 query.setFields(field);
 
                 query.setRowsPerPage(23);
@@ -1146,14 +1132,14 @@ public class SendoutOrderScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
-                                             window.setError(consts.get("noMoreRecordInDir"));
+                                             window.setError(Messages.get().noMoreRecordInDir());
                                          } else {
                                              Window.alert("Error: Order call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -1196,9 +1182,9 @@ public class SendoutOrderScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = OrderMeta.getId();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.INTEGER;
+                field.setKey(OrderMeta.getId());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.INTEGER);
 
                 query = new Query();
                 query.setFields(field);
@@ -1206,11 +1192,11 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -1302,17 +1288,17 @@ public class SendoutOrderScreen extends Screen {
 
         // add the type
         field = new QueryData();
-        field.key = OrderMeta.getType();
-        field.query = OrderManager.TYPE_SEND_OUT;
-        field.type = QueryData.Type.STRING;
+        field.setKey(OrderMeta.getType());
+        field.setQuery(OrderManager.TYPE_SEND_OUT);
+        field.setType(QueryData.Type.STRING);
         // fields.add(field);
 
         if (auxFields.size() > 0) {
             // add ref table
             field = new QueryData();
-            field.key = OrderMeta.getAuxDataReferenceTableId();
-            field.type = QueryData.Type.INTEGER;
-            field.query = String.valueOf(Constants.table().ORDER);
+            field.setKey(OrderMeta.getAuxDataReferenceTableId());
+            field.setType(QueryData.Type.INTEGER);
+            field.setQuery(String.valueOf(Constants.table().ORDER));
             fields.add(field);
 
             // add aux fields
@@ -1336,7 +1322,7 @@ public class SendoutOrderScreen extends Screen {
         drawAllTabs();
 
         setFocus(id);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -1369,22 +1355,22 @@ public class SendoutOrderScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(neededInDays);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
         if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder().getStatusId())) {
-            Window.alert(consts.get("cancelledOrderCantBeUpdated"));
+            Window.alert(Messages.get().cancelledOrderCantBeUpdated());
             return;
         }
 
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
 
             if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder().getStatusId())) {
-                Window.alert(consts.get("cancelledOrderCantBeUpdated"));
+                Window.alert(Messages.get().cancelledOrderCantBeUpdated());
                 manager = manager.abortUpdate();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -1421,7 +1407,7 @@ public class SendoutOrderScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -1432,7 +1418,7 @@ public class SendoutOrderScreen extends Screen {
 
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             data = manager.getOrder();
             prevStatusId = data.getStatusId();
             try {
@@ -1456,7 +1442,7 @@ public class SendoutOrderScreen extends Screen {
                 manager = manager.add();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
                 if ( !e.hasErrors() && e.hasWarnings()) {
@@ -1478,7 +1464,7 @@ public class SendoutOrderScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
 
             data = manager.getOrder();
             prevStatusId = data.getStatusId();
@@ -1502,7 +1488,7 @@ public class SendoutOrderScreen extends Screen {
                 manager = manager.update();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
                 if ( !e.hasErrors() && e.hasWarnings()) {
@@ -1535,7 +1521,7 @@ public class SendoutOrderScreen extends Screen {
         data = manager.getOrder();
         prevStatusId = data.getStatusId();
         if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
 
             try {
                 manager = manager.add();
@@ -1559,7 +1545,7 @@ public class SendoutOrderScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
@@ -1589,21 +1575,21 @@ public class SendoutOrderScreen extends Screen {
 
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
-            ok = Window.confirm(consts.get("abortWarning"));
+            ok = Window.confirm(Messages.get().abortWarning());
             if (ok) {
                 fetchById(null);
-                window.setDone(consts.get("addAborted"));
+                window.setDone(Messages.get().addAborted());
             } else {
-                window.setDone(consts.get("enterInformationPressCommit"));
+                window.setDone(Messages.get().enterInformationPressCommit());
             }
         } else if (state == State.UPDATE) {
-            ok = Window.confirm(consts.get("abortWarning"));
+            ok = Window.confirm(Messages.get().abortWarning());
             if (ok) {
                 try {
                     manager = manager.abortUpdate();
@@ -1613,7 +1599,7 @@ public class SendoutOrderScreen extends Screen {
                     Window.alert(e.getMessage());
                     fetchById(null);
                 }
-                window.setDone(consts.get("updateAborted"));
+                window.setDone(Messages.get().updateAborted());
             } else {
                 window.clearStatus();
             }
@@ -1624,7 +1610,7 @@ public class SendoutOrderScreen extends Screen {
 
     protected void duplicate() {
         try {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
 
             manager = OrderService.get().duplicate(manager.getOrder().getId());
 
@@ -1648,7 +1634,7 @@ public class SendoutOrderScreen extends Screen {
             DataChangeEvent.fire(this);
 
             setFocus(neededInDays);
-            window.setDone(consts.get("enterInformationPressCommit"));
+            window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -1658,7 +1644,7 @@ public class SendoutOrderScreen extends Screen {
 
     protected void shippingInfo() {
         try {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
 
             ShippingService.get().fetchByOrderId(manager.getOrder().getId(),
                                  new SyncCallback<ShippingViewDO>() {
@@ -1688,7 +1674,7 @@ public class SendoutOrderScreen extends Screen {
             if (shippingManager != null)
                 showShippingScreen(shippingManager, State.DISPLAY);
             else
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -1703,15 +1689,15 @@ public class SendoutOrderScreen extends Screen {
 
         query = new Query();
         field = new QueryData();
-        field.key = "ORDERID";
-        field.query = manager.getOrder().getId().toString();
-        field.type = QueryData.Type.INTEGER;
+        field.setKey("ORDERID");
+        field.setQuery(manager.getOrder().getId().toString());
+        field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
         field = new QueryData();
-        field.key = "PRINTER";
-        field.query = "-view-";
-        field.type = QueryData.Type.INTEGER;
+        field.setKey("PRINTER");
+        field.setQuery("-view-");
+        field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
         try {
@@ -1733,7 +1719,7 @@ public class SendoutOrderScreen extends Screen {
         hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder()
                                                                .getId()
                                                                .toString());
-        HistoryScreen.showHistory(consts.get("orderHistory"),
+        HistoryScreen.showHistory(Messages.get().orderHistory(),
                                   Constants.table().ORDER,
                                   hist);
     }
@@ -1754,7 +1740,7 @@ public class SendoutOrderScreen extends Screen {
                 refVoList[i] = new IdNameVO(data.getId(), data.getOrganizationName());
             }
 
-            HistoryScreen.showHistory(consts.get("orderOrganizationHistory"),
+            HistoryScreen.showHistory(Messages.get().orderOrganizationHistory(),
                                       Constants.table().ORDER_ORGANIZATION,
                                       refVoList);
         } catch (Exception e) {
@@ -1778,7 +1764,7 @@ public class SendoutOrderScreen extends Screen {
                 data = man.getItemAt(i);
                 refVoList[i] = new IdNameVO(data.getId(), data.getInventoryItemName());
             }
-            HistoryScreen.showHistory(consts.get("orderItemHistory"),
+            HistoryScreen.showHistory(Messages.get().orderItemHistory(),
                                       Constants.table().ORDER_ITEM,
                                       refVoList);
         } catch (Exception e) {
@@ -1801,7 +1787,7 @@ public class SendoutOrderScreen extends Screen {
                 data = man.getTestAt(i);
                 refVoList[i] = new IdNameVO(data.getId(), data.getTestName());
             }
-            HistoryScreen.showHistory(consts.get("orderTestHistory"),
+            HistoryScreen.showHistory(Messages.get().orderTestHistory(),
                                       Constants.table().ORDER_TEST,
                                       refVoList);
         } catch (Exception e) {
@@ -1826,7 +1812,7 @@ public class SendoutOrderScreen extends Screen {
                 dict = DictionaryCache.getById(data.getContainerId());
                 refVoList[i] = new IdNameVO(data.getId(), dict.getEntry());
             }
-            HistoryScreen.showHistory(consts.get("orderContainerHistory"),
+            HistoryScreen.showHistory(Messages.get().orderContainerHistory(),
                                       Constants.table().ORDER_CONTAINER,
                                       refVoList);
         } catch (Exception e) {
@@ -1840,7 +1826,7 @@ public class SendoutOrderScreen extends Screen {
             manager = OrderManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 switch (tab) {
                     case ORGANIZATION:
@@ -1874,12 +1860,12 @@ public class SendoutOrderScreen extends Screen {
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }
@@ -1931,7 +1917,7 @@ public class SendoutOrderScreen extends Screen {
         ScreenWindow modal;
 
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(consts.get("shipping"));
+        modal.setName(Messages.get().shipping());
         if (shippingScreen == null)
             shippingScreen = new ShippingScreen(modal);
 
@@ -1984,6 +1970,6 @@ public class SendoutOrderScreen extends Screen {
 
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId))
-            Window.alert(consts.get("orgMarkedAsHoldRefuseSample") + "'" + name + "'");
+            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" + name + "'");
     }
 }

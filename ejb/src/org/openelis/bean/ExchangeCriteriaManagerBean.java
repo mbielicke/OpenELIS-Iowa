@@ -35,12 +35,11 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
-import org.openelis.domain.Constants;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.ExchangeProfileDO;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
 @SecurityDomain("openelis")

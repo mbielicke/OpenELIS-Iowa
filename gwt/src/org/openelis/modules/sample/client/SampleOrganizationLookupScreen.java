@@ -29,15 +29,15 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -155,13 +155,13 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                     case 0:
                         sampleOrganizationTable.clearCellExceptions(r, c);
                         if(Constants.dictionary().ORG_REPORT_TO.equals((Integer)val) && !canAddReportTo)
-                            sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddReportToException"));
+                            sampleOrganizationTable.setCellException(r, c, new Exception(Messages.get().cantAddReportToException()));
                         
                         else if(Constants.dictionary().ORG_BILL_TO.equals((Integer)val) && !canAddBillTo)
-                            sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddBillToException"));
+                            sampleOrganizationTable.setCellException(r, c, new Exception(Messages.get().cantAddBillToException()));
                         
                         else if(Constants.dictionary().ORG_SECOND_REPORT_TO.equals((Integer)val) && !canAddSecondReportTo)
-                            sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddSecondReortToException"));
+                            sampleOrganizationTable.setCellException(r, c, new Exception(Messages.get().cantAddSecondReortToException()));
                         
                         data.setTypeId((Integer)val);
                         break;
@@ -209,7 +209,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                         
                         try {
                             if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId()))
-                                Window.alert(consts.get("orgMarkedAsHoldRefuseSample") + "'" +
+                                Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" +
                                              data.getOrganizationName() + "'");
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
@@ -439,10 +439,10 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             }
             
             if(numBillTo > 1)
-                errorsList.add(new FormErrorException("multipleBillToException"));
+                errorsList.add(new FormErrorException(Messages.get().multipleBillToException()));
             
             if(numReportTo > 1)
-                errorsList.add(new FormErrorException("multipleReportToException"));
+                errorsList.add(new FormErrorException(Messages.get().multipleReportToException()));
             
             if(errorsList.size() > 0)
                 throw errorsList;
@@ -456,7 +456,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         }
         
         if (!superValue)
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
         
         return superValue;
     }

@@ -30,21 +30,23 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionParameterDO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -102,26 +104,15 @@ public class SectionScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    public SectionScreen() throws Exception {
+    public SectionScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(SectionDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("section");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Section Screen");
+            throw new PermissionException(Messages.get().screenPermException("Section Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         manager = SectionManager.getInstance();
 
         initialize();
@@ -498,7 +489,7 @@ public class SectionScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(13);
                 SectionService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -509,14 +500,14 @@ public class SectionScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
-                                             window.setError(consts.get("noMoreRecordInDir"));
+                                             window.setError(Messages.get().noMoreRecordInDir());
                                          } else {
                                              Window.alert("Error: Section call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -557,9 +548,9 @@ public class SectionScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = SectionMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(SectionMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -567,11 +558,11 @@ public class SectionScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -605,7 +596,7 @@ public class SectionScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -624,11 +615,11 @@ public class SectionScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -646,7 +637,7 @@ public class SectionScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -657,13 +648,13 @@ public class SectionScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -671,13 +662,13 @@ public class SectionScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -690,14 +681,14 @@ public class SectionScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -707,7 +698,7 @@ public class SectionScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -717,7 +708,7 @@ public class SectionScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getSection().getId(), manager.getSection().getName());
-        HistoryScreen.showHistory(consts.get("sectionHistory"),
+        HistoryScreen.showHistory(Messages.get().sectionHistory(),
                                   Constants.table().SECTION,
                                   hist);
     }
@@ -742,7 +733,7 @@ public class SectionScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("sectionParameterHistory"),
+        HistoryScreen.showHistory(Messages.get().sectionParameterHistory(),
                                   Constants.table().SECTION_PARAMETER,
                                   refVoList);
     }
@@ -752,18 +743,18 @@ public class SectionScreen extends Screen {
             manager = SectionManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 manager = SectionManager.fetchWithParameters(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

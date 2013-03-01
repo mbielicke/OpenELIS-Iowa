@@ -28,8 +28,8 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 
 /**
  * The class is used to carry fields for the analysis records on SDWIS Unload report.

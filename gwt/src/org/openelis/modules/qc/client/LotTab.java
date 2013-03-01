@@ -30,11 +30,13 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.widget.WindowInt;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -73,7 +75,7 @@ public class LotTab extends Screen {
 
     private boolean                     loaded;
     
-    public LotTab(ScreenDefInt def, ScreenWindowInt window) {   
+    public LotTab(ScreenDefInt def, WindowInt window) {   
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -254,7 +256,7 @@ public class LotTab extends Screen {
 
                 try {
                     if (r > -1 && table.numRows() > 0) { 
-                        window.setBusy(consts.get("validatingDelete"));
+                        window.setBusy(Messages.get().validatingDelete());
                         validateForDelete(manager.getLots().getLotAt(r));
                         table.deleteRow(r);
                     }

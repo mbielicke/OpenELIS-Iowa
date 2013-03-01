@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;

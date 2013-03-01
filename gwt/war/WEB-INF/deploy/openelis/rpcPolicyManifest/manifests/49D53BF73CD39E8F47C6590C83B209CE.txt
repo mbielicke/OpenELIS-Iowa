@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.inventoryTransfer.client.InventoryTransferServiceInt
+path: E7659B8DFC12F7FD9B3F5903CFC637DF.gwt.rpc

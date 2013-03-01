@@ -31,6 +31,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.OrderManager;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
@@ -38,7 +39,7 @@ public class SampleNoteTab extends NotesTab {
 
     protected OrderManager parentManager;
     
-    public SampleNoteTab(ScreenDefInt def, ScreenWindowInt window, String notesPanelKey,
+    public SampleNoteTab(ScreenDefInt def, WindowInt window, String notesPanelKey,
                         String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }

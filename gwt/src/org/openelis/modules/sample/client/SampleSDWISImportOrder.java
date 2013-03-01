@@ -27,6 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PWSDO;
@@ -34,10 +35,10 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleSDWISManager;
@@ -99,8 +100,8 @@ public class SampleSDWISImportOrder extends ImportOrder {
                             sdwis.setPwsName(pws.getName());
                             sdwis.setPwsNumber0(pws.getNumber0());
                         } catch (NotFoundException e) {
-                            errors.add(new FormErrorException("orderImportError", "pws id",
-                                                                  data.getValue()));
+                            errors.add(new FormErrorException(Messages.get().orderImportError("pws id",
+                                                                  data.getValue())));
                         }
                     }
                 } else if ("state_lab_num".equals(analyteId)) {
@@ -113,8 +114,8 @@ public class SampleSDWISImportOrder extends ImportOrder {
                     if (dict != null)
                         value = dict.getId();
                     else if (data.getValue() != null)
-                        errors.add(new FormErrorException("orderImportError", "sample type",
-                                                              data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError("sample type",
+                                                              data.getValue())));
                     sdwis.setSampleTypeId(value);
                 } else if ("sample_cat".equals(analyteId)) {
                     value = null;
@@ -122,8 +123,8 @@ public class SampleSDWISImportOrder extends ImportOrder {
                     if (dict != null)
                         value = dict.getId();
                     else if (data.getValue() != null)
-                        errors.add(new FormErrorException("orderImportError",
-                                                              "sample category", data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError(
+                                                              "sample category", data.getValue())));
 
                     sdwis.setSampleCategoryId(value);
                 } else if ("sample_pt_id".equals(analyteId)) {
@@ -144,8 +145,8 @@ public class SampleSDWISImportOrder extends ImportOrder {
                         manager.getProjects().addFirstPermanentProject(smplProj);
 
                     } else {
-                        errors.add(new FormErrorException("orderImportError", "project",
-                                                              data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError("project",
+                                                              data.getValue())));
                     }
                 }
             } catch (Exception e) {

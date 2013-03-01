@@ -25,16 +25,24 @@
  */
 package org.openelis.modules.main.client;
 
+import org.openelis.constants.OpenELISConstants;
+import org.openelis.modules.main.client.resources.OpenELISResources;
+import org.openelis.ui.resources.UIResources;
+
+import com.google.gwt.cell.client.ButtonCellBase.DefaultAppearance.Resources;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.i18n.shared.GwtLocale;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.teklabs.gwt.i18n.client.LocaleFactory;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -47,6 +55,12 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         // All Events will flow this this handler first before any other
         // handlers.
         Event.addNativePreviewHandler(this);
+        OpenELISResources.INSTANCE.style().ensureInjected();
+        UIResources.INSTANCE.buttonPanel().ensureInjected();
+        UIResources.INSTANCE.calendar().ensureInjected();
+        UIResources.INSTANCE.collapse().ensureInjected();
+        UIResources.INSTANCE.text().ensureInjected();
+        UIResources.INSTANCE.dragDrop().ensureInjected();
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -54,7 +68,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
                         try {
                             Window.enableScrolling(true);
                             RootPanel.get("load").getElement().removeFromParent();
-                            RootPanel.get().add(new org.openelis.modules.main.client.OpenELIS());
+                            RootLayoutPanel.get().add(new org.openelis.modules.main.client.OpenELIS());
                             SessionTimer.start();
                         } catch (Throwable e) {
                             e.printStackTrace();

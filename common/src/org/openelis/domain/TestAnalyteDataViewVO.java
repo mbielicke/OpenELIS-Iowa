@@ -28,7 +28,7 @@ package org.openelis.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * This class is used for managing the analytes and results that will be part of

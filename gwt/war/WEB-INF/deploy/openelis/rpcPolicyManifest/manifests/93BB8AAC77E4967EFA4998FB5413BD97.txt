@@ -1,0 +1,2 @@
+serviceClass: org.openelis.cache.InventoryItemCacheServiceInt
+path: 2606DA2D1029D57D72651246D12359F4.gwt.rpc

@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.InventoryReceiptBean;
 import org.openelis.bean.InventoryReceiptManagerBean;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptServiceInt;

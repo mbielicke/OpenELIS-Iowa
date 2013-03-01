@@ -34,7 +34,7 @@ import org.openelis.bean.InstrumentBean;
 import org.openelis.bean.InstrumentManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;

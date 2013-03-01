@@ -15,7 +15,7 @@ import javax.print.PrintServiceLookup;
 import org.jboss.security.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.gwt.common.OptionListItem;
+import org.openelis.ui.common.OptionListItem;
 import org.openelis.utils.Printer;
 
 /**

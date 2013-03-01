@@ -3,7 +3,7 @@ package org.openelis.modules.inventoryReceipt.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.InventoryLocationViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

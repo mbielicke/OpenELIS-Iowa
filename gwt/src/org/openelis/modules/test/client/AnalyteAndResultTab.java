@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -38,12 +39,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.GridFieldErrorException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -89,6 +89,7 @@ import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.scriptlet.client.ScriptletService;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
@@ -138,7 +139,7 @@ public class AnalyteAndResultTab extends Screen
     private ResultRangeNumeric                           rangeNumeric;
     private ResultRangeTiter                             rangeTiter;
 
-    public AnalyteAndResultTab(ScreenDefInt def, ScreenWindowInt window) {
+    public AnalyteAndResultTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 
@@ -189,7 +190,7 @@ public class AnalyteAndResultTab extends Screen
                 if (selections.size() > 0) {
                     row = selections.get(selections.size() - 1);
                     if ( ! (row.data.equals(selRow.data))) {
-                        Window.alert(consts.get("headerCantSelWithAnalytes"));
+                        Window.alert(Messages.get().headerCantSelWithAnalytes());
                         event.cancel();
                     }
                     addButton.enable(false);
@@ -354,7 +355,7 @@ public class AnalyteAndResultTab extends Screen
                 }
 
                 if (analyteTable.getSelections().size() > 1 && !cancel)
-                    window.setStatus(consts.get("multiSelRowEditCol") + c, "");
+                    window.setStatus(Messages.get().multiSelRowEditCol() + c, "");
                 else
                     window.clearStatus();
             }
@@ -1127,7 +1128,7 @@ public class AnalyteAndResultTab extends Screen
                         resultTable.clearCellExceptions(r, 2);
                         try {
                             validateValue(data, (String)resultTable.getObject(r, 2));
-                        } catch (LocalizedException e) {
+                        } catch (Exception e) {
                             resultTable.setCellException(r, 2, e);
                             addToResultErrorList(group,
                                                  r,
@@ -1139,7 +1140,7 @@ public class AnalyteAndResultTab extends Screen
                         resultTable.clearCellExceptions(r, c);
                         try {
                             validateValue(data, (String)val);
-                        } catch (LocalizedException e) {
+                        } catch (Exception e) {
                             resultTable.setCellException(r, c, e);
                             addToResultErrorList(group,
                                                  r,
@@ -1376,7 +1377,7 @@ public class AnalyteAndResultTab extends Screen
         int dindex, trindex, col, i;
         String field;
         TableDataRow row;
-        ArrayList<LocalizedException> errors;
+        ArrayList<Exception> errors;
 
         dindex = error.getRowIndex();
         col = error.getColumnIndex();
@@ -1418,7 +1419,7 @@ public class AnalyteAndResultTab extends Screen
         if ( !errorExistsInList(error.getRowIndex(),
                                 error.getColumnIndex(),
                                 error.getFieldName(),
-                                error.getKey())) {
+                                error.getMessage())) {
             if (resultErrorList == null)
                 resultErrorList = new ArrayList<GridFieldErrorException>();
             resultErrorList.add(error);
@@ -1554,15 +1555,15 @@ public class AnalyteAndResultTab extends Screen
         query = new Query();
         fields = new ArrayList<QueryData>();
         field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = entry;
+        field.setKey(CategoryMeta.getDictionaryEntry());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(entry);
         fields.add(field);
 
         field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
+        field.setKey(CategoryMeta.getIsSystem());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery("N");
         fields.add(field);
 
         query.setFields(fields);
@@ -1582,7 +1583,7 @@ public class AnalyteAndResultTab extends Screen
         return null;
     }
 
-    private void validateValue(TestResultViewDO data, String value) throws LocalizedException {
+    private void validateValue(TestResultViewDO data, String value) throws Exception {
         IdNameVO dict;
 
         if (value == null)
@@ -1596,7 +1597,7 @@ public class AnalyteAndResultTab extends Screen
                     data.setDictionary(dict.getName());
                 } else {
                     data.setDictionary(null);
-                    throw new LocalizedException("test.invalidValue");
+                    throw new Exception(Messages.get().test_invalidValue());
                 }
             } else if (Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(data.getTypeId())) {
                 rangeNumeric.setRange((String)value);
@@ -1613,9 +1614,9 @@ public class AnalyteAndResultTab extends Screen
                        Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(data.getTypeId())) {
                 data.setValue((String)value);
             } else {
-                throw new LocalizedException("test.invalidValue");
+                throw new Exception(Messages.get().test_invalidValue());
             }
-        } catch (LocalizedException e) {
+        } catch (Exception e) {
             data.setValue(null);
             data.setDictionary(null);
             throw e;
@@ -1629,10 +1630,10 @@ public class AnalyteAndResultTab extends Screen
         row = new TableDataRow(10);
 
         cell = row.cells.get(0);
-        cell.setValue(new TableDataRow( -1, consts.get("analyte")));
+        cell.setValue(new TableDataRow( -1, Messages.get().analyte()));
 
         cell = row.cells.get(1);
-        cell.setValue(new TableDataRow( -1, consts.get("value")));
+        cell.setValue(new TableDataRow( -1, Messages.get().value()));
         row.style = "SubHeader";
         row.data = new Boolean(true);
 
@@ -1689,9 +1690,9 @@ public class AnalyteAndResultTab extends Screen
         ((Dropdown<Integer>)resultTable.getColumnWidget(TestMeta.getResultRoundingMethodId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow("analyte", consts.get("analyte")));
-        model.add(new TableDataRow("column", consts.get("column")));
-        model.add(new TableDataRow("header", consts.get("header")));
+        model.add(new TableDataRow("analyte", Messages.get().analyte()));
+        model.add(new TableDataRow("column", Messages.get().column()));
+        model.add(new TableDataRow("header", Messages.get().header()));
 
         tableActions.setModel(model);
         tableActions.setSelection("analyte");
@@ -1857,7 +1858,7 @@ public class AnalyteAndResultTab extends Screen
                 } else {
                     ncell = row.cells.get(i + 1);
                     if (ncell.getExceptions() != null) {
-                        for (LocalizedException ex : ncell.getExceptions())
+                        for (Exception ex : ncell.getExceptions())
                             cell.addException(ex);
                     }
                     rrow = (TableDataRow)ncell.getValue();
@@ -2028,9 +2029,9 @@ public class AnalyteAndResultTab extends Screen
                         if ( !(Boolean)nrow.data)
                             analyteTable.deleteRow(r);
                         else
-                            Window.alert(consts.get("atleastTwoRowsInRowGroup"));
+                            Window.alert(Messages.get().atleastTwoRowsInRowGroup());
                     } else {
-                        Window.alert(consts.get("atleastTwoRowsInRowGroup"));
+                        Window.alert(Messages.get().atleastTwoRowsInRowGroup());
                     }
                 } else {
                     //
@@ -2050,7 +2051,7 @@ public class AnalyteAndResultTab extends Screen
         TestAnalyteManager man;
 
         if ( !canAddRemoveColumn) {
-            Window.alert(consts.get("cantAddColumn"));
+            Window.alert(Messages.get().cantAddColumn());
             return;
         }
 
@@ -2079,7 +2080,7 @@ public class AnalyteAndResultTab extends Screen
         TestAnalyteManager man;
 
         if ( !canAddRemoveColumn) {
-            Window.alert(consts.get("cantRemoveColumn"));
+            Window.alert(Messages.get().cantRemoveColumn());
             return;
         }
 
@@ -2127,7 +2128,7 @@ public class AnalyteAndResultTab extends Screen
                     analyteTable.addRow(r + 1, createHeaderRow());
                     analyteTable.scrollToSelection();
                 } else {
-                    Window.alert(consts.get("headerCantBeAddedInsideGroup"));
+                    Window.alert(Messages.get().headerCantBeAddedInsideGroup());
                 }
             }
         }
@@ -2182,7 +2183,7 @@ public class AnalyteAndResultTab extends Screen
                         if (list != null) {
                             r = resultTable.getSelectedRow();
                             if (r == -1) {
-                                window.setError(consts.get("test.noSelectedRow"));
+                                window.setError(Messages.get().test_noSelectedRow());
                                 return;
                             }
 
@@ -2235,7 +2236,7 @@ public class AnalyteAndResultTab extends Screen
 
         }
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("chooseDictEntry"));
+        modal.setName(Messages.get().chooseDictEntry());
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);
         if (list != null) {
@@ -2256,7 +2257,7 @@ public class AnalyteAndResultTab extends Screen
         for (int i = 0; i < resultErrorList.size(); i++ ) {
             ex = resultErrorList.get(i);
             if ( (ex.getRowIndex() == group) && (ex.getColumnIndex() == row) &&
-                (ex.getFieldName().equals(field)) && (ex.getKey().equals(message))) {
+                (ex.getFieldName().equals(field)) && (ex.getMessage().equals(message))) {
                 return true;
             }
         }

@@ -39,17 +39,18 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.AuxFieldValue;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.AuxFieldGroupMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -230,13 +231,13 @@ public class AuxFieldValueBean {
         typeId = data.getTypeId();
 
         if (typeId == null)
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              AuxFieldGroupMeta.getFieldValueTypeId()));
 
         if (value == null &&
             (DataBaseUtil.isSame(Constants.dictionary().AUX_NUMERIC, typeId) ||
              DataBaseUtil.isSame(Constants.dictionary().AUX_DICTIONARY, typeId))) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              AuxFieldGroupMeta.getFieldValueValue()));
         } else if (value != null &&
                    (DataBaseUtil.isSame(Constants.dictionary().AUX_DATE_TIME, typeId) ||
@@ -245,7 +246,7 @@ public class AuxFieldValueBean {
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_LOWER, typeId) ||
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_UPPER, typeId) ||
                     DataBaseUtil.isSame(Constants.dictionary().AUX_ALPHA_MIXED, typeId))) {
-            list.add(new FieldErrorException("valuePresentForTypeException",
+            list.add(new FieldErrorException(Messages.get().valuePresentForTypeException(),
                                              AuxFieldGroupMeta.getFieldValueValue()));
         }
 

@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.cron.client.CronServiceInt
+path: 575FB6B911F976EAFF2A014B8C849436.gwt.rpc

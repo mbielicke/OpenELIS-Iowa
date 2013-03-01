@@ -38,10 +38,10 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
 @SecurityDomain("openelis")

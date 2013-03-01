@@ -4,13 +4,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
 
 public class AnalysisResultManager implements Serializable {
@@ -230,7 +231,7 @@ public class AnalysisResultManager implements Serializable {
 
     public Integer validateResultValue(Integer resultGroup, Integer unitId, String value) throws Exception {
         if (resultGroup == null)
-            throw new ParseException("testAnalyteDefinitionChanged");
+            throw new ParseException(Messages.get().testAnalyteDefinitionChanged());
         return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
     }
 

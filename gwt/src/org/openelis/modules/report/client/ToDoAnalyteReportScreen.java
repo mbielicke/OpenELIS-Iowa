@@ -27,12 +27,14 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -40,11 +42,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class ToDoAnalyteReportScreen extends ReportScreen<Query> {
     private ArrayList<Object> selections;
     
-    public ToDoAnalyteReportScreen() throws Exception {
+    public ToDoAnalyteReportScreen(WindowInt window) throws Exception {
         Integer id;
         
+        setWindow(window);
+        
         drawScreen(new ScreenDef());
-        setName(consts.get("toDoAnalyteReport"));
+        setName(Messages.get().toDoAnalyteReport());
         
         selections = new ArrayList<Object>();
         /* 

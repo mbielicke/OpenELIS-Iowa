@@ -62,6 +62,7 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteParameterViewDO;
@@ -81,15 +82,6 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.SectionPermission;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.AnalysisUserManager;
@@ -105,6 +97,14 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -754,10 +754,10 @@ public class WorksheetCompletionBean {
                                         !Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusDO.getId()) &&
                                         !Constants.dictionary().ANALYSIS_REQUEUE.equals(statusDO.getId()) &&
                                         !Constants.dictionary().ANALYSIS_COMPLETED.equals(statusDO.getId())) {
-                                        errorList.add(new FormErrorException("invalidAnalysisStatusChange",
+                                        errorList.add(new FormErrorException(Messages.get().invalidAnalysisStatusChange(
                                                                              (String)value,
                                                                              String.valueOf(wiDO.getPosition()),
-                                                                             String.valueOf(a + 1)));
+                                                                             String.valueOf(a + 1))));
                                     } else {
                                         aVDO.setStatusId(statusDO.getId());
                                         anaModified = true;
@@ -780,14 +780,14 @@ public class WorksheetCompletionBean {
                                         if (auManager.addCompleteRecord(userVO) != -1)
                                             anaModified = true;
                                     } else {
-                                        errorList.add(new FormErrorException("illegalWorksheetUserFormException",
+                                        errorList.add(new FormErrorException(Messages.get().illegalWorksheetUserFormException(
                                                                              String.valueOf(wiDO.getPosition()),
-                                                                             String.valueOf(a + 1)));
+                                                                             String.valueOf(a + 1))));
                                     }
                                 } catch (Exception anyE) {
-                                    errorList.add(new FormErrorException("illegalWorksheetUserFormException",
+                                    errorList.add(new FormErrorException(Messages.get().illegalWorksheetUserFormException(
                                                                          String.valueOf(wiDO.getPosition()),
-                                                                         String.valueOf(a + 1)));
+                                                                         String.valueOf(a + 1))));
                                 }
                             }
                         }
@@ -882,10 +882,10 @@ public class WorksheetCompletionBean {
                                                                                                "." +
                                                                                                r);
                                             } catch (Exception anyE) {
-                                                errorList.add(new FormErrorException("columnAnalyteLookupFormException",
+                                                errorList.add(new FormErrorException(Messages.get().columnAnalyteLookupFormException(
                                                                                      String.valueOf(wiDO.getPosition()),
                                                                                      wrVDO.getAnalyteName(),
-                                                                                     rVDO.getAnalyte()));
+                                                                                     rVDO.getAnalyte())));
                                             }
                                         }
                                         if (value != null &&
@@ -912,11 +912,11 @@ public class WorksheetCompletionBean {
                                             anaModified = true;
                                         }
                                     } catch (ParseException parE) {
-                                        errorList.add(new FormErrorException("illegalResultValueFormException",
+                                        errorList.add(new FormErrorException(Messages.get().illegalResultValueFormException(
                                                                              String.valueOf(value),
                                                                              String.valueOf(wiDO.getPosition()),
                                                                              wrVDO.getAnalyteName(),
-                                                                             (c == 0 ? "Final Value" : rVDO.getAnalyte())));
+                                                                             (c == 0 ? "Final Value" : rVDO.getAnalyte()))));
                                     }
                                 }
                             }
@@ -972,14 +972,14 @@ public class WorksheetCompletionBean {
                                     if (userVO != null) {
                                         waDO.setQcSystemUserId(userVO.getId());
                                     } else {
-                                        errorList.add(new FormErrorException("illegalWorksheetUserFormException",
+                                        errorList.add(new FormErrorException(Messages.get().illegalWorksheetUserFormException(
                                                                              String.valueOf(wiDO.getPosition()),
-                                                                             String.valueOf(a + 1)));
+                                                                             String.valueOf(a + 1))));
                                     }
                                 } catch (Exception anyE) {
-                                    errorList.add(new FormErrorException("illegalWorksheetUserFormException",
+                                    errorList.add(new FormErrorException(Messages.get().illegalWorksheetUserFormException(
                                                                          String.valueOf(wiDO.getPosition()),
-                                                                         String.valueOf(a + 1)));
+                                                                         String.valueOf(a + 1))));
                                 }
                             }
                         }
@@ -988,9 +988,9 @@ public class WorksheetCompletionBean {
                             userVO = userCache.getSystemUser();
                             waDO.setQcSystemUserId(userVO.getId());
                         } catch (Exception anyE) {
-                            errorList.add(new FormErrorException("defaultWorksheetQcUserFormException",
+                            errorList.add(new FormErrorException(Messages.get().defaultWorksheetQcUserFormException(
                                                                  String.valueOf(wiDO.getPosition()),
-                                                                 String.valueOf(a + 1)));
+                                                                 String.valueOf(a + 1))));
                         }
                     }
 
@@ -1661,9 +1661,9 @@ public class WorksheetCompletionBean {
                 if (anyE instanceof EntityLockedException) {
                     params = new String[3];
                     params[0] = sManager.getSample().getAccessionNumber().toString();
-                    params[1] = ((EntityLockedException)anyE).getParams()[0];
-                    params[2] = ((EntityLockedException)anyE).getParams()[1];
-                    throw new LocalizedException("worksheetSampleLockException", params);
+                    //params[1] = ((EntityLockedException)anyE).getParams()[0];
+                    //params[2] = ((EntityLockedException)anyE).getParams()[1];
+                    throw new Exception(Messages.get().worksheetSampleLockException(params[0],"",""));
                 } else {
                     throw anyE;
                 }

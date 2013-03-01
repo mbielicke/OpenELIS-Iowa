@@ -38,18 +38,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.entity.WorksheetAnalysis;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.WorksheetCompletionMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -218,12 +219,12 @@ public class WorksheetAnalysisBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getAccessionNumber()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              WorksheetCompletionMeta.getWorksheetAnalysisAccessionNumber()));
         if (DataBaseUtil.isEmpty(data.getAnalysisId()) && DataBaseUtil.isEmpty(data.getQcLotId())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              WorksheetCompletionMeta.getWorksheetAnalysisAnalysisId()));
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              WorksheetCompletionMeta.getWorksheetAnalysisQcLotId()));
         }
 

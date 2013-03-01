@@ -38,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -51,16 +52,16 @@ import org.openelis.entity.InventoryReceipt;
 import org.openelis.entity.InventoryXPut;
 import org.openelis.entity.Order;
 import org.openelis.entity.OrderItem;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -296,7 +297,7 @@ public class InventoryReceiptBean {
             // receipt
             //
             if (xputs.size() + dQ < 0)
-                throw new FieldErrorException("notSuffcientQtyAtLocException", null);
+                throw new FieldErrorException(Messages.get().notSuffcientQtyAtLocException(), null);
             for (i = 0; i < Math.abs(dQ); i++ ) {
                 if (dQ < 0) {
                     oldEntityLocation = manager.find(InventoryLocation.class,
@@ -349,7 +350,7 @@ public class InventoryReceiptBean {
             // of adjusting the quantity on hand at the location
             //
             if (oldEntityLocation.getQuantityOnhand() + dQ < 0)
-                throw new FieldErrorException("notSuffcientQtyAtLocException", null);
+                throw new FieldErrorException(Messages.get().notSuffcientQtyAtLocException(), null);
 
             //
             // adjust existing xput and inventory location
@@ -453,30 +454,30 @@ public class InventoryReceiptBean {
         item = null;
 
         if (data.getReceivedDate() == null)
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InventoryReceiptMeta.getReceivedDate()));
 
         if (data.getInventoryItemId() == null) {
             if (data.getId() == null)
-                list.add(new FieldErrorException("fieldRequiredException",
+                list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                  InventoryReceiptMeta.getInventoryItemName()));
         } else {
             item = inventoryItem.fetchById(data.getInventoryItemId());
         }
 
         if (data.getOrganizationId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InventoryReceiptMeta.getOrganizationName()));
 
         if (data.getInventoryLocations() != null) {
             location = data.getInventoryLocations().get(0);
             if (location.getStorageLocationId() == null)
-                list.add(new FieldErrorException("storageLocReqForItemException",
+                list.add(new FieldErrorException(Messages.get().storageLocReqForItemException(),
                                                  InventoryReceiptMeta.getInventoryItemName()));
 
             if (item != null && location.getLotNumber() == null &&
                 "Y".equals(item.getIsLotMaintained()))
-                list.add(new FieldErrorException("lotNumRequiredForOrderItemException",
+                list.add(new FieldErrorException(Messages.get().lotNumRequiredForOrderItemException(),
                                                  InventoryReceiptMeta.getInventoryItemName()));
 
             /*
@@ -484,15 +485,15 @@ public class InventoryReceiptBean {
              * location specified here must already exist
              */
             if ("Y".equals(data.getAddToExistingLocation()) && location.getId() == null)
-                list.add(new FieldErrorException("itemNotExistAtLocationException",
+                list.add(new FieldErrorException(Messages.get().itemNotExistAtLocationException(),
                                                  InventoryReceiptMeta.getInventoryItemName()));
             else if ("N".equals(data.getAddToExistingLocation()) &&
                      location.getId() != null)
-                list.add(new FieldErrorException("itemExistAtLocationException",
+                list.add(new FieldErrorException(Messages.get().itemExistAtLocationException(),
                                                  InventoryReceiptMeta.getInventoryItemName()));
 
         } else {
-            list.add(new FieldErrorException("storageLocReqForItemException",
+            list.add(new FieldErrorException(Messages.get().storageLocReqForItemException(),
                                              InventoryReceiptMeta.getInventoryItemName()));
         }
 
@@ -500,13 +501,13 @@ public class InventoryReceiptBean {
         receivedQ = data.getQuantityReceived();
         if (receivedQ == null) {
             if (data.getId() != null)
-                list.add(new FieldErrorException("numRecReqForReceivedItemsException",
+                list.add(new FieldErrorException(Messages.get().numRecReqForReceivedItemsException(),
                                                  InventoryReceiptMeta.getQuantityReceived()));
         } else if (receivedQ < 0) {
-            list.add(new FieldErrorException("numRecNotLessThanZeroException",
+            list.add(new FieldErrorException(Messages.get().numRecNotLessThanZeroException(),
                                              InventoryReceiptMeta.getQuantityReceived()));
         } else if (orderItemQ != null && receivedQ > orderItemQ) {
-            list.add(new FieldErrorException("numReqLessThanNumRecException",
+            list.add(new FieldErrorException(Messages.get().numReqLessThanNumRecException(),
                                              InventoryReceiptMeta.getQuantityReceived()));
         }
 

@@ -33,16 +33,16 @@ import java.util.Set;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.InventoryItemCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -76,6 +76,7 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -98,7 +99,7 @@ public class ItemTab extends Screen {
     private AppButton                      popoutButton;
     private ItemTreePopoutLookup           popoutLookup;
 
-    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ItemTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -474,14 +475,14 @@ public class ItemTab extends Screen {
                 query = new Query();
 
                 field = new QueryData();
-                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
+                field.setQuery(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                 fields.add(field);
 
                 item = itemsTree.getSelection();
                 key = (OrderItemViewDO)item.parent.key;
 
                 field = new QueryData();
-                field.query = Integer.toString(key.getInventoryItemId());
+                field.setQuery(Integer.toString(key.getInventoryItemId()));
                 fields.add(field);
 
                 query.setFields(fields);
@@ -534,7 +535,7 @@ public class ItemTab extends Screen {
                     return;
 
                 if ("top".equals(item.leafType)) {
-                    window.setStatus(consts.get("qtyAdjustedItemNotRemoved"), "");
+                    window.setStatus(Messages.get().qtyAdjustedItemNotRemoved(), "");
                 } else {
                     data = (InventoryXUseViewDO)item.data;
                     man = combinedMap.get(data.getOrderItemOrderId());
@@ -587,7 +588,7 @@ public class ItemTab extends Screen {
                         itemsTree.toggle(item);
 
                     if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
-                        Window.alert(consts.get("itemFlagDontInvCantBeFilled"));
+                        Window.alert(Messages.get().itemFlagDontInvCantBeFilled());
                         return;
                     }
 
@@ -704,7 +705,7 @@ public class ItemTab extends Screen {
                         }
                     }
                 } else if ( (quantity == null) || (quantity != null && quantity > 0)) {
-                    parent.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                    parent.cells.get(1).addException(new Exception(Messages.get().sumOfQtyLessThanQtyOrderedException()));
                     itemsTree.refreshRow(parent);
                     validate = false;
                 }
@@ -938,9 +939,9 @@ public class ItemTab extends Screen {
         if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
             if (qty == null || qty < 0) {
                 if (r > -1)
-                    itemsTree.setCellException(r, 1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                    itemsTree.setCellException(r, 1, new Exception(Messages.get().sumOfQtyMoreThanQtyOrderedException()));
                 else
-                    item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                    item.cells.get(1).addException(new Exception(Messages.get().sumOfQtyMoreThanQtyOrderedException()));
                 return false;
             }
             return true;
@@ -951,20 +952,18 @@ public class ItemTab extends Screen {
 
         if (qty == null || sum > qty) {
             if (r > -1)
-                itemsTree.setCellException(r, 1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                itemsTree.setCellException(r, 1, new Exception(Messages.get().sumOfQtyMoreThanQtyOrderedException()));
             else
-                item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                item.cells.get(1).addException(new Exception(Messages.get().sumOfQtyMoreThanQtyOrderedException()));
             valid = false;
         } else if (sum < qty) {
             if (r > -1)
                 itemsTree.setCellException(r,
                                            1,
-                                           new LocalizedException(
-                                                                  "sumOfQtyLessThanQtyOrderedException"));
+                                           new Exception(Messages.get().sumOfQtyLessThanQtyOrderedException()));
             else
                 item.cells.get(1)
-                          .addException(new LocalizedException(
-                                                               "sumOfQtyLessThanQtyOrderedException"));
+                          .addException(new Exception(Messages.get().sumOfQtyLessThanQtyOrderedException()));
             valid = false;
         }
 
@@ -990,9 +989,9 @@ public class ItemTab extends Screen {
         qty = (Integer)child.cells.get(1).getValue();
         if (qty == null) {
             if (row > -1)
-                itemsTree.setCellException(row, 1, new LocalizedException("fieldRequiredException"));
+                itemsTree.setCellException(row, 1, new Exception(Messages.get().fieldRequiredException()));
             else
-                child.cells.get(1).addException(new LocalizedException("fieldRequiredException"));
+                child.cells.get(1).addException(new Exception(Messages.get().fieldRequiredException()));
 
             return false;
         }
@@ -1002,9 +1001,9 @@ public class ItemTab extends Screen {
 
         if (qty < 1) {
             if (row > -1)
-                itemsTree.setCellException(row, 1, new LocalizedException("invalidLocationQuantityException"));
+                itemsTree.setCellException(row, 1, new Exception(Messages.get().invalidLocationQuantityException()));
             else
-                child.cells.get(1).addException(new LocalizedException("invalidLocationQuantityException"));
+                child.cells.get(1).addException(new Exception(Messages.get().invalidLocationQuantityException()));
 
             valid = false;
         }
@@ -1013,12 +1012,11 @@ public class ItemTab extends Screen {
             if (row > -1) {
                 itemsTree.setCellException(row,
                                            1,
-                                           new LocalizedException(
-                                                                  "noLocationSelectedForRowException"));
+                                           new Exception(Messages.get().noLocationSelectedForRowException()));
             } else {
                 child.cells.get(1)
-                           .addException(new LocalizedException("noLocationSelectedForRowException"));
-                child.cells.get(3).addException(new LocalizedException("fieldRequiredException"));
+                           .addException(new Exception(Messages.get().noLocationSelectedForRowException()));
+                child.cells.get(3).addException(new Exception(Messages.get().fieldRequiredException()));
             }
 
             valid = false;
@@ -1030,11 +1028,10 @@ public class ItemTab extends Screen {
                 if (row > -1)
                     itemsTree.setCellException(row,
                                                1,
-                                               new LocalizedException(
-                                                                      "qtyMoreThanQtyOnhandException"));
+                                               new Exception(Messages.get().qtyMoreThanQtyOnhandException()));
                 else
                     child.cells.get(1)
-                               .addException(new LocalizedException("qtyMoreThanQtyOnhandException"));
+                               .addException(new Exception(Messages.get().qtyMoreThanQtyOnhandException()));
 
                 valid = false;
             }
@@ -1045,11 +1042,11 @@ public class ItemTab extends Screen {
 
         if (qtyOrdered == null || sum > qtyOrdered) {
             parent.cells.get(1)
-                        .addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                        .addException(new Exception(Messages.get().sumOfQtyMoreThanQtyOrderedException()));
             valid = false;
         } else if (sum < qtyOrdered) {
             parent.cells.get(1)
-                        .addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                        .addException(new Exception(Messages.get().sumOfQtyLessThanQtyOrderedException()));
             valid = false;
         }
 
@@ -1078,7 +1075,7 @@ public class ItemTab extends Screen {
                 return;
             }
         }
-        modal.setName(consts.get("items"));
+        modal.setName(Messages.get().items());
         modal.setContent(popoutLookup);
         popoutLookup.setScreenState(state);
         popoutLookup.setManager(manager, combinedMap);

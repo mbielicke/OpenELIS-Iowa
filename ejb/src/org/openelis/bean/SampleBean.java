@@ -40,6 +40,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
@@ -47,19 +48,19 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormErrorWarning;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
+import org.openelis.gwt.widget.QueryFieldUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -185,7 +186,7 @@ public class SampleBean {
 
         orgPresent = false;
         for (QueryData f : fields) {
-            if (SampleMeta.getOrgId().equals(f.key)) {
+            if (SampleMeta.getOrgId().equals(f.getKey())) {
                 orgPresent = true;
                 continue;
             }
@@ -237,7 +238,7 @@ public class SampleBean {
         try {
             return (SampleDO)query.getSingleResult();
         } catch (NoResultException e) {
-            throw new NotFoundException("noRecordsFound");
+            throw new NotFoundException(Messages.get().noRecordsFound());
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
@@ -492,7 +493,7 @@ public class SampleBean {
 
         orgPresent = false;
         for (QueryData f : fields) {
-            if (SampleMeta.getOrgId().equals(f.key)) {
+            if (SampleMeta.getOrgId().equals(f.getKey())) {
                 orgPresent = true;
                 continue;
             }
@@ -544,15 +545,15 @@ public class SampleBean {
          * set the values of the parameters created in the clause above
          */
         field = new QueryData();
-        field.key = "dt";
-        field.query = queryStr;
-        field.type = QueryData.Type.DATE;
+        field.setKey("dt");
+        field.setQuery(queryStr);
+        field.setType(QueryData.Type.DATE);
         fields.add(field);
 
         field = new QueryData();
-        field.key = "dt1";
-        field.query = queryStr;
-        field.type = QueryData.Type.DATE;
+        field.setKey("dt1");
+        field.setQuery(queryStr);
+        field.setType(QueryData.Type.DATE);
 
         /*
          * these fields were not added to the list passed to constructWhere()
@@ -641,12 +642,12 @@ public class SampleBean {
         // that by the time we insert it will still be unique, and will
         // slow us down.
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
-            e.add(new FormErrorException("sample.accessionNumberNotPositiveException",
-                                         data.getAccessionNumber()));
+            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotValidException(
+                                         DataBaseUtil.asString(data.getAccessionNumber()))));
 
         if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
-            e.add(new FormErrorException("sample.accessionNumberNotInUse",
-                                         data.getAccessionNumber()));
+            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotInUse(
+                                         DataBaseUtil.asString(data.getAccessionNumber()))));
 
         // domain
         d = data.getDomain();
@@ -657,21 +658,21 @@ public class SampleBean {
              !Constants.domain().NEWBORN.equals(d) &&
              !Constants.domain().PRIVATEWELL.equals(d) &&
              !Constants.domain().PT.equals(d) && !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
-            e.add(new FormErrorException("sample.noDomainException", data.getAccessionNumber()));
+            e.add(new FormErrorException(Messages.get().sample_noDomainException(DataBaseUtil.asString(data.getAccessionNumber()))));
         // dates
         ent = data.getEnteredDate();
         rec = data.getReceivedDate();
         minEnt = null;
         if (ent == null)
-            e.add(new FormErrorException("sample.enteredDateRequiredException",
-                                         data.getAccessionNumber()));
+            e.add(new FormErrorException(Messages.get().sample_enteredDateRequiredException(
+                                         DataBaseUtil.asString(data.getAccessionNumber()))));
         else
             minEnt = ent.add( -180);
         if (rec == null)
-            e.add(new FormErrorException("sample.receivedDateRequiredException",
-                                         data.getAccessionNumber()));
+            e.add(new FormErrorException(Messages.get().sample_receivedDateRequiredException(
+                                         DataBaseUtil.asString(data.getAccessionNumber()))));
         else if (rec.before(minEnt) && !ignoreWarning)
-            e.add(new FormErrorWarning("sample.receivedTooOldWarning", data.getAccessionNumber()));
+            e.add(new FormErrorWarning(Messages.get().sample_receivedTooOldWarning(DataBaseUtil.asString(data.getAccessionNumber()))));
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
             cal = Calendar.getInstance();
@@ -682,11 +683,11 @@ public class SampleBean {
         }
         if (col != null) {
             if (col.after(rec))
-                e.add(new FormErrorException("sample.collectedDateInvalidError",
-                                             data.getAccessionNumber()));
+                e.add(new FormErrorException(Messages.get().sample_collectedDateInvalidError(
+                                             DataBaseUtil.asString(data.getAccessionNumber()))));
             if (col.before(minEnt) && !ignoreWarning)
-                e.add(new FormErrorException("sample.collectedTooOldWarning",
-                                             data.getAccessionNumber()));
+                e.add(new FormErrorException(Messages.get().sample_collectedTooOldWarning(
+                                             DataBaseUtil.asString(data.getAccessionNumber()))));
         }
 
         if (e.size() > 0)
@@ -711,12 +712,12 @@ public class SampleBean {
         for (i = 0; i < fields.size(); i++ ) {
             field = fields.get(i);
             qField = new QueryFieldUtil();
-            qField.parse(field.query);
+            qField.parse(field.getQuery());
 
-            if (wellOrgFieldMap.get(field.key) != null) {
+            if (wellOrgFieldMap.get(field.getKey()) != null) {
                 wellFields.add(fields.remove(i));
                 i-- ;
-            } else if (reportToAddressFieldMap.get(field.key) != null) {
+            } else if (reportToAddressFieldMap.get(field.getKey()) != null) {
                 wellFields.add(fields.remove(i));
                 i-- ;
             }
@@ -729,14 +730,14 @@ public class SampleBean {
         for (i = 0; i < wellFields.size(); i++ ) {
             field = wellFields.get(i);
             qField = new QueryFieldUtil();
-            qField.parse(field.query);
+            qField.parse(field.getQuery());
 
             if (i % 2 == 0) {
                 whereClause += " and ( " +
-                               QueryBuilderV2.getQueryNoOperand(qField, field.key);
+                               QueryBuilderV2.getQueryNoOperand(qField, field.getKey());
             } else {
                 whereClause += " or " +
-                               QueryBuilderV2.getQueryNoOperand(qField, field.key) +
+                               QueryBuilderV2.getQueryNoOperand(qField, field.getKey()) +
                                " ) ";
             }
         }

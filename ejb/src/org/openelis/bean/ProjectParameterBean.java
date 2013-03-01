@@ -10,13 +10,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.entity.ProjectParameter;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.ProjectMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -89,13 +90,13 @@ public class ProjectParameterBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getParameter()))
-            list.add(new FieldErrorException("fieldRequiredException", 
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), 
                                              ProjectMeta.getProjectParameterParameter()));
         if (DataBaseUtil.isEmpty(data.getOperationId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              ProjectMeta.getProjectParameterOperationId()));
         if (DataBaseUtil.isEmpty(data.getValue()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              ProjectMeta.getProjectParameterValue()));
         if (list.size() > 0)
             throw list;

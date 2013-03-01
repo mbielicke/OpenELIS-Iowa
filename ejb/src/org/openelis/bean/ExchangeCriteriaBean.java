@@ -42,18 +42,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.ExchangeCriteria;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.ExchangeCriteriaMeta;
 import org.openelis.meta.SampleMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -198,12 +199,12 @@ public class ExchangeCriteriaBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", ExchangeCriteriaMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ExchangeCriteriaMeta.getName()));
         } else {
             try {
                 dup = fetchByName(data.getName());
                 if (!dup.getId().equals(data.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException", ExchangeCriteriaMeta.getName()));
+                    list.add(new FieldErrorException(Messages.get().fieldUniqueException(), ExchangeCriteriaMeta.getName()));
             } catch (NotFoundException e) {
                 // ignore
             }
@@ -213,15 +214,15 @@ public class ExchangeCriteriaBean {
         
         fields = data.getFields();
         if (fields == null || fields.size() == 0) {
-            list.add(new FieldErrorException("atleastOneFieldFilledException", null));
+            list.add(new FieldErrorException(Messages.get().atleastOneFieldFilledException(), null));
         } else if ("N".equals(data.getIsAllAnalysesIncluded())) {
             /*
              * at least one test must be specified in the query if all analyses are 
              * not to be included
              */
             field = getQuery(data, SampleMeta.getAnalysisTestId());
-            if (field == null || field.query == null)
-                list.add(new FieldErrorException("noTestForNotIncludeAllAnalysesException", SampleMeta.getAnalysisTestId()));
+            if (field == null || field.getQuery() == null)
+                list.add(new FieldErrorException(Messages.get().noTestForNotIncludeAllAnalysesException(), SampleMeta.getAnalysisTestId()));
         }
         
         if (list.size() > 0)
@@ -236,7 +237,7 @@ public class ExchangeCriteriaBean {
             return;
         
         if (uri.indexOf(FILE_PREFIX) == -1 && uri.indexOf(SOCKET_PREFIX) == -1) { 
-            errors.add(new FieldErrorException("destURIMustHaveFileOrSocketException", ExchangeCriteriaMeta.getDestinationUri()));
+            errors.add(new FieldErrorException(Messages.get().destURIMustHaveFileOrSocketException(), ExchangeCriteriaMeta.getDestinationUri()));
         } else if (uri.indexOf(SOCKET_PREFIX) == 0) {
             /*
              * the original uri must remain unchanged
@@ -244,7 +245,7 @@ public class ExchangeCriteriaBean {
             temp = uri.replaceAll(SOCKET_PREFIX, "");         
             socket = temp.split(":");
             if (socket.length != 2) 
-                errors.add(new FieldErrorException("socketURIMustHaveHostAndPortException", ExchangeCriteriaMeta.getDestinationUri()));
+                errors.add(new FieldErrorException(Messages.get().socketURIMustHaveHostAndPortException(), ExchangeCriteriaMeta.getDestinationUri()));
         } 
     }
     
@@ -284,7 +285,7 @@ public class ExchangeCriteriaBean {
             return null;
         
         for (QueryData f : fields) {
-            if (key.equals(f.key))
+            if (key.equals(f.getKey()))
                 return f;
         }
         

@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class OrganizationParameterManager implements Serializable {
 
