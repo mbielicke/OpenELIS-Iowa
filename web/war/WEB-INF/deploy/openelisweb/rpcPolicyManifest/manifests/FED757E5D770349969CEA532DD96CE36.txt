@@ -1,0 +1,2 @@
+serviceClass: org.openelis.web.modules.notificationPreference.client.NotificationPreferenceServiceInt
+path: 5C76CFEF7D42BB17657BCD68FA1548D9.gwt.rpc

@@ -31,16 +31,17 @@ import java.util.EnumSet;
 
 import org.openelis.web.cache.DictionaryCache;
 import org.openelis.web.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.domain.SampleStatusWebReportVO.QAEventType;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -100,7 +101,7 @@ public class SampleStatusScreen extends Screen {
 
         userPermission = UserCache.getPermission().getModule("w_status");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Sample Status Screen");
+            throw new PermissionException(Messages.get().screenPermException("Sample Status Screen"));
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -178,7 +179,7 @@ public class SampleStatusScreen extends Screen {
         accessionFrom = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberFrom());
         addScreenHandler(accessionFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionFrom.setValue(data.getAccessionFrom());
+                accessionFrom.setFieldValue(data.getAccessionFrom());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -200,7 +201,7 @@ public class SampleStatusScreen extends Screen {
         accessionTo = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberTo());
         addScreenHandler(accessionTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionTo.setValue(data.getAccessionTo());
+                accessionTo.setFieldValue(data.getAccessionTo());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -306,7 +307,7 @@ public class SampleStatusScreen extends Screen {
                         }
                     }
                     modal = new ScreenWindow(ScreenWindow.Mode.DIALOG, false);
-                    modal.setName(consts.get("sampleStatusQALookUp"));
+                    modal.setName(Messages.get().qaLookUp());
                     modal.setContent(sampleStatusQALookupscreen);
 
                     row = sampleEntTable.getRow(event.getRow());
@@ -335,7 +336,7 @@ public class SampleStatusScreen extends Screen {
             }
         });
 
-        queryDeckLabel = new Label(consts.get("backToSearch"));
+        queryDeckLabel = new Label(Messages.get().backToSearch());
         queryDeckLabel.setStyleName("ScreenLabel");
         hp = new HorizontalPanel();
         ap = new AbsolutePanel();
@@ -372,7 +373,7 @@ public class SampleStatusScreen extends Screen {
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
         query = new Query();
@@ -381,20 +382,20 @@ public class SampleStatusScreen extends Screen {
          * if user does not enter any search details, throw an error.
          */
         if (queryList.size() == 0) {
-            window.setError(consts.get("nofieldSelectedError"));
+            window.setError(Messages.get().nofieldSelectedError());
             return;
         }
 
         query.setFields(queryList);
 
-        window.setBusy(consts.get("retrSamples"));
+        window.setBusy(Messages.get().retrSamples());
 
         try {
             list = SampleStatusReportService.get().getSampleListForSampleStatusReport(query);
             if (list.size() > 0) {
                 loadDeck(list);
             } else {
-                window.setError(consts.get("noSamplesFoundChangeSearch"));
+                window.setError(Messages.get().noSamplesFoundChangeSearch());
                 return;
             }
         } catch (Exception e) {
@@ -458,8 +459,8 @@ public class SampleStatusScreen extends Screen {
 
         accNumPrev = null;
         accRow = 0;
-        completed = consts.get("completed");
-        inProgress = consts.get("inProgress");
+        completed = Messages.get().completed();
+        inProgress = Messages.get().inProgress();
 
         for (SampleStatusWebReportVO data : results) {
             accNum = data.getAccessionNumber();
@@ -540,36 +541,36 @@ public class SampleStatusScreen extends Screen {
 
         for (i = 0; i < fields.size(); i++ ) {
             field = fields.get(i);
-            if ( (SampleWebMeta.getCollectionDateFrom()).equals(field.key)) {
+            if ( (SampleWebMeta.getCollectionDateFrom()).equals(field.getKey())) {
                 if (fCol == null) {
                     fCol = field;
-                    fCol.key = SampleWebMeta.getCollectionDate();
+                    fCol.setKey(SampleWebMeta.getCollectionDate());
                 } else {
-                    fCol.query = field.query + ".." + fCol.query;
+                    fCol.setQuery(field.getQuery() + ".." + fCol.getQuery());
                     list.add(fCol);
                 }
-            } else if ( (SampleWebMeta.getCollectionDateTo()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getCollectionDateTo()).equals(field.getKey())) {
                 if (fCol == null) {
                     fCol = field;
-                    fCol.key = SampleWebMeta.getCollectionDate();
+                    fCol.setKey(SampleWebMeta.getCollectionDate());
                 } else {
-                    fCol.query = fCol.query + ".." + field.query;
+                    fCol.setQuery(fCol.getQuery() + ".." + field.getQuery());
                     list.add(fCol);
                 }
-            } else if ( (SampleWebMeta.getAccessionNumberFrom()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getAccessionNumberFrom()).equals(field.getKey())) {
                 if (fAcc == null) {
                     fAcc = field;
-                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                    fAcc.setKey(SampleWebMeta.getAccessionNumber());
                 } else {
-                    fAcc.query = field.query + ".." + fAcc.query;
+                    fAcc.setQuery(field.getQuery() + ".." + fAcc.getQuery());
                     list.add(fAcc);
                 }
-            } else if ( (SampleWebMeta.getAccessionNumberTo()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getAccessionNumberTo()).equals(field.getKey())) {
                 if (fAcc == null) {
                     fAcc = field;
-                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                    fAcc.setKey(SampleWebMeta.getAccessionNumber());
                 } else {
-                    fAcc.query = fAcc.query + ".." + field.query;
+                    fAcc.setQuery(fAcc.getQuery() + ".." + field.getQuery());
                     list.add(fAcc);
                 }
             } else {

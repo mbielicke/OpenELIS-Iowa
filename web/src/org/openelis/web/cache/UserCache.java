@@ -28,8 +28,8 @@ package org.openelis.web.cache;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.SystemUserVO;
 
 /**
  * Class provides cache service handling for front end GWT classes. Cache

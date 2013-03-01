@@ -1,0 +1,2 @@
+serviceClass: org.openelis.web.modules.sampleStatusReport.client.SampleStatusReportServiceInt
+path: A67CEF5A70B3A899B01F0C61B94E2350.gwt.rpc

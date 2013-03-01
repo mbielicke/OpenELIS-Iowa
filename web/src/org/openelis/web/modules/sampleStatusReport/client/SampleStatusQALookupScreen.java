@@ -31,7 +31,7 @@ import org.openelis.web.cache.DictionaryCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -138,7 +138,7 @@ public class SampleStatusQALookupScreen extends Screen {
                     }
                 }
             } catch (NotFoundException e) {
-                window.setError(consts.get("noResultsFound"));
+                window.setError(Messages.get().noResultsFound"));
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
@@ -154,7 +154,7 @@ public class SampleStatusQALookupScreen extends Screen {
                     }
                 }
             } catch (NotFoundException e) {
-                window.setError(consts.get("noResultsFound"));
+                window.setError(Messages.get().noResultsFound"));
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }

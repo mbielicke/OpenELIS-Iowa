@@ -28,9 +28,9 @@ package org.openelis.web.modules.notificationPreference.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.LocalizedException;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -182,7 +182,7 @@ public class AddEditEmailScreen extends Screen implements
     
     public void ok() {     
         if (DataBaseUtil.isEmpty(data.getEmail())) { 
-           email.addException(new LocalizedException(consts.get("enterEmailOrCancel")));
+           email.addException(new Exception(Messages.get().enterEmailOrCancel()));
            return;
         }
         if (!validate())

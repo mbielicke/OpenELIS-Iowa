@@ -2,7 +2,8 @@ package org.openelis.web.modules.main.client;
 
 import java.util.Date;
 
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.Datetime;
+import org.openelis.constants.Messages;
 import org.openelis.gwt.widget.Confirm;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -32,10 +33,10 @@ public class SessionTimer {
          * add session timeout dialog box and timers
          */
         timeoutPopup = new Confirm(Confirm.Type.WARN,
-                                   OpenELIS.consts.get("timeoutHeader"),
-                                   OpenELIS.consts.get("timeoutWarning"),
-                                   OpenELIS.consts.get("timeoutExtendTime"),
-                                   OpenELIS.consts.get("timeoutLogout"));
+                                   Messages.get().timeoutHeader(),
+                                   Messages.get().timeoutWarning(),
+                                   Messages.get().timeoutExtendTime(),
+                                   Messages.get().timeoutLogout());
         timeoutPopup.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 if (event.getSelectedItem() == 0) {
@@ -118,7 +119,7 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(OpenELIS.consts.get("couldNotCall"));
+                Window.alert(caught.getMessage());
                 //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
             }
         });
@@ -134,7 +135,7 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(OpenELIS.consts.get("couldNotCall"));
+                Window.alert(caught.getMessage());
                 //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
             }
         });

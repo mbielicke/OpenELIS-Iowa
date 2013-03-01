@@ -1,0 +1,10 @@
+# Module openelisweb
+# RPC service class, partial path of RPC policy file
+org.openelis.web.cache.CategoryCacheServiceInt, A92C63350FCC3151FF1CD53B109CC2A6.gwt.rpc
+org.openelis.gwt.services.CalendarServiceInt, 785762E2BCC592192BAC3A88B0B7F526.gwt.rpc
+org.openelis.web.modules.main.client.OpenELISWebServiceInt, 420530CDBD91A953EDD50FE3C3F28953.gwt.rpc
+org.openelis.web.cache.UserCacheServiceInt, BEA2D63F16A8AA8E8E943BB461B95357.gwt.rpc
+org.openelis.web.modules.sampleStatusReport.client.SampleStatusReportServiceInt, A67CEF5A70B3A899B01F0C61B94E2350.gwt.rpc
+org.openelis.web.modules.dataView.client.DataViewServiceInt, 6E4B3392A89DDC5AC8DE0884335D014D.gwt.rpc
+org.openelis.web.modules.finalReport.client.FinalReportServiceInt, FCBAA2AF3924632B4473ECD091AF4B3A.gwt.rpc
+org.openelis.web.modules.notificationPreference.client.NotificationPreferenceServiceInt, 5C76CFEF7D42BB17657BCD68FA1548D9.gwt.rpc
