@@ -1,0 +1,2 @@
+serviceClass: org.openelis.web.modules.finalReport.client.FinalReportServiceInt
+path: FCBAA2AF3924632B4473ECD091AF4B3A.gwt.rpc

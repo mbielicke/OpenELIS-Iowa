@@ -1,0 +1,2 @@
+serviceClass: org.openelis.web.cache.UserCacheServiceInt
+path: BEA2D63F16A8AA8E8E943BB461B95357.gwt.rpc

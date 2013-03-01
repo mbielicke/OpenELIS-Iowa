@@ -25,7 +25,7 @@
 */
 package org.openelis.web.modules.notificationPreference.client;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class AddEditEmailVO {        
     private Integer organizationId;

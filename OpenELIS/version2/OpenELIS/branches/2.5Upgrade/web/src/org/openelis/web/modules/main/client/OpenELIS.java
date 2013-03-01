@@ -26,8 +26,9 @@
 package org.openelis.web.modules.main.client;
 
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.ModulePermission;
+import org.openelis.ui.common.ModulePermission;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.widget.Label;
@@ -82,7 +83,6 @@ public class OpenELIS extends Screen {
 
         rpc = OpenELISWebService.get().initialData();
 
-        consts = rpc.appConstants;
         Constants.setConstants(rpc.constants);
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
@@ -132,7 +132,7 @@ public class OpenELIS extends Screen {
                 public void onClick(ClickEvent event) {
                     try {
                         Screen screen = new FinalReportEnvironmentalScreen();
-                        setScreen(screen, consts.get("environmentalFinalReport"),
+                        setScreen(screen, Messages.get().environmentalFinalReport(),
                                   "finalReportEnvironmental");
                         window.setCrumbLink(null);
                     } catch (Exception e) {
@@ -150,7 +150,7 @@ public class OpenELIS extends Screen {
                     try {
                         Screen screen = new FinalReportPrivateWellScreen();
                         setScreen(screen,
-                                  consts.get("privateWellFinalReport"),
+                                  Messages.get().privateWellFinalReport(),
                                   "finalReportPrivateWell");
                         window.setCrumbLink(null);
                     } catch (Exception e) {
@@ -167,7 +167,7 @@ public class OpenELIS extends Screen {
                 public void onClick(ClickEvent event) {
                     try {
                         Screen screen = new FinalReportSDWISScreen();
-                        setScreen(screen, consts.get("sdwisFinalReport"), "finalReportSDWIS");
+                        setScreen(screen, Messages.get().sdwisFinalReport(),"finalReportSDWIS");
                         window.setCrumbLink(null);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -183,7 +183,7 @@ public class OpenELIS extends Screen {
                 public void onClick(ClickEvent event) {
                     try {
                         Screen screen = new DataViewEnvironmentalScreen();
-                        setScreen(screen, consts.get("environmentalResultByAnalyte"),
+                        setScreen(screen, Messages.get().environmentalResultByAnalyte(),
                                   "environmentalResultByAnalyte");
                         window.setCrumbLink(null);
                     } catch (Exception e) {
@@ -205,7 +205,7 @@ public class OpenELIS extends Screen {
                 public void onClick(ClickEvent event) {
                     try {
                         Screen screen = new SampleStatusScreen();
-                        setScreen(screen, consts.get("sampleInhouseStatusReport"), "sampleStatus");
+                        setScreen(screen, Messages.get().sampleInhouseStatusReport(), "sampleStatus");
                         window.setCrumbLink(null);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -227,7 +227,7 @@ public class OpenELIS extends Screen {
                 public void onClick(ClickEvent event) {
                     try {
                         Screen screen = new NotificationPreferenceScreen();
-                        setScreen(screen, consts.get("notificationPreference"), "notificationPref");
+                        setScreen(screen, Messages.get().notificationPreference(), "notificationPref");
                         window.setCrumbLink(null);
                     } catch (Exception e) {
                         e.printStackTrace();
