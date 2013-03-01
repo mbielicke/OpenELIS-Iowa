@@ -71,11 +71,6 @@ import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -93,6 +88,11 @@ import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -218,8 +218,8 @@ public class DataExchangeXMLMapperBean {
                 fields = criteria.getFields();
                 critTestIds = new HashSet<Integer>();
                 for (QueryData field : fields) {
-                    if (SampleMeta.getAnalysisTestId().equals(field.key)) {
-                        testQuery = field.query.split(",");
+                    if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
+                        testQuery = field.getQuery().split(",");
                         for (String tq : testQuery) {
                             try {
                                 critTestIds.add(Integer.valueOf(tq));
@@ -1024,12 +1024,14 @@ public class DataExchangeXMLMapperBean {
         if (analysis.getPrintedDate() != null)
             parent.setAttribute("printed_date", getDatetimeForSchema(analysis.getPrintedDate()));
         
+        /*
         if (analysis.getPanelId() != null)
             parent.setAttribute("panel_id", analysis.getPanelId().toString());
         
         if (analysis.getIsPreliminary() != null)
             parent.setAttribute("is_preliminary", analysis.getIsPreliminary());
-
+        */
+        
         return parent;
     }
 

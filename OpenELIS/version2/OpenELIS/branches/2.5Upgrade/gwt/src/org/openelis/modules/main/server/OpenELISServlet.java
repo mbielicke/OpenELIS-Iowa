@@ -25,20 +25,15 @@
  */
 package org.openelis.modules.main.server;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
 import org.openelis.bean.ApplicationBean;
 import org.openelis.bean.UserCacheBean;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.modules.main.client.OpenELISRPC;
 import org.openelis.modules.main.client.OpenELISServiceInt;
-import org.openelis.util.UTFResource;
+import org.openelis.ui.common.Datetime;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -57,7 +52,6 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
         OpenELISRPC rpc;
 
         rpc = new OpenELISRPC();
-        rpc.appConstants = getConstants();
         try {
             rpc.constants = application.getConstants();
         } catch (Exception e) {
@@ -93,6 +87,7 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
         }
     }
 
+    /*
     private HashMap<String, String> getConstants() {
         String locale, key;
         UTFResource resource;
@@ -114,5 +109,6 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
         }
 
         return consts;
-    }   
+    } 
+    */  
 }

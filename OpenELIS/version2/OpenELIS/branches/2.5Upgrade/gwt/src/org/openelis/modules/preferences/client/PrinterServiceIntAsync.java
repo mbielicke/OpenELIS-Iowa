@@ -2,7 +2,7 @@ package org.openelis.modules.preferences.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.OptionListItem;
+import org.openelis.ui.common.OptionListItem;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

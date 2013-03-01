@@ -31,13 +31,14 @@ import java.util.List;
 
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.TestAnalyteBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.GridFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class TestAnalyteManagerProxy {
@@ -157,14 +158,14 @@ public class TestAnalyteManagerProxy {
                     al.validate(data);
 
                     if (rg > results.size()) {
-                        exc = new GridFieldErrorException("invalidResultGroupException", i, j,
+                        exc = new GridFieldErrorException(Messages.get().invalidResultGroupException(), i, j,
                                                           TestMeta.getAnalyteResultGroup(),
                                                           "analyteTable");
                         list.add(exc);
                     }
 
                     if (j > 0 && DataBaseUtil.isSame(Constants.dictionary().TEST_ANALYTE_SUPLMTL, data.getTypeId())) {
-                        exc = new GridFieldErrorException("columnAnalyteSupplException", i, j,
+                        exc = new GridFieldErrorException(Messages.get().columnAnalyteSupplException(), i, j,
                                                           TestMeta.getAnalyteTypeId(),
                                                           "analyteTable");
                         list.add(exc);

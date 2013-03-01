@@ -29,14 +29,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -321,8 +322,8 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                     }
                     
                     if (sectionId == null) {
-                        errorsList.add(new FormErrorException("reflexTestNeedsSection",
-                                                              (String)item.cells.get(0).getValue()));
+                        errorsList.add(new FormErrorException(Messages.get().reflexTestNeedsSection(
+                                                              (String)item.cells.get(0).getValue())));
                     } else {
                         selectedRow = new ArrayList<Object>();
                         selectedRow.add(item.parent.data);

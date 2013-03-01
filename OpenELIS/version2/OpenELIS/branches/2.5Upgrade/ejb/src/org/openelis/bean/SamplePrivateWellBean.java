@@ -42,9 +42,9 @@ import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.entity.SamplePrivateWell;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")

@@ -27,6 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -38,9 +39,9 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderOrganizationManager;
@@ -109,8 +110,8 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                     if (getDictionaryByEntry(data.getValue(), "state") != null)
                         locAddr.setState(data.getValue());
                     else if (data.getValue() != null)
-                        errors.add(new FormErrorException("orderImportError", "state",
-                                                              data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError("state",
+                                                              data.getValue())));
                 } else if ("loc_zip_code".equals(analyteId)) {
                     locAddr.setZipCode(data.getValue());
                 } else if ("owner".equals(analyteId)) {
@@ -131,8 +132,8 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                         manager.getProjects().addFirstPermanentProject(sampleProj);
 
                     } else {
-                        errors.add(new FormErrorException("orderImportError", "project",
-                                                              data.getValue()));
+                        errors.add(new FormErrorException(Messages.get().orderImportError("project",
+                                                              data.getValue())));
                     }
                 }
             } catch (Exception e) {

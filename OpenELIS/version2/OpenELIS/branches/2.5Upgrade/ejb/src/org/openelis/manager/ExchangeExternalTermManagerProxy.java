@@ -28,11 +28,12 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.ExchangeExternalTermBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ExchangeExternalTermDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class ExchangeExternalTermManagerProxy {
@@ -113,7 +114,7 @@ public class ExchangeExternalTermManagerProxy {
              */
             if (profileId != null && "Y".equals(active)) {
                 if (profiles.contains(profileId))
-                    list.add(new TableFieldErrorException("onlyOneActiveExtTermPerProfileException", i,
+                    list.add(new TableFieldErrorException(Messages.get().onlyOneActiveExtTermPerProfileException(), i,
                                                           ExchangeLocalTermMeta.getExternalTermExchangeProfileId(), "termMappingTable"));
                 else
                     profiles.add(profileId);                

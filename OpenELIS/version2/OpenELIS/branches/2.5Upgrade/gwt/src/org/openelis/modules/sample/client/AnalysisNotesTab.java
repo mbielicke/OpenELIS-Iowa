@@ -29,12 +29,14 @@ import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.SectionPermission;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -71,12 +73,12 @@ public class AnalysisNotesTab extends NotesTab {
     protected EditNoteScreen   internalEditNote;
     protected NoteViewDO       internalNote;
 
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window,
+    public AnalysisNotesTab(ScreenDefInt def, WindowInt window,
                             String notesPanelKey, String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }
 
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window,
+    public AnalysisNotesTab(ScreenDefInt def, WindowInt window,
                             String externalNotesPanelKey, String externalEditButtonKey,
                             String internalNotesPanelKey, String internalEditButtonKey) {
 
@@ -161,7 +163,7 @@ public class AnalysisNotesTab extends NotesTab {
                 }
 
                 ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("standardNote"));
+                modal.setName(Messages.get().standardNote());
                 modal.setContent(internalEditNote);
 
                 internalNote = null;

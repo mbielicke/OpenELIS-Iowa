@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.sampleTracking.client.SampleTrackingServiceInt
+path: 2BA50F53106E714D5ACA0D8ED9A12098.gwt.rpc

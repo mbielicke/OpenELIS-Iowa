@@ -40,13 +40,13 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.EventLog;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.EventLogMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless

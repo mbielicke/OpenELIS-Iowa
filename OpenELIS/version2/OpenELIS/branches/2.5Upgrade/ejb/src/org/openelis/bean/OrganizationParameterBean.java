@@ -36,14 +36,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.entity.OrganizationParameter;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.OrganizationMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EmailUtil;
 
 @Stateless
@@ -143,19 +144,18 @@ public class OrganizationParameterBean  {
         value = data.getValue();
 
         if (DataBaseUtil.isEmpty(typeId))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrganizationMeta.getOrganizationParameterTypeId()));
         if (DataBaseUtil.isEmpty(value)) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrganizationMeta.getOrganizationParameterValue()));
         } else if (Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL.equals(typeId) ||
                    Constants.dictionary().RELEASED_REPORTTO_EMAIL.equals(typeId)) {
             try {
                 EmailUtil.validateAddress(value);
             } catch (AddressException e) {
-                list.add(new FieldErrorException("invalidFormatEmailException",
-                                                 OrganizationMeta.getOrganizationParameterValue(),
-                                                 value));
+                list.add(new FieldErrorException(Messages.get().invalidFormatEmailException(value),
+                                                 OrganizationMeta.getOrganizationParameterValue()));
             }
         }
 

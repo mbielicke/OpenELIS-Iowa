@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.project.client.ProjectServiceInt
+path: 9C9CF581A4C3F4BFA3514CB7A8AC2BB6.gwt.rpc

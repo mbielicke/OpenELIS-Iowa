@@ -38,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.Constants;
@@ -47,12 +48,12 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.entity.Result;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.manager.TestManager;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.RoundingMethod;
 import org.openelis.utilcommon.ResultValidator.Type;
@@ -661,8 +662,8 @@ public class ResultBean {
             if (tm != null) {
                 test = tm.getTest().getName();
                 method = tm.getTest().getMethodName();
-                e.add(new FormErrorException("sample.oneOrMoreResultValuesInvalid", 
-                                             accession, test, method));
+                e.add(new FormErrorException(Messages.get().sample_oneOrMoreResultValuesInvalid( 
+                                             DataBaseUtil.asString(accession), test, method)));
             }
         }
 

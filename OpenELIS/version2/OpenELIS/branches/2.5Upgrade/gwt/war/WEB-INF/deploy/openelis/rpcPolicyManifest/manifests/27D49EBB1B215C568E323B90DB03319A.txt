@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.client.ShippingReportServiceInt
+path: 72825C90E4FE1A97412717AA823C5831.gwt.rpc

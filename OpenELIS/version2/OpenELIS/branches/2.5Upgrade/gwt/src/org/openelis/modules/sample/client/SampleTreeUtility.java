@@ -3,9 +3,10 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -21,6 +22,7 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab.Action;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -32,7 +34,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
     protected TestPrepUtility     testPrep;
     private Screen                parentScreen;
     private SampleManager         manager;
-    private ScreenWindowInt       window;
+    private WindowInt             window;
     private TreeWidget            itemsTree;
     private TestPrepActionHandler testPrepActionHandler;
     private Confirm               cancelAnalysisConfirm;
@@ -41,7 +43,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         ORDER, PREP, REFLEX
     }
     
-    public SampleTreeUtility(ScreenWindowInt window, TreeWidget itemsTree, Screen parentScreen) {
+    public SampleTreeUtility(WindowInt window, TreeWidget itemsTree, Screen parentScreen) {
         this.window = window;
         this.itemsTree = itemsTree;
         this.parentScreen = parentScreen;
@@ -103,8 +105,8 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
                 if (key != null && key > 0) {
                     if (cancelAnalysisConfirm == null) {
                         cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                            parentScreen.consts.get("cancelAnalysisCaption"),
-                                                            parentScreen.consts.get("cancelAnalysisMessage"),
+                                                            Messages.get().cancelAnalysisCaption(),
+                                                            Messages.get().cancelAnalysisMessage(),
                                                             "No", "Yes");
                         cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                             public void onSelection(SelectionEvent<Integer> event) {

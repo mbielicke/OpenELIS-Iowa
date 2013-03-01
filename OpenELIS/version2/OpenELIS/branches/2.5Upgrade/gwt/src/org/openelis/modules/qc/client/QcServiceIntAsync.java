@@ -6,7 +6,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;

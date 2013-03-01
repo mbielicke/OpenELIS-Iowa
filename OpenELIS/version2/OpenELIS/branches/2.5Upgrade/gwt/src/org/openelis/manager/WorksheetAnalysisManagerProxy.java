@@ -27,7 +27,7 @@ package org.openelis.manager;
 
 import java.util.HashMap;
 
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.modules.worksheet.client.WorksheetService;
 
 public class WorksheetAnalysisManagerProxy {

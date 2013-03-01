@@ -10,7 +10,7 @@ import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.QueryData;
 
 @Local
 public interface SampleLocal {

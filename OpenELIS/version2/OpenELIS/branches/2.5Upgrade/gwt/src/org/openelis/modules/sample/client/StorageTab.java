@@ -30,14 +30,12 @@ import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -48,7 +46,6 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -64,6 +61,9 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.storage.client.StorageService;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -82,7 +82,7 @@ public class StorageTab extends Screen {
     protected SampleDataBundle      bundle;
     protected StorageManager        manager;
 
-    public StorageTab(ScreenDefInt def, ScreenWindowInt window) {
+    public StorageTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 
@@ -152,7 +152,7 @@ public class StorageTab extends Screen {
 
                         if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
                             storageTable.setCellException(row, col,
-                                                          new LocalizedException("checkinDateAfterCheckoutDateException"));
+                                                          new Exception(Messages.get().checkinDateAfterCheckoutDateException()));
                         break;
                     case 3:
                         data.setCheckout((Datetime)val);
@@ -162,7 +162,7 @@ public class StorageTab extends Screen {
 
                         if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
                             storageTable.setCellException(row, col,
-                                                          new LocalizedException("checkinDateAfterCheckoutDateException"));
+                                                          new Exception(Messages.get().checkinDateAfterCheckoutDateException()));
                         break;
                 }
             }
@@ -409,8 +409,7 @@ public class StorageTab extends Screen {
                 storageTable.setCellException(
                                               i,
                                               3,
-                                              new LocalizedException(
-                                                                     "checkinDateAfterCheckoutDateException"));
+                                              new Exception(Messages.get().checkinDateAfterCheckoutDateException()));
                 returnValue = false;
             }
         }

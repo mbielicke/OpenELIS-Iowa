@@ -27,13 +27,14 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.SampleOrganizationBean;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class SampleOrganizationManagerProxy {
@@ -106,9 +107,9 @@ public class SampleOrganizationManagerProxy {
         }
 
         if (numBillTo > 1)
-            errorsList.add(new FormErrorException("multipleBillToException"));
+            errorsList.add(new FormErrorException(Messages.get().multipleBillToException()));
 
         if (numReportTo > 1)
-            errorsList.add(new FormErrorException("multipleReportToException"));
+            errorsList.add(new FormErrorException(Messages.get().multipleReportToException()));
     }
 }

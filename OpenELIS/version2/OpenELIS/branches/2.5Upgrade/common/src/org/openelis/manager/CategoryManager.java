@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.CategoryDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 
 public class CategoryManager implements Serializable {
 

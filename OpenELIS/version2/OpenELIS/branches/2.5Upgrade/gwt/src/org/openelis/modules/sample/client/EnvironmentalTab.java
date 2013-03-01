@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationDO;
@@ -35,10 +36,10 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -64,6 +65,7 @@ import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -95,11 +97,11 @@ public class EnvironmentalTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public EnvironmentalTab(ScreenWindowInt window) throws Exception {
+    public EnvironmentalTab(WindowInt window) throws Exception {
         this(null, window);
     }
     
-    public EnvironmentalTab(ScreenDefInt def, ScreenWindowInt window) throws Exception {
+    public EnvironmentalTab(ScreenDefInt def, WindowInt window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(EnvironmentalTabDef.class));
         else
@@ -150,7 +152,7 @@ public class EnvironmentalTab extends Screen {
         priority = (TextBox<Integer>)def.getWidget(SampleMeta.getEnvPriority());
         addScreenHandler(priority, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                priority.setValue(getEnvManager().getEnvironmental().getPriority());
+                priority.setFieldValue(getEnvManager().getEnvironmental().getPriority());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -172,7 +174,7 @@ public class EnvironmentalTab extends Screen {
 
                     pr = getPreviousEnvManager().getEnvironmental().getPriority();
                     getEnvManager().getEnvironmental().setPriority(pr) ;
-                    priority.setValue(pr);
+                    priority.setFieldValue(pr);
                     
                     event.preventDefault();
                     event.stopPropagation();
@@ -701,9 +703,9 @@ public class EnvironmentalTab extends Screen {
 
         if (fields.size() > 0) {
             domain = new QueryData();
-            domain.key = SampleMeta.getDomain();
-            domain.query = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
-            domain.type = QueryData.Type.STRING;
+            domain.setKey(SampleMeta.getDomain());
+            domain.setQuery(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+            domain.setType(QueryData.Type.STRING);
             fields.add(domain);
         }
 
@@ -773,7 +775,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("sampleProject"));
+            modal.setName(Messages.get().sampleProject());
             modal.setContent(projectScreen);
             projectScreen.setScreenState(state);
 
@@ -802,7 +804,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("sampleOrganization"));
+            modal.setName(Messages.get().sampleOrganization());
             modal.setContent(organizationScreen);
 
             organizationScreen.setScreenState(state);
@@ -830,7 +832,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("sampleLocation"));
+            modal.setName(Messages.get().sampleLocation());
             modal.setContent(locationScreen);
 
             SampleEnvironmentalDO envDO = ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental();
@@ -932,6 +934,6 @@ public class EnvironmentalTab extends Screen {
     
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
-            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ name+"'");
+            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ name+"'");
     }
 }

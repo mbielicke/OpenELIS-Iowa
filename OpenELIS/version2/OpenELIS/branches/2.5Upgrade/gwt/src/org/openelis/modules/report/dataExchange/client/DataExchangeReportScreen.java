@@ -27,11 +27,12 @@ package org.openelis.modules.report.dataExchange.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -43,7 +44,7 @@ public class DataExchangeReportScreen extends ReportScreen<Query> {
 
     String reportMethod; 
     
-    public DataExchangeReportScreen(String reportMethod, ScreenWindowInt window) throws Exception {
+    public DataExchangeReportScreen(String reportMethod, WindowInt window) throws Exception {
         this.reportMethod = reportMethod;
         this.window = window;
     }

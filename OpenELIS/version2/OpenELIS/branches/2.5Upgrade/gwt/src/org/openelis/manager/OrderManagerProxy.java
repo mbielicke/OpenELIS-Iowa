@@ -27,14 +27,15 @@ package org.openelis.manager;
 
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorWarning;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorWarning;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.test.client.TestService;
 
@@ -128,8 +129,7 @@ public class OrderManagerProxy {
                 /*
                  * no container is present for this item sequence 
                  */
-                warnList.add(new FieldErrorWarning("noContainerWithItemNumWarning", null,
-                                                   sequence.toString(), getTestLabel(test)));
+                warnList.add(new FieldErrorWarning(Messages.get().noContainerWithItemNumWarning(sequence.toString(), getTestLabel(test)), null));
             } else if (sequence >= 0 && testId != null) {
                 cont = contMan.getContainerAt(sequence);
                 if (cont.getTypeOfSampleId() == null) 
@@ -155,16 +155,14 @@ public class OrderManagerProxy {
                     /*
                      * the sample type is not valid for the test    
                      */
-                    warnList.add(new FieldErrorWarning("invalidSampleTypeForTestWarning", null,
-                                                       sequence.toString(), getTestLabel(test)));                                   
+                    warnList.add(new FieldErrorWarning(Messages.get().invalidSampleTypeForTestWarning(sequence.toString(), getTestLabel(test)), null));                                   
             }
         }
         
         for (i = 0; i < contCount; i++) {
             cont = contMan.getContainerAt(i);
             if (cont.getTypeOfSampleId() == null) 
-                warnList.add(new FieldErrorWarning("noSampleTypeForContainerWarning", null,
-                                                   cont.getItemSequence().toString()));            
+                warnList.add(new FieldErrorWarning(Messages.get().noSampleTypeForContainerWarning(cont.getItemSequence().toString()), null));            
         }
 
         if (warnList.size() > 0)

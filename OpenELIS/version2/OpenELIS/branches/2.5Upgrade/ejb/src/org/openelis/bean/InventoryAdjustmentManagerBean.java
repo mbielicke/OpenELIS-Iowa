@@ -35,9 +35,9 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
 @SecurityDomain("openelis")

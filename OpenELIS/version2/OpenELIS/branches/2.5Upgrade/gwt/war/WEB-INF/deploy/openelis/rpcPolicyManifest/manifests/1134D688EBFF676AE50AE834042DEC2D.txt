@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.qc.client.QcServiceInt
+path: BED5FBEACA7E43856560F4E41A344960.gwt.rpc

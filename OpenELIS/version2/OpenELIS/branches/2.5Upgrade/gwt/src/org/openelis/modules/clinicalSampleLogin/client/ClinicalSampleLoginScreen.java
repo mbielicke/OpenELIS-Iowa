@@ -124,13 +124,13 @@ public class ClinicalSampleLoginScreen {//extends OpenELISScreenForm<ClinicalSam
     
     private void onProjectLookupClick(){
         ScreenWindow modal = new ScreenWindow(null,"Sample Project","sampleProjectScreen","Loading...",true,false);
-        modal.setName(consts.get("sampleProject"));
+        modal.setName(Messages.get().sampleProject"));
        // modal.setContent(new SampleProjectScreen());
     }
     
     private void onOrganizationLookupClick(){
         ScreenWindow modal = new ScreenWindow(null,"Sample Organization","sampleOrganizationScreen","Loading...",true,false);
-        modal.setName(consts.get("sampleOrganization"));
+        modal.setName(Messages.get().sampleOrganization"));
         //modal.setContent(new SampleOrganizationScreen());
     }
     

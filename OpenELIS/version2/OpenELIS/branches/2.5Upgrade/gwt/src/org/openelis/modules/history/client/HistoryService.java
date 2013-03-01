@@ -3,7 +3,7 @@ package org.openelis.modules.history.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.HistoryVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;

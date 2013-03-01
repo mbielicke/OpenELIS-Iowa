@@ -36,18 +36,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageLocationDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.StorageLocationMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -191,7 +192,7 @@ public class StorageLocationBean {
 
         // name required
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", StorageLocationMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), StorageLocationMeta.getName()));
         } else {
             // no name duplicates
             dups = fetchByName(data.getName());
@@ -204,12 +205,12 @@ public class StorageLocationBean {
 
         // storage unit required
         if (DataBaseUtil.isEmpty(data.getStorageUnitId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              StorageLocationMeta.getStorageUnitDescription()));
 
         // location required
         if (DataBaseUtil.isEmpty(data.getLocation()))
-            list.add(new FieldErrorException("fieldRequiredException", StorageLocationMeta.getLocation()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), StorageLocationMeta.getLocation()));
 
         if (list.size() > 0)
             throw list;
@@ -223,13 +224,12 @@ public class StorageLocationBean {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getStorageUnitId()))
-            list.add(new FieldErrorException(
-                                             "fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              StorageLocationMeta.getChildStorageUnitDescription()));
 
         // location required
         if (DataBaseUtil.isEmpty(data.getLocation()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              StorageLocationMeta.getChildStorageUnitDescription()));
 
         if (list.size() > 0)
@@ -247,7 +247,7 @@ public class StorageLocationBean {
         result = query.getResultList();
 
         if (result.size() > 0) {
-            list.add(new FieldErrorException("storageLocationDeleteException", null));
+            list.add(new FieldErrorException(Messages.get().storageLocationDeleteException(), null));
             throw list;
         }
     }

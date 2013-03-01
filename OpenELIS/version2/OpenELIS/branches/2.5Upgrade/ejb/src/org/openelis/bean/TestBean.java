@@ -38,20 +38,21 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.Test;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -273,24 +274,24 @@ public class TestBean {
         checkDuplicate = true;
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException", TestMeta.getName()));
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(), TestMeta.getName()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getMethodId())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getMethodId()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getDescription())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getDescription()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getIsActive())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getIsActive()));
             checkDuplicate = false;
         } else if ("N".equals(data.getIsActive())) {
@@ -299,7 +300,7 @@ public class TestBean {
             query.setParameter("testId", data.getId());
             list = query.getResultList();
             if (list.size() > 0) {
-                exceptionList.add(new FieldErrorException("testUsedAsPrepTestException", null));
+                exceptionList.add(new FieldErrorException(Messages.get().testUsedAsPrepTestException(), null));
                 checkDuplicate = false;
             }
 
@@ -307,62 +308,62 @@ public class TestBean {
             query.setParameter("testId", data.getId());
             list = query.getResultList();
             if (list.size() > 0) {
-                exceptionList.add(new FieldErrorException("testUsedAsReflexTestException", null));
+                exceptionList.add(new FieldErrorException(Messages.get().testUsedAsReflexTestException(), null));
                 checkDuplicate = false;
             }
         }
 
         if (DataBaseUtil.isEmpty(data.getIsReportable())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getIsReportable()));
         
         if (DataBaseUtil.isEmpty(data.getTimeTaMax())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getTimeTaMax()));        
 
         if (DataBaseUtil.isEmpty(data.getTimeTransit())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getTimeTransit()));       
 
         if (DataBaseUtil.isEmpty(data.getTimeTaAverage())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getTimeTaAverage()));        
 
         if (DataBaseUtil.isEmpty(data.getTimeHolding())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getTimeHolding()));        
 
         if (DataBaseUtil.isEmpty(data.getTimeTaWarning())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getTimeTaWarning()));
         
         if (DataBaseUtil.isEmpty(data.getTestFormatId()))
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getTestFormatId()));
             
         if (DataBaseUtil.isEmpty(data.getReportingMethodId())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getReportingMethodId()));
         
         if (DataBaseUtil.isEmpty(data.getSortingMethodId())) 
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getSortingMethodId()));                
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getActiveBegin()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       TestMeta.getActiveEnd()));
             checkDuplicate = false;
         }
 
         if (checkDuplicate) {
             if (data.getActiveEnd().before(data.getActiveBegin())) {
-                exceptionList.add(new FieldErrorException("endDateAfterBeginDateException", null));
+                exceptionList.add(new FieldErrorException(Messages.get().endDateAfterBeginDateException(), null));
                 checkDuplicate = false;
             }
         }
@@ -378,7 +379,7 @@ public class TestBean {
                     DataBaseUtil.isSame(test.getMethodId(), data.getMethodId()) &&
                     DataBaseUtil.isSame(test.getIsActive(), data.getIsActive())) {
                     if ("Y".equals(data.getIsActive())) {
-                        exceptionList.add(new FieldErrorException("testActiveException", null));
+                        exceptionList.add(new FieldErrorException(Messages.get().testActiveException(), null));
                         break;
                     }
 
@@ -407,7 +408,7 @@ public class TestBean {
                     }
 
                     if (overlap) {
-                        exceptionList.add(new FieldErrorException("testTimeOverlapException", null));
+                        exceptionList.add(new FieldErrorException(Messages.get().testTimeOverlapException(), null));
                     }
                 }
             }

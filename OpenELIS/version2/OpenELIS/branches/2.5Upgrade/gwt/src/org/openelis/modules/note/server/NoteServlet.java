@@ -29,8 +29,8 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.NoteManagerBean;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.NoteManager;
 import org.openelis.meta.NoteMeta;
@@ -50,13 +50,13 @@ public class NoteServlet extends RemoteServlet implements NoteServiceInt {
 
         // parse the query to find refTableId and refId
         for (QueryData field : query.getFields()) {
-            if (field.key != null) {
-                if (NoteMeta.getReferenceId().equals(field.key))
-                    refId = Integer.valueOf(field.query);
-                else if (NoteMeta.getReferenceTableId().equals(field.key))
-                    refTableId = Integer.valueOf(field.query);
-                else if (NoteMeta.getIsExternal().equals(field.key))
-                    isExternal = field.query;
+            if (field.getKey() != null) {
+                if (NoteMeta.getReferenceId().equals(field.getKey()))
+                    refId = Integer.valueOf(field.getQuery());
+                else if (NoteMeta.getReferenceTableId().equals(field.getKey()))
+                    refTableId = Integer.valueOf(field.getQuery());
+                else if (NoteMeta.getIsExternal().equals(field.getKey()))
+                    isExternal = field.getQuery();
             }
         }
 

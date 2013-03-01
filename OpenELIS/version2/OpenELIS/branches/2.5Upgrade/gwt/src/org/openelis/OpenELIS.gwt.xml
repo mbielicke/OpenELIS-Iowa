@@ -33,6 +33,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
     <inherits name="org.openelis.gwt.Screen"/>
+    <inherits name="org.openelis.ui.UI"/>
     <!--  
     <inherits name="com.google.gwt.widgetideas.GWTCanvas"/>
     -->
@@ -57,4 +58,18 @@ UIRF Software License are applicable instead of those above.
     <set-property name="props" value="org_openelis_constants_OpenELISConstants"/>
 
     <set-property name="user.agent" value="gecko1_8" />
+    
+      <!-- <set-property name="user.agent" value="gecko1_8" /> -->
+    <set-property name="gwt.logging.logLevel" value="SEVERE"/>
+    <set-property name="gwt.logging.consoleHandler" value="DISABLED"/>
+    <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED"/>
+    <set-property name="gwt.logging.popupHandler" value="DISABLED"/>
+    <set-property name="gwt.logging.systemHandler" value="DISABLED"/>
+    <set-property name="gwt.logging.firebugHandler" value="DISABLED"/>
+    
+    <set-property name="compiler.stackMode" value="emulated" />
+    <set-configuration-property name="compiler.emulatedStack.recordLineNumbers" value="TRUE"/>
+    
+    <set-configuration-property name="CssResource.style" value="pretty"/>
+    
 </module>

@@ -30,7 +30,7 @@ import java.io.Serializable;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleHumanDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class SampleHumanManager implements Serializable, SampleDomainInt {
 

@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
@@ -36,8 +38,8 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.FormErrorWarning;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.modules.panel.client.PanelService;
@@ -171,7 +173,7 @@ public class AuxDataUtil {
              * check to see if these fields have already been added to the AuxDataManager
              */
             if (groupAddedToParent(field.getAuxFieldGroupId(), auxMan)) {
-                errors.add(new FormErrorWarning("auxGrpAlreadyAddedException", field.getAuxFieldGroupName()));
+                errors.add(new FormErrorWarning(Messages.get().auxGrpAlreadyAddedException(field.getAuxFieldGroupName())));
                 return;
             }                                       
         }
@@ -207,9 +209,9 @@ public class AuxDataUtil {
                             }
                         }
                     } catch (ParseException parE) {
-                        errors.add(new FormErrorWarning("illegalDefaultValueForAuxFieldException",
+                        errors.add(new FormErrorWarning(Messages.get().illegalDefaultValueForAuxFieldException(
                                                             defaultVal.getValue(),
-                                                            field.getAnalyteName()));
+                                                            field.getAnalyteName())));
                     }
                 } else {
                     data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);

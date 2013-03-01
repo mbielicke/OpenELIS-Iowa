@@ -1,0 +1,2 @@
+serviceClass: org.openelis.cache.DictionaryCacheServiceInt
+path: 99C27347148A24171CEEA5F3BF6092B5.gwt.rpc

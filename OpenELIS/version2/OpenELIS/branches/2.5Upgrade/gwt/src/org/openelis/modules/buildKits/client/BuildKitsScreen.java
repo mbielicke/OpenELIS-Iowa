@@ -34,6 +34,8 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
@@ -42,16 +44,12 @@ import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -85,6 +83,10 @@ import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.report.client.BuildKitsReportScreen;
 import org.openelis.modules.storage.client.StorageService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -110,27 +112,15 @@ public class BuildKitsScreen extends Screen {
     private Dropdown<Integer>                     dispensedUnitsId;
     private BuildKitsReportScreen                 buildKitsReportScreen; 
     
-    public BuildKitsScreen() throws Exception {
+    public BuildKitsScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(BuildKitsDef.class));
+        
+        setWindow(window);
         
         userPermission = UserCache.getPermission().getModule("buildkits");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Build Kits Screen");
+            throw new PermissionException(Messages.get().screenPermException("Build Kits Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-    
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
-        
         try {
             CategoryCache.getBySystemNames("inventory_unit");
         } catch (Exception e) {
@@ -411,11 +401,11 @@ public class BuildKitsScreen extends Screen {
                         query = new Query();                                                                                                     
                         
                         field = new QueryData();
-                        field.query = param;
+                        field.setQuery(param);
                         fields.add(field);
 
                         field = new QueryData();
-                        field.query = Integer.toString(itemId);
+                        field.setQuery(Integer.toString(itemId));
                         fields.add(field);
 
                         query.setFields(fields);
@@ -592,15 +582,15 @@ public class BuildKitsScreen extends Screen {
                     query = new Query();                                                                                                     
                     
                     field = new QueryData();
-                    field.query = param;
+                    field.setQuery(param);
                     fields.add(field);
 
                     field = new QueryData();
-                    field.query = Integer.toString(itemId);
+                    field.setQuery(Integer.toString(itemId));
                     fields.add(field);
                     
                     field = new QueryData();
-                    field.query = Integer.toString(storeId);
+                    field.setQuery(Integer.toString(storeId));
                     fields.add(field);
 
                     query.setFields(fields);
@@ -693,7 +683,7 @@ public class BuildKitsScreen extends Screen {
                                 componentTable.setCell(r, 4, factor * data.getQuantity());                                
                             }                                 
                             numRequested.clearExceptions();
-                            numRequested.setValue(factor);
+                            numRequested.setFieldValue(factor);
                             manager.getInventoryReceipt().setQuantityReceived(factor);
                         }                    
                         break;
@@ -713,11 +703,11 @@ public class BuildKitsScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -754,24 +744,24 @@ public class BuildKitsScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
     
     public void commit() {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
-        window.setBusy(consts.get("adding"));
+        window.setBusy(Messages.get().adding());
         try {
             manager = manager.add();
 
             setState(State.DISPLAY);
             DataChangeEvent.fire(this);
-            window.setDone(consts.get("addingComplete"));
+            window.setDone(Messages.get().addingComplete());
             
             showReportScreen();
         } catch (ValidationErrorsList e) {
@@ -787,10 +777,10 @@ public class BuildKitsScreen extends Screen {
         setFocus(null);
         manager = BuildKitManager.getInstance();        
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
-        window.setDone(consts.get("addAborted"));
+        window.setDone(Messages.get().addAborted());
     }
     
     protected void showReportScreen() {
@@ -815,7 +805,7 @@ public class BuildKitsScreen extends Screen {
             }
 
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("print"));
+            modal.setName(Messages.get().print());
             modal.setContent(buildKitsReportScreen);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -889,7 +879,7 @@ public class BuildKitsScreen extends Screen {
         if (manager == null)
             return;
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(consts.get("inventoryTransfer"));
+        modal.setName(Messages.get().inventoryTransfer());
         try {
             if (inventoryTransferScreen == null)
                 inventoryTransferScreen = new InventoryTransferScreen(modal);   
@@ -916,7 +906,7 @@ public class BuildKitsScreen extends Screen {
         toItem = null;
         
         if (selRows.length == 0) {
-            Window.alert(consts.get("selRowsToTransfer"));
+            Window.alert(Messages.get().selRowsToTransfer());
             return null;
         }
            
@@ -933,7 +923,7 @@ public class BuildKitsScreen extends Screen {
                 
                 toItem = InventoryItemCache.getById(comp.getComponentId());
                 if (toItem.getParentInventoryItemId() == null) {
-                    window.setError(consts.get("transferNotAllowed")+ " "+ toItem.getName());
+                    window.setError(Messages.get().transferNotAllowed()+ " "+ toItem.getName());
                     return null;
                 }
                     fromItem = InventoryItemCache.getById(toItem.getParentInventoryItemId());                
@@ -965,7 +955,7 @@ public class BuildKitsScreen extends Screen {
             return;
         
         if (val < 1) {
-            numRequested.addException(new LocalizedException("numRequestedMoreThanZeroException"));
+            numRequested.addException(new Exception(Messages.get().numRequestedMoreThanZeroException()));
             return;
         } 
         
@@ -1002,7 +992,7 @@ public class BuildKitsScreen extends Screen {
                 }
                 numRequested.clearExceptions();
             } else {
-                numRequested.addException(new LocalizedException("qtyOnHandNotSufficientException"));
+                numRequested.addException(new Exception(Messages.get().qtyOnHandNotSufficientException()));
             }
         }
     }

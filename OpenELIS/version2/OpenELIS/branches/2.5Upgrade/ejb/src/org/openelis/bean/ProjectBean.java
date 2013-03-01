@@ -38,20 +38,21 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.entity.Project;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -251,31 +252,31 @@ public class ProjectBean {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getIsActive()))
-            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getIsActive()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getIsActive()));
 
         if (DataBaseUtil.isEmpty(data.getOwnerId()))
-            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getOwnerId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getOwnerId()));
 
         if (DataBaseUtil.isEmpty(data.getStartedDate()))
-            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getStartedDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getStartedDate()));
 
         if (DataBaseUtil.isEmpty(data.getCompletedDate()))
-            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getCompletedDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getCompletedDate()));
 
         if (DataBaseUtil.isAfter(data.getStartedDate(), data.getCompletedDate()))
-            list.add(new FieldErrorException("endDateAfterBeginDateException",
+            list.add(new FieldErrorException(Messages.get().endDateAfterBeginDateException(),
                                                       ProjectMeta.getCompletedDate()));
         //
         // check for duplicate name
         //
         if (DataBaseUtil.isEmpty(data.getName())) { 
-            list.add(new FieldErrorException("fieldRequiredException", ProjectMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProjectMeta.getName()));
         } else {
             if ("Y".equals(data.getIsActive())) {
                 try {
                     dups = fetchActiveByName(data.getName(), 1);
                     if (dups.size() > 0 && DataBaseUtil.isDifferent(data.getId(), dups.get(0).getId())) 
-                        list.add(new FieldErrorException("fieldUniqueException", ProjectMeta.getName()));
+                        list.add(new FieldErrorException(Messages.get().fieldUniqueException(), ProjectMeta.getName()));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class SampleEnvironmentalManager implements Serializable, SampleDomainInt {
 

@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.client.QASummaryReportServiceInt
+path: 0BA5BAC041FEEB32CD4F84BCDE2C3EEE.gwt.rpc

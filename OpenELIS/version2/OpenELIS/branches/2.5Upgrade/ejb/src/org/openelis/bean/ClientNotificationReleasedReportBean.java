@@ -44,9 +44,9 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.InconsistencyException;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 

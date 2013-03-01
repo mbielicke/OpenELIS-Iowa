@@ -29,8 +29,8 @@ import java.util.ArrayList;
 
 import org.openelis.bean.ShippingTrackingBean;
 import org.openelis.domain.ShippingTrackingDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class ShippingTrackingManagerProxy {

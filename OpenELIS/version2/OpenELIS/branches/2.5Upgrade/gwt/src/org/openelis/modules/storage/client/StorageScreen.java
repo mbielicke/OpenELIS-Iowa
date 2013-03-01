@@ -30,16 +30,14 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -50,7 +48,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.StorageLocationManager;
@@ -58,14 +55,16 @@ import org.openelis.manager.StorageManager;
 import org.openelis.manager.StorageViewManager;
 import org.openelis.meta.StorageMeta;
 import org.openelis.modules.storageLocation.client.StorageLocationService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -91,26 +90,15 @@ public class StorageScreen extends Screen {
         CURRENT, HISTORY
     };    
     
-    public StorageScreen() throws Exception {
+    public StorageScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(StorageDef.class));
+        
+        setWindow(window);
     
         userPermission = UserCache.getPermission().getModule("storage");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Storage Screen");
+            throw new PermissionException(Messages.get().screenPermException("Storage Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-    
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         tab = Tabs.CURRENT;
         manager = StorageViewManager.getInstance();        
         
@@ -327,7 +315,7 @@ public class StorageScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(20);
                 StorageLocationService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -338,14 +326,14 @@ public class StorageScreen extends Screen {
                     public void onFailure(Throwable error) {
                         setQueryResult(null);
                         if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
+                            window.setDone(Messages.get().noRecordsFound());
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
+                            window.setError(Messages.get().noMoreRecordInDir());
                         } else {
                             Window.alert("Error: Storage call query failed; " +
                                          error.getMessage());
-                            window.setError(consts.get("queryFailed"));
+                            window.setError(Messages.get().queryFailed());
                         }
                     }
                 });
@@ -385,9 +373,9 @@ public class StorageScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = StorageMeta.getStorageLocationName();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(StorageMeta.getStorageLocationName());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -395,11 +383,11 @@ public class StorageScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -419,7 +407,7 @@ public class StorageScreen extends Screen {
         historyTab.draw();
         
         setFocus(name);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
     
     protected void previous() {
@@ -431,7 +419,7 @@ public class StorageScreen extends Screen {
     }
     
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -454,7 +442,7 @@ public class StorageScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -465,7 +453,7 @@ public class StorageScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {                              
                 //
                 // we first update the managers that represents the new locations
@@ -505,7 +493,7 @@ public class StorageScreen extends Screen {
                 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -520,11 +508,11 @@ public class StorageScreen extends Screen {
         
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.UPDATE) {
             try {                
                 locList = currentTab.getLocationList();
@@ -539,7 +527,7 @@ public class StorageScreen extends Screen {
                 Window.alert(e.getMessage());                
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -550,7 +538,7 @@ public class StorageScreen extends Screen {
             manager = StorageViewManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {                
                 switch (tab) {
                     case CURRENT:                                      
@@ -563,12 +551,12 @@ public class StorageScreen extends Screen {
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false; 
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

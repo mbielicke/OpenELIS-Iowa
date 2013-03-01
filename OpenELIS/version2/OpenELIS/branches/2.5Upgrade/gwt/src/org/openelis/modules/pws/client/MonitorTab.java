@@ -40,6 +40,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
@@ -49,7 +50,7 @@ public class MonitorTab extends Screen{
     private boolean     loaded;
     private TableWidget monitorTable;    
 
-    public MonitorTab(ScreenDefInt def, ScreenWindowInt window) {
+    public MonitorTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();

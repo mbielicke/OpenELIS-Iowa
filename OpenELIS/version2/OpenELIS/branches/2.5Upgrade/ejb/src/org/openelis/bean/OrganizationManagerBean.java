@@ -38,12 +38,12 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
 @SecurityDomain("openelis")

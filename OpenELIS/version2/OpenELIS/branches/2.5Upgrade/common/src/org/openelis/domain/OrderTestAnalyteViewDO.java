@@ -25,7 +25,7 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * The class extends order test analyte DO and adds analyte name etc. The

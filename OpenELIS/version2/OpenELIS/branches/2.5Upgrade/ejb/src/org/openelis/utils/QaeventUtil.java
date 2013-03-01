@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.bean.QaEventBean;
 import org.openelis.domain.QaEventDO;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class QaeventUtil {
 

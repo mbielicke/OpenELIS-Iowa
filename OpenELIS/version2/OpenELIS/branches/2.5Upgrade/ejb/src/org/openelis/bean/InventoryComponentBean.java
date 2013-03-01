@@ -36,15 +36,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.entity.InventoryComponent;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -123,16 +124,16 @@ public class InventoryComponentBean {
         compId = data.getComponentId();
 
         if (DataBaseUtil.isEmpty(compId))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InventoryItemMeta.getComponentId()));
         if (DataBaseUtil.isEmpty(data.getQuantity()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InventoryItemMeta.getComponentQuantity()));
         
         if (inventoryItemStoreId != null) {
             item = inventoryCache.getById(compId);
             if (!inventoryItemStoreId.equals(item.getStoreId())) {
-                list.add(new FieldErrorException("compStoreNotSameAsKitStoreException",
+                list.add(new FieldErrorException(Messages.get().compStoreNotSameAsKitStoreException(),
                                                  InventoryItemMeta.getComponentName()));
             }
         }

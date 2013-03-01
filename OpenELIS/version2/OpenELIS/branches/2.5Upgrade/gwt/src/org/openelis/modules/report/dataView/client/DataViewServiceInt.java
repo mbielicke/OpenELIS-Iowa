@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.apache.commons.fileupload.FileItem;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.ui.common.ReportStatus;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;

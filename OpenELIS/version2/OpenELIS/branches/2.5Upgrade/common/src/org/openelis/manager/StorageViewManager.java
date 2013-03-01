@@ -27,9 +27,9 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.meta.StorageMeta;
 
 public class StorageViewManager implements Serializable {
@@ -102,9 +102,9 @@ public class StorageViewManager implements Serializable {
         query = new Query();
         
         field = new QueryData();
-        field.key = StorageMeta.getStorageLocationId();
-        field.query = id.toString();
-        field.type = QueryData.Type.INTEGER;            
+        field.setKey(StorageMeta.getStorageLocationId());
+        field.setQuery(id.toString());
+        field.setType(QueryData.Type.INTEGER);            
         query.setFields(field);
         
         query.setPage(first);

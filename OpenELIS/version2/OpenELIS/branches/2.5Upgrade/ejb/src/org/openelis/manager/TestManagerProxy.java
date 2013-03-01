@@ -32,8 +32,8 @@ import java.util.List;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class TestManagerProxy {

@@ -25,6 +25,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.ProviderManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -36,7 +37,7 @@ public class LocationTab extends Screen {
 	private AppButton addAddressButton, removeAddressButton;
 	private boolean loaded;
 	
-	public LocationTab(ScreenDefInt def, ScreenWindowInt window) {
+	public LocationTab(ScreenDefInt def, WindowInt window) {
 		setDefinition(def);
 		setWindow(window);
 		initialize();

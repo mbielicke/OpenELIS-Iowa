@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class StorageManager implements Serializable {
 

@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.StorageUnitBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageUnitDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.storageunit.client.StorageUnitServiceInt;
 

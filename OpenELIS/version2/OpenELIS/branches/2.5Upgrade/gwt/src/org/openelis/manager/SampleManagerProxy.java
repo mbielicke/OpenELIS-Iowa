@@ -28,13 +28,14 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FieldErrorWarning;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FieldErrorWarning;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.services.CalendarService;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.SampleService;
@@ -97,22 +98,22 @@ public class SampleManagerProxy {
 
         // received date required
         if (data.getReceivedDate() == null || data.getReceivedDate().getDate() == null)
-            errorsList.add(new FieldErrorWarning("receivedDateRequiredException",
+            errorsList.add(new FieldErrorWarning(Messages.get().receivedDateRequiredException(),
                                                  SampleMeta.getReceivedDate()));
         else if (data.getEnteredDate() != null &&
                  data.getReceivedDate().before(data.getEnteredDate().add( -180)))
             // received can't be more than 180 days before entered
-            errorsList.add(new FieldErrorWarning("receivedTooOldWarning",
+            errorsList.add(new FieldErrorWarning(Messages.get().receivedTooOldWarning(),
                                                  SampleMeta.getReceivedDate()));
 
         if (data.getEnteredDate() != null && data.getCollectionDate() != null &&
             data.getCollectionDate().before(data.getEnteredDate().add( -180)))
-            errorsList.add(new FieldErrorException("collectedTooOldWarning",
+            errorsList.add(new FieldErrorException(Messages.get().collectedTooOldWarning(),
                                                    SampleMeta.getCollectionDate()));
 
         if (data.getCollectionDate() != null && data.getReceivedDate() != null &&
             data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
-            errorsList.add(new FieldErrorException("collectedDateInvalidError",
+            errorsList.add(new FieldErrorException(Messages.get().collectedDateInvalidError(),
                                                    SampleMeta.getReceivedDate()));
 
         // every unreleased sample needs an internal comment describing the
@@ -121,7 +122,7 @@ public class SampleManagerProxy {
             noteMan = man.getInternalNotes();
             if ( (noteMan == null || noteMan.count() == 0) ||
                 (noteMan != null && noteMan.count() > 0 && noteMan.getNoteAt(0).getId() != null)) {
-                errorsList.add(new FormErrorException("unreleaseNoNoteException"));
+                errorsList.add(new FormErrorException(Messages.get().unreleaseNoNoteException()));
             }
         }
 
@@ -169,10 +170,10 @@ public class SampleManagerProxy {
         try {
             man = OrderManager.fetchById(data.getOrderId());
             if ( !OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType()))
-                errorsList.add(new FieldErrorException("orderIdInvalidException",
+                errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
                                                        SampleMeta.getOrderId()));
         } catch (NotFoundException e) {
-            errorsList.add(new FieldErrorException("orderIdInvalidException",
+            errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
                                                    SampleMeta.getOrderId()));
         }
 

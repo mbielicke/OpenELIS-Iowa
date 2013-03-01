@@ -31,12 +31,13 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.modules.note.client.RichTextTab;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
 public class ManufacturingTab extends RichTextTab {
 
-    public ManufacturingTab(ScreenDefInt def, ScreenWindowInt window, String richtextPanelKey,
+    public ManufacturingTab(ScreenDefInt def, WindowInt window, String richtextPanelKey,
                             String editButtonKey) {
         super(def, window, richtextPanelKey, editButtonKey);
     }

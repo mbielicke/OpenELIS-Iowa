@@ -3,7 +3,7 @@ package org.openelis.modules.exchangeVocabularyMap.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.ExchangeLocalTermViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;

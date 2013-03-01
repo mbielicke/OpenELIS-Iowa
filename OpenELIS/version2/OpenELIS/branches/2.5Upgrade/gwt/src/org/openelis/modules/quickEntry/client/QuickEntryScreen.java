@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdVO;
@@ -40,17 +41,17 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -86,6 +87,7 @@ import org.openelis.modules.sample.client.TestPrepUtility;
 import org.openelis.modules.test.client.TestService;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -117,27 +119,21 @@ public class QuickEntryScreen extends Screen {
     private ModulePermission       userPermission;
     private HashMap<Integer, Item> managers;
 
-    public QuickEntryScreen() throws Exception {
+    public QuickEntryScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("quickentry");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Quick Entry Screen");
+            throw new PermissionException(Messages.get().screenPermException("Quick Entry Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {
         initialize();
         initializeDropdowns();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
 
-        DeferredCommand.addCommand(new Command() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             public void execute() {
                 setFocus(entry);
             }
@@ -148,16 +144,16 @@ public class QuickEntryScreen extends Screen {
         managers = new HashMap<Integer, Item>();
         close = false;
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (close) {
                     close = false;
                 } else if (quickEntryTable.numRows() > 0) {
                     event.cancel();
                     if (windowCloseConfirm == null) {
                         windowCloseConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                         consts.get("onCloseConfirmTitle"),
-                                                         consts.get("onCloseConfirmBody"),
+                                                         Messages.get().onCloseConfirmTitle(),
+                                                         Messages.get().onCloseConfirmBody(),
                                                          "No",
                                                          "Yes",
                                                          "Cancel");
@@ -215,11 +211,11 @@ public class QuickEntryScreen extends Screen {
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 if (todaysDate.after(event.getValue())) {
-                    LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody",
+                    Exception ex = new Exception(Messages.get().recievedDateNotTodayExceptionBody(
                                                                    event.getValue()
-                                                                        .toString());
+                                                                        .toString()));
                     receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                              consts.get("recievedDateNotTodayExceptionTitle"),
+                                                              Messages.get().recievedDateNotTodayExceptionTitle(),
                                                               ex.getMessage(),
                                                               "No",
                                                               "Yes");
@@ -279,7 +275,7 @@ public class QuickEntryScreen extends Screen {
                         testSection.setModel(model);
                         testSection.setSelection(defaultSectionId);
                     } catch (Exception anyE) {
-                        Window.alert(consts.get("testSectionLoadError"));
+                        Window.alert(Messages.get().testSectionLoadError());
                         anyE.printStackTrace();
                     }
                 } else {
@@ -305,7 +301,7 @@ public class QuickEntryScreen extends Screen {
                         testSection.setModel(model);
                         testSection.setSelection(defaultSectionId);
                     } catch (Exception anyE) {
-                        Window.alert(consts.get("panelSectionLoadError"));
+                        Window.alert(Messages.get().panelSectionLoadError());
                         anyE.printStackTrace();
                     }
                 }
@@ -443,7 +439,7 @@ public class QuickEntryScreen extends Screen {
         ValidationErrorsList errorsList;
 
         setFocus(null);
-        window.setBusy(consts.get("adding"));
+        window.setBusy(Messages.get().adding());
 
         itr = managers.values().iterator();
         errorsList = new ValidationErrorsList();
@@ -466,22 +462,22 @@ public class QuickEntryScreen extends Screen {
                 removables.add(manager.getSample().getAccessionNumber());
                 item.count = 0;
             } catch (ValidationErrorsList e) {
-                errorsList.add(new FormErrorException("quickCommitError"));
+                errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
                 for (i = 0; i < e.size(); i++ )
-                    errorsList.add(new FormErrorException("rowError",
+                    errorsList.add(new FormErrorException(Messages.get().rowError(
                                                           manager.getSample()
                                                                  .getAccessionNumber()
                                                                  .toString(),
                                                           e.getErrorList()
                                                            .get(i)
-                                                           .getLocalizedMessage()));
+                                                           .getLocalizedMessage())));
             } catch (Exception e) {
-                errorsList.add(new FormErrorException("quickCommitError"));
-                errorsList.add(new FormErrorException("rowError",
+                errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
+                errorsList.add(new FormErrorException(Messages.get().rowError(
                                                       manager.getSample()
                                                              .getAccessionNumber()
                                                              .toString(),
-                                                      e.getMessage()));
+                                                      e.getMessage())));
             }
         }
 
@@ -492,7 +488,7 @@ public class QuickEntryScreen extends Screen {
             showErrors(errorsList);
         } else {
             setState(Screen.State.DEFAULT);
-            window.setDone(consts.get("addingComplete"));
+            window.setDone(Messages.get().addingComplete());
         }
 
         DataChangeEvent.fire(this);
@@ -504,7 +500,7 @@ public class QuickEntryScreen extends Screen {
         Integer accessionNum;
         SampleDO sampleDO;
         SampleManager sampleMan;
-        LocalizedException ex;
+        Exception ex;
 
         val = entry.getValue();
         window.clearStatus();
@@ -514,10 +510,10 @@ public class QuickEntryScreen extends Screen {
         recDate.validate();
         if (recDate.exceptions == null) {
             if (todaysDate.after(recDate.getValue())) {
-                ex = new LocalizedException("recievedDateNotTodayExceptionBody",
-                                            recDate.getValue().toString());
+                ex = new Exception(Messages.get().recievedDateNotTodayExceptionBody(
+                                            recDate.getValue().toString()));
                 receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                          consts.get("recievedDateNotTodayExceptionTitle"),
+                                                          Messages.get().recievedDateNotTodayExceptionTitle(),
                                                           ex.getMessage(),
                                                           "No",
                                                           "Yes");
@@ -541,7 +537,7 @@ public class QuickEntryScreen extends Screen {
             try {
                 testMethodSampleType.setValue(val, true);
             } catch (Exception e) {
-                ex = new LocalizedException("invalidEntryException", val);
+                ex = new Exception(Messages.get().invalidEntryException(val));
                 window.setError(ex.getMessage());
             }
         } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) { // tube #
@@ -553,7 +549,7 @@ public class QuickEntryScreen extends Screen {
 
                 try {
                     accessionNum = accNumUtil.getNewAccessionNumber();
-                    accessionNumber.setValue(accessionNum);
+                    accessionNumber.setFieldValue(accessionNum);
                     addAnalysisRow();
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
@@ -590,7 +586,7 @@ public class QuickEntryScreen extends Screen {
                     accessionNumber.setValue(val);
                     addAnalysisRow();
                 } catch (NumberFormatException e) {
-                    ex = new LocalizedException("invalidEntryException", val);
+                    ex = new Exception(Messages.get().invalidEntryException(val));
                     window.setError(ex.getMessage());
                 } catch (ValidationErrorsList e) {
                     FieldErrorException fe;
@@ -599,7 +595,7 @@ public class QuickEntryScreen extends Screen {
                     // convert all the field errors to form errors
                     for (int i = 0; i < e.size(); i++ ) {
                         fe = (FieldErrorException)e.getErrorList().get(i);
-                        newE.add(new FormErrorException(fe.getKey()));
+                        newE.add(new FormErrorException(fe.getMessage()));
                     }
                     showErrors(newE);
                 } catch (Exception e) {
@@ -607,7 +603,7 @@ public class QuickEntryScreen extends Screen {
                 }
             }
         } else {
-            ex = new LocalizedException("invalidEntryException", val);
+            ex = new Exception(Messages.get().invalidEntryException(val));
             window.setError(ex.getMessage());
         }
         entry.setValue(null);
@@ -856,19 +852,19 @@ public class QuickEntryScreen extends Screen {
     private boolean validateFields() {
         // received date needs filled out
         if (receivedDate.getValue() == null) {
-            window.setError(consts.get("receivedDateNoValueException"));
+            window.setError(Messages.get().receivedDateNoValueException());
             return false;
         }
 
         // test needs filled out
         if (testMethodSampleType.getValue() == null) {
-            window.setError(consts.get("testMethodNoValueException"));
+            window.setError(Messages.get().testMethodNoValueException());
             return false;
         }
 
         // test needs filled out
         if (testSection.getValue() == null) {
-            window.setError(consts.get("testSectionNoValueException"));
+            window.setError(Messages.get().testSectionNoValueException());
             return false;
         }
 

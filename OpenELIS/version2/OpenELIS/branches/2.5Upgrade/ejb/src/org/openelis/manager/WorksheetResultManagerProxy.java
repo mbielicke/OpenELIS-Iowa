@@ -30,8 +30,8 @@ import java.util.ArrayList;
 
 import org.openelis.bean.WorksheetResultBean;
 import org.openelis.domain.WorksheetResultViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetResultManagerProxy {

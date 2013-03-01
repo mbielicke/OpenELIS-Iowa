@@ -34,7 +34,7 @@ import org.openelis.bean.StorageLocationBean;
 import org.openelis.bean.StorageLocationManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;

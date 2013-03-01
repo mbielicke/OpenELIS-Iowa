@@ -30,9 +30,9 @@ import java.util.List;
 
 import org.openelis.bean.InstrumentLogBean;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class InstrumentLogManagerProxy {

@@ -38,7 +38,7 @@ import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * This class provides data for todo lists corresponding to analyses and samples

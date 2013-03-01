@@ -35,13 +35,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.entity.TestWorksheetItem;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -124,13 +125,13 @@ public class TestWorksheetItemBean {
         typeId = data.getTypeId();
 
         if (DataBaseUtil.isEmpty(data.getTypeId())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getWorksheetItemTypeId()));
 
         }
         if (DataBaseUtil.isDifferent(Constants.dictionary().POS_DUPLICATE, typeId) &&
             DataBaseUtil.isEmpty(name)) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getWorksheetItemQcName()));
         }
 
@@ -138,20 +139,20 @@ public class TestWorksheetItemBean {
             if (DataBaseUtil.isSame(Constants.dictionary().POS_DUPLICATE, typeId) ||
                 DataBaseUtil.isSame(Constants.dictionary().POS_FIXED, typeId) ||
                 DataBaseUtil.isSame(Constants.dictionary().POS_FIXED_ALWAYS, typeId)) {
-                list.add(new FieldErrorException("fixedDuplicatePosException",
+                list.add(new FieldErrorException(Messages.get().fixedDuplicatePosException(),
                                                  TestMeta.getWorksheetItemPosition()));
             }
         } else {
             if (position == 1 &&
                 DataBaseUtil.isSame(Constants.dictionary().POS_DUPLICATE, typeId)) {
-                list.add(new FieldErrorException("posOneDuplicateException",
+                list.add(new FieldErrorException(Messages.get().posOneDuplicateException(),
                                                  TestMeta.getWorksheetItemTypeId()));
             } else if (DataBaseUtil.isDifferent(Constants.dictionary().POS_DUPLICATE,
                                                 typeId) &&
                        DataBaseUtil.isDifferent(Constants.dictionary().POS_FIXED, typeId) &&
                        DataBaseUtil.isDifferent(Constants.dictionary().POS_FIXED_ALWAYS,
                                                 typeId)) {
-                list.add(new FieldErrorException("posSpecifiedException",
+                list.add(new FieldErrorException(Messages.get().posSpecifiedException(),
                                                  TestMeta.getWorksheetItemPosition()));
             }
         }

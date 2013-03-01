@@ -29,8 +29,8 @@ import java.io.Serializable;
 
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
 
 public class BuildKitManager implements Serializable {
 

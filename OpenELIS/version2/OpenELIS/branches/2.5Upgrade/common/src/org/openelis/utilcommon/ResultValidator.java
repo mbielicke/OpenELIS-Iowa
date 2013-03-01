@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.openelis.constants.Messages;
 import org.openelis.exception.ParseException;
 
 /**
@@ -184,7 +185,7 @@ public class ResultValidator implements Serializable {
         if (id != null)
             return id;
 
-        throw new ParseException("illegalResultValueException");
+        throw new ParseException(Messages.get().illegalResultValueException());
     }
 
     /**

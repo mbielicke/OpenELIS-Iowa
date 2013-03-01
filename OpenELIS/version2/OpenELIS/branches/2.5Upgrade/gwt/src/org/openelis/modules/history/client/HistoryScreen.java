@@ -29,12 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.HistoryVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -104,7 +105,7 @@ public class HistoryScreen extends Screen {
                     refId = Integer.valueOf((String)item.cells.get(1).getValue()); 
                     fieldName = (String)item.cells.get(0).getValue();
                     data = new IdNameVO(refId, fieldName + ": "+ refId.toString());                    
-                    showHistory(consts.get("history"), refTable, data);
+                    showHistory(Messages.get().history(), refTable, data);
                 }                                                  
             }            
         });
@@ -149,7 +150,7 @@ public class HistoryScreen extends Screen {
     }
     
     protected void initializeWindow(String title) {
-        OpenELIS.getBrowser().addScreen(this);
+        //OpenELIS.getBrowser().addScreen(this);
     }
     
     protected void setReferenceVoList(IdNameVO[] referenceVOList) {
@@ -213,14 +214,14 @@ public class HistoryScreen extends Screen {
 
         field = new QueryData();
         refVO = referenceVoList[index];
-        field.query = refVO.getId().toString();
+        field.setQuery(refVO.getId().toString());
         query.setFields(field);
 
         field = new QueryData();
-        field.query = referenceTableId.toString();
+        field.setQuery(referenceTableId.toString());
         query.setFields(field);
 
-        window.setBusy(consts.get("fetching"));
+        window.setBusy(Messages.get().fetching());
         try {
             list = HistoryService.get().fetchByReferenceIdAndTable(query);
             for (HistoryVO data : list) {
@@ -264,11 +265,11 @@ public class HistoryScreen extends Screen {
             window.clearStatus();
         }
         
-        window.setDone(consts.get("loadCompleteMessage"));
+        window.setDone(Messages.get().loadCompleteMessage());
         if(parent.getItems().size() == 0) {
             parent.checkForChildren(false);
             historyTree.refresh(true);
-            window.setStatus(consts.get("noRecordsFound"), "");
+            window.setStatus(Messages.get().noRecordsFound(), "");
         }
     }
 }

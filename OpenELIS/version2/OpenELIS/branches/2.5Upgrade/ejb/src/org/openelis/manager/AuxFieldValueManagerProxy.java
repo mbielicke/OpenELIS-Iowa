@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import org.openelis.bean.AuxFieldValueBean;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class AuxFieldValueManagerProxy {

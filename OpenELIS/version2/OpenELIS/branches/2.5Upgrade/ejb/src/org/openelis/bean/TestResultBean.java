@@ -38,15 +38,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.entity.TestResult;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
@@ -198,18 +199,18 @@ public class TestResultBean {
         typeId = data.getTypeId();
 
         if (DataBaseUtil.isEmpty(typeId))
-            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultTypeId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), TestMeta.getResultTypeId()));
         //
         // dictionary, titers, numeric require a value
         //
         type = types.get(data.getTypeId());
         if (DataBaseUtil.isEmpty(value) &&
             (type == Type.NUMERIC || type == Type.TITER || type == Type.DICTIONARY)) {
-            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultValue()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), TestMeta.getResultValue()));
         } else if ( !DataBaseUtil.isEmpty(value) &&
                    (type == Type.DATE_TIME || type == Type.TIME || type == Type.DATE || type == Type.ALPHA_LOWER ||
                    type == Type.ALPHA_UPPER || type == Type.ALPHA_MIXED)) {
-            list.add(new FieldErrorException("valuePresentForTypeException",
+            list.add(new FieldErrorException(Messages.get().valuePresentForTypeException(),
                                              TestMeta.getResultValue()));
         }
 

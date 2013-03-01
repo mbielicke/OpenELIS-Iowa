@@ -37,16 +37,17 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.entity.QcLot;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.QcMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -202,31 +203,31 @@ public class QcLotBean {
         list = new ValidationErrorsList();
 
         if (data.getLotNumber() == null) 
-            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getQcLotLotNumber()));        
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), QcMeta.getQcLotLotNumber()));        
 
         validatePrep = true;
         validateExpire = true;
         if (data.getPreparedDate() == null) {
-            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getQcLotPreparedDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), QcMeta.getQcLotPreparedDate()));
             validatePrep = false;
         }
 
         if (data.getUsableDate() == null) {
-            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getQcLotUsableDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), QcMeta.getQcLotUsableDate()));
             validatePrep = false;
             validateExpire = false;
         }
 
         if (data.getExpireDate() == null) {
-            list.add(new FieldErrorException("fieldRequiredException", QcMeta.getQcLotExpireDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), QcMeta.getQcLotExpireDate()));
             validateExpire = false;
         }
 
         if (validatePrep && DataBaseUtil.isAfter(data.getPreparedDate(), data.getUsableDate()))
-            list.add(new FieldErrorException("usableBeforePrepException", QcMeta.getQcLotUsableDate()));
+            list.add(new FieldErrorException(Messages.get().usableBeforePrepException(), QcMeta.getQcLotUsableDate()));
 
         if (validateExpire && DataBaseUtil.isAfter(data.getUsableDate(), data.getExpireDate()))
-            list.add(new FieldErrorException("expireBeforeUsableException", QcMeta.getQcLotExpireDate()));
+            list.add(new FieldErrorException(Messages.get().expireBeforeUsableException(), QcMeta.getQcLotExpireDate()));
 
         if (list.size() > 0)
             throw list;
@@ -240,7 +241,7 @@ public class QcLotBean {
         
         try {
             worksheetAnalysis.fetchByQcLotId(data.getId());
-            list.add(new FieldErrorException("qcLotDeleteException", null));
+            list.add(new FieldErrorException(Messages.get().qcLotDeleteException(), null));
             throw list;
         } catch (NotFoundException e) {
             // ignore

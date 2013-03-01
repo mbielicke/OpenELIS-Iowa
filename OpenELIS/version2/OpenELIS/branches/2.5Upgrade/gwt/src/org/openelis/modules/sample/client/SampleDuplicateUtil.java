@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -45,7 +46,6 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -77,7 +77,7 @@ public class SampleDuplicateUtil {
                     !Constants.dictionary().ANALYSIS_INPREP.equals(statusId) &&
                     !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId) &&
                     !Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId))
-                    throw new LocalizedException("analysisHasAdvancedStatusException");
+                    throw new Exception(Messages.get().analysisHasAdvancedStatusException());
             }
         }
         newMan = SampleManager.getInstance();
@@ -251,7 +251,7 @@ public class SampleDuplicateUtil {
             // we don't allow duplication if even one analysis has reflexed analyses
             //
             if (oldData.getParentAnalysisId() != null || oldData.getParentResultId() != null) 
-                throw new LocalizedException("analysisHasReflexAnalysesException", oldData.getTestName()+ ":"+oldData.getMethodName());
+                throw new Exception(Messages.get().analysisHasReflexAnalysesException(oldData.getTestName()+ ":"+oldData.getMethodName()));
             index = newMan.addAnalysis();
             newData = newMan.getAnalysisAt(index);
             newOldAnaIdMap.put(oldData.getId(), newData);
