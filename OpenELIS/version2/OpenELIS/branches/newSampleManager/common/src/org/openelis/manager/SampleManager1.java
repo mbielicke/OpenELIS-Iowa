@@ -43,7 +43,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -71,7 +71,7 @@ public class SampleManager1 implements Serializable {
     protected SampleEnvironmentalDO               sampleEnvironmental;
     protected SampleSDWISViewDO                   sampleSDWIS;
     protected SamplePrivateWellViewDO             samplePrivateWell;
-    protected SampleNeonatalDO                    sampleNeonatal; 
+    protected SampleNeonatalViewDO                sampleNeonatal;
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
@@ -84,17 +84,19 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<AnalysisUserViewDO>       users;
     protected ArrayList<ResultViewDO>             results;
     protected ArrayList<DataObject>               removed;
+    protected int                                 nextUID      = -1;
 
-    transient public final SampleOrganization     organization = new SampleOrganization();
-    transient public final SampleProject          project      = new SampleProject();
-    transient public final QAEvent                qaEvent      = new QAEvent();
-    transient public final AuxData                auxData      = new AuxData();
-
-    // TODO move all these to application level global flags
-    public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
-                    HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEONATAL_DOMAIN_FLAG = "N",
-                    PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
-                    QUICK_ENTRY = "Q";
+    transient public final SampleOrganization    organization = new SampleOrganization();
+    transient public final SampleProject         project      = new SampleProject();
+    transient public final QAEvent               qaEvent      = new QAEvent();
+    transient public final AuxData               auxData      = new AuxData();
+    transient public final SampleNote            sampleNote   = new SampleNote();
+    transient public final SampleItem            item         = new SampleItem();
+    transient public final Storage               storage      = new Storage();
+    transient public final Analysis              analysis     = new Analysis();
+    transient public final AnalysisNote          analysisNote = new AnalysisNote();
+    transient public final AnalysisUser          analysisUser = new AnalysisUser();
+    transient public final Result                result       = new Result();
 
     /**
      * Initialize an empty sample manager
@@ -115,7 +117,7 @@ public class SampleManager1 implements Serializable {
     public SampleEnvironmentalDO getSampleEnvironmental() {
         return sampleEnvironmental;
     }
-    
+
     public SampleSDWISViewDO getSampleSDWIS() {
         return sampleSDWIS;
     }
@@ -123,15 +125,23 @@ public class SampleManager1 implements Serializable {
     public SamplePrivateWellViewDO getSamplePrivateWell() {
         return samplePrivateWell;
     }
-    
-    public SampleNeonatalDO getSampleNeonatal() {
+
+    public SampleNeonatalViewDO getSampleNeonatal() {
         return sampleNeonatal;
+    }
+
+    /**
+     * Returns the next negative Id for this sample's newly created and as yet
+     * uncommitted sample items, analyses and results
+     */
+    public int getNextUID() {
+        return --nextUID;
     }
 
     /**
      * Class to manage Sample Organization information
      */
-    protected class SampleOrganization {
+    public class SampleOrganization {
         /**
          * Returns the organization at specified index.
          */
@@ -201,7 +211,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage Sample Project information
      */
-    protected class SampleProject {
+    public class SampleProject {
         /**
          * Returns the project at specified index.
          */
@@ -249,16 +259,16 @@ public class SampleManager1 implements Serializable {
         }
 
         /**
-         * Returns a list of sample projects that match the isPerminate (Y/N)
+         * Returns a list of sample projects that match the isPermament (Y/N)
          * flag.
          */
-        public ArrayList<SampleProjectViewDO> getByType(String isPerminate) {
+        public ArrayList<SampleProjectViewDO> getByType(String isPermament) {
             ArrayList<SampleProjectViewDO> list;
 
             list = null;
             if (projects != null) {
                 for (SampleProjectViewDO data : projects) {
-                    if (isPerminate.equals(data.getIsPermanent())) {
+                    if (isPermament.equals(data.getIsPermanent())) {
                         if (list == null)
                             list = new ArrayList<SampleProjectViewDO>();
                         list.add(data);
@@ -272,7 +282,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage Sample & Analysis QAEvents
      */
-    protected class QAEvent {
+    public class QAEvent {
         transient protected HashMap<Integer, ArrayList<AnalysisQaEventViewDO>> map = null;
 
         /**
@@ -496,7 +506,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage auxiliary data
      */
-    protected class AuxData {
+    public class AuxData {
         /**
          * Returns the aux data at specified index.
          */
@@ -517,7 +527,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage sample notes
      */
-    protected class SampleNote {
+    public class SampleNote {
         transient int     extE, intE;
         transient boolean searched;
 
@@ -632,7 +642,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage sample items
      */
-    protected class SampleItem {
+    public class SampleItem {
         /**
          * Returns the organization at specified index.
          */
@@ -691,7 +701,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage sample item & Analysis storage
      */
-    protected class Storage {
+    public class Storage {
         //
         // Storage records for the entire sample, both sample items and
         // analyses, are often less than 10 records. That is why this class uses
@@ -710,20 +720,6 @@ public class SampleManager1 implements Serializable {
             return get(Constants.table().ANALYSIS, analysis.getId(), i);
         }
 
-        protected StorageViewDO get(int tableId, int id, int i) {
-            int n;
-
-            n = -1;
-            for (StorageViewDO data : storages) {
-                if (tableId == data.getReferenceTableId() && id == data.getReferenceId()) {
-                    n++ ;
-                    if (n == i)
-                        return data;
-                }
-            }
-            return null;
-        }
-
         /**
          * Returns a new storage location for a sample item or analysis
          */
@@ -735,19 +731,6 @@ public class SampleManager1 implements Serializable {
             return add(Constants.table().ANALYSIS, analysis.getId());
         }
 
-        protected StorageViewDO add(int tableId, int id) {
-            StorageViewDO data;
-
-            data = new StorageViewDO();
-            data.setReferenceTableId(tableId);
-            data.setReferenceId(id);
-            if (storages == null)
-                storages = new ArrayList<StorageViewDO>();
-            storages.add(data);
-
-            return data;
-        }
-
         /**
          * Removes a storage from sample item or analysis
          */
@@ -757,25 +740,6 @@ public class SampleManager1 implements Serializable {
 
         public void remove(AnalysisDO analysis, int i) {
             remove(Constants.table().ANALYSIS, analysis.getId(), i);
-        }
-
-        protected void remove(int tableId, int id, int i) {
-            int n;
-            StorageViewDO data;
-
-            n = -1;
-            for (int j = 0; j < storages.size(); j++ ) {
-                data = storages.get(j);
-                if (tableId == data.getReferenceTableId() && id == data.getReferenceId()) {
-                    n++ ;
-                    if (n == i) {
-                        storages.remove(j);
-                        if (data.getId() != null && data.getId() > 0)
-                            removeDataObject(data);
-                        break;
-                    }
-                }
-            }
         }
 
         public void remove(StorageViewDO data) {
@@ -800,7 +764,53 @@ public class SampleManager1 implements Serializable {
             return count(Constants.table().ANALYSIS, analysis.getId());
         }
 
-        protected int count(int tableId, int id) {
+        private StorageViewDO get(int tableId, int id, int i) {
+            int n;
+        
+            n = -1;
+            for (StorageViewDO data : storages) {
+                if (tableId == data.getReferenceTableId() && id == data.getReferenceId()) {
+                    n++ ;
+                    if (n == i)
+                        return data;
+                }
+            }
+            return null;
+        }
+
+        private StorageViewDO add(int tableId, int id) {
+            StorageViewDO data;
+        
+            data = new StorageViewDO();
+            data.setReferenceTableId(tableId);
+            data.setReferenceId(id);
+            if (storages == null)
+                storages = new ArrayList<StorageViewDO>();
+            storages.add(data);
+        
+            return data;
+        }
+
+        private void remove(int tableId, int id, int i) {
+            int n;
+            StorageViewDO data;
+        
+            n = -1;
+            for (int j = 0; j < storages.size(); j++ ) {
+                data = storages.get(j);
+                if (tableId == data.getReferenceTableId() && id == data.getReferenceId()) {
+                    n++ ;
+                    if (n == i) {
+                        storages.remove(j);
+                        if (data.getId() != null && data.getId() > 0)
+                            removeDataObject(data);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private int count(int tableId, int id) {
             int n;
 
             n = 0;
@@ -818,7 +828,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage analysis data
      */
-    protected class Analysis {
+    public class Analysis {
         transient protected HashMap<Integer, ArrayList<AnalysisViewDO>> map = null;
 
         /**
@@ -875,7 +885,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage analysis notes
      */
-    protected class AnalysisNote {
+    public class AnalysisNote {
         transient protected HashMap<Integer, ArrayList<NoteViewDO>> map = null;
         transient int                                               extE, intE;
 
@@ -983,7 +993,7 @@ public class SampleManager1 implements Serializable {
     /**
      * Class to manage analysis users
      */
-    protected class AnalysisUser {
+    public class AnalysisUser {
         transient protected HashMap<Integer, ArrayList<AnalysisUserViewDO>> map = null;
 
         /**
@@ -1087,7 +1097,7 @@ public class SampleManager1 implements Serializable {
         }
     }
 
-    protected class Result {
+    public class Result {
         transient protected HashMap<Integer, ArrayList<ArrayList<ResultViewDO>>> map = null;
 
         /**
@@ -1164,7 +1174,6 @@ public class SampleManager1 implements Serializable {
             }
         }
 
-
         // /**
         // * Adds a new row. The first column is created from row-analyte data
         // while remaining columns
@@ -1200,7 +1209,7 @@ public class SampleManager1 implements Serializable {
      * Adds the specified data object to the list of objects that should be
      * removed from the database.
      */
-    protected void removeDataObject(DataObject data) {
+    private void removeDataObject(DataObject data) {
         removed.add(data);
     }
 }
