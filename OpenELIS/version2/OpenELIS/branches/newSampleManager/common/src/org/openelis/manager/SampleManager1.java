@@ -86,17 +86,18 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID      = -1;
 
-    transient public final SampleOrganization    organization = new SampleOrganization();
-    transient public final SampleProject         project      = new SampleProject();
-    transient public final QAEvent               qaEvent      = new QAEvent();
-    transient public final AuxData               auxData      = new AuxData();
-    transient public final SampleNote            sampleNote   = new SampleNote();
-    transient public final SampleItem            item         = new SampleItem();
-    transient public final Storage               storage      = new Storage();
-    transient public final Analysis              analysis     = new Analysis();
-    transient public final AnalysisNote          analysisNote = new AnalysisNote();
-    transient public final AnalysisUser          analysisUser = new AnalysisUser();
-    transient public final Result                result       = new Result();
+    transient public final SampleOrganization     organization = new SampleOrganization();
+    transient public final SampleProject          project      = new SampleProject();
+    transient public final QAEvent                qaEvent      = new QAEvent();
+    transient public final AuxData                auxData      = new AuxData();
+    transient public final SampleNote             sampleNote   = new SampleNote();
+    transient public final SampleItem             item         = new SampleItem();
+    transient public final Storage                storage      = new Storage();
+    transient public final Analysis               analysis     = new Analysis();
+    transient public final AnalysisNote           analysisNote = new AnalysisNote();
+    transient public final AnalysisUser           analysisUser = new AnalysisUser();
+    transient public final Result                 result       = new Result();
+    transient private HashMap<String, DataObject> doMap;
 
     /**
      * Initialize an empty sample manager
@@ -138,6 +139,33 @@ public class SampleManager1 implements Serializable {
         return --nextUID;
     }
 
+    /**
+     * Returns a unique id representing the data object's type and key. This id
+     * can be used to directly find the object this manager rather than serially
+     * traversing the lists.
+     */
+
+    public String getUid(SampleItemDO data) {
+        return getSampleItemUid(data.getId());
+    }
+
+    public String getUid(AnalysisDO data) {
+        return "A:"+data.getId();
+    }
+    
+    /**
+     * Returns the data object using its Uid.
+     */
+    public DataObject getObject(String uid) {
+        if (doMap == null) {
+            doMap = new HashMap<String, DataObject>();
+            if (items != null) 
+                for (SampleItemDO data:items)
+                    doMap.put(getSampleItemUid(data.getId()), data);
+        }
+        return doMap.get(uid);
+    }
+    
     /**
      * Class to manage Sample Organization information
      */
@@ -766,7 +794,7 @@ public class SampleManager1 implements Serializable {
 
         private StorageViewDO get(int tableId, int id, int i) {
             int n;
-        
+
             n = -1;
             for (StorageViewDO data : storages) {
                 if (tableId == data.getReferenceTableId() && id == data.getReferenceId()) {
@@ -780,21 +808,21 @@ public class SampleManager1 implements Serializable {
 
         private StorageViewDO add(int tableId, int id) {
             StorageViewDO data;
-        
+
             data = new StorageViewDO();
             data.setReferenceTableId(tableId);
             data.setReferenceId(id);
             if (storages == null)
                 storages = new ArrayList<StorageViewDO>();
             storages.add(data);
-        
+
             return data;
         }
 
         private void remove(int tableId, int id, int i) {
             int n;
             StorageViewDO data;
-        
+
             n = -1;
             for (int j = 0; j < storages.size(); j++ ) {
                 data = storages.get(j);
@@ -1205,6 +1233,13 @@ public class SampleManager1 implements Serializable {
 
     }
 
+    /**
+     * Returns the unique identifiers for each data object.
+     */
+    private String getSampleItemUid(Integer id) {
+        return "I:"+id;
+    }
+    
     /**
      * Adds the specified data object to the list of objects that should be
      * removed from the database.
