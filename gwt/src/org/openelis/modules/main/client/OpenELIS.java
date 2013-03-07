@@ -54,6 +54,7 @@ import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.order.client.VendorOrderScreen;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
+import org.openelis.modules.organization.client.OrganizationScreenUI;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.preferences.client.PreferencesScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
@@ -511,9 +512,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.organization());
-                            window.setContent(new OrganizationScreen(window));
+                            window.setSize("877px", "631px");
+                            window.setContent(new OrganizationScreenUI(window));
                             browser.addWindow(window, "organization");
                         } catch (Throwable e) {
                             e.printStackTrace();

@@ -77,55 +77,37 @@
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.name}" />
-                  :
-                </td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.name}" /></td>
                 <td colspan="6">
                   <w:TextBox ui:field="name" width="145px" case="LOWER" maxLength="20" field="String" required="true" />
                 </td>
               </tr>
               <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.description}" />
-                  :
-                </td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.description}" /></td>
                 <td colspan="6">
                   <w:TextBox ui:field="description" width="425px" case="MIXED" maxLength="60" field="String" />
                 </td>
               </tr>
               <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.reportDescription}" />
-                  :
-                </td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.reportDescription}" /></td>
                 <td colspan="6">
                   <w:TextBox ui:field="reportingDescription" width="425px" case="MIXED" maxLength="60" field="String" />
                 </td>
               </tr>
               <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.active}" />
-                  :
-                </td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.active}" /></td>
                 <td>
                   <w:CheckBox ui:field="isActive" />
                 </td>
               </tr>
               <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.beginDate}" />
-                  :
-                </td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.beginDate}" /></td>
                 <td>
                   <c:Calendar ui:field="activeBegin" width="90" required="true" />
                 </td>
               </tr>
               <tr>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.endDate}" />
-                  :
-                </td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.endDate}" /></td>
                 <td>
                   <c:Calendar ui:field="activeEnd" width="90px" required="true" />
                 </td>
