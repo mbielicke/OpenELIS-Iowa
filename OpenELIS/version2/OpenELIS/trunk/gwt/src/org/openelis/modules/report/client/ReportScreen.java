@@ -390,6 +390,8 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
                             } catch (IllegalArgumentException iargE) {
                                 // we don't set a default if we cannot parse it
                             }
+                        } else {
+                            cl.setValue(null);
                         }
                         break;
                     }
