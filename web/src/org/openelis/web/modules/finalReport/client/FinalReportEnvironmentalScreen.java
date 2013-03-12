@@ -41,6 +41,7 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -96,8 +97,10 @@ public class FinalReportEnvironmentalScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public FinalReportEnvironmentalScreen() throws Exception {
+    public FinalReportEnvironmentalScreen(WindowInt win) throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportEnvironmentalDef.class));
+        
+        setWindow(win);
 
         userPermission = UserCache.getPermission().getModule("w_final_environmental");
         if (userPermission == null)

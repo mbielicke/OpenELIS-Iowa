@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.pws.client;
 
-import org.openelis.modules.main.client.OpenELISDef;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface PWSDef extends OpenELISDef {
+public interface PWSDef extends ScreenDefInt {
 }

@@ -42,6 +42,7 @@ import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -96,8 +97,10 @@ public class SampleStatusScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public SampleStatusScreen() throws Exception {
+    public SampleStatusScreen(WindowInt win) throws Exception {
         super((ScreenDefInt)GWT.create(SampleStatusDef.class));
+        
+        setWindow(win);
 
         userPermission = UserCache.getPermission().getModule("w_status");
         if (userPermission == null)

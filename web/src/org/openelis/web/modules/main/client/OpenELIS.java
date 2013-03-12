@@ -29,10 +29,9 @@ package org.openelis.web.modules.main.client;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.widget.Label;
-import org.openelis.gwt.widget.web.WebWindow;
+import org.openelis.ui.screen.Screen;
+import org.openelis.ui.widget.Label;
+import org.openelis.ui.widget.web.WebWindow;
 import org.openelis.web.cache.UserCache;
 import org.openelis.web.modules.dataView.client.DataViewEnvironmentalScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScreen;
@@ -43,17 +42,23 @@ import org.openelis.web.modules.notificationPreference.client.NotificationPrefer
 import org.openelis.web.modules.sampleStatusReport.client.SampleStatusScreen;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 
@@ -61,16 +66,28 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * screen navigations will be handled by this class.
  * 
  */
-public class OpenELIS extends Screen {
+public class OpenELIS extends ResizeComposite {
+    
+    @UiTemplate("OpenELIS.ui.xml")
+    interface OpenELISUiBinder extends UiBinder<Widget, OpenELIS>{};
+    private static final OpenELISUiBinder uiBinder = GWT.create(OpenELISUiBinder.class);
 
     /**
      * This panel is where the screen content is displayed
-     */
-    protected AbsolutePanel           content, linksPanel;
+     */    
+    protected AbsolutePanel           linksPanel;
+    
+    @UiField
+    protected Label<String>           logo;
+    
+    @UiField
+    protected HorizontalPanel         header;
+    
 
     /**
      * Static window used to display status messages
      */
+    @UiField
     protected WebWindow               window;
 
     /**
@@ -85,12 +102,12 @@ public class OpenELIS extends Screen {
 
         Constants.setConstants(rpc.constants);
 
-        drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
-        window = new WebWindow();
+        initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
+        
+        setScreen(new HomeScreen(window), "Home", "home");
 
-        setScreen(new HomeScreen(), "Home", "home");
     }
 
     /**
@@ -101,18 +118,14 @@ public class OpenELIS extends Screen {
         Section section;
         Label<String> link;
 
-        content = (AbsolutePanel)def.getWidget("content");
-        content.add(window);
-
         //
         // link the logo with home screen
         //
-        link = (Label)def.getWidget("logo");
-        if (link != null) {
-            link.addClickHandler(new ClickHandler() {
+        if (logo != null) {
+            logo.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        setScreen(new HomeScreen(), "Home", "home");
+                        setScreen(new HomeScreen(window), "Home", "home");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -131,10 +144,8 @@ public class OpenELIS extends Screen {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        Screen screen = new FinalReportEnvironmentalScreen();
-                        setScreen(screen, Messages.get().environmentalFinalReport(),
+                        setScreen(new FinalReportEnvironmentalScreen(window), Messages.get().environmentalFinalReport(),
                                   "finalReportEnvironmental");
-                        window.setCrumbLink(null);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -148,11 +159,9 @@ public class OpenELIS extends Screen {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        Screen screen = new FinalReportPrivateWellScreen();
-                        setScreen(screen,
+                        setScreen(new FinalReportPrivateWellScreen(window),
                                   Messages.get().privateWellFinalReport(),
                                   "finalReportPrivateWell");
-                        window.setCrumbLink(null);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -166,9 +175,7 @@ public class OpenELIS extends Screen {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        Screen screen = new FinalReportSDWISScreen();
-                        setScreen(screen, Messages.get().sdwisFinalReport(),"finalReportSDWIS");
-                        window.setCrumbLink(null);
+                        setScreen(new FinalReportSDWISScreen(window), Messages.get().sdwisFinalReport(),"finalReportSDWIS");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -182,10 +189,8 @@ public class OpenELIS extends Screen {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        Screen screen = new DataViewEnvironmentalScreen();
-                        setScreen(screen, Messages.get().environmentalResultByAnalyte(),
+                        setScreen(new DataViewEnvironmentalScreen(window), Messages.get().environmentalResultByAnalyte(),
                                   "environmentalResultByAnalyte");
-                        window.setCrumbLink(null);
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -204,9 +209,7 @@ public class OpenELIS extends Screen {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        Screen screen = new SampleStatusScreen();
-                        setScreen(screen, Messages.get().sampleInhouseStatusReport(), "sampleStatus");
-                        window.setCrumbLink(null);
+                        setScreen(new SampleStatusScreen(window), Messages.get().sampleInhouseStatusReport(), "sampleStatus");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -226,9 +229,7 @@ public class OpenELIS extends Screen {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        Screen screen = new NotificationPreferenceScreen();
-                        setScreen(screen, Messages.get().notificationPreference(), "notificationPref");
-                        window.setCrumbLink(null);
+                        setScreen(new NotificationPreferenceScreen(window), Messages.get().notificationPreference(), "notificationPref");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -242,7 +243,6 @@ public class OpenELIS extends Screen {
             public void onClick(ClickEvent event) {
                 try {
                     Window.open("https://www.shl.uiowa.edu/ldap/loginView.jsp", "password", null);
-                    window.setCrumbLink(null);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
@@ -279,9 +279,9 @@ public class OpenELIS extends Screen {
      * This method is called to initialize the screen and set the main screen
      * content.
      */
-    private void setScreen(Screen screen, String name, String key) {
-        screen.getDefinition().setName(name);
-        window.setContent(screen);
+    private void setScreen(Widget screen, String name, String key) {
+        //screen.getDefinition().setName(name);
+        window.setContent(screen);//setContent(screen);
     }
 
     /**
@@ -336,8 +336,6 @@ public class OpenELIS extends Screen {
         }
 
         public Label<String> add(String text, String style) {
-            HorizontalPanel header;
-
             //
             // since the menus are based on user permission, we will delay adding a
             // menu section until the user has a menu item for that section.
@@ -346,8 +344,6 @@ public class OpenELIS extends Screen {
                 first = false;
                 section = new HorizontalPanel();
                 section.addStyleName("header-section");
-
-                header = (HorizontalPanel)def.getWidget("header");
                 header.add(section);
             }
             if (current == null || count % 4 == 0) {

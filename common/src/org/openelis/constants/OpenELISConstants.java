@@ -1303,11 +1303,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String auxGroups();
 
   /**
-   * Translated "The auxiliary group ''{0}'' has already been added ".
+   * Translated "The auxiliary group ''{0}'' has already been added".
    * 
-   * @return translated "The auxiliary group ''{0}'' has already been added "
+   * @return translated "The auxiliary group ''{0}'' has already been added"
    */
-  @DefaultMessage("The auxiliary group ''{0}'' has already been added ")
+  @DefaultMessage("The auxiliary group ''{0}'' has already been added")
   @Key("auxGrpAlreadyAddedException")
   String auxGrpAlreadyAddedException(String arg0);
 
@@ -5963,6 +5963,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Exit the application.")
   @Key("logoutDescription")
   String logoutDescription();
+
+  /**
+   * Translated "Logs ".
+   * 
+   * @return translated "Logs "
+   */
+  @DefaultMessage("Logs ")
+  @Key("logs")
+  String logs();
 
   /**
    * Translated "Lookup Item".

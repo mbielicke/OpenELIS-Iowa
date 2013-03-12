@@ -25,24 +25,23 @@
  */
 package org.openelis.modules.main.client;
 
-import org.openelis.constants.OpenELISConstants;
+import static org.openelis.modules.main.client.Logger.*;
+
+import java.util.logging.Level;
+
 import org.openelis.modules.main.client.resources.OpenELISResources;
 import org.openelis.ui.resources.UIResources;
 
-import com.google.gwt.cell.client.ButtonCellBase.DefaultAppearance.Resources;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.i18n.shared.GwtLocale;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.teklabs.gwt.i18n.client.LocaleFactory;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -61,7 +60,16 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         UIResources.INSTANCE.collapse().ensureInjected();
         UIResources.INSTANCE.text().ensureInjected();
         UIResources.INSTANCE.dragDrop().ensureInjected();
-        DeferredCommand.addCommand(new Command() {
+        
+        GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+            public void onUncaughtException(Throwable e) {
+                e.printStackTrace();
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                Window.alert("Sorry, but an unexpected error has occurred.  Please contact IT support");
+            }
+        });
+        
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -71,12 +79,13 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
                             RootLayoutPanel.get().add(new org.openelis.modules.main.client.OpenELIS());
                             SessionTimer.start();
                         } catch (Throwable e) {
-                            e.printStackTrace();
+                            remote.log(Level.SEVERE,e.getMessage(),e);
                             Window.alert("Unable to start app : " + e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
+                        remote.log(Level.SEVERE,caught.getMessage(),caught);
                         Window.alert(caught.getMessage());
                     }
                 });

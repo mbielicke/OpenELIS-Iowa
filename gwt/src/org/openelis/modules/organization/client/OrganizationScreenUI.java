@@ -25,6 +25,7 @@
  */
 package org.openelis.modules.organization.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DEFAULT;
@@ -178,6 +179,10 @@ public class OrganizationScreenUI extends Screen {
         setState(DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
+        
+        logger.fine("Organization Screen Opened");
+        
+        
     }
 
     /**
