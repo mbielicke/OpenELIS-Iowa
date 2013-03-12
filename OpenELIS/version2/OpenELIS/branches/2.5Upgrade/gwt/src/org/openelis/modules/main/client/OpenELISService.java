@@ -1,6 +1,7 @@
 package org.openelis.modules.main.client;
 
 import org.openelis.ui.common.Datetime;
+import org.openelis.domain.Constants;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
@@ -24,8 +25,8 @@ public class OpenELISService implements OpenELISServiceInt, OpenELISServiceIntAs
     }
 
     @Override
-    public void initialData(AsyncCallback<OpenELISRPC> callback) {
-        service.initialData(callback);
+    public void getConstants(AsyncCallback<Constants> callback) {
+        service.getConstants(callback);
     }
 
     @Override
@@ -39,11 +40,11 @@ public class OpenELISService implements OpenELISServiceInt, OpenELISServiceIntAs
     }
 
     @Override
-    public OpenELISRPC initialData() throws Exception {
-        Callback<OpenELISRPC> callback;
+    public Constants getConstants() throws Exception {
+        Callback<Constants> callback;
         
-        callback = new Callback<OpenELISRPC>();
-        service.initialData(callback);
+        callback = new Callback<Constants>();
+        service.getConstants(callback);
         return callback.getResult();
     }
 

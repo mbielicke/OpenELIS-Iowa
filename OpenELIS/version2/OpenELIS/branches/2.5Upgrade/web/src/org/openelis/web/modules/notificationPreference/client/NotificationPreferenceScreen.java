@@ -39,6 +39,7 @@ import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -78,9 +79,11 @@ public class NotificationPreferenceScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public NotificationPreferenceScreen() throws Exception {
+    public NotificationPreferenceScreen(WindowInt win) throws Exception {
         super((ScreenDefInt)GWT.create(NotificationPreferenceDef.class));
-
+        
+        setWindow(win);
+        
         userPermission = UserCache.getPermission().getModule("w_notify");
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Notification Preference Screen"));

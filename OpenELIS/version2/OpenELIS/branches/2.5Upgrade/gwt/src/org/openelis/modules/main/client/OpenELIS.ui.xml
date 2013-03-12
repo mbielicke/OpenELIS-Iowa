@@ -32,6 +32,7 @@
               <w:Menu label="{msg.application}">
                 <w:MenuItem description="{msg.preferenceDescription}" enabled="true" icon="{res.style.preferenceIcon}" ui:field="preference"
                   display="{msg.preference}" />
+                <w:MenuItem description="" enabled="true" ui:field="logs" display="{msg.logs}"/>
                 <w:MenuItem description="{msg.logoutDescription}" enabled="true" icon="{res.style.logoutIcon}" ui:field="logout"
                   display="{msg.logout}" />
               </w:Menu>

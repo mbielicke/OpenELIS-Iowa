@@ -1,6 +1,9 @@
 package org.openelis.modules.main.client;
 
+import static org.openelis.modules.main.client.Logger.remote;
+
 import java.util.Date;
+import java.util.logging.Level;
 
 import org.openelis.constants.OpenELISConstants;
 import org.openelis.ui.common.Datetime;
@@ -121,8 +124,8 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());//consts.couldNotCall());
-                //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
+                remote().log(Level.SEVERE,caught.getMessage(),caught);
+                Window.alert(caught.getMessage());
             }
         });
     }
@@ -137,8 +140,8 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(caught.getMessage());//OpenELIS.Messages.get().couldNotCall"));
-                //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
+                remote().log(Level.SEVERE,caught.getMessage(),caught);
+                Window.alert(caught.getMessage());
             }
         });
     }
@@ -163,8 +166,8 @@ public class SessionTimer {
         try {
             OpenELISService.get().logout();
         } catch (Exception e) {
+            remote().log(Level.SEVERE,e.getMessage(),e);
             Window.alert(e.getMessage());
-            //Application.logger().log(Level.SEVERE, e.getMessage(), e);
         }
 
         Window.open("OpenELIS.html", "_self", null);

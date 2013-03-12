@@ -44,6 +44,7 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -108,8 +109,10 @@ public class DataViewEnvironmentalScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public DataViewEnvironmentalScreen() throws Exception {
+    public DataViewEnvironmentalScreen(WindowInt win) throws Exception {
         super((ScreenDefInt)GWT.create(DataViewEnvironmentalDef.class));
+        
+        setWindow(win);
 
         userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
         if (userPermission == null)

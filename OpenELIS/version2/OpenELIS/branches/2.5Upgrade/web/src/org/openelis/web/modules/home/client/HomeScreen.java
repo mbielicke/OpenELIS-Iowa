@@ -27,6 +27,8 @@ package org.openelis.web.modules.home.client;
 
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.ui.widget.WindowInt;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -43,8 +45,11 @@ public class HomeScreen extends Screen {
 	/**
 	 * No-Arg constructor
 	 */
-	public HomeScreen() {
+	public HomeScreen(WindowInt win) {
 		super((ScreenDefInt)GWT.create(HomeScreenDef.class));
+		
+		setWindow(win);
+		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				initialize();
