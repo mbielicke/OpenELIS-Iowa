@@ -1,2 +1,0 @@
-serviceClass: org.openelis.web.modules.dataView.client.DataViewServiceInt
-path: 6E4B3392A89DDC5AC8DE0884335D014D.gwt.rpc
