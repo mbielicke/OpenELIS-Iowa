@@ -41,7 +41,7 @@ import org.openelis.bean.SystemVariableBean;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.web.modules.dataView.client.DataViewServiceInt;
 

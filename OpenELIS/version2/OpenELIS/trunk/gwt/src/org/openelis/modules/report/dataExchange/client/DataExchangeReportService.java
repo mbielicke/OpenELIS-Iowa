@@ -2,9 +2,9 @@ package org.openelis.modules.report.dataExchange.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;

@@ -35,7 +35,7 @@ import javax.servlet.http.HttpSession;
 
 import org.openelis.bean.ApplicationBean;
 import org.openelis.bean.UserCacheBean;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.Datetime;
 import org.openelis.util.UTFResource;
 import org.openelis.web.modules.main.client.OpenELISRPC;
 import org.openelis.web.modules.main.client.OpenELISWebServiceInt;

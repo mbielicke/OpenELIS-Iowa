@@ -27,13 +27,14 @@ package org.openelis.modules.report.orderRequestForm.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
 import org.openelis.modules.report.client.RequestFormReportService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -43,7 +44,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class OrderRequestFormReportScreen extends ReportScreen<Query> {
 
-    public OrderRequestFormReportScreen(ScreenWindowInt window) throws Exception { 
+    public OrderRequestFormReportScreen(WindowInt window) throws Exception { 
         drawScreen(new ScreenDef());        
         this.window = window;
     }

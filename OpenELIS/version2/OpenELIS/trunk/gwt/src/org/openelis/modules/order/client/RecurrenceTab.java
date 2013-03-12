@@ -30,11 +30,11 @@ import java.util.Date;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LocalizedException;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -50,6 +50,7 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -67,7 +68,7 @@ public class RecurrenceTab extends Screen {
     private TableWidget       table;
     private boolean           loaded;
 
-    public RecurrenceTab(ScreenDefInt def, ScreenWindowInt window) {
+    public RecurrenceTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -131,7 +132,7 @@ public class RecurrenceTab extends Screen {
         recurrenceFrequency = (TextBox)def.getWidget(OrderMeta.getRecurrenceFrequency());
         addScreenHandler(recurrenceFrequency, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                recurrenceFrequency.setValue(recurrence.getFrequency());
+                recurrenceFrequency.setFieldValue(recurrence.getFrequency());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -163,7 +164,7 @@ public class RecurrenceTab extends Screen {
         parentOrderId = (TextBox)def.getWidget(OrderMeta.getParentOrderId());
         addScreenHandler(parentOrderId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentOrderId.setValue(manager.getOrder().getParentOrderId());
+                parentOrderId.setFieldValue(manager.getOrder().getParentOrderId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -245,7 +246,7 @@ public class RecurrenceTab extends Screen {
 
         if (bdt == null || edt == null || freq == null || freq < 1 || unit == null) {
             if (state == State.ADD || state == State.UPDATE)
-                Window.alert(consts.get("datesFreqUnitNotSpec"));
+                Window.alert(Messages.get().datesFreqUnitNotSpec());
             return model;
         }
 
@@ -452,7 +453,7 @@ public class RecurrenceTab extends Screen {
                 switch (nmon) {
                     case 1:
                         if (nday > 29 || ( (nyr % 4 != 0) && nday > 28)) {
-                            recurrenceFrequency.addException(new LocalizedException(consts.get("notAllDatesValid")));
+                            recurrenceFrequency.addException(new Exception(Messages.get().notAllDatesValid()));
                             return false;
                         }
                         break;
@@ -461,7 +462,7 @@ public class RecurrenceTab extends Screen {
                     case 8:
                     case 10:
                         if (nday > 30) {
-                            recurrenceFrequency.addException(new LocalizedException(consts.get("notAllDatesValid")));
+                            recurrenceFrequency.addException(new Exception(Messages.get().notAllDatesValid()));
                             return false;
                         }
                         break;
@@ -474,7 +475,7 @@ public class RecurrenceTab extends Screen {
             while (nyr < eyr) {
                 nyr += freq;
                 if (nyr % 4 != 0) {
-                    recurrenceFrequency.addException(new LocalizedException(consts.get("notAllDatesValid")));
+                    recurrenceFrequency.addException(new Exception(Messages.get().notAllDatesValid()));
                     return false;
                 }
             }
@@ -492,7 +493,7 @@ public class RecurrenceTab extends Screen {
         if (bdt == null || edt == null) {
             recurrenceActiveEnd.clearExceptions();
         } else if (edt.before(bdt)) {
-            recurrenceActiveEnd.addException(new LocalizedException(consts.get("endDateAfterBeginDateException")));
+            recurrenceActiveEnd.addException(new Exception(Messages.get().endDateAfterBeginDateException()));
             return false;
         } else {
             recurrenceActiveEnd.clearExceptions();

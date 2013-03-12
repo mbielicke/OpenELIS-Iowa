@@ -1,8 +1,8 @@
 package org.openelis.modules.report.turnaroundStatistic.client;
 
 import org.openelis.domain.TurnAroundReportViewVO;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;

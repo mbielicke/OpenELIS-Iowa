@@ -28,11 +28,12 @@ package org.openelis.modules.test.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -323,7 +324,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
 
     private void cancel() {
         if (validate()) {
-            Window.alert(consts.get("prepTestRequiredException"));
+            Window.alert(Messages.get().prepTestRequiredException());
             window.close();
             ActionEvent.fire(this, Action.CANCEL, null);
         }
@@ -485,8 +486,8 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 }
                 
                 if (sectionId == null) {
-                    errorsList.add(new FormErrorException("prepTestNeedsSection",
-                                                          (String)item.cells.get(0).getValue()));
+                    errorsList.add(new FormErrorException(Messages.get().prepTestNeedsSection(
+                                                          (String)item.cells.get(0).getValue())));
                     break;
                 } else {
                     selectedRow = new ArrayList<Object>(3);

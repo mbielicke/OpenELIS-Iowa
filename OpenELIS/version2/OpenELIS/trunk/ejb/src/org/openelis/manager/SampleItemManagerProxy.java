@@ -30,12 +30,13 @@ import java.util.HashMap;
 
 import org.openelis.bean.SampleItemBean;
 import org.openelis.bean.StorageBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class SampleItemManagerProxy {
@@ -132,14 +133,14 @@ public class SampleItemManagerProxy {
         SampleItemListItem item;
         // you have to have at least 1 sample item
         if (man.count() == 0)
-            errorsList.add(new FormErrorException("minOneSampleItemException"));
+            errorsList.add(new FormErrorException(Messages.get().minOneSampleItemException()));
 
         for (int i = 0; i < man.count(); i++ ) {
             sequenceNum = man.getSampleItemAt(i).getItemSequence().toString();
             // validate the sample item
             if (man.getSampleItemAt(i).getTypeOfSampleId() == null)
-                errorsList.add(new FormErrorException("sampleItemTypeMissing",
-                                                      sequenceNum));
+                errorsList.add(new FormErrorException(Messages.get().sampleItemTypeMissing(
+                                                      sequenceNum)));
 
             item = man.getItemAt(i);
             // validate the children

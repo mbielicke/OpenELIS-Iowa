@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;

@@ -26,7 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class SamplePrivateWellManagerProxy {

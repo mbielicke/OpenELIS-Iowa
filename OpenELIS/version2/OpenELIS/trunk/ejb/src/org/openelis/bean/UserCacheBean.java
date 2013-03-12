@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -38,11 +39,12 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.SectionPermission.SectionFlags;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.constants.Messages;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -216,7 +218,7 @@ public class UserCacheBean  {
      */
     public void applyPermission(String module, ModuleFlags flag) throws Exception {
         if ( !getPermission().has(module, flag))
-            throw new PermissionException("modulePermException", flag.name(), module);
+            throw new PermissionException(Messages.get().modulePermException(flag.name(), module));
     }
 
     /**
@@ -225,7 +227,7 @@ public class UserCacheBean  {
      */
     public void applyPermission(String section, SectionFlags flag) throws Exception {
         if ( !getPermission().has(section, flag))
-            throw new PermissionException("sectionPermException", flag.name(), section);
+            throw new PermissionException(Messages.get().sectionPermException(flag.name(), section));
     }
 
     /**
@@ -320,4 +322,5 @@ public class UserCacheBean  {
 
         return data;
     }
+    
 }

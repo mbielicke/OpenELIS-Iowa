@@ -32,16 +32,17 @@ import java.util.List;
 import org.openelis.bean.AuxFieldBean;
 import org.openelis.bean.AuxFieldValueBean;
 import org.openelis.bean.DictionaryBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.GridFieldErrorException;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.AuxFieldManager.AuxFieldListItem;
 import org.openelis.meta.AuxFieldGroupMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utils.EJBFactory;
 
@@ -234,10 +235,10 @@ public class AuxFieldManagerProxy {
 
                     if (numDefault > 1) {
                         fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
-                        throw new InconsistencyException("auxMoreThanOneDefaultException");
+                        throw new InconsistencyException(Messages.get().auxMoreThanOneDefaultException());
                     } else if (count == 1 && numDefault == 1 && j > 0) {
                         fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
-                        throw new InconsistencyException("auxDefaultWithNoOtherTypeException");
+                        throw new InconsistencyException(Messages.get().auxDefaultWithNoOtherTypeException());
                     }
 
                     if (DataBaseUtil.isDifferent(firstTypeId, typeId) &&
@@ -250,7 +251,7 @@ public class AuxFieldManagerProxy {
                         // the type "Default".
                         //
                         fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
-                        throw new InconsistencyException("auxMoreThanOneTypeException");
+                        throw new InconsistencyException(Messages.get().auxMoreThanOneTypeException());
                     }
 
                     if (DataBaseUtil.isSame(Constants.dictionary().AUX_NUMERIC, typeId)) {
@@ -263,15 +264,15 @@ public class AuxFieldManagerProxy {
                         entryId = Integer.parseInt(value);
                         fieldName = AuxFieldGroupMeta.getFieldValueValue();
                         if (entryId == null)
-                            throw new ParseException("illegalDictEntryException");
+                            throw new ParseException(Messages.get().illegalDictEntryException());
 
                         if ( !dictList.contains(entryId))
                             dictList.add(entryId);
                         else
-                            throw new InconsistencyException("auxDictEntryNotUniqueException");
+                            throw new InconsistencyException(Messages.get().auxDictEntryNotUniqueException());
                     }
                 } catch (ParseException pe) {
-                    list.add(new GridFieldErrorException(pe.getKey(),
+                    list.add(new GridFieldErrorException(pe.getMessage(),
                                                          i,
                                                          j,
                                                          fieldName,
@@ -293,7 +294,7 @@ public class AuxFieldManagerProxy {
         for (int i = 0; i < nrList.size(); i++ ) {
             lr = nrList.get(i);
             if (lr.intersects(nr))
-                throw new InconsistencyException("auxNumRangeOverlapException");
+                throw new InconsistencyException(Messages.get().auxNumRangeOverlapException());
         }
 
         nrList.add(nr);

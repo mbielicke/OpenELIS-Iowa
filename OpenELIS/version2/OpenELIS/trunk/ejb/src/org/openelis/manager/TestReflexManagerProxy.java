@@ -31,14 +31,15 @@ import java.util.List;
 
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.TestReflexBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class TestReflexManagerProxy {
@@ -162,7 +163,7 @@ public class TestReflexManagerProxy {
                     idsList.add(ids);
                 } else {
                     fieldName = TestMeta.getReflexAddTestName();
-                    throw new InconsistencyException("fieldUniqueOnlyException");
+                    throw new InconsistencyException(Messages.get().fieldUniqueOnlyException());
                 }
                 
                 fieldName = TestMeta.getReflexTestResultValue();
@@ -172,7 +173,7 @@ public class TestReflexManagerProxy {
                 typeId = getResultTypeForReflexId(anaResGrpMap, resGrpRsltMap, data);
                     
                 if(DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DEFAULT, typeId))                             
-                    throw new InconsistencyException("resultDefaultReflexTestException");
+                    throw new InconsistencyException(Messages.get().resultDefaultReflexTestException());
                         
 
             } catch (InconsistencyException ex) {
@@ -224,9 +225,9 @@ public class TestReflexManagerProxy {
             //
             resList = resGrpRsltMap.get(rg);
             if (resList == null) {
-                throw new InconsistencyException("resultDoesntBelongToAnalyteException");
+                throw new InconsistencyException(Messages.get().resultDoesntBelongToAnalyteException());
             } else if (!listContainsId(resList, resId)) {
-                throw new InconsistencyException("resultDoesntBelongToAnalyteException");
+                throw new InconsistencyException(Messages.get().resultDoesntBelongToAnalyteException());
             }
         }
     }

@@ -26,11 +26,14 @@
 package org.openelis.web.modules.main.client;
 
 
+import org.openelis.web.modules.main.client.resources.Resources;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -45,11 +48,11 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         // All Events will flow this this handler first before any other
         // handlers.
         Event.addNativePreviewHandler(this);
-
+        Resources.INSTANCE.style().ensureInjected();
         try {
-            RootPanel.get("main").add(new OpenELIS());
-            RootPanel.get("main").setHeight("100%");
-            RootPanel.get().setStyleName("AppBackground");
+            RootPanel.get("main").clear();
+            RootLayoutPanel.get().add(new OpenELIS());
+
             SessionTimer.start();
         } catch (Throwable e) {
             e.printStackTrace();

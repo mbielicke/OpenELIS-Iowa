@@ -37,18 +37,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.entity.Section;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.SectionMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -181,7 +182,7 @@ public class SectionBean {
         name = data.getName();
         exceptionList = new ValidationErrorsList();
         if (name == null) {
-            exceptionList.add(new FieldErrorException("fieldRequiredException",
+            exceptionList.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                       SectionMeta.getName()));
         } else {
             query = manager.createNamedQuery("Section.FetchByName");
@@ -190,7 +191,7 @@ public class SectionBean {
             for (i = 0; i < list.size(); i++ ) {
                 sectDO = list.get(i);
                 if ( !sectDO.getId().equals(data.getId())) {
-                    exceptionList.add(new FieldErrorException("fieldUniqueException",
+                    exceptionList.add(new FieldErrorException(Messages.get().fieldUniqueException(),
                                                               SectionMeta.getName()));
                     break;
                 }
@@ -198,12 +199,12 @@ public class SectionBean {
         }
 
         if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null)
-            exceptionList.add(new FieldErrorException("orgNotSpecForExtSectionException",
+            exceptionList.add(new FieldErrorException(Messages.get().orgNotSpecForExtSectionException(),
                                                       null));
 
         psecId = data.getParentSectionId();
         if (psecId != null && psecId.equals(data.getId())) {
-            exceptionList.add(new FieldErrorException("sectItsOwnParentException",
+            exceptionList.add(new FieldErrorException(Messages.get().sectItsOwnParentException(),
                                                       SectionMeta.getParentSectionName()));
         }
 

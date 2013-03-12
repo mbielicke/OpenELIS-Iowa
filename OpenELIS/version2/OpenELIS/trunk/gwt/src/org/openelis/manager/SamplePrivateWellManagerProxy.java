@@ -25,9 +25,10 @@
 */
 package org.openelis.manager;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.gwt.common.FieldErrorWarning;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FieldErrorWarning;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.meta.SampleMeta;
 
 public class SamplePrivateWellManagerProxy {
@@ -57,6 +58,6 @@ public class SamplePrivateWellManagerProxy {
         wellDO = man.getPrivateWell();
         
         if(wellDO.getOrganizationId() == null && wellDO.getReportToName() == null)
-            errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getWellOrganizationName()));
+            errorsList.add(new FieldErrorWarning(Messages.get().reportToMissingWarning(), SampleMeta.getWellOrganizationName()));
     }
 }

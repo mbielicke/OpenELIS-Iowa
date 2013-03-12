@@ -25,195 +25,197 @@
  */
 package org.openelis.modules.method.client;
 
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DELETE;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
+
 import java.util.ArrayList;
-import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AppButton.ButtonState;
-import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.MethodMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.event.StateChangeHandler;
+import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.ScreenNavigator;
+import org.openelis.ui.widget.AtoZButtons;
+import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.CheckBox;
+import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.MenuItem;
+import org.openelis.ui.widget.TextBox;
+import org.openelis.ui.widget.WindowInt;
+import org.openelis.ui.widget.calendar.Calendar;
+import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
 
 public class MethodScreen extends Screen {
+    @UiTemplate("Method.ui.xml")
+    interface MethodUiBinder extends UiBinder<Widget, MethodScreen> {
+    };
 
-    private MethodDO         data;
-    private ModulePermission userPermission;
+    public static final MethodUiBinder uiBinder = GWT.create(MethodUiBinder.class);
 
-    private CalendarLookUp   activeBegin, activeEnd;
-    private TextBox          name, description, reportingDescription;
-    private CheckBox         isActive;
-    private AppButton        queryButton, previousButton, nextButton, addButton,
-                    updateButton, commitButton, abortButton;
-    protected MenuItem       history;
-    private ButtonGroup      atoz;
-    private ScreenNavigator  nav;
+    private MethodDO                   data;
+    private ModulePermission           userPermission;
 
-    public MethodScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(MethodDef.class));
+    @UiField
+    protected Calendar                 activeBegin, activeEnd;
+    @UiField
+    protected TextBox<String>          name, description, reportingDescription;
+    @UiField
+    protected CheckBox                 isActive;
+    @UiField
+    protected Button                   query, previous, next, add, update, commit, abort, atozNext,
+                                       atozPrev, optionsButton;
 
+    @UiField
+    protected MenuItem                 history;
+    @UiField
+    protected AtoZButtons              atozButtons;
+
+    @UiField
+    protected Table                    atozTable;
+
+    private ScreenNavigator<IdNameVO>  nav;
+
+    public MethodScreen(WindowInt window) throws Exception {
+        setWindow(window);
+        
+        initWidget(uiBinder.createAndBindUi(this));
+        
         userPermission = UserCache.getPermission().getModule("method");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Method Screen");
+            throw new PermissionException(Messages.get().screenPermException("Method Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         data = new MethodDO();
 
         initialize();
-        setState(State.DEFAULT);
+        setState(DEFAULT);
         DataChangeEvent.fire(this);
     }
 
     private void initialize() {
-        queryButton = (AppButton)def.getWidget("query");
-        addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                query();
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                if (isState(QUERY)) {
+                    query.lock();
+                    query.setPressed(true);
+                } else
+                    query.setPressed(false);
             }
+        });
+        
+        addShortcut(query, 'q', CTRL);
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
-                                          .contains(event.getState()) &&
-                                   userPermission.hasSelectPermission());
-                if (event.getState() == State.QUERY)
-                    queryButton.setState(ButtonState.LOCK_PRESSED);
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                previous.setEnabled(isState(DISPLAY));
+            }
+        });
+        
+        addShortcut(previous,'p',CTRL);
+
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                next.setEnabled(isState(DISPLAY));
+            }
+        });
+        
+        addShortcut(next,'n',CTRL);
+
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                if (isState(ADD)) {
+                    add.lock();
+                    add.setPressed(true);
+                } else
+                    add.setPressed(false);
+            }
+        });
+        
+        addShortcut(add,'a',CTRL);
+
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
+                if (isState(UPDATE)) {
+                    update.lock();
+                    update.setPressed(true);
+                } else
+                    update.setPressed(false);
+            }
+        });
+        
+        addShortcut(update,'u',CTRL);
+
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                commit.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
+            }
+        });
+        
+        addShortcut(commit,'m',CTRL);
+
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                abort.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
+            }
+        });
+        
+        addShortcut(abort,'o',CTRL);
+
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
+                history.setEnabled(isState(DISPLAY));
+                optionsButton.setEnabled(isState(DISPLAY));
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
-        addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                previous();
-            }
+        history.addCommand(new Command() {
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY)
-                                             .contains(event.getState()));
-            }
-        });
-
-        nextButton = (AppButton)def.getWidget("next");
-        addScreenHandler(nextButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                next();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                nextButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
-        });
-
-        addButton = (AppButton)def.getWidget("add");
-        addScreenHandler(addButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                add();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
-                                        .contains(event.getState()) &&
-                                 userPermission.hasAddPermission());
-                if (event.getState() == State.ADD)
-                    addButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
-
-        updateButton = (AppButton)def.getWidget("update");
-        addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                update();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    userPermission.hasUpdatePermission());
-                if (event.getState() == State.UPDATE)
-                    updateButton.setState(ButtonState.LOCK_PRESSED);
-            }
-        });
-
-        commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                commit();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
-            }
-        });
-
-        abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                abort();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
-            }
-        });
-
-        history = (MenuItem)def.getWidget("methodHistory");
-        addScreenHandler(history, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
+            @Override
+            public void execute() {
                 history();
             }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-            }
         });
 
-        name = (TextBox)def.getWidget(MethodMeta.getName());
-        addScreenHandler(name, new ScreenEventHandler<String>() {
+        addScreenHandler(name, MethodMeta.getName(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
             }
@@ -222,15 +224,17 @@ public class MethodScreen extends Screen {
                 data.setName(event.getValue());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                name.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                   .contains(event.getState()));
-                name.setQueryMode(event.getState() == State.QUERY);
+            public void onStateChange(StateChangeEvent event) {
+                name.setEnabled(isState(QUERY, ADD, UPDATE));
+                name.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? description : activeEnd;
             }
         });
 
-        description = (TextBox)def.getWidget(MethodMeta.getDescription());
-        addScreenHandler(description, new ScreenEventHandler<String>() {
+        addScreenHandler(description, MethodMeta.getDescription(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 description.setValue(data.getDescription());
             }
@@ -239,34 +243,38 @@ public class MethodScreen extends Screen {
                 data.setDescription(event.getValue());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
-                description.setQueryMode(event.getState() == State.QUERY);
+            public void onStateChange(StateChangeEvent event) {
+                description.setEnabled(isState(QUERY, ADD, UPDATE));
+                description.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? reportingDescription : name;
             }
         });
 
-        reportingDescription = (TextBox)def.getWidget(MethodMeta.getReportingDescription());
-        addScreenHandler(reportingDescription, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                reportingDescription.setValue(data.getReportingDescription());
-            }
+        addScreenHandler(reportingDescription,
+                         MethodMeta.getReportingDescription(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 reportingDescription.setValue(data.getReportingDescription());
+                             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setReportingDescription(event.getValue());
-            }
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 data.setReportingDescription(event.getValue());
+                             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                reportingDescription.enable(EnumSet.of(State.QUERY,
-                                                       State.ADD,
-                                                       State.UPDATE)
-                                                   .contains(event.getState()));
-                reportingDescription.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
+                             public void onStateChange(StateChangeEvent event) {
+                                 reportingDescription.setEnabled(isState(QUERY, ADD, UPDATE));
+                                 reportingDescription.setQueryMode(isState(QUERY));
+                             }
 
-        isActive = (CheckBox)def.getWidget(MethodMeta.getIsActive());
-        addScreenHandler(isActive, new ScreenEventHandler<String>() {
+                             public Widget onTab(boolean forward) {
+                                 return forward ? isActive : description;
+                             }
+                         });
+
+        addScreenHandler(isActive, MethodMeta.getIsActive(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(data.getIsActive());
             }
@@ -275,15 +283,17 @@ public class MethodScreen extends Screen {
                 data.setIsActive(event.getValue());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                       .contains(event.getState()));
-                isActive.setQueryMode(event.getState() == State.QUERY);
+            public void onStateChange(StateChangeEvent event) {
+                isActive.setEnabled(isState(QUERY, ADD, UPDATE));
+                isActive.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? activeBegin : reportingDescription;
             }
         });
 
-        activeBegin = (CalendarLookUp)def.getWidget(MethodMeta.getActiveBegin());
-        addScreenHandler(activeBegin, new ScreenEventHandler<Datetime>() {
+        addScreenHandler(activeBegin, MethodMeta.getActiveBegin(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(data.getActiveBegin());
             }
@@ -292,15 +302,17 @@ public class MethodScreen extends Screen {
                 data.setActiveBegin(event.getValue());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                activeBegin.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
-                activeBegin.setQueryMode(event.getState() == State.QUERY);
+            public void onStateChange(StateChangeEvent event) {
+                activeBegin.setEnabled(isState(QUERY, ADD, UPDATE));
+                activeBegin.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? activeEnd : isActive;
             }
         });
 
-        activeEnd = (CalendarLookUp)def.getWidget(MethodMeta.getActiveEnd());
-        addScreenHandler(activeEnd, new ScreenEventHandler<Datetime>() {
+        addScreenHandler(activeEnd, MethodMeta.getActiveEnd(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(data.getActiveEnd());
             }
@@ -309,19 +321,22 @@ public class MethodScreen extends Screen {
                 data.setActiveEnd(event.getValue());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                activeEnd.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                        .contains(event.getState()));
-                activeEnd.setQueryMode(event.getState() == State.QUERY);
+            public void onStateChange(StateChangeEvent event) {
+                activeEnd.setEnabled(isState(QUERY, ADD, UPDATE));
+                activeEnd.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? name : activeBegin;
             }
         });
 
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<IdNameVO>(def) {
+        nav = new ScreenNavigator<IdNameVO>(atozTable, atozPrev, atozNext) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(9);
                 MethodService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -329,59 +344,57 @@ public class MethodScreen extends Screen {
                         setQueryResult(result);
                     }
 
-                                     public void onFailure(Throwable error) {
-                                         setQueryResult(null);
-                                         if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
-                                             setState(State.DEFAULT);
-                                         } else if (error instanceof LastPageException) {
-                                             window.setError(consts.get("noMoreRecordInDir"));
-                                         } else {
-                                             Window.alert("Error: Method call query failed; " +
-                                                          error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
-                                         }
-                                     }
-                                 });
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(Messages.get().noRecordsFound());
+                            setState(DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError(Messages.get().noMoreRecordInDir());
+                        } else {
+                            Window.alert("Error: Method call query failed; " + error.getMessage());
+                            window.setError("Query Failed");//Messages.get().queryFailed());
+                        }
+                    }
+                });
             }
 
             public boolean fetch(IdNameVO entry) {
                 return fetchById( (entry == null) ? null : entry.getId());
             }
 
-            public ArrayList<TableDataRow> getModel() {
+            public ArrayList<Item<Integer>> getModel() {
                 ArrayList<IdNameVO> result;
-                ArrayList<TableDataRow> model;
+                ArrayList<Item<Integer>> model;
 
                 result = nav.getQueryResult();
-                model = new ArrayList<TableDataRow>();
+                model = new ArrayList<Item<Integer>>();
                 if (result != null) {
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName()));
+                        model.add(new Item<Integer>(entry.getId(), entry.getName()));
                 }
                 return model;
             }
         };
 
-        atoz = (ButtonGroup)def.getWidget("atozButtons");
-        addScreenHandler(atoz, new ScreenEventHandler<Object>() {
-            public void onStateChange(StateChangeEvent<State> event) {
+        addStateChangeHandler(new StateChangeHandler() {
+            public void onStateChange(StateChangeEvent event) {
                 boolean enable;
-                enable = EnumSet.of(State.DEFAULT, State.DISPLAY)
-                                .contains(event.getState()) &&
-                         userPermission.hasSelectPermission();
-                atoz.enable(enable);
+                enable = isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission();
+                atozButtons.setEnabled(enable);
                 nav.enable(enable);
             }
+        });
 
+        atozButtons.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 Query query;
                 QueryData field;
 
                 field = new QueryData();
-                field.key = MethodMeta.getName();
-                field.query = ((AppButton)event.getSource()).action;
-                field.type = QueryData.Type.STRING;
+                field.setKey(MethodMeta.getName());
+                field.setQuery( ((Button)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -389,126 +402,142 @@ public class MethodScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
+                if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
     }
 
-    protected void query() {
+    @UiHandler("query")
+    protected void query(ClickEvent event) {
         data = new MethodDO();
-        setState(State.QUERY);
+        setState(QUERY);
         DataChangeEvent.fire(this);
 
-        setFocus(name);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        name.setFocus(true);
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
-    protected void next() {
+    @UiHandler("next")
+    protected void next(ClickEvent event) {
         nav.next();
     }
 
-    protected void previous() {
+    @UiHandler("previous")
+    protected void previous(ClickEvent event) {
         nav.previous();
     }
 
-    protected void add() {
+    @UiHandler("add")
+    protected void add(ClickEvent event) {
         data = new MethodDO();
         data.setIsActive("Y");
-        setState(State.ADD);
+        setState(ADD);
         DataChangeEvent.fire(this);
 
-        setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        name.setFocus(true);
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
-    protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+    @UiHandler("update")
+    protected void update(ClickEvent event) {
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             data = MethodService.get().fetchForUpdate(data.getId());
 
-            setState(State.UPDATE);
+            setState(UPDATE);
             DataChangeEvent.fire(this);
-            setFocus(name);
+            name.setFocus(true);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
     }
 
-    protected void commit() {
-        setFocus(null);
+    @UiHandler("commit")
+    protected void commit(ClickEvent event) {
+        finishEditing();
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
-        if (state == State.QUERY) {
-            Query query;
+        switch (state) {
+            case QUERY:
+                Query query;
 
-            query = new Query();
-            query.setFields(getQueryFields());
-            nav.setQuery(query);
-        } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
-            try {
-                data = MethodService.get().add(data);
+                query = new Query();
+                query.setFields(getQueryFields());
+                nav.setQuery(query);
+                break;
+            case ADD:
+                window.setBusy(Messages.get().adding());
+                try {
+                    data = MethodService.get().add(data);
 
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitAdd(): " + e.getMessage());
+                    setState(DISPLAY);
+                    DataChangeEvent.fire(this);
+                    window.setDone(Messages.get().addingComplete());
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                } catch (Exception e) {
+                    Window.alert("commitAdd(): " + e.getMessage());
+                    window.clearStatus();
+                }
+                break;
+            case UPDATE:
+                window.setBusy(Messages.get().updating());
+                try {
+                    data = MethodService.get().update(data);
+
+                    setState(DISPLAY);
+                    DataChangeEvent.fire(this);
+                    window.setDone(Messages.get().updatingComplete());
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                } catch (Exception e) {
+                    Window.alert("commitUpdate(): " + e.getMessage());
+                    window.clearStatus();
+                }
+            default :
                 window.clearStatus();
-            }
-        } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
-            try {
-                data = MethodService.get().update(data);
-
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
-            } catch (ValidationErrorsList e) {
-                showErrors(e);
-            } catch (Exception e) {
-                Window.alert("commitUpdate(): " + e.getMessage());
-                window.clearStatus();
-            }
         }
     }
 
-    protected void abort() {
-        setFocus(null);
+    @UiHandler("abort")
+    protected void abort(ClickEvent event) {
+        finishEditing();
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
-        if (state == State.QUERY) {
-            fetchById(null);
-            window.setDone(consts.get("queryAborted"));
-        } else if (state == State.ADD) {
-            fetchById(null);
-            window.setDone(consts.get("addAborted"));
-        } else if (state == State.UPDATE) {
-            try {
-                data = MethodService.get().abortUpdate(data.getId());
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
+        switch (state) {
+            case QUERY:
                 fetchById(null);
-            }
-            window.setDone(consts.get("updateAborted"));
-        } else {
-            window.clearStatus();
+                window.setDone(Messages.get().queryAborted());
+                break;
+            case ADD:
+                fetchById(null);
+                window.setDone(Messages.get().addAborted());
+                break;
+            case UPDATE:
+                try {
+                    data = MethodService.get().abortUpdate(data.getId());
+                    setState(DISPLAY);
+                    DataChangeEvent.fire(this);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    fetchById(null);
+                }
+                window.setDone(Messages.get().updateAborted());
+                break;
+            default:
+                window.clearStatus();
         }
     }
 
@@ -516,28 +545,26 @@ public class MethodScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(consts.get("methodHistory"),
-                                  Constants.table().METHOD,
-                                  hist);
+        HistoryScreen.showHistory(Messages.get().methodHistory(), Constants.table().METHOD, hist);
     }
 
     protected boolean fetchById(Integer id) {
         if (id == null) {
             data = new MethodDO();
-            setState(State.DEFAULT);
+            setState(DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 data = MethodService.get().fetchById(id);
-                setState(State.DISPLAY);
+                setState(DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

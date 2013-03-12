@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.bean.StorageBean;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class StorageManagerProxy {

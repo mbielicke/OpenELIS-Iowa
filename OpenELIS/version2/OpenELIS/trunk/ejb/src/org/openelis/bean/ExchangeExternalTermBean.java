@@ -38,14 +38,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ExchangeExternalTermDO;
 import org.openelis.domain.ExchangeExternalTermViewDO;
 import org.openelis.entity.ExchangeExternalTerm;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -185,10 +186,10 @@ public class ExchangeExternalTermBean {
 
         list = new ValidationErrorsList();
         if (data.getProfileId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              ExchangeLocalTermMeta.getExternalTermExchangeProfileId()));
         if (DataBaseUtil.isEmpty(data.getExternalTerm()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              ExchangeLocalTermMeta.getExternalTermExternalTerm()));
         
         if (list.size() > 0)

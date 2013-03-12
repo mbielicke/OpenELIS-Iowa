@@ -3,7 +3,7 @@ package org.openelis.modules.inventoryAdjustment.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.InventoryAdjustmentDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;

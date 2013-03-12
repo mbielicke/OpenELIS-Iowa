@@ -28,6 +28,7 @@ package org.openelis.modules.shipping.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ShippingItemDO;
@@ -57,6 +58,7 @@ import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.modules.order.client.OrderService;
 import org.openelis.modules.order.client.SendoutOrderScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -74,7 +76,7 @@ public class ItemTab extends Screen {
     private SendoutOrderScreen sendoutOrderScreen;
     private boolean            loaded;
 
-    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ItemTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 
@@ -394,7 +396,7 @@ public class ItemTab extends Screen {
         ScreenWindow modal;
 
         try {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             OrderService.get().fetchByShippingItemId(data.getId(), new SyncCallback<OrderViewDO>() {
                 public void onSuccess(OrderViewDO result) {                                    
                     try {
@@ -419,7 +421,7 @@ public class ItemTab extends Screen {
             
             if(orderManager != null) {
                 modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                modal.setName(consts.get("sendoutOrder"));
+                modal.setName(Messages.get().sendoutOrder());
                 if (sendoutOrderScreen == null)
                     sendoutOrderScreen = new SendoutOrderScreen(modal);
 

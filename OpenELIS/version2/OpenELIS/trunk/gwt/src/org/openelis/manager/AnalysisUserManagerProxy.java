@@ -26,8 +26,8 @@
 package org.openelis.manager;
 
 import org.openelis.cache.UserCache;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.modules.analysisUser.client.AnalysisUserService;
 
 public class AnalysisUserManagerProxy {

@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.SectionCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
@@ -37,12 +38,12 @@ import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class AnalysisManager implements Serializable {
     private static final long                       serialVersionUID = 1L;
@@ -199,9 +200,9 @@ public class AnalysisManager implements Serializable {
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasCancelPermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesCancelAnalysis",
+            errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesCancelAnalysis(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
         
@@ -218,9 +219,9 @@ public class AnalysisManager implements Serializable {
                 if (data.getId().equals(checkData.getPreAnalysisId()) &&
                                 Constants.dictionary().ANALYSIS_RELEASED.equals(checkData.getStatusId())) {
                     errorsList = new ValidationErrorsList();
-                    errorsList.add(new FormErrorException("noCancelPrepWithReleasedTest",
+                    errorsList.add(new FormErrorException(Messages.get().noCancelPrepWithReleasedTest(
                                                           data.getTestName(), data.getMethodName(),
-                                                          checkData.getTestName(), checkData.getMethodName()));
+                                                          checkData.getTestName(), checkData.getMethodName())));
                     throw errorsList;
                 }
             }
@@ -253,7 +254,7 @@ public class AnalysisManager implements Serializable {
             Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
             Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("wrongStatusNoInitiate"));
+            errorsList.add(new FormErrorException(Messages.get().wrongStatusNoInitiate()));
             throw errorsList;
         }
 
@@ -263,9 +264,9 @@ public class AnalysisManager implements Serializable {
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesInitiateAnalysis",
+            errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesInitiateAnalysis(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 
@@ -276,9 +277,9 @@ public class AnalysisManager implements Serializable {
                      .hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
                                                .getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleTypeInvalid",
+            errorsList.add(new FormErrorException(Messages.get().sampleTypeInvalid(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 
@@ -311,7 +312,7 @@ public class AnalysisManager implements Serializable {
             !Constants.dictionary().ANALYSIS_INITIATED.equals(data.getStatusId()) &&
             !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("wrongStatusNoComplete"));
+            errorsList.add(new FormErrorException(Messages.get().wrongStatusNoComplete()));
             throw errorsList;
 
         }
@@ -322,9 +323,9 @@ public class AnalysisManager implements Serializable {
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesCompleteAnalysis",
+            errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesCompleteAnalysis(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 
@@ -335,9 +336,9 @@ public class AnalysisManager implements Serializable {
                      .hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
                                                .getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleTypeInvalid",
+            errorsList.add(new FormErrorException(Messages.get().sampleTypeInvalid(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 
@@ -379,13 +380,13 @@ public class AnalysisManager implements Serializable {
         // make sure the status is completed
         if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("analysisAlreadyReleased"));
+            errorsList.add(new FormErrorException(Messages.get().analysisAlreadyReleased()));
             throw errorsList;
         } else if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("completeStatusRequiredToRelease",
+            errorsList.add(new FormErrorException(Messages.get().completeStatusRequiredToRelease(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 
@@ -393,10 +394,10 @@ public class AnalysisManager implements Serializable {
         sample = items.get(index).bundle.getSampleManager().getSample();
         if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(sample.getStatusId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleNotVerifiedForAnalysisRelease",
+            errorsList.add(new FormErrorException(Messages.get().sampleNotVerifiedForAnalysisRelease(
                                                   sample.getAccessionNumber().toString(),
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 
@@ -406,9 +407,9 @@ public class AnalysisManager implements Serializable {
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasReleasePermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesReleaseAnalysis",
+            errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesReleaseAnalysis(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 
@@ -436,19 +437,19 @@ public class AnalysisManager implements Serializable {
         errorsList = new ValidationErrorsList();
 
         if ( !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()))
-            errorsList.add(new FormErrorException("wrongStatusUnrelease"));
+            errorsList.add(new FormErrorException(Messages.get().wrongStatusUnrelease()));
 
         // make sure the user has release permission for the section
         perm = proxy().getSystemUserPermission();
         section = proxy().getSectionFromId(data.getSectionId());
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasReleasePermission())
-            errorsList.add(new FormErrorException("insufficientPrivilegesUnreleaseAnalysis",
+            errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesUnreleaseAnalysis(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
 
         if (intenotes == null || !intenotes.hasEditingNote())
-            errorsList.add(new FormErrorException("unreleaseNoNoteException"));
+            errorsList.add(new FormErrorException(Messages.get().unreleaseNoNoteException()));
 
         if (errorsList.size() > 0)
             throw errorsList;
@@ -487,9 +488,9 @@ public class AnalysisManager implements Serializable {
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("insufficientPrivilegesUnInitiateAnalysis",
+            errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesUnInitiateAnalysis(
                                                   data.getTestName(),
-                                                  data.getMethodName()));
+                                                  data.getMethodName())));
             throw errorsList;
         }
 

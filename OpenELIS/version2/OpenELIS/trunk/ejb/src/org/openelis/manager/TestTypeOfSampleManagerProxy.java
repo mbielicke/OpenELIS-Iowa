@@ -28,10 +28,11 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.TestTypeOfSampleBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class TestTypeOfSampleManagerProxy {   
@@ -97,7 +98,7 @@ public class TestTypeOfSampleManagerProxy {
         sl = EJBFactory.getTestTypeOfSample();
         count = man.count();
         if (count == 0) {
-            list.add(new FieldErrorException("atleastOneSampleTypeException", null));
+            list.add(new FieldErrorException(Messages.get().atleastOneSampleTypeException(), null));
         } else {
             for (int i = 0; i < count; i++ ) {
                 data = man.getTypeAt(i);

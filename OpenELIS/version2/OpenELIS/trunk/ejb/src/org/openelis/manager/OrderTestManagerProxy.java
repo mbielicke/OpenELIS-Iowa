@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import org.openelis.bean.OrderTestAnalyteBean;
 import org.openelis.bean.OrderTestBean;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.OrderTestManager.OrderTestListItem;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class OrderTestManagerProxy {

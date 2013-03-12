@@ -32,8 +32,8 @@ package org.openelis.meta;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.openelis.gwt.common.Meta;
-import org.openelis.gwt.common.MetaMap;
+import org.openelis.ui.common.Meta;
+import org.openelis.ui.common.MetaMap;
 
 public class TestMeta implements Meta, MetaMap {
 	

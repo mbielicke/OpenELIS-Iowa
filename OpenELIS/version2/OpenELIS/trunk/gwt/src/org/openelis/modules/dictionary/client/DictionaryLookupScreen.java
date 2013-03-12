@@ -27,11 +27,12 @@ package org.openelis.modules.dictionary.client;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -234,26 +235,26 @@ public class DictionaryLookupScreen extends Screen implements
         catId = category.getValue();        
         if(catId != null) {            
             field = new QueryData();
-            field.key = CategoryMeta.getId();
-            field.type = QueryData.Type.INTEGER;
-            field.query = catId.toString();
+            field.setKey(CategoryMeta.getId());
+            field.setType(QueryData.Type.INTEGER);
+            field.setQuery(catId.toString());
             fields.add(field);
         }
         field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = pattern;
+        field.setKey(CategoryMeta.getDictionaryEntry());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(pattern);
         fields.add(field);
         
         field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
+        field.setKey(CategoryMeta.getIsSystem());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery("N");
         fields.add(field);
         
         query.setFields(fields);
         
-        window.setBusy(consts.get("querying"));
+        window.setBusy(Messages.get().querying());
         
         DictionaryService.get().fetchByEntry(query, new AsyncCallback<ArrayList<IdNameVO>>() {
             public void onSuccess(ArrayList<IdNameVO> result) {
@@ -263,10 +264,10 @@ public class DictionaryLookupScreen extends Screen implements
             public void onFailure(Throwable error) {
                 setQueryResult(null);
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));                   
+                    window.setDone(Messages.get().noRecordsFound());                   
                 } else {
                     Window.alert("Error: Query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }               
             }
         });                        
@@ -297,6 +298,6 @@ public class DictionaryLookupScreen extends Screen implements
         
         dictEntTable.load(model);
         
-        window.setDone(consts.get("done"));
+        window.setDone(Messages.get().loadCompleteMessage());
     }
 }

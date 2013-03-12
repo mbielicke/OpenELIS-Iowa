@@ -3,7 +3,7 @@ package org.openelis.modules.storage.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.StorageManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;

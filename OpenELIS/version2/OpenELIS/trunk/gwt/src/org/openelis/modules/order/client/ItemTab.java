@@ -33,6 +33,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -47,7 +48,7 @@ public class ItemTab extends Screen {
     private boolean               loaded, hasExtraCols;
     private int                   numColumns;
 
-    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ItemTab(ScreenDefInt def, WindowInt window) {
 
         setDefinition(def);
         setWindow(window);

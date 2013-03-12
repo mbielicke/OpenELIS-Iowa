@@ -27,20 +27,23 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.modules.order.client.OrderService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OrderRecurrenceReportScreen extends ReportScreen<Query> {
     
-    public OrderRecurrenceReportScreen() throws Exception { 
+    public OrderRecurrenceReportScreen(WindowInt window) throws Exception {
+        setWindow(window);
         drawScreen(new ScreenDef());      
-        setName(consts.get("orderRecurrence"));
+        setName(Messages.get().orderRecurrence());
     }
     
     @Override
@@ -56,7 +59,7 @@ public class OrderRecurrenceReportScreen extends ReportScreen<Query> {
             window.setError("Failed");
             Window.alert(e.getMessage());
         }
-        window.setDone(consts.get("recurredOrders"));
+        window.setDone(Messages.get().recurredOrders());
 
         
     }

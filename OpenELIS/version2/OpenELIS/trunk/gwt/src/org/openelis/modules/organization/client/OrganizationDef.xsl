@@ -149,12 +149,12 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
-                <textbox key="{meta:getName()}" width="225" case="UPPER" max="40" tab="{meta:getAddressMultipleUnit()},{meta:getId()}" field="String" required="true" />
+                <textbox key="{meta:getName()}" width="225" case="UPPER" max="40" tab="{meta:getAddressMultipleUnit()},{meta:getId()}" field="String"  />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'city')" />:
                 </text>
                 <widget colspan="3">
-                  <textbox key="{meta:getAddressCity()}" width="212" case="UPPER" max="30" tab="{meta:getAddressState()},{meta:getAddressStreetAddress()}" field="String" required="true" />
+                  <textbox key="{meta:getAddressCity()}" width="212" case="UPPER" max="30" tab="{meta:getAddressState()},{meta:getAddressStreetAddress()}" field="String" />
                 </widget>
               </row>
               <row>
@@ -175,7 +175,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'address')" />:
                 </text>
-                <textbox key="{meta:getAddressStreetAddress()}" width="212" case="UPPER" max="30" tab="{meta:getAddressCity()},{meta:getAddressMultipleUnit()}" field="String" required="true" />
+                <textbox key="{meta:getAddressStreetAddress()}" width="212" case="UPPER" max="30" tab="{meta:getAddressCity()},{meta:getAddressMultipleUnit()}" field="String"  />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'country')" />:
                 </text>

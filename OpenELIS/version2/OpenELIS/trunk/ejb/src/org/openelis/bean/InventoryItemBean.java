@@ -37,18 +37,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.entity.InventoryItem;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -243,19 +244,19 @@ public class InventoryItemBean {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), InventoryItemMeta.getName()));
 
         if (DataBaseUtil.isEmpty(data.getStoreId()))
-            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getStoreId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), InventoryItemMeta.getStoreId()));
         
         if (DataBaseUtil.isEmpty(data.getQuantityMinLevel()))
-            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getQuantityMinLevel()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), InventoryItemMeta.getQuantityMinLevel()));
 
         if (DataBaseUtil.isEmpty(data.getDispensedUnitsId()))
-            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getDispensedUnitsId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), InventoryItemMeta.getDispensedUnitsId()));
         
         if (DataBaseUtil.isEmpty(data.getQuantityToReorder()))
-            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getQuantityToReorder()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), InventoryItemMeta.getQuantityToReorder()));
 
         //
         // check for duplicate lot #
@@ -263,25 +264,25 @@ public class InventoryItemBean {
         if (! DataBaseUtil.isEmpty(data.getName()) && ! DataBaseUtil.isEmpty(data.getStoreId())) {
             dup = fetchActiveByNameAndStore(data.getName(), data.getStoreId(), 1);
             if (dup.size() > 0 && DataBaseUtil.isDifferent(dup.get(0).getId(), data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", InventoryItemMeta.getName()));
+                list.add(new FieldErrorException(Messages.get().fieldUniqueException(), InventoryItemMeta.getName()));
         }        
 
         if ("Y".equals(data.getIsBulk()) && "Y".equals(data.getIsSerialMaintained()))
-            list.add(new FieldErrorException("itemCantBeBulkAndSerialReqException", null)); 
+            list.add(new FieldErrorException(Messages.get().itemCantBeBulkAndSerialReqException(), null)); 
         
         if ("Y".equals(data.getIsBulk()) && "Y".equals(data.getIsLotMaintained()))
-            list.add(new FieldErrorException("itemCantBeBulkAndLotReqException", null));
+            list.add(new FieldErrorException(Messages.get().itemCantBeBulkAndLotReqException(), null));
                 
         if ( !DataBaseUtil.isEmpty(data.getParentInventoryItemId())) {
             parentItem = fetchById(data.getParentInventoryItemId());            
             if ("Y".equals(data.getIsLotMaintained()) && !"Y".equals(parentItem.getIsLotMaintained()))
-                list.add(new FieldErrorException("parentNotFlaggedLotReqException", InventoryItemMeta.getIsLotMaintained()));    
+                list.add(new FieldErrorException(Messages.get().parentNotFlaggedLotReqException(), InventoryItemMeta.getIsLotMaintained()));    
             
             if ( !DataBaseUtil.isEmpty(data.getParentRatio())) {
                 if (data.getParentRatio() <= 0)
-                    list.add(new FieldErrorException("parentRatioMoreThanZeroException", InventoryItemMeta.getParentRatio()));
+                    list.add(new FieldErrorException(Messages.get().parentRatioMoreThanZeroException(), InventoryItemMeta.getParentRatio()));
             } else {
-                list.add(new FieldErrorException("parentRatioReqIfParentItemSpecException", InventoryItemMeta.getParentRatio()));
+                list.add(new FieldErrorException(Messages.get().parentRatioReqIfParentItemSpecException(), InventoryItemMeta.getParentRatio()));
             }
         }               
         

@@ -29,20 +29,22 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.web.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataDataViewVO;
 import org.openelis.domain.AuxFieldDataViewVO;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.TestAnalyteDataViewVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -107,12 +109,14 @@ public class DataViewEnvironmentalScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public DataViewEnvironmentalScreen() throws Exception {
+    public DataViewEnvironmentalScreen(WindowInt win) throws Exception {
         super((ScreenDefInt)GWT.create(DataViewEnvironmentalDef.class));
+        
+        setWindow(win);
 
         userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Environmental Result By Analyte");
+            throw new PermissionException(Messages.get().screenPermException("Environmental Result By Analyte"));
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -251,7 +255,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         accessionFrom = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberFrom());
         addScreenHandler(accessionFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionFrom.setValue(data.getAccessionNumberFrom());
+                accessionFrom.setFieldValue(data.getAccessionNumberFrom());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -273,7 +277,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         accessionTo = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberTo());
         addScreenHandler(accessionTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionTo.setValue(data.getAccessionNumberTo());
+                accessionTo.setFieldValue(data.getAccessionNumberTo());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1130,7 +1134,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
         query = new Query();
@@ -1139,22 +1143,22 @@ public class DataViewEnvironmentalScreen extends Screen {
          * if user does not enter any search details, throw an error.
          */
         if (queryList.size() == 0) {
-            window.setError(consts.get("nofieldSelectedError"));
+            window.setError(Messages.get().nofieldSelectedError());
             return;
         }
         /*
          * To make sure that the data belonging to environmental domain gets returned
          */
         field = new QueryData();
-        field.query = "E";
-        field.key = SampleWebMeta.getDomain();
-        field.type = QueryData.Type.STRING;        
+        field.setQuery("E");
+        field.setKey(SampleWebMeta.getDomain());
+        field.setType(QueryData.Type.STRING);        
         queryList.add(field);
         
         query.setFields(queryList);
         data.setQueryFields(query.getFields());
         
-        window.setBusy(consts.get("querying"));
+        window.setBusy(Messages.get().querying());
 
         try {
             temp = DataViewReportService.get().fetchAnalyteAndAuxFieldForWebEnvironmental(data);
@@ -1162,7 +1166,7 @@ public class DataViewEnvironmentalScreen extends Screen {
             data.setAuxFields(temp.getAuxFields());
             loadDeck();
         } catch (NotFoundException e) {
-            Window.alert(consts.get("noSamplesFoundChangeSearch"));
+            Window.alert(Messages.get().noSamplesFoundChangeSearch());
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -1229,12 +1233,12 @@ public class DataViewEnvironmentalScreen extends Screen {
                 }
             }
             if (numAux == 0) {
-                window.setError(consts.get("selectOneAnaOrAux"));
+                window.setError(Messages.get().selectOneAnaOrAux());
                 return;
             }
         }
         try {
-            window.setBusy(consts.get("genReportMessage"));
+            window.setBusy(Messages.get().genReportMessage());
             st = DataViewReportService.get().runReportForWebEnvironmental(data);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "/openelisweb/openelisweb/report?file=" + st.getMessage();
@@ -1298,52 +1302,52 @@ public class DataViewEnvironmentalScreen extends Screen {
 
         for (i = 0; i < fields.size(); i++ ) {
             field = fields.get(i);
-            if ( (SampleWebMeta.getReleasedDateFrom()).equals(field.key)) {
+            if ( (SampleWebMeta.getReleasedDateFrom()).equals(field.getKey())) {
                 if (fRel == null) {
                     fRel = field;
-                    fRel.key = SampleWebMeta.getReleasedDate();
+                    fRel.setKey(SampleWebMeta.getReleasedDate());
                 } else {
-                    fRel.query = field.query + ".." + fRel.query;
+                    fRel.setQuery(field.getQuery() + ".." + fRel.getQuery());
                     list.add(fRel);
                 }
-            } else if ( (SampleWebMeta.getReleasedDateTo()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getReleasedDateTo()).equals(field.getKey())) {
                 if (fRel == null) {
                     fRel = field;
-                    fRel.key = SampleWebMeta.getReleasedDate();
+                    fRel.setKey(SampleWebMeta.getReleasedDate());
                 } else {
-                    fRel.query = fRel.query + ".." + field.query;
+                    fRel.setQuery(fRel.getQuery() + ".." + field.getQuery());
                     list.add(fRel);
                 }
-            } else if ( (SampleWebMeta.getCollectionDateFrom()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getCollectionDateFrom()).equals(field.getKey())) {
                 if (fCol == null) {
                     fCol = field;
-                    fCol.key = SampleWebMeta.getCollectionDate();
+                    fCol.setKey(SampleWebMeta.getCollectionDate());
                 } else {
-                    fCol.query = field.query + ".." + fCol.query;
+                    fCol.setQuery(field.getQuery() + ".." + fCol.getQuery());
                     list.add(fCol);
                 }
-            } else if ( (SampleWebMeta.getCollectionDateTo()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getCollectionDateTo()).equals(field.getKey())) {
                 if (fCol == null) {
                     fCol = field;
-                    fCol.key = SampleWebMeta.getCollectionDate();
+                    fCol.setKey(SampleWebMeta.getCollectionDate());
                 } else {
-                    fCol.query = fCol.query + ".." + field.query;
+                    fCol.setQuery(fCol.getQuery() + ".." + field.getQuery());
                     list.add(fCol);
                 }
-            } else if ( (SampleWebMeta.getAccessionNumberFrom()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getAccessionNumberFrom()).equals(field.getKey())) {
                 if (fAcc == null) {
                     fAcc = field;
-                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                    fAcc.setKey(SampleWebMeta.getAccessionNumber());
                 } else {
-                    fAcc.query = field.query + ".." + fAcc.query;
+                    fAcc.setQuery(field.getQuery() + ".." + fAcc.getQuery());
                     list.add(fAcc);
                 }
-            } else if ( (SampleWebMeta.getAccessionNumberTo()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getAccessionNumberTo()).equals(field.getKey())) {
                 if (fAcc == null) {
                     fAcc = field;
-                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                    fAcc.setKey(SampleWebMeta.getAccessionNumber());
                 } else {
-                    fAcc.query = fAcc.query + ".." + field.query;
+                    fAcc.setQuery(fAcc.getQuery() + ".." + field.getQuery());
                     list.add(fAcc);
                 }
             } else {

@@ -25,7 +25,7 @@
  */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * The class extends inventory item DO and carries parent inventory item name.

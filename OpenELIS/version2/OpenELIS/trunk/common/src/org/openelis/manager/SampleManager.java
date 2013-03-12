@@ -27,16 +27,17 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class SampleManager implements Serializable, HasAuxDataInt {
     private static final long                     serialVersionUID = 1L;
@@ -176,7 +177,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
 
         if ( !Constants.dictionary().SAMPLE_RELEASED.equals(sample.getStatusId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("wrongStatusUnrelease"));
+            errorsList.add(new FormErrorException(Messages.get().wrongStatusUnrelease()));
             throw errorsList;
         }
 
@@ -197,7 +198,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
         if (DataBaseUtil.isEmpty(newDomain) || sample.getDomain().equals(newDomain))
             return;
         if (deletedDomainManager != null)
-            throw new InconsistencyException("canChangeDomainOnlyOnce");
+            throw new InconsistencyException(Messages.get().canChangeDomainOnlyOnce());
         
         deletedDomainManager = domainManager;        
         sample.setDomain(newDomain);        

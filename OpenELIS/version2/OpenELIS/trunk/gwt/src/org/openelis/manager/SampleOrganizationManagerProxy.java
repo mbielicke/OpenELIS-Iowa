@@ -25,11 +25,12 @@
  */
 package org.openelis.manager;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleOrganizationDO;
-import org.openelis.gwt.common.FieldErrorWarning;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FieldErrorWarning;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.SampleService;
 
@@ -68,13 +69,13 @@ public class SampleOrganizationManagerProxy {
         }
 
         if (numBillTo > 1)
-            errorsList.add(new FormErrorException("multipleBillToException"));
+            errorsList.add(new FormErrorException(Messages.get().multipleBillToException()));
 
         if (numReportTo > 1)
-            errorsList.add(new FormErrorException("multipleReportToException"));
+            errorsList.add(new FormErrorException(Messages.get().multipleReportToException()));
 
         if (validateReportTo && numReportTo == 0)
-            errorsList.add(new FieldErrorWarning("reportToMissingWarning",
+            errorsList.add(new FieldErrorWarning(Messages.get().reportToMissingWarning(),
                                                  SampleMeta.getOrgName()));
     }
 }

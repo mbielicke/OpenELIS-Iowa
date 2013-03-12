@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 
 public class OrganizationManager implements Serializable, HasNotesInt {
 

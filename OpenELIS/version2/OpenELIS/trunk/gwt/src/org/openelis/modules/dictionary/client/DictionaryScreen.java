@@ -32,20 +32,23 @@ import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.BeforeDragStartEvent;
 import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -113,26 +116,15 @@ public class DictionaryScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    public DictionaryScreen() throws Exception {
+    public DictionaryScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryDef.class));
+        
+        setWindow(window);
         
         userPermission = UserCache.getPermission().getModule("dictionary");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Dictionary Screen");
+            throw new PermissionException(Messages.get().screenPermException("Dictionary Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         manager = CategoryManager.getInstance();
 
         initialize();
@@ -522,12 +514,12 @@ public class DictionaryScreen extends Screen {
                 r = dictTable.getSelectedRow();
                 try {
                     if (r > -1 && dictTable.numRows() > 0) {
-                        window.setBusy(consts.get("validatingDelete"));
+                        window.setBusy(Messages.get().validatingDelete());
                         validateForDelete(manager.getEntries().getEntryAt(r));
                         dictTable.deleteRow(r);
                     }
                 } catch (ValidationErrorsList e) {
-                    Window.alert(consts.get("dictionaryDeleteException"));
+                    Window.alert(Messages.get().dictionaryDeleteException());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     e.printStackTrace();
@@ -564,7 +556,7 @@ public class DictionaryScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(20);
                 DictionaryService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -575,14 +567,14 @@ public class DictionaryScreen extends Screen {
                     public void onFailure(Throwable error) {
                         setQueryResult(null);
                         if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
+                            window.setDone(Messages.get().noRecordsFound());
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
+                            window.setError(Messages.get().noMoreRecordInDir());
                         } else {
                             Window.alert("Error: Dictionary call query failed; " +
                                          error.getMessage());
-                            window.setError(consts.get("queryFailed"));
+                            window.setError(Messages.get().queryFailed());
                         }
                     }
                 });
@@ -621,9 +613,9 @@ public class DictionaryScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = CategoryMeta.getName();
-                field.query = ((AppButton)event.getSource()).action;
-                field.type = QueryData.Type.STRING;
+                field.setKey(CategoryMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).action);
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -631,11 +623,11 @@ public class DictionaryScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -664,7 +656,7 @@ public class DictionaryScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -683,7 +675,7 @@ public class DictionaryScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
@@ -706,7 +698,7 @@ public class DictionaryScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -717,13 +709,13 @@ public class DictionaryScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -731,12 +723,12 @@ public class DictionaryScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -749,14 +741,14 @@ public class DictionaryScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchByCategoryId(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchByCategoryId(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -766,7 +758,7 @@ public class DictionaryScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchByCategoryId(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -776,7 +768,7 @@ public class DictionaryScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getCategory().getId(), manager.getCategory().getName());
-        HistoryScreen.showHistory(consts.get("categoryHistory"), Constants.table().CATEGORY, hist);
+        HistoryScreen.showHistory(Messages.get().categoryHistory(), Constants.table().CATEGORY, hist);
     }
 
     protected void dictionaryHistory() {
@@ -799,7 +791,7 @@ public class DictionaryScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("dictionaryHistory"), Constants.table().DICTIONARY, list);
+        HistoryScreen.showHistory(Messages.get().dictionaryHistory(), Constants.table().DICTIONARY, list);
     }
 
     protected boolean fetchByCategoryId(Integer id) {
@@ -807,14 +799,14 @@ public class DictionaryScreen extends Screen {
             manager = CategoryManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
-                window.setBusy(consts.get("fetching"));
+                window.setBusy(Messages.get().fetching());
                 manager = CategoryManager.fetchWithEntries(id);
             } catch (Exception e) {
                 fetchByCategoryId(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
             setState(State.DISPLAY);

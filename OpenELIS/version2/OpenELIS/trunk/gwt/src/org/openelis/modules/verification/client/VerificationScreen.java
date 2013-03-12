@@ -26,13 +26,12 @@
 package org.openelis.modules.verification.client;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -40,13 +39,13 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.sample.client.SampleService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class VerificationScreen extends Screen {
@@ -55,26 +54,15 @@ public class VerificationScreen extends Screen {
 
     protected TextBox        barcode;
 
-    public VerificationScreen() throws Exception {
+    public VerificationScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(VerificationDef.class));
 
+        setWindow(window);
+        
         userPermission = UserCache.getPermission().getModule("verification");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Verification Screen");
+            throw new PermissionException(Messages.get().screenPermException("Verification Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         initialize();
         setState(State.DEFAULT);
         setFocus(barcode);
@@ -111,11 +99,11 @@ public class VerificationScreen extends Screen {
     public void reset() {
         setFocus(barcode);
         barcode.setValue(null);
-        window.setDone(consts.get("done"));
+        window.setDone(Messages.get().loadCompleteMessage());
     }
 
     private void verifySample(String code) {
-        LocalizedException le;
+        Exception le;
         SampleManager manager;
 
         if (DataBaseUtil.isEmpty(code))
@@ -126,12 +114,12 @@ public class VerificationScreen extends Screen {
 
         if (code.matches("[0-9]+")) {
             try {
-                window.setBusy(consts.get("updating"));
+                window.setBusy(Messages.get().updating());
 
                 manager = SampleService.get().fetchByAccessionNumber(new Integer(code));
                 if ( !Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
                                                                                .getStatusId())) {
-                    window.setError(consts.get("wrongStatusForVerifying"));
+                    window.setError(Messages.get().wrongStatusForVerifying());
                     return;
                 }
 
@@ -140,18 +128,18 @@ public class VerificationScreen extends Screen {
                 try {
                     manager.validate();
                     manager.update();
-                    window.setDone(consts.get("updatingComplete"));
+                    window.setDone(Messages.get().updatingComplete());
                 } catch (ValidationErrorsList e) {
                     if (e.hasErrors()) {
                         showErrors(e);
                     } else if (e.hasWarnings()) {
                         manager.setStatusWithError(true);
                         manager.update();
-                        window.setDone(consts.get("updatingComplete"));
+                        window.setDone(Messages.get().updatingComplete());
                     }
                 }
             } catch (NotFoundException nfE) {
-                le = new LocalizedException("invalidEntryException", code);
+                le = new Exception(Messages.get().invalidEntryException(code));
                 window.setError(le.getMessage());
             } catch (Exception anyE) {
                 Window.alert(anyE.getMessage());
@@ -162,7 +150,7 @@ public class VerificationScreen extends Screen {
                 barcode.setValue(null);
             }
         } else {
-            le = new LocalizedException("invalidEntryException", code);
+            le = new Exception(Messages.get().invalidEntryException(code));
             window.setError(le.getMessage());
         }
     }

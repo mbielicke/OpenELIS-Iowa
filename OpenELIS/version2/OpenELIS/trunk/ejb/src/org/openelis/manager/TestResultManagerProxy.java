@@ -34,16 +34,17 @@ import java.util.Set;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.bean.TestResultBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.GridFieldErrorException;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 import org.openelis.utils.EJBFactory;
@@ -172,12 +173,12 @@ public class TestResultManagerProxy {
                 if ( !unitIsValid(unitId, ttsm.getTypes())) {
                     unitText = dcl.getById(unitId).getEntry();
 
-                    list.add(new GridFieldErrorException("illegalUnitOfMeasureException",
+                    list.add(new GridFieldErrorException(Messages.get().illegalUnitOfMeasureException(unitText),
                                                          i,
                                                          j,
                                                          TestMeta.getResultUnitOfMeasureId(),
-                                                         "resultTable",
-                                                         unitText));
+                                                         "resultTable"
+                                                         ));
                     continue;
                 }
 
@@ -212,7 +213,7 @@ public class TestResultManagerProxy {
                                                    typeId)) {
                         entryId = Integer.parseInt(value);
                         if (entryId == null)
-                            throw new ParseException("illegalDictEntryException");
+                            throw new ParseException(Messages.get().illegalDictEntryException());
 
                         if ( !dictList.contains(entryId)) {
                             dictList.add(entryId);
@@ -224,9 +225,7 @@ public class TestResultManagerProxy {
                             // message to show at the bottom of Test screen
                             // and not in the table
                             //
-                            list.add(new FieldErrorException("testDictEntryNotUniqueException",
-                                                             null,
-                                                             String.valueOf(i + 1)));
+                            list.add(new FieldErrorException(Messages.get().testDictEntryNotUniqueException(String.valueOf(i + 1)),null));
                         }
                     } else if (DataBaseUtil.isSame(Constants.dictionary().TEST_RES_TYPE_DEFAULT,
                                                    typeId)) {
@@ -255,9 +254,7 @@ public class TestResultManagerProxy {
                                 // screen
                                 // and not in the table
                                 //
-                                list.add(new FieldErrorException("testMoreThanOneDefaultForUnitException",
-                                                                 null,
-                                                                 String.valueOf(i + 1)));
+                                list.add(new FieldErrorException(Messages.get().testMoreThanOneDefaultForUnitException(String.valueOf(i + 1)), null));
 
                                 defErrorAdded = true;
                             }
@@ -277,15 +274,13 @@ public class TestResultManagerProxy {
                             // message to show at the bottom of Test screen
                             // and not in the table
                             //
-                            list.add(new FieldErrorException("testMoreThanOneAlphaTypeException",
-                                                             null,
-                                                             String.valueOf(i + 1)));
+                            list.add(new FieldErrorException(Messages.get().testMoreThanOneAlphaTypeException(String.valueOf(i + 1)), null));
                             alphaErrorAdded = true;
                         }
                         alphaPresent = true;
                     }
                 } catch (ParseException ex) {
-                    list.add(new GridFieldErrorException(ex.getKey(),
+                    list.add(new GridFieldErrorException(ex.getMessage(),
                                                          i,
                                                          j,
                                                          fieldName,
@@ -329,9 +324,8 @@ public class TestResultManagerProxy {
                                             tmpData.getTypeId()) &&
                         size == 1) {
                         tmpData = typeDataList.get(0);
-                        list.add(new FieldErrorException("testDefaultWithNoOtherTypeException",
-                                                         null,
-                                                         String.valueOf(tmpData.getResultGroup())));
+                        list.add(new FieldErrorException(Messages.get().testDefaultWithNoOtherTypeException(String.valueOf(tmpData.getResultGroup())),
+                                                         null));
                     }
                 }
 
@@ -352,7 +346,7 @@ public class TestResultManagerProxy {
             for (int i = 0; i < trList.size(); i++ ) {
                 lr = trList.get(i);
                 if (lr.intersects(tr))
-                    throw new InconsistencyException("testTiterRangeOverlapException");
+                    throw new InconsistencyException(Messages.get().testTiterRangeOverlapException());
             }
             trList.add(tr);
         } else {
@@ -372,7 +366,7 @@ public class TestResultManagerProxy {
             for (int i = 0; i < nrList.size(); i++ ) {
                 lr = nrList.get(i);
                 if (lr.intersects(nr))
-                    throw new InconsistencyException("testNumRangeOverlapException");
+                    throw new InconsistencyException(Messages.get().testNumRangeOverlapException());
             }
             nrList.add(nr);
         } else {

@@ -29,9 +29,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ToDoWorksheetVO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -55,7 +57,7 @@ public class WorksheetTab extends Screen {
     private ArrayList<ToDoWorksheetVO> fullList;
     private TableWidget                 table;
     
-    public WorksheetTab(ScreenDefInt def, ScreenWindowInt window) {
+    public WorksheetTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();        
@@ -90,7 +92,7 @@ public class WorksheetTab extends Screen {
             Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
             table.load(model);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             ToDoService.get().getWorksheet(new AsyncCallback<ArrayList<ToDoWorksheetVO>>() {
                 public void onSuccess(ArrayList<ToDoWorksheetVO> result) {
                     ArrayList<TableDataRow> model;         
@@ -104,7 +106,7 @@ public class WorksheetTab extends Screen {
 
                 public void onFailure(Throwable error) {
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert(error.getMessage());
                         error.printStackTrace();

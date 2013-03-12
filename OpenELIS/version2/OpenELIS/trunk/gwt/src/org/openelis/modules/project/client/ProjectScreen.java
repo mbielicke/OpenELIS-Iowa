@@ -30,21 +30,18 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -62,7 +59,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -79,12 +75,15 @@ import org.openelis.manager.ProjectParameterManager;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.scriptlet.client.ScriptletService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -104,26 +103,15 @@ public class ProjectScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    public ProjectScreen() throws Exception {
+    public ProjectScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(ProjectDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("project");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Project Screen");
+            throw new PermissionException(Messages.get().screenPermException("Project Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         manager = ProjectManager.getInstance();
 
         // Setup link between Screen and widget Handlers
@@ -250,7 +238,7 @@ public class ProjectScreen extends Screen {
         id = (TextBox<Integer>)def.getWidget(ProjectMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                id.setValue(manager.getProject().getId());
+                id.setFieldValue(manager.getProject().getId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -548,7 +536,7 @@ public class ProjectScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(18);
                 ProjectService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -559,13 +547,13 @@ public class ProjectScreen extends Screen {
                     public void onFailure(Throwable error) {
                         setQueryResult(null);
                         if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
+                            window.setDone(Messages.get().noRecordsFound());
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
+                            window.setError(Messages.get().noMoreRecordInDir());
                         } else {
                             Window.alert("Error: Project call query failed; " + error.getMessage());
-                            window.setError(consts.get("queryFailed"));
+                            window.setError(Messages.get().queryFailed());
                         }
                     }
                 });
@@ -604,9 +592,9 @@ public class ProjectScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = ProjectMeta.getName();
-                field.query = ((AppButton)event.getSource()).action;
-                field.type = QueryData.Type.STRING;
+                field.setKey(ProjectMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).action);
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -614,11 +602,11 @@ public class ProjectScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -648,7 +636,7 @@ public class ProjectScreen extends Screen {
         DataChangeEvent.fire(this);
         
         setFocus(id);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void next() {
@@ -666,11 +654,11 @@ public class ProjectScreen extends Screen {
         setState(State.ADD);
         DataChangeEvent.fire(this);
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -688,7 +676,7 @@ public class ProjectScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -699,13 +687,13 @@ public class ProjectScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -713,13 +701,13 @@ public class ProjectScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -732,14 +720,14 @@ public class ProjectScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -749,7 +737,7 @@ public class ProjectScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -759,7 +747,7 @@ public class ProjectScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(manager.getProject().getId(), manager.getProject().getName());
-        HistoryScreen.showHistory(consts.get("projectHistory"),
+        HistoryScreen.showHistory(Messages.get().projectHistory(),
                                   Constants.table().PROJECT, hist); 
     }
     
@@ -783,7 +771,7 @@ public class ProjectScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("projectParameterHistory"),
+        HistoryScreen.showHistory(Messages.get().projectParameterHistory(),
                                   Constants.table().PROJECT_PARAMETER, refVoList);
     }
 
@@ -792,18 +780,18 @@ public class ProjectScreen extends Screen {
             manager = ProjectManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 manager = ProjectManager.fetchWithParameters(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

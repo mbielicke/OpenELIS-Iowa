@@ -36,14 +36,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.entity.PanelItem;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.PanelMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -133,7 +134,7 @@ public class PanelItemBean  {
             match = false;
 
             if (tests.size() == 0) {
-                list.add(new FieldErrorException("noActiveTestsException", PanelMeta.getItemName()));
+                list.add(new FieldErrorException(Messages.get().noActiveTestsException(), PanelMeta.getItemName()));
                 throw list;
             } else {
                 for (int i = 0; i < tests.size(); i++ ) {
@@ -145,7 +146,7 @@ public class PanelItemBean  {
                 }
 
                 if ( !match) {
-                    list.add(new FieldErrorException("noActiveTestsException",
+                    list.add(new FieldErrorException(Messages.get().noActiveTestsException(),
                                                      PanelMeta.getItemName()));
                     throw list;
                 }
@@ -154,7 +155,7 @@ public class PanelItemBean  {
             try {
                 auxFieldGroup.fetchActiveByName(data.getName());
             } catch (NotFoundException e) {
-                list.add(new FieldErrorException("noActiveAuxGrpException",
+                list.add(new FieldErrorException(Messages.get().noActiveAuxGrpException(),
                                                  PanelMeta.getItemName()));
                 throw list;
             }

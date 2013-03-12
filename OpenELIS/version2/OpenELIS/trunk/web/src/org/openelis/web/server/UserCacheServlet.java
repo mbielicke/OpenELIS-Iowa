@@ -31,8 +31,8 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.UserCacheBean;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.SystemUserVO;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.web.cache.UserCacheServiceInt;
 

@@ -25,7 +25,7 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * The class extends exchange external term DO and carries the field reference name.

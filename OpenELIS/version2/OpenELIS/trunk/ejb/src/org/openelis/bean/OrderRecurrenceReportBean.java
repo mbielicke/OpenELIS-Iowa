@@ -38,9 +38,9 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.Prompt;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.Prompt;
 
 @Stateless
 @SecurityDomain("openelis")

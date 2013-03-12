@@ -68,6 +68,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -85,16 +86,16 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -719,7 +720,7 @@ public class SampleManager1Bean {
             maxAccession = Integer.valueOf(sys.getValue());
         } catch (Exception any) {
             log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", e);
-            throw new FormErrorException("systemVariable.missingInvalidSystemVariable", "last_accession_number");
+            throw new FormErrorException(Messages.get().systemVariable_missingInvalidSystemVariable("last_accession_number"));
         }
 
         for (SampleManager1 sm : sms) {
@@ -753,14 +754,14 @@ public class SampleManager1Bean {
                         cnt++ ;
             }
             if (cnt != 1 && !ignoreWarning)
-                e.add(new FormErrorException("sample.moreThanOneReportToException", accession));
+                e.add(new FormErrorException(Messages.get().sample_moreThanOneReportToException(DataBaseUtil.asString(accession))));
 
             /*
              * at least one sample item and items must have sample type
              */
             si.clear();
             if (getItems(sm) == null || getItems(sm).size() < 1) {
-                e.add(new FormErrorException("sample.minOneSampleItemException", accession));
+                e.add(new FormErrorException(Messages.get().sample_minOneSampleItemException(DataBaseUtil.asString(accession))));
             } else {
                 for (SampleItemViewDO data : getItems(sm)) {
                     si.put(data.getId(), data);
@@ -831,14 +832,14 @@ public class SampleManager1Bean {
          */
         acc = data.getAccessionNumber();
         if (acc == null || acc <= 0)
-            throw new FormErrorException("sample.accessionNumberNotValidException",
-                                          data.getAccessionNumber());
+            throw new FormErrorException(Messages.get().sample_accessionNumberNotValidException(
+                                          DataBaseUtil.asString(data.getAccessionNumber())));
 
         try {
             sys = systemVariable.fetchByName("last_accession_number");
             if (acc.compareTo(Integer.valueOf(sys.getValue())) > 0)
-                throw new FormErrorException("sample.accessionNumberNotInUse",
-                                              data.getAccessionNumber());
+                throw new FormErrorException(Messages.get().sample_accessionNumberNotInUse(
+                                              DataBaseUtil.asString(data.getAccessionNumber())));
         } catch (Exception any) {
             log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
             throw any;
@@ -847,8 +848,8 @@ public class SampleManager1Bean {
         try {
             dup = sample.fetchByAccessionNumber(acc);
             if ( !dup.getId().equals(data.getId()))
-                throw new FormErrorException("sample.accessionNumberDuplicate",
-                                              data.getAccessionNumber());
+                throw new FormErrorException(Messages.get().sample_accessionNumberDuplicate(
+                                              DataBaseUtil.asString(data.getAccessionNumber())));
         } catch (NotFoundException nf) {
             // ok if no other sample with the same accession number
         }

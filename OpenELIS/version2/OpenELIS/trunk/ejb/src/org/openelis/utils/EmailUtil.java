@@ -28,7 +28,7 @@ package org.openelis.utils;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class EmailUtil {
     

@@ -29,13 +29,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.openelis.bean.QcLotBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.QcMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class QcLotManagerProxy {
@@ -127,7 +128,7 @@ public class QcLotManagerProxy {
                 try {
                     lot = cl.fetchByLotNumber(lotNum);
                     if (!lot.getQcId().equals(data.getQcId())) {
-                        list.add(new TableFieldErrorException("fieldUniqueException", i,
+                        list.add(new TableFieldErrorException(Messages.get().fieldUniqueException(), i,
                                                               QcMeta.getQcLotLotNumber(), "qcLotTable"));                        
                    }
                 } catch (NotFoundException e) {
@@ -136,7 +137,7 @@ public class QcLotManagerProxy {
 
                 lotNums.add(lotNum);
              } else {
-                 list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
+                 list.add(new TableFieldErrorException(Messages.get().fieldUniqueOnlyException(), i,
                                                            QcMeta.getQcLotLotNumber(), "qcLotTable"));                        
              }
         }

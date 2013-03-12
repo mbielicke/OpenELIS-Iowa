@@ -29,14 +29,15 @@ import java.util.ArrayList;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -251,15 +252,15 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         parser.parse("*" + search.getValue() + "*");
 
         field = new QueryData();
-        field.type = QueryData.Type.STRING;
-        field.query = parser.getParameter().get(0);
-        field.key = StandardNoteMeta.getName();
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(parser.getParameter().get(0));
+        field.setKey(StandardNoteMeta.getName());
         query.setFields(field);
 
         field = new QueryData();
-        field.type = QueryData.Type.STRING;
-        field.query = parser.getParameter().get(0);
-        field.key = StandardNoteMeta.getDescription();
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(parser.getParameter().get(0));
+        field.setKey(StandardNoteMeta.getDescription());
         query.setFields(field);
 
         window.setBusy("querying");
@@ -274,11 +275,11 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
                 buildTree(null);
 
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                     setState(State.DEFAULT);
                 } else {
                     Window.alert("Error: EditNote call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }
             }
         });
@@ -297,11 +298,11 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
                 buildTree(row, null);
 
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                     setState(State.DEFAULT);
                 } else {
                     Window.alert("Error: EditNote call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }
             }
         });
@@ -356,8 +357,8 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         if (note != null) {
             if ("N".equals(note.getIsExternal())) {
                 if (subject.getValue().trim().length() == 0 && text.getValue().trim().length() > 0) {
-                    subject.addException(new FieldErrorException("fieldRequiredException", ""));
-                    window.setError(consts.get("correctErrors"));
+                    subject.addException(new FieldErrorException(Messages.get().fieldRequiredException(), ""));
+                    window.setError(Messages.get().correctErrors());
                     valid = false;
                 }
             }

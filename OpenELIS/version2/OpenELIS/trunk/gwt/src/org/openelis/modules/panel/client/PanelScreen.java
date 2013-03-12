@@ -29,20 +29,22 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.PanelVO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -93,21 +95,15 @@ public class PanelScreen extends Screen {
     protected MenuItem       panelHistory, panelItemHistory;
     private TableWidget      panelItemTable, allTestAuxTable;
 
-    public PanelScreen() throws Exception {
+    public PanelScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(PanelDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("panel");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Panel Screen");
+            throw new PermissionException(Messages.get().screenPermException("Panel Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {
         manager = PanelManager.getInstance();
 
         initialize();
@@ -349,10 +345,10 @@ public class PanelScreen extends Screen {
 
                         if (itemExistsInPanel(row)) {
                             if ("A".equals(row.data)) {
-                                Window.alert(consts.get("auxAlreadyAddedException"));
+                                Window.alert(Messages.get().auxAlreadyAddedException());
                                 return;
                             }
-                            ok = Window.confirm(consts.get("testAlreadyAdded"));
+                            ok = Window.confirm(Messages.get().testAlreadyAdded());
                             if (ok)
                                 panelItemTable.addRow(getPanelItemRow(row));
                         } else {
@@ -444,10 +440,10 @@ public class PanelScreen extends Screen {
         refreshButton = (AppButton)def.getWidget("refreshButton");
         addScreenHandler(refreshButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                window.setBusy(consts.get("fetching"));
+                window.setBusy(Messages.get().fetching());
                 initializeAllTestTable();
                 if (state == State.ADD)
-                    window.setDone(consts.get("enterInformationPressCommit"));
+                    window.setDone(Messages.get().enterInformationPressCommit());
                 else
                     window.clearStatus();
             }
@@ -462,7 +458,7 @@ public class PanelScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(14);
                 PanelService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -473,13 +469,13 @@ public class PanelScreen extends Screen {
                     public void onFailure(Throwable error) {
                         setQueryResult(null);
                         if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
+                            window.setDone(Messages.get().noRecordsFound());
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
+                            window.setError(Messages.get().noMoreRecordInDir());
                         } else {
                             Window.alert("Error: Panel call query failed; " + error.getMessage());
-                            window.setError(consts.get("queryFailed"));
+                            window.setError(Messages.get().queryFailed());
                         }
                     }
                 });
@@ -519,9 +515,9 @@ public class PanelScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = PanelMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(PanelMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -529,11 +525,11 @@ public class PanelScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -578,7 +574,7 @@ public class PanelScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -596,11 +592,11 @@ public class PanelScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -615,7 +611,7 @@ public class PanelScreen extends Screen {
     }
 
     protected void delete() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -633,7 +629,7 @@ public class PanelScreen extends Screen {
         allTestAuxTable.clearSelections();
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -644,13 +640,13 @@ public class PanelScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -658,13 +654,13 @@ public class PanelScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -672,12 +668,12 @@ public class PanelScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
+            window.setBusy(Messages.get().deleting());
             try {
                 manager.delete();
 
                 fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
+                window.setDone(Messages.get().deleteComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -691,14 +687,14 @@ public class PanelScreen extends Screen {
         setFocus(null);
         allTestAuxTable.clearSelections();
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -708,7 +704,7 @@ public class PanelScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else if (state == State.DELETE) {
             try {
                 manager = manager.abortUpdate();
@@ -718,7 +714,7 @@ public class PanelScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("deleteAborted"));
+            window.setDone(Messages.get().deleteAborted());
         } else {
             window.clearStatus();
         }
@@ -728,7 +724,7 @@ public class PanelScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getPanel().getId(), manager.getPanel().getName());
-        HistoryScreen.showHistory(consts.get("panelHistory"), Constants.table().PANEL, hist);
+        HistoryScreen.showHistory(Messages.get().panelHistory(), Constants.table().PANEL, hist);
     }
 
     protected void panelItemHistory() {
@@ -759,7 +755,7 @@ public class PanelScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("panelItemHistory"), Constants.table().PANEL_ITEM,
+        HistoryScreen.showHistory(Messages.get().panelItemHistory(), Constants.table().PANEL_ITEM,
                                   refVoList);
     }
 
@@ -768,18 +764,18 @@ public class PanelScreen extends Screen {
             manager = PanelManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 manager = PanelManager.fetchWithItems(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

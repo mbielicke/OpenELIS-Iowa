@@ -36,19 +36,20 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentDO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.entity.Instrument;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.InstrumentMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -187,28 +188,28 @@ public class InstrumentBean {
         checkDuplicate = true;
         
         if(DataBaseUtil.isEmpty(name)){
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InstrumentMeta.getName()));
             checkDuplicate = false;
         } 
         
         if(DataBaseUtil.isEmpty(serialNumber)){
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InstrumentMeta.getSerialNumber()));
             checkDuplicate = false;
         } 
         
         if(DataBaseUtil.isEmpty(location)) 
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InstrumentMeta.getLocation()));        
         
         if(DataBaseUtil.isEmpty(data.getTypeId())) 
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InstrumentMeta.getTypeId()));                                       
         
         if(checkDuplicate) {
             if(!DataBaseUtil.isEmpty(activeEnd) && DataBaseUtil.isAfter(activeBegin,activeEnd))
-                list.add(new FieldErrorException("endDateAfterBeginDateException",null));                              
+                list.add(new FieldErrorException(Messages.get().endDateAfterBeginDateException(),null));                              
             
             query = manager.createNamedQuery("Instrument.FetchByNameSerialNumber");
             query.setParameter("name", name);
@@ -218,7 +219,7 @@ public class InstrumentBean {
             for(int i = 0; i < instruments.size(); i++) {
                 inst = instruments.get(i);
                 if((!inst.getId().equals(id))) {
-                    list.add(new FieldErrorException("instrumentUniqueException",null));                                   
+                    list.add(new FieldErrorException(Messages.get().instrumentUniqueException(),null));                                   
                     break; 
                 }
             }

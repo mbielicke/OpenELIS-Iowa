@@ -31,16 +31,18 @@ import java.util.EnumSet;
 
 import org.openelis.web.cache.CategoryCache;
 import org.openelis.web.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.FinalReportWebVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -95,12 +97,14 @@ public class FinalReportPrivateWellScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public FinalReportPrivateWellScreen() throws Exception {
+    public FinalReportPrivateWellScreen(WindowInt win) throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportPrivateWellDef.class));
+        
+        setWindow(win);
 
         userPermission = UserCache.getPermission().getModule("w_final_privatewell");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Final Report Private Well Screen");
+            throw new PermissionException(Messages.get().screenPermException("Final Report Private Well Screen"));
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -235,7 +239,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         accessionFrom = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberFrom());
         addScreenHandler(accessionFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionFrom.setValue(data.getAccessionFrom());
+                accessionFrom.setFieldValue(data.getAccessionFrom());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -256,7 +260,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         accessionTo = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberTo());
         addScreenHandler(accessionTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionTo.setValue(data.getAccessionTo());
+                accessionTo.setFieldValue(data.getAccessionTo());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -377,7 +381,7 @@ public class FinalReportPrivateWellScreen extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 sampleEntTable.load(getTableModel());
                 if (sampleEntTable.numRows() > 0)
-                    numSampleSelected.setValue(sampleEntTable.numRows() + " "+ consts.get("numSamplesFound"));
+                    numSampleSelected.setValue(sampleEntTable.numRows() + " "+ Messages.get().numSamplesFound());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -444,7 +448,7 @@ public class FinalReportPrivateWellScreen extends Screen {
             }
         });
 
-        queryDeckLabel = new Label(consts.get("backToSearch"));
+        queryDeckLabel = new Label(Messages.get().backToSearch());
         queryDeckLabel.setStyleName("ScreenLabel");
         hp = new HorizontalPanel();
         ap = new AbsolutePanel();
@@ -494,7 +498,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -504,13 +508,13 @@ public class FinalReportPrivateWellScreen extends Screen {
          * if user does not enter any search details, throw an error.
          */
         if (queryList.size() == 0) {
-            window.setError(consts.get("nofieldSelectedError"));
+            window.setError(Messages.get().nofieldSelectedError());
             return;
         }
 
         query.setFields(queryList);
         
-        window.setBusy(consts.get("retrSamples"));
+        window.setBusy(Messages.get().retrSamples());
 
         try {
             list = FinalReportService.get().getSamplePrivateWellList(query);
@@ -518,7 +522,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                 loadDeck(list);
                 setResults(list);
             } else {
-                window.setError(consts.get("noSamplesFoundChangeSearch"));
+                window.setError(Messages.get().noSamplesFoundChangeSearch());
                 return;
             }
         } catch (Exception e) {
@@ -578,7 +582,7 @@ public class FinalReportPrivateWellScreen extends Screen {
 
         query = new Query();
         field = new QueryData();
-        field.key = "SAMPLE_ID";
+        field.setKey("SAMPLE_ID");
         sampleEntTable = (TableWidget)def.getWidget("sampleEntTable");
         for (int i = 0; i < sampleEntTable.numRows(); i++ ) {
             row = sampleEntTable.getRow(i);
@@ -590,20 +594,20 @@ public class FinalReportPrivateWellScreen extends Screen {
                  * selected, else an index is already selected, so field.query
                  * should be appended with comma.
                  */
-                if (field.query == null)
-                    field.query = val;
+                if (field.getQuery() == null)
+                    field.setQuery(val);
                 else
-                    field.query += "," + val;
+                    field.setQuery(field.getQuery() + "," + val);
             }
         }
         query.setFields(field);
 
-        if (field.query == null) {
-            window.setError(consts.get("noSampleSelectedError"));
+        if (field.getQuery() == null) {
+            window.setError(Messages.get().noSampleSelectedError());
             return;
         }
         try {
-            window.setBusy(consts.get("genReportMessage"));
+            window.setBusy(Messages.get().genReportMessage());
             st = FinalReportService.get().runReportForWeb(query);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "/openelisweb/openelisweb/report?file=" + st.getMessage();
@@ -654,52 +658,52 @@ public class FinalReportPrivateWellScreen extends Screen {
 
         for (i = 0; i < fields.size(); i++ ) {
             field = fields.get(i);
-            if ((SampleWebMeta.getReleasedDateFrom()).equals(field.key)) {
+            if ((SampleWebMeta.getReleasedDateFrom()).equals(field.getKey())) {
                 if (fRel == null) {
                     fRel = field;
-                    fRel.key = SampleWebMeta.getReleasedDate();
+                    fRel.setKey(SampleWebMeta.getReleasedDate());
                 } else {
-                    fRel.query = field.query + ".." + fRel.query;
+                    fRel.setQuery(field.getQuery() + ".." + fRel.getQuery());
                     list.add(fRel);
                 }
-            } else if ((SampleWebMeta.getReleasedDateTo()).equals(field.key)) {
+            } else if ((SampleWebMeta.getReleasedDateTo()).equals(field.getKey())) {
                 if (fRel == null) {
                     fRel = field;
-                    fRel.key = SampleWebMeta.getReleasedDate();
+                    fRel.setKey(SampleWebMeta.getReleasedDate());
                 } else {
-                    fRel.query = fRel.query + ".." + field.query;
+                    fRel.setQuery(fRel.getQuery() + ".." + field.getQuery());
                     list.add(fRel);
                 }
-            } else if ((SampleWebMeta.getCollectionDateFrom()).equals(field.key)) {
+            } else if ((SampleWebMeta.getCollectionDateFrom()).equals(field.getKey())) {
                 if (fCol == null) {
                     fCol = field;
-                    fCol.key = SampleWebMeta.getCollectionDate();
+                    fCol.setKey(SampleWebMeta.getCollectionDate());
                 } else {
-                    fCol.query = field.query + ".." + fCol.query;
+                    fCol.setQuery(field.getQuery() + ".." + fCol.getQuery());
                     list.add(fCol);
                 }
-            } else if ((SampleWebMeta.getCollectionDateTo()).equals(field.key)) {
+            } else if ((SampleWebMeta.getCollectionDateTo()).equals(field.getKey())) {
                 if (fCol == null) {
                     fCol = field;
-                    fCol.key = SampleWebMeta.getCollectionDate();
+                    fCol.setKey(SampleWebMeta.getCollectionDate());
                 } else {
-                    fCol.query = fCol.query + ".." + field.query;
+                    fCol.setQuery(fCol.getQuery() + ".." + field.getQuery());
                     list.add(fCol);
                 }
-            } else if ((SampleWebMeta.getAccessionNumberFrom()).equals(field.key)) {
+            } else if ((SampleWebMeta.getAccessionNumberFrom()).equals(field.getKey())) {
                 if (fAcc == null) {
                     fAcc = field;
-                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                    fAcc.setKey(SampleWebMeta.getAccessionNumber());
                 } else {
-                    fAcc.query = field.query + ".." + fAcc.query;
+                    fAcc.setQuery(field.getQuery() + ".." + fAcc.getQuery());
                     list.add(fAcc);
                 }
-            } else if ((SampleWebMeta.getAccessionNumberTo()).equals(field.key)) {
+            } else if ((SampleWebMeta.getAccessionNumberTo()).equals(field.getKey())) {
                 if (fAcc == null) {
                     fAcc = field;
-                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                    fAcc.setKey(SampleWebMeta.getAccessionNumber());
                 } else {
-                    fAcc.query = fAcc.query + ".." + field.query;
+                    fAcc.setQuery(fAcc.getQuery() + ".." + field.getQuery());
                     list.add(fAcc);
                 }
             } else {

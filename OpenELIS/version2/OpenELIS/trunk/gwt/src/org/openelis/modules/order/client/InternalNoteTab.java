@@ -27,9 +27,10 @@ package org.openelis.modules.order.client;
 
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -44,6 +45,7 @@ import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.modules.note.client.EditNoteScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -61,7 +63,7 @@ public class InternalNoteTab extends Screen {
 
     protected NoteViewDO     internalNote;
 
-    public InternalNoteTab(ScreenDefInt def, ScreenWindowInt window, String userName,
+    public InternalNoteTab(ScreenDefInt def, WindowInt window, String userName,
                             Integer userId) {
         setDefinition(def);
         setWindow(window);
@@ -112,7 +114,7 @@ public class InternalNoteTab extends Screen {
                 }
 
                 modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("standardNote"));
+                modal.setName(Messages.get().standardNote());
                 modal.setContent(internalEditNoteScreen);
 
                 try {

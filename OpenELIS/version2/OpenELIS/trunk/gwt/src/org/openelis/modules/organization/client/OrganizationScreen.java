@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -37,15 +38,16 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -109,26 +111,16 @@ public class OrganizationScreen extends Screen {
         CONTACT, PARAMETER, NOTE
     };
 
-    public OrganizationScreen() throws Exception {
+    public OrganizationScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(OrganizationDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("organization");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Oranization Screen");
+            throw new PermissionException(Messages.get().screenPermException("Oranization Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
 
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         tab = Tabs.CONTACT;
         manager = OrganizationManager.getInstance();
 
@@ -316,7 +308,7 @@ public class OrganizationScreen extends Screen {
         id = (TextBox)def.getWidget(OrganizationMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                id.setValue(manager.getOrganization().getId());
+                id.setFieldValue(manager.getOrganization().getId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -585,7 +577,7 @@ public class OrganizationScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(20);
                 OrganizationService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -596,14 +588,14 @@ public class OrganizationScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
                                              window.setError("No more records in this direction");
                                          } else {
                                              Window.alert("Error: Organization call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -644,9 +636,9 @@ public class OrganizationScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = OrganizationMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(OrganizationMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -654,11 +646,11 @@ public class OrganizationScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -710,7 +702,7 @@ public class OrganizationScreen extends Screen {
         parameterTab.draw();
 
         setFocus(id);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -729,11 +721,11 @@ public class OrganizationScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -751,7 +743,7 @@ public class OrganizationScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -762,13 +754,13 @@ public class OrganizationScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -776,13 +768,13 @@ public class OrganizationScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -795,14 +787,14 @@ public class OrganizationScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -812,7 +804,7 @@ public class OrganizationScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -823,7 +815,7 @@ public class OrganizationScreen extends Screen {
 
         hist = new IdNameVO(manager.getOrganization().getId(), manager.getOrganization()
                                                                       .getName());
-        HistoryScreen.showHistory(consts.get("orgHistory"),
+        HistoryScreen.showHistory(Messages.get().orgHistory(),
                                   Constants.table().ORGANIZATION,
                                   hist);
     }
@@ -834,7 +826,7 @@ public class OrganizationScreen extends Screen {
 
         addr = manager.getOrganization().getAddress();
         hist = new IdNameVO(addr.getId(), addr.getStreetAddress());
-        HistoryScreen.showHistory(consts.get("orgAddressHistory"),
+        HistoryScreen.showHistory(Messages.get().orgAddressHistory(),
                                   Constants.table().ADDRESS,
                                   hist);
     }
@@ -859,7 +851,7 @@ public class OrganizationScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orgContactHistory"),
+        HistoryScreen.showHistory(Messages.get().orgContactHistory(),
                                   Constants.table().ORGANIZATION_CONTACT,
                                   refVoList);
     }
@@ -884,7 +876,7 @@ public class OrganizationScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orgContactAddressHistory"),
+        HistoryScreen.showHistory(Messages.get().orgContactAddressHistory(),
                                   Constants.table().ADDRESS,
                                   refVoList);
     }
@@ -909,7 +901,7 @@ public class OrganizationScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orgParameterHistory"),
+        HistoryScreen.showHistory(Messages.get().orgParameterHistory(),
                                   Constants.table().ORGANIZATION_PARAMETER,
                                   refVoList);
     }
@@ -919,7 +911,7 @@ public class OrganizationScreen extends Screen {
             manager = OrganizationManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 switch (tab) {
                     case CONTACT:
@@ -935,12 +927,12 @@ public class OrganizationScreen extends Screen {
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

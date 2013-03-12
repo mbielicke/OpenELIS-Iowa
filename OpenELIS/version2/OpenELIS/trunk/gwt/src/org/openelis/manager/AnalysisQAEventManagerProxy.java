@@ -25,7 +25,7 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.modules.analysis.client.AnalysisService;
 
 public class AnalysisQAEventManagerProxy {

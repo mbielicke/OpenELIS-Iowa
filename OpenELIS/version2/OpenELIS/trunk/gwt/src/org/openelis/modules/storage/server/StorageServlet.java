@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.StorageLocationBean;
 import org.openelis.bean.StorageManagerBean;
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.storage.client.StorageServiceInt;
@@ -51,8 +51,8 @@ public class StorageServlet extends RemoteServlet implements StorageServiceInt {
     
 
     public StorageManager fetchById(Query query) throws Exception {
-        return storageManager.fetchById(new Integer(query.getFields().get(0).query),
-                                         new Integer(query.getFields().get(1).query));
+        return storageManager.fetchById(new Integer(query.getFields().get(0).getQuery()),
+                                         new Integer(query.getFields().get(1).getQuery()));
     }
 
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {
@@ -60,7 +60,7 @@ public class StorageServlet extends RemoteServlet implements StorageServiceInt {
     }
 
     public StorageManager fetchHistoryByLocationId(Query query) throws Exception {        
-        return storageManager.fetchHistoryByLocationId(new Integer(query.getFields().get(0).query), 
+        return storageManager.fetchHistoryByLocationId(new Integer(query.getFields().get(0).getQuery()), 
                                                         query.getPage(),query.getRowsPerPage());
     }
 

@@ -37,18 +37,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryAdjustmentViewDO;
 import org.openelis.entity.InventoryAdjustment;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.InventoryAdjustmentMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -148,13 +149,13 @@ public class InventoryAdjustmentBean {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getDescription()))
-            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMeta.getDescription()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),InventoryAdjustmentMeta.getDescription()));
         
         if (DataBaseUtil.isEmpty(data.getAdjustmentDate()))
-            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMeta.getAdjustmentDate()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),InventoryAdjustmentMeta.getAdjustmentDate()));
         
         if (DataBaseUtil.isEmpty(data.getSystemUserId()))
-            list.add(new FieldErrorException("fieldRequiredException",InventoryAdjustmentMeta.getSystemUserId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),InventoryAdjustmentMeta.getSystemUserId()));
                
         if (list.size() > 0)
             throw list;                

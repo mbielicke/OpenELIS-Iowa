@@ -27,18 +27,21 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.ScreenDef;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FinalReportBatchScreen extends ReportScreen<Query> {
 
-    public FinalReportBatchScreen() throws Exception {         
+    public FinalReportBatchScreen(WindowInt window) throws Exception {
+        setWindow(window);
         drawScreen(new ScreenDef());        
-        setName(consts.get("finalReportBatch"));
+        setName(Messages.get().finalReportBatch());
     }
 
     @Override

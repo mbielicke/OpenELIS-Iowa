@@ -1,8 +1,8 @@
 package org.openelis.modules.report.qcChart.client;
 
 import org.openelis.domain.QcChartReportViewVO;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

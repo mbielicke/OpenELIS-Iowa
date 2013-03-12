@@ -30,7 +30,7 @@ import java.io.PrintStream;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * 

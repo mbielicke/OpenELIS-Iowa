@@ -30,16 +30,17 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 import org.openelis.bean.DictionaryBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.SampleMeta;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class SampleManagerProxy {
@@ -435,7 +436,7 @@ public class SampleManagerProxy {
 
         if (collectionDateTime != null && data.getReceivedDate() != null &&
             collectionDateTime.compareTo(data.getReceivedDate()) == 1)
-            errorsList.add(new FieldErrorException("collectedDateInvalidError",
+            errorsList.add(new FieldErrorException(Messages.get().collectedDateInvalidError(),
                                                    SampleMeta.getReceivedDate()));
 
         if (man.domainManager != null)
@@ -475,7 +476,7 @@ public class SampleManagerProxy {
             return;
         order = EJBFactory.getOrder().fetchById(data.getOrderId());
         if (order == null || !OrderManager.TYPE_SEND_OUT.equals(order.getType()))
-            errorsList.add(new FieldErrorException("orderIdInvalidException",
+            errorsList.add(new FieldErrorException(Messages.get().orderIdInvalidException(),
                                                    SampleMeta.getOrderId()));
     }
 }

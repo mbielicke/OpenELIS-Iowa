@@ -40,6 +40,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
@@ -49,7 +50,7 @@ public class FacilityTab extends Screen {
     private boolean     loaded;
     private TableWidget facilityTable;
     
-    public FacilityTab(ScreenDefInt def, ScreenWindowInt window) {
+    public FacilityTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();

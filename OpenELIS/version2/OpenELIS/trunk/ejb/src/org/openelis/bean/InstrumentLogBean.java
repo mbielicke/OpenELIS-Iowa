@@ -36,15 +36,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.entity.InstrumentLog;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.InstrumentMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -143,7 +144,7 @@ public class InstrumentLogBean {
         list = new ValidationErrorsList();
         
         if(DataBaseUtil.isEmpty(data.getTypeId())) 
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InstrumentMeta.getLogTypeId()));        
         
         wsId = data.getWorksheetId();
@@ -151,7 +152,7 @@ public class InstrumentLogBean {
             query = manager.createNamedQuery("Worksheet.FetchById");
             query.setParameter("id",wsId );
             if(query.getResultList().size() == 0)
-                list.add(new FieldErrorException("illegalWorksheetIdException",
+                list.add(new FieldErrorException(Messages.get().illegalWorksheetIdException(),
                                                  InstrumentMeta.getLogWorksheetId()));           
         }
          
@@ -159,10 +160,10 @@ public class InstrumentLogBean {
         ee = data.getEventEnd();
         
         if(DataBaseUtil.isEmpty(eb)) 
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InstrumentMeta.getLogEventBegin()));
         else if(!DataBaseUtil.isEmpty(ee) && DataBaseUtil.isAfter(eb,ee)) 
-            list.add(new FieldErrorException("endDateAfterBeginDateException",
+            list.add(new FieldErrorException(Messages.get().endDateAfterBeginDateException(),
                                              InstrumentMeta.getLogEventEnd()));
                   
         if (list.size() > 0)

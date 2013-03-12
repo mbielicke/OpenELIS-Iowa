@@ -41,6 +41,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.StorageLocationManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
@@ -50,7 +51,7 @@ public class LocationTab extends Screen {
     private TableWidget          table;
     private boolean              loaded;
 
-    public LocationTab(ScreenDefInt def, ScreenWindowInt window) {
+    public LocationTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();
