@@ -57,9 +57,8 @@ public class SampleMergeUtility {
             for (i = 0; i < quickEntryItemMan.count(); i++) {
                 orderSampleItem = fromOrderItemMan.getSampleItemAt(fromOrderItemMan.addSampleItem());
                 qeSampleItem = quickEntryItemMan.getSampleItemAt(i);
-                SampleDuplicateUtil.duplicateSampleItem(orderSampleItem, qeSampleItem);
-                fromOrderItemMan.setSampleItemAt(orderSampleItem, i);
-                orderSampleItem.setSampleId(qeSampleItem.getSampleId());
+                SampleDuplicateUtil.duplicateSampleItem(orderSampleItem, qeSampleItem);                
+                orderSampleItem.setSampleId(quickEntryMan.getSample().getId());
                 fromOrderItemMan.setAnalysisAt(quickEntryItemMan.getAnalysisAt(i), i);
                 duplicateStorage(fromOrderItemMan.getStorageAt(i) ,quickEntryItemMan.getStorageAt(i));
             }

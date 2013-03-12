@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.CategoryCacheService;
-import org.openelis.cache.DictionaryCacheService;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -1601,7 +1599,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         try {
             if (manager.getSample().getAccessionNumber() == null) {
                 Window.alert(consts.get("enterAccNumBeforeOrderLoad"));
-                orderNumber.setValue(manager.getSample().getOrderId());
+                orderNumber.setValue((Integer)null);
                 return;
             }
 
@@ -1664,7 +1662,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
             
             if (quickEntryMan != null)
                 SampleMergeUtility.mergeTests(manager, quickEntryMan);
-
+            
+            manager.getSample().setOrderId(orderId);
             setDataInTabs();
             DataChangeEvent.fire(screen);
             window.clearStatus();

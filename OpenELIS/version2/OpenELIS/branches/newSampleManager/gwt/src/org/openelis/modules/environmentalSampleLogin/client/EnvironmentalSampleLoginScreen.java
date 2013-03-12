@@ -1499,12 +1499,10 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         try {
             if (manager.getSample().getAccessionNumber() == null) {
                 Window.alert(consts.get("enterAccNumBeforeOrderLoad"));
-                orderNumber.setValue(manager.getSample().getOrderId());
+                orderNumber.setValue((Integer)null);
                 return;
             }            
 
-            manager.getSample().setOrderId(orderId);
-            
             window.setBusy(consts.get("fetching"));
             
             man = OrderManager.fetchById(orderId);
@@ -1513,6 +1511,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 window.clearStatus();
                 return;
             }
+            
         } catch (NotFoundException e) {                    
             orderNumber.addException(new LocalizedException("orderIdInvalidException"));
             window.clearStatus();
@@ -1562,7 +1561,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             if (quickEntryMan != null)
               SampleMergeUtility.mergeTests(manager, quickEntryMan);            
-                                      
+                                 
+            manager.getSample().setOrderId(orderId);
             setDataInTabs();
             DataChangeEvent.fire(screen);                       
             window.clearStatus();
