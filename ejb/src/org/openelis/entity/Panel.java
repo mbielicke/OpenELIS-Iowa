@@ -61,7 +61,7 @@ import org.openelis.utils.Auditable;
    @NamedQuery( name = "Panel.FetchPanelSampleTypeList",
                 query = "select distinct new org.openelis.domain.TestMethodSampleTypeVO(p.id,p.name,type.typeOfSampleId, d.entry)"
                       + " from Panel p LEFT JOIN p.panelItem pi, Test t LEFT JOIN t.method m " +
-                      	" INNER JOIN t.testTypeOfSample type LEFT JOIN type.typeDictionary d " +
+                      	" INNER JOIN t.testTypeOfSample type LEFT JOIN type.dictionary d " +
                       	" where pi.name=t.name AND " +
                         " pi.methodName=m.name AND t.isActive='Y' order by p.name, d.entry")
 })

@@ -48,6 +48,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
 import org.openelis.utils.EJBFactory;
 
@@ -71,13 +72,13 @@ public class WorksheetAnalysisManagerProxy {
         waManager = WorksheetAnalysisManager.getInstance();
         waManager.setWorksheet(wVDO);
         waManager.setWorksheetItemId(id);
-        for (i = 0; i < analyses.size(); i++ ) {
+        for (i = 0; i < analyses.size(); i++) {
             waDO = analyses.get(i);
             waManager.addWorksheetAnalysis(waDO);
             if (waDO.getAnalysisId() != null) {
                 aVDO = EJBFactory.getAnalysis().fetchById(waDO.getAnalysisId());
                 sectionVDO = EJBFactory.getSection().fetchById(aVDO.getSectionId());
-                if ( !sections.containsKey(sectionVDO.getId()))
+                if (!sections.containsKey(sectionVDO.getId()))
                     sections.put(sectionVDO.getId(), sectionVDO);
             }
         }
@@ -93,7 +94,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisDO analysis;
 
         numUnresolved = 0;
-        for (i = 0; i < manager.count(); i++ ) {
+        for (i = 0; i < manager.count(); i++) {
             unresolved = false;
             analysis = manager.getWorksheetAnalysisAt(i);
 
@@ -110,8 +111,8 @@ public class WorksheetAnalysisManagerProxy {
 
             // if both the related analysis id is resolved, then add/update the
             // analysis and set the mappings in the hash, otherwise skip
-            if ( !unresolved) {
-                if ( !idHash.containsKey(analysis.getId())) {
+            if (!unresolved) {
+                if (!idHash.containsKey(analysis.getId())) {
                     if (analysis.getId() < 0) {
                         oldId = analysis.getId();
                         add(manager, analysis, i);
@@ -120,7 +121,7 @@ public class WorksheetAnalysisManagerProxy {
                     idHash.put(analysis.getId(), null);
                 }
             } else {
-                numUnresolved++ ;
+                numUnresolved++;
             }
         }
 
@@ -195,21 +196,19 @@ public class WorksheetAnalysisManagerProxy {
                 manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
             }
             siManager = sManager.getSampleItems();
-            for (j = 0; j < siManager.count(); j++ ) {
+            for (j = 0; j < siManager.count(); j++) {
                 aManager = siManager.getAnalysisAt(j);
-                for (k = 0; k < aManager.count(); k++ ) {
+                for (k = 0; k < aManager.count(); k++) {
                     aVDO = aManager.getAnalysisAt(k);
                     if (analysis.getAnalysisId().equals(aVDO.getId())) {
                         //
                         // We are only initiating records that were not added
-                        // from another
-                        // worksheet
+                        // from another worksheet
                         //
                         if ("N".equals(analysis.getIsFromOther())) {
                             arManager = aManager.getAnalysisResultAt(k);
                             // if the result records haven't been added via a
-                            // full
-                            // login, we need to add them now
+                            // full login, we need to add them now
                             if (arManager.rowCount() <= 0) {
                                 try {
                                     arManager = AnalysisResultManager.fetchByTestId(aVDO.getTestId(),
@@ -217,10 +216,8 @@ public class WorksheetAnalysisManagerProxy {
                                     aManager.setAnalysisResultAt(arManager, k);
                                 } catch (NotFoundException nfE) {
                                     // ignore result not found error and leave
-                                    // the
-                                    // empty AnalysisResultManager attached to
-                                    // the
-                                    // AnalysisManger
+                                    // the empty AnalysisResultManager attached
+                                    // to the AnalysisManger
                                 }
                             }
 
@@ -265,7 +262,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisBean local;
 
         local = EJBFactory.getWorksheetAnalysis();
-        for (i = 0; i < manager.count(); i++ ) {
+        for (i = 0; i < manager.count(); i++) {
             analysis = manager.getWorksheetAnalysisAt(i);
 
             if (analysis.getId() == null) {
@@ -274,8 +271,7 @@ public class WorksheetAnalysisManagerProxy {
                 if (analysis.getAnalysisId() != null) {
                     //
                     // We are only updating records that were not added from
-                    // another
-                    // worksheet
+                    // another worksheet
                     //
                     if ("Y".equals(analysis.getIsFromOther()))
                         continue;
@@ -283,18 +279,15 @@ public class WorksheetAnalysisManagerProxy {
                     doBreak = false;
                     //
                     // Trim the 'D' off the front of the accession number for
-                    // analyses
-                    // in a duplicate position on the worksheet
+                    // analyses in a duplicate position on the worksheet
                     //
                     accessionNumber = analysis.getAccessionNumber();
                     if (accessionNumber.startsWith("D"))
                         accessionNumber = accessionNumber.substring(1);
                     //
                     // Keep a hash map of sample managers so we only allocate
-                    // one per
-                    // sample to avoid update collisions for multiple analyses
-                    // on the
-                    // same sample
+                    // one per sample to avoid update collisions for multiple
+                    // analyses on the same sample
                     //
                     sManager = manager.getLockedManagers()
                                       .get(Integer.valueOf(accessionNumber));
@@ -309,9 +302,9 @@ public class WorksheetAnalysisManagerProxy {
                                                         sManager);
                     }
                     siManager = sManager.getSampleItems();
-                    for (k = 0; k < siManager.count(); k++ ) {
+                    for (k = 0; k < siManager.count(); k++) {
                         aManager = siManager.getAnalysisAt(k);
-                        for (l = 0; l < aManager.count(); l++ ) {
+                        for (l = 0; l < aManager.count(); l++) {
                             aVDO = aManager.getAnalysisAt(l);
                             if (analysis.getAnalysisId().equals(aVDO.getId())) {
                                 if (Constants.dictionary().WORKSHEET_FAILED.equals(manager.getWorksheet()
@@ -328,8 +321,7 @@ public class WorksheetAnalysisManagerProxy {
                                         startedDate = aVDO.getStartedDate();
                                         //
                                         // only clear the started date if it was
-                                        // set
-                                        // when this worksheet was created
+                                        // set when this worksheet was created
                                         //
                                         if (startedDate != null &&
                                             (startedDate.equals(createdDate) || (startedDate.after(createdDate) && startedDate.before(new Date(manager.getWorksheet()
@@ -349,11 +341,9 @@ public class WorksheetAnalysisManagerProxy {
                                             aManager.completeAnalysisAt(l);
                                         } catch (Exception ignE) {
                                             // ignoring errors cause by trying
-                                            // to complete
-                                            // the analysis because they should
-                                            // not prevent
-                                            // us from saving the record
-                                            // properly
+                                            // to complete the analysis because
+                                            // they should not prevent us from
+                                            // saving the record properly
                                         }
                                     }
                                 }
@@ -391,7 +381,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisBean local;
 
         local = EJBFactory.getWorksheetAnalysis();
-        for (i = 0; i < manager.count(); i++ ) {
+        for (i = 0; i < manager.count(); i++) {
             waDO = manager.getWorksheetAnalysisAt(i);
             //
             // We are only validating records that were not added from another
@@ -431,13 +421,13 @@ public class WorksheetAnalysisManagerProxy {
 
         twAnalytes = new HashMap<Integer, TestWorksheetAnalyteViewDO>();
         twManager = TestWorksheetManager.fetchByTestId(aVDO.getTestId());
-        for (i = 0; i < twManager.analyteCount(); i++ ) {
+        for (i = 0; i < twManager.analyteCount(); i++) {
             twaVDO = twManager.getAnalyteAt(i);
             twAnalytes.put(twaVDO.getTestAnalyteId(), twaVDO);
         }
 
         results = arManager.getResults();
-        for (i = 0; i < results.size(); i++ ) {
+        for (i = 0; i < results.size(); i++) {
             resultRow = results.get(i);
             result = resultRow.get(0);
             if (twAnalytes.size() == 0 ||
@@ -518,8 +508,7 @@ public class WorksheetAnalysisManagerProxy {
             }
         }
     }
- */
-
+*/
     /**
      * Loads the WorksheetQcResultManager from the provided QcManager.
      */
@@ -531,7 +520,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetQcResultViewDO wqrVDO;
 
         qcaManager = qcManager.getAnalytes();
-        for (i = 0; i < qcaManager.count(); i++ ) {
+        for (i = 0; i < qcaManager.count(); i++) {
             qcaVDO = qcaManager.getAnalyteAt(i);
             wqrVDO = new WorksheetQcResultViewDO();
             wqrVDO.setSortOrder(i + 1);

@@ -76,7 +76,7 @@ public class WorksheetCreationBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
-    private static final Logger                log  = Logger.getLogger("openelis");
+    private static final Logger                log = Logger.getLogger("openelis");
     private static final WorksheetCreationMeta meta = new WorksheetCreationMeta();
     
     @SuppressWarnings("unchecked")
@@ -109,16 +109,14 @@ public class WorksheetCreationBean {
                           WorksheetCreationMeta.getSamplePrivateWellReportToName()+", "+
 //                          WorksheetCreationMeta.getPatientLastName()+", "+
 //                          WorksheetCreationMeta.getPatientFirstName()+", "+
-                          WorksheetCreationMeta.getSampleItemTypeOfSampleId()+", "+
                           WorksheetCreationMeta.getAnalysisTestId()+", " +
                           WorksheetCreationMeta.getAnalysisTestName()+", " +
                           WorksheetCreationMeta.getAnalysisTestMethodName()+", "+
                           WorksheetCreationMeta.getAnalysisTestTimeHolding()+", " +
                           WorksheetCreationMeta.getAnalysisTestTimeTaAverage()+", " +
                           WorksheetCreationMeta.getAnalysisSectionId()+", "+
-                          WorksheetCreationMeta.getAnalysisPreAnalysisId()+", " +
+                          WorksheetCreationMeta.getAnalysisPreAnalysisId()+", "+
                           WorksheetCreationMeta.getAnalysisStatusId()+", " +
-                          WorksheetCreationMeta.getAnalysisUnitOfMeasureId()+", " +
                           WorksheetCreationMeta.getTestWorksheetFormatId()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCreationMeta.getSampleAccessionNumber());

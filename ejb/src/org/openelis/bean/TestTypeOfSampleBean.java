@@ -64,23 +64,6 @@ public class TestTypeOfSampleBean {
         return DataBaseUtil.toArrayList(sampleTypeList);
     }
 
-    @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Integer testId, Integer typeOfSampleId, String unitOfMeasure) throws Exception {
-        Query query;
-        ArrayList<IdNameVO> unitList;
-
-        query = manager.createNamedQuery("TestTypeOfSample.FetchUnitsForWorksheetAutocomplete");
-        query.setParameter("testId", testId);
-        query.setParameter("typeOfSampleId", typeOfSampleId);
-        query.setParameter("unitOfMeasure", unitOfMeasure);
-        unitList = (ArrayList<IdNameVO>)query.getResultList();
-
-        if (unitList.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(unitList);
-    }
-
     public TestTypeOfSampleDO add(TestTypeOfSampleDO data) throws Exception {
         TestTypeOfSample sampleType;
         manager.setFlushMode(FlushModeType.COMMIT);

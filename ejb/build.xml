@@ -14,8 +14,7 @@
 	<war destFile="build/openelisweb.war" baseDir="../OpenELIS-Web/war">
 	    <exclude name="WEB-INF/lib/gwt-servlet.jar" />
 	    <exclude name="WEB-INF/classes/org/openelis/manager/*"/>
-    </war>
-	  
+    </war>  
 
 	<delete file="build/openelis.jar" />
 	<copy file="src/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />
@@ -75,7 +74,7 @@
 		<fileset dir="build">
 			<include name="openelis.war" />
 		</fileset>
-		<fileset dir="build">
+	    <fileset dir="build">
 			<include name="openelisweb.war" />
 	    </fileset>
 		<fileset dir="build">
@@ -100,10 +99,11 @@
 			<include name="lib/gwt-servlet.jar" />
 			<include name="lib/javamail.jar" />
 			<include name="lib/commons-fileupload-1.2.1.jar"/>
+			<include name="lib/report-fonts.jar"/>
 		</fileset>
 	</ear>
-	
+<!--	
 	<copy file="build/openelis.ear" todir="/usr/local/java/jboss-as-7.1.1.Final/standalone/deployments"/>
-
+-->
 </project>
 

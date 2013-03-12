@@ -64,15 +64,15 @@ public class MCLViolationReportBean {
     @EJB
     private SessionCacheBean     session;
     @EJB
-    private AnalysisBean          analysisBean;
+    private AnalysisBean         analysisBean;
     @EJB
-    private AnalysisQAEventBean   analysisQAEventBean;
+    private AnalysisQAEventBean  analysisQAEventBean;
     @EJB
-    private AnalyteBean           analyteBean;
+    private AnalyteBean          analyteBean;
     @EJB
-    private DictionaryCacheBean   dictionaryCache;
+    private DictionaryCacheBean  dictionaryCache;
     @EJB
-    private ResultBean            resultBean;
+    private ResultBean           resultBean;
     @EJB
     private SampleQAEventBean    sampleQAEventBean;
     @EJB
@@ -80,7 +80,7 @@ public class MCLViolationReportBean {
     @EJB
     private SystemVariableBean   sysVarBean;
 
-    private static final Logger   log = Logger.getLogger("openelis");
+    private static final Logger  log = Logger.getLogger("openelis");
 
     private HashMap<String, String> contaminantIds, methodCodes;
     private String                  dnrEmail;
@@ -223,11 +223,11 @@ public class MCLViolationReportBean {
                                ") is missing results.");
                     continue;
                 }
-                for (j = 0; j < results.size(); j++ ) {
+                for (j = 0; j < results.size(); j++) {
                     resultRow = results.get(j);
                     rowResult = resultRow.get(0);
-                    if ( !DataBaseUtil.isEmpty(rowResult.getValue())) {
-                        for (k = 1; k < resultRow.size(); k++ ) {
+                    if (!DataBaseUtil.isEmpty(rowResult.getValue())) {
+                        for (k = 1; k < resultRow.size(); k++) {
                             colResult = resultRow.get(k);
                             analyte = analyteBean.fetchById(colResult.getAnalyteId());
                             if ("mcl".equals(analyte.getExternalId()) &&
@@ -290,6 +290,10 @@ public class MCLViolationReportBean {
 
     protected void printHeader(StringBuilder body, MCLViolationReportVO analysis) {
         body.append("\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("<br>\r\n")
             .append("This is an automatic notification for MCL violation. NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n")
             .append("The following analyte(s) exceed the MCL specified by the test and IDNR has been notified.<br>\r\n")
             .append("<br>\r\n")
@@ -348,6 +352,10 @@ public class MCLViolationReportBean {
         }
 
         body.append("\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("THIS EMAIL IS FROM OUR TEST SYSTEM.  THIS IS NOT A REAL NOTIFICATION.<br>\r\n")
+            .append("=====================================================================<br>\r\n")
+            .append("<br>\r\n")
             .append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
             .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
             .append("Lab ID ");

@@ -225,11 +225,11 @@ public class WorksheetCompletionBean {
 
         r = 1;
         o = 1;
-        for (i = 0; i < manager.getItems().count(); i++ ) {
+        for (i = 0; i < manager.getItems().count(); i++) {
             wiDO = manager.getItems().getWorksheetItemAt(i);
             waManager = manager.getItems().getWorksheetAnalysisAt(i);
 
-            for (a = 0; a < waManager.count(); a++ ) {
+            for (a = 0; a < waManager.count(); a++) {
                 waDO = waManager.getWorksheetAnalysisAt(a);
 
                 if (waDO.getWorksheetAnalysisId() != null) {
@@ -362,7 +362,7 @@ public class WorksheetCompletionBean {
                         cell.setCellValue("N");
 
                         createEmptyCellsForFormat(row, tRow);
-                        r++ ;
+                        r++;
                     } else {
                         r = createResultCellsForFormat(resultSheet,
                                                        row,
@@ -487,7 +487,7 @@ public class WorksheetCompletionBean {
 
                         createEmptyCellsForFormat(row, tRow);
 
-                        r++ ;
+                        r++;
                     } else {
                         cellNameIndex = i + "." + a;
                         r = createQcResultCellsForFormat(resultSheet,
@@ -566,11 +566,11 @@ public class WorksheetCompletionBean {
                     cellName.setRefersToFormula("Overrides!$" +
                                                 CellReference.convertNumToColString(7) +
                                                 "$" + (oRow.getRowNum() + 1));
-                    o++ ;
+                    o++;
                 }
             }
 
-            status.setPercentComplete( (i / manager.getItems().count()) * 90 + 5);
+            status.setPercentComplete((i / manager.getItems().count()) * 90 + 5);
             session.setAttribute("WorksheetSaveExcelStatus", status);
         }
 
@@ -602,14 +602,14 @@ public class WorksheetCompletionBean {
         //
         // Auto resize columns on result sheet and override sheet
         //
-        resultSheet.autoSizeColumn(2, true); // Description
-        resultSheet.autoSizeColumn(4, true); // Test
-        resultSheet.autoSizeColumn(5, true); // Method
-        resultSheet.autoSizeColumn(7, true); // Analyte
+        resultSheet.autoSizeColumn(2, true);            // Description
+        resultSheet.autoSizeColumn(4, true);            // Test
+        resultSheet.autoSizeColumn(5, true);            // Method
+        resultSheet.autoSizeColumn(7, true);            // Analyte
 
-        overrideSheet.autoSizeColumn(2, true); // Description
-        overrideSheet.autoSizeColumn(3, true); // Test
-        overrideSheet.autoSizeColumn(4, true); // Method
+        overrideSheet.autoSizeColumn(2, true);          // Description
+        overrideSheet.autoSizeColumn(3, true);          // Test
+        overrideSheet.autoSizeColumn(4, true);          // Method
 
         try {
             out = new FileOutputStream(outFileName);
@@ -688,15 +688,15 @@ public class WorksheetCompletionBean {
         r = 0;
         rowIndex = 1;
         wiManager = manager.getItems();
-        for (i = 0; i < wiManager.count(); i++ ) {
+        for (i = 0; i < wiManager.count(); i++) {
             wiDO = wiManager.getWorksheetItemAt(i);
             waManager = wiManager.getWorksheetAnalysisAt(i);
-            for (a = 0; a < waManager.count(); a++ ) {
+            for (a = 0; a < waManager.count(); a++) {
                 //
                 // increment rowIndex if there were no result records for the
                 // previous analysis
                 if (r == 0 && a != 0)
-                    rowIndex++ ;
+                    rowIndex++;
 
                 waDO = waManager.getWorksheetAnalysisAt(a);
                 if (waDO.getAnalysisId() != null) {
@@ -735,18 +735,17 @@ public class WorksheetCompletionBean {
                         statusLocked = false;
 
                     sectionVDO = sectionLocal.fetchById(aVDO.getSectionId());
-                    perm = userCache.getPermission()
-                                    .getSection(sectionVDO.getName());
+                    perm = userCache.getPermission().getSection(sectionVDO.getName());
                     if (perm == null || !perm.hasCompletePermission())
                         permLocked = true;
                     else
                         permLocked = false;
 
-                    if ( !statusLocked && !permLocked && !editLocked) {
+                    if (!statusLocked && !permLocked && !editLocked) {
                         value = getValueFromCellByName(wb.getSheet("Worksheet"),
                                                        "analysis_status." + i + "." + a);
-                        if ( !statusMap.get(aVDO.getStatusId()).equals(value)) {
-                            for (s = 0; s < statusList.size(); s++ ) {
+                        if (!statusMap.get(aVDO.getStatusId()).equals(value)) {
+                            for (s = 0; s < statusList.size(); s++) {
                                 statusDO = statusList.get(s);
                                 if (statusDO.getEntry().equals(value)) {
                                     if ( !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusDO.getId()) &&
@@ -805,8 +804,8 @@ public class WorksheetCompletionBean {
                         }
 
                         value = getValueFromCellByName(wb.getSheet("Overrides"),
-                                                       "analysis_completed." + i + "." +
-                                                                       a);
+                                                       "analysis_completed." + i +
+                                                       "." + a);
                         if (value != null) {
                             if (value instanceof Datetime)
                                 aVDO.setCompletedDate((Datetime)value);
@@ -817,7 +816,7 @@ public class WorksheetCompletionBean {
                             anaModified = true;
                         }
 
-                        for (r = 0; r < wrManager.count(); r++ , rowIndex++ ) {
+                        for (r = 0; r < wrManager.count(); r++, rowIndex++) {
                             wrVDO = wrManager.getWorksheetResultAt(r);
                             for (c = 0; c < 30; c++ ) {
                                 value = getValueFromCellByCoords(wb.getSheet("Worksheet"),
@@ -834,7 +833,7 @@ public class WorksheetCompletionBean {
 
                             // only save data back to the analysis record if the
                             // status has not been changed to Requeue
-                            if ( !Constants.dictionary().ANALYSIS_REQUEUE.equals(aVDO.getStatusId())) {
+                            if (!Constants.dictionary().ANALYSIS_REQUEUE.equals(aVDO.getStatusId())) {
                                 for (c = 0; c < arManager.getRowAt(wrVDO.getResultRow())
                                                          .size(); c++ ) {
                                     rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
@@ -842,45 +841,38 @@ public class WorksheetCompletionBean {
                                         if (c == 0) {
                                             value = getValueFromCellByName(wb.getSheet("Worksheet"),
                                                                            "analyte_reportable." +
-                                                                                           i +
-                                                                                           "." +
-                                                                                           a +
-                                                                                           "." +
-                                                                                           r);
+                                                                           i + "." +
+                                                                           a + "." +
+                                                                           r);
                                             if (value != null &&
                                                 !rVDO.getIsReportable().equals(value)) {
                                                 rVDO.setIsReportable((String)value);
                                                 anaModified = true;
                                             }
-
+        
                                             value = getValueFromCellByName(wb.getSheet("Worksheet"),
                                                                            "final_value." +
-                                                                                           i +
-                                                                                           "." +
-                                                                                           a +
-                                                                                           "." +
-                                                                                           r);
+                                                                           i + "." +
+                                                                           a + "." +
+                                                                           r);
                                         } else {
                                             try {
                                                 aDO = analyteLocal.fetchById(rVDO.getAnalyteId());
                                                 cell = getCellForName(wb.getSheet("Worksheet"),
                                                                       aDO.getExternalId() +
-                                                                                      "." +
-                                                                                      i +
-                                                                                      "." +
-                                                                                      a +
-                                                                                      "." +
-                                                                                      r);
+                                                                      "." + i +
+                                                                      "." + a +
+                                                                      "." + r);
                                                 if (cell == null)
                                                     continue;
                                                 value = getValueFromCellByName(wb.getSheet("Worksheet"),
                                                                                aDO.getExternalId() +
-                                                                                               "." +
-                                                                                               i +
-                                                                                               "." +
-                                                                                               a +
-                                                                                               "." +
-                                                                                               r);
+                                                                               "." +
+                                                                               i + 
+                                                                               "." + 
+                                                                               a + 
+                                                                               "." + 
+                                                                               r);
                                             } catch (Exception anyE) {
                                                 errorList.add(new FormErrorException("columnAnalyteLookupFormException",
                                                                                      String.valueOf(wiDO.getPosition()),
@@ -921,7 +913,7 @@ public class WorksheetCompletionBean {
                                 }
                             }
                         }
-                        if ( !anaModified && newSampleLock) {
+                        if (!anaModified && newSampleLock) {
                             sampleManagerLocal.abortUpdate(sManager.getSample().getId());
                             manager.getLockedManagers()
                                    .remove(sManager.getSample().getAccessionNumber());
@@ -929,8 +921,8 @@ public class WorksheetCompletionBean {
                     } else {
                         //
                         // increment rowIndex and r since we skipped running
-                        // through
-                        // the result records due to permissions or status
+                        // through the result records due to permissions or
+                        // status
                         //
                         r = wrManager.count();
                         rowIndex += r;
@@ -943,12 +935,11 @@ public class WorksheetCompletionBean {
                     }
                 } else if (waDO.getQcLotId() != null) {
                     wqrManager = waManager.getWorksheetQcResultAt(a);
-                    for (r = 0; r < wqrManager.count(); r++ , rowIndex++ ) {
+                    for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
                         wqrVDO = wqrManager.getWorksheetQcResultAt(r);
-                        for (c = 0; c < 30; c++ ) {
+                        for (c = 0; c < 30; c++) {
                             value = getValueFromCellByCoords(wb.getSheet("Worksheet"),
-                                                             rowIndex,
-                                                             9 + c);
+                                                             rowIndex, 9 + c);
                             if (value != null && !value.equals(wqrVDO.getValueAt(c))) {
                                 if (blankIndicator.equals(value))
                                     wqrVDO.setValueAt(c, "");
@@ -959,7 +950,8 @@ public class WorksheetCompletionBean {
                     }
 
                     value = getValueFromCellByName(wb.getSheet("Overrides"),
-                                                   "analysis_users." + i + "." + a);
+                                                   "analysis_users." + i + "." +
+                                                   a);
                     if (value != null) {
                         if (blankIndicator.equals(value)) {
                             waDO.setQcSystemUserId(null);
@@ -1012,9 +1004,9 @@ public class WorksheetCompletionBean {
             // increment rowIndex if there were no result records for the
             // last analysis or there were no analyses for this item
             if (r == 0)
-                rowIndex++ ;
+                rowIndex++;
 
-            status.setPercentComplete( (i / wiManager.count()) * 90 + 5);
+            status.setPercentComplete((i / wiManager.count()) * 90 + 5);
             session.setAttribute("WorksheetLoadExcelStatus", status);
         }
 
@@ -1022,7 +1014,7 @@ public class WorksheetCompletionBean {
             // abort update on any samples we may have locked when loading data
             iter = manager.getLockedManagers().values().iterator();
             while (iter.hasNext()) {
-                sManager = (SampleManager)iter.next();
+                sManager = (SampleManager) iter.next();
                 sampleManagerLocal.abortUpdate(sManager.getSample().getId());
             }
             manager.getLockedManagers().clear();
@@ -1072,14 +1064,15 @@ public class WorksheetCompletionBean {
         }
 
         hRow = wb.getSheet("Worksheet").getRow(0);
-        for (i = 0; i < hRow.getLastCellNum() && i < 39; i++ )
+        for (i = 0; i < hRow.getLastCellNum() && i < 39; i++)
             headers.add(new IdNameVO(i, hRow.getCell(i).getStringCellValue()));
 
         return headers;
     }
 
     private void createStyles(HSSFWorkbook wb) {
-        CellStyle dateTimeEditStyle, dateTimeNoEditStyle, headerStyle, rowEditStyle, rowNoEditStyle;
+        CellStyle dateTimeEditStyle, dateTimeNoEditStyle, headerStyle, rowEditStyle,
+                  rowNoEditStyle;
         CreationHelper helper;
         Font font;
 
@@ -1150,11 +1143,11 @@ public class WorksheetCompletionBean {
 
         r = row.getRowNum();
 
-        for (i = 0; i < wrManager.count(); i++ , r++ ) {
+        for (i = 0; i < wrManager.count(); i++, r++) {
             wrVDO = wrManager.getWorksheetResultAt(i);
             if (i != 0) {
                 row = sheet.createRow(r);
-                for (c = 0; c < 7; c++ ) {
+                for (c = 0; c < 7; c++) {
                     cell = row.createCell(c);
                     cell.setCellStyle(styles.get("row_no_edit"));
                 }
@@ -1183,7 +1176,7 @@ public class WorksheetCompletionBean {
 
             apVDO = null;
             queriedAP = false;
-            for (c = 9; c < tRow.getLastCellNum() && c < 39; c++ ) {
+            for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
 
                 cell = row.createCell(c);
@@ -1211,7 +1204,7 @@ public class WorksheetCompletionBean {
                 }
                 if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wrVDO.getValueAt(c - 9) == null) {
-                        if ( !queriedAP) {
+                        if (!queriedAP) {
                             try {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wrVDO.getAnalyteId(),
                                                                                                                 testId,
@@ -1239,12 +1232,12 @@ public class WorksheetCompletionBean {
                 }
             }
 
-            for (c = 0; c < arManager.getRowAt(wrVDO.getResultRow()).size(); c++ ) {
+            for (c = 0; c < arManager.getRowAt(wrVDO.getResultRow()).size(); c++) {
                 rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
                 try {
                     aDO = analyteLocal.fetchById(rVDO.getAnalyteId());
-                    if ( !"Y".equals(rVDO.getIsColumn()))
-                        cellName = sheet.getWorkbook().getName("final_value." +
+                    if (!"Y".equals(rVDO.getIsColumn()))
+                        cellName = sheet.getWorkbook().getName("final_value."+
                                                                cellNameIndex);
                     else
                         cellName = sheet.getWorkbook().getName(aDO.getExternalId() + "." +
@@ -1288,11 +1281,11 @@ public class WorksheetCompletionBean {
 
         r = row.getRowNum();
 
-        for (i = 0; i < wqrManager.count(); i++ , r++ ) {
+        for (i = 0; i < wqrManager.count(); i++, r++) {
             wqrVDO = wqrManager.getWorksheetQcResultAt(i);
             if (i != 0) {
                 row = sheet.createRow(r);
-                for (c = 0; c < 7; c++ ) {
+                for (c = 0; c < 7; c++) {
                     cell = row.createCell(c);
                     cell.setCellStyle(styles.get("row_no_edit"));
                 }
@@ -1312,7 +1305,7 @@ public class WorksheetCompletionBean {
 
             apVDO = null;
             queriedAP = false;
-            for (c = 9; c < tRow.getLastCellNum() && c < 39; c++ ) {
+            for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
 
                 cell = row.createCell(c);
@@ -1337,7 +1330,7 @@ public class WorksheetCompletionBean {
                 }
                 if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wqrVDO.getValueAt(c - 9) == null) {
-                        if ( !queriedAP) {
+                        if (!queriedAP) {
                             try {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getAnalyteId(),
                                                                                                                 qcId,
@@ -1404,7 +1397,7 @@ public class WorksheetCompletionBean {
         cell.setCellStyle(styles.get("row_no_edit"));
         cell.setCellValue("N");
 
-        for (c = 9; c < tRow.getLastCellNum(); c++ ) {
+        for (c = 9; c < tRow.getLastCellNum(); c++) {
             cell = row.createCell(c);
             cell.setCellStyle(styles.get("row_no_edit"));
             cell.setCellValue("");
@@ -1432,7 +1425,7 @@ public class WorksheetCompletionBean {
 
         statusDOs = getStatuses();
         statusMap = new HashMap<Integer, String>();
-        for (i = 0; i < statusDOs.size(); i++ )
+        for (i = 0; i < statusDOs.size(); i++)
             statusMap.put(statusDOs.get(i).getId(), statusDOs.get(i).getEntry());
 
         return statusMap;
@@ -1446,7 +1439,7 @@ public class WorksheetCompletionBean {
 
         statusDOs = getStatuses();
         statuses = new String[statusDOs.size()];
-        for (i = 0; i < statusDOs.size(); i++ ) {
+        for (i = 0; i < statusDOs.size(); i++) {
             dictDO = statusDOs.get(i);
             statuses[i] = dictDO.getEntry();
         }
@@ -1461,7 +1454,7 @@ public class WorksheetCompletionBean {
 
         names = new HashMap<String, String>();
 
-        for (i = 0; i < wb.getNumberOfNames(); i++ ) {
+        for (i = 0; i < wb.getNumberOfNames(); i++) {
             name = wb.getNameAt(i);
             names.put(name.getRefersToFormula(), name.getNameName());
         }
@@ -1534,7 +1527,7 @@ public class WorksheetCompletionBean {
         StringBuffer tooltip;
 
         tooltip = new StringBuffer();
-        for (i = 0; i < ranges.length; i++ ) {
+        for (i = 0; i < ranges.length; i++) {
             if (tooltip.length() > 0)
                 tooltip.append("\n");
             tooltip.append(ranges[i]);
@@ -1572,14 +1565,14 @@ public class WorksheetCompletionBean {
                             } else {
                                 cell.setCellType(Cell.CELL_TYPE_STRING);
                                 value = cell.getStringCellValue();
-                                if ( ((String)value).trim().length() == 0)
+                                if (((String)value).trim().length() == 0)
                                     value = null;
                             }
                             break;
 
                         case Cell.CELL_TYPE_STRING:
                             value = cell.getStringCellValue();
-                            if ( ((String)value).trim().length() == 0)
+                            if (((String)value).trim().length() == 0)
                                 value = null;
                             break;
                     }
@@ -1593,14 +1586,14 @@ public class WorksheetCompletionBean {
                     } else {
                         cell.setCellType(Cell.CELL_TYPE_STRING);
                         value = cell.getStringCellValue();
-                        if ( ((String)value).trim().length() == 0)
+                        if (((String)value).trim().length() == 0)
                             value = null;
                     }
                     break;
 
                 case Cell.CELL_TYPE_STRING:
                     value = cell.getStringCellValue();
-                    if ( ((String)value).trim().length() == 0)
+                    if (((String)value).trim().length() == 0)
                         value = null;
                     break;
             }
@@ -1640,8 +1633,8 @@ public class WorksheetCompletionBean {
 
         newBundle = null;
         sManager = bundle.getSampleManager();
-        if ( !manager.getLockedManagers().containsKey(sManager.getSample()
-                                                              .getAccessionNumber())) {
+        if (!manager.getLockedManagers().containsKey(sManager.getSample()
+                                                             .getAccessionNumber())) {
             try {
                 sManager = sampleManagerLocal.fetchForUpdate(sManager.getSample().getId());
                 manager.getLockedManagers()
@@ -1654,7 +1647,7 @@ public class WorksheetCompletionBean {
                 // data
                 iter = manager.getLockedManagers().values().iterator();
                 while (iter.hasNext()) {
-                    tempManager = (SampleManager)iter.next();
+                    tempManager = (SampleManager) iter.next();
                     sampleManagerLocal.abortUpdate(tempManager.getSample().getId());
                 }
                 manager.getLockedManagers().clear();
@@ -1681,9 +1674,9 @@ public class WorksheetCompletionBean {
 
         bundle = null;
         siManager = sManager.getSampleItems();
-        items: for (i = 0; i < siManager.count(); i++ ) {
+        items: for (i = 0; i < siManager.count(); i++) {
             aManager = siManager.getAnalysisAt(i);
-            for (j = 0; j < aManager.count(); j++ ) {
+            for (j = 0; j < aManager.count(); j++) {
                 aVDO = aManager.getAnalysisAt(j);
                 if (anaId.equals(aVDO.getId())) {
                     bundle = aManager.getBundleAt(j);

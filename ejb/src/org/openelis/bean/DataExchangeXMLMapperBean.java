@@ -1023,12 +1023,6 @@ public class DataExchangeXMLMapperBean {
 
         if (analysis.getPrintedDate() != null)
             parent.setAttribute("printed_date", getDatetimeForSchema(analysis.getPrintedDate()));
-        
-        if (analysis.getPanelId() != null)
-            parent.setAttribute("panel_id", analysis.getPanelId().toString());
-        
-        if (analysis.getIsPreliminary() != null)
-            parent.setAttribute("is_preliminary", analysis.getIsPreliminary());
 
         return parent;
     }
