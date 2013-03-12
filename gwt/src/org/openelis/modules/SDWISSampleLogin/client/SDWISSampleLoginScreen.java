@@ -1517,11 +1517,9 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         try {
             if (manager.getSample().getAccessionNumber() == null) {
                 Window.alert(consts.get("enterAccNumBeforeOrderLoad"));
-                orderNumber.setValue(manager.getSample().getOrderId());
+                orderNumber.setValue((Integer)null);
                 return;
             }
-
-            manager.getSample().setOrderId(orderId);
 
             window.setBusy(consts.get("fetching"));
 
@@ -1581,6 +1579,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             if (quickEntryMan != null)
                 SampleMergeUtility.mergeTests(manager, quickEntryMan);
 
+            manager.getSample().setOrderId(orderId);
             setDataInTabs();
             DataChangeEvent.fire(screen);
             window.clearStatus();
