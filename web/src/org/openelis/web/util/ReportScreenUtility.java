@@ -27,8 +27,8 @@ package org.openelis.web.util;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -40,7 +40,7 @@ import org.openelis.gwt.widget.IntegerField;
 import org.openelis.gwt.widget.StringField;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.common.Prompt;
+import org.openelis.ui.common.Prompt;
 
 public class ReportScreenUtility {
     protected ArrayList<Prompt> reportParameters;
@@ -92,19 +92,19 @@ public class ReportScreenUtility {
         f = dd.getField();
 
         qd = new QueryData();
-        qd.key = key;
+        qd.setKey(key);
         if (f instanceof StringField)
-            qd.type = QueryData.Type.STRING;
+            qd.setType(QueryData.Type.STRING);
         if (f instanceof IntegerField)
-            qd.type = QueryData.Type.INTEGER;
+            qd.setType(QueryData.Type.INTEGER);
 
-        qd.query = "";
+        qd.setQuery("");
         needComma = false;
         for (TableDataRow row : sel) {
             if (needComma)
-                qd.query += "|";
+                qd.setQuery(qd.getQuery() + "|");
             if (row.key != null) {
-                qd.query += row.key.toString();
+                qd.setQuery(qd.getQuery() + row.key.toString());
                 needComma = true;
             }
         }
@@ -122,16 +122,16 @@ public class ReportScreenUtility {
             return null;
 
         qd = new QueryData();
-        qd.query = field.getValue().toString();
-        qd.key = key;
+        qd.setQuery(field.getValue().toString());
+        qd.setKey(key);
         if (field instanceof StringField)
-            qd.type = QueryData.Type.STRING;
+            qd.setType(QueryData.Type.STRING);
         else if (field instanceof IntegerField)
-            qd.type = QueryData.Type.INTEGER;
+            qd.setType(QueryData.Type.INTEGER);
         else if (field instanceof DoubleField)
-            qd.type = QueryData.Type.DOUBLE;
+            qd.setType(QueryData.Type.DOUBLE);
         else if (field instanceof DateField)
-            qd.type = QueryData.Type.DATE;
+            qd.setType(QueryData.Type.DATE);
         return qd;
     }
 
@@ -145,9 +145,9 @@ public class ReportScreenUtility {
             return null;
 
         qd = new QueryData();
-        qd.query = field.formatQuery();
-        qd.key = key;
-        qd.type = QueryData.Type.DATE;
+        qd.setQuery(field.formatQuery());
+        qd.setKey(key);
+        qd.setType(QueryData.Type.DATE);
 
         return qd;
     }

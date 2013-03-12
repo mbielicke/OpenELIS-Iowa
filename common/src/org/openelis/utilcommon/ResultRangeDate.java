@@ -28,6 +28,7 @@ package org.openelis.utilcommon;
 
 import java.util.Date;
 
+import org.openelis.constants.Messages;
 import org.openelis.exception.ParseException;
 
 public class ResultRangeDate implements ResultRange {
@@ -50,7 +51,7 @@ public class ResultRangeDate implements ResultRange {
             Date.parse(date.replaceAll("-", "/"));
             this.date = date;
         } catch (IllegalArgumentException ex){
-            throw new ParseException("illegalDateValueException");
+            throw new ParseException(Messages.get().illegalDateValueException());
         }   
         
     }

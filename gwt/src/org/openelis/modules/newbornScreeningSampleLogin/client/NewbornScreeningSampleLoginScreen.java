@@ -28,6 +28,7 @@ package org.openelis.modules.newbornScreeningSampleLogin.client;
 
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Command;
@@ -36,17 +37,12 @@ import com.google.gwt.user.client.DeferredCommand;
 
 public class NewbornScreeningSampleLoginScreen extends Screen {
     
-    public NewbornScreeningSampleLoginScreen() throws Exception {
+    public NewbornScreeningSampleLoginScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(NewbornScreeningSampleLoginDef.class));
 
         //userPermission = UserCache.getPermission().getModule("sampleenvironmental");
         //if (userPermission == null)
           //  throw new PermissionException("screenPermException", "Environmental Sample Login Screen");
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                //postConstructor();
-            }
-        });
     }
 }

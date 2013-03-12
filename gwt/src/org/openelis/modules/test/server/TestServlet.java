@@ -38,8 +38,8 @@ import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
@@ -79,13 +79,13 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
 
         fields = query.getFields();
         field = fields.get(0);
-        if (field.query != null)
-            testName = field.query;
+        if (field.getQuery() != null)
+            testName = field.getQuery();
         else
             testName = null; 
         field = fields.get(1);
-        if (field.query != null)
-            methodName = field.query;
+        if (field.getQuery() != null)
+            methodName = field.getQuery();
         else
             methodName = null;
         
@@ -120,18 +120,18 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
 
         fields = query.getFields();
         field = fields.get(0);
-        if (field.query != null)
-            testId = Integer.valueOf(field.query);
+        if (field.getQuery() != null)
+            testId = Integer.valueOf(field.getQuery());
         else
             testId = null; 
         field = fields.get(1);
-        if (field.query != null)
-            typeOfSampleId = Integer.valueOf(field.query);
+        if (field.getQuery() != null)
+            typeOfSampleId = Integer.valueOf(field.getQuery());
         else
             typeOfSampleId = null;
         field = fields.get(2);
-        if (field.query != null)
-            unitOfMeasure = field.query;
+        if (field.getQuery() != null)
+            unitOfMeasure = field.getQuery();
         else
             unitOfMeasure = null; 
         

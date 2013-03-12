@@ -25,8 +25,8 @@
 */
 package org.openelis.manager;
 
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.meta.NoteMeta;
 import org.openelis.modules.note.client.NoteService;
 
@@ -42,21 +42,21 @@ public class NoteManagerProxy {
         query = new Query();
 
         field = new QueryData();
-        field.key = NoteMeta.getReferenceId();
-        field.type = QueryData.Type.INTEGER;
-        field.query = id.toString();
+        field.setKey(NoteMeta.getReferenceId());
+        field.setType(QueryData.Type.INTEGER);
+        field.setQuery(id.toString());
         query.setFields(field);
         
         field = new QueryData();
-        field.key = NoteMeta.getReferenceTableId();
-        field.type = QueryData.Type.INTEGER;
-        field.query = tableId.toString();
+        field.setKey(NoteMeta.getReferenceTableId());
+        field.setType(QueryData.Type.INTEGER);
+        field.setQuery(tableId.toString());
         query.setFields(field);
         
         field = new QueryData();
-        field.key = NoteMeta.getIsExternal();
-        field.type = QueryData.Type.STRING;
-        field.query = isExternal;
+        field.setKey(NoteMeta.getIsExternal());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(isExternal);
         query.setFields(field);
 
         return NoteService.get().fetchByRefTableRefIdIsExt(query);

@@ -50,12 +50,12 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.AuxDataManager;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

@@ -28,10 +28,11 @@ package org.openelis.modules.inventoryItem.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -55,6 +56,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -67,7 +69,7 @@ public class ComponentTab extends Screen {
     private AppButton             addComponentButton, removeComponentButton;
     private boolean               loaded;
 
-    public ComponentTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ComponentTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -166,7 +168,7 @@ public class ComponentTab extends Screen {
                 ArrayList<TableDataRow> model;
 
                 if (manager.getInventoryItem().getStoreId() == null) {
-                    window.setError(consts.get("inventoryNoStoreException"));
+                    window.setError(Messages.get().inventoryNoStoreException());
                     return;
                 }
                 window.clearStatus();
@@ -174,15 +176,15 @@ public class ComponentTab extends Screen {
                 query = new Query();
 
                 field = new QueryData();
-                field.key = InventoryItemMeta.getName();
-                field.type = QueryData.Type.STRING;
-                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
+                field.setKey(InventoryItemMeta.getName());
+                field.setType(QueryData.Type.STRING);
+                field.setQuery(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                 query.setFields(field);
 
                 field = new QueryData();
-                field.key = InventoryItemMeta.getStoreId();
-                field.type = QueryData.Type.INTEGER;
-                field.query = manager.getInventoryItem().getStoreId().toString();
+                field.setKey(InventoryItemMeta.getStoreId());
+                field.setType(QueryData.Type.INTEGER);
+                field.setQuery(manager.getInventoryItem().getStoreId().toString());
                 query.setFields(field);
 
                 try {

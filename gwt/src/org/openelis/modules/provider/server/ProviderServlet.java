@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.ProviderBean;
 import org.openelis.bean.ProviderManagerBean;
 import org.openelis.domain.IdFirstLastNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;

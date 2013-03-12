@@ -6,7 +6,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.SampleTrackingBean;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.sampleTracking.client.SampleTrackingServiceInt;

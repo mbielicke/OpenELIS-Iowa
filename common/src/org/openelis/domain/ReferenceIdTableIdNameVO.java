@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  *  The class is used to return the data to be shown as the result of querying

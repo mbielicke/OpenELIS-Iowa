@@ -35,7 +35,7 @@ import org.openelis.bean.ExchangeCriteriaManagerBean;
 import org.openelis.bean.SampleBean;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;

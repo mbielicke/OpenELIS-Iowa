@@ -30,13 +30,13 @@ import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ShippingViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.OptionListItem;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -356,27 +356,27 @@ public class ShippingReportBean {
 
         list = new ArrayList<QueryData>();
         field = new QueryData();
-        field.key = "ORDERID";
-        field.query = orderId.toString();
-        field.type = QueryData.Type.INTEGER;
+        field.setKey("ORDERID");
+        field.setQuery(orderId.toString());
+        field.setType(QueryData.Type.INTEGER);
         list.add(field);
 
         field = new QueryData();
-        field.key = "PRINTER";
-        field.query = printer;
-        field.type = QueryData.Type.STRING;
+        field.setKey("PRINTER");
+        field.setQuery(printer);
+        field.setType(QueryData.Type.STRING);
         list.add(field);
 
         field = new QueryData();
-        field.key = "USE_NUM_FORMS";
-        field.type = QueryData.Type.STRING;
+        field.setKey("USE_NUM_FORMS");
+        field.setType(QueryData.Type.STRING);
         /*
          * query needs to be specified even if it's redundant because otherwise
          * ReportUtil.getSingleParameter() for this parameter in the other bean
          * will return null and this parameter won't have any effect on the
          * report
          */
-        field.query = "USE_NUM_FORMS";
+        field.setQuery("USE_NUM_FORMS");
         list.add(field);
 
         requestFormReport.runReport(list);

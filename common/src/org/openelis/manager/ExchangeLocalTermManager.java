@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.ExchangeLocalTermViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 
 public class ExchangeLocalTermManager implements Serializable {
 

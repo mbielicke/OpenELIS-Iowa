@@ -37,14 +37,11 @@ import javax.persistence.NoResultException;
 import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleItemManager;
@@ -52,6 +49,10 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -182,7 +183,7 @@ public class SampleManagerBean {
         errorsList = new ValidationErrorsList();
         accNum = data.getAccessionNumber();
         if (accNum <= 0) {
-            errorsList.add(new FieldErrorException("accessionNumberNotPositiveException",
+            errorsList.add(new FieldErrorException(Messages.get().accessionNumberNotPositiveException(),
                                                    SampleMeta.getAccessionNumber()));
             throw errorsList;
         }
@@ -192,7 +193,7 @@ public class SampleManagerBean {
 
         // we need to set the error
         if (data.getAccessionNumber().compareTo(new Integer(sysVarDO.getValue())) > 0) {
-            errorsList.add(new FieldErrorException("accessionNumberNotInUse",
+            errorsList.add(new FieldErrorException(Messages.get().accessionNumberNotInUse(),
                                                    SampleMeta.getAccessionNumber()));
             throw errorsList;
         }
@@ -236,7 +237,7 @@ public class SampleManagerBean {
 
                     return quickEntryMan;
                 } else {
-                    errorsList.add(new FieldErrorException("accessionNumberDuplicate",
+                    errorsList.add(new FieldErrorException(Messages.get().accessionNumberDuplicate(),
                                                            SampleMeta.getAccessionNumber()));
                 }
             }

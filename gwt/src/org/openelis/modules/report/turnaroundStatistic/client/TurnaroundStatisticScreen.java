@@ -32,6 +32,7 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SectionViewDO;
@@ -40,13 +41,12 @@ import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.domain.TurnAroundReportViewVO.PlotValue;
 import org.openelis.domain.TurnAroundReportViewVO.StatisticType;
 import org.openelis.domain.TurnAroundReportViewVO.Value;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.OptionListItem;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -71,14 +71,13 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.preferences.client.PrinterService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -105,23 +104,11 @@ public class TurnaroundStatisticScreen extends Screen {
     private String                    recRelLabel;
     private ArrayList<StatisticType>  statTypeList;
 
-    public TurnaroundStatisticScreen() throws Exception {
+    public TurnaroundStatisticScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(TurnaroundStatisticDef.class));
-
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         
+        setWindow(window);
+
         initialize();
         setState(State.DEFAULT);
         initializeDropdowns();
@@ -578,7 +565,7 @@ public class TurnaroundStatisticScreen extends Screen {
         refreshScreen();
         clearErrors();
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -589,74 +576,74 @@ public class TurnaroundStatisticScreen extends Screen {
         toDate = data.getReleasedDateTo();
         if(fromDate != null && toDate != null) {
             field = new QueryData();
-            field.key = SampleMeta.getAnalysisReleasedDate();
-            field.query = DataBaseUtil.concatWithSeparator(fromDate.toString(), "..", toDate.toString());
-            field.type = QueryData.Type.DATE;
+            field.setKey(SampleMeta.getAnalysisReleasedDate());
+            field.setQuery(DataBaseUtil.concatWithSeparator(fromDate.toString(), "..", toDate.toString()));
+            field.setType(QueryData.Type.DATE);
             fields.add(field);
         }
         
         plotInterval = data.getPlotIntervalId();
         if (plotInterval != null) {
             field = new QueryData();
-            field.key = "PLOT_INTERVAL";
-            field.query = plotInterval.toString();
-            field.type = QueryData.Type.INTEGER;
+            field.setKey("PLOT_INTERVAL");
+            field.setQuery(plotInterval.toString());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }
 
         section = data.getSectionId();
         if (section != null) {
             field = new QueryData();
-            field.key = SampleMeta.getAnalysisSectionId();
-            field.query = section.toString();
-            field.type = QueryData.Type.INTEGER;
+            field.setKey(SampleMeta.getAnalysisSectionId());
+            field.setQuery(section.toString());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }
 
         test = data.getTestId();
         if (test != null) {
             field = new QueryData();
-            field.key = SampleMeta.getAnalysisTestId();
-            field.query = test.toString();
-            field.type = QueryData.Type.INTEGER;
+            field.setKey(SampleMeta.getAnalysisTestId());
+            field.setQuery(test.toString());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }
 
         organization = data.getOrganizationId();
         if (organization != null) {
             field = new QueryData();
-            field.key = SampleMeta.getOrgId();
-            field.query = organization.toString();
-            field.type = QueryData.Type.INTEGER;
+            field.setKey(SampleMeta.getOrgId());
+            field.setQuery(organization.toString());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }
 
         exclPT = data.getIsExcludePTSample();
         if (exclPT != null) {
             field = new QueryData();
-            field.key = "EXCLUDE_PT";
-            field.query = exclPT.toString();
-            field.type = QueryData.Type.STRING;
+            field.setKey("EXCLUDE_PT");
+            field.setQuery(exclPT.toString());
+            field.setType(QueryData.Type.STRING);
             fields.add(field);
         }
         query.setFields(fields);
 
-        window.setBusy(consts.get("fetching"));
+        window.setBusy(Messages.get().fetching());
         TurnaroundStatisticReportService.get().fetchForTurnaroundStatistic(query, new AsyncCallback<TurnAroundReportViewVO>() {
             public void onSuccess(TurnAroundReportViewVO result) {
                 setPlotData(result);
                 plotDataButton.enable(true);
-                window.setDone(consts.get("done"));
+                window.setDone(Messages.get().loadCompleteMessage());
             }
 
             public void onFailure(Throwable error) {
                 setPlotData(null);
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                     setState(State.DEFAULT);
                 } else {
                     Window.alert("Error: Method call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }
             }
         });
@@ -678,7 +665,7 @@ public class TurnaroundStatisticScreen extends Screen {
          * to the back end.
          */
         if (allUnSelected) {
-            window.setError(consts.get("noSampleSelectedError"));
+            window.setError(Messages.get().noSampleSelectedError());
             return;
         }
         try {

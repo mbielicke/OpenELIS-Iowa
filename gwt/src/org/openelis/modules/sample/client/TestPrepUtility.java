@@ -29,14 +29,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
@@ -212,9 +213,9 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 if (!testMan.canAssignThisSection(sectionVDO)) {
                     sectionVDO = testMan.getTestSections().getDefaultSection();
                     if (sectionVDO == null || !testMan.canAssignThisSection(sectionVDO)) {
-                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                        errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesAddTest(
                                                               testMan.getTest().getName(),
-                                                              testMan.getTest().getMethodName()));
+                                                              testMan.getTest().getMethodName())));
                         continue;
                     }
                 }
@@ -304,7 +305,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setContent(prepPickerScreen);
-        modal.setName(consts.get("prepTestPicker"));
+        modal.setName(Messages.get().prepTestPicker());
         prepPickerScreen.setBundles(prepBundles);
     }
 
@@ -371,9 +372,9 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                     if (!testMan.canAssignThisSection(tsVDO)) {
                         tsVDO = testMan.getTestSections().getDefaultSection();
                         if (tsVDO == null || !testMan.canAssignThisSection(tsVDO)) {
-                            errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                            errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesAddTest(
                                                                   testMan.getTest().getName(),
-                                                                  testMan.getTest().getMethodName()));
+                                                                  testMan.getTest().getMethodName())));
                             return;
                         }
                     }
@@ -471,7 +472,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             bundles.clear();
             ActionEvent.fire(this, Action.DONE, bundles);
         } catch (Exception anyE) {
-            Window.alert(consts.get("prepTestCancelledCleanupException"));
+            Window.alert(Messages.get().prepTestCancelledCleanupException());
         }
     }
 }

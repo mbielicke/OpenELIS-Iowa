@@ -28,14 +28,15 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -63,6 +64,7 @@ import org.openelis.manager.HasAuxDataInt;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.auxData.client.AuxDataUtil;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultValidator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +84,7 @@ public class AuxDataTab extends Screen {
     protected HasAuxDataInt         parentMan;
     protected AuxDataManager        manager;
 
-    public AuxDataTab(ScreenDefInt def, ScreenWindowInt window) {
+    public AuxDataTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 
@@ -153,7 +155,7 @@ public class AuxDataTab extends Screen {
                         event.cancel();
                     } else if (c == 2 && queryFieldEntered && DataBaseUtil.isEmpty(val)) {
                         event.cancel();
-                        window.setError(consts.get("auxDataOneQueryException"));
+                        window.setError(Messages.get().auxDataOneQueryException());
                     }
                 } else if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     if ( !canEdit())
@@ -250,7 +252,7 @@ public class AuxDataTab extends Screen {
                 }
 
                 ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("auxGroupSelection"));
+                modal.setName(Messages.get().auxGroupSelection());
                 modal.setContent(auxGroupScreen);
                 auxGroupScreen.draw();
             }
@@ -270,7 +272,7 @@ public class AuxDataTab extends Screen {
                 r = auxValsTable.getSelectedRow();
                 if (r == -1)
                     return;
-                if (Window.confirm(consts.get("removeAuxMessage"))) {
+                if (Window.confirm(Messages.get().removeAuxMessage())) {
                     auxValsTable.unselect(r);
                     manager.removeAuxDataGroupAt(r);
                 }
@@ -394,16 +396,16 @@ public class AuxDataTab extends Screen {
             if (row.cells.get(2).value != null) {
 
                 field = new QueryData();
-                field.key = SampleMeta.getAuxDataAuxFieldId();
-                field.type = QueryData.Type.INTEGER;
-                field.query = String.valueOf(fieldDO.getId());
+                field.setKey(SampleMeta.getAuxDataAuxFieldId());
+                field.setType(QueryData.Type.INTEGER);
+                field.setQuery(String.valueOf(fieldDO.getId()));
                 fieldList.add(field);
 
                 // aux data value
                 field = new QueryData();
-                field.key = SampleMeta.getAuxDataValue();
-                field.type = QueryData.Type.STRING;
-                field.query = String.valueOf(row.cells.get(2).value);
+                field.setKey(SampleMeta.getAuxDataValue());
+                field.setType(QueryData.Type.STRING);
+                field.setQuery(String.valueOf(row.cells.get(2).value));
                 fieldList.add(field);
             }
         }

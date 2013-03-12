@@ -26,7 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.domain.AuxDataDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.modules.auxData.client.AuxDataService;
 
 public class AuxDataManagerProxy {

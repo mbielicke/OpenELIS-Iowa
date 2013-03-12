@@ -56,6 +56,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -74,7 +75,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
     private TableWidget   table;
     private AppButton     addButton, removeButton;
 
-    public SampleTypeTab(ScreenDefInt def, ScreenWindowInt window) {
+    public SampleTypeTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);       
         

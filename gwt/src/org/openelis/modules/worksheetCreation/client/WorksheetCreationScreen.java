@@ -29,19 +29,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -57,15 +49,12 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -108,6 +97,17 @@ import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetCreationScreen extends Screen {
 
@@ -143,26 +143,15 @@ public class WorksheetCreationScreen extends Screen {
     protected WorksheetCreationLookupScreen    wcLookupScreen;
     protected WorksheetLookupScreen            wLookupScreen, wAnaLookupScreen;
     
-    public WorksheetCreationScreen() throws Exception {
+    public WorksheetCreationScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Worksheet Creation Screen");
+            throw new PermissionException(Messages.get().screenPermException("Worksheet Creation Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-    
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         analysisItems      = new ArrayList<TableDataRow>();
         isSaved            = true;
         isTemplateLoaded   = false;
@@ -190,8 +179,8 @@ public class WorksheetCreationScreen extends Screen {
         
         initialize();
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (wasExitCalled) {
                     wcLookupScreen.getWindow().close();
                 } else {
@@ -217,7 +206,7 @@ public class WorksheetCreationScreen extends Screen {
         worksheetId = (TextBox<Integer>)def.getWidget(WorksheetCreationMeta.getWorksheetId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                worksheetId.setValue(manager.getWorksheet().getId());
+                worksheetId.setFieldValue(manager.getWorksheet().getId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -228,7 +217,7 @@ public class WorksheetCreationScreen extends Screen {
         relatedWorksheetId = (TextBox<Integer>)def.getWidget(WorksheetCreationMeta.getWorksheetRelatedWorksheetId());
         addScreenHandler(relatedWorksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                relatedWorksheetId.setValue(manager.getWorksheet().getRelatedWorksheetId());
+                relatedWorksheetId.setFieldValue(manager.getWorksheet().getRelatedWorksheetId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -291,7 +280,7 @@ public class WorksheetCreationScreen extends Screen {
             public void onClick(ClickEvent event) {
                 if (worksheetSaveConfirm == null) {
                     worksheetSaveConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                       consts.get("worksheetCreationSaveConfirm"),
+                                                       Messages.get().worksheetCreationSaveConfirm(),
                                                        "Don't Save", "Save");
                     worksheetSaveConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
                         public void onSelection(SelectionEvent<Integer> event) {
@@ -417,7 +406,7 @@ public class WorksheetCreationScreen extends Screen {
                             }
                             
                             if (((Integer)dataRow.key).equals(tempKey)) {
-                                Window.alert(consts.get("oneOrMoreQcLinkOnRemove"));
+                                Window.alert(Messages.get().oneOrMoreQcLinkOnRemove());
                                 return;
                             }
                         }
@@ -427,7 +416,7 @@ public class WorksheetCreationScreen extends Screen {
                         if (((ArrayList<Object>)dataRow.data).size() != 3) {
                             if (worksheetRemoveQCConfirm == null) {
                                 worksheetRemoveQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                                       consts.get("worksheetRemoveQCConfirm"),
+                                                                       Messages.get().worksheetRemoveQCConfirm(),
                                                                        "Don't Remove", "Remove");
                                 worksheetRemoveQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                                     public void onSelection(SelectionEvent<Integer> event) {
@@ -444,7 +433,7 @@ public class WorksheetCreationScreen extends Screen {
                                                     Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN.equals(twiDO.getTypeId())) {
                                                     if (worksheetRemoveLastOfQCConfirm == null) {
                                                         worksheetRemoveLastOfQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                                                                     consts.get("worksheetRemoveLastOfQCConfirm"),
+                                                                                                     Messages.get().worksheetRemoveLastOfQCConfirm(),
                                                                                                      "Don't Remove", "Remove");
                                                         worksheetRemoveLastOfQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                                                             public void onSelection(SelectionEvent<Integer> event) {
@@ -478,7 +467,7 @@ public class WorksheetCreationScreen extends Screen {
                         if (((String)dataRow.cells.get(1).value).startsWith("D")) {
                             if (worksheetRemoveDuplicateQCConfirm == null) {
                                 worksheetRemoveDuplicateQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                                                consts.get("worksheetRemoveDuplicateQCConfirm"),
+                                                                                Messages.get().worksheetRemoveDuplicateQCConfirm(),
                                                                                 "Don't Remove", "Remove");
                                 worksheetRemoveDuplicateQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                                     public void onSelection(SelectionEvent<Integer> event) {
@@ -584,7 +573,7 @@ public class WorksheetCreationScreen extends Screen {
                                         // a format of DefaultTotal and tests with
                                         // a null format can be on the same worksheet
                                     } else if (!formatId.equals(data.getWorksheetFormatId())) {
-                                        message.append(consts.get("accessionNum")).append(data.getAccessionNumber())
+                                        message.append(Messages.get().accessionNum()).append(data.getAccessionNumber())
                                                .append("\t").append(data.getTestName().trim()).append(", ")
                                                .append(data.getMethodName().trim());
                                         try {
@@ -617,10 +606,10 @@ public class WorksheetCreationScreen extends Screen {
                                 }
                                 
                                 if (message.length() > 0)
-                                    Window.alert(consts.get("worksheetItemsFormatConflict")+":\n\n"+message.toString());
+                                    Window.alert(Messages.get().worksheetItemsFormatConflict()+":\n\n"+message.toString());
 
                                 if (testIds.size() > 1)
-                                    Window.alert(consts.get("multipleTestsOnWorksheet"));
+                                    Window.alert(Messages.get().multipleTestsOnWorksheet());
                                 else if (!isTemplateLoaded)
                                     loadQCTemplate();
 
@@ -634,7 +623,10 @@ public class WorksheetCreationScreen extends Screen {
                     }
                 });
                 
-                OpenELIS.getBrowser().addScreen(wcLookupScreen);
+                org.openelis.ui.widget.Window win = new org.openelis.ui.widget.Window(false);
+                win.setName(wcLookupScreen.getName());
+                win.setContent(wcLookupScreen);
+                OpenELIS.getBrowser().addWindow(win,"wcLookupScreen");
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("error: " + e.getMessage());
@@ -667,11 +659,11 @@ public class WorksheetCreationScreen extends Screen {
         setFocus(null);
         
         if (worksheetItemTable.numRows() == 0) {
-            Window.alert(consts.get("worksheetNotSaveEmpty"));
+            Window.alert(Messages.get().worksheetNotSaveEmpty());
             return;
         }
         
-        window.setBusy(consts.get("saving"));
+        window.setBusy(Messages.get().saving());
         
         //
         // If the format has not been set (QC only worksheet), set it to the default
@@ -689,7 +681,7 @@ public class WorksheetCreationScreen extends Screen {
                 toColumnNames.put(columnNameVO.getName(), columnNameVO.getId());
             }
         } catch (Exception anyE) {
-//            Window.alert(consts.get("worksheetToColumnMappingLoadError"));
+//            Window.alert(Messages.get().worksheetToColumnMappingLoadError"));
             anyE.printStackTrace();
             toColumnNames = null;
         }
@@ -770,7 +762,7 @@ public class WorksheetCreationScreen extends Screen {
                                 }
                                 formatColumnNames.put(fromFormatId, fromColumnNames);
                             } catch (Exception anyE1) {
-//                                Window.alert(consts.get("worksheetFromColumnMappingLoadError"));
+//                                Window.alert(Messages.get().worksheetFromColumnMappingLoadError"));
                                 anyE1.printStackTrace();
                                 fromColumnNames = null;
                             }
@@ -849,7 +841,7 @@ public class WorksheetCreationScreen extends Screen {
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(wcs);
-                window.setDone(consts.get("savingComplete"));
+                window.setDone(Messages.get().savingComplete());
                 
                 isSaved = true;
                 saveButton.enable(false);
@@ -878,7 +870,7 @@ public class WorksheetCreationScreen extends Screen {
         if (!isSaved) {
             if (worksheetExitConfirm == null) {
                 worksheetExitConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                   consts.get("worksheetExitConfirm"),
+                                                   Messages.get().worksheetExitConfirm(),
                                                    "Don't Exit", "Exit");
                 worksheetExitConfirm.addSelectionHandler(new SelectionHandler<Integer>(){
                     public void onSelection(SelectionEvent<Integer> event) {
@@ -941,16 +933,16 @@ public class WorksheetCreationScreen extends Screen {
                         list = QcService.get().fetchActiveByExactName(twiDO.getQcName());
                         if (list.size() == 0) {
                             if (Constants.dictionary().POS_RANDOM.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-1, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeRandString));
+                                qcErrors.put(-1, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeRandString)));
                             } else if (Constants.dictionary().POS_LAST_OF_RUN.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-2, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastRunString));
+                                qcErrors.put(-2, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeLastRunString)));
                             } else if (Constants.dictionary().POS_LAST_OF_SUBSET.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-3, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastSubsetString));
+                                qcErrors.put(-3, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeLastSubsetString)));
                             } else if (Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-4, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastBothString));
+                                qcErrors.put(-4, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeLastBothString)));
                             } else {
                                 for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getSubsetCapacity())
-                                    qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
+                                    qcErrors.put(j, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), String.valueOf(j))));
                             }
                             continue;
                         } else if (list.size() > 1) {
@@ -973,7 +965,7 @@ public class WorksheetCreationScreen extends Screen {
                             }
                             
                             if (qcDO == null) {
-                                Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), String.valueOf(i+1)).getMessage());
+                                Window.alert(new FormErrorException(Messages.get().multiMatchingActiveQc(twiDO.getQcName(), String.valueOf(i+1))).getMessage());
                                 openQCLookup(twiDO.getQcName(), list);
                                 qcStartIndex = i + 1;
                                 break;
@@ -1219,7 +1211,7 @@ public class WorksheetCreationScreen extends Screen {
         }
 
         if (j < analysisItems.size())
-            Window.alert(consts.get("worksheetIsFull"));
+            Window.alert(Messages.get().worksheetIsFull());
 
         //
         // load QC Link dropdown model
@@ -1266,7 +1258,7 @@ public class WorksheetCreationScreen extends Screen {
                             list = (ArrayList<TableDataRow>)event.getData();
                             if (list != null) {
                                 wVDO = (WorksheetViewDO)list.get(0).data;
-                                relatedWorksheetId.setValue(wVDO.getId());
+                                relatedWorksheetId.setFieldValue(wVDO.getId());
                             }
                         }
                     }
@@ -1274,7 +1266,7 @@ public class WorksheetCreationScreen extends Screen {
             }
             
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("worksheetLookup"));
+            modal.setName(Messages.get().worksheetLookup());
             modal.setContent(wLookupScreen);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1404,7 +1396,7 @@ public class WorksheetCreationScreen extends Screen {
                                     waSelectionScreen.setWorksheetId(wVDO.getId());
                                     waSelectionScreen.draw();
                                     modal2.setContent(waSelectionScreen);
-                                    modal2.setName(consts.get("worksheetNumber")+wVDO.getId().toString());
+                                    modal2.setName(Messages.get().worksheetNumber()+wVDO.getId().toString());
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     Window.alert("error: " + e.getMessage());
@@ -1417,7 +1409,7 @@ public class WorksheetCreationScreen extends Screen {
             }
             
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("worksheetLookup"));
+            modal.setName(Messages.get().worksheetLookup());
             modal.setContent(wAnaLookupScreen);
         } catch (Exception e) {
             e.printStackTrace();
@@ -1530,7 +1522,7 @@ public class WorksheetCreationScreen extends Screen {
                 qcLookupScreen.enableMultiSelect(true);
             
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("qcLookup"));
+            modal.setName(Messages.get().QCLookup());
             modal.setContent(qcLookupScreen);
 
             if (list != null) {

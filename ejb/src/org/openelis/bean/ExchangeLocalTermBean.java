@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.Constants;
@@ -47,14 +48,14 @@ import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.ExchangeLocalTerm;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -131,9 +132,9 @@ public class ExchangeLocalTermBean {
         results = null;
         refName = null;
         for (QueryData field : fields) {
-            if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.key))
-                refTableId = Integer.parseInt(field.query);
-            else if (ExchangeLocalTermMeta.getReferenceName().equals(field.key))
+            if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.getKey()))
+                refTableId = Integer.parseInt(field.getQuery());
+            else if (ExchangeLocalTermMeta.getReferenceName().equals(field.getKey()))
                 refName = field;
         }
 
@@ -215,13 +216,13 @@ public class ExchangeLocalTermBean {
         checkDuplicate = false;
 
         if (data.getReferenceTableId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              ExchangeLocalTermMeta.getReferenceTableId()));
         else
             checkDuplicate = true;
 
         if (data.getReferenceId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              ExchangeLocalTermMeta.getReferenceName()));
         else
             checkDuplicate = true;
@@ -231,7 +232,7 @@ public class ExchangeLocalTermBean {
                 localTerm = fetchByReferenceTableIdReferenceId(data.getReferenceTableId(),
                                                                data.getReferenceId());
                 if ( !localTerm.getId().equals(data.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException",
+                    list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
                                                      ExchangeLocalTermMeta.getReferenceName()));
             } catch (NotFoundException ignE) {
                 // ignore
@@ -283,12 +284,12 @@ public class ExchangeLocalTermBean {
     private void setReferenceQuery(QueryData refName, ArrayList<QueryData> fields,
                                    String key) {
         if (refName != null) {
-            refName.key = key;
+            refName.setKey(key);
         } else {
             refName = new QueryData();
-            refName.key = key;
-            refName.query = "*";
-            refName.type = QueryData.Type.STRING;
+            refName.setKey(key);
+            refName.setQuery("*");
+            refName.setType(QueryData.Type.STRING);
             fields.add(refName);
         }
     }

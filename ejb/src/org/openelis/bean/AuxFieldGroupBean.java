@@ -36,17 +36,18 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.entity.AuxFieldGroup;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.AuxFieldGroupMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -182,32 +183,32 @@ public class AuxFieldGroupBean { //implements AuxFieldGroupRemote, AuxFieldGroup
         checkDuplicate = true;
         
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              AuxFieldGroupMeta.getName()));
             checkDuplicate = false;
         }
         
         if (DataBaseUtil.isEmpty(data.getDescription())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              AuxFieldGroupMeta.getDescription()));
             checkDuplicate = false;
         }
             
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              AuxFieldGroupMeta.getActiveBegin()));
             checkDuplicate = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              AuxFieldGroupMeta.getActiveEnd()));
             checkDuplicate = false;
         }
             
         if(checkDuplicate){
             if(DataBaseUtil.isAfter(data.getActiveBegin(),data.getActiveEnd())){
-                list.add(new FieldErrorException("endDateAfterBeginDateException", null));  
+                list.add(new FieldErrorException(Messages.get().endDateAfterBeginDateException(), null));  
                 checkDuplicate = false;
             }
         }
@@ -221,7 +222,7 @@ public class AuxFieldGroupBean { //implements AuxFieldGroupRemote, AuxFieldGroup
                 if(DataBaseUtil.isDifferent(group.getId(), data.getId())) {                 
                     if(DataBaseUtil.isSame(group.getIsActive(),data.getIsActive())
                                     && DataBaseUtil.isSame("Y",data.getIsActive())) {                        
-                        list.add(new FieldErrorException("auxFieldGroupActiveException",null));                                   
+                        list.add(new FieldErrorException(Messages.get().auxFieldGroupActiveException(),null));                                   
                         break;                                         
                     }
                     
@@ -250,7 +251,7 @@ public class AuxFieldGroupBean { //implements AuxFieldGroupRemote, AuxFieldGroup
                     }
                       
                     if(overlap)
-                        list.add(new FieldErrorException("auxFieldGroupTimeOverlapException",null));
+                        list.add(new FieldErrorException(Messages.get().auxFieldGroupTimeOverlapException(),null));
                     
                 }
             } 

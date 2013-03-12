@@ -50,7 +50,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;

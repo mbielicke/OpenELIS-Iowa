@@ -7,8 +7,8 @@ import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdAccessionVO;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.SampleManager;
+import org.openelis.ui.common.data.QueryData;
 
 @Stateless
 @SecurityDomain("openelis")

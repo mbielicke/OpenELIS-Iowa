@@ -54,10 +54,10 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

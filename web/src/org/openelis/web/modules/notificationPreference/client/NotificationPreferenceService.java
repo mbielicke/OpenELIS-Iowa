@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;

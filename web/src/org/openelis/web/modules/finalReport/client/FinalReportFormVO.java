@@ -25,8 +25,8 @@
 */
 package org.openelis.web.modules.finalReport.client;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 
 public class FinalReportFormVO {
     

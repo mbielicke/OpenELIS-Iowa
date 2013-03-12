@@ -29,8 +29,8 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.util.Date;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 
 /**
  * The class is used to carry fields for the client notification received report.

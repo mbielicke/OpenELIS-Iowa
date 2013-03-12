@@ -26,7 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.cache.UserCache;
-import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.modules.test.client.TestService;
 
 public class TestManagerProxy {

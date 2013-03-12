@@ -31,6 +31,7 @@ import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -65,6 +66,7 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -90,7 +92,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
         REFRESH_TABS
     };
 
-    public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindowInt window,
+    public SampleItemAnalysisTreeTab(ScreenDefInt def, WindowInt window,
                                      HasActionHandlers parentScreen, 
                                      SampleHistoryUtility historyUtility) {
         setDefinition(def);
@@ -291,7 +293,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
         addScreenHandler(addAnalysis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 if(itemsTree.getSelectedRow() == -1 && itemsTree.numRows() > 1) {
-                    window.setError(consts.get("sampleItemSelectedToAddAnalysis"));
+                    window.setError(Messages.get().sampleItemSelectedToAddAnalysis());
                     return;
                 }
                 treeUtil.onAddAnalysisButtonClick();
@@ -398,7 +400,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
         }
         
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(consts.get("itemsAndAnalyses"));
+        modal.setName(Messages.get().itemsAndAnalyses());
         modal.setContent(treePopout);
         
         modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
@@ -496,7 +498,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
         item = itemsTree.getSelection();
 
         if (item == null || !"analysis".equals(item.leafType)) {
-            window.setError(consts.get("resultHistoryException"));
+            window.setError(Messages.get().resultHistoryException());
             return;
         }
 

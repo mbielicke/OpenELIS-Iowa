@@ -25,6 +25,7 @@
  */
 package org.openelis.utilcommon;
 
+import org.openelis.constants.Messages;
 import org.openelis.exception.ParseException;
 
 /**
@@ -43,19 +44,19 @@ public class ResultRangeNumeric implements ResultRange {
 
         valid = false;
         if (range == null)
-            throw new ParseException("illegalNumericFormatException");
+            throw new ParseException(Messages.get().illegalNumericFormatException());
 
         st = range.split(",");
         if (st.length != 2)
-            throw new ParseException("illegalNumericFormatException");
+            throw new ParseException(Messages.get().illegalNumericFormatException());
 
         try {
             min = Double.parseDouble(st[0]);
             max = Double.parseDouble(st[1]);
             if (min >= max)
-                throw new ParseException("illegalNumericRangeException");
+                throw new ParseException(Messages.get().illegalNumericRangeException());
         } catch (NumberFormatException ex) {
-            throw new ParseException("illegalNumericFormatException");
+            throw new ParseException(Messages.get().illegalNumericFormatException());
         }
         valid = true;
     }
@@ -75,7 +76,7 @@ public class ResultRangeNumeric implements ResultRange {
         }
         
         if(!contains || !valid)
-            throw new ParseException("illegalNumericValueException", String.valueOf(min), String.valueOf(max));
+            throw new ParseException(Messages.get().illegalNumericValueException(String.valueOf(min), String.valueOf(max)));
     }
     
     public boolean intersects(ResultRange value) {

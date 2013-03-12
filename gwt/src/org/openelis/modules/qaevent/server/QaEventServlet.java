@@ -34,7 +34,7 @@ import org.openelis.bean.QaEventBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.qaevent.client.QAEventServiceInt;
 

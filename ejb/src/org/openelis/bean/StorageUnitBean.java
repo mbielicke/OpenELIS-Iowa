@@ -37,20 +37,21 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.entity.StorageUnit;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.StorageUnitMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -213,7 +214,7 @@ public class StorageUnitBean {
         locations = query.getResultList();
 
         if (locations.size() > 0) {
-            list.add(new FormErrorException("storageUnitDeleteException"));
+            list.add(new FormErrorException(Messages.get().storageUnitDeleteException()));
             throw list;
         }
     }
@@ -227,17 +228,17 @@ public class StorageUnitBean {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getCategoryId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              StorageUnitMeta.getCategoryId()));
 
         if (DataBaseUtil.isEmpty(desc)) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              StorageUnitMeta.getDescription()));
         } else {
             dups = fetchByDescription(desc, 1);
             if (dups.size() > 0 &&
                 DataBaseUtil.isDifferent(dups.get(0).getId(), data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException",
+                list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
                                                  StorageUnitMeta.getDescription()));
         }
 

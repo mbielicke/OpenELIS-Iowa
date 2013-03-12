@@ -36,17 +36,18 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.entity.Provider;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.ProviderMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -143,10 +144,10 @@ public class ProviderBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(providerDO.getLastName()))
-            list.add(new FieldErrorException("fieldRequiredException", ProviderMeta.getLastName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProviderMeta.getLastName()));
 
         if (DataBaseUtil.isEmpty(providerDO.getTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException", ProviderMeta.getTypeId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), ProviderMeta.getTypeId()));
 
         if (list.size() > 0)
             throw list;

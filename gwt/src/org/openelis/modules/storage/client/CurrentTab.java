@@ -31,9 +31,10 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -55,6 +56,7 @@ import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.manager.StorageViewManager;
 import org.openelis.modules.storageLocation.client.StorageLocationLookupScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -72,7 +74,7 @@ public class CurrentTab extends Screen {
     private HashMap<Integer, StorageManager>         storageCache;
     private HashMap<Integer, StorageLocationManager> storageLocationCache;
 
-    public CurrentTab(ScreenDefInt def, ScreenWindowInt window) {
+    public CurrentTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -116,7 +118,7 @@ public class CurrentTab extends Screen {
                     if (isStorage) {
                         data = (StorageViewDO)item.data;
                         if (data.getCheckout() != null) {
-                            window.setError(consts.get("cantSelectItem"));
+                            window.setError(Messages.get().cantSelectItem());
                             event.cancel();
                         } else {
                             window.clearStatus();
@@ -223,7 +225,7 @@ public class CurrentTab extends Screen {
         if (manager == null || treeFetched)
             return;
         try {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             sm = manager.getCurrent();
             for (i = 0; i < sm.count(); i++ ) {
                 data = sm.getStorageAt(i);
@@ -335,7 +337,7 @@ public class CurrentTab extends Screen {
                                     oldstorage = (StorageViewDO)item.data;
 
                                     if (oldstorage.getStorageLocationId().equals(data.getId())) {
-                                        window.setError(consts.get("itemsCantBeMoved"));
+                                        window.setError(Messages.get().itemsCantBeMoved());
                                         continue;
                                     }
 
@@ -365,7 +367,7 @@ public class CurrentTab extends Screen {
         }
         window.clearStatus();
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("storageLocationSelection"));
+        modal.setName(Messages.get().storageLocationSelection());
         modal.setContent(storageLocationLookup);
         storageLocationLookup.setScreenState(State.DEFAULT);
         storageLocationLookup.clearFields();

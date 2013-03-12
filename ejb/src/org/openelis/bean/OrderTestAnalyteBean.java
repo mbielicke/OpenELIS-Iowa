@@ -35,13 +35,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.OrderTestAnalyteDO;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.entity.OrderTestAnalyte;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -156,7 +157,7 @@ public class OrderTestAnalyteBean {
              * this analyte is not present in the original test thus it needs
              * to be removed from this order test 
              */
-            list.add(new FieldErrorException("analyteNotPresentInTestException", null, indexStr, data.getAnalyteName()));            
+            list.add(new FieldErrorException(Messages.get().analyteNotPresentInTestException(null, indexStr), data.getAnalyteName()));            
         
         if (list.size() > 0)
             throw list;

@@ -29,15 +29,17 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -77,12 +79,14 @@ public class NotificationPreferenceScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public NotificationPreferenceScreen() throws Exception {
+    public NotificationPreferenceScreen(WindowInt win) throws Exception {
         super((ScreenDefInt)GWT.create(NotificationPreferenceDef.class));
-
+        
+        setWindow(win);
+        
         userPermission = UserCache.getPermission().getModule("w_notify");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Notification Preference Screen");
+            throw new PermissionException(Messages.get().screenPermException("Notification Preference Screen"));
 
         clause = userPermission.getClause();
 
@@ -311,11 +315,11 @@ public class NotificationPreferenceScreen extends Screen {
              * this user's system user module for this screen   
              */
             if (idList == null) {
-                Window.alert(consts.get("noPermToAddEmailException"));               
+                Window.alert(Messages.get().noPermToAddEmailException());               
                 return;
             }
         }
-        window.setBusy(consts.get("fetching"));
+        window.setBusy(Messages.get().fetching());
         try {
            organizationList = NotificationPreferenceService.get().fetchByIds(idList);
         } catch (Exception e) {
@@ -387,7 +391,7 @@ public class NotificationPreferenceScreen extends Screen {
         String msg, prevMsg;
         ArrayList<OrganizationParameterDO> params;
 
-        window.setBusy(consts.get("adding"));
+        window.setBusy(Messages.get().adding());
 
         for (int i = 0; i < organizationList.size(); i++ ) {
             try {
@@ -408,7 +412,7 @@ public class NotificationPreferenceScreen extends Screen {
                     break;
                 }
             } catch (EntityLockedException e) {
-                Window.alert(consts.get("recordNotAvailableLockException"));
+                Window.alert(Messages.get().recordNotAvailableLockException());
             } catch (ValidationErrorsList e) {
                 prevMsg = null;
                 for (int j = 0; j < e.size(); j++) {
@@ -432,7 +436,7 @@ public class NotificationPreferenceScreen extends Screen {
         
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
-        window.setDone(consts.get("addingComplete"));
+        window.setDone(Messages.get().addingComplete());
     }
     
     private void update(AddEditEmailVO data) {
@@ -441,7 +445,7 @@ public class NotificationPreferenceScreen extends Screen {
         ArrayList<OrganizationParameterDO> params, list;
         OrganizationParameterDO par;
 
-        window.setBusy(consts.get("updating"));
+        window.setBusy(Messages.get().updating());
         
         list = (ArrayList<OrganizationParameterDO>)table.getSelection().data;
         
@@ -473,7 +477,7 @@ public class NotificationPreferenceScreen extends Screen {
                     break;
                 }
             } catch (EntityLockedException e) {
-                Window.alert(consts.get("recordNotAvailableLockException"));
+                Window.alert(Messages.get().recordNotAvailableLockException());
             } catch (ValidationErrorsList e) {
                 prevMsg = null;
                 for (int j = 0; j < e.size(); j++) {
@@ -497,7 +501,7 @@ public class NotificationPreferenceScreen extends Screen {
 
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
-        window.setDone(consts.get("updatingComplete"));
+        window.setDone(Messages.get().updatingComplete());
     }
     
     private void delete() {
@@ -506,7 +510,7 @@ public class NotificationPreferenceScreen extends Screen {
         OrganizationParameterDO data, par;
         TableDataRow row;
 
-        window.setBusy(consts.get("deleting"));
+        window.setBusy(Messages.get().deleting());
         row = table.getSelection();
         list = (ArrayList<OrganizationParameterDO>)row.data;
         
@@ -539,7 +543,7 @@ public class NotificationPreferenceScreen extends Screen {
                 }
 
             } catch (EntityLockedException e) {
-                Window.alert(consts.get("recordNotAvailableLockException"));
+                Window.alert(Messages.get().recordNotAvailableLockException());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 e.printStackTrace();
@@ -548,7 +552,7 @@ public class NotificationPreferenceScreen extends Screen {
 
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
-        window.setDone(consts.get("deleteComplete"));
+        window.setDone(Messages.get().deleteComplete());
     }
         
     private void createParameters(ArrayList<OrganizationParameterDO> params, AddEditEmailVO data) {        

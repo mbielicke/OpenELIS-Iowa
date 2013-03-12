@@ -28,8 +28,9 @@ package org.openelis.modules.storage.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.LastPageException;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -44,6 +45,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.manager.StorageViewManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -57,7 +59,7 @@ public class HistoryTab extends Screen {
     private boolean            loaded;
     private int                pageNum;
     
-    public HistoryTab(ScreenDefInt def, ScreenWindowInt window) {
+    public HistoryTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();  
@@ -90,7 +92,7 @@ public class HistoryTab extends Screen {
                     pageNum--;
                     DataChangeEvent.fire(screen, storageHistoryTable);                                   
                 } else {  
-                    window.setError(consts.get("noMoreRecordInDir"));
+                    window.setError(Messages.get().noMoreRecordInDir());
                 }
             }
 
@@ -133,11 +135,11 @@ public class HistoryTab extends Screen {
             return;
         
         try {           
-            window.setBusy(consts.get("fetching"));                      
+            window.setBusy(Messages.get().fetching());                      
             
             sm = manager.getHistory(slm.getStorageLocation().getId(), pageNum, 100);       
         } catch (LastPageException e) {
-            window.setError(consts.get("noMoreRecordInDir"));
+            window.setError(Messages.get().noMoreRecordInDir());
             pageNum--;
             return;
         } catch (Exception e) {

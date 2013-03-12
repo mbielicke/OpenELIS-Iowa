@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -38,12 +39,12 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -71,6 +72,7 @@ import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.pws.client.PWSService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -101,11 +103,11 @@ public class SDWISTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public SDWISTab(ScreenWindowInt window) throws Exception {
+    public SDWISTab(WindowInt window) throws Exception {
         this(null, window);
     }
     
-    public SDWISTab(ScreenDefInt def, ScreenWindowInt window) throws Exception {
+    public SDWISTab(ScreenDefInt def, WindowInt window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(SDWISTabDef.class));
         else
@@ -218,7 +220,7 @@ public class SDWISTab extends Screen {
         stateLabId = (TextBox<Integer>)def.getWidget(SampleMeta.getSDWISStateLabId());
         addScreenHandler(stateLabId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                stateLabId.setValue(getSDWISManager().getSDWIS().getStateLabId());
+                stateLabId.setFieldValue(getSDWISManager().getSDWIS().getStateLabId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -240,7 +242,7 @@ public class SDWISTab extends Screen {
 
                     labId = getPreviousSDWISManager().getSDWIS().getStateLabId();
                     getSDWISManager().getSDWIS().setStateLabId(labId);
-                    stateLabId.setValue(labId);
+                    stateLabId.setFieldValue(labId);
                     
                     event.preventDefault();
                     event.stopPropagation();                   
@@ -811,9 +813,9 @@ public class SDWISTab extends Screen {
 
         if (fields.size() > 0) {
             domain = new QueryData();
-            domain.key = SampleMeta.getDomain();
-            domain.query = SampleManager.SDWIS_DOMAIN_FLAG;
-            domain.type = QueryData.Type.STRING;
+            domain.setKey(SampleMeta.getDomain());
+            domain.setQuery(SampleManager.SDWIS_DOMAIN_FLAG);
+            domain.setType(QueryData.Type.STRING);
             fields.add(domain);
         }
 
@@ -843,7 +845,10 @@ public class SDWISTab extends Screen {
         ScreenWindow modal;
 
         try {
-            pwsScreen = new PWSScreen(pwsId.getValue());
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(Messages.get().pwsInformation());
+                                     
+            pwsScreen = new PWSScreen(pwsId.getValue(),modal);
 
             pwsScreen.addActionHandler(new ActionHandler<PWSScreen.Action>() {
                 public void onAction(ActionEvent<PWSScreen.Action> event) {
@@ -864,8 +869,6 @@ public class SDWISTab extends Screen {
                 }
             });
 
-            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("pwsInformation"));
             modal.setContent(pwsScreen);
 
         } catch (Exception e) {
@@ -888,7 +891,7 @@ public class SDWISTab extends Screen {
             }
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("sampleProject"));
+            modal.setName(Messages.get().sampleProject());
             modal.setContent(projectScreen);
             projectScreen.setScreenState(state);
 
@@ -948,7 +951,7 @@ public class SDWISTab extends Screen {
             }
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("sampleOrganization"));
+            modal.setName(Messages.get().sampleOrganization());
             modal.setContent(organizationScreen);
 
             organizationScreen.setScreenState(state);
@@ -1069,6 +1072,6 @@ public class SDWISTab extends Screen {
     
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
-            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ name+"'");
+            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ name+"'");
     }
 }

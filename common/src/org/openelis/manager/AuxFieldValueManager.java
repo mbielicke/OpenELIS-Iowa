@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class AuxFieldValueManager implements Serializable {
 

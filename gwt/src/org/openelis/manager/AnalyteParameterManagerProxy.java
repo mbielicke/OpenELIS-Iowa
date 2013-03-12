@@ -27,8 +27,8 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterService;
 
 public class AnalyteParameterManagerProxy {
@@ -46,18 +46,18 @@ public class AnalyteParameterManagerProxy {
         
         field = new QueryData();
         if (referenceId == null)
-            field.query = null;
+            field.setQuery(null);
         else
-            field.query = referenceId.toString();
-        field.type = QueryData.Type.INTEGER;
+            field.setQuery(referenceId.toString());
+        field.setType(QueryData.Type.INTEGER);
         fields.add(field);
             
         field = new QueryData();
         if (referenceTableId == null)            
-            field.query = null;
+            field.setQuery(null);
         else
-            field.query = referenceTableId.toString();            
-        field.type = QueryData.Type.INTEGER;
+            field.setQuery(referenceTableId.toString());            
+        field.setType(QueryData.Type.INTEGER);
         fields.add(field);
         query.setFields(fields);        
         

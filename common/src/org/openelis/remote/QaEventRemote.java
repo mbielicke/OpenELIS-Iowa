@@ -32,7 +32,7 @@ import javax.ejb.Remote;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.QueryData;
 
 @Remote
 public interface QaEventRemote {

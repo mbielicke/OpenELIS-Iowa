@@ -36,8 +36,8 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleItemDO;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.manager.TestManager;
+import org.openelis.ui.common.Datetime;
 
 @Local
 public interface AnalysisLocal {

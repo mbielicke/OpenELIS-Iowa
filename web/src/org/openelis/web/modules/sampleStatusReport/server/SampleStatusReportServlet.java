@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.SampleStatusReportBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.web.modules.sampleStatusReport.client.SampleStatusReportServiceInt;
 

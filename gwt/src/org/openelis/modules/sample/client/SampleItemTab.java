@@ -32,7 +32,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.common.Util;
+import org.openelis.ui.common.Util;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -47,6 +47,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.meta.SampleMeta;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -64,7 +65,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     protected TextBox           sourceOther, containerReference, quantity;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
-    public SampleItemTab(ScreenDefInt def, ScreenWindowInt window) {
+    public SampleItemTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 

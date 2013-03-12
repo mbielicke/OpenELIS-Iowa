@@ -192,8 +192,6 @@ margin:8px;
 .ContentPanel{
     padding:12px;
     background:#fafafa;/*url("../Images/whitecontentpanel.jpg") no-repeat;*/
-    width:992px;
-    height:668px;
     margin-left:8px;
 }
 .WhiteContentPanel{
@@ -224,7 +222,6 @@ width:58px;
     margin:2px 0 0 8px;
     background:black;/* url("../Images/crumbline.jpg") no-repeat scroll 0 0 transparent;*/
     height: 28px;
-    width: 1016px;
 }
 .crumbline .webLabel{
     font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;

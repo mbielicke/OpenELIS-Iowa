@@ -1,10 +1,15 @@
 package org.openelis.modules.main.client;
 
-import java.util.Date;
+import static org.openelis.modules.main.client.Logger.remote;
 
-import org.openelis.gwt.common.Datetime;
+import java.util.Date;
+import java.util.logging.Level;
+
+import org.openelis.constants.OpenELISConstants;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.widget.Confirm;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -22,6 +27,7 @@ public class SessionTimer {
                                 CHECK_TIMEOUT = 1000 * 60 * 5;    // How often to poll the server for last access
     
     private HandlerRegistration closeHandler;
+    private OpenELISConstants consts = GWT.create(OpenELISConstants.class);
 
     public static void start() {
         new SessionTimer();
@@ -32,10 +38,10 @@ public class SessionTimer {
          * add session timeout dialog box and timers
          */
         timeoutPopup = new Confirm(Confirm.Type.WARN,
-                                   OpenELIS.consts.get("timeoutHeader"),
-                                   OpenELIS.consts.get("timeoutWarning"),
-                                   OpenELIS.consts.get("timeoutExtendTime"),
-                                   OpenELIS.consts.get("timeoutLogout"));
+                                   consts.timeoutHeader(),
+                                   consts.timeoutWarning(),
+                                   consts.timeoutExtendTime(),
+                                   consts.timeoutLogout());
         timeoutPopup.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 if (event.getSelectedItem() == 0) {
@@ -118,8 +124,8 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(OpenELIS.consts.get("couldNotCall"));
-                //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
+                remote().log(Level.SEVERE,caught.getMessage(),caught);
+                Window.alert(caught.getMessage());
             }
         });
     }
@@ -134,8 +140,8 @@ public class SessionTimer {
             }
 
             public void onFailure(Throwable caught) {
-                Window.alert(OpenELIS.consts.get("couldNotCall"));
-                //Application.logger().log(Level.SEVERE, caught.getMessage(), caught);
+                remote().log(Level.SEVERE,caught.getMessage(),caught);
+                Window.alert(caught.getMessage());
             }
         });
     }
@@ -160,8 +166,8 @@ public class SessionTimer {
         try {
             OpenELISService.get().logout();
         } catch (Exception e) {
+            remote().log(Level.SEVERE,e.getMessage(),e);
             Window.alert(e.getMessage());
-            //Application.logger().log(Level.SEVERE, e.getMessage(), e);
         }
 
         Window.open("OpenELIS.html", "_self", null);

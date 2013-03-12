@@ -35,15 +35,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryXUseDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.entity.InventoryItem;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXUse;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -80,7 +81,7 @@ public class InventoryXUseBean {
 
         loc = manager.find(InventoryLocation.class, data.getInventoryLocationId());      
         if(loc.getQuantityOnhand() <  data.getQuantity()) 
-            throw new FieldErrorException("qtyMoreThanQtyOnhandException", null);
+            throw new FieldErrorException(Messages.get().qtyMoreThanQtyOnhandException(), null);
         
         loc.setQuantityOnhand(loc.getQuantityOnhand() - data.getQuantity());
         
@@ -155,7 +156,7 @@ public class InventoryXUseBean {
         }
         
         if(newLoc.getQuantityOnhand() < newQty) 
-            throw new FieldErrorException("qtyMoreThanQtyOnhandException", null);        
+            throw new FieldErrorException(Messages.get().qtyMoreThanQtyOnhandException(), null);        
         
         newLoc.setQuantityOnhand(newLoc.getQuantityOnhand() - newQty);        
         

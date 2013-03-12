@@ -42,10 +42,10 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.entity.Storage;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
 
 @Stateless
 @SecurityDomain("openelis")

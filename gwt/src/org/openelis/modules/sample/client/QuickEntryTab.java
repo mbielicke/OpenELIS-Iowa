@@ -4,6 +4,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.SampleManager;
+import org.openelis.ui.widget.WindowInt;
 
 /**
  * This class is used to act a placeholder on Sample Tracking screen for the samples
@@ -11,11 +12,11 @@ import org.openelis.manager.SampleManager;
  */
 public class QuickEntryTab extends Screen {
 
-    public QuickEntryTab(ScreenWindowInt window) {
+    public QuickEntryTab(WindowInt window) {
         this(null, window); 
     }
     
-    public QuickEntryTab(ScreenDefInt def, ScreenWindowInt window) {
+    public QuickEntryTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();

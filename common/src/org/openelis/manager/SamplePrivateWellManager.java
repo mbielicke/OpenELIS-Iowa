@@ -3,7 +3,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class SamplePrivateWellManager implements Serializable, SampleDomainInt {
 

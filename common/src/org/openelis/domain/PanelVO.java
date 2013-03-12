@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class PanelVO implements Serializable {
     private static final long serialVersionUID = 1L;

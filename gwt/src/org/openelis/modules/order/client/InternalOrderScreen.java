@@ -30,21 +30,19 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -58,7 +56,6 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -66,14 +63,16 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -101,21 +100,13 @@ public class InternalOrderScreen extends Screen {
         ITEM, FILL, SHIPNOTE
     };
 
-    public InternalOrderScreen() throws Exception {
+    public InternalOrderScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(InternalOrderDef.class));
 
         userPermission = UserCache.getPermission().getModule("internalorder");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Internal Order Screen");
+            throw new PermissionException(Messages.get().screenPermException("Internal Order Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {
         tab = Tabs.ITEM;
         manager = OrderManager.getInstance();
 
@@ -270,7 +261,7 @@ public class InternalOrderScreen extends Screen {
         id = (TextBox)def.getWidget(OrderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                id.setValue(manager.getOrder().getId());
+                id.setFieldValue(manager.getOrder().getId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -286,7 +277,7 @@ public class InternalOrderScreen extends Screen {
         neededInDays = (TextBox)def.getWidget(OrderMeta.getNeededInDays());
         addScreenHandler(neededInDays, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                neededInDays.setValue(manager.getOrder().getNeededInDays());
+                neededInDays.setFieldValue(manager.getOrder().getNeededInDays());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -432,12 +423,12 @@ public class InternalOrderScreen extends Screen {
             public void executeQuery(Query query) {
                 QueryData field;
 
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
                 // this screen should only query for internal orders
                 field = new QueryData();
-                field.key = OrderMeta.getType();
-                field.query = OrderManager.TYPE_INTERNAL;
-                field.type = QueryData.Type.STRING;
+                field.setKey(OrderMeta.getType());
+                field.setQuery(OrderManager.TYPE_INTERNAL);
+                field.setType(QueryData.Type.STRING);
                 query.setFields(field);
 
                 query.setRowsPerPage(20);
@@ -449,14 +440,14 @@ public class InternalOrderScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
                                              window.setError("No more records in this direction");
                                          } else {
                                              Window.alert("Error: Order call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -499,9 +490,9 @@ public class InternalOrderScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = OrderMeta.getId();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.INTEGER;
+                field.setKey(OrderMeta.getId());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.INTEGER);
 
                 query = new Query();
                 query.setFields(field);
@@ -509,11 +500,11 @@ public class InternalOrderScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -569,7 +560,7 @@ public class InternalOrderScreen extends Screen {
         shipNoteTab.draw();
 
         setFocus(id);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -602,11 +593,11 @@ public class InternalOrderScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(neededInDays);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -624,7 +615,7 @@ public class InternalOrderScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -634,22 +625,22 @@ public class InternalOrderScreen extends Screen {
 
             // this screen should only query for internal orders
             field = new QueryData();
-            field.key = OrderMeta.getType();
-            field.query = OrderManager.TYPE_INTERNAL;
-            field.type = QueryData.Type.STRING;
+            field.setKey(OrderMeta.getType());
+            field.setQuery(OrderManager.TYPE_INTERNAL);
+            field.setType(QueryData.Type.STRING);
 
             query = new Query();
             query.setFields(getQueryFields());
             query.setFields(field);
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -657,13 +648,13 @@ public class InternalOrderScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -676,14 +667,14 @@ public class InternalOrderScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -693,7 +684,7 @@ public class InternalOrderScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -701,7 +692,7 @@ public class InternalOrderScreen extends Screen {
 
     protected void duplicate() {
         try {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
 
             manager = OrderService.get().duplicate(manager.getOrder().getId());
 
@@ -715,7 +706,7 @@ public class InternalOrderScreen extends Screen {
             DataChangeEvent.fire(this);
 
             setFocus(neededInDays);
-            window.setDone(consts.get("enterInformationPressCommit"));
+            window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -729,7 +720,7 @@ public class InternalOrderScreen extends Screen {
         hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder()
                                                                .getId()
                                                                .toString());
-        HistoryScreen.showHistory(consts.get("orderHistory"),
+        HistoryScreen.showHistory(Messages.get().orderHistory(),
                                   Constants.table().ORDER,
                                   hist);
     }
@@ -754,7 +745,7 @@ public class InternalOrderScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("orderItemHistory"),
+        HistoryScreen.showHistory(Messages.get().orderItemHistory(),
                                   Constants.table().ORDER_ITEM,
                                   refVoList);
     }
@@ -764,7 +755,7 @@ public class InternalOrderScreen extends Screen {
             manager = OrderManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 switch (tab) {
                     case ITEM:
@@ -780,12 +771,12 @@ public class InternalOrderScreen extends Screen {
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

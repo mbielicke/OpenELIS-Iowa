@@ -33,11 +33,13 @@ import java.util.List;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -76,7 +78,7 @@ public class CompletedTab extends Screen {
     private ColumnChart                chart;
     private Options                    options;
     
-    public CompletedTab(ScreenDefInt def, ScreenWindowInt window) {
+    public CompletedTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();        
@@ -112,11 +114,11 @@ public class CompletedTab extends Screen {
         loadBySection = "N";    
         
         ranges = new ArrayList<String>();
-        ranges.add(consts.get("today"));
-        ranges.add(consts.get("yesterday"));
-        ranges.add(consts.get("twoDays"));
-        ranges.add(consts.get("threeDays"));
-        ranges.add(consts.get("moreThanThreeDays"));
+        ranges.add(Messages.get().today());
+        ranges.add(Messages.get().yesterday());
+        ranges.add(Messages.get().twoDays());
+        ranges.add(Messages.get().threeDays());
+        ranges.add(Messages.get().moreThanThreeDays());
     }
     
     private void initializeDropdowns() {
@@ -150,7 +152,7 @@ public class CompletedTab extends Screen {
             if (refreshChart)
                 refreshChart();
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             ToDoService.get().getCompleted(new AsyncCallback<ArrayList<AnalysisViewVO>>() {
                 public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
@@ -166,7 +168,7 @@ public class CompletedTab extends Screen {
 
                 public void onFailure(Throwable error) {
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert(error.getMessage());
                         error.printStackTrace();
@@ -330,7 +332,7 @@ public class CompletedTab extends Screen {
         
         data = DataTable.create();
         data.addColumn(ColumnType.STRING);
-        data.addColumn(ColumnType.NUMBER, consts.get("analyses"));
+        data.addColumn(ColumnType.NUMBER, Messages.get().analyses());
         size = ranges.size();
         data.addRows(size);
         for (int i = 0; i < size; i++) {
@@ -373,7 +375,7 @@ public class CompletedTab extends Screen {
         ops.setLegend(LegendPosition.NONE);
         
         aops = AxisOptions.create();
-        aops.setTitle(consts.get("numAnalyses"));        
+        aops.setTitle(Messages.get().numAnalyses());        
         ops.setVAxisOptions(aops);
         
         aops = AxisOptions.create();
@@ -384,7 +386,7 @@ public class CompletedTab extends Screen {
         ops.setHAxisOptions(aops);                  
         ops.setWidth(625);
         ops.setHeight(215);
-        ops.setTitle(consts.get("timeSinceAnalysesCompleted"));
+        ops.setTitle(Messages.get().timeSinceAnalysesCompleted());
         return ops;      
     }
 }

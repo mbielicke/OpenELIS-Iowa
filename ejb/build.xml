@@ -64,6 +64,7 @@
 	</jar>
 
 	<copy file="../OpenELIS-Lib/openelis-lib.jar" todir="./lib" overwrite="true" />
+	<copy file="../OpenELIS-UI/ui.jar" todir="./lib" overwrite="true"/>
 	<delete file="build/openelis.ear" />
 	<ear destfile="build/openelis.ear" appxml="src/resources/META-INF/application.xml">
 	    <fileset dir="src/resources/">
@@ -86,6 +87,8 @@
 		</fileset>
 		<fileset dir=".">
 			<include name="lib/openelis-lib.jar" />
+			<include name="lib/ui.jar"/>
+			<include name="lib/gwt-dev.jar"/>
 			<include name="lib/commons-collections-3.2.1.jar"/>
 			<include name="lib/poi-3.6-20091214.jar" />
 			<include name="lib/iText-2.1.7.jar" />
@@ -100,6 +103,7 @@
 			<include name="lib/gwt-servlet.jar" />
 			<include name="lib/javamail.jar" />
 			<include name="lib/commons-fileupload-1.2.1.jar"/>
+			<include name="lib/gwt-i18n-server-0.17.jar"/>
 		</fileset>
 	</ear>
 	

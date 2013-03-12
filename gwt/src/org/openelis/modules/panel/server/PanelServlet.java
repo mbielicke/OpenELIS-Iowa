@@ -35,7 +35,7 @@ import org.openelis.bean.PanelManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
@@ -66,7 +66,7 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
     
     public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(Query query) throws Exception {
         if (query.getFields().size() == 2)
-            return panel.fetchByNameSampleTypeWithTests(query.getFields().get(0).query, new Integer(query.getFields().get(1).query), query.getRowsPerPage());
+            return panel.fetchByNameSampleTypeWithTests(query.getFields().get(0).getQuery(), new Integer(query.getFields().get(1).getQuery()), query.getRowsPerPage());
         return null;
     }
 

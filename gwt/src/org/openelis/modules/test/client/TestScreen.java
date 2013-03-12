@@ -33,6 +33,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
@@ -51,22 +52,23 @@ import org.openelis.domain.TestViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.TestWorksheetViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.GridFieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.Util;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -160,26 +162,15 @@ public class TestScreen extends Screen {
         DETAILS, SAMPLE_TYPES, ANALYTES_RESULTS, PREPS_REFLEXES, WORKSHEET
     };
 
-    public TestScreen() throws Exception {
+    public TestScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(TestDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("test");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Test Screen");
+            throw new PermissionException(Messages.get().screenPermException("Test Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         tab = Tabs.DETAILS;
         manager = TestManager.getInstance();
 
@@ -441,7 +432,7 @@ public class TestScreen extends Screen {
         id = (TextBox)def.getWidget(TestMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                id.setValue(manager.getTest().getId());
+                id.setFieldValue(manager.getTest().getId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -554,7 +545,7 @@ public class TestScreen extends Screen {
         timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
         addScreenHandler(timeTaMax, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaMax.setValue(manager.getTest().getTimeTaMax());
+                timeTaMax.setFieldValue(manager.getTest().getTimeTaMax());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -571,7 +562,7 @@ public class TestScreen extends Screen {
         timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
         addScreenHandler(timeTaAverage, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaAverage.setValue(manager.getTest().getTimeTaAverage());
+                timeTaAverage.setFieldValue(manager.getTest().getTimeTaAverage());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -588,7 +579,7 @@ public class TestScreen extends Screen {
         timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
         addScreenHandler(timeTaWarning, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTaWarning.setValue(manager.getTest().getTimeTaWarning());
+                timeTaWarning.setFieldValue(manager.getTest().getTimeTaWarning());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -605,7 +596,7 @@ public class TestScreen extends Screen {
         timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
         addScreenHandler(timeTransit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeTransit.setValue(manager.getTest().getTimeTransit());
+                timeTransit.setFieldValue(manager.getTest().getTimeTransit());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -622,7 +613,7 @@ public class TestScreen extends Screen {
         timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
         addScreenHandler(timeHolding, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                timeHolding.setValue(manager.getTest().getTimeHolding());
+                timeHolding.setFieldValue(manager.getTest().getTimeHolding());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -946,7 +937,7 @@ public class TestScreen extends Screen {
         reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
         addScreenHandler(reportingSequence, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                reportingSequence.setValue(manager.getTest().getReportingSequence());
+                reportingSequence.setFieldValue(manager.getTest().getReportingSequence());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1143,7 +1134,7 @@ public class TestScreen extends Screen {
         //
         nav = new ScreenNavigator<TestMethodVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(26);
                 TestService.get().query(query, new AsyncCallback<ArrayList<TestMethodVO>>() {
@@ -1154,14 +1145,14 @@ public class TestScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
-                                             window.setError(consts.get("noMoreRecordInDir"));
+                                             window.setError(Messages.get().noMoreRecordInDir());
                                          } else {
                                              Window.alert("Error: Test call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -1204,9 +1195,9 @@ public class TestScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = TestMeta.getName();
-                field.query = ((AppButton)event.getSource()).action;
-                field.type = QueryData.Type.STRING;
+                field.setKey(TestMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).action);
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -1214,11 +1205,11 @@ public class TestScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -1321,7 +1312,7 @@ public class TestScreen extends Screen {
         worksheetLayoutTab.draw();
 
         setFocus(id);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -1344,11 +1335,11 @@ public class TestScreen extends Screen {
         DataChangeEvent.fire(this);
         setFocus(name);
 
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -1400,7 +1391,7 @@ public class TestScreen extends Screen {
         analyteAndResultTab.finishEditing();
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -1412,13 +1403,13 @@ public class TestScreen extends Screen {
             nav.setQuery(query);
         } else if (state == State.ADD) {
             if (canCommitResultGroups() && allowAnalytesEmpty()) {
-                window.setBusy(consts.get("adding"));
+                window.setBusy(Messages.get().adding());
                 try {
                     manager = manager.add();
 
                     setState(State.DISPLAY);
                     DataChangeEvent.fire(this);
-                    window.setDone(consts.get("addingComplete"));
+                    window.setDone(Messages.get().addingComplete());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                 } catch (Exception e) {
@@ -1428,13 +1419,13 @@ public class TestScreen extends Screen {
             }
         } else if (state == State.UPDATE) {
             if (canCommitResultGroups() && allowAnalytesEmpty()) {
-                window.setBusy(consts.get("updating"));
+                window.setBusy(Messages.get().updating());
                 try {
                     manager = manager.update();
 
                     setState(State.DISPLAY);
                     DataChangeEvent.fire(this);
-                    window.setDone(consts.get("updatingComplete"));
+                    window.setDone(Messages.get().updatingComplete());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                 } catch (Exception e) {
@@ -1448,14 +1439,14 @@ public class TestScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1465,7 +1456,7 @@ public class TestScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -1497,7 +1488,7 @@ public class TestScreen extends Screen {
             setState(State.ADD);
             DataChangeEvent.fire(this);
 
-            window.setDone(consts.get("enterInformationPressCommit"));
+            window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -1507,7 +1498,7 @@ public class TestScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getTest().getId(), manager.getTest().getName());
-        HistoryScreen.showHistory(consts.get("testHistory"), Constants.table().TEST, hist);
+        HistoryScreen.showHistory(Messages.get().testHistory(), Constants.table().TEST, hist);
     }
 
     protected void testSectionHistory() {
@@ -1538,7 +1529,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testSectionHistory"),
+        HistoryScreen.showHistory(Messages.get().testSectionHistory(),
                                   Constants.table().TEST_SECTION,
                                   refVoList);
     }
@@ -1572,7 +1563,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testSampleTypeHistory"),
+        HistoryScreen.showHistory(Messages.get().testSampleTypeHistory(),
                                   Constants.table().TEST_TYPE_OF_SAMPLE,
                                   refVoList);
     }
@@ -1604,7 +1595,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testAnalyteHistory"),
+        HistoryScreen.showHistory(Messages.get().testAnalyteHistory(),
                                   Constants.table().TEST_ANALYTE,
                                   refVoList);
     }
@@ -1643,7 +1634,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testResultHistory"),
+        HistoryScreen.showHistory(Messages.get().testResultHistory(),
                                   Constants.table().TEST_RESULT,
                                   refVoList);
     }
@@ -1669,7 +1660,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testPrepHistory"),
+        HistoryScreen.showHistory(Messages.get().testPrepHistory(),
                                   Constants.table().TEST_PREP,
                                   refVoList);
 
@@ -1696,7 +1687,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testReflexHistory"),
+        HistoryScreen.showHistory(Messages.get().testReflexHistory(),
                                   Constants.table().TEST_REFLEX,
                                   refVoList);
 
@@ -1720,8 +1711,8 @@ public class TestScreen extends Screen {
         id = data.getId();
         if (id == null)
             id = -1;
-        hist = new IdNameVO(id, consts.get("worksheet"));
-        HistoryScreen.showHistory(consts.get("testWorksheetHistory"),
+        hist = new IdNameVO(id, Messages.get().worksheet());
+        HistoryScreen.showHistory(Messages.get().testWorksheetHistory(),
                                   Constants.table().TEST_WORKSHEET,
                                   hist);
 
@@ -1754,7 +1745,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testWorksheetItemHistory"),
+        HistoryScreen.showHistory(Messages.get().testWorksheetItemHistory(),
                                   Constants.table().TEST_WORKSHEET_ITEM,
                                   refVoList);
 
@@ -1780,7 +1771,7 @@ public class TestScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("testWorksheetAnalyteHistory"),
+        HistoryScreen.showHistory(Messages.get().testWorksheetAnalyteHistory(),
                                   Constants.table().TEST_WORKSHEET_ANALYTE,
                                   refVoList);
 
@@ -1791,7 +1782,7 @@ public class TestScreen extends Screen {
             manager = TestManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 switch (tab) {
                     case DETAILS:
@@ -1813,12 +1804,12 @@ public class TestScreen extends Screen {
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
 
@@ -1851,9 +1842,9 @@ public class TestScreen extends Screen {
     }
 
     public void showErrors(ValidationErrorsList errors) {
-        ArrayList<LocalizedException> formErrors;
+        ArrayList<Exception> formErrors;
 
-        formErrors = new ArrayList<LocalizedException>();
+        formErrors = new ArrayList<Exception>();
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
                 if (ex instanceof GridFieldErrorException) {
@@ -1880,7 +1871,7 @@ public class TestScreen extends Screen {
             }
         }
         if (formErrors.size() == 0)
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
         else if (formErrors.size() == 1)
             window.setError(formErrors.get(0).getMessage());
         else {
@@ -1924,7 +1915,7 @@ public class TestScreen extends Screen {
             list = getEmptyResultGroups(manager.getTestResults());
             size = list.size();
             if (size > 0) {
-                commit = Window.confirm(consts.get("resultGroupsEmpty"));
+                commit = Window.confirm(Messages.get().resultGroupsEmpty());
                 if (commit) {
                     for (i = size - 1; i >= 0; i-- ) {
                         manager.getTestResults().removeResultGroup(list.get(i));
@@ -1950,7 +1941,7 @@ public class TestScreen extends Screen {
             ressize = manager.getTestResults().groupCount();
 
             if (anasize == 0 && ressize > 0) {
-                allow = Window.confirm(consts.get("resultNoAnalytes"));
+                allow = Window.confirm(Messages.get().resultNoAnalytes());
             }
 
         } catch (Exception e) {

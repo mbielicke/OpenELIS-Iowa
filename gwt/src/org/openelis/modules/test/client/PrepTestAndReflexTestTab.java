@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -37,8 +38,7 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.LocalizedException;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -72,6 +72,7 @@ import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.meta.TestMeta;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -94,7 +95,7 @@ public class PrepTestAndReflexTestTab extends Screen
     private AutoComplete<Integer> prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
     private Label<String>         prepMethodName, reflexMethodName;
 
-    public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindowInt window) {
+    public PrepTestAndReflexTestTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 
@@ -298,7 +299,7 @@ public class PrepTestAndReflexTestTab extends Screen
                 if (c == 3) {
                     val = (TableDataRow)testReflexTable.getObject(r, 2);
                     if (val == null || val.key == null) {
-                        Window.alert(consts.get("selectAnaBeforeRes"));
+                        Window.alert(Messages.get().selectAnaBeforeRes());
                         event.cancel();
                     }
                 }
@@ -732,7 +733,7 @@ public class PrepTestAndReflexTestTab extends Screen
                 if ( (matchLabel && ! (val.equals(name))) || !matchLabel) {
                     row = new TableDataRow(null, "");
                     testReflexTable.setCell(i, 2, row);
-                    testReflexTable.setCellException(i, 2, new LocalizedException(key));
+                    testReflexTable.setCellException(i, 2, new Exception(key));
                 }
             }
         }
@@ -755,7 +756,7 @@ public class PrepTestAndReflexTestTab extends Screen
                 if ( (matchLabel && ! (val.equals(value))) || !matchLabel) {
                     row = new TableDataRow(null, "");
                     testReflexTable.setCell(i, 3, row);
-                    testReflexTable.setCellException(i, 3, new LocalizedException(key));
+                    testReflexTable.setCellException(i, 3, new Exception(key));
                 }
             }
         }

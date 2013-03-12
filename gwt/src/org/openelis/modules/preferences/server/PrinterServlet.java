@@ -31,7 +31,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.PrinterCacheBean;
-import org.openelis.gwt.common.OptionListItem;
+import org.openelis.ui.common.OptionListItem;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.preferences.client.PrinterServiceInt;
 

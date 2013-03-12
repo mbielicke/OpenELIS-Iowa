@@ -2,8 +2,8 @@ package org.openelis.web.cache;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.SystemUserVO;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 

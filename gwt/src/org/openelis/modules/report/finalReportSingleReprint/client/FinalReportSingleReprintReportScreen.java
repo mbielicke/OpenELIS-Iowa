@@ -27,19 +27,20 @@ package org.openelis.modules.report.finalReportSingleReprint.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.FinalReportService;
 import org.openelis.modules.report.client.ReportScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FinalReportSingleReprintReportScreen extends ReportScreen<Query> {
     
-    public FinalReportSingleReprintReportScreen(ScreenWindowInt window) throws Exception {         
+    public FinalReportSingleReprintReportScreen(WindowInt window) throws Exception {         
         drawScreen(new ScreenDef());        
         this.window = window;
     }

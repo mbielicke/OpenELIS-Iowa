@@ -35,13 +35,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.OrderTestDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.entity.OrderTest;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -118,12 +119,12 @@ public class OrderTestBean {
         list = new ValidationErrorsList();
         indexStr = String.valueOf(index);
         if (data.getTestId() == null)
-            list.add(new FieldErrorException("testNameRequiredException", null, indexStr));        
+            list.add(new FieldErrorException(Messages.get().testNameRequiredException(null), indexStr));        
         
         if (data.getItemSequence() == null)
-            list.add(new FieldErrorException("itemNumRequiredException", null, indexStr));
+            list.add(new FieldErrorException(Messages.get().itemNumRequiredException(null), indexStr));
         else if (data.getItemSequence() < 0)
-            list.add(new FieldErrorException("itemNumCantBeNegativeException", null, indexStr));
+            list.add(new FieldErrorException(Messages.get().itemNumCantBeNegativeException(null), indexStr));
                
         if (list.size() > 0)
             throw list;

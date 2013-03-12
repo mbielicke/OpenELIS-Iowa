@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.todo.client;
 
+import org.openelis.constants.Messages;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -40,6 +41,9 @@ import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.ui.widget.Browser;
+import org.openelis.ui.widget.ModalWindow;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,17 +79,11 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
         LOGGED_IN, INITIATED, WORKSHEET, COMPLETED, RELEASED, TO_BE_VERIFIED, OTHER, INSTRUMENT;
     };
     
-    public ToDoScreen() throws Exception {
+    public ToDoScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(ToDoDef.class));
+        
+        setWindow(window);
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {
         tab = Tabs.LOGGED_IN;
     
         initialize();
@@ -353,34 +351,37 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
     }  
     
     private void showTrackingScreen(final Integer id) throws Exception {
-        WindowBrowser browser;
-        ScreenWindow window;
+        Browser browser;
+        WindowInt window;
         final SampleTrackingScreen trackingScreen;
 
         browser = OpenELIS.getBrowser();
         window = browser.getScreenByKey("tracking");
 
         if (window == null) {
-            trackingScreen = new SampleTrackingScreen();
-            browser.addScreen(trackingScreen, "tracking");
+            window = new org.openelis.ui.widget.Window(false);
+            window.setName("Tracking");
+            trackingScreen = new SampleTrackingScreen(window);
+            window.setContent(trackingScreen);
+            browser.addWindow(window, "tracking");
             DeferredCommand.addCommand(new Command() {
                 public void execute() {
                     trackingScreen.query(id);
                 }
             });
         } else {
-            trackingScreen = (SampleTrackingScreen)window.content;
+            trackingScreen = (SampleTrackingScreen)window.getContent();
             trackingScreen.query(id);
         }        
     }
         
     private void showCompletionScreen(Integer id) throws Exception {
-        ScreenWindow modal;    
+        ModalWindow modal;    
         WorksheetCompletionScreen wcScreen;
         
-        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(consts.get("worksheetCompletion"));
-        wcScreen = new WorksheetCompletionScreen(id);
+        modal = new ModalWindow();
+        modal.setName(Messages.get().worksheetCompletion());
+        wcScreen = new WorksheetCompletionScreen(id,modal);
         modal.setContent(wcScreen);
         window.clearStatus();
     }       

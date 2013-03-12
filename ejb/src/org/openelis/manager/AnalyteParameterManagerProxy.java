@@ -28,15 +28,16 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.AnalyteParameterBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.QcViewDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class AnalyteParameterManagerProxy {
@@ -193,7 +194,7 @@ public class AnalyteParameterManagerProxy {
         params = man.getParameters(); 
         errors = new ValidationErrorsList();
         if (params == null || params.size() == 0) {
-            errors.add(new FormErrorException("recordHasNoAnalytesException"));
+            errors.add(new FormErrorException(Messages.get().recordHasNoAnalytesException()));
             throw errors;
         }
         
@@ -273,7 +274,7 @@ public class AnalyteParameterManagerProxy {
         }        
         
         if (numActive == 0)
-            errors.add(new FormErrorException("recordHasNoActiveAnalytesException"));
+            errors.add(new FormErrorException(Messages.get().recordHasNoActiveAnalytesException()));
         
         if (errors.size() > 0)
             throw errors;
@@ -318,7 +319,7 @@ public class AnalyteParameterManagerProxy {
         cet = prev.getActiveEnd().getDate().getTime();
         
         if ((pbt - cbt) <= 60000) 
-            errors.add(new FormErrorException("beginDateInvalidWithParamException", prev.getAnalyteName()));
+            errors.add(new FormErrorException(Messages.get().beginDateInvalidWithParamException(prev.getAnalyteName())));
         /*
          * since the code in update() sets the end date of the previously latest
          * record, which could be "prev", to a minute before the begin date of 
@@ -329,7 +330,7 @@ public class AnalyteParameterManagerProxy {
          * be in update()   
          */
         if (!("Y".equals(data.getIsActive()) && "Y".equals(prev.getIsActive())) && (pbt - cet) <= 0)
-            errors.add(new FormErrorException("beginDateAfterPreviousEndDateException", prev.getAnalyteName()));
+            errors.add(new FormErrorException(Messages.get().beginDateAfterPreviousEndDateException(prev.getAnalyteName())));
     }  
         
     private boolean canAddParameter(AnalyteParameterViewDO data) {

@@ -38,22 +38,22 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.Constants;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.entity.QaEvent;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.QaEventMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -258,7 +258,7 @@ public class QaEventBean {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              QaEventMeta.getName()));
         } else {
             //
@@ -271,18 +271,18 @@ public class QaEventBean {
                     if (DataBaseUtil.isDifferent(data.getId(), dup.getId()) &&
                         !DataBaseUtil.isDifferent(data.getName(), dup.getName()) &&
                         !DataBaseUtil.isDifferent(data.getTestId(), dup.getTestId()))
-                        list.add(new FormErrorException("qaeventTestComboUnique"));
+                        list.add(new FormErrorException(Messages.get().qaeventTestComboUnique()));
                 }
             } catch (NotFoundException ignE) {
             }
         }
 
         if (DataBaseUtil.isEmpty(data.getTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              QaEventMeta.getTypeId()));
 
         if (DataBaseUtil.isEmpty(data.getReportingText()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              QaEventMeta.getReportingText()));
 
         if (list.size() > 0)

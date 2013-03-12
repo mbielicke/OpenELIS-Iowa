@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * The class is used to carry id, name, and store id fields for query returns, for left 

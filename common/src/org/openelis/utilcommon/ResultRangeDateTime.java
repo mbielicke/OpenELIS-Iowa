@@ -28,6 +28,7 @@ package org.openelis.utilcommon;
 
 import java.util.Date;
 
+import org.openelis.constants.Messages;
 import org.openelis.exception.ParseException;
 
 public class ResultRangeDateTime implements ResultRange {
@@ -53,17 +54,17 @@ public class ResultRangeDateTime implements ResultRange {
         try {
             st = dateTime.split(" ");
             if (st.length != 2)
-                throw new ParseException("illegalDateTimeValueException");
+                throw new ParseException(Messages.get().illegalDateTimeValueException());
 
             hhmm = st[1];
             if (hhmm.split(":").length != 2)
-                throw new ParseException("illegalDateTimeValueException");
+                throw new ParseException(Messages.get().illegalDateTimeValueException());
 
             Date.parse(dateTime.replaceAll("-", "/"));
             this.dateTime = dateTime;
             
         } catch (IllegalArgumentException ex) {
-            throw new ParseException("illegalDateTimeValueException");
+            throw new ParseException(Messages.get().illegalDateTimeValueException());
         }
     }
 

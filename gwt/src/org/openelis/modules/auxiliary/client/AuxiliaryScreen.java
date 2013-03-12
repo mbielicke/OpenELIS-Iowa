@@ -32,6 +32,8 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
@@ -39,24 +41,20 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.GridFieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.GridFieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.BeforeDragStartEvent;
 import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -104,6 +102,10 @@ import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.modules.scriptlet.client.ScriptletService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultRangeNumeric;
 
 import com.google.gwt.core.client.GWT;
@@ -111,8 +113,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -142,21 +142,15 @@ public class AuxiliaryScreen extends Screen {
 
     private ArrayList<GridFieldErrorException> valueErrorList;
 
-    public AuxiliaryScreen() throws Exception {
+    public AuxiliaryScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(AuxiliaryDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("auxiliary");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Auxiliary Screen");
+            throw new PermissionException(Messages.get().screenPermException("Auxiliary Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {
         manager = AuxFieldGroupManager.getInstance();
 
         initialize();
@@ -805,7 +799,7 @@ public class AuxiliaryScreen extends Screen {
                         try {
                             validateValue(data,
                                           (String)auxFieldValueTable.getObject(r, 1));
-                        } catch (LocalizedException e) {
+                        } catch (Exception e) {
                             auxFieldValueTable.setCellException(r, 1, e);
                         }
                         break;
@@ -817,7 +811,7 @@ public class AuxiliaryScreen extends Screen {
                         auxFieldValueTable.clearCellExceptions(r, c);
                         try {
                             validateValue(data, (String)val);
-                        } catch (LocalizedException e) {
+                        } catch (Exception e) {
                             auxFieldValueTable.setCellException(r, c, e);
                         }
                         break;
@@ -903,7 +897,7 @@ public class AuxiliaryScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(26);
                 AuxiliaryService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -914,14 +908,14 @@ public class AuxiliaryScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
-                                             window.setError(consts.get("noMoreRecordInDir"));
+                                             window.setError(Messages.get().noMoreRecordInDir());
                                          } else {
                                              Window.alert("Error: Auxiliary call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -962,9 +956,9 @@ public class AuxiliaryScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = AuxFieldGroupMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(AuxFieldGroupMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -972,11 +966,11 @@ public class AuxiliaryScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -1019,7 +1013,7 @@ public class AuxiliaryScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -1040,7 +1034,7 @@ public class AuxiliaryScreen extends Screen {
 
         prevSelFieldRow = -1;
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
@@ -1064,7 +1058,7 @@ public class AuxiliaryScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -1075,13 +1069,13 @@ public class AuxiliaryScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1089,12 +1083,12 @@ public class AuxiliaryScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1107,14 +1101,14 @@ public class AuxiliaryScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1124,7 +1118,7 @@ public class AuxiliaryScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -1134,7 +1128,7 @@ public class AuxiliaryScreen extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(manager.getGroup().getId(), manager.getGroup().getName());
-        HistoryScreen.showHistory(consts.get("auxFieldGroupHistory"),
+        HistoryScreen.showHistory(Messages.get().auxFieldGroupHistory(),
                                   Constants.table().AUX_FIELD_GROUP,
                                   hist);
     }
@@ -1159,7 +1153,7 @@ public class AuxiliaryScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("auxFieldHistory"),
+        HistoryScreen.showHistory(Messages.get().auxFieldHistory(),
                                   Constants.table().AUX_FIELD,
                                   refVoList);
     }
@@ -1206,7 +1200,7 @@ public class AuxiliaryScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("auxFieldValueHistory"),
+        HistoryScreen.showHistory(Messages.get().auxFieldValueHistory(),
                                   Constants.table().AUX_FIELD_VALUE,
                                   refVoList);
     }
@@ -1216,14 +1210,14 @@ public class AuxiliaryScreen extends Screen {
             manager = AuxFieldGroupManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
-                window.setBusy(consts.get("fetching"));
+                window.setBusy(Messages.get().fetching());
                 manager = AuxFieldGroupManager.fetchByIdWithFields(id);
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
             setState(State.DISPLAY);
@@ -1235,7 +1229,7 @@ public class AuxiliaryScreen extends Screen {
     }
 
     public void showErrors(ValidationErrorsList errors) {
-        ArrayList<LocalizedException> formErrors;
+        ArrayList<Exception> formErrors;
         TableFieldErrorException tfe;
         GridFieldErrorException gfe;
         FormErrorException fe;
@@ -1243,7 +1237,7 @@ public class AuxiliaryScreen extends Screen {
         ArrayList<Integer> rowList;
         Integer row;
 
-        formErrors = new ArrayList<LocalizedException>();
+        formErrors = new ArrayList<Exception>();
         rowList = new ArrayList<Integer>();
 
         for (Exception ex : errors.getErrorList()) {
@@ -1261,7 +1255,7 @@ public class AuxiliaryScreen extends Screen {
                     if ( !rowList.contains(row)) {
                         auxFieldTable.setCellException(row,
                                                        AuxFieldGroupMeta.getFieldAnalyteName(),
-                                                       new LocalizedException("errorsWithAuxFieldValuesException"));
+                                                       new Exception(Messages.get().errorsWithAuxFieldValuesException()));
                         rowList.add(row);
                     }
                     valueErrorList.add(gfe);
@@ -1282,7 +1276,7 @@ public class AuxiliaryScreen extends Screen {
         }
 
         if (formErrors.size() == 0)
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
         else if (formErrors.size() == 1)
             window.setError(formErrors.get(0).getMessage());
         else {
@@ -1371,15 +1365,15 @@ public class AuxiliaryScreen extends Screen {
 
         query = new Query();
         field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = entry;
+        field.setKey(CategoryMeta.getDictionaryEntry());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery(entry);
         query.setFields(field);
 
         field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
+        field.setKey(CategoryMeta.getIsSystem());
+        field.setType(QueryData.Type.STRING);
+        field.setQuery("N");
         query.setFields(field);
 
         try {
@@ -1397,7 +1391,7 @@ public class AuxiliaryScreen extends Screen {
         return null;
     }
 
-    private void validateValue(AuxFieldValueViewDO data, String value) throws LocalizedException {
+    private void validateValue(AuxFieldValueViewDO data, String value) throws Exception {
         IdNameVO dict;
 
         if (value == null)
@@ -1411,7 +1405,7 @@ public class AuxiliaryScreen extends Screen {
                     data.setDictionary(dict.getName());
                 } else {
                     data.setDictionary(null);
-                    throw new LocalizedException("aux.invalidValueException");
+                    throw new Exception(Messages.get().aux_invalidValueException());
                 }
             } else if (Constants.dictionary().AUX_NUMERIC.equals(data.getTypeId())) {
                 rangeNumeric.setRange((String)value);
@@ -1419,9 +1413,9 @@ public class AuxiliaryScreen extends Screen {
             } else if (Constants.dictionary().AUX_DEFAULT.equals(data.getTypeId())) {
                 data.setValue((String)value);
             } else if (DataBaseUtil.trim(value) != null) {
-                throw new LocalizedException("valuePresentForTypeException");
+                throw new Exception(Messages.get().valuePresentForTypeException());
             }
-        } catch (LocalizedException e) {
+        } catch (Exception e) {
             data.setValue(null);
             data.setDictionary(null);
             throw e;
@@ -1453,7 +1447,7 @@ public class AuxiliaryScreen extends Screen {
                             r = auxFieldValueTable.getSelectedRow();
                             fr = auxFieldTable.getSelectedRow();
                             if (r == -1) {
-                                window.setError(consts.get("aux.noSelectedRow"));
+                                window.setError(Messages.get().aux_noSelectedRow());
                                 return;
                             }
                             entry = list.get(0);
@@ -1480,7 +1474,7 @@ public class AuxiliaryScreen extends Screen {
             });
         }
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("chooseDictEntry"));
+        modal.setName(Messages.get().chooseDictEntry());
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);
         if (list != null) {
@@ -1507,14 +1501,14 @@ public class AuxiliaryScreen extends Screen {
     }
 
     private void clearFieldError(int index) {
-        ArrayList<LocalizedException> list;
-        LocalizedException ex;
+        ArrayList<Exception> list;
+        Exception ex;
 
         list = auxFieldTable.getCell(index, 0).getExceptions();
         if (list != null) {
             for (int i = 0; i < list.size(); i++ ) {
                 ex = list.get(i);
-                if ("errorsWithAuxFieldValuesException".equals(ex.getKey())) {
+                if ("errorsWithAuxFieldValuesException".equals(ex.getMessage())) {
                     auxFieldTable.removeCellException(index, 0, ex);
                 }
             }

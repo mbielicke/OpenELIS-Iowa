@@ -38,8 +38,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 
 @NamedQueries( {                  
     @NamedQuery( name = "ToDoSampleView.FetchBySampleStatusId",

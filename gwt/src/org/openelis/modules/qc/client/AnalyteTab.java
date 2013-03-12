@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
@@ -62,6 +63,7 @@ import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -79,7 +81,7 @@ public class AnalyteTab extends Screen {
 
     private boolean                     loaded;
 
-    public AnalyteTab(ScreenDefInt def, ScreenWindowInt window) {        
+    public AnalyteTab(ScreenDefInt def, WindowInt window) {        
         setDefinition(def);
         setWindow(window);
                 
@@ -304,7 +306,7 @@ public class AnalyteTab extends Screen {
                         if (list != null) {
                             r = table.getSelectedRow();
                             if (r == -1) {
-                                window.setError(consts.get("qc.noSelectedRow"));
+                                window.setError(Messages.get().qc_noSelectedRow());
                                 return;
                             }
                             entry = list.get(0);
@@ -324,7 +326,7 @@ public class AnalyteTab extends Screen {
             });
         }
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("chooseDictEntry"));
+        modal.setName(Messages.get().chooseDictEntry());
         modal.setContent(dictLookup);
         dictLookup.setScreenState(State.DEFAULT);
         if (list != null) {

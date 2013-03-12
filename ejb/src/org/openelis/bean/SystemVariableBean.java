@@ -37,20 +37,20 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.Constants;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.SystemVariable;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.SystemVariableMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -249,19 +249,19 @@ public class SystemVariableBean {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              SystemVariableMeta.getName()));
         } else {
             ArrayList<SystemVariableDO> dups;
 
             dups = fetchByName(data.getName(), 1);
             if (dups.size() > 0 && !dups.get(0).getId().equals(data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException",
+                list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
                                                  SystemVariableMeta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getValue()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              SystemVariableMeta.getValue()));
 
         if (list.size() > 0)

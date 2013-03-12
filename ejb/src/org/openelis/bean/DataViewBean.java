@@ -86,13 +86,13 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.TestAnalyteDataViewVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.util.UTFResource;
 import org.openelis.utils.EJBFactory;
@@ -266,9 +266,9 @@ public class DataViewBean {
             throw new InconsistencyException("You may not execute an empty query");
 
         field = new QueryData();
-        field.key = SampleWebMeta.getDomain();
-        field.query = "E";
-        field.type = QueryData.Type.STRING;
+        field.setKey(SampleWebMeta.getDomain());
+        field.setQuery("E");
+        field.setType(QueryData.Type.STRING);
 
         fields.add(field);
 
@@ -287,9 +287,9 @@ public class DataViewBean {
             throw new InconsistencyException("You may not execute an empty query");
 
         field = new QueryData();
-        field.key = SampleWebMeta.getDomain();
-        field.query = "E";
-        field.type = QueryData.Type.STRING;
+        field.setKey(SampleWebMeta.getDomain());
+        field.setQuery("E");
+        field.setType(QueryData.Type.STRING);
 
         fields.add(field);
 
@@ -393,7 +393,7 @@ public class DataViewBean {
 
         reportTo = null;
         for (QueryData f : fields) {
-            if ("reportToOrganizationName".equals(f.key)) {
+            if ("reportToOrganizationName".equals(f.getKey())) {
                 reportTo = f;
                 break;
             }
@@ -401,7 +401,7 @@ public class DataViewBean {
         list = new ArrayList<Object[]>();
 
         if (reportTo != null) {
-            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
@@ -410,7 +410,7 @@ public class DataViewBean {
 
             builder.clearWhereClause();
 
-            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
             list.addAll(fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields));
@@ -559,7 +559,7 @@ public class DataViewBean {
         reportTo = null;
 
         for (QueryData f : fields) {
-            if ("reportToOrganizationName".equals(f.key)) {
+            if ("reportToOrganizationName".equals(f.getKey())) {
                 reportTo = f;
                 break;
             }
@@ -2708,7 +2708,7 @@ public class DataViewBean {
              * having a sample organization of type report to with a name
              * matching the query
              */
-            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             list = fetchResults(moduleName, builder, analyteResultMap, data);
@@ -2719,7 +2719,7 @@ public class DataViewBean {
              * having their report to as an organization with a name matching
              * the query
              */
-            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
             list = fetchResults(moduleName, builder, analyteResultMap, data);
         } else {
             /*
@@ -2728,14 +2728,14 @@ public class DataViewBean {
              */
             list = new ArrayList<DataViewResultFetchVO>();
 
-            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             list.addAll(fetchResults(moduleName, builder, analyteResultMap, data));
 
             builder.clearWhereClause();
 
-            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
             list.addAll(fetchResults(moduleName, builder, analyteResultMap, data));
 
             Collections.sort(list, comparator);
@@ -2768,7 +2768,7 @@ public class DataViewBean {
              * having a sample organization of type report to with a name
              * matching the query
              */
-            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             list = fetchAuxData(moduleName, builder, auxFieldValueMap, data);
@@ -2779,7 +2779,7 @@ public class DataViewBean {
              * having their report to as an organization with a name matching
              * the query
              */
-            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
             list = fetchAuxData(moduleName, builder, auxFieldValueMap, data);
         } else {
             /*
@@ -2788,14 +2788,14 @@ public class DataViewBean {
              */
             list = new ArrayList<DataViewAuxDataFetchVO>();
 
-            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            reportTo.setKey(SampleWebMeta.getSampleOrgOrganizationName());
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + " = " +
                              Constants.dictionary().ORG_REPORT_TO);
             list.addAll(fetchAuxData(moduleName, builder, auxFieldValueMap, data));
 
             builder.clearWhereClause();
 
-            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            reportTo.setKey(SampleWebMeta.getWellOrganizationName());
             list.addAll(fetchAuxData(moduleName, builder, auxFieldValueMap, data));
 
             Collections.sort(list, comparator);

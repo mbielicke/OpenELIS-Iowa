@@ -25,20 +25,15 @@
  */
 package org.openelis.modules.main.server;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Locale;
-
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpSession;
 
 import org.openelis.bean.ApplicationBean;
 import org.openelis.bean.UserCacheBean;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.modules.main.client.OpenELISRPC;
+import org.openelis.domain.Constants;
 import org.openelis.modules.main.client.OpenELISServiceInt;
-import org.openelis.util.UTFResource;
+import org.openelis.ui.common.Datetime;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -53,20 +48,14 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
     @EJB
     ApplicationBean application;
 
-    public OpenELISRPC initialData() {
-        OpenELISRPC rpc;
-
-        rpc = new OpenELISRPC();
-        rpc.appConstants = getConstants();
-        try {
-            rpc.constants = application.getConstants();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    public Constants getConstants() {
         keepAlive();
         
-        return rpc;
+        try {
+            return application.getConstants();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void keepAlive() {
@@ -92,27 +81,4 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
             e.printStackTrace();
         }
     }
-
-    private HashMap<String, String> getConstants() {
-        String locale, key;
-        UTFResource resource;
-        Enumeration<String> keys;
-        HashMap<String, String> consts;
-        
-        locale = null;
-        if (getThreadLocalRequest().getSession() != null)
-            locale = (String)getThreadLocalRequest().getSession().getAttribute("locale");
-        if (locale == null)
-            locale = "en";
-        resource = UTFResource.getBundle("org.openelis.constants.OpenELISConstants", new Locale(locale));
-        
-        consts = new HashMap<String, String>();
-        keys = resource.getKeys();
-        while (keys.hasMoreElements()) {
-            key = keys.nextElement();
-            consts.put(key, resource.getString(key));
-        }
-
-        return consts;
-    }   
 }

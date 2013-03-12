@@ -35,15 +35,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryXAdjustDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.InventoryAdjustmentMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -127,14 +128,14 @@ public class InventoryXAdjustBean  {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getInventoryLocationId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InventoryAdjustmentMeta.getInventoryLocationInventoryItemName()));
         
         if (DataBaseUtil.isEmpty(data.getPhysicalCount()))  
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InventoryAdjustmentMeta.getInventoryXAdjustPhysicalCount()));
         else if (!DataBaseUtil.isEmpty(data.getQuantity()) && data.getQuantity() == 0) 
-            list.add(new FieldErrorException("physCountNotEqualToOnHandException",
+            list.add(new FieldErrorException(Messages.get().physCountNotEqualToOnHandException(),
                                              InventoryAdjustmentMeta.getInventoryXAdjustPhysicalCount()));
         
         

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;

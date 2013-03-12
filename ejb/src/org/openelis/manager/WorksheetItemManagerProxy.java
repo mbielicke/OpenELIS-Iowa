@@ -31,13 +31,14 @@ import java.util.HashMap;
 
 import org.openelis.bean.SessionCacheBean;
 import org.openelis.bean.WorksheetItemBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.WorksheetItemManager.WorksheetItemListItem;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetItemManagerProxy {
@@ -83,7 +84,7 @@ public class WorksheetItemManagerProxy {
             }
             
             if (unresolved != 0 && unresolved == lastUnresolved)
-                throw new FormErrorException("worksheetAnalysisLinkError");
+                throw new FormErrorException(Messages.get().worksheetAnalysisLinkError());
 
             lastUnresolved = unresolved;
         } while (unresolved != 0);

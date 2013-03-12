@@ -29,9 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.bean.InventoryXUseBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.InventoryXUseViewDO;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class OrderFillManagerProxy {
@@ -146,7 +147,7 @@ public class OrderFillManagerProxy {
         }
 
         for (j = 0; j < names.size(); j++ ) {
-            exc = new FieldErrorException("totalItemsMoreThanQtyOnHandException", null, names.get(j));
+            exc = new FieldErrorException(Messages.get().totalItemsMoreThanQtyOnHandException(names.get(j)[0],names.get(j)[1]),null);
             list.add(exc);
         }
 

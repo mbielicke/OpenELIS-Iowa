@@ -17,8 +17,8 @@ import javax.ejb.Stateless;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SectionParameterDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
