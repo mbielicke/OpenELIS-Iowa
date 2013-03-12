@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/OpenELIS-GWT"/>
@@ -9,7 +10,6 @@
 	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/bin/client/jboss-client.jar"/>
 	<classpathentry kind="lib" path="/OpenELIS-EJB/bin"/>
 	<classpathentry kind="lib" path="/OpenELIS-Lib/lib/commons-fileupload-1.2.1.jar"/>
-	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
