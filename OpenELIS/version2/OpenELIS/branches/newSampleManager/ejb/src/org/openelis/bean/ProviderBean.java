@@ -74,6 +74,16 @@ public class ProviderBean {
         }
         return data;
     }
+    
+    public ArrayList<ProviderDO> fetchByLastName(String providerLastName, int max) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Provider.FetchByLastName");
+        query.setParameter("lastName", providerLastName);
+        query.setMaxResults(max);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     @SuppressWarnings("unchecked")
     public ArrayList<IdFirstLastNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {

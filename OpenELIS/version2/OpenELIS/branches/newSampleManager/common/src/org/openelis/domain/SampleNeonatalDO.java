@@ -38,30 +38,46 @@ public class SampleNeonatalDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    private Integer           id, sampleId, patientId, birthOrder, gestationalAge, 
-                               nextOfKinId, nextOfKinRelationId, feedingId, weight,
-                               collectionAge, providerId;
+    protected Integer         id, sampleId, birthOrder, gestationalAge, nextOfKinRelationId,
+                               feedingId, weight, collectionAge, providerId;
 
-    private String            isRepeat, isNicu, weightSign, isTransfused, isCollectionValid,
+    protected String          isRepeat, isNicu, weightSign, isTransfused, isCollectionValid,
                                formNumber;
 
-    private Datetime          transfusionDate;
+    protected Datetime        transfusionDate;
+
+    protected PatientDO       patient, nextOfKin;
 
     public SampleNeonatalDO() {
+        patient = new PatientDO();
+        nextOfKin = new PatientDO();
     }
 
     public SampleNeonatalDO(Integer id, Integer sampleId, Integer patientId, Integer birthOrder,
-                            Integer gestationalAge, Integer nextOfKinId,
-                            Integer nextOfKinRelationId, String isRepeat, String isNicu,
-                            Integer feedingId, String weightSign, Integer weight,
-                            String isTransfused, Date transfusionDate, String isCollectionValid,
-                            Integer collectionAge, Integer providerId, String formNumber) {
+                            Integer gestationalAge, Integer nextOfKinId, Integer nextOfKinRelationId,
+                            String isRepeat, String isNicu, Integer feedingId, String weightSign,
+                            Integer weight, String isTransfused, Date transfusionDate,
+                            String isCollectionValid, Integer collectionAge, Integer providerId,
+                            String formNumber, String patientLastName, String patientFirstName,
+                            String patientMiddleName, Integer patientAddressId, 
+                            Date patientBirthDate, Date patientBirthTime, Integer patientGenderId, 
+                            Integer patientRaceId, Integer patientEthnicityId, String patientMultipleUnit,
+                            String patientStreetAddress, String patientCity, String patientState, 
+                            String patientZipCode, String patientWorkPhone, String patientHomePhone,
+                            String patientCellPhone, String patientFaxPhone, String patientEmail, 
+                            String patientCountry, String nextOfKinLastName, String nextOfKinFirstName,
+                            String nextOfKinMiddleName, Integer nextOfKinAddressId, 
+                            Date nextOfKinBirthDate, Date nextOfKinBirthTime, Integer nextOfKinGenderId, 
+                            Integer nextOfKinRaceId, Integer nextOfKinEthnicityId,
+                            String nextOfKinMultipleUnit, String nextOfKinStreetAddress,
+                            String nextOfKinCity, String nextOfKinState, String nextOfKinZipCode,
+                            String nextOfKinWorkPhone, String nextOfKinHomePhone,
+                            String nextOfKinCellPhone, String nextOfKinFaxPhone,
+                            String nextOfKinEmail, String nextOfKinCountry) {
         setId(id);
         setSampleId(sampleId);
-        setPatientId(patientId);
         setBirthOrder(birthOrder);
         setGestationalAge(gestationalAge);
-        setNextOfKinId(nextOfKinId);
         setNextOfKinRelationId(nextOfKinRelationId);
         setIsRepeat(isRepeat);
         setIsNicu(isNicu);
@@ -74,6 +90,23 @@ public class SampleNeonatalDO extends DataObject {
         setCollectionAge(collectionAge);
         setProviderId(providerId);
         setFormNumber(formNumber);
+        
+        patient = new PatientDO(patientId, patientLastName, patientFirstName, patientMiddleName,
+                                patientAddressId, patientBirthDate, patientBirthTime, 
+                                patientGenderId, patientRaceId, patientEthnicityId, 
+                                patientMultipleUnit, patientStreetAddress, patientCity,
+                                patientState, patientZipCode, patientWorkPhone, 
+                                patientHomePhone, patientCellPhone, patientFaxPhone, 
+                                patientEmail, patientCountry);
+        
+        nextOfKin = new PatientDO(nextOfKinId, nextOfKinLastName, nextOfKinFirstName, 
+                                  nextOfKinMiddleName, nextOfKinAddressId, nextOfKinBirthDate,
+                                  nextOfKinBirthTime, nextOfKinGenderId, nextOfKinRaceId,
+                                  nextOfKinEthnicityId, nextOfKinMultipleUnit, nextOfKinStreetAddress,
+                                  nextOfKinCity, nextOfKinState, nextOfKinZipCode,
+                                  nextOfKinWorkPhone, nextOfKinHomePhone, nextOfKinCellPhone,
+                                  nextOfKinFaxPhone, nextOfKinEmail, nextOfKinCountry);
+        
         _changed = false;
     }
 
@@ -95,15 +128,6 @@ public class SampleNeonatalDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(Integer patientId) {
-        this.patientId = patientId;
-        _changed = true;
-    }
-
     public Integer getBirthOrder() {
         return birthOrder;
     }
@@ -119,15 +143,6 @@ public class SampleNeonatalDO extends DataObject {
 
     public void setGestationalAge(Integer gestationalAge) {
         this.gestationalAge = gestationalAge;
-        _changed = true;
-    }
-
-    public Integer getNextOfKinId() {
-        return nextOfKinId;
-    }
-
-    public void setNextOfKinId(Integer nextOfKinId) {
-        this.nextOfKinId = nextOfKinId;
         _changed = true;
     }
 
@@ -237,5 +252,13 @@ public class SampleNeonatalDO extends DataObject {
     public void setFormNumber(String formNumber) {
         this.formNumber = DataBaseUtil.trim(formNumber);
         _changed = true;
+    }
+
+    public PatientDO getPatient() {
+        return patient;
+    }
+
+    public PatientDO getNextOfKin() {
+        return nextOfKin;
     }
 }

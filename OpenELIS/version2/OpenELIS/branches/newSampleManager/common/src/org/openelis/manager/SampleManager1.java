@@ -30,14 +30,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.AnalysisDO;
+import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.AnalysisUserDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
+import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QaEventDO;
+import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -47,8 +51,10 @@ import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
 
 /**
@@ -91,10 +97,10 @@ public class SampleManager1 implements Serializable {
     transient public final QAEvent                qaEvent      = new QAEvent();
     transient public final AuxData                auxData      = new AuxData();
     transient public final SampleNote             sampleNote   = new SampleNote();
-    transient public final SampleItem             item         = new SampleItem();
-    transient public final Storage                storage      = new Storage();
-    transient public final Analysis               analysis     = new Analysis();
     transient public final AnalysisNote           analysisNote = new AnalysisNote();
+    transient public final SampleItem             item         = new SampleItem();
+    transient public final Analysis               analysis     = new Analysis();
+    transient public final Storage                storage      = new Storage();
     transient public final AnalysisUser           analysisUser = new AnalysisUser();
     transient public final Result                 result       = new Result();
     transient private HashMap<String, DataObject> doMap;
@@ -145,12 +151,36 @@ public class SampleManager1 implements Serializable {
      * traversing the lists.
      */
 
+    public String getUid(SampleQaEventDO data) {
+        return getSampleQAEventUid(data.getId());
+    } 
+    
+    public String getUid(AnalysisQaEventDO data) {
+        return getAnalysisQAEventUid(data.getId());
+    }    
+    
+    public String getUid(NoteDO data) {
+        return getNoteUid(data.getId());
+    }
+    
     public String getUid(SampleItemDO data) {
         return getSampleItemUid(data.getId());
     }
-
+    
     public String getUid(AnalysisDO data) {
-        return "A:"+data.getId();
+        return getAnalysisUid(data.getId());
+    }
+    
+    public String getUid(StorageDO data) {
+        return getStorageUid(data.getId());
+    }
+
+    public String getUid(AnalysisUserDO data) {
+        return getAnalysisUserUid(data.getId());
+    }
+
+    public String getUid(ResultDO data) {
+        return getResultUid(data.getId());
     }
     
     /**
@@ -159,9 +189,43 @@ public class SampleManager1 implements Serializable {
     public DataObject getObject(String uid) {
         if (doMap == null) {
             doMap = new HashMap<String, DataObject>();
+            
+            if (sampleQAs != null) 
+                for (SampleQaEventDO data : sampleQAs)
+                    doMap.put(getSampleQAEventUid(data.getId()), data);
+            
+            if (analysisQAs != null) 
+                for (AnalysisQaEventDO data : analysisQAs)
+                    doMap.put(getAnalysisQAEventUid(data.getId()), data);
+            
+            if (sampleNotes != null) 
+                for (NoteDO data : sampleNotes)
+                    doMap.put(getNoteUid(data.getId()), data);
+            
+            if (analysisNotes != null) 
+                for (NoteDO data : analysisNotes)
+                    doMap.put(getNoteUid(data.getId()), data);
+            
             if (items != null) 
-                for (SampleItemDO data:items)
+                for (SampleItemDO data : items)
                     doMap.put(getSampleItemUid(data.getId()), data);
+            
+            if (storages != null) 
+                for (StorageDO data : storages)
+                    doMap.put(getStorageUid(data.getId()), data);
+            
+            if (analyses != null) 
+                for (AnalysisDO data : analyses)
+                    doMap.put(getAnalysisUid(data.getId()), data);         
+            
+            if (users != null) 
+                for (AnalysisUserDO data : users)
+                    doMap.put(getAnalysisUserUid(data.getId()), data);
+            
+            if (results != null) 
+                for (ResultDO data : results)
+                    doMap.put(getResultUid(data.getId()), data);
+            
         }
         return doMap.get(uid);
     }
@@ -1236,8 +1300,37 @@ public class SampleManager1 implements Serializable {
     /**
      * Returns the unique identifiers for each data object.
      */
+    
+    private String getSampleQAEventUid(Integer id) {
+        return "Q:"+id;
+    }
+    
+    private String getAnalysisQAEventUid(Integer id) {
+        return "E:"+id;
+    }
+    
+    private String getNoteUid(Integer id) {
+        return "N:"+id;
+    }
+    
     private String getSampleItemUid(Integer id) {
         return "I:"+id;
+    }
+    
+    private String getStorageUid(Integer id) {
+        return "T:"+id;
+    }
+    
+    private String getAnalysisUid(Integer id) {
+        return "A:"+id;
+    }
+    
+    private String getAnalysisUserUid(Integer id) {
+        return "U:"+id;
+    }
+    
+    private String getResultUid(Integer id) {
+        return "R:"+id;
     }
     
     /**

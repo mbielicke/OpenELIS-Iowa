@@ -655,7 +655,7 @@ public class SampleBean {
             ( !Constants.domain().ANIMAL.equals(d) &&
              !Constants.domain().ENVIRONMENTAL.equals(d) &&
              !Constants.domain().HUMAN.equals(d) &&
-             !Constants.domain().NEWBORN.equals(d) &&
+             !Constants.domain().NEONATAL.equals(d) &&
              !Constants.domain().PRIVATEWELL.equals(d) &&
              !Constants.domain().PT.equals(d) && !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
             e.add(new FormErrorException("sample.noDomainException", data.getAccessionNumber()));

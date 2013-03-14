@@ -36,6 +36,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.entity.SampleNeonatal;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -66,7 +67,7 @@ public class SampleNeonatalBean {
         return data;
     }
     
-    public ArrayList<SampleNeonatalDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+    public ArrayList<SampleNeonatalViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
 
         query = manager.createNamedQuery("SampleNeonatal.FetchBySampleIds");
@@ -82,10 +83,10 @@ public class SampleNeonatalBean {
 
         entity = new SampleNeonatal();
         entity.setSampleId(data.getSampleId());
-        entity.setPatientId(data.getPatientId());
+        entity.setPatientId(data.getPatient().getId());
         entity.setBirthOrder(data.getBirthOrder());
         entity.setGestationalAge(data.getGestationalAge());
-        entity.setNextOfKinId(data.getNextOfKinId());
+        entity.setNextOfKinId(data.getNextOfKin().getId());
         entity.setNextOfKinRelationId(data.getNextOfKinRelationId());
         entity.setIsRepeat(data.getIsRepeat());
         entity.setIsNicu(data.getIsNicu());
@@ -109,17 +110,17 @@ public class SampleNeonatalBean {
     public SampleNeonatalDO update(SampleNeonatalDO data) throws Exception {
         SampleNeonatal entity;
         
-        if (!data.isChanged())
+        if (!data.isChanged() && !data.getPatient().isChanged() && data.getNextOfKin().isChanged())
             return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = manager.find(SampleNeonatal.class, data.getId());
         entity.setSampleId(data.getSampleId());
-        entity.setPatientId(data.getPatientId());
+        entity.setPatientId(data.getPatient().getId());
         entity.setBirthOrder(data.getBirthOrder());
         entity.setGestationalAge(data.getGestationalAge());
-        entity.setNextOfKinId(data.getNextOfKinId());
+        entity.setNextOfKinId(data.getNextOfKin().getId());
         entity.setNextOfKinRelationId(data.getNextOfKinRelationId());
         entity.setIsRepeat(data.getIsRepeat());
         entity.setIsNicu(data.getIsNicu());
