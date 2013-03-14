@@ -40,6 +40,7 @@ public class PatientDO extends DataObject {
     protected AddressDO       address;
 
     public PatientDO() {
+        address = new AddressDO();
     }
 
     public PatientDO(Integer id, String lastName, String firstName, String middleName,

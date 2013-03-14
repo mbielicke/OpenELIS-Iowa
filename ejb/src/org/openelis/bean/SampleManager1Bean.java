@@ -53,6 +53,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalDO;
+import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -139,27 +140,30 @@ public class SampleManager1Bean {
     private UserCacheBean           userCache;
 
     private static final Logger    log = Logger.getLogger("openelis");
+    
 
     /**
-     * Returns a new instance of sample manager with pre-initailized sample and other
-     * structures.
+     * Returns a new instance of sample manager with pre-initailized sample and
+     * other structures.
      */
-    public SampleManager1 getInstance(String domain) {
+    public SampleManager1 getInstance(String domain) throws Exception {
         SampleManager1 sm;
-        Datetime now;
         SampleDO s;
-        
+        Datetime now;
+
+        // sample
         now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         sm = new SampleManager1();
 
-        // sample
         s = new SampleDO();
         s.setNextItemSequence(0);
         s.setRevision(0);
         s.setEnteredDate(now);
-        s.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
+        s.setReceivedById(userCache.getId());
+        s.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);        
+        
         setSample(sm, s);
-
+        
         // set the domain
         if (Constants.domain().QUICKENTRY.equals(domain)) {
             s.setDomain(domain);
@@ -167,14 +171,40 @@ public class SampleManager1Bean {
             SampleEnvironmentalDO se;
 
             se = new SampleEnvironmentalDO();
-            se.
+            se.setIsHazardous("N");
             setSampleEnvironmental(sm, se);
 
             s.setDomain(domain);
         } else if (Constants.domain().PRIVATEWELL.equals(domain)) {
+            SamplePrivateWellViewDO spw;
+
+            spw = new SamplePrivateWellViewDO();
+            setSamplePrivateWell(sm, spw);
+
+            s.setDomain(domain);
         } else if (Constants.domain().SDWIS.equals(domain)) {
+            SampleSDWISViewDO ssd;
+
+            ssd = new SampleSDWISViewDO();
+            setSampleSDWIS(sm, ssd);
+
+            s.setDomain(domain);
         } else if (Constants.domain().NEONATAL.equals(domain)) {
+            SampleNeonatalViewDO snn;
+
+            snn = new SampleNeonatalViewDO();
+            snn.setIsRepeat("N");
+            snn.setIsNicu("N");
+            snn.setIsTransfused("N");
+            snn.setIsCollectionValid("N");
+            setSampleNeonatal(sm, snn);
+
+            s.setDomain(domain);
+        } else {
+            throw new InconsistencyException("Specified domain is invalid");
         }
+        
+        return sm;
     }
 
     /**
@@ -246,7 +276,7 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
         
-        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }
@@ -442,7 +472,7 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
         
-        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }
