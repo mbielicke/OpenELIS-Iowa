@@ -27,9 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.meta.StorageMeta;
 import org.openelis.modules.storage.client.StorageService;
 
@@ -47,11 +47,11 @@ public class StorageManagerProxy {
         query = new Query();
 
         field = new QueryData();
-        field.query = tableId.toString();
+        field.setQuery(tableId.toString());
         fields.add(field);
 
         field = new QueryData();
-        field.query = id.toString();
+        field.setQuery(id.toString());
         fields.add(field);
 
         query.setFields(fields);
@@ -70,9 +70,9 @@ public class StorageManagerProxy {
         query = new Query();
         
         field = new QueryData();
-        field.key = StorageMeta.getStorageLocationId();
-        field.query = id.toString();
-        field.type = QueryData.Type.INTEGER;            
+        field.setKey(StorageMeta.getStorageLocationId());
+        field.setQuery(id.toString());
+        field.setType(QueryData.Type.INTEGER);            
         query.setFields(field);
                      
         query.setRowsPerPage(max);

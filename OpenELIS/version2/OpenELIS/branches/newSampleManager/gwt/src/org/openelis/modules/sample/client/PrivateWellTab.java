@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -37,11 +38,11 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.Util;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -67,6 +68,7 @@ import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -101,11 +103,11 @@ public class PrivateWellTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public PrivateWellTab(ScreenWindowInt window) throws Exception {        
+    public PrivateWellTab(WindowInt window) throws Exception {        
         this(null, window);
     }
 
-    public PrivateWellTab(ScreenDefInt def, ScreenWindowInt window) throws Exception {
+    public PrivateWellTab(ScreenDefInt def, WindowInt window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(PrivateWellTabDef.class));
         else
@@ -151,7 +153,7 @@ public class PrivateWellTab extends Screen {
                 wellDO = getWellManager().getPrivateWell();
                 if (orgDO != null) {
                     // it's an org record
-                    wellOrganizationId.setValue(orgDO.getId());
+                    wellOrganizationId.setFieldValue(orgDO.getId());
 
                     setAddress(orgDO.getAddress());                    
 
@@ -163,7 +165,7 @@ public class PrivateWellTab extends Screen {
                     
                     try {
                         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgDO.getId())) 
-                            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ orgDO.getName()+"'");
+                            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ orgDO.getName()+"'");
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         e.printStackTrace();
@@ -224,7 +226,7 @@ public class PrivateWellTab extends Screen {
                     prevOrg = prevData.getOrganization();
                     
                     if (prevOrg != null) {         
-                        wellOrganizationId.setValue(prevOrg.getId());
+                        wellOrganizationId.setFieldValue(prevOrg.getId());
                         setAddress(prevOrg.getAddress());
                         data.setOrganization(prevOrg);
                         data.setOrganizationId(prevOrg.getId());
@@ -293,7 +295,7 @@ public class PrivateWellTab extends Screen {
         wellOrganizationId = (TextBox<Integer>)def.getWidget(SampleMeta.getWellOrganizationId());
         addScreenHandler(wellOrganizationId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                wellOrganizationId.setValue(getWellManager().getPrivateWell().getOrganizationId());
+                wellOrganizationId.setFieldValue(getWellManager().getPrivateWell().getOrganizationId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1189,7 +1191,7 @@ public class PrivateWellTab extends Screen {
                     billTo.setSelection(data.getOrganizationId(),  data.getOrganizationName());
                     
                     if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId())) 
-                        Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ data.getOrganizationName()+"'");
+                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ data.getOrganizationName()+"'");
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -1274,9 +1276,9 @@ public class PrivateWellTab extends Screen {
 
         if (fields.size() > 0) {
             domain = new QueryData();
-            domain.key = SampleMeta.getDomain();
-            domain.query = SampleManager.WELL_DOMAIN_FLAG;
-            domain.type = QueryData.Type.STRING;
+            domain.setKey(SampleMeta.getDomain());
+            domain.setQuery(SampleManager.WELL_DOMAIN_FLAG);
+            domain.setType(QueryData.Type.STRING);
             fields.add(domain);
         }       
 
@@ -1316,7 +1318,7 @@ public class PrivateWellTab extends Screen {
             }
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("sampleProject"));
+            modal.setName(Messages.get().sampleProject());
             modal.setContent(projectScreen);
             projectScreen.setScreenState(state);
 
@@ -1376,7 +1378,7 @@ public class PrivateWellTab extends Screen {
             }
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("sampleOrganization"));
+            modal.setName(Messages.get().sampleOrganization());
             modal.setContent(organizationScreen);
 
             organizationScreen.setScreenState(state);

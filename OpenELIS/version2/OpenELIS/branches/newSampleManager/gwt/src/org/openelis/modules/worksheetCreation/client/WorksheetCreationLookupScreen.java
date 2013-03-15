@@ -30,18 +30,19 @@ import java.util.ArrayList;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.SectionPermission;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -113,8 +114,8 @@ public class WorksheetCreationLookupScreen extends Screen
 
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
-            throw new PermissionException("screenPermException",
-                                          "Worksheet Creation Lookup Screen");
+            throw new PermissionException(Messages.get().screenPermException(
+                                          "Worksheet Creation Lookup Screen"));
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -387,13 +388,13 @@ public class WorksheetCreationLookupScreen extends Screen
                 row = ((AutoComplete)def.getWidget(key)).getSelection();
                 if (row != null && row.key != null) {
                     qd = new QueryData();
-                    qd.key = key;
-                    qd.query = ((Integer)row.key).toString();
-                    qd.type = QueryData.Type.INTEGER;
+                    qd.setKey(key);
+                    qd.setQuery(((Integer)row.key).toString());
+                    qd.setType(QueryData.Type.INTEGER);
                     list.add(qd);
 
                     qField = new QueryFieldUtil();
-                    qField.parse(qd.query);
+                    qField.parse(qd.getQuery());
                 }
             } else if (def.getWidget(key) instanceof HasField) {
                 ((HasField)def.getWidget(key)).getQuery(list, key);
@@ -406,7 +407,7 @@ public class WorksheetCreationLookupScreen extends Screen
         Query query;
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -414,7 +415,7 @@ public class WorksheetCreationLookupScreen extends Screen
         query.setFields(getQueryFields());
 
         if (query.getFields().size() > 0) {
-            window.setBusy(consts.get("querying"));
+            window.setBusy(Messages.get().querying());
 
             query.setRowsPerPage(500);
             WorksheetCreationService.get().query(query, new AsyncCallback<ArrayList<WorksheetCreationVO>>() {
@@ -425,15 +426,15 @@ public class WorksheetCreationLookupScreen extends Screen
                 public void onFailure(Throwable error) {
                     setQueryResult(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert("Error: WorksheetCreationLookup call query failed; "+error.getMessage());
-                        window.setError(consts.get("queryFailed"));
+                        window.setError(Messages.get().queryFailed());
                     }
                 }
             });
         } else {
-            window.setDone(consts.get("emptyQueryException"));
+            window.setDone(Messages.get().emptyQueryException());
         }
     }
 
@@ -444,11 +445,11 @@ public class WorksheetCreationLookupScreen extends Screen
         WorksheetCreationVO analysisRow;
 
         if (list == null || list.size() == 0) {
-            window.setDone(consts.get("noRecordsFound"));
+            window.setDone(Messages.get().noRecordsFound());
 
             analysesTable.clear();
         } else {
-            window.setDone(consts.get("queryingComplete"));
+            window.setDone(Messages.get().queryingComplete());
 
             model = new ArrayList<TableDataRow>();
             for (i = 0; i < list.size(); i++ ) {
@@ -494,7 +495,7 @@ public class WorksheetCreationLookupScreen extends Screen
             if ( !isAnalysisEditable(analysisRow)) {
                 selections.remove(i);
 
-                message.append(consts.get("accessionNum"))
+                message.append(Messages.get().accessionNum())
                        .append(analysisRow.getAccessionNumber())
                        .append("\t")
                        .append(analysisRow.getTestName().trim())
@@ -514,7 +515,7 @@ public class WorksheetCreationLookupScreen extends Screen
         }
 
         if (message.length() > 0)
-            Window.alert(consts.get("worksheetItemsNotAdded") + ":\n\n" +
+            Window.alert(Messages.get().worksheetItemsNotAdded() + ":\n\n" +
                          message.toString());
         if (selections.size() > 0)
             ActionEvent.fire(this, Action.ADD, selections);

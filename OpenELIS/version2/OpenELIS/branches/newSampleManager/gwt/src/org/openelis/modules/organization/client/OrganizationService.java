@@ -6,7 +6,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
@@ -19,7 +19,7 @@ public class OrganizationService implements OrganizationServiceInt, Organization
     
     static OrganizationService instance;
     
-    private OrganizationServiceIntAsync service;
+    private OrganizationServiceIntAsync service; 
     
     public static OrganizationService get() {
         if (instance == null)
@@ -30,8 +30,8 @@ public class OrganizationService implements OrganizationServiceInt, Organization
     private OrganizationService() {
         service = (OrganizationServiceIntAsync)GWT.create(OrganizationServiceInt.class);
     }
-
-    @Override
+    
+    
     public void abortUpdate(Integer id, AsyncCallback<OrganizationManager> callback) {
         service.abortUpdate(id, callback);
     }

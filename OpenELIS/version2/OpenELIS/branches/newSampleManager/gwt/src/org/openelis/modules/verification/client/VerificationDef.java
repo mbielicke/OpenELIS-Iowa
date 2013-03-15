@@ -25,8 +25,8 @@
 */
 package org.openelis.modules.verification.client;
 
-import org.openelis.modules.main.client.OpenELISDef;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface VerificationDef extends OpenELISDef {
+public interface VerificationDef extends ScreenDefInt {
 
 }

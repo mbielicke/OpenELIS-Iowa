@@ -25,9 +25,10 @@
 */
 package org.openelis.modules.sample.client;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.SampleManager;
 
 public class AccessionNumberUtility {
@@ -52,7 +53,7 @@ public class AccessionNumberUtility {
             return newNum;
         
         erList = new ValidationErrorsList();
-        erList.add(new FormErrorException("newAccessionNumError"));
+        erList.add(new FormErrorException(Messages.get().newAccessionNumError()));
         throw erList;
     }
 }

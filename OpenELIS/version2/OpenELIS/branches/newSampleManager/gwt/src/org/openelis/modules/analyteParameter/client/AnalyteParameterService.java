@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AnalyteParameterManager;
 

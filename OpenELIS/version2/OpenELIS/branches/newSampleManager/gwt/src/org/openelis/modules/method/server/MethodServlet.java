@@ -33,8 +33,8 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.MethodBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.method.client.MethodServiceInt;
 
 @WebServlet("/openelis/method")

@@ -2,10 +2,11 @@ package org.openelis.modules.completeRelease.client;
 
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.Util;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -13,11 +14,11 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
@@ -36,7 +37,7 @@ public class SampleTab extends Screen {
 
     protected AccessionNumberUtility accessionNumUtil;
 
-    public SampleTab(ScreenDefInt def, ScreenWindowInt window) {
+    public SampleTab(ScreenDefInt def, WindowInt window) {
 		setDefinition(def);
 		setWindow(window);
 		
@@ -61,7 +62,7 @@ public class SampleTab extends Screen {
                 oldNumber = manager.getSample().getAccessionNumber();
                 oldNumStr = Util.toString(oldNumber);                
                 if (oldNumber != null) {                    
-                    if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                    if (!Window.confirm(Messages.get().accessionNumberEditConfirm())) {
                         accessionNumber.setValue(oldNumStr);
                         setFocus(accessionNumber);
                         return;
@@ -75,7 +76,7 @@ public class SampleTab extends Screen {
 
                     quickEntryMan = accessionNumUtil.validateAccessionNumber(manager.getSample());
                     if (quickEntryMan != null)
-                        throw new Exception(consts.get("quickEntryNumberExists"));
+                        throw new Exception(Messages.get().quickEntryNumberExists());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                     accessionNumber.setValue(oldNumStr);
@@ -129,7 +130,7 @@ public class SampleTab extends Screen {
         collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectedTime.setValue(manager.getSample().getCollectionTime());
+                collectedTime.setFieldValue(manager.getSample().getCollectionTime());
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {

@@ -26,33 +26,30 @@
 package org.openelis.modules.inventoryReceipt.client;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -66,7 +63,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -85,6 +81,10 @@ import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.modules.inventoryReceipt.client.ItemTab.Action;
 import org.openelis.modules.order.client.ShipNoteTab;
 import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -92,8 +92,6 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.Focusable;
@@ -126,26 +124,15 @@ public class InventoryReceiptScreen extends Screen {
         ITEM, VENDOR_ADDRESS, SHIP_NOTE
     };
     
-    public InventoryReceiptScreen() throws Exception {
+    public InventoryReceiptScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(InventoryReceiptDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("inventoryreceipt");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Inventory Receipt Screen");
+            throw new PermissionException(Messages.get().screenPermException("Inventory Receipt Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-    
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         tab = Tabs.ITEM;
         initialize(); 
         setState(State.DEFAULT);
@@ -317,8 +304,8 @@ public class InventoryReceiptScreen extends Screen {
                 OrganizationDO org;
                 IdNameVO upcData;
                 Datetime dateRec;
-                LocalizedException ex;
-                ArrayList<LocalizedException> exceptions;
+                Exception ex;
+                ArrayList<Exception> exceptions;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -353,7 +340,7 @@ public class InventoryReceiptScreen extends Screen {
                                 if (exceptions != null) {
                                     for (int i = 0; i < exceptions.size(); i++) {
                                         ex = exceptions.get(i);
-                                        if ("fieldRequiredException".equals(ex.getKey())) {
+                                        if ("fieldRequiredException".equals(ex.getMessage())) {
                                             exceptions.remove(i);
                                             break;
                                         }                                        
@@ -637,8 +624,8 @@ public class InventoryReceiptScreen extends Screen {
         itemTab.addActionHandler(new ActionHandler<ItemTab.Action>() {            
             public void onAction(ActionEvent<ItemTab.Action> event) {
                 int i,r;
-                LocalizedException ex;
-                ArrayList<LocalizedException> exceptions;
+                Exception ex;
+                ArrayList<Exception> exceptions;
                 TableDataRow row, val;        
 
                 r = receiptTable.getSelectedRow();
@@ -649,7 +636,7 @@ public class InventoryReceiptScreen extends Screen {
                     if(exceptions != null && event.getData() != null) {
                         for (i = 0; i < exceptions.size(); i++) {
                             ex = exceptions.get(i);
-                            if ("lotNumRequiredForOrderItemException".equals(ex.getKey())) {
+                            if ("lotNumRequiredForOrderItemException".equals(ex.getMessage())) {
                                 exceptions.remove(i);
                                 break;
                             }                                        
@@ -674,9 +661,9 @@ public class InventoryReceiptScreen extends Screen {
                     if(exceptions != null && event.getData() != null) {
                         for (i = 0; i < exceptions.size(); i++) {
                             ex = exceptions.get(i);
-                            if ("storageLocReqForItemException".equals(ex.getKey()) || 
-                                "itemNotExistAtLocationException".equals(ex.getKey()) ||
-                                "itemExistAtLocationException".equals(ex.getKey())) {
+                            if ("storageLocReqForItemException".equals(ex.getMessage()) || 
+                                "itemNotExistAtLocationException".equals(ex.getMessage()) ||
+                                "itemExistAtLocationException".equals(ex.getMessage())) {
                                 exceptions.remove(i);
                                 break;
                             }                                        
@@ -725,11 +712,11 @@ public class InventoryReceiptScreen extends Screen {
             }
         });               
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -752,7 +739,7 @@ public class InventoryReceiptScreen extends Screen {
         drawTabs();
         
         enableColumns(false);
-        window.setDone(consts.get("enterFieldsToQuery"));       
+        window.setDone(Messages.get().enterFieldsToQuery());       
     }
     
     protected void add() {
@@ -771,15 +758,15 @@ public class InventoryReceiptScreen extends Screen {
         
         drawTabs();
         
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
     
     protected void update() {
         if (query == null) {
-            Window.alert(consts.get("queryExeBeforeUpdate"));
+            Window.alert(Messages.get().queryExeBeforeUpdate());
             return;
         }
-        window.setBusy(consts.get("lockForUpdate"));           
+        window.setBusy(Messages.get().lockForUpdate());           
         executeQuery(query);  
     }    
 
@@ -793,7 +780,7 @@ public class InventoryReceiptScreen extends Screen {
         OrderManager order;
         
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
         
@@ -804,7 +791,7 @@ public class InventoryReceiptScreen extends Screen {
             query.setFields(fields);
             executeQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             success = true;            
             for (i = 0; i < receiptTable.numRows(); i++ ) {
                 row = receiptTable.getRow(i);
@@ -826,10 +813,10 @@ public class InventoryReceiptScreen extends Screen {
             if (success) {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             }                          
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
 
             prevMan = null;
             success = true;
@@ -862,7 +849,7 @@ public class InventoryReceiptScreen extends Screen {
                 shipNoteTab.setManager(order);
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             }
         }
     }    
@@ -873,7 +860,7 @@ public class InventoryReceiptScreen extends Screen {
         order = OrderManager.getInstance();
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
         itemTab.setManager(null, -1, screen);
         vendorTab.setManager(null, receiptTable.getSelectedRow());
         shipNoteTab.setManager(order);
@@ -883,14 +870,14 @@ public class InventoryReceiptScreen extends Screen {
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             drawTabs();
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {          
             query = null;
             receiptModel = new ArrayList<TableDataRow>();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             drawTabs();
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {           
             executeQuery(query);             
         }
@@ -913,14 +900,14 @@ public class InventoryReceiptScreen extends Screen {
 
     
     public void showErrors(ValidationErrorsList list) {
-        ArrayList<LocalizedException> formErrors;
+        ArrayList<Exception> formErrors;
         TableFieldErrorException tableE;
         FormErrorException formE;
         FieldErrorException fieldE;
         TableWidget tableWid;
         HasField field;
 
-        formErrors = new ArrayList<LocalizedException>();
+        formErrors = new ArrayList<Exception>();
         for (Exception ex : list.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
                 tableE = (TableFieldErrorException) ex;
@@ -939,7 +926,7 @@ public class InventoryReceiptScreen extends Screen {
         }
 
         if (formErrors.size() == 0)
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
         else if (formErrors.size() == 1)
             window.setError(formErrors.get(0).getMessage());
         else {
@@ -950,7 +937,7 @@ public class InventoryReceiptScreen extends Screen {
     }
      
     private void executeQuery(Query query) {
-        window.setBusy(consts.get("querying"));
+        window.setBusy(Messages.get().querying());
 
         InventoryReceiptService.get().query(query, new SyncCallback<ArrayList<InventoryReceiptManager>>() {
             public void onSuccess(ArrayList<InventoryReceiptManager> result) {
@@ -1037,7 +1024,7 @@ public class InventoryReceiptScreen extends Screen {
                     setState(State.DISPLAY);           
                     DataChangeEvent.fire(screen);
                     drawTabs();
-                    window.setDone(consts.get("updateAborted"));
+                    window.setDone(Messages.get().updateAborted());
                 } else if (state == State.QUERY){
                     setState(State.DISPLAY);            
                     DataChangeEvent.fire(screen);
@@ -1048,14 +1035,14 @@ public class InventoryReceiptScreen extends Screen {
             public void onFailure(Throwable error) {
                 receiptTable.load(null);
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                     receiptModel = null;
                     setState(State.DEFAULT);
                 } else if (error instanceof LastPageException) {
-                    window.setError(consts.get("noMoreRecordInDir"));
+                    window.setError(Messages.get().noMoreRecordInDir());
                 } else {
                     Window.alert("Error: Inventory Receipt call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }
             }
         });

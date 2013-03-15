@@ -30,19 +30,17 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageUnitDO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -55,17 +53,18 @@ import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.StorageUnitMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -83,26 +82,15 @@ public class StorageUnitScreen extends Screen {
     protected MenuItem         history;
     private Dropdown<Integer>  category;
 
-    public StorageUnitScreen() throws Exception {
+    public StorageUnitScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(StorageUnitDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("storageunit");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Storage Unit Screen");
+            throw new PermissionException(Messages.get().screenPermException("Storage Unit Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         data = new StorageUnitDO();
         data.setIsSingular("N");
 
@@ -284,7 +272,7 @@ public class StorageUnitScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(9);
                 StorageUnitService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -295,14 +283,14 @@ public class StorageUnitScreen extends Screen {
                     public void onFailure(Throwable error) {
                         setQueryResult(null);
                         if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
+                            window.setDone(Messages.get().noRecordsFound());
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError(consts.get("noMoreRecordInDir"));
+                            window.setError(Messages.get().noMoreRecordInDir());
                         } else {
                             Window.alert("Error: Storage Unit call query failed; " +
                                          error.getMessage());
-                            window.setError(consts.get("queryFailed"));
+                            window.setError(Messages.get().queryFailed());
                         }
                     }
                 });
@@ -342,9 +330,9 @@ public class StorageUnitScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = StorageUnitMeta.getDescription();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(StorageUnitMeta.getDescription());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -352,11 +340,11 @@ public class StorageUnitScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -389,7 +377,7 @@ public class StorageUnitScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(category);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
 
     }
 
@@ -409,12 +397,12 @@ public class StorageUnitScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(category);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
 
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             data = StorageUnitService.get().fetchForUpdate(data.getId());
@@ -430,7 +418,7 @@ public class StorageUnitScreen extends Screen {
     }
 
     protected void delete() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             data = StorageUnitService.get().fetchForUpdate(data.getId());
@@ -448,7 +436,7 @@ public class StorageUnitScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -459,13 +447,13 @@ public class StorageUnitScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 data = StorageUnitService.get().add(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -473,13 +461,13 @@ public class StorageUnitScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 data = StorageUnitService.get().update(data);
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -487,12 +475,12 @@ public class StorageUnitScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
+            window.setBusy(Messages.get().deleting());
             try {
                 StorageUnitService.get().delete(data);
 
                 fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
+                window.setDone(Messages.get().deleteComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -506,14 +494,14 @@ public class StorageUnitScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 data = StorageUnitService.get().abortUpdate(data.getId());
@@ -523,7 +511,7 @@ public class StorageUnitScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else if (state == State.DELETE) {
             try {
                 data = StorageUnitService.get().abortUpdate(data.getId());
@@ -533,7 +521,7 @@ public class StorageUnitScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("deleteAborted"));
+            window.setDone(Messages.get().deleteAborted());
         } else {
             window.clearStatus();
         }
@@ -543,7 +531,7 @@ public class StorageUnitScreen extends Screen {
         IdNameVO hist;
         
         hist = new IdNameVO(data.getId(), data.getDescription());
-        HistoryScreen.showHistory(consts.get("storageUnitHistory"), Constants.table().STORAGE_UNIT, hist);
+        HistoryScreen.showHistory(Messages.get().storageUnitHistory(), Constants.table().STORAGE_UNIT, hist);
     }
 
     protected boolean fetchById(Integer id) {
@@ -552,18 +540,18 @@ public class StorageUnitScreen extends Screen {
             data.setIsSingular("N");
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 data = StorageUnitService.get().fetchById(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

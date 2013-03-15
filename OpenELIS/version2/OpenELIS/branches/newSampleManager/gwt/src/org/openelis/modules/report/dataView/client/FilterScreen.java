@@ -28,12 +28,13 @@ package org.openelis.modules.report.dataView.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataDataViewVO;
 import org.openelis.domain.AuxFieldDataViewVO;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.TestAnalyteDataViewVO;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -199,7 +200,7 @@ public class FilterScreen extends Screen {
                 if ("N".equals(ana.getIsIncluded())) {
                     event.cancel();                
                     if (event.getCol() == 0)
-                        Window.alert(consts.get("selAnaToSelVal"));
+                        Window.alert(Messages.get().selAnaToSelVal());
                 }
             }
         });
@@ -396,7 +397,7 @@ public class FilterScreen extends Screen {
                 if ("N".equals(af.getIsIncluded())) {
                     event.cancel();
                     if (event.getCol() == 0)
-                        Window.alert(consts.get("selAnaToSelVal"));
+                        Window.alert(Messages.get().selAnaToSelVal());
                 }
             }
         });
@@ -531,7 +532,7 @@ public class FilterScreen extends Screen {
                 }
             }
             if (numAux == 0) {
-                window.setError(consts.get("selectOneAnaOrAux"));
+                window.setError(Messages.get().selectOneAnaOrAux());
                 return;
             }
         }               

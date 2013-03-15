@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -58,6 +59,7 @@ import org.openelis.gwt.widget.table.event.RowMovedEvent;
 import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -74,7 +76,7 @@ public class ContainerTab extends Screen {
     private boolean                 loaded;
     private TestContainerPopoutUtil popoutUtil;
     
-    public ContainerTab(ScreenDefInt def, ScreenWindowInt window, TestContainerPopoutUtil popoutUtil) {
+    public ContainerTab(ScreenDefInt def, WindowInt window, TestContainerPopoutUtil popoutUtil) {
 
         this.popoutUtil = popoutUtil;
         setDefinition(def);
@@ -420,7 +422,7 @@ public class ContainerTab extends Screen {
     
     private void showPopout() {
         try {
-            popoutUtil.showPopout(consts.get("testsAndContainers"), state, manager);
+            popoutUtil.showPopout(Messages.get().testsAndContainers(), state, manager);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("TestContainerPopoutLookup error: " + e.getMessage());

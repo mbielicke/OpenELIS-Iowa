@@ -3,7 +3,7 @@ package org.openelis.modules.provider.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdFirstLastNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;

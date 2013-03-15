@@ -27,9 +27,10 @@ package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.ScreenDef;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -42,7 +43,7 @@ public class ShippingReportScreen extends ReportScreen<Query> {
 
     public ShippingReportScreen() throws Exception {
         drawScreen(new ScreenDef());
-        setName(consts.get("print"));
+        setName(Messages.get().print());
     }
     
     public void runReport() {

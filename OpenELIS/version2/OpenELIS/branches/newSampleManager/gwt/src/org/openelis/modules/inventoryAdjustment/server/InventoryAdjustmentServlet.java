@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.InventoryAdjustmentBean;
 import org.openelis.bean.InventoryAdjustmentManagerBean;
 import org.openelis.domain.InventoryAdjustmentDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;

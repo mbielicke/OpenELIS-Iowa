@@ -38,6 +38,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.OrderManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -55,7 +56,7 @@ public class ItemTreePopoutLookup extends Screen implements
         OK
     };
     
-    public ItemTreePopoutLookup(ScreenWindowInt window) throws Exception {
+    public ItemTreePopoutLookup(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(ItemTreePopoutDef.class));
         
         /*

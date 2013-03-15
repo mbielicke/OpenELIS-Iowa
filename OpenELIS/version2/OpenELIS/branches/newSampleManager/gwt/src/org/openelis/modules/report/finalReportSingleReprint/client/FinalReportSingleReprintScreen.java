@@ -28,20 +28,19 @@ package org.openelis.modules.report.finalReportSingleReprint.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.Constants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.OptionListItem;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -60,14 +59,12 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.modules.preferences.client.PrinterService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class FinalReportSingleReprintScreen extends Screen {
 
@@ -84,17 +81,11 @@ public class FinalReportSingleReprintScreen extends Screen {
     private FinalReportSingleReprintReportScreen finalReportScreen;
     private String                               VIEW_PDF_KEY = "-view-";
 
-    public FinalReportSingleReprintScreen() throws Exception {
+    public FinalReportSingleReprintScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportSingleReprintDef.class));
+        
+        setWindow(window);
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {   
         reset();
         initialize();
         setState(State.DEFAULT);
@@ -108,7 +99,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         accessionNumber = (TextBox)def.getWidget("accessionNumber");
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(data.getAccessionNumber());
+                accessionNumber.setFieldValue(data.getAccessionNumber());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -125,13 +116,13 @@ public class FinalReportSingleReprintScreen extends Screen {
                 
                 try {
                     if (accNum != null) {
-                        window.setBusy(consts.get("fetching"));
+                        window.setBusy(Messages.get().fetching());
                         manager = SampleManager.fetchWithAllDataByAccessionNumber(accNum);
                     }
                     window.clearStatus();
                 } catch (NotFoundException e) {
                     data.setAccessionNumber(null);
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                 } catch (Exception e) {
                     data.setAccessionNumber(null);
                     Window.alert(e.getMessage());
@@ -389,7 +380,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         try {
             options = PrinterService.get().getPrinters("pdf");
-            model.add(new TableDataRow(VIEW_PDF_KEY, consts.get("viewInPDF")));
+            model.add(new TableDataRow(VIEW_PDF_KEY, Messages.get().viewInPDF()));
             for (OptionListItem item : options)
                 model.add(new TableDataRow(item.getKey(), item.getLabel()));
         } catch (Exception e) {
@@ -407,71 +398,71 @@ public class FinalReportSingleReprintScreen extends Screen {
 
         setFocus(null);
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
         
         query = new Query();    
         
         field = new QueryData();
-        field.key = "ACCESSION_NUMBER";
-        field.query = data.getAccessionNumber().toString();
-        field.type = QueryData.Type.INTEGER;
+        field.setKey("ACCESSION_NUMBER");
+        field.setQuery(data.getAccessionNumber().toString());
+        field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
         
         if ("Y".equals(data.getIsPrint())) {
             field = new QueryData();
-            field.key = "PRINTER";
-            field.query = data.getPrinter();
-            field.type = QueryData.Type.STRING;
+            field.setKey("PRINTER");
+            field.setQuery(data.getPrinter());
+            field.setType(QueryData.Type.STRING);
             query.setFields(field);
             
             id = data.getOrganizationId();
             if (id != null) {
                 field = new QueryData();
-                field.key = "ORGANIZATION_ID";
-                field.query = id.toString();
-                field.type = QueryData.Type.STRING;
+                field.setKey("ORGANIZATION_ID");
+                field.setQuery(id.toString());
+                field.setType(QueryData.Type.STRING);
                 query.setFields(field);
             }
         } else if ("Y".equals(data.getIsFax())) {
             id = data.getDestinationId();
             if (id != null) {
                 field = new QueryData();
-                field.key = "ORGANIZATION_ID";
-                field.query = id.toString();
-                field.type = QueryData.Type.STRING;
+                field.setKey("ORGANIZATION_ID");
+                field.setQuery(id.toString());
+                field.setType(QueryData.Type.STRING);
                 query.setFields(field);
             }
             
             field = new QueryData();
-            field.key = "FAX_NUMBER";
-            field.query = data.getFaxNumber();
-            field.type = QueryData.Type.STRING;
+            field.setKey("FAX_NUMBER");
+            field.setQuery(data.getFaxNumber());
+            field.setType(QueryData.Type.STRING);
             query.setFields(field);
             
             field = new QueryData();
-            field.key = "FROM_COMPANY";
-            field.query = data.getFrom();
-            field.type = QueryData.Type.STRING;
+            field.setKey("FROM_COMPANY");
+            field.setQuery(data.getFrom());
+            field.setType(QueryData.Type.STRING);
             query.setFields(field);
             
             field = new QueryData();
-            field.key = "FAX_ATTENTION";
-            field.query = data.getToName();
-            field.type = QueryData.Type.STRING;
+            field.setKey("FAX_ATTENTION");
+            field.setQuery(data.getToName());
+            field.setType(QueryData.Type.STRING);
             query.setFields(field);
             
             field = new QueryData();
-            field.key = "TO_COMPANY";
-            field.query = data.getToCompany();
-            field.type = QueryData.Type.STRING;
+            field.setKey("TO_COMPANY");
+            field.setQuery(data.getToCompany());
+            field.setType(QueryData.Type.STRING);
             query.setFields(field);
             
             field = new QueryData();
-            field.key = "FAX_NOTE";
-            field.query = data.getNote();
-            field.type = QueryData.Type.STRING;
+            field.setKey("FAX_NOTE");
+            field.setQuery(data.getNote());
+            field.setType(QueryData.Type.STRING);
             query.setFields(field);            
         }
         
@@ -494,7 +485,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         data = new FormVO();
         data.setIsPrint("Y");
         data.setIsFax("N");     
-        data.setFrom(consts.get("fromCompany"));
+        data.setFrom(Messages.get().fromCompany());
         try {
             prefs = Preferences.userRoot();
             data.setPrinter(prefs.get("default_printer", VIEW_PDF_KEY));
@@ -678,7 +669,7 @@ public class FinalReportSingleReprintScreen extends Screen {
              * this dropdown also shows the option for getting the values for 
              * fax # etc. from the aux-data, if any, for this sample
              */
-            row = new TableDataRow(null, consts.get("fromSample"));
+            row = new TableDataRow(null, Messages.get().fromSample());
             row.data = getAuxDataFax();
             model.add(0, row);
         } catch (Exception e) {

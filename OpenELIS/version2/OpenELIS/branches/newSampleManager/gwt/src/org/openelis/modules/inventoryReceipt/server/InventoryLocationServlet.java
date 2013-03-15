@@ -32,7 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.InventoryLocationBean;
 import org.openelis.domain.InventoryLocationViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.inventoryReceipt.client.InventoryLocationServiceInt;
 
@@ -48,8 +48,8 @@ public class InventoryLocationServlet extends RemoteServlet implements Inventory
         Integer id;
         String search;
         
-        search = query.getFields().get(0).query;
-        id = new Integer(query.getFields().get(1).query);
+        search = query.getFields().get(0).getQuery();
+        id = new Integer(query.getFields().get(1).getQuery());
         return inventoryLocation.fetchByLocationNameInventoryItemId(search + "%", id,50);
     }   
     
@@ -57,9 +57,9 @@ public class InventoryLocationServlet extends RemoteServlet implements Inventory
         Integer itemId, storeId;
         String search;
         
-        search = query.getFields().get(0).query;
-        itemId = new Integer(query.getFields().get(1).query);
-        storeId = new Integer(query.getFields().get(2).query);
+        search = query.getFields().get(0).getQuery();
+        itemId = new Integer(query.getFields().get(1).getQuery());
+        storeId = new Integer(query.getFields().get(2).getQuery());
         return inventoryLocation.fetchByLocationNameInventoryItemIdStoreId(search + "%", itemId, storeId, 50);
     }
     
@@ -71,8 +71,8 @@ public class InventoryLocationServlet extends RemoteServlet implements Inventory
         Integer storeId;
         String search;
         
-        search = query.getFields().get(0).query;
-        storeId = new Integer(query.getFields().get(1).query);
+        search = query.getFields().get(0).getQuery();
+        storeId = new Integer(query.getFields().get(1).getQuery());
         return inventoryLocation.fetchByInventoryItemNameStoreId(search + "%", storeId, 50);
     }
     

@@ -25,15 +25,22 @@
  */
 package org.openelis.modules.main.client;
 
+import static org.openelis.modules.main.client.Logger.*;
+
+import java.util.logging.Level;
+
+import org.openelis.modules.main.client.resources.OpenELISResources;
+import org.openelis.ui.resources.UIResources;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -47,22 +54,38 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         // All Events will flow this this handler first before any other
         // handlers.
         Event.addNativePreviewHandler(this);
-        DeferredCommand.addCommand(new Command() {
+        OpenELISResources.INSTANCE.style().ensureInjected();
+        UIResources.INSTANCE.buttonPanel().ensureInjected();
+        UIResources.INSTANCE.calendar().ensureInjected();
+        UIResources.INSTANCE.collapse().ensureInjected();
+        UIResources.INSTANCE.text().ensureInjected();
+        UIResources.INSTANCE.dragDrop().ensureInjected();
+        
+        GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
+            public void onUncaughtException(Throwable e) {
+                e.printStackTrace();
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                Window.alert("Sorry, but an unexpected error has occurred.  Please contact IT support");
+            }
+        });
+        
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
                             Window.enableScrolling(true);
                             RootPanel.get("load").getElement().removeFromParent();
-                            RootPanel.get().add(new org.openelis.modules.main.client.OpenELIS());
+                            RootLayoutPanel.get().add(new org.openelis.modules.main.client.OpenELIS());
                             SessionTimer.start();
                         } catch (Throwable e) {
-                            e.printStackTrace();
+                            remote.log(Level.SEVERE,e.getMessage(),e);
                             Window.alert("Unable to start app : " + e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
+                        remote.log(Level.SEVERE,caught.getMessage(),caught);
                         Window.alert(caught.getMessage());
                     }
                 });

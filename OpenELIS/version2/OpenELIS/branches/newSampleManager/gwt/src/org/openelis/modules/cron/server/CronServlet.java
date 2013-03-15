@@ -8,7 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.CronBean;
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.cron.client.CronServiceInt;
 

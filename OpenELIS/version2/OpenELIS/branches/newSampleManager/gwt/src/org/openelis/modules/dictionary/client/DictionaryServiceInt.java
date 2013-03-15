@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 

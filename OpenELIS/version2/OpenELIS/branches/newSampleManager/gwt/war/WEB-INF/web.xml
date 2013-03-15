@@ -63,11 +63,27 @@ UIRF Software License are applicable instead of those above.
   </servlet>
   
   <servlet>
+   <servlet-name>remoteLoggingServlet</servlet-name>
+   <servlet-class>org.openelis.ui.server.LoggingServlet</servlet-class>
+   <init-param>
+      <param-name>symbolMaps</param-name>
+      <param-value>WEB-INF/deploy/openelis/symbolMaps</param-value>
+    </init-param>
+   <load-on-startup>4</load-on-startup>
+  </servlet>
+  
+  <servlet>
     <servlet-name>CalendarServlet</servlet-name>
     <servlet-class>org.openelis.gwt.server.CalendarServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
+    <load-on-startup>5</load-on-startup>
   </servlet>
    
+  <servlet>
+    <servlet-name>CalendarUIServlet</servlet-name>
+    <servlet-class>org.openelis.ui.server.CalendarServlet</servlet-class>
+    <load-on-startup>6</load-on-startup>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>FileServlet</servlet-name>
     <url-pattern>/openelis/upload</url-pattern>
@@ -80,8 +96,18 @@ UIRF Software License are applicable instead of those above.
   </servlet-mapping>
   
   <servlet-mapping>
+   <servlet-name>remoteLoggingServlet</servlet-name>
+   <url-pattern>/openelis/remote_logging</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
     <servlet-name>CalendarServlet</servlet-name>
     <url-pattern>/openelis/calendar</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>CalendarUIServlet</servlet-name>
+    <url-pattern>/openelis/calendarui</url-pattern>
   </servlet-mapping>
   
   <session-config>

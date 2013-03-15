@@ -3,7 +3,7 @@ package org.openelis.modules.worksheet.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;

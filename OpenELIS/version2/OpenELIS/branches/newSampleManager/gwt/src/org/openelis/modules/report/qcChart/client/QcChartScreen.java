@@ -31,16 +31,15 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.domain.QcDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -62,12 +61,11 @@ import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.meta.QcListMeta;
 import org.openelis.modules.qc.client.QcService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -91,22 +89,11 @@ public class QcChartScreen extends Screen {
     private QcChartReportScreen  qcChartReportScreen;
     private Integer              typeDynamicId, typeQcSpike, typeQcBlank, typeQcDuplicate;
 
-    public QcChartScreen() throws Exception {
+    public QcChartScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(QcChartDef.class));
+        
+        setWindow(window);
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         try {
             CategoryCache.getBySystemNames("qc_type");
         } catch (Exception e) {
@@ -218,7 +205,7 @@ public class QcChartScreen extends Screen {
         numInstances = (TextBox)def.getWidget("numInstances");
         addScreenHandler(numInstances, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                numInstances.setValue(data.getNumInstances());
+                numInstances.setFieldValue(data.getNumInstances());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -425,7 +412,7 @@ public class QcChartScreen extends Screen {
 
     public boolean validateFromToFields() {
         boolean valid, fromEmpty, toEmpty, numberEmpty;
-        LocalizedException le;
+        Exception le;
         valid = true;
 
         fromEmpty = workSheetCreatedDateFrom.getValue() == null;
@@ -433,20 +420,20 @@ public class QcChartScreen extends Screen {
         numberEmpty = DataBaseUtil.isEmpty(numInstances.getValue());
         if ( !fromEmpty) {
             if (toEmpty) {
-                workSheetCreatedDateTo.addException(new LocalizedException("fieldRequiredException"));
+                workSheetCreatedDateTo.addException(new Exception(Messages.get().fieldRequiredException()));
                 valid = false;
             } else if ( !numberEmpty) {
-                le = new LocalizedException("requiredEitherFields");
+                le = new Exception(Messages.get().requiredEitherFields());
                 workSheetCreatedDateTo.addException(le);
                 workSheetCreatedDateFrom.addException(le);
                 numInstances.addException(le);
                 valid = false;
             }
         } else if ( !toEmpty) {
-            workSheetCreatedDateFrom.addException(new LocalizedException("fieldRequiredException"));
+            workSheetCreatedDateFrom.addException(new Exception(Messages.get().fieldRequiredException()));
             valid = false;
         } else if (toEmpty && numberEmpty) {
-            le = new LocalizedException("requiredEitherFields");
+            le = new Exception(Messages.get().requiredEitherFields());
             workSheetCreatedDateTo.addException(le);
             workSheetCreatedDateFrom.addException(le);
             numInstances.addException(le);
@@ -466,7 +453,7 @@ public class QcChartScreen extends Screen {
         disableScreenButtons();
         clearErrors();
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -476,54 +463,54 @@ public class QcChartScreen extends Screen {
         fromDate = data.getWorkSheetCreatedDateFrom();
         if (fromDate != null) {
             field = new QueryData();
-            field.key = "WORKSHEET_CREATED_DATE_FROM";
-            field.query = fromDate.toString();
-            field.type = QueryData.Type.DATE;
+            field.setKey("WORKSHEET_CREATED_DATE_FROM");
+            field.setQuery(fromDate.toString());
+            field.setType(QueryData.Type.DATE);
             fields.add(field);
         }
 
         toDate = data.getWorkSheetCreatedDateTo();
         if (toDate != null) {
             field = new QueryData();
-            field.key = "WORKSHEET_CREATED_DATE_TO";
-            field.query = toDate.toString();
-            field.type = QueryData.Type.DATE;
+            field.setKey("WORKSHEET_CREATED_DATE_TO");
+            field.setQuery(toDate.toString());
+            field.setType(QueryData.Type.DATE);
             fields.add(field);
         }
 
         numInstance = data.getNumInstances();
         if (numInstance != null) {
             field = new QueryData();
-            field.key = "NUM_INSTANCES";
-            field.query = numInstance.toString();
-            field.type = QueryData.Type.INTEGER;
+            field.setKey("NUM_INSTANCES");
+            field.setQuery(numInstance.toString());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }
 
         qcName = data.getName();
         if (qcName != null) {
             field = new QueryData();
-            field.key = "QC_NAME";
-            field.query = qcName;
-            field.type = QueryData.Type.STRING;
+            field.setKey("QC_NAME");
+            field.setQuery(qcName);
+            field.setType(QueryData.Type.STRING);
             fields.add(field);
         }
 
         qcType = data.getQcTypeId();
         if (qcType != null) {
             field = new QueryData();
-            field.key = "QC_TYPE";
-            field.query = qcType.toString();
-            field.type = QueryData.Type.INTEGER;
+            field.setKey("QC_TYPE");
+            field.setQuery(qcType.toString());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }
 
         plotType = data.getPlotTypeId();
         if (plotType != null) {
             field = new QueryData();
-            field.key = "PLOT_TYPE";
-            field.query = plotType.toString();
-            field.type = QueryData.Type.INTEGER;
+            field.setKey("PLOT_TYPE");
+            field.setQuery(plotType.toString());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }
 
@@ -537,19 +524,19 @@ public class QcChartScreen extends Screen {
                     recomputeButton.enable(true);
                     plotDataButton.enable(true);
                     if (result.getQcList().size() > 0)
-                        window.setDone(consts.get("done"));
+                        window.setDone(Messages.get().loadCompleteMessage());
                     else
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                 }
 
                 public void onFailure(Throwable error) {
                     setResults(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                         setState(State.DEFAULT);
                     } else {
                         Window.alert("Error: Method call query failed; " + error.getMessage());
-                        window.setError(consts.get("queryFailed"));
+                        window.setError(Messages.get().queryFailed());
                     }
                 }
             });
@@ -563,17 +550,17 @@ public class QcChartScreen extends Screen {
         QcChartReportService.get().recompute(results, new AsyncCallback<QcChartReportViewVO>() {
             public void onSuccess(QcChartReportViewVO result) {
                 setResults(result);
-                window.setDone(consts.get("done"));
+                window.setDone(Messages.get().loadCompleteMessage());
             }
 
             public void onFailure(Throwable error) {
                 setResults(null);
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                     setState(State.DEFAULT);
                 } else {
                     Window.alert("Error: Method call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }
             }
         });
@@ -592,7 +579,7 @@ public class QcChartScreen extends Screen {
                 cnt++ ;
         }
         if (plotDataTable.numRows() == cnt) {
-            window.setError(consts.get("noSampleSelectedError"));
+            window.setError(Messages.get().noSampleSelectedError());
             return;
         }
         try {

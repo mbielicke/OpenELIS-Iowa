@@ -31,7 +31,7 @@ import java.util.HashMap;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;

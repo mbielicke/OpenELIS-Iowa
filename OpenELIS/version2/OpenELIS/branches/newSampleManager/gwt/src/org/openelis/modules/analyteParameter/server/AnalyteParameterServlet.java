@@ -34,8 +34,8 @@ import org.openelis.bean.AnalyteParameterBean;
 import org.openelis.bean.AnalyteParameterManagerBean;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AnalyteParameterManager;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterServiceInt;
@@ -58,13 +58,13 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
         
         fields = query.getFields();
         field = fields.get(0);
-        if (field.query != null)
-            refId = Integer.parseInt(field.query);
+        if (field.getQuery() != null)
+            refId = Integer.parseInt(field.getQuery());
         else
             refId = null; 
         field = fields.get(1);
-        if (field.query != null)
-            refTableId = Integer.parseInt(field.query);
+        if (field.getQuery() != null)
+            refTableId = Integer.parseInt(field.getQuery());
         else
             refTableId = null;
         return analyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
@@ -77,20 +77,20 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
         
         fields = query.getFields();
         field = fields.get(0);
-        if (field.query != null)
-            anaId = Integer.parseInt(field.query);
+        if (field.getQuery() != null)
+            anaId = Integer.parseInt(field.getQuery());
         else
             anaId = null;
         
         field = fields.get(1);
-        if (field.query != null)
-            refId = Integer.parseInt(field.query);
+        if (field.getQuery() != null)
+            refId = Integer.parseInt(field.getQuery());
         else
             refId = null;
         
         field = fields.get(2);
-        if (field.query != null)
-            refTableId = Integer.parseInt(field.query);
+        if (field.getQuery() != null)
+            refTableId = Integer.parseInt(field.getQuery());
         else
             refTableId = null;
         

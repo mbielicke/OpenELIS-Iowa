@@ -35,8 +35,8 @@ import org.openelis.bean.InventoryItemManagerBean;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
@@ -71,11 +71,11 @@ public class InventoryItemServlet extends RemoteServlet implements InventoryItem
         name = null;
         // parse the query to find name and/or store
         for (QueryData field : query.getFields()) {
-            if (field.key != null) {
-                if (field.key.endsWith("name"))
-                    name = field.query;
-                else if (field.key.endsWith("storeId"))
-                    storeId = Integer.valueOf(field.query);
+            if (field.getKey() != null) {
+                if (field.getKey().endsWith("name"))
+                    name = field.getQuery();
+                else if (field.getKey().endsWith("storeId"))
+                    storeId = Integer.valueOf(field.getQuery());
             }
         }
 
@@ -95,13 +95,13 @@ public class InventoryItemServlet extends RemoteServlet implements InventoryItem
         
         // parse the query to find name and/or store
         for (QueryData field : query.getFields()) {
-            if (field.key != null) {
-                if (field.key.endsWith("name"))
-                    name = field.query;
+            if (field.getKey() != null) {
+                if (field.getKey().endsWith("name"))
+                    name = field.getQuery();
                 //else if (field.key.endsWith("storeId"))
                   //  storeId = Integer.valueOf(field.query);
-                else if (field.key.endsWith("parentInventoryItemId"))
-                    parentInventoryItemId = Integer.valueOf(field.query);
+                else if (field.getKey().endsWith("parentInventoryItemId"))
+                    parentInventoryItemId = Integer.valueOf(field.getQuery());
             }
         }
         

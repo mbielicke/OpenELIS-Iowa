@@ -3,8 +3,9 @@ package org.openelis.modules.note.client;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -17,6 +18,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -35,7 +37,7 @@ public class RichTextTab extends Screen {
     protected Integer            userId;
     protected boolean            loaded;
 
-    public RichTextTab(ScreenDefInt def, ScreenWindowInt window, String richtextPanelKey,
+    public RichTextTab(ScreenDefInt def, WindowInt window, String richtextPanelKey,
                        String editButtonKey) {
         setDefinition(def);
         setWindow(window);
@@ -100,7 +102,7 @@ public class RichTextTab extends Screen {
         }
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("richTextEditor"));
+        modal.setName(Messages.get().richTextEditor());
         modal.setContent(richtext);
 
         note = null;

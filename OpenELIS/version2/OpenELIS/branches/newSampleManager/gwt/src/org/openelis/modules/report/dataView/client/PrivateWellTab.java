@@ -11,6 +11,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
@@ -24,7 +25,7 @@ public class PrivateWellTab extends Screen {
     private boolean    loaded;
     private int        checkCount;
 
-    public PrivateWellTab(ScreenDefInt def, ScreenWindowInt window) {
+    public PrivateWellTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();

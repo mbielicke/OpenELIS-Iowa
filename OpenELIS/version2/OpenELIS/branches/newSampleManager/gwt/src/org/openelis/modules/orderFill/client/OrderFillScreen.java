@@ -27,7 +27,6 @@
 package org.openelis.modules.orderFill.client;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import java.util.Set;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.InventoryItemCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
@@ -47,19 +47,16 @@ import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.domain.ShippingViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -96,6 +93,10 @@ import org.openelis.modules.report.client.ShippingReportScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingScreen.Action;
 import org.openelis.modules.shipping.client.ShippingService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -138,26 +139,15 @@ public class OrderFillScreen extends Screen {
         SHIP_NOTE, ITEM, CUSTOMER_NOTE
     };
 
-    public OrderFillScreen() throws Exception {
+    public OrderFillScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(OrderFillDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("fillorder");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Order Fill Screen");
+            throw new PermissionException(Messages.get().screenPermException("Order Fill Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         tab = Tabs.SHIP_NOTE;
 
         try {
@@ -341,7 +331,7 @@ public class OrderFillScreen extends Screen {
                              !DataBaseUtil.isSame(data.getStatusId(),
                                                   prevData.getStatusId()) || !DataBaseUtil.isSame(data.getType(),
                                                                                                   prevData.getType()))) {
-                            Window.alert(consts.get("sameShipToStatusTypeOrderCombined"));
+                            Window.alert(Messages.get().sameShipToStatusTypeOrderCombined());
                             custNoteTab.setState(State.DISPLAY);
                             event.cancel();
                         }
@@ -384,7 +374,7 @@ public class OrderFillScreen extends Screen {
                                 man.setOrder(data);
                             }
 
-                            window.setBusy(consts.get("lockForUpdate"));
+                            window.setBusy(Messages.get().lockForUpdate());
                             row.data = man.fetchForUpdate();
                             man = (OrderManager)row.data;
                             window.clearStatus();
@@ -432,7 +422,7 @@ public class OrderFillScreen extends Screen {
                             shipNoteTab.setManager(man);
                             itemTab.setManager(man, combinedMap);
                             custNoteTab.setManager(man);
-                            window.setDone(consts.get("updateAborted"));
+                            window.setDone(Messages.get().updateAborted());
                             drawTabs();
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
@@ -514,11 +504,11 @@ public class OrderFillScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -561,8 +551,8 @@ public class OrderFillScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        model.add(new TableDataRow(OrderManager.TYPE_INTERNAL, consts.get("internal")));
-        model.add(new TableDataRow(OrderManager.TYPE_SEND_OUT, consts.get("sendOut")));
+        model.add(new TableDataRow(OrderManager.TYPE_INTERNAL, Messages.get().internal()));
+        model.add(new TableDataRow(OrderManager.TYPE_SEND_OUT, Messages.get().sendOut()));
 
         type = ((Dropdown<Integer>)orderTable.getColumnWidget(OrderMeta.getType()));
         type.setModel(model);
@@ -589,7 +579,7 @@ public class OrderFillScreen extends Screen {
         custNoteTab.draw();
 
         orderMap = null;
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void update() {
@@ -608,7 +598,7 @@ public class OrderFillScreen extends Screen {
         ArrayList<TreeDataItem> model;
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -622,14 +612,14 @@ public class OrderFillScreen extends Screen {
         } else if (state == State.UPDATE) {
             data = getProcessShipData();
             if (data == null) {
-                Window.alert(consts.get("noOrdersSelectForProcess"));
+                Window.alert(Messages.get().noOrdersSelectForProcess());
                 return;
             } else {
                 loadProcessRows();
                 model = itemsTree.getData();
 
                 if (model == null || model.size() == 0) {
-                    Window.alert(consts.get("noItemsToProcess"));
+                    Window.alert(Messages.get().noItemsToProcess());
                     return;
                 }
             }
@@ -641,11 +631,11 @@ public class OrderFillScreen extends Screen {
                 while (iter.hasNext()) {
                     man = combinedMap.get(iter.next());
 
-                    window.setBusy(consts.get("updating"));
+                    window.setBusy(Messages.get().updating());
                     man.getOrder()
                        .setStatusId(Constants.dictionary().ORDER_STATUS_PROCESSED);
                     man = man.update();
-                    window.setDone(consts.get("updatingComplete"));
+                    window.setDone(Messages.get().updatingComplete());
 
                     combinedMap.put(man.getOrder().getId(), man);
                 }
@@ -674,14 +664,14 @@ public class OrderFillScreen extends Screen {
         clearErrors();
 
         if (state == State.QUERY) {
-            window.setBusy(consts.get("cancelChanges"));
+            window.setBusy(Messages.get().cancelChanges());
             shipNoteTab.setManager(man);
             itemTab.setManager(man, combinedMap);
             custNoteTab.setManager(man);
 
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.UPDATE) {
             set = combinedMap.keySet();
             iter = set.iterator();
@@ -689,11 +679,11 @@ public class OrderFillScreen extends Screen {
                 while (iter.hasNext()) {
                     man = combinedMap.get(iter.next());
 
-                    window.setBusy(consts.get("cancelChanges"));
+                    window.setBusy(Messages.get().cancelChanges());
                     man.getOrder()
                        .setStatusId(Constants.dictionary().ORDER_STATUS_PROCESSED);
                     man = man.abortUpdate();
-                    window.setDone(consts.get("updateAborted"));
+                    window.setDone(Messages.get().updateAborted());
 
                     combinedMap.put(man.getOrder().getId(), man);
                 }
@@ -722,7 +712,7 @@ public class OrderFillScreen extends Screen {
             order = (OrderManager)row.data;
             data = order.getOrder();
 
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
 
             ShippingService.get().fetchByOrderId(data.getId(),
                                  new SyncCallback<ShippingViewDO>() {
@@ -826,8 +816,8 @@ public class OrderFillScreen extends Screen {
         }
 
         for (i = 0; i < names.size(); i++ ) {
-            exc = new FormErrorException("totalItemsMoreThanQtyOnHandException",
-                                         names.get(i));
+            exc = new FormErrorException(Messages.get().totalItemsMoreThanQtyOnHandException(
+                                         names.get(i)[0],names.get(i)[1]));
             list.add(exc);
         }
 
@@ -839,14 +829,14 @@ public class OrderFillScreen extends Screen {
         OrderManager man;
 
         man = null;
-        window.setBusy(consts.get("fetching"));
+        window.setBusy(Messages.get().fetching());
         try {
             man = OrderManager.fetchById(data.getId());
         } catch (NotFoundException e) {
             man = OrderManager.getInstance();
-            window.setDone(consts.get("noRecordsFound"));
+            window.setDone(Messages.get().noRecordsFound());
         } catch (Exception e) {
-            Window.alert(consts.get("fetchFailed") + e.getMessage());
+            Window.alert(Messages.get().fetchFailed() + e.getMessage());
             e.printStackTrace();
         }
         window.clearStatus();
@@ -874,7 +864,7 @@ public class OrderFillScreen extends Screen {
     }
 
     private void executeQuery(Query query) {
-        window.setBusy(consts.get("querying"));
+        window.setBusy(Messages.get().querying());
 
         OrderService.get().queryOrderFill(query, new AsyncCallback<ArrayList<OrderViewDO>>() {
             public void onSuccess(ArrayList<OrderViewDO> result) {
@@ -911,14 +901,14 @@ public class OrderFillScreen extends Screen {
                              public void onFailure(Throwable error) {
                                  orderTable.load(null);
                                  if (error instanceof NotFoundException) {
-                                     window.setDone(consts.get("noRecordsFound"));
+                                     window.setDone(Messages.get().noRecordsFound());
                                      setState(State.DEFAULT);
                                  } else if (error instanceof LastPageException) {
-                                     window.setError(consts.get("noMoreRecordInDir"));
+                                     window.setError(Messages.get().noMoreRecordInDir());
                                  } else {
                                      Window.alert("Error: Order call query failed; " +
                                                   error.getMessage());
-                                     window.setError(consts.get("queryFailed"));
+                                     window.setError(Messages.get().queryFailed());
                                  }
                              }
                          });
@@ -1118,7 +1108,7 @@ public class OrderFillScreen extends Screen {
                         index = man.addItem();
                         shippingItem = man.getItemAt(index);
                         shippingItem.setQuantity(orderItemData.getQuantity());
-                        shippingItem.setDescription(consts.get("orderNum") + " " +
+                        shippingItem.setDescription(Messages.get().orderNum() + " " +
                                                     orderItemData.getOrderId() + ": " +
                                                     orderItemData.getInventoryItemName());
                         shippingItem.setReferenceId(orderItemData.getId());
@@ -1132,7 +1122,7 @@ public class OrderFillScreen extends Screen {
                             index = man.addItem();
                             shippingItem = man.getItemAt(index);
                             shippingItem.setQuantity(data.getQuantity());
-                            shippingItem.setDescription(consts.get("orderNum") + " " +
+                            shippingItem.setDescription(Messages.get().orderNum() + " " +
                                                         data.getOrderItemOrderId() +
                                                         ": " +
                                                         data.getInventoryItemName());
@@ -1276,12 +1266,12 @@ public class OrderFillScreen extends Screen {
 
             if (DataBaseUtil.isEmpty(defaultPrinter) ||
                 DataBaseUtil.isEmpty(defaultBarcodePrinter)) {
-                Window.alert(consts.get("mustSpecifyDefPrinters"));
+                Window.alert(Messages.get().mustSpecifyDefPrinters());
                 return;
             }
 
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("shipping"));
+            modal.setName(Messages.get().shipping());
             if (shippingScreen == null) {
                 shippingScreen = new ShippingScreen(modal);
 

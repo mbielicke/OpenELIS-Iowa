@@ -27,6 +27,8 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
@@ -35,11 +37,11 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.modules.result.client.ResultService;
 
 public class AnalysisResultManagerProxy {
@@ -102,7 +104,7 @@ public class AnalysisResultManagerProxy {
 
         for (int i = 0; i < analytes.size(); i++ ) {
             field = new QueryData();
-            field.query = analytes.get(i).getAnalyteId().toString();
+            field.setQuery(analytes.get(i).getAnalyteId().toString());
             fields.add(field);
         }
 
@@ -151,8 +153,8 @@ public class AnalysisResultManagerProxy {
             }
 
         } catch (ParseException e) {
-            errorsList.add(new FormErrorException("oneOrMoreResultValuesInvalid",
-                                                  data.getTestName(), data.getMethodName()));
+            errorsList.add(new FormErrorException(Messages.get().oneOrMoreResultValuesInvalid(
+                                                  data.getTestName(), data.getMethodName())));
         }
     }
 
@@ -181,13 +183,13 @@ public class AnalysisResultManagerProxy {
                 if (DataBaseUtil.isSame(Constants.dictionary().TEST_ANALYTE_REQ, result.getTestAnalyteTypeId()) &&
                     (DataBaseUtil.isEmpty(result.getValue()))) {
                     if (j == 0)
-                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusRequiredResultsException(
                                                               data.getTestName(), data.getMethodName(),
-                                                              rowResult.getAnalyte(), "Value"));
+                                                              rowResult.getAnalyte(), "Value")));
                     else
-                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusRequiredResultsException(
                                                               data.getTestName(), data.getMethodName(),
-                                                              rowResult.getAnalyte(), result.getAnalyte()));
+                                                              rowResult.getAnalyte(), result.getAnalyte())));
                     throw errorsList;
                 }
 
@@ -204,13 +206,13 @@ public class AnalysisResultManagerProxy {
                     }
                 } catch (ParseException e) {
                     if (j == 0)
-                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusInvalidResultsException(
                                                               data.getTestName(), data.getMethodName(),
-                                                              rowResult.getAnalyte(), "Value"));
+                                                              rowResult.getAnalyte(), "Value")));
                     else
-                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusInvalidResultsException(
                                                               data.getTestName(), data.getMethodName(),
-                                                              rowResult.getAnalyte(), result.getAnalyte()));
+                                                              rowResult.getAnalyte(), result.getAnalyte())));
                     throw errorsList;
                 }
 

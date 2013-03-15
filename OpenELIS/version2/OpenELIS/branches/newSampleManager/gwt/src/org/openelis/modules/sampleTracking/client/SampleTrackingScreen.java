@@ -8,6 +8,7 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -17,27 +18,24 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FieldErrorWarning;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormErrorWarning;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.Util;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FieldErrorWarning;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -92,6 +90,10 @@ import org.openelis.modules.sample.client.SampleItemsPopoutTreeLookup;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleTreeUtility;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -100,8 +102,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -159,12 +159,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
     };
 
-    public SampleTrackingScreen() throws Exception {
+    public SampleTrackingScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("sampletracking");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Sample Tracking Screen");
+            throw new PermissionException(Messages.get().screenPermException("Sample Tracking Screen"));
 
         unreleasePermission = UserCache.getPermission().getModule("sampleunrelease");
         if (unreleasePermission == null)
@@ -175,14 +177,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         if (changeDomainPermission == null)
             changeDomainPermission = new ModulePermission();
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    public void postConstructor() {
         tab = Tabs.BLANK;
         manager = SampleManager.getInstance();
 
@@ -482,7 +476,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 item = trackingTree.getSelection();
 
                 if (item == null || !"analysis".equals(item.leafType)) {
-                    window.setError(consts.get("resultHistoryException"));
+                    window.setError(Messages.get().resultHistoryException());
                     return;
                 }
 
@@ -673,7 +667,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                 oldNumber = manager.getSample().getAccessionNumber();
                 if (oldNumber != null) {
-                    if ( !Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                    if ( !Window.confirm(Messages.get().accessionNumberEditConfirm())) {
                         accessionNumber.setValue(Util.toString(oldNumber));
                         setFocus(accessionNumber);
                         return;
@@ -687,7 +681,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                     quickEntryMan = accessionNumUtil.validateAccessionNumber(manager.getSample());
                     if (quickEntryMan != null)
-                        throw new Exception(consts.get("quickEntryNumberExists"));
+                        throw new Exception(Messages.get().quickEntryNumberExists());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                     accessionNumber.setValue(Util.toString(oldNumber));
@@ -746,7 +740,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectedTime.setValue(manager.getSample().getCollectionTime());
+                collectedTime.setFieldValue(manager.getSample().getCollectionTime());
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -1199,25 +1193,25 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 analysis = new TreeDataItem();
                 analysis.leafType = "result";
                 analysis.data = bundle;
-                analysis.cells.add(new TableDataCell(consts.get("analysis")));
+                analysis.cells.add(new TableDataCell(Messages.get().analysis()));
                 results.addItem(analysis);
 
                 note = new TreeDataItem();
                 note.leafType = "note";
                 note.data = bundle;
-                note.cells.add(new TableDataCell(consts.get("notes")));
+                note.cells.add(new TableDataCell(Messages.get().notes()));
                 results.addItem(note);
 
                 storage = new TreeDataItem();
                 storage.leafType = "storage";
                 storage.data = bundle;
-                storage.cells.add(new TableDataCell(consts.get("storage")));
+                storage.cells.add(new TableDataCell(Messages.get().storage()));
                 results.addItem(storage);
 
                 qaevent = new TreeDataItem();
                 qaevent.leafType = "qaevent";
                 qaevent.data = bundle;
-                qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
+                qaevent.cells.add(new TableDataCell(Messages.get().qaEvents()));
                 results.addItem(qaevent);
                 trackingTree.addChildItem(parentRow,
                                           results,
@@ -1253,11 +1247,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -1280,11 +1274,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         }
 
         modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(consts.get("itemsAndAnalyses"));
+        modal.setName(Messages.get().itemsAndAnalyses());
         modal.setContent(treePopout);
 
-        modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        modal.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (state == State.UPDATE)
                     refreshSampleItems();
             }
@@ -1340,7 +1334,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         auxDataTab.draw();
 
         setFocus(accessionNumber);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     public void query(Integer id) {
@@ -1351,13 +1345,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             if (state == State.DISPLAY || state == State.DEFAULT) {
                 query = new Query();
                 field = new QueryData();
-                field.key = SampleMeta.getId();
-                field.query = id.toString();
-                field.type = QueryData.Type.INTEGER;
+                field.setKey(SampleMeta.getId());
+                field.setQuery(id.toString());
+                field.setType(QueryData.Type.INTEGER);
                 query.setFields(field);
                 executeQuery(query);
             } else {
-                window.setStatus(consts.get("notProperState"), "");
+                window.setStatus(Messages.get().notProperState(), "");
             }
         }
     }
@@ -1366,11 +1360,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         TreeDataItem sampleRow;
 
         if (trackingTree.getSelectedRow() == -1) {
-            window.setError(consts.get("selectRecordToUpdate"));
+            window.setError(Messages.get().selectRecordToUpdate());
             return;
         }
 
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -1416,7 +1410,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -1428,7 +1422,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             try {
                 setDomainFields(fields);
             } catch (Exception e) {
-                window.setError(consts.get("queryDomainException"));
+                window.setError(Messages.get().queryDomainException());
                 return;
             }
 
@@ -1436,10 +1430,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             executeQuery(query);
 
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 if ( !validateUpdate()) {
-                    window.setError(consts.get("correctErrors"));
+                    window.setError(Messages.get().correctErrors());
                     return;
                 }
 
@@ -1470,7 +1464,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         manager.setStatusWithError(true);
 
         if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
@@ -1496,7 +1490,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         environmentalTab.clearErrors();
         wellTab.clearErrors();
         sdwisTab.clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             domain = manager.getSample().getDomain();
@@ -1506,7 +1500,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1544,9 +1538,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         if (auxFields.size() > 0) {
             // add ref table
             field = new QueryData();
-            field.key = SampleMeta.getAuxDataReferenceTableId();
-            field.type = QueryData.Type.INTEGER;
-            field.query = String.valueOf(Constants.table().SAMPLE);
+            field.setKey(SampleMeta.getAuxDataReferenceTableId());
+            field.setType(QueryData.Type.INTEGER);
+            field.setQuery(String.valueOf(Constants.table().SAMPLE));
             fields.add(field);
 
             // add aux fields
@@ -1593,9 +1587,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             // Added this Query Param to keep Quick Entry Samples out of query
             // results
             field = new QueryData();
-            field.key = SampleMeta.getDomain();
-            field.query = domain;
-            field.type = QueryData.Type.STRING;
+            field.setKey(SampleMeta.getDomain());
+            field.setQuery(domain);
+            field.setType(QueryData.Type.STRING);
             fields.add(field);
         }
     }
@@ -1659,25 +1653,25 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             analysis = new TreeDataItem();
             analysis.leafType = "result";
             analysis.data = analysisBundle;
-            analysis.cells.add(new TableDataCell(consts.get("analysis")));
+            analysis.cells.add(new TableDataCell(Messages.get().analysis()));
             results.addItem(analysis);
 
             note = new TreeDataItem();
             note.leafType = "note";
             note.data = analysisBundle;
-            note.cells.add(new TableDataCell(consts.get("notes")));
+            note.cells.add(new TableDataCell(Messages.get().notes()));
             results.addItem(note);
 
             storage = new TreeDataItem();
             storage.leafType = "storage";
             storage.data = analysisBundle;
-            storage.cells.add(new TableDataCell(consts.get("storage")));
+            storage.cells.add(new TableDataCell(Messages.get().storage()));
             results.addItem(storage);
 
             qaevent = new TreeDataItem();
             qaevent.leafType = "qaevent";
             qaevent.data = analysisBundle;
-            qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
+            qaevent.cells.add(new TableDataCell(Messages.get().qaEvents()));
             results.addItem(qaevent);
 
             trackingTree.addChildItem(sampleItem, results, analysisIndex);
@@ -1729,7 +1723,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     private void executeQuery(final Query query) {
-        window.setBusy(consts.get("querying"));
+        window.setBusy(Messages.get().querying());
 
         query.setRowsPerPage(14);
         SampleTrackingService.get().query(query, new AsyncCallback<ArrayList<SampleManager>>() {
@@ -1753,7 +1747,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 int page;
 
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                     trackingTree.clear();
 
                     setDataInTabs();
@@ -1773,12 +1767,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 } else if (error instanceof LastPageException) {
                     page = query.getPage();
                     query.setPage(page - 1);
-                    window.setError(consts.get("noMoreRecordInDir"));
+                    window.setError(Messages.get().noMoreRecordInDir());
                 } else {
                     trackingTree.clear();
                     Window.alert("Error: envsample call query failed; " +
                                  error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }
             }
         });
@@ -1844,19 +1838,19 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         note = new TreeDataItem();
         note.leafType = "note";
         note.data = bundle;
-        note.cells.add(new TableDataCell(consts.get("notes")));
+        note.cells.add(new TableDataCell(Messages.get().notes()));
         row.addItem(note);
 
         qaevent = new TreeDataItem();
         qaevent.leafType = "qaevent";
         qaevent.data = bundle;
-        qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
+        qaevent.cells.add(new TableDataCell(Messages.get().qaEvents()));
         row.addItem(qaevent);
 
         aux = new TreeDataItem();
         aux.leafType = "auxdata";
         aux.data = bundle;
-        aux.cells.add(new TableDataCell(consts.get("auxData")));
+        aux.cells.add(new TableDataCell(Messages.get().auxData()));
         row.addItem(aux);
         row.checkForChildren(false);
     }
@@ -1889,7 +1883,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             storage = new TreeDataItem();
             storage.leafType = "storage";
             storage.data = bundle;
-            storage.cells.add(new TableDataCell(consts.get("storage")));
+            storage.cells.add(new TableDataCell(Messages.get().storage()));
             item.addItem(storage);
             row.addItem(item);
         }
@@ -1918,25 +1912,25 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             analysis = new TreeDataItem();
             analysis.leafType = "result";
             analysis.data = bundle;
-            analysis.cells.add(new TableDataCell(consts.get("analysis")));
+            analysis.cells.add(new TableDataCell(Messages.get().analysis()));
             results.addItem(analysis);
 
             storage = new TreeDataItem();
             storage.leafType = "storage";
             storage.data = bundle;
-            storage.cells.add(new TableDataCell(consts.get("storage")));
+            storage.cells.add(new TableDataCell(Messages.get().storage()));
             results.addItem(storage);
 
             qaevent = new TreeDataItem();
             qaevent.leafType = "qaevent";
             qaevent.data = bundle;
-            qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
+            qaevent.cells.add(new TableDataCell(Messages.get().qaEvents()));
             results.addItem(qaevent);
 
             note = new TreeDataItem();
             note.leafType = "note";
             note.data = bundle;
-            note.cells.add(new TableDataCell(consts.get("notes")));
+            note.cells.add(new TableDataCell(Messages.get().notes()));
             results.addItem(note);
             analyses.add(results);
         }
@@ -1946,14 +1940,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     public void showErrors(ValidationErrorsList errors) {
         String domain;
-        ArrayList<LocalizedException> formErrors;
+        ArrayList<Exception> formErrors;
         TableFieldErrorException tableE;
         FormErrorException formE;
         FieldErrorException fieldE;
         TableWidget tableWid;
         HasField field;
 
-        formErrors = new ArrayList<LocalizedException>();
+        formErrors = new ArrayList<Exception>();
 
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
@@ -1969,7 +1963,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                  * when the tables are not visible, because their tab not being
                  * shown on the screen presently.
                  */
-                formErrors.add(new FormErrorException(tableE.getKey(), tableE.getParams()));
+                formErrors.add(new FormErrorException(tableE.getMessage()));
             } else if (ex instanceof FormErrorException) {
                 formE = (FormErrorException)ex;
                 formErrors.add(formE);
@@ -1986,21 +1980,18 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                      * errors even when the fields are not visible, because
                      * their tab not being shown on the screen presently.
                      */
-                    formErrors.add(new FormErrorException(fieldE.getKey(),
-                                                          fieldE.getParams()));
+                    formErrors.add(new FormErrorException(fieldE.getMessage()));
                 }
 
                 if (ex instanceof FieldErrorWarning)
-                    formErrors.add(new FormErrorWarning(fieldE.getKey(),
-                                                        fieldE.getParams()));
+                    formErrors.add(new FormErrorWarning(fieldE.getMessage()));
                 else
-                    formErrors.add(new FormErrorException(fieldE.getKey(),
-                                                          fieldE.getParams()));
+                    formErrors.add(new FormErrorException(fieldE.getMessage()));
             }
         }
 
         if (formErrors.size() == 0) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
         } else if (formErrors.size() == 1) {
             window.setError(formErrors.get(0).getMessage());
         } else {
@@ -2136,19 +2127,19 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         Confirm confirm;
 
         if (trackingTree.getSelectedRow() == -1) {
-            window.setError(consts.get("selectRecordToUpdate"));
+            window.setError(Messages.get().selectRecordToUpdate());
             return;
         }
 
         if ( !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                    .getStatusId())) {
-            Window.alert(consts.get("wrongStatusUnrelease"));
+            Window.alert(Messages.get().wrongStatusUnrelease());
             return;
         }
 
         confirm = new Confirm(Confirm.Type.QUESTION,
-                              consts.get("unreleaseSampleCaption"),
-                              consts.get("unreleaseSampleMessage"),
+                              Messages.get().unreleaseSampleCaption(),
+                              Messages.get().unreleaseSampleMessage(),
                               "Cancel",
                               "OK");
         confirm.show();
@@ -2174,20 +2165,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         fields = new ArrayList<QueryData>();
 
         field = new QueryData();
-        field.key = "ACCESSION_NUMBER";
-        field.query = manager.getSample().getAccessionNumber().toString();
-        field.type = QueryData.Type.STRING;
+        field.setKey("ACCESSION_NUMBER");
+        field.setQuery(manager.getSample().getAccessionNumber().toString());
+        field.setType(QueryData.Type.STRING);
         fields.add(field);
 
         field = new QueryData();
-        field.key = "PRINTER";
-        field.query = "-view-";
-        field.type = QueryData.Type.STRING;
+        field.setKey("PRINTER");
+        field.setQuery("-view-");
+        field.setType(QueryData.Type.STRING);
         fields.add(field);
 
         query.setFields(fields);
 
-        window.setBusy(consts.get("genReportMessage"));
+        window.setBusy(Messages.get().genReportMessage());
 
         FinalReportService.get().runReportForSingle(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
@@ -2195,7 +2186,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                                         url = "report?file=" + status.getMessage();
                                         Window.open(URL.encode(url), "FinalReport", null);
-                                        window.setDone(consts.get("done"));
+                                        window.setDone(Messages.get().loadCompleteMessage());
                                     }
 
                                     public void onFailure(Throwable caught) {
@@ -2356,7 +2347,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         }
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("changeDomain"));
+        modal.setName(Messages.get().changeDomain());
         modal.setContent(changeDomainScreen);
         changeDomainScreen.setDomain(manager.getSample().getDomain());
     }
@@ -2385,71 +2376,71 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         size = fields.size();
         for (int i = size - 1; i >= 0; i-- ) {
             data = fields.get(i);
-            dataKey = data.key;
+            dataKey = data.getKey();
 
             if (SampleMeta.getWellOrganizationName().equals(dataKey)) {
-                orgName = data.query;
+                orgName = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getWellReportToName();
-                data.type = QueryData.Type.STRING;
-                data.query = orgName;
+                data.setKey(SampleMeta.getWellReportToName());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(orgName);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressMultipleUnit().equals(dataKey)) {
-                addressMult = data.query;
+                addressMult = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getAddressMultipleUnit();
-                data.type = QueryData.Type.STRING;
-                data.query = addressMult;
+                data.setKey(SampleMeta.getAddressMultipleUnit());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(addressMult);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressStreetAddress().equals(dataKey)) {
-                addressStreet = data.query;
+                addressStreet = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getAddressStreetAddress();
-                data.type = QueryData.Type.STRING;
-                data.query = addressStreet;
+                data.setKey(SampleMeta.getAddressStreetAddress());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(addressStreet);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressCity().equals(dataKey)) {
-                addressCity = data.query;
+                addressCity = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getAddressCity();
-                data.type = QueryData.Type.STRING;
-                data.query = addressCity;
+                data.setKey(SampleMeta.getAddressCity());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(addressCity);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressState().equals(dataKey)) {
-                addressState = data.query;
+                addressState = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getAddressState();
-                data.type = QueryData.Type.STRING;
-                data.query = addressState;
+                data.setKey(SampleMeta.getAddressState());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(addressState);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressZipCode().equals(dataKey)) {
-                addressZip = data.query;
+                addressZip = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getAddressZipCode();
-                data.type = QueryData.Type.STRING;
-                data.query = addressZip;
+                data.setKey(SampleMeta.getAddressZipCode());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(addressZip);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressWorkPhone().equals(dataKey)) {
-                addressWorkPhone = data.query;
+                addressWorkPhone = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getAddressWorkPhone();
-                data.type = QueryData.Type.STRING;
-                data.query = addressWorkPhone;
+                data.setKey(SampleMeta.getAddressWorkPhone());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(addressWorkPhone);
                 fields.add(data);
             } else if (SampleMeta.getWellReportToAddressFaxPhone().equals(dataKey)) {
-                addressFaxPhone = data.query;
+                addressFaxPhone = data.getQuery();
 
                 data = new QueryData();
-                data.key = SampleMeta.getAddressFaxPhone();
-                data.type = QueryData.Type.STRING;
-                data.query = addressFaxPhone;
+                data.setKey(SampleMeta.getAddressFaxPhone());
+                data.setType(QueryData.Type.STRING);
+                data.setQuery(addressFaxPhone);
                 fields.add(data);
             }
         }

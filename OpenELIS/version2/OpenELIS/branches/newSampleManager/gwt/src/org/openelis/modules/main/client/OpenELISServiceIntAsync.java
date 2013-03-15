@@ -1,12 +1,13 @@
 package org.openelis.modules.main.client;
 
-import org.openelis.gwt.common.Datetime;
+import org.openelis.domain.Constants;
+import org.openelis.ui.common.Datetime;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface OpenELISServiceIntAsync {
 
-    void initialData(AsyncCallback<OpenELISRPC> callback);
+    void getConstants(AsyncCallback<Constants> callback);
 
     void keepAlive(AsyncCallback<Void> callback);
 

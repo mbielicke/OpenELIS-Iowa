@@ -26,7 +26,8 @@
 package org.openelis.modules.shipping.client;
 
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.constants.Messages;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
@@ -92,7 +93,7 @@ public class ProcessShippingScreen extends Screen implements HasActionHandlers<P
         setFocus(barcode);
         barcode.setValue(null);
         previousCode = null;
-        window.setDone(consts.get("done"));
+        window.setDone(Messages.get().loadCompleteMessage());
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<ProcessShippingScreen.Action> handler) {
@@ -112,7 +113,7 @@ public class ProcessShippingScreen extends Screen implements HasActionHandlers<P
          */
         if (!code.startsWith("SH")) {
             if (previousCode == null) {
-                window.setError(consts.get("enterShippingBeforeTracking"));
+                window.setError(Messages.get().enterShippingBeforeTracking());
                 setFocus(barcode);
                 barcode.setValue(null);
                 return;
@@ -132,7 +133,7 @@ public class ProcessShippingScreen extends Screen implements HasActionHandlers<P
                 window.clearStatus();
                 ActionEvent.fire(screen, Action.SHIPPING, id);
             } catch (NumberFormatException e) {
-                window.setError(consts.get("enterValidBarcode"));                        
+                window.setError(Messages.get().enterValidBarcode());                        
             }                     
         }        
         barcode.setValue(null);        

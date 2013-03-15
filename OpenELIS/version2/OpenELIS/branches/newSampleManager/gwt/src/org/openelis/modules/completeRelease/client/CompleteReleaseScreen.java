@@ -7,29 +7,26 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.EntityLockedException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -78,6 +75,10 @@ import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
 import org.openelis.modules.sample.client.TestPrepUtility;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -86,8 +87,6 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.http.client.URL;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -153,21 +152,15 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
     };
 
-    public CompleteReleaseScreen() throws Exception {
+    public CompleteReleaseScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(CompleteReleaseDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("samplecompleterelease");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Complete and Release Screen");
+            throw new PermissionException(Messages.get().screenPermException("Complete and Release Screen()"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    private void postConstructor() {
         tab = Tabs.BLANK;
         manager = SampleManager.getInstance();
 
@@ -288,7 +281,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
                 rows = completeReleaseTable.getSelections();
                 if (rows.size() != 1) {
-                    Window.alert(consts.get("selOneRowUnrelease"));
+                    Window.alert(Messages.get().selOneRowUnrelease());
                     return;
                 }
 
@@ -772,11 +765,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -885,16 +878,16 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         auxDataTab.draw();
 
         completeReleaseTable.select(0, 0);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void update() {
         if (completeReleaseTable.getSelections().size() > 1) {
-            window.setError(consts.get("cantUpdateMultiple"));
+            window.setError(Messages.get().cantUpdateMultiple());
             return;
         }
 
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -930,7 +923,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         rows = completeReleaseTable.getSelections();
         hash = new HashMap<Integer, Item>();
 
-        window.setBusy(consts.get("updating"));
+        window.setBusy(Messages.get().updating());
 
         // loop through and lock sample if necessary
         for (int i = 0; i < rows.size(); i++ ) {
@@ -967,7 +960,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                              .getAnalysisAt(bundle.getSampleItemIndex());
                 data = aman.getAnalysisAt(bundle.getAnalysisIndex());
                 if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(data.getStatusId()) &&
-                    !Window.confirm(consts.get("onHoldWarning")))
+                    !Window.confirm(Messages.get().onHoldWarning()))
                     continue;
                 aman.completeAnalysisAt(bundle.getAnalysisIndex());
             } catch (EntityLockedException e) {
@@ -976,7 +969,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                  */
                 man = bundle.getSampleManager();
                 hash.put(man.getSample().getId(), new Item(man, -1));
-                Window.alert(consts.get("errorSampleAccNum") +
+                Window.alert(Messages.get().errorSampleAccNum() +
                              man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
             } catch (ValidationErrorsList e) {
                 /*
@@ -1002,7 +995,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                  */
                 man = bundle.getSampleManager();
                 hash.put(man.getSample().getId(), new Item(man, 0));
-                Window.alert(consts.get("errorSampleAccNum") +
+                Window.alert(Messages.get().errorSampleAccNum() +
                              man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
             }
         }
@@ -1023,18 +1016,18 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         SampleDataBundle bundle;
         ArrayList<TableDataRow> rows;
         HashMap<Integer, Item> hash;
-        LocalizedException warn;
+        Exception warn;
 
         bundle = null;
         rows = completeReleaseTable.getSelections();
         hash = new HashMap<Integer, Item>();
 
         if (rows.size() > 1) {
-            warn = new LocalizedException("releaseMultipleWarning", String.valueOf(rows.size()));
+            warn = new Exception(Messages.get().releaseMultipleWarning(String.valueOf(rows.size())));
             if ( !Window.confirm(warn.getMessage()))
                 return;
         }
-        window.setBusy(consts.get("updating"));
+        window.setBusy(Messages.get().updating());
 
         // loop through and lock sample if necessary
         for (int i = 0; i < rows.size(); i++ ) {
@@ -1073,7 +1066,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                  */
                 man = bundle.getSampleManager();
                 hash.put(man.getSample().getId(), new Item(man, -1));
-                Window.alert(consts.get("errorSampleAccNum") +
+                Window.alert(Messages.get().errorSampleAccNum() +
                              man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
             } catch (ValidationErrorsList e) {
                 /*
@@ -1098,7 +1091,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                  */
                 man = bundle.getSampleManager();
                 hash.put(man.getSample().getId(), new Item(man, 0));
-                Window.alert(consts.get("errorSampleAccNum") +
+                Window.alert(Messages.get().errorSampleAccNum() +
                              man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
             }
         }
@@ -1124,10 +1117,10 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         rows = completeReleaseTable.getSelections();
 
         if (rows.size() > 1) {
-            Window.alert(consts.get("unreleaseMultipleException"));
+            Window.alert(Messages.get().unreleaseMultipleException());
             return;
         }
-        window.setBusy(consts.get("updating"));
+        window.setBusy(Messages.get().updating());
 
         row = rows.get(0);
         bundle = (SampleDataBundle)row.data;
@@ -1160,7 +1153,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
              */
             man = bundle.getSampleManager();
             hash.put(man.getSample().getId(), new Item(man, -1));
-            Window.alert(consts.get("errorSampleAccNum") + man.getSample().getAccessionNumber() +
+            Window.alert(Messages.get().errorSampleAccNum() + man.getSample().getAccessionNumber() +
                          ":\n\n" + e.getMessage());
         } catch (ValidationErrorsList e) {
             /*
@@ -1186,7 +1179,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
              */
             man = bundle.getSampleManager();
             hash.put(man.getSample().getId(), new Item(man, 0));
-            Window.alert(consts.get("errorSampleAccNum") + man.getSample().getAccessionNumber() +
+            Window.alert(Messages.get().errorSampleAccNum() + man.getSample().getAccessionNumber() +
                          ":\n\n" + e.getMessage());
         }
 
@@ -1207,12 +1200,12 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         lastAccession = manager.getSample().getAccessionNumber();
         query = new Query();
         field = new QueryData();
-        field.key = "ACCESSION_NUMBER";
-        field.query = lastAccession.toString();
-        field.type = QueryData.Type.INTEGER;
+        field.setKey("ACCESSION_NUMBER");
+        field.setQuery(lastAccession.toString());
+        field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
-        window.setBusy(consts.get("genReportMessage"));
+        window.setBusy(Messages.get().genReportMessage());
 
         FinalReportService.get().runReportForPreview(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
@@ -1220,7 +1213,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
                 url = "report?file=" + status.getMessage();
                 Window.open(URL.encode(url), "FinalReport", null);
-                window.setDone(consts.get("done"));
+                window.setDone(Messages.get().loadCompleteMessage());
             }
 
             public void onFailure(Throwable caught) {
@@ -1236,7 +1229,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -1245,13 +1238,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             query = new Query();
             query.setFields(getQueryFields());
             QueryData qd = new QueryData();
-            qd.key = SampleMeta.getDomain();
-            qd.query = "!Q";
-            qd.type = QueryData.Type.STRING;
+            qd.setKey(SampleMeta.getDomain());
+            qd.setQuery("!Q");
+            qd.setType(QueryData.Type.STRING);
             query.setFields(qd);
             executeQuery(query);
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager.validate();
                 manager = manager.update();
@@ -1282,7 +1275,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         manager.setStatusWithError(true);
 
         if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
                 updateAllRows(manager.getSample().getAccessionNumber());
@@ -1307,7 +1300,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         environmentalTab.clearErrors();
         wellTab.clearErrors();
         sdwisTab.clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             domain = manager.getSample().getDomain();
@@ -1318,7 +1311,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1371,7 +1364,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     }
 
     private void executeQuery(final Query query) {
-        window.setBusy(consts.get("querying"));
+        window.setBusy(Messages.get().querying());
 
         query.setRowsPerPage(500);
         CompleteReleaseService.get().query(query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
@@ -1392,17 +1385,17 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                 int page;
 
                 if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
+                    window.setDone(Messages.get().noRecordsFound());
                     completeReleaseTable.clear();
                     setState(State.DEFAULT);
                 } else if (error instanceof LastPageException) {
                     page = query.getPage();
                     query.setPage(page - 1);
-                    window.setError(consts.get("noMoreRecordInDir"));
+                    window.setError(Messages.get().noMoreRecordInDir());
                 } else {
                     completeReleaseTable.clear();
                     Window.alert("Error: envsample call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
+                    window.setError(Messages.get().queryFailed());
                 }
             }
         });
@@ -1509,7 +1502,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                     row.data = bundle;
                 }
             } catch (ValidationErrorsList e) {
-                Window.alert(consts.get("errorSampleAccNum") +
+                Window.alert(Messages.get().errorSampleAccNum() +
                              bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n"+
                              e.getErrorList().get(0).getMessage());
                 /*
@@ -1519,7 +1512,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                  */
                 unlockAndRefetchSample(item, bundle, row);
             }catch (Exception e) {
-                Window.alert(consts.get("errorSampleAccNum") +
+                Window.alert(Messages.get().errorSampleAccNum() +
                              bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n" +
                              e.getMessage());
                 /*
@@ -1685,7 +1678,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         }
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("standardNote"));
+        modal.setName(Messages.get().standardNote());
         modal.setContent(internalEditNote);
 
         internalNote = null;
@@ -1756,8 +1749,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     private void showConfirm() {
         if (confirm == null) {
             confirm = new Confirm(Confirm.Type.QUESTION,
-                                  consts.get("unreleaseAnalysisCaption"),
-                                  consts.get("unreleaseAnalysisMessage"),
+                                  Messages.get().unreleaseAnalysisCaption(),
+                                  Messages.get().unreleaseAnalysisMessage(),
                                   "Cancel",
                                   "OK");
             confirm.addSelectionHandler(this);
@@ -1779,7 +1772,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                     row.data = bundle;
                 }
             } catch (Exception e1) {
-                Window.alert(consts.get("errorSampleAccNum") +
+                Window.alert(Messages.get().errorSampleAccNum() +
                              bundle.getSampleManager().getSample().getAccessionNumber() +
                              ":\n\n" + e1.getMessage());
             }
