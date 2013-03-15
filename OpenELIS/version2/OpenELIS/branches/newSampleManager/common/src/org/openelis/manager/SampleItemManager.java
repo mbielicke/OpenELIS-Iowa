@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class SampleItemManager implements Serializable {

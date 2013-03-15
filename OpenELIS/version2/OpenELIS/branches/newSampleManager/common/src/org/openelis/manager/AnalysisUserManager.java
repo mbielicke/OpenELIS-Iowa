@@ -30,8 +30,8 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class AnalysisUserManager implements Serializable {
 

@@ -27,7 +27,7 @@ package org.openelis.domain;
 
 import java.io.Serializable;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * The class carries the data, e.g. the ids of the samples, analyses etc, used to

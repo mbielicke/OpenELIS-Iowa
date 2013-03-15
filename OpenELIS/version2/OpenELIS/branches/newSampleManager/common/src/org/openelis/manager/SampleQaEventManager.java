@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.Constants;
 import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class SampleQaEventManager implements Serializable {
     

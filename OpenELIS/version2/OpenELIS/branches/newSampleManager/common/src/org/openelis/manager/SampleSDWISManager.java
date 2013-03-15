@@ -3,7 +3,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class SampleSDWISManager implements Serializable, SampleDomainInt {
     private static final long                          serialVersionUID = 1L;

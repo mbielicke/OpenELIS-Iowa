@@ -3,8 +3,8 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.AuxFieldGroupDO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class AuxFieldGroupManager implements Serializable {
 

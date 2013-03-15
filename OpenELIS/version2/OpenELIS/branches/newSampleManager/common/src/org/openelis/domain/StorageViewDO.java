@@ -2,7 +2,7 @@ package org.openelis.domain;
 
 import java.util.Date;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class StorageViewDO extends StorageDO {
     private static final long serialVersionUID = 1L;

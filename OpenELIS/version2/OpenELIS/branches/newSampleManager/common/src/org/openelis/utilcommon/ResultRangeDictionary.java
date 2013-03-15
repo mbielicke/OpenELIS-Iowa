@@ -25,8 +25,9 @@
  */
 package org.openelis.utilcommon;
 
+import org.openelis.constants.Messages;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * This class is used to manage a dictionary entry having a string representation and
@@ -52,7 +53,7 @@ public class ResultRangeDictionary implements ResultRange {
 
     public void contains(String value) throws ParseException {
         if(DataBaseUtil.isDifferent(value, entry) && (id != null && DataBaseUtil.isDifferent(value, id.toString())))
-            throw new ParseException("illegalDictionaryValueException");
+            throw new ParseException(Messages.get().illegalDictEntryException());
     }
     
     public boolean intersects(ResultRange value) {
