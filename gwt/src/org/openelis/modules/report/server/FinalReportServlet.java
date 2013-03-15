@@ -34,9 +34,9 @@ import org.openelis.bean.FinalReportBean;
 import org.openelis.bean.FinalReportWebBean;
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.client.FinalReportServiceInt;
 

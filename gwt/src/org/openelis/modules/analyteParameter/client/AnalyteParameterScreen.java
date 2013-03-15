@@ -31,6 +31,8 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -40,18 +42,18 @@ import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -117,27 +119,16 @@ public class AnalyteParameterScreen extends Screen {
     private boolean                 warningShown;
     private static final String     LATEST_LEAF = "latest", PREVIOUS_LEAF = "previous";
 
-    public AnalyteParameterScreen() throws Exception {
+    public AnalyteParameterScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteParameterDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("analyteparameter");
         if (userPermission == null)
-            throw new PermissionException("screenPermException",
-                                          "Analyte Parameter Screen");
+            throw new PermissionException(Messages.get().screenPermException(
+                                          "Analyte Parameter Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         manager = AnalyteParameterManager.getInstance();
 
         try {
@@ -303,7 +294,7 @@ public class AnalyteParameterScreen extends Screen {
                 manager.setReferenceName(referenceName.getTextBoxDisplay());
 
                 if (rid != null && rtid != null) {
-                    window.setBusy(consts.get("fetching"));
+                    window.setBusy(Messages.get().fetching());
                     try {
                         if (Constants.table().TEST.equals(rtid)) {
                             loadFromTest(rid);
@@ -333,7 +324,7 @@ public class AnalyteParameterScreen extends Screen {
         referenceName.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
             public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
                 if (referenceTableId.getValue() == null) {
-                    Window.alert(consts.get("pleaseSelectType"));
+                    Window.alert(Messages.get().pleaseSelectType());
                     event.cancel();
                 }
             }
@@ -401,23 +392,23 @@ public class AnalyteParameterScreen extends Screen {
                 data = (AnalyteParameterViewDO)item.data;
 
                 field = new QueryData();
-                field.query = data.getAnalyteId().toString();
-                field.type = QueryData.Type.INTEGER;
+                field.setQuery(data.getAnalyteId().toString());
+                field.setType(QueryData.Type.INTEGER);
                 fields.add(field);
 
                 field = new QueryData();
-                field.query = manager.getReferenceId().toString();
-                field.type = QueryData.Type.INTEGER;
+                field.setQuery(manager.getReferenceId().toString());
+                field.setType(QueryData.Type.INTEGER);
                 fields.add(field);
 
                 field = new QueryData();
-                field.query = manager.getReferenceTableId().toString();
-                field.type = QueryData.Type.INTEGER;
+                field.setQuery(manager.getReferenceTableId().toString());
+                field.setType(QueryData.Type.INTEGER);
                 fields.add(field);
                 query.setFields(fields);
 
                 try {
-                    window.setBusy(consts.get("fetching"));
+                    window.setBusy(Messages.get().fetching());
                     list = AnalyteParameterService.get().fetchByAnalyteIdReferenceIdReferenceTableId(query);
                     index = manager.indexOf(data);
                     if (data.getId() == null || index == 0)
@@ -463,7 +454,7 @@ public class AnalyteParameterScreen extends Screen {
                 } else if (state == State.UPDATE) {
                     if (data.getId() != null && "N".equals(data.getIsActive()) &&
                         !warningShown) {
-                        Window.alert(consts.get("editPreviousWarning"));
+                        Window.alert(Messages.get().editPreviousWarning());
                         warningShown = true;
                     }
                 }
@@ -494,19 +485,19 @@ public class AnalyteParameterScreen extends Screen {
                         if (data.getId() != null && val == null) {
                             parameterTree.setCellException(r,
                                                            c,
-                                                           new LocalizedException(consts.get("fieldRequiredException")));
+                                                           new Exception(Messages.get().fieldRequiredException()));
                             return;
                         }
                         if ( !beginDateValid(item)) {
                             parameterTree.setCellException(r,
                                                            c,
-                                                           new LocalizedException(consts.get("beginDateInvalidException")));
+                                                           new Exception(Messages.get().beginDateInvalidException()));
                             return;
                         }
                         if ( !endDateValid(data)) {
                             parameterTree.setCellException(r,
                                                            c,
-                                                           new LocalizedException(consts.get("endDateInvalidException")));
+                                                           new Exception(Messages.get().endDateInvalidException()));
                             return;
                         }
                         if (changeActive(data))
@@ -539,13 +530,13 @@ public class AnalyteParameterScreen extends Screen {
                         if (data.getId() != null && val == null) {
                             parameterTree.setCellException(r,
                                                            c,
-                                                           new LocalizedException(consts.get("fieldRequiredException")));
+                                                           new Exception(Messages.get().fieldRequiredException()));
                             return;
                         }
                         if ( !endDateValid(data)) {
                             parameterTree.setCellException(r,
                                                            c,
-                                                           new LocalizedException(consts.get("endDateInvalidException")));
+                                                           new Exception(Messages.get().endDateInvalidException()));
                             return;
                         }
                         if (changeActive(data)) {
@@ -565,7 +556,7 @@ public class AnalyteParameterScreen extends Screen {
                         if (data.getId() != null && val == null) {
                             parameterTree.setCellException(r,
                                                            c,
-                                                           new LocalizedException(consts.get("fieldRequiredException")));
+                                                           new Exception(Messages.get().fieldRequiredException()));
                             return;
                         }
                         if (changeActive(data)) {
@@ -597,7 +588,7 @@ public class AnalyteParameterScreen extends Screen {
         //
         nav = new ScreenNavigator<ReferenceIdTableIdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(18);
                 AnalyteParameterService.get().query(query, new AsyncCallback<ArrayList<ReferenceIdTableIdNameVO>>() {
@@ -608,14 +599,14 @@ public class AnalyteParameterScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
-                                             window.setError(consts.get("noMoreRecordInDir"));
+                                             window.setError(Messages.get().noMoreRecordInDir());
                                          } else {
                                              Window.alert("Error: Analyte Parameter call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -668,11 +659,11 @@ public class AnalyteParameterScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -731,12 +722,12 @@ public class AnalyteParameterScreen extends Screen {
             //
             // type e.g. Test, QC etc. must be specified in query mode
             //
-            referenceTableId.addException(new LocalizedException(consts.get("fieldRequiredException")));
+            referenceTableId.addException(new Exception(Messages.get().fieldRequiredException()));
         } else if (sels.size() > 1) {
             //
             // we don't allow more than one type to be selected
             //
-            referenceTableId.addException(new LocalizedException(consts.get("onlyOneTypeSelectionForQueryException")));
+            referenceTableId.addException(new Exception(Messages.get().onlyOneTypeSelectionForQueryException()));
         }
         return super.validate();
     }
@@ -751,7 +742,7 @@ public class AnalyteParameterScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(referenceTableId);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -769,14 +760,14 @@ public class AnalyteParameterScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(referenceTableId);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
         TestTypeOfSampleManager ttsm;
         ArrayList<TableDataRow> model;
 
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -805,7 +796,7 @@ public class AnalyteParameterScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -814,13 +805,13 @@ public class AnalyteParameterScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -828,13 +819,13 @@ public class AnalyteParameterScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -847,14 +838,14 @@ public class AnalyteParameterScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchByRefIdRefTableId(null, null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchByRefIdRefTableId(null, null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -864,7 +855,7 @@ public class AnalyteParameterScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchByRefIdRefTableId(null, null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -875,19 +866,19 @@ public class AnalyteParameterScreen extends Screen {
             manager = AnalyteParameterManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 manager = AnalyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId,
                                                                                            refTableId);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchByRefIdRefTableId(null, null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchByRefIdRefTableId(null, null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

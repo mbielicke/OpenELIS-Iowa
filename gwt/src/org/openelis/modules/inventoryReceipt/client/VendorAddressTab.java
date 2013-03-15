@@ -37,6 +37,7 @@ import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.meta.InventoryReceiptMeta;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
@@ -49,7 +50,7 @@ public class VendorAddressTab extends Screen {
     private int                     index;
     private boolean                 loaded;  
 
-    public VendorAddressTab(ScreenDefInt def, ScreenWindowInt window) {
+    public VendorAddressTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();

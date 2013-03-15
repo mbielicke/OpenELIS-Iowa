@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.AnalysisResultManager;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;

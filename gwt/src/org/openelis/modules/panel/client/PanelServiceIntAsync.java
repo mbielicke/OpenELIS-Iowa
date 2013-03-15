@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
 

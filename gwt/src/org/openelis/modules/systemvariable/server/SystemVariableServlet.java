@@ -34,7 +34,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.SystemVariableBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.systemvariable.client.SystemVariableServiceInt;
 

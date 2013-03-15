@@ -28,14 +28,15 @@ package org.openelis.modules.report.client;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.OptionListItem;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.Util;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
@@ -56,7 +57,11 @@ import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.Preferences;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
@@ -161,12 +166,12 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 	 * Gets the prompts from the report
 	 */
 	protected void getReportParameters() {
-		window.setBusy(consts.get("gettingReportParam"));
+		window.setBusy(Messages.get().gettingReportParam());
 
 		try {
 		    reportParameters = getPrompts();
 		    createReportWindow();
-            window.setDone(consts.get("loadCompleteMessage"));
+            window.setDone(Messages.get().loadCompleteMessage());
 		} catch (Exception e) {
 		    window.close();
             Window.alert("Failed to get parameters for " + name);
@@ -249,7 +254,7 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 		main.add(hp);
 
 		hp = new HorizontalPanel();
-		runReportButton = createAppButton(consts.get("runReport"));
+		runReportButton = createAppButton(Messages.get().runReport());
 		runReportButton.enable(true);
 		hp.add(runReportButton);
 		def.setWidget(runReportButton, "run");
@@ -260,7 +265,7 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 			}
 		});
 
-		resetButton = createAppButton(consts.get("reset"));
+		resetButton = createAppButton(Messages.get().reset());
 		resetButton.enable(true);
 		hp.add(resetButton);
 		def.setWidget(resetButton, "reset");
@@ -298,7 +303,7 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 		Query query;
 
 		if (!validate()) {
-			window.setError(consts.get("correctErrors"));
+			window.setError(Messages.get().correctErrors());
 			return;
 		}
 
@@ -314,14 +319,14 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
     public abstract void runReport(T rpc, AsyncCallback<ReportStatus> callback);
     
     public void runReport(T query) {
-        window.setBusy(consts.get("genReportMessage"));
+        window.setBusy(Messages.get().genReportMessage());
 
         runReport(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
                 String url;
 
                 if (status.getStatus() == ReportStatus.Status.SAVED) {
-                    url = "report?file=" + status.getMessage();
+                    url = "/openelis/openelis/report?file=" + status.getMessage();
                     if (attachmentName != null)
                         url += "&attachment=" + attachmentName;
 
@@ -390,6 +395,8 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
                             } catch (IllegalArgumentException iargE) {
                                 // we don't set a default if we cannot parse it
                             }
+                        } else {
+                            cl.setValue(null);
                         }
                         break;
                     }
@@ -478,16 +485,16 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 			return null;
 
 		qd = new QueryData();
-		qd.key = key;
-		qd.type = QueryData.Type.STRING;
+		qd.setKey(key);
+		qd.setType(QueryData.Type.STRING);
 
-		qd.query = "";
+		qd.setQuery("");
 		needComma = false;
 		for (TableDataRow row : sel) {
 			if (needComma)
-				qd.query += ",";
+				qd.setQuery(qd.getQuery() + ",");
 			if (row.key != null) {
-				qd.query += row.key.toString();
+				qd.setQuery(qd.getQuery() + row.key.toString());
 				needComma = true;
 			}
 		}
@@ -505,16 +512,16 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 			return null;
 
 		qd = new QueryData();
-		qd.query = field.getValue().toString();
-		qd.key = key;
+		qd.setQuery(field.getValue().toString());
+		qd.setKey(key);
 		if (field instanceof StringField)
-			qd.type = QueryData.Type.STRING;
+			qd.setType(QueryData.Type.STRING);
 		else if (field instanceof IntegerField)
-			qd.type = QueryData.Type.INTEGER;
+			qd.setType(QueryData.Type.INTEGER);
 		else if (field instanceof DoubleField)
-			qd.type = QueryData.Type.DOUBLE;
+			qd.setType(QueryData.Type.DOUBLE);
 		else if (field instanceof DateField)
-			qd.type = QueryData.Type.DATE;
+			qd.setType(QueryData.Type.DATE);
 		return qd;
 	}
 
@@ -528,9 +535,9 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 			return null;
 
 		qd = new QueryData();
-		qd.query = field.formatQuery();
-		qd.key = key;
-		qd.type = QueryData.Type.DATE;
+		qd.setQuery(field.formatQuery());
+		qd.setKey(key);
+		qd.setType(QueryData.Type.DATE);
 
 		return qd;
 	}
@@ -545,9 +552,9 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
             return null;
 
         qd = new QueryData();
-        qd.query = field.formatQuery();
-        qd.key = key;
-        qd.type = QueryData.Type.STRING;
+        qd.setQuery(field.formatQuery());
+        qd.setKey(key);
+        qd.setType(QueryData.Type.STRING);
 
         return qd;
 	}
@@ -623,12 +630,22 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 	}
 
 	protected TextBox createTextBox(Field f, Prompt p) {
-		TextBox t;
+		final TextBox t;
 
 		t = new TextBox();
 		t.setStyleName("ScreenTextBox");
-		t.addFocusHandler(Util.focusHandler);
-		t.addBlurHandler(Util.focusHandler);
+		t.addFocusHandler(new FocusHandler() {  
+            @Override
+            public void onFocus(FocusEvent event) {
+                t.addStyleName("Focus");
+            }
+        });
+		t.addBlurHandler(new BlurHandler() { 
+            @Override
+            public void onBlur(BlurEvent event) {
+                t.removeStyleName("Focus");
+            }
+        });
 		f.required = p.isRequired();
 		t.setField(f);
 

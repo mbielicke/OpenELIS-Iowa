@@ -30,8 +30,8 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.TurnaroundStatisticReportBean;
 import org.openelis.domain.TurnAroundReportViewVO;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticReportServiceInt;
 

@@ -44,6 +44,7 @@ import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
+<<<<<<< .working
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.widget.AppButton;
@@ -61,6 +62,9 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleService;
+=======
+import org.openelis.ui.widget.WindowInt;
+>>>>>>> .merge-right.r6752
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -75,6 +79,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class NewbornScreeningSampleLoginScreen extends Screen {
     
+<<<<<<< .working
 
     private SampleManager1         manager;
     private Dropdown<Integer>      statusId;
@@ -118,17 +123,23 @@ private ModulePermission               userPermission;
 private CheckBox neoIsNicu;  
     
     public NewbornScreeningSampleLoginScreen() throws Exception {
+=======
+    public NewbornScreeningSampleLoginScreen(WindowInt window) throws Exception {
+>>>>>>> .merge-right.r6752
         super((ScreenDefInt)GWT.create(NewbornScreeningSampleLoginDef.class));
 
         userPermission = UserCache.getPermission().getModule("samplenewborn");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Neonatal Screening Sample Login Screen");
 
+<<<<<<< .working
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
             }
         });
+=======
+>>>>>>> .merge-right.r6752
     }
     
     /**

@@ -28,11 +28,12 @@ package org.openelis.modules.report.dataView.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.DataViewVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Prompt;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -44,7 +45,7 @@ public class DataViewReportScreen extends ReportScreen<DataViewVO> {
 
     String reportMethod;
     
-    public DataViewReportScreen(String reportMethod, ScreenWindowInt window, String attachment) throws Exception {
+    public DataViewReportScreen(String reportMethod, WindowInt window, String attachment) throws Exception {
         this.reportMethod = reportMethod;
         this.window = window;
         if (!DataBaseUtil.isEmpty(attachment))

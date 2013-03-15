@@ -28,14 +28,14 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.LocalizedException;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -73,6 +73,7 @@ import org.openelis.manager.PanelManager;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -98,7 +99,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         ADD_AUX, REFRESH_AUX
     };
 
-    public TestTab(ScreenDefInt def, ScreenWindowInt window, TestContainerPopoutUtil popoutUtil) {
+    public TestTab(ScreenDefInt def, WindowInt window, TestContainerPopoutUtil popoutUtil) {
 
         this.popoutUtil = popoutUtil;
         setDefinition(def);
@@ -498,7 +499,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
             return;             
         
         try {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             
             if (state == State.ADD || state == State.UPDATE)
                 man = manager.getTests().getMergedAnalytesAt(index); 
@@ -588,7 +589,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 }
                 tree.refresh(true);
             } else {
-                tree.setCellException(index, 1, new LocalizedException("noActiveTestFoundForPanelException"));
+                tree.setCellException(index, 1, new Exception(Messages.get().noActiveTestFoundForPanelException()));
             }
             
             ActionEvent.fire(this, Action.ADD_AUX, panelId);
@@ -647,7 +648,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     
     private void showPopout() {
         try {
-            popoutUtil.showPopout(consts.get("testsAndContainers"), state, manager);
+            popoutUtil.showPopout(Messages.get().testsAndContainers(), state, manager);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("TestContainerPopoutLookup error: " + e.getMessage());

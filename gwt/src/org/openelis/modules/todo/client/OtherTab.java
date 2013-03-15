@@ -32,11 +32,13 @@ import java.util.List;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -61,7 +63,7 @@ public class OtherTab extends Screen {
     private ArrayList<AnalysisViewVO> fullList;
     private TableWidget                   table;
     
-    public OtherTab(ScreenDefInt def, ScreenWindowInt window) {
+    public OtherTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();        
@@ -128,7 +130,7 @@ public class OtherTab extends Screen {
             Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
             table.load(model);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             ToDoService.get().getOther(new AsyncCallback<ArrayList<AnalysisViewVO>>() {
                 public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
@@ -142,7 +144,7 @@ public class OtherTab extends Screen {
 
                 public void onFailure(Throwable error) {
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert(error.getMessage());
                         error.printStackTrace();

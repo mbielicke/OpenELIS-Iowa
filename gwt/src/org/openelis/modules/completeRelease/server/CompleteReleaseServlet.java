@@ -6,7 +6,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.CompleteReleaseBean;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.modules.completeRelease.client.CompleteReleaseServiceInt;

@@ -28,13 +28,14 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
@@ -171,7 +172,7 @@ public class TestReflexUtility extends Screen implements
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setContent(reflexPickerScreen);
-        modal.setName(consts.get("reflexTestPicker"));
+        modal.setName(Messages.get().reflexTestPicker());
         reflexPickerScreen.setBundles(reflexBundles);
     }
     
@@ -203,9 +204,9 @@ public class TestReflexUtility extends Screen implements
                 if (!testMan.canAssignThisSection(tsVDO)) {
                     tsVDO = testMan.getTestSections().getDefaultSection();
                     if (tsVDO == null || !testMan.canAssignThisSection(tsVDO)) {
-                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                        errorsList.add(new FormErrorException(Messages.get().insufficientPrivilegesAddTest(
                                                               testMan.getTest().getName(),
-                                                              testMan.getTest().getMethodName()));
+                                                              testMan.getTest().getMethodName())));
                         return;
                     }
                 }

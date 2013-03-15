@@ -32,6 +32,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -39,7 +40,8 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.SectionPermission;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -94,7 +96,7 @@ public class QAEventsTab extends Screen {
     
     protected QaeventLookupScreen    qaEventScreen;
 
-    public QAEventsTab(ScreenDefInt def, ScreenWindowInt window) {
+    public QAEventsTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 
@@ -152,7 +154,7 @@ public class QAEventsTab extends Screen {
                 val = sampleQATable.getObject(r,c);
                 data = sampleQAManager.getSampleQAAt(r);
                 
-                if (!Window.confirm(consts.get("qaEventEditConfirm"))) {
+                if (!Window.confirm(Messages.get().qaEventEditConfirm())) {
                     switch (c) {
                         case 1:
                             sampleQATable.setCell(r,c, data.getTypeId());
@@ -199,7 +201,7 @@ public class QAEventsTab extends Screen {
                  */
         		window.clearStatus();
                 if (!canEditSampleQA(data.getTypeId()))
-					window.setError(consts.get("cantUpdateSampleQAEvent"));
+					window.setError(Messages.get().cantUpdateSampleQAEvent());
 				else
 					sampleQATable.deleteRow(r);
             }
@@ -272,7 +274,7 @@ public class QAEventsTab extends Screen {
                 val = analysisQATable.getObject(r,c);
                 data = analysisQAManager.getAnalysisQAAt(r);
 
-                if (!Window.confirm(consts.get("qaEventEditConfirm"))) {
+                if (!Window.confirm(Messages.get().qaEventEditConfirm())) {
                     switch (c) {
                         case 1:
                         	analysisQATable.setCell(r,c, data.getTypeId());
@@ -318,7 +320,7 @@ public class QAEventsTab extends Screen {
                  */
         		window.clearStatus();
                 if (!canEditAnalysisQA(data.getTypeId()))
-					window.setError(consts.get("cantUpdateAnalysisQAEvent"));
+					window.setError(Messages.get().cantUpdateAnalysisQAEvent());
 				else
 					analysisQATable.deleteRow(r);
             }
@@ -449,7 +451,7 @@ public class QAEventsTab extends Screen {
                             }
                         }
                         if (nonInte)
-                            window.setError(consts.get("cantAddQAEvent"));
+                            window.setError(Messages.get().cantAddQAEvent());
                         else
                             window.clearStatus();
 	                }
@@ -461,7 +463,7 @@ public class QAEventsTab extends Screen {
 	        }
         }
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("qaEventSelection"));
+        modal.setName(Messages.get().qaEventSelection());
         modal.setContent(qaEventScreen);
     }
 
@@ -574,14 +576,14 @@ public class QAEventsTab extends Screen {
     
     private void showSampleBillableMessage() {
         if (sampleQAManager != null && sampleQAManager.hasNotBillableQA()) 
-            sampleBillableLabel.setText(consts.get("sampleNotBillable"));
+            sampleBillableLabel.setText(Messages.get().sampleNotBillable());
         else
             sampleBillableLabel.setText("");
     }
     
     private void showAnalysisBillableMessage() {
         if (analysisQAManager != null && analysisQAManager.hasNotBillableQA()) 
-            analysisBillableLabel.setText(consts.get("analysisNotBillable"));
+            analysisBillableLabel.setText(Messages.get().analysisNotBillable());
         else
             analysisBillableLabel.setText("");
     }

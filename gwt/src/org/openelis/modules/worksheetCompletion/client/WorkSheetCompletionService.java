@@ -3,7 +3,7 @@ package org.openelis.modules.worksheetCompletion.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.ui.common.ReportStatus;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.WorksheetManager;
 

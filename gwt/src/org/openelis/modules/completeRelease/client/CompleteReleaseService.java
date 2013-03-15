@@ -2,7 +2,7 @@ package org.openelis.modules.completeRelease.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleDataBundle;
 

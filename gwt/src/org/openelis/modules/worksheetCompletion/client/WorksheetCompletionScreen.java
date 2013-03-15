@@ -33,6 +33,7 @@ import java.util.Iterator;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -50,17 +51,12 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.SectionPermission;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -105,25 +101,19 @@ import org.openelis.modules.sample.client.TestReflexUtility;
 import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.TabPanel;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -165,40 +155,29 @@ public class WorksheetCompletionScreen extends Screen {
         WORKSHEET, NOTE
     };
 
-    public WorksheetCompletionScreen(final Integer worksheetId) throws Exception {
-        this();
+    public WorksheetCompletionScreen(final Integer worksheetId, WindowInt window) throws Exception {
+        this(window);
         isPopup = true;
-        DeferredCommand.addCommand(new Command() {
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             public void execute() {
                 fetchById(worksheetId);
             }
         });
     }
 
-    public WorksheetCompletionScreen() throws Exception {
+    public WorksheetCompletionScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
+        
+        setWindow(window);
 
         isPopup = false;
         successfulLoad = false;
 
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
-            throw new PermissionException("screenPermException",
-                                          "Worksheet Completion Screen");
+            throw new PermissionException(Messages.get().screenPermException(
+                                          "Worksheet Completion Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         ArrayList<SystemVariableDO> list;
 
         closeWindow = false;
@@ -213,13 +192,13 @@ public class WorksheetCompletionScreen extends Screen {
 
             list = SystemVariableService.get().fetchByName("worksheet_display_directory");
             if (list.size() == 0)
-                throw new Exception(consts.get("worksheetDisplayDirectoryLookupException"));
+                throw new Exception(Messages.get().worksheetDisplayDirectoryLookupException());
             else
                 displayFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
 
             list = SystemVariableService.get().fetchByName("worksheet_template_directory");
             if (list.size() == 0)
-                throw new Exception(consts.get("worksheetTemplateDirectoryLookupException"));
+                throw new Exception(Messages.get().worksheetTemplateDirectoryLookupException());
             else
                 templateFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
         } catch (Exception e) {
@@ -298,7 +277,7 @@ public class WorksheetCompletionScreen extends Screen {
         worksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                worksheetId.setValue(manager.getWorksheet().getId());
+                worksheetId.setFieldValue(manager.getWorksheet().getId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -324,7 +303,7 @@ public class WorksheetCompletionScreen extends Screen {
         relatedWorksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getRelatedWorksheetId());
         addScreenHandler(relatedWorksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                relatedWorksheetId.setValue(manager.getWorksheet()
+                relatedWorksheetId.setFieldValue(manager.getWorksheet()
                                                    .getRelatedWorksheetId());
             }
 
@@ -523,11 +502,11 @@ public class WorksheetCompletionScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 } else {
                     if ( !isPopup && !closeWindow) {
                         event.cancel();
@@ -571,7 +550,7 @@ public class WorksheetCompletionScreen extends Screen {
             DataChangeEvent.fire(this);
             window.clearStatus();
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             final WorksheetCompletionScreen wcs = this;
             // worksheetService.call("fetchWithItemsAndNotes", id, new
             // AsyncCallback<WorksheetManager>() {
@@ -586,11 +565,11 @@ public class WorksheetCompletionScreen extends Screen {
                 public void onFailure(Throwable error) {
                     if (error instanceof NotFoundException ) {
                         fetchById(null);
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         fetchById(null);
                         error.printStackTrace();
-                        Window.alert(consts.get("fetchFailed") + error.getMessage());
+                        Window.alert(Messages.get().fetchFailed() + error.getMessage());
                     }
                 }
             });
@@ -637,7 +616,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("worksheetLookup"));
+            modal.setName(Messages.get().worksheetLookup());
             modal.setContent(wLookupScreen);
         } catch (Exception e) {
             e.printStackTrace();
@@ -647,7 +626,7 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
         final WorksheetCompletionScreen wcs = this;
         WorksheetService.get().fetchForUpdate(manager.getWorksheet().getId(), new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager newMan) {
@@ -673,18 +652,18 @@ public class WorksheetCompletionScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            Window.alert(consts.get("correctErrors"));
+            Window.alert(Messages.get().correctErrors());
             return;
         }
 
-        window.setBusy(consts.get("updating"));
+        window.setBusy(Messages.get().updating());
         final WorksheetCompletionScreen wcs = this;
         WorksheetService.get().update(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager newMan) {
                 manager = newMan;
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(wcs);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
                 successfulLoad = false;
                 // commitDone = true;
             }
@@ -703,13 +682,13 @@ public class WorksheetCompletionScreen extends Screen {
         // cb = new AsyncCallback<ReportStatus>() {
         // public void onSuccess(ReportStatus status) {
         // if (ReportStatus.Status.RUNNING.equals(status.getStatus())) {
-        // window.setBusy(consts.get("updating")+" - "+status.getPercentComplete()+"%");
+        // window.setBusy(Messages.get().updating")+" - "+status.getPercentComplete()+"%");
         // window.setProgress(status.getPercentComplete());
         // }
         // }
         //
         // public void onFailure(Throwable error) {
-        // window.setBusy(consts.get("updating")+" - ERROR");
+        // window.setBusy(Messages.get().updating")+" - ERROR");
         // }
         // };
 
@@ -726,7 +705,7 @@ public class WorksheetCompletionScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.UPDATE) {
             final WorksheetCompletionScreen wcs = this;
@@ -735,14 +714,14 @@ public class WorksheetCompletionScreen extends Screen {
                     manager = newMan;
                     setState(State.DISPLAY);
                     DataChangeEvent.fire(wcs);
-                    window.setDone(consts.get("updateAborted"));
+                    window.setDone(Messages.get().updateAborted());
                     successfulLoad = false;
                 }
                 
                 public void onFailure(Throwable error) {
                     Window.alert(error.getMessage());
                     fetchById(null);
-                    window.setDone(consts.get("updateAborted"));
+                    window.setDone(Messages.get().updateAborted());
                     successfulLoad = false;
                 }
             });
@@ -758,7 +737,7 @@ public class WorksheetCompletionScreen extends Screen {
         hist = new IdNameVO(manager.getWorksheet().getId(), manager.getWorksheet()
                                                                    .getId()
                                                                    .toString());
-        HistoryScreen.showHistory(consts.get("worksheetHistory"),
+        HistoryScreen.showHistory(Messages.get().worksheetHistory(),
                                   Constants.table().WORKSHEET,
                                   hist);
     }
@@ -773,7 +752,7 @@ public class WorksheetCompletionScreen extends Screen {
                 try {
                     userVO = UserCache.getSystemUser(manager.getWorksheet()
                                                             .getSystemUserId());
-                    window.setDone(consts.get("worksheetCompletionEditConfirm") + " " +
+                    window.setDone(Messages.get().worksheetCompletionEditConfirm() + " " +
                                    displayFileDirectory + manager.getWorksheet().getId() +
                                    "_" + userVO.getLoginName() + ".xls");
                 } catch (Exception anyE) {
@@ -792,7 +771,7 @@ public class WorksheetCompletionScreen extends Screen {
 
     protected void loadFromEdit() {
         if (successfulLoad) {
-            Window.alert(consts.get("oneWorksheetLoadPerCommit"));
+            Window.alert(Messages.get().oneWorksheetLoadPerCommit());
             return;
         }
 
@@ -902,7 +881,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("worksheetLookup"));
+            modal.setName(Messages.get().worksheetLookup());
             modal.setContent(wrLookupScreen);
         } catch (Exception e) {
             e.printStackTrace();
@@ -927,7 +906,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(consts.get("worksheetFileUpload"));
+            modal.setName(Messages.get().worksheetFileUpload());
             modal.setContent(wFileUploadScreen);
         } catch (Exception e) {
             e.printStackTrace();
@@ -969,7 +948,7 @@ public class WorksheetCompletionScreen extends Screen {
         }
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("noteEditor"));
+        modal.setName(Messages.get().noteEditor());
         modal.setContent(editNote);
 
         failedRunNote = null;
@@ -981,7 +960,7 @@ public class WorksheetCompletionScreen extends Screen {
         }
         failedRunNote.setSystemUser(userName);
         failedRunNote.setSystemUserId(userId);
-        failedRunNote.setSubject(consts.get("failedRunSubject"));
+        failedRunNote.setSubject(Messages.get().failedRunSubject());
         failedRunNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
         editNote.setNote(failedRunNote);
     }

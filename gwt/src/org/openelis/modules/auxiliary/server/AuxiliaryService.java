@@ -35,7 +35,7 @@ import org.openelis.bean.AuxFieldGroupBean;
 import org.openelis.bean.AuxFieldGroupManagerBean;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;

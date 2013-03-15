@@ -25,8 +25,8 @@
 */
 package org.openelis.modules.shipping.client;
 
-import org.openelis.modules.main.client.OpenELISDef;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface ProcessShippingDef extends OpenELISDef {
+public interface ProcessShippingDef extends ScreenDefInt {
 
 }

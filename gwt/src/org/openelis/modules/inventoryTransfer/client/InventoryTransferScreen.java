@@ -31,17 +31,15 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -53,7 +51,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -71,14 +68,16 @@ import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.inventoryItem.client.InventoryItemService;
 import org.openelis.modules.inventoryReceipt.client.InventoryLocationService;
 import org.openelis.modules.storage.client.StorageService;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class InventoryTransferScreen extends Screen {
@@ -103,9 +102,9 @@ public class InventoryTransferScreen extends Screen {
         InventoryTransferScreenImpl(true);
     }
     
-    public InventoryTransferScreen(ScreenWindow window) throws Exception {
+    public InventoryTransferScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(InventoryTransferDef.class));
-        this.window = window;
+        setWindow(window);
 
         InventoryTransferScreenImpl(false);
     }
@@ -114,31 +113,10 @@ public class InventoryTransferScreen extends Screen {
 
         userPermission = UserCache.getPermission().getModule("inventorytransfer");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Inventory Transfer Screen");
+            throw new PermissionException(Messages.get().screenPermException("Inventory Transfer Screen"));
         
         openedFromMenu = fromMenu;
-        //
-        // this is done here in order to make sure that if the screen is brought
-        // up from some other screen then its widgets are initialized before the
-        // constructor ends execution
-        //
-        if (window != null) {
-            postConstructor();
-        } else {
-            DeferredCommand.addCommand(new Command() {
-                public void execute() {
-                    postConstructor();
-                }
-            });
-        }
-    } 
-    
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
+
         initialize(); 
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
@@ -266,15 +244,15 @@ public class InventoryTransferScreen extends Screen {
                 query = new Query();
 
                 field = new QueryData();
-                field.key = InventoryItemMeta.getName();
-                field.type = QueryData.Type.STRING;
-                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
+                field.setKey(InventoryItemMeta.getName());
+                field.setType(QueryData.Type.STRING);
+                field.setQuery(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                 query.setFields(field);
                 
                 field = new QueryData();
-                field.key = InventoryItemMeta.getParentInventoryItemId();
-                field.type = QueryData.Type.INTEGER;                
-                field.query = id.toString();           
+                field.setKey(InventoryItemMeta.getParentInventoryItemId());
+                field.setType(QueryData.Type.INTEGER);                
+                field.setQuery(id.toString());           
                 query.setFields(field);
                 try {
                     list = InventoryItemService.get().fetchActiveByNameStoreAndParentInventoryItem(query);
@@ -321,7 +299,7 @@ public class InventoryTransferScreen extends Screen {
                 try {
                     data = manager.getToInventoryItemAt(r);
                     if(data == null) {
-                        Window.alert(consts.get("selToItem"));
+                        Window.alert(Messages.get().selToItem());
                         window.clearStatus();
                         return;
                     }
@@ -332,11 +310,11 @@ public class InventoryTransferScreen extends Screen {
                         query = new Query();                                                                                                     
                         
                         field = new QueryData();
-                        field.query = param;
+                        field.setQuery(param);
                         fields.add(field);
 
                         field = new QueryData();
-                        field.query = Integer.toString(itemId);
+                        field.setQuery(Integer.toString(itemId));
                         fields.add(field);
 
                         query.setFields(fields);
@@ -410,13 +388,13 @@ public class InventoryTransferScreen extends Screen {
                 switch(c) {
                     case 4:
                         if (fromData == null) {
-                            Window.alert(consts.get("selFromItem"));
+                            Window.alert(Messages.get().selFromItem());
                             event.cancel();                                                                       
                         }
                         break;
                     case 5:
                         if (toData == null) {
-                            Window.alert(consts.get("selToItem"));
+                            Window.alert(Messages.get().selToItem());
                             event.cancel();
                             return;                                            
                         }
@@ -425,7 +403,7 @@ public class InventoryTransferScreen extends Screen {
                         break;
                     case 6:
                         if (toData == null) {
-                            Window.alert(consts.get("selToItem")); 
+                            Window.alert(Messages.get().selToItem()); 
                             event.cancel();                                            
                         }                        
                         break;                   
@@ -713,7 +691,7 @@ public class InventoryTransferScreen extends Screen {
                 if (r > -1) {
                     data = manager.getFromInventoryLocationAt(r);
                     if (data != null)
-                        inventoryLocationExpirationDate.setValue(data.getExpirationDate());
+                        inventoryLocationExpirationDate.setFieldValue(data.getExpirationDate());
                     else 
                         inventoryLocationExpirationDate.setValue(null);
                 } else {
@@ -869,7 +847,7 @@ public class InventoryTransferScreen extends Screen {
                 if (r > -1) {                   
                     data = manager.getToInventoryLocationAt(r);
                     if (data != null)
-                        toExpDate.setValue(data.getExpirationDate());
+                        toExpDate.setFieldValue(data.getExpirationDate());
                     else 
                         toExpDate.setValue(null);
                 } else {
@@ -886,11 +864,11 @@ public class InventoryTransferScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -913,25 +891,25 @@ public class InventoryTransferScreen extends Screen {
         setState(State.ADD);
         DataChangeEvent.fire(this);
         
-        window.setDone(consts.get("enterInformationPressCommit"));        
+        window.setDone(Messages.get().enterInformationPressCommit());        
     }
     
     protected void commit() {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
         if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
                 
                 if (!openedFromMenu)                     
                     window.close();
@@ -949,18 +927,18 @@ public class InventoryTransferScreen extends Screen {
     protected void abort() {        
         setFocus(null);        
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
         
         if (state == State.QUERY) {            
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {            
             reloadTable = true;
             manager = InventoryTransferManager.getInstance();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
             
             if (!openedFromMenu)                     
                 window.close();

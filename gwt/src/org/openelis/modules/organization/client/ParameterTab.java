@@ -26,6 +26,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrganizationManager;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -37,7 +38,7 @@ public class ParameterTab extends Screen {
     private AppButton           removeButton, addButton;
     private boolean             loaded;
 
-    public ParameterTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ParameterTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderOrganizationViewDO;
@@ -58,6 +59,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrderManager;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -71,7 +73,7 @@ public class OrganizationTab extends Screen {
     
     private boolean               loaded;
     
-    public OrganizationTab(ScreenDefInt def, ScreenWindowInt window) {
+    public OrganizationTab(ScreenDefInt def, WindowInt window) {
         
         setDefinition(def);
         setWindow(window);
@@ -208,7 +210,7 @@ public class OrganizationTab extends Screen {
                         
                         try {
                             if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId()))
-                                Window.alert(consts.get("orgMarkedAsHoldRefuseSample") + "'" +
+                                Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" +
                                              data.getOrganizationName() + "'");
                         } catch (Exception e) {
                             Window.alert(e.getMessage());

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;

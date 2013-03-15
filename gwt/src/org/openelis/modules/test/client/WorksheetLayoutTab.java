@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
@@ -37,7 +38,6 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -71,6 +71,7 @@ import org.openelis.meta.TestMeta;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.scriptlet.client.ScriptletService;
 import org.openelis.modules.test.client.AnalyteAndResultTab.Action;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -93,7 +94,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private TextBox<Integer>                 subsetCapacity, totalCapacity;
     private AutoComplete                     scriptlet, qcname;
 
-    public WorksheetLayoutTab(ScreenDefInt def, ScreenWindowInt window) {
+    public WorksheetLayoutTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         
@@ -135,7 +136,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             public void onDataChange(DataChangeEvent event) {
                 try {
                     if(manager != null)
-                        subsetCapacity.setValue(manager.getTestWorksheet().getWorksheet().getSubsetCapacity());
+                        subsetCapacity.setFieldValue(manager.getTestWorksheet().getWorksheet().getSubsetCapacity());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -161,7 +162,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             public void onDataChange(DataChangeEvent event) {
                 try {
                     if(manager != null)
-                        totalCapacity.setValue(manager.getTestWorksheet().getWorksheet().getTotalCapacity());
+                        totalCapacity.setFieldValue(manager.getTestWorksheet().getWorksheet().getTotalCapacity());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -457,7 +458,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
                 } 
                 
                 modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("testAnalyteSelection"));
+                modal.setName(Messages.get().testAnalyteSelection());
                 modal.setContent(analyteLookup);
                 analyteLookup.setScreenState(State.DEFAULT);
             }
@@ -660,7 +661,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
             if (data.equals(id)) {
                 if ( (matchLabel && ! (val.equals(name))) || !matchLabel)
-                    worksheetAnalyteTable.setCellException(i, 0, new LocalizedException(key));
+                    worksheetAnalyteTable.setCellException(i, 0, new Exception(key));
             }
         }
     }

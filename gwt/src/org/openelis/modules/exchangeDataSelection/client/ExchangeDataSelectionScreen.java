@@ -32,6 +32,7 @@ import java.util.HashSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -43,19 +44,19 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -139,26 +140,15 @@ public class ExchangeDataSelectionScreen extends Screen {
     private ExchangeDataSelectionScreen screen;
     private DataExchangeReportScreen    dataExchangeReportScreen; 
     
-    public ExchangeDataSelectionScreen() throws Exception {
+    public ExchangeDataSelectionScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeDataSelectionDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("exchangedataselection");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Exchange Data Selection Screen");
+            throw new PermissionException(Messages.get().screenPermException("Exchange Data Selection Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-    
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         manager = ExchangeCriteriaManager.getInstance();
         
         try {
@@ -301,7 +291,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                 IdNameVO hist;
 
                 hist = new IdNameVO(manager.getExchangeCriteria().getId(), manager.getExchangeCriteria().getName());
-                HistoryScreen.showHistory(consts.get("exchangeCriteriaHistory"), Constants.table().EXCHANGE_CRITERIA, hist);
+                HistoryScreen.showHistory(Messages.get().exchangeCriteriaHistory(), Constants.table().EXCHANGE_CRITERIA, hist);
                 
             }
 
@@ -338,7 +328,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                     return;
                 }
 
-                HistoryScreen.showHistory(consts.get("exchangeProfileHistory"), Constants.table().EXCHANGE_PROFILE, list);
+                HistoryScreen.showHistory(Messages.get().exchangeProfileHistory(), Constants.table().EXCHANGE_PROFILE, list);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -402,7 +392,7 @@ public class ExchangeDataSelectionScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 String val;
-                ArrayList<LocalizedException> exceptions;
+                ArrayList<Exception> exceptions;
                 
                 val = event.getValue();
                 manager.getExchangeCriteria().setIsAllAnalysesIncluded(val);
@@ -421,14 +411,14 @@ public class ExchangeDataSelectionScreen extends Screen {
                  * on checking isAllAnalysisIncluded and commit doesn't fail in 
                  * the front-end   
                  */
-                for (LocalizedException e : exceptions) {
-                    if ("noTestForNotIncludeAllAnalysesException".equals(e.getKey())) {
+                for (Exception e : exceptions) {
+                    if ("noTestForNotIncludeAllAnalysesException".equals(e.getMessage())) {
                         exceptions.remove(e);
                         break;
                     }
                 }
                 test.clearExceptions();
-                for (LocalizedException e : exceptions) 
+                for (Exception e : exceptions) 
                    test.addException(e);                
             }
 
@@ -579,7 +569,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                 QueryData field;
                 
                 field = getQuery(SampleMeta.getDomain());
-                domain.setSelection(field != null ? field.query : field);
+                domain.setSelection(field != null ? field.getQuery() : field);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -785,7 +775,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                  * on the date associated with this row 
                  */
                 if (DataBaseUtil.isEmpty(queryResults.getText()) ||
-                                Window.confirm(consts.get("replaceCurrentSampleList"))) {
+                                Window.confirm(Messages.get().replaceCurrentSampleList())) {
                     data = (EventLogDO)lastRunTable.getSelection().data;
                     setQueryResults(data.getText());
                 }
@@ -805,7 +795,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                     pageNum--;
                     DataChangeEvent.fire(screen, lastRunTable);                                   
                 } else {  
-                    window.setError(consts.get("noMoreRecordInDir"));
+                    window.setError(Messages.get().noMoreRecordInDir());
                 }
             }
 
@@ -857,7 +847,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(20);
                 ExchangeDataSelectionService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
@@ -868,14 +858,14 @@ public class ExchangeDataSelectionScreen extends Screen {
                     public void onFailure(Throwable error) {
                         setQueryResult(null);
                         if (error instanceof NotFoundException) {
-                            window.setDone(consts.get("noRecordsFound"));
+                            window.setDone(Messages.get().noRecordsFound());
                             setState(State.DEFAULT);
                         } else if (error instanceof LastPageException) {
                             window.setError("No more records in this direction");
                         } else {
                             Window.alert("Error: Exchange Data Selection call query failed; " +
                                          error.getMessage());
-                            window.setError(consts.get("queryFailed"));
+                            window.setError(Messages.get().queryFailed());
                         }
                     }
                 });
@@ -916,9 +906,9 @@ public class ExchangeDataSelectionScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = ExchangeCriteriaMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(ExchangeCriteriaMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -926,11 +916,11 @@ public class ExchangeDataSelectionScreen extends Screen {
             }
         });
         
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -1088,7 +1078,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -1110,11 +1100,11 @@ public class ExchangeDataSelectionScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -1130,7 +1120,7 @@ public class ExchangeDataSelectionScreen extends Screen {
     }
     
     protected void delete() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -1147,12 +1137,12 @@ public class ExchangeDataSelectionScreen extends Screen {
         setFocus(null);
 
         if (state != State.QUERY && reportToHasEmptyRows()) {
-            Window.alert(consts.get("removeEmptyReportToRows"));
+            Window.alert(Messages.get().removeEmptyReportToRows());
             return;
         }
         
          if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -1163,14 +1153,14 @@ public class ExchangeDataSelectionScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 createSampleQueryFields();
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1178,14 +1168,14 @@ public class ExchangeDataSelectionScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 createSampleQueryFields();
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1193,12 +1183,12 @@ public class ExchangeDataSelectionScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.DELETE) {
-            window.setBusy(consts.get("deleting"));
+            window.setBusy(Messages.get().deleting());
             try {
                 manager.delete();
 
                 fetchById(null);
-                window.setDone(consts.get("deleteComplete"));
+                window.setDone(Messages.get().deleteComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1211,14 +1201,14 @@ public class ExchangeDataSelectionScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1228,7 +1218,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else if (state == State.DELETE) {
             try {
                 manager = manager.abortUpdate();
@@ -1238,7 +1228,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("deleteAborted"));
+            window.setDone(Messages.get().deleteAborted());
         } else {
             window.clearStatus();
         }
@@ -1246,7 +1236,7 @@ public class ExchangeDataSelectionScreen extends Screen {
     
     protected void duplicate() {
         try {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             
             manager = ExchangeDataSelectionService.get().duplicate(manager.getExchangeCriteria().getId());
 
@@ -1254,7 +1244,7 @@ public class ExchangeDataSelectionScreen extends Screen {
             DataChangeEvent.fire(this);
 
             setFocus(name);
-            window.setDone(consts.get("enterInformationPressCommit"));
+            window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -1267,19 +1257,19 @@ public class ExchangeDataSelectionScreen extends Screen {
             manager = ExchangeCriteriaManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 manager = ExchangeCriteriaManager.fetchWithProfiles(id);
                 setState(State.DISPLAY);
                 pageNum = 0;
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }
@@ -1307,9 +1297,9 @@ public class ExchangeDataSelectionScreen extends Screen {
         query = new Query();
         
         orgField = new QueryData();
-        orgField.query = field.query;
-        orgField.key = OrganizationMeta.getId();
-        orgField.type = QueryData.Type.INTEGER;
+        orgField.setQuery(field.getQuery());
+        orgField.setKey(OrganizationMeta.getId());
+        orgField.setType(QueryData.Type.INTEGER);
         query.setFields(orgField);
         
         try {
@@ -1372,24 +1362,24 @@ public class ExchangeDataSelectionScreen extends Screen {
         query = new Query();
         
         field = new QueryData();
-        field.key = EventLogMeta.getReferenceTableId();
-        field.query = String.valueOf(Constants.table().EXCHANGE_CRITERIA);
-        field.type = QueryData.Type.INTEGER;
+        field.setKey(EventLogMeta.getReferenceTableId());
+        field.setQuery(String.valueOf(Constants.table().EXCHANGE_CRITERIA));
+        field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
         
         data = manager.getExchangeCriteria();
         
         field = new QueryData();
-        field.key = EventLogMeta.getReferenceId();
-        field.query = data.getId().toString();
-        field.type = QueryData.Type.INTEGER;
+        field.setKey(EventLogMeta.getReferenceId());
+        field.setQuery(data.getId().toString());
+        field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
         
         query.setPage(pageNum);
         query.setRowsPerPage(10);
         
         try {           
-            window.setBusy(consts.get("fetching"));                      
+            window.setBusy(Messages.get().fetching());                      
             
             logs = EventLogService.get().query(query); 
             
@@ -1403,11 +1393,11 @@ public class ExchangeDataSelectionScreen extends Screen {
             lastRunTable.load(model);
             window.clearStatus();      
         } catch (LastPageException e) {
-            window.setError(consts.get("noMoreRecordInDir"));
+            window.setError(Messages.get().noMoreRecordInDir());
             pageNum--;
             return;
         } catch (NotFoundException e) {
-            window.setDone(consts.get("noRecordsFound"));
+            window.setDone(Messages.get().noRecordsFound());
             lastRunTable.load(model);
             return;
         } catch (Exception e) {
@@ -1427,7 +1417,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         ArrayList<String> list;
 
         if (reportToRowsEmpty()) {
-            Window.alert(consts.get("removeEmptyReportToRows"));
+            Window.alert(Messages.get().removeEmptyReportToRows());
             return;
         }
         
@@ -1435,7 +1425,7 @@ public class ExchangeDataSelectionScreen extends Screen {
         
         fields = manager.getExchangeCriteria().getFields();
         if (fields.size() == 0) {
-            Window.alert(consts.get("atleastOneFieldFilledException"));
+            Window.alert(Messages.get().atleastOneFieldFilledException());
             return;
         }
         
@@ -1445,7 +1435,7 @@ public class ExchangeDataSelectionScreen extends Screen {
             /*
              * run the query, get the list of samples and show the accession numbers
              */
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             samples = ExchangeDataSelectionService.get().dataExchangeQuery(query);
             list = new ArrayList<String>();
             for (IdAccessionVO s : samples) 
@@ -1462,7 +1452,7 @@ public class ExchangeDataSelectionScreen extends Screen {
             window.clearStatus();
         } catch (NotFoundException e) {
             setQueryResults(null);
-            window.setDone(consts.get("noRecordsFound"));
+            window.setDone(Messages.get().noRecordsFound());
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -1489,9 +1479,9 @@ public class ExchangeDataSelectionScreen extends Screen {
         selRow = domain.getSelection();        
         if (selRow != null && selRow.key != null) {
             field = new QueryData();
-            field.query = (String)selRow.key;
-            field.key = SampleMeta.getDomain();
-            field.type = QueryData.Type.STRING;
+            field.setQuery((String)selRow.key);
+            field.setKey(SampleMeta.getDomain());
+            field.setType(QueryData.Type.STRING);
             fields.add(field);
         }
         
@@ -1503,18 +1493,18 @@ public class ExchangeDataSelectionScreen extends Screen {
         
         if (orgIds.size() > 0) {
             field = new QueryData();
-            field.query = DataBaseUtil.concatWithSeparator(orgIds, "|");
-            field.key = SampleMeta.getOrgId();
-            field.type = QueryData.Type.INTEGER;
+            field.setQuery(DataBaseUtil.concatWithSeparator(orgIds, "|"));
+            field.setKey(SampleMeta.getOrgId());
+            field.setType(QueryData.Type.INTEGER);
             fields.add(field);
         }       
         
         selRow = profileVersion.getSelection();        
         if (selRow != null && selRow.key != null) {
             field = new QueryData();
-            field.query = (String)selRow.key;
-            field.key = SampleMeta.getOrgParamValue();
-            field.type = QueryData.Type.STRING;
+            field.setQuery((String)selRow.key);
+            field.setKey(SampleMeta.getOrgParamValue());
+            field.setType(QueryData.Type.STRING);
             fields.add(field);
         }
         
@@ -1529,7 +1519,7 @@ public class ExchangeDataSelectionScreen extends Screen {
             return null;
         
         for (QueryData f : fields) {
-            if (key.equals(f.key))
+            if (key.equals(f.getKey()))
                 return f;
         }
         
@@ -1562,14 +1552,14 @@ public class ExchangeDataSelectionScreen extends Screen {
         field = null;
         if (data.getId() == null) {
             if (uri == null) {
-                Window.alert(consts.get("specifyDestURI"));
+                Window.alert(Messages.get().specifyDestURI());
                 return;
             }
         } else {
             field = new QueryData();
-            field.key = "EXCHANGE_CRITERIA_ID"; 
-            field.query = data.getId().toString();
-            field.type = QueryData.Type.STRING;
+            field.setKey("EXCHANGE_CRITERIA_ID"); 
+            field.setQuery(data.getId().toString());
+            field.setType(QueryData.Type.STRING);
         }
         
         query = new Query();
@@ -1577,15 +1567,15 @@ public class ExchangeDataSelectionScreen extends Screen {
             query.setFields(field);
         
         field = new QueryData();
-        field.key = "ACCESSION_NUMBERS"; 
-        field.query = queryResults.getText();
-        field.type = QueryData.Type.STRING;
+        field.setKey("ACCESSION_NUMBERS"); 
+        field.setQuery(queryResults.getText());
+        field.setType(QueryData.Type.STRING);
         query.setFields(field);
         
         field = new QueryData();
-        field.key = "DESTINATION_URI"; 
-        field.query = uri;
-        field.type = QueryData.Type.STRING;
+        field.setKey("DESTINATION_URI"); 
+        field.setQuery(uri);
+        field.setType(QueryData.Type.STRING);
         query.setFields(field);
         
         try {

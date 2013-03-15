@@ -33,12 +33,14 @@ import java.util.List;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -77,7 +79,7 @@ public class InitiatedTab extends Screen {
     private ColumnChart                   chart;
     private Options                       options;
 
-    public InitiatedTab(ScreenDefInt def, ScreenWindowInt window) {
+    public InitiatedTab(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -113,13 +115,13 @@ public class InitiatedTab extends Screen {
         loadBySection = "N";
 
         ranges = new ArrayList<String>();
-        ranges.add(consts.get("today"));
-        ranges.add(consts.get("yesterday"));
-        ranges.add(consts.get("twoToFiveDays"));
-        ranges.add(consts.get("sixToTenDays"));
-        ranges.add(consts.get("elevnToTwntyDays"));
-        ranges.add(consts.get("twntyOneToThrtyDays"));
-        ranges.add(consts.get("moreThanThrtyDays"));
+        ranges.add(Messages.get().today());
+        ranges.add(Messages.get().yesterday());
+        ranges.add(Messages.get().twoToFiveDays());
+        ranges.add(Messages.get().sixToTenDays());
+        ranges.add(Messages.get().elevnToTwntyDays());
+        ranges.add(Messages.get().twntyOneToThrtyDays());
+        ranges.add(Messages.get().moreThanThrtyDays());
     }
 
     private void initializeDropdowns() {
@@ -153,7 +155,7 @@ public class InitiatedTab extends Screen {
             if (refreshChart)
                 refreshChart();
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             ToDoService.get().getInitiated(new AsyncCallback<ArrayList<AnalysisViewVO>>() {
                 public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;
@@ -169,7 +171,7 @@ public class InitiatedTab extends Screen {
 
                 public void onFailure(Throwable error) {
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert(error.getMessage());
                         error.printStackTrace();
@@ -378,7 +380,7 @@ public class InitiatedTab extends Screen {
 
         data = DataTable.create();
         data.addColumn(ColumnType.STRING);
-        data.addColumn(ColumnType.NUMBER, consts.get("analyses"));
+        data.addColumn(ColumnType.NUMBER, Messages.get().analyses());
         size = ranges.size();
         data.addRows(size);
         for (int i = 0; i < size; i++ ) {
@@ -421,7 +423,7 @@ public class InitiatedTab extends Screen {
         ops.setLegend(LegendPosition.NONE);
 
         aops = AxisOptions.create();
-        aops.setTitle(consts.get("numAnalyses"));
+        aops.setTitle(Messages.get().numAnalyses());
         ops.setVAxisOptions(aops);
 
         aops = AxisOptions.create();
@@ -432,7 +434,7 @@ public class InitiatedTab extends Screen {
 
         ops.setWidth(625);
         ops.setHeight(215);
-        ops.setTitle(consts.get("timeSinceAnalysesInitiated"));
+        ops.setTitle(Messages.get().timeSinceAnalysesInitiated());
         return ops;
     }
 }

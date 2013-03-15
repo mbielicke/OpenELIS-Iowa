@@ -39,7 +39,7 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;

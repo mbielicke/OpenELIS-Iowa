@@ -29,18 +29,20 @@ import java.util.ArrayList;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -107,8 +109,8 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
     private void postConstructor() {
         initialize();
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
                 worksheetTable.clear();
             }
         });
@@ -290,13 +292,13 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
                 row = ((AutoComplete)def.getWidget(key)).getSelection();
                 if(row != null && row.key != null) {
                     qd = new QueryData();
-                    qd.key = key;
-                    qd.query = ((Integer)row.key).toString();
-                    qd.type = QueryData.Type.INTEGER;
+                    qd.setKey(key);
+                    qd.setQuery(((Integer)row.key).toString());
+                    qd.setType(QueryData.Type.INTEGER);
                     list.add(qd);
 
                     qField = new QueryFieldUtil();
-                    qField.parse(qd.query);
+                    qField.parse(qd.getQuery());
                 }
             } else if (def.getWidget(key) instanceof HasField) {
                 ((HasField)def.getWidget(key)).getQuery(list, key);
@@ -309,7 +311,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         Query query;
 
         if (!validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -317,7 +319,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         query.setFields(getQueryFields());
 
         if (query.getFields().size() > 0) {
-            window.setBusy(consts.get("querying"));
+            window.setBusy(Messages.get().querying());
     
             query.setRowsPerPage(50);
             WorksheetService.get().query(query, new AsyncCallback<ArrayList<WorksheetViewDO>>() {
@@ -328,15 +330,15 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
                 public void onFailure(Throwable error) {
                     setQueryResult(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(consts.get("noRecordsFound"));
+                        window.setDone(Messages.get().noRecordsFound());
                     } else {
                         Window.alert("Error: WorksheetLookup call query failed; "+error.getMessage());
-                        window.setError(consts.get("queryFailed"));
+                        window.setError(Messages.get().queryFailed());
                     }
                 }
             });
         } else {
-            window.setDone(consts.get("emptyQueryException"));
+            window.setDone(Messages.get().emptyQueryException());
         }
     }
 
@@ -348,14 +350,14 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         AnalysisViewDO            aVDO;
         WorksheetViewDO           worksheetRow;
         
-        window.setDone(consts.get("queryingComplete"));
+        window.setDone(Messages.get().queryingComplete());
 
         if (list == null || list.size() == 0) {
-            window.setDone(consts.get("noRecordsFound"));
+            window.setDone(Messages.get().noRecordsFound());
             
             worksheetTable.clear();
         } else {
-            window.setDone(consts.get("queryingComplete"));
+            window.setDone(Messages.get().queryingComplete());
 
             model = new ArrayList<TableDataRow>();
             for (i = 0; i < list.size(); i++) {

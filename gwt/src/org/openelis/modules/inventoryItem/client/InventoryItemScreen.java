@@ -32,6 +32,7 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameStoreVO;
@@ -40,15 +41,16 @@ import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.PermissionException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -120,26 +122,15 @@ public class InventoryItemScreen extends Screen {
         COMPONENT, LOCATION, ADDITIONAL, MANUFACTURING, NOTE
     };
 
-    public InventoryItemScreen() throws Exception {
+    public InventoryItemScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(InventoryItemDef.class));
+        
+        setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("inventoryitem");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "Inventory Item Screen");
+            throw new PermissionException(Messages.get().screenPermException("Inventory Item Screen"));
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-    }
-
-    /**
-     * This method is called to set the initial state of widgets after the
-     * screen is attached to the browser. It is usually called in deferred
-     * command.
-     */
-    private void postConstructor() {
         tab = Tabs.COMPONENT;
         manager = InventoryItemManager.getInstance();
 
@@ -300,7 +291,7 @@ public class InventoryItemScreen extends Screen {
         id = (TextBox)def.getWidget(InventoryItemMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                id.setValue(manager.getInventoryItem().getId());
+                id.setFieldValue(manager.getInventoryItem().getId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -384,7 +375,7 @@ public class InventoryItemScreen extends Screen {
         quantityMinLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMinLevel());
         addScreenHandler(quantityMinLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                quantityMinLevel.setValue(manager.getInventoryItem()
+                quantityMinLevel.setFieldValue(manager.getInventoryItem()
                                                  .getQuantityMinLevel());
             }
 
@@ -402,7 +393,7 @@ public class InventoryItemScreen extends Screen {
         quantityToReorder = (TextBox)def.getWidget(InventoryItemMeta.getQuantityToReorder());
         addScreenHandler(quantityToReorder, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                quantityToReorder.setValue(manager.getInventoryItem()
+                quantityToReorder.setFieldValue(manager.getInventoryItem()
                                                   .getQuantityToReorder());
             }
 
@@ -420,7 +411,7 @@ public class InventoryItemScreen extends Screen {
         quantityMaxLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMaxLevel());
         addScreenHandler(quantityMaxLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                quantityMaxLevel.setValue(manager.getInventoryItem()
+                quantityMaxLevel.setFieldValue(manager.getInventoryItem()
                                                  .getQuantityMaxLevel());
             }
 
@@ -682,7 +673,7 @@ public class InventoryItemScreen extends Screen {
         parentRatio = (TextBox)def.getWidget(InventoryItemMeta.getParentRatio());
         addScreenHandler(parentRatio, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentRatio.setValue(manager.getInventoryItem().getParentRatio());
+                parentRatio.setFieldValue(manager.getInventoryItem().getParentRatio());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -699,7 +690,7 @@ public class InventoryItemScreen extends Screen {
         averageLeadTime = (TextBox)def.getWidget(InventoryItemMeta.getAverageLeadTime());
         addScreenHandler(averageLeadTime, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                averageLeadTime.setValue(manager.getInventoryItem().getAverageLeadTime());
+                averageLeadTime.setFieldValue(manager.getInventoryItem().getAverageLeadTime());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -713,7 +704,7 @@ public class InventoryItemScreen extends Screen {
         averageCost = (TextBox)def.getWidget(InventoryItemMeta.getAverageCost());
         addScreenHandler(averageCost, new ScreenEventHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
-                averageCost.setValue(manager.getInventoryItem().getAverageCost());
+                averageCost.setFieldValue(manager.getInventoryItem().getAverageCost());
             }
 
             public void onValueChange(ValueChangeEvent<Double> event) {
@@ -727,7 +718,7 @@ public class InventoryItemScreen extends Screen {
         averageDailyUse = (TextBox)def.getWidget(InventoryItemMeta.getAverageDailyUse());
         addScreenHandler(averageDailyUse, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                averageDailyUse.setValue(manager.getInventoryItem().getAverageDailyUse());
+                averageDailyUse.setFieldValue(manager.getInventoryItem().getAverageDailyUse());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -817,7 +808,7 @@ public class InventoryItemScreen extends Screen {
         //
         nav = new ScreenNavigator<IdNameStoreVO>(def) {
             public void executeQuery(final Query query) {
-                window.setBusy(consts.get("querying"));
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(23);
                 InventoryItemService.get().query(query, new AsyncCallback<ArrayList<IdNameStoreVO>>() {
@@ -828,14 +819,14 @@ public class InventoryItemScreen extends Screen {
                                      public void onFailure(Throwable error) {
                                          setQueryResult(null);
                                          if (error instanceof NotFoundException) {
-                                             window.setDone(consts.get("noRecordsFound"));
+                                             window.setDone(Messages.get().noRecordsFound());
                                              setState(State.DEFAULT);
                                          } else if (error instanceof LastPageException) {
                                              window.setError("No more records in this direction");
                                          } else {
                                              Window.alert("Error: InventoryItem call query failed; " +
                                                           error.getMessage());
-                                             window.setError(consts.get("queryFailed"));
+                                             window.setError(Messages.get().queryFailed());
                                          }
                                      }
                                  });
@@ -878,9 +869,9 @@ public class InventoryItemScreen extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.key = InventoryItemMeta.getName();
-                field.query = ((AppButton)event.getSource()).getAction();
-                field.type = QueryData.Type.STRING;
+                field.setKey(InventoryItemMeta.getName());
+                field.setQuery(((AppButton)event.getSource()).getAction());
+                field.setType(QueryData.Type.STRING);
 
                 query = new Query();
                 query.setFields(field);
@@ -888,11 +879,11 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
-                    window.setError(consts.get("mustCommitOrAbort"));
+                    window.setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -960,7 +951,7 @@ public class InventoryItemScreen extends Screen {
         manufacturingTab.draw();
         noteTab.draw();
         setFocus(id);
-        window.setDone(consts.get("enterFieldsToQuery"));
+        window.setDone(Messages.get().enterFieldsToQuery());
     }
 
     protected void previous() {
@@ -987,11 +978,11 @@ public class InventoryItemScreen extends Screen {
         DataChangeEvent.fire(this);
 
         setFocus(name);
-        window.setDone(consts.get("enterInformationPressCommit"));
+        window.setDone(Messages.get().enterInformationPressCommit());
     }
 
     protected void update() {
-        window.setBusy(consts.get("lockForUpdate"));
+        window.setBusy(Messages.get().lockForUpdate());
 
         try {
             manager = manager.fetchForUpdate();
@@ -1009,7 +1000,7 @@ public class InventoryItemScreen extends Screen {
         setFocus(null);
 
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
 
@@ -1020,13 +1011,13 @@ public class InventoryItemScreen extends Screen {
             query.setFields(getQueryFields());
             nav.setQuery(query);
         } else if (state == State.ADD) {
-            window.setBusy(consts.get("adding"));
+            window.setBusy(Messages.get().adding());
             try {
                 manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("addingComplete"));
+                window.setDone(Messages.get().addingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1034,13 +1025,13 @@ public class InventoryItemScreen extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            window.setBusy(consts.get("updating"));
+            window.setBusy(Messages.get().updating());
             try {
                 manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(Messages.get().updatingComplete());
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1053,14 +1044,14 @@ public class InventoryItemScreen extends Screen {
     protected void abort() {
         setFocus(null);
         clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
+        window.setBusy(Messages.get().cancelChanges());
 
         if (state == State.QUERY) {
             fetchById(null);
-            window.setDone(consts.get("queryAborted"));
+            window.setDone(Messages.get().queryAborted());
         } else if (state == State.ADD) {
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
+            window.setDone(Messages.get().addAborted());
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1070,7 +1061,7 @@ public class InventoryItemScreen extends Screen {
                 Window.alert(e.getMessage());
                 fetchById(null);
             }
-            window.setDone(consts.get("updateAborted"));
+            window.setDone(Messages.get().updateAborted());
         } else {
             window.clearStatus();
         }
@@ -1100,7 +1091,7 @@ public class InventoryItemScreen extends Screen {
             DataChangeEvent.fire(this);
 
             setFocus(name);
-            window.setDone(consts.get("enterInformationPressCommit"));
+            window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -1111,7 +1102,7 @@ public class InventoryItemScreen extends Screen {
 
         hist = new IdNameVO(manager.getInventoryItem().getId(),
                             manager.getInventoryItem().getName());
-        HistoryScreen.showHistory(consts.get("invItemHistory"),
+        HistoryScreen.showHistory(Messages.get().invItemHistory(),
                                   Constants.table().INVENTORY_ITEM,
                                   hist);
     }
@@ -1136,7 +1127,7 @@ public class InventoryItemScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("invComponentHistory"),
+        HistoryScreen.showHistory(Messages.get().invComponentHistory(),
                                   Constants.table().INVENTORY_COMPONENT,
                                   refVoList);
     }
@@ -1165,7 +1156,7 @@ public class InventoryItemScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("invLocationHistory"),
+        HistoryScreen.showHistory(Messages.get().invLocationHistory(),
                                   Constants.table().INVENTORY_LOCATION,
                                   refVoList);
     }
@@ -1175,7 +1166,7 @@ public class InventoryItemScreen extends Screen {
             manager = InventoryItemManager.getInstance();
             setState(State.DEFAULT);
         } else {
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(Messages.get().fetching());
             try {
                 switch (tab) {
                     case COMPONENT:
@@ -1197,12 +1188,12 @@ public class InventoryItemScreen extends Screen {
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
+                window.setDone(Messages.get().noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
+                Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
             }
         }

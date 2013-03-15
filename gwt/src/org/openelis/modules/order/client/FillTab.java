@@ -10,7 +10,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -20,6 +19,7 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.OrderMeta;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
@@ -31,7 +31,7 @@ public class FillTab extends Screen {
 
     private int          numColumns;
 
-    public FillTab(ScreenDefInt def, ScreenWindowInt window) {
+    public FillTab(ScreenDefInt def, WindowInt window) {
 
         setDefinition(def);
         setWindow(window);
