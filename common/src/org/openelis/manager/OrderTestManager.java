@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 
 public class OrderTestManager implements Serializable {
     

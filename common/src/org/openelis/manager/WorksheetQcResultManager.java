@@ -29,7 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetQcResultViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 
 public class WorksheetQcResultManager implements Serializable {
     

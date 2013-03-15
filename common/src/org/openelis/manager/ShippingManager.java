@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 import org.openelis.domain.Constants;
 import org.openelis.domain.ShippingViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 
 public class ShippingManager implements Serializable, HasNotesInt {
 

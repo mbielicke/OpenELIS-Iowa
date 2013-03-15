@@ -29,9 +29,9 @@ import java.io.Serializable;
 
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SectionPermission;
-import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.SystemUserPermission;
 
 public class TestManager implements Serializable {
 

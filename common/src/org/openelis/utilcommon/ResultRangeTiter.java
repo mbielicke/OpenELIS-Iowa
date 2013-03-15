@@ -25,6 +25,7 @@
  */
 package org.openelis.utilcommon;
 
+import org.openelis.constants.Messages;
 import org.openelis.exception.ParseException;
 
 /**
@@ -43,21 +44,21 @@ public class ResultRangeTiter implements ResultRange {
 
         valid = false;
         if (range == null)
-            throw new ParseException("illegalTiterFormatException");
+            throw new ParseException(Messages.get().illegalTiterFormatException());
 
         st = range.split(":");
         if (st.length != 2)
-            throw new ParseException("illegalTiterFormatException");
+            throw new ParseException(Messages.get().illegalTiterFormatException());
 
         try {
             min = Integer.parseInt(st[0]);
             max = Integer.parseInt(st[1]);
             if (min <= 0 || max <= 0)
-                throw new ParseException("illegalTiterFormatException");
+                throw new ParseException(Messages.get().illegalTiterFormatException());
             if (min > max)
-                throw new ParseException("illegalTiterRangeException");
+                throw new ParseException(Messages.get().illegalTiterRangeException());
         } catch (NumberFormatException ex) {
-            throw new ParseException("illegalTiterFormatException");
+            throw new ParseException(Messages.get().illegalTiterFormatException());
         }
         valid = true;
     }
@@ -75,7 +76,7 @@ public class ResultRangeTiter implements ResultRange {
         if (value.startsWith("1:"))
             value = value.substring(2);
         else
-            throw new ParseException("illegalTiterFormatException");
+            throw new ParseException(Messages.get().illegalTiterFormatException());
 
         try {
             d = Integer.parseInt(value);
@@ -85,7 +86,7 @@ public class ResultRangeTiter implements ResultRange {
         }
 
         if ( !contains || !valid)
-            throw new ParseException("illegalTiterFormatException");
+            throw new ParseException(Messages.get().illegalTiterFormatException());
     }
 
     public boolean intersects(ResultRange value) {

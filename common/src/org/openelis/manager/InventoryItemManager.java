@@ -28,7 +28,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 import org.openelis.domain.Constants;
 import org.openelis.domain.InventoryItemViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 
 public class InventoryItemManager implements Serializable, HasNotesInt {
 

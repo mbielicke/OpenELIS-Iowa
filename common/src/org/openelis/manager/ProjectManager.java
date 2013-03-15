@@ -3,7 +3,7 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.ProjectViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 
 public class ProjectManager implements Serializable {
 	

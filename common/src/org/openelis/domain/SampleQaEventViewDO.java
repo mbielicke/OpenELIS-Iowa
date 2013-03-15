@@ -1,6 +1,6 @@
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 public class SampleQaEventViewDO extends SampleQaEventDO {
     private static final long serialVersionUID = 1L;
