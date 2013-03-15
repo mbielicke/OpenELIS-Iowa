@@ -28,11 +28,12 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.OrderItemBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.OrderItemViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.OrderMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class OrderItemManagerProxy {
@@ -110,7 +111,7 @@ public class OrderItemManagerProxy {
             invItemId = man.getItemAt(i).getInventoryItemId();
             if (invItemId != null) {
                 if (invItemIdList.contains(invItemId)) 
-                    list.add(new TableFieldErrorException("duplicateInvItemVendorOrderException",i,
+                    list.add(new TableFieldErrorException(Messages.get().duplicateInvItemVendorOrderException(),i,
                                                           OrderMeta.getOrderItemInventoryItemName(), "itemTable"));
                 else
                     invItemIdList.add(invItemId);

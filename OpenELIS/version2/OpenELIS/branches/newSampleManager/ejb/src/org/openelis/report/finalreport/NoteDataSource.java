@@ -41,7 +41,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.TestTrailerDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.utils.EJBFactory;
 
 public class NoteDataSource implements JRRewindableDataSource {

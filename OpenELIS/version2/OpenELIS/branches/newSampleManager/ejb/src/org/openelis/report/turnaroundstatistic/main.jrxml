@@ -70,58 +70,64 @@
 			<textField pattern="">
 				<reportElement key="headerUserName" mode="Opaque" x="652" y="12" width="100" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMM dd, yyyy">
 				<reportElement x="0" y="0" width="100" height="12"/>
 				<textElement>
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
 				<reportElement x="0" y="12" width="100" height="12"/>
 				<textElement>
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement x="650" y="0" width="77" height="12"/>
 				<textElement textAlignment="Right">
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
 				<reportElement x="730" y="0" width="22" height="12"/>
 				<textElement>
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="TestMethodGroupHeader" pattern="">
 				<reportElement x="168" y="12" width="419" height="12"/>
 				<textElement textAlignment="Center">
-					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{TEST},", ",$F{METHOD})]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="TestMethodGroupHeader" pattern="">
 				<reportElement x="117" y="0" width="520" height="12"/>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Turnaround Statistics Report for the period " + $P{FROM_DATE}+" to "+$P{TO_DATE}]]></textFieldExpression>
 			</textField>
 			<lineChart>
 				<chart customizerClass="org.openelis.report.turnaroundstatistic.TurnaroundCustomizer">
 					<reportElement x="12" y="24" width="738" height="194"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend position="Right"/>
+					<chartTitle>
+						<font fontName="Times New Roman"/>
+					</chartTitle>
+					<chartSubtitle>
+						<font fontName="Times New Roman"/>
+					</chartSubtitle>
+					<chartLegend position="Right">
+						<font fontName="Times New Roman"/>
+					</chartLegend>
 				</chart>
 				<categoryDataset>
 					<dataset resetType="None"/>
@@ -132,18 +138,22 @@
 					<categoryAxisFormat labelRotation="-60.0">
 						<axisFormat verticalTickLabels="true">
 							<labelFont>
-								<font size="8"/>
+								<font fontName="Times New Roman" size="8"/>
 							</labelFont>
 							<tickLabelFont>
-								<font size="8"/>
+								<font fontName="Times New Roman" size="8"/>
 							</tickLabelFont>
 						</axisFormat>
 					</categoryAxisFormat>
 					<valueAxisLabelExpression><![CDATA[$V{LABEL_VALUE_AXIS}]]></valueAxisLabelExpression>
 					<valueAxisFormat>
 						<axisFormat>
-							<labelFont/>
-							<tickLabelFont/>
+							<labelFont>
+								<font fontName="Times New Roman"/>
+							</labelFont>
+							<tickLabelFont>
+								<font fontName="Times New Roman"/>
+							</tickLabelFont>
 						</axisFormat>
 					</valueAxisFormat>
 				</linePlot>
@@ -161,7 +171,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement>
-					<font reportFont="FieldLabel" isBold="false" pdfFontName="Times-Italic"/>
+					<font reportFont="FieldLabel" fontName="Times New Roman" isBold="false" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Date]]></text>
 			</staticText>
@@ -222,7 +232,7 @@
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="0" y="0" width="59" height="12"/>
 				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{PLOT_DATE}]]></textFieldExpression>
 			</textField>
@@ -282,7 +292,9 @@
 		<band height="12">
 			<staticText>
 				<reportElement x="3" y="0" width="752" height="12"/>
-				<textElement/>
+				<textElement>
+					<font fontName="Times New Roman"/>
+				</textElement>
 				<text><![CDATA[* All values are in days and hours. i.e., 4.09 is 4 days and 9 hours]]></text>
 			</staticText>
 		</band>

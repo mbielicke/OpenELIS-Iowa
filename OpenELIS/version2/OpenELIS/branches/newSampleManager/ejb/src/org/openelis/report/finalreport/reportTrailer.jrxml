@@ -18,7 +18,7 @@
 			<staticText>
 				<reportElement key="generalLine1" positionType="Float" x="0" y="0" width="550" height="24" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[The result(s) of this report relate only to the items analyzed. This report shall not be reproduced except in full without the written approval of the laboratory.]]></text>
 			</staticText>
@@ -27,14 +27,14 @@
 					<printWhenExpression><![CDATA["E".equals($P{SAMPLE_DOMAIN}) || "S".equals($P{SAMPLE_DOMAIN})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Iowa Environmental Laboratory IDs are: Ankeny #397, Iowa City/Coralville #027, Lakeside #393.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement key="generalLine2" positionType="Float" x="0" y="36" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[If you have any questions, please call Client Services at 800/421-IOWA (4692) or 319/335-4500. Thank you.]]></text>
 			</staticText>

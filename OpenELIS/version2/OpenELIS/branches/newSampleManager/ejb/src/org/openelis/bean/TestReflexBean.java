@@ -36,15 +36,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.entity.TestReflex;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -142,22 +143,22 @@ public class TestReflexBean {
         list = new ValidationErrorsList();
 
         if (data.getAddTestId() == null) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getReflexAddTestName()));
         }
 
         if (data.getTestAnalyteId() == null) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getReflexTestAnalyteName()));
         }
 
         if (data.getTestResultId() == null) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getReflexTestResultValue()));
         }
 
         if (data.getFlagsId() == null) {
-            list.add(new FieldErrorException("fieldRequiredException", TestMeta.getReflexFlagsId()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), TestMeta.getReflexFlagsId()));
         }
 
         if (list.size() > 0)

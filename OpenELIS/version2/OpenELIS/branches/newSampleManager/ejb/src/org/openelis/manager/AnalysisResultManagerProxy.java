@@ -31,6 +31,7 @@ import java.util.HashMap;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.bean.ResultBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.Constants;
@@ -38,10 +39,10 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utils.EJBFactory;
 
@@ -247,8 +248,8 @@ public class AnalysisResultManagerProxy {
             }
 
         } catch (ParseException e) {
-            errorsList.add(new FormErrorException("oneOrMoreResultValuesInvalid",
-                                                  anDO.getTestName(), anDO.getMethodName()));
+            errorsList.add(new FormErrorException(Messages.get().oneOrMoreResultValuesInvalid(
+                                                  anDO.getTestName(), anDO.getMethodName())));
         }
     }
 
@@ -277,13 +278,13 @@ public class AnalysisResultManagerProxy {
                 if (resultRequiredId.equals(result.getTestAnalyteTypeId()) &&
                     (DataBaseUtil.isEmpty(result.getValue()))) {
                     if (j == 0)
-                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusRequiredResultsException(
                                                               anDO.getTestName(), anDO.getMethodName(),
-                                                              rowResult.getAnalyte(), "Value"));
+                                                              rowResult.getAnalyte(), "Value")));
                     else
-                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusRequiredResultsException(
                                                               anDO.getTestName(), anDO.getMethodName(),
-                                                              rowResult.getAnalyte(), result.getAnalyte()));
+                                                              rowResult.getAnalyte(), result.getAnalyte())));
                 }
 
                 // make sure the result is valid if its filled out
@@ -292,13 +293,13 @@ public class AnalysisResultManagerProxy {
                         validateResult(man, anDO, result);                    
                 } catch (ParseException e) {
                     if (j == 0)
-                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusInvalidResultsException(
                                                               anDO.getTestName(), anDO.getMethodName(),
-                                                              rowResult.getAnalyte(), "Value"));
+                                                              rowResult.getAnalyte(), "Value")));
                     else
-                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                        errorsList.add(new FormErrorException(Messages.get().completeStatusInvalidResultsException(
                                                               anDO.getTestName(), anDO.getMethodName(),
-                                                              rowResult.getAnalyte(), result.getAnalyte()));
+                                                              rowResult.getAnalyte(), result.getAnalyte())));
                 }
 
                 j++ ;

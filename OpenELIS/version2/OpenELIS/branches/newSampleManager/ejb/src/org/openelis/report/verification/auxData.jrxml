@@ -51,7 +51,7 @@ ORDER BY aux_data.sort_order]]>
 			<textField>
 				<reportElement key="analyteName" x="0" y="0" width="150" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()]]></textFieldExpression>
 			</textField>
@@ -61,7 +61,7 @@ ORDER BY aux_data.sort_order]]>
 			<textField isBlankWhenNull="true">
 				<reportElement key="auxDataValue" x="165" y="0" width="480" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{aux_data_value}]]></textFieldExpression>
 			</textField>

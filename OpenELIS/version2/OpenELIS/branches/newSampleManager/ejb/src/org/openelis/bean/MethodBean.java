@@ -38,22 +38,22 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.Constants;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.entity.Method;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.MethodMeta;
-import org.openelis.util.QueryBuilderV2;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -225,7 +225,7 @@ public class MethodBean {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              MethodMeta.getName()));
         } else {
             MethodDO dup;
@@ -233,22 +233,22 @@ public class MethodBean {
             try {
                 dup = fetchByName(data.getName());
                 if (DataBaseUtil.isDifferent(data.getId(), dup.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException",
+                    list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
                                                      MethodMeta.getName()));
             } catch (NotFoundException ignE) {
             }
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              MethodMeta.getActiveBegin()));
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              MethodMeta.getActiveEnd()));
 
         if (DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd()))
-            list.add(new FormErrorException("endDateAfterBeginDateException"));
+            list.add(new FormErrorException(Messages.get().endDateAfterBeginDateException()));
 
         if (list.size() > 0)
             throw list;

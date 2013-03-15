@@ -39,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalyteParameterDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
@@ -46,14 +47,14 @@ import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.entity.AnalyteParameter;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.AnalyteParameterMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -185,9 +186,9 @@ public class AnalyteParameterBean {
         results = null;
         refName = null;
         for (QueryData field : fields) {
-            if (AnalyteParameterMeta.getReferenceTableId().equals(field.key))
-                refTableId = Integer.parseInt(field.query);
-            else if (AnalyteParameterMeta.getReferenceName().equals(field.key))
+            if (AnalyteParameterMeta.getReferenceTableId().equals(field.getKey()))
+                refTableId = Integer.parseInt(field.getQuery());
+            else if (AnalyteParameterMeta.getReferenceName().equals(field.getKey()))
                 refName = field;
         }
         /*
@@ -202,23 +203,23 @@ public class AnalyteParameterBean {
          */
         if (Constants.table().TEST.equals(refTableId)) {
             if (refName != null) {
-                refName.key = AnalyteParameterMeta.getTestName();
+                refName.setKey(AnalyteParameterMeta.getTestName());
             } else {
                 refName = new QueryData();
-                refName.key = AnalyteParameterMeta.getTestName();
-                refName.query = "*";
-                refName.type = QueryData.Type.STRING;
+                refName.setKey(AnalyteParameterMeta.getTestName());
+                refName.setQuery("*");
+                refName.setType(QueryData.Type.STRING);
                 fields.add(refName);
             }
             results = testQuery(fields, builder, first, max);
         } else if (Constants.table().QC.equals(refTableId)) {
             if (refName != null) {
-                refName.key = AnalyteParameterMeta.getQcName();
+                refName.setKey(AnalyteParameterMeta.getQcName());
             } else {
                 refName = new QueryData();
-                refName.key = AnalyteParameterMeta.getQcName();
-                refName.query = "*";
-                refName.type = QueryData.Type.STRING;
+                refName.setKey(AnalyteParameterMeta.getQcName());
+                refName.setQuery("*");
+                refName.setType(QueryData.Type.STRING);
                 fields.add(refName);
             }
             results = qcQuery(fields, builder, first, max);
@@ -306,25 +307,21 @@ public class AnalyteParameterBean {
         validateED = true;
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
-            errors.add(new FieldErrorException("beginDateRequiredForAnalyteException",
-                                               "",
+            errors.add(new FieldErrorException(Messages.get().beginDateRequiredForAnalyteException(""),
                                                data.getAnalyteName()));
             validateED = false;
         }
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
-            errors.add(new FieldErrorException("endDateRequiredForAnalyteException",
-                                               "",
+            errors.add(new FieldErrorException(Messages.get().endDateRequiredForAnalyteException(""),
                                                data.getAnalyteName()));
             validateED = false;
         }
         if (DataBaseUtil.isEmpty(data.getP1()))
-            errors.add(new FieldErrorException("p1RequiredForAnalyteException",
-                                               "",
+            errors.add(new FieldErrorException(Messages.get().p1RequiredForAnalyteException(""),
                                                data.getAnalyteName()));
 
         if (validateED && !endDateValid(data))
-            errors.add(new FieldErrorException("endDateInvalidWithParamException",
-                                               "",
+            errors.add(new FieldErrorException(Messages.get().endDateInvalidWithParamException(""),
                                                data.getAnalyteName()));
 
         if (errors.size() > 0)

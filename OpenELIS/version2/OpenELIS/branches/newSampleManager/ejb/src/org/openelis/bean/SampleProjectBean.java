@@ -38,8 +38,8 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SampleProjectDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.entity.SampleProject;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")

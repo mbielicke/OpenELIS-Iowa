@@ -39,7 +39,7 @@ import javax.ejb.Startup;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.ui.common.InconsistencyException;
 
 /**
  * This class provides application level initialization and services.

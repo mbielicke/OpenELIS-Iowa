@@ -35,14 +35,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.WorksheetResultDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.entity.WorksheetResult;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.WorksheetCompletionMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -180,13 +181,13 @@ public class WorksheetResultBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getTestAnalyteId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              WorksheetCompletionMeta.getWorksheetResultTestAnalyteId()));
         if (DataBaseUtil.isEmpty(data.getResultRow()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              WorksheetCompletionMeta.getWorksheetResultResultRow()));
         if (DataBaseUtil.isEmpty(data.getAnalyteId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              WorksheetCompletionMeta.getWorksheetResultAnalyteId()));
         
         if (list.size() > 0)

@@ -32,9 +32,9 @@ import org.openelis.bean.LockBean;
 import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.Constants;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetManagerProxy {

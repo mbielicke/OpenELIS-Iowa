@@ -25,7 +25,7 @@
  */
 package org.openelis.report.finalreport;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 
 /**

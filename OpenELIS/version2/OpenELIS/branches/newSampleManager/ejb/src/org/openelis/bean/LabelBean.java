@@ -37,22 +37,22 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.Constants;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.entity.Label;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.LabelMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -217,7 +217,7 @@ public class LabelBean   {
         result = query.getResultList();
 
         if (result.size() > 0) {
-            list.add(new FormErrorException("labelDeleteException"));
+            list.add(new FormErrorException(Messages.get().labelDeleteException()));
             throw list;
         }
     }
@@ -229,15 +229,15 @@ public class LabelBean   {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), meta.getName()));
         } else {
             dups = fetchByName(data.getName(), 1);
             if (dups.size() > 0 && !dups.get(0).getId().equals(data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                list.add(new FieldErrorException(Messages.get().fieldUniqueException(), meta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getPrinterTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              meta.getPrinterTypeId()));
 
         if (list.size() > 0)

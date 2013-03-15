@@ -51,10 +51,10 @@ import javax.sql.DataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.data.QueryData;
 
 public class ReportUtil {
 
@@ -67,7 +67,7 @@ public class ReportUtil {
 
         p = new HashMap<String, QueryData>();
         for (QueryData q : list)
-            p.put(q.key, q);
+            p.put(q.getKey(), q);
 
         return p;
     }
@@ -81,7 +81,7 @@ public class ReportUtil {
 
         q = parameter.get(key);
         if (q != null)
-            return q.query;
+            return q.getQuery();
 
         return null;
     }
@@ -97,10 +97,10 @@ public class ReportUtil {
 
         q = parameter.get(key);
         if (q != null) {
-            if (q.query.contains(","))
-                return "in (" + q.query + ")";
-            else if ( !DataBaseUtil.isEmpty(q.query))
-                return " = " + q.query;
+            if (q.getQuery().contains(","))
+                return "in (" + q.getQuery() + ")";
+            else if ( !DataBaseUtil.isEmpty(q.getQuery()))
+                return " = " + q.getQuery();
         }
         return null;
     }
@@ -114,9 +114,9 @@ public class ReportUtil {
         String str[];
 
         q = parameter.get(key);
-        if (q == null || q.query == null)
+        if (q == null || q.getQuery() == null)
             return null;
-        str = q.query.split(",");
+        str = q.getQuery().split(",");
         list = new int[str.length];
         for (int i = 0; i < str.length; i++ ) {
             try {

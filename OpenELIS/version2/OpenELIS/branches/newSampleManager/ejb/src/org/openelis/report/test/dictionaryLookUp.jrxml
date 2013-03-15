@@ -26,7 +26,7 @@ WHERE d.id = $P{DICT_ID}]]>
 					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>
@@ -43,7 +43,7 @@ WHERE d.id = $P{DICT_ID}]]>
 					<rightPen lineWidth="0.0"/>
 				</box>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d_entry}]]></textFieldExpression>
 			</textField>

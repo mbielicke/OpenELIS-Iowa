@@ -35,13 +35,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.entity.OrderContainer;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.OrderMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -118,15 +119,15 @@ public class OrderContainerBean {
 
         list = new ValidationErrorsList();
         if (data.getContainerId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrderMeta.getContainerContainerId()));
         num = data.getItemSequence();
         if (num == null) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              OrderMeta.getContainerItemSequence()));
         } else if(num > MAX_QUANTITY) {
-            list.add(new FieldErrorException("qtyNotMoreThanMaxException",
-                                             OrderMeta.getContainerItemSequence(), MAX_QUANTITY.toString()));            
+            list.add(new FieldErrorException(Messages.get().qtyNotMoreThanMaxException(MAX_QUANTITY.toString()),
+                                             OrderMeta.getContainerItemSequence()));            
         }
         
         if (list.size() > 0)

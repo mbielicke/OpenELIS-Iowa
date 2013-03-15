@@ -35,13 +35,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.entity.TestWorksheetAnalyte;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -120,7 +121,7 @@ public class TestWorksheetAnalyteBean {
         list = new ValidationErrorsList();
         
         if (DataBaseUtil.isEmpty(repeat) || repeat < 1) {
-            list.add(new FieldErrorException("repeatNullForAnalyteException",
+            list.add(new FieldErrorException(Messages.get().repeatNullForAnalyteException(),
                                              TestMeta.getWorksheetAnalyteRepeat()));
         }
         

@@ -37,14 +37,14 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.gwt.common.ReportStatus;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
 @SecurityDomain("openelis")

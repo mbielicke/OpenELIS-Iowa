@@ -27,7 +27,7 @@
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{TYPE}]]></textFieldExpression>
 			</textField>
@@ -40,7 +40,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[#]]></text>
 			</staticText>
@@ -53,7 +53,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Min]]></text>
 			</staticText>
@@ -66,7 +66,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Max]]></text>
 			</staticText>
@@ -79,7 +79,7 @@
 					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Avg]]></text>
 			</staticText>
@@ -92,7 +92,7 @@
 					<rightPen lineWidth="0.25" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[1 SD]]></text>
 			</staticText>

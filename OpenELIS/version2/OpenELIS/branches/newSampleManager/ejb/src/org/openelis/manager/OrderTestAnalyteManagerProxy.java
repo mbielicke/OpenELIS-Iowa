@@ -34,8 +34,8 @@ import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.OrderTestAnalyteBean;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class OrderTestAnalyteManagerProxy {

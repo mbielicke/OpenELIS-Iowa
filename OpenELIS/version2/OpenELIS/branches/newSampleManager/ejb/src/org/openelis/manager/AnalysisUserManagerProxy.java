@@ -28,10 +28,9 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.AnalysisUserBean;
-import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.AnalysisUserViewDO;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisUserManagerProxy {

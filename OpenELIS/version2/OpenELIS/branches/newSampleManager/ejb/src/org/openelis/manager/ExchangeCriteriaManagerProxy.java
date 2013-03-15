@@ -31,9 +31,9 @@ import org.openelis.domain.Constants;
 import org.openelis.bean.EventLogBean;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class ExchangeCriteriaManagerProxy {

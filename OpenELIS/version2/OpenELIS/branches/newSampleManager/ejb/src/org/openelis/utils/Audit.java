@@ -28,7 +28,7 @@ package org.openelis.utils;
 import java.util.ArrayList;
 
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
