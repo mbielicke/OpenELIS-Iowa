@@ -29,8 +29,8 @@ import org.openelis.domain.Constants;
 import org.openelis.bean.OrderRecurrenceBean;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class OrderManagerProxy {

@@ -38,7 +38,7 @@ import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.bean.ResultBean;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.utils.EJBFactory;
 
 public class ResultDataSource implements JRRewindableDataSource {

@@ -49,14 +49,14 @@ import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.meta.WorksheetCreationMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless

@@ -23,7 +23,7 @@ WHERE an.id = $P{ANALYSIS_ID} and r.analysis_id = an.id and r.is_reportable ='Y'
 					<rightPen lineWidth="0.25" lineColor="#C0C0C0"/>
 				</box>
 				<textElement>
-					<font size="9" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="9" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>

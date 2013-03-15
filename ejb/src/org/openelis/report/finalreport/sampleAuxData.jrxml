@@ -51,14 +51,14 @@ ORDER BY aux_data.sort_order]]>
 			<textField>
 				<reportElement x="0" y="0" width="150" height="12"/>
 				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="160" y="0" width="390" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[($F{aux_data_value} != null && $F{aux_data_value}.length() > 0) ? $F{aux_data_value} : "Not provided"]]></textFieldExpression>
 			</textField>

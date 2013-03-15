@@ -36,8 +36,8 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.AnalyteParameterManager;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.utils.EJBFactory;
 
 @Stateless

@@ -35,13 +35,13 @@ import org.openelis.domain.TurnAroundReportViewVO.PlotValue;
 import org.openelis.domain.TurnAroundReportViewVO.StatisticType;
 import org.openelis.domain.TurnAroundReportViewVO.Value;
 import org.openelis.domain.TurnAroundReportViewVO.Value.Stat;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.SampleMeta;
 import org.openelis.report.turnaroundstatistic.TurnaroundDataSource;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
@@ -101,8 +101,8 @@ public class TurnaroundStatisticReportBean {
          */
         i = 0;
         while (i < paramList.size()) {
-            if ( ("PLOT_INTERVAL").equals(paramList.get(i).key) ||
-                ("EXCLUDE_PT").equals(paramList.get(i).key)) {
+            if ( ("PLOT_INTERVAL").equals(paramList.get(i).getKey()) ||
+                ("EXCLUDE_PT").equals(paramList.get(i).getKey())) {
                 paramList.remove(i);
                 if (i > 0)
                     i-- ;

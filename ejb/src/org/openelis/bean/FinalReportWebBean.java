@@ -16,9 +16,9 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless

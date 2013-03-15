@@ -3,7 +3,7 @@ package org.openelis.report.finalreport;
 import java.util.*;
 import java.util.logging.Logger;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.ui.common.DataBaseUtil;
 
 import net.sf.jasperreports.engine.*;
 

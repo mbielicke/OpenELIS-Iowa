@@ -28,16 +28,17 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.bean.DictionaryBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisManagerProxy {
@@ -253,13 +254,13 @@ public class AnalysisManagerProxy {
             //
             if (analysisDO.isChanged()) {
                 if (analysisDO.getTestId() == null)
-                    errorsList.add(new FormErrorException("analysisTestIdMissing",
-                                                          sampleItemSequence));
+                    errorsList.add(new FormErrorException(Messages.get().analysisTestIdMissing(
+                                                          DataBaseUtil.asString(sampleItemSequence))));
 
                 if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
-                    errorsList.add(new FormErrorException("analysisSectionIdMissing",
+                    errorsList.add(new FormErrorException(Messages.get().analysisSectionIdMissing(
                                                           analysisDO.getTestName(),
-                                                          analysisDO.getMethodName()));
+                                                          analysisDO.getMethodName())));
 
                 // if unit is null, check the test definition to see if all
                 // sample types
@@ -267,16 +268,16 @@ public class AnalysisManagerProxy {
                 if (analysisDO.getTestId() != null &&
                     analysisDO.getUnitOfMeasureId() == null &&
                     !testMan.getSampleTypes().hasEmptyUnit())
-                    errorsList.add(new FormErrorException("analysisUnitRequired",
+                    errorsList.add(new FormErrorException(Messages.get().analysisUnitRequired(
                                                           analysisDO.getTestName(),
-                                                          analysisDO.getMethodName()));
+                                                          analysisDO.getMethodName())));
 
                 if (analysisDO.getStartedDate() != null &&
                     analysisDO.getCompletedDate() != null &&
                     analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
-                    errorsList.add(new FormErrorException("startedDateInvalidError",
+                    errorsList.add(new FormErrorException(Messages.get().startedDateInvalidError(
                                                           analysisDO.getTestName(),
-                                                          analysisDO.getMethodName()));
+                                                          analysisDO.getMethodName())));
             }
 
             item = man.getItemAt(i);

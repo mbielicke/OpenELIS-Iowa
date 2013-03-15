@@ -38,10 +38,10 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.Note;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserVO;
 
 @Stateless
 @SecurityDomain("openelis")

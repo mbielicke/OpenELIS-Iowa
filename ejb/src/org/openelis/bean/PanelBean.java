@@ -36,6 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
@@ -44,14 +45,14 @@ import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.Panel;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.PanelMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -326,7 +327,7 @@ public class PanelBean {
         list = new ValidationErrorsList();
         name = data.getName();
         if (DataBaseUtil.isEmpty(name)) {
-            list.add(new FieldErrorException("fieldRequiredException", PanelMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), PanelMeta.getName()));
             throw list;
         }
 
@@ -335,7 +336,7 @@ public class PanelBean {
         try {
             panel = (PanelDO)query.getSingleResult();
             if (DataBaseUtil.isDifferent(panel.getId(), data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", PanelMeta.getName()));
+                list.add(new FieldErrorException(Messages.get().fieldUniqueException(), PanelMeta.getName()));
         } catch (NoResultException ignE) {
             // do nothing
         }

@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
@@ -44,14 +45,14 @@ import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.entity.Shipping;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.ShippingMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
@@ -185,19 +186,19 @@ public class ShippingBean {
         list = new ValidationErrorsList();
        
         if(data.getStatusId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getStatusId()));        
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),ShippingMeta.getStatusId()));        
                 
         if(data.getNumberOfPackages() == null)
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getNumberOfPackages()));        
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),ShippingMeta.getNumberOfPackages()));        
                 
         if(data.getShippedFromId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedFromId()));        
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),ShippingMeta.getShippedFromId()));        
                 
         if(data.getShippedToId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getShippedToName()));        
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),ShippingMeta.getShippedToName()));        
                 
         if(data.getCost() != null && data.getCost().doubleValue() <= 0)
-            list.add(new FieldErrorException("invalidCostException",ShippingMeta.getCost()));
+            list.add(new FieldErrorException(Messages.get().invalidCostException(),ShippingMeta.getCost()));
         
         if(list.size() > 0)
             throw list;

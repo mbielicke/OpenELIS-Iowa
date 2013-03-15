@@ -23,7 +23,7 @@ ORDER BY sp_id]]>
 			<textField>
 				<reportElement x="0" y="0" width="142" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}.toUpperCase()]]></textFieldExpression>
 			</textField>

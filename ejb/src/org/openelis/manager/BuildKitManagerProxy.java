@@ -31,6 +31,7 @@ import org.openelis.bean.InventoryItemBean;
 import org.openelis.bean.InventoryLocationBean;
 import org.openelis.bean.InventoryReceiptBean;
 import org.openelis.bean.InventoryXPutBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -39,13 +40,13 @@ import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.InventoryItemMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class BuildKitManagerProxy {
@@ -197,7 +198,7 @@ public class BuildKitManagerProxy {
         storeId = null;
 
         if (itemMan == null) {
-            list.add(new FieldErrorException("fieldRequiredException", InventoryItemMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), InventoryItemMeta.getName()));
         } else {
             item = itemMan.getInventoryItem();
             compMan = itemMan.getComponents();
@@ -210,7 +211,7 @@ public class BuildKitManagerProxy {
         if (receipt.getInventoryLocations() != null) {
             location = receipt.getInventoryLocations().get(0);
             if (location.getStorageLocationId() == null)
-                list.add(new FieldErrorException("fieldRequiredException",
+                list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                                  InventoryItemMeta.getLocationStorageLocationName()));
 
             if (item != null) {
@@ -219,29 +220,29 @@ public class BuildKitManagerProxy {
                 // lot number must be specified
                 //
                 if (DataBaseUtil.isEmpty(location.getLotNumber()) &&  "Y".equals(item.getIsLotMaintained()))
-                    list.add(new FieldErrorException("lotNumRequiredForOrderItemException",
+                    list.add(new FieldErrorException(Messages.get().lotNumRequiredForOrderItemException(),
                                                  InventoryItemMeta.getLocationLotNumber()));
                 /*
                  * if this item is to be added to an existing location then the
                  * location specified here must already exist
                  */
                 if ("Y".equals(receipt.getAddToExistingLocation()) && location.getId() == null)
-                    list.add(new FieldErrorException("itemNotExistAtLocationException",
+                    list.add(new FieldErrorException(Messages.get().itemNotExistAtLocationException(),
                                                  InventoryItemMeta.getLocationStorageLocationName()));
                 else if ("N".equals(receipt.getAddToExistingLocation()) && location.getId() != null)
-                    list.add(new FieldErrorException("itemExistAtLocationException",
+                    list.add(new FieldErrorException(Messages.get().itemExistAtLocationException(),
                                                      InventoryItemMeta.getLocationStorageLocationName()));
             }
         } else {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              InventoryItemMeta.getLocationStorageLocationName()));
         }
 
         receivedQ = receipt.getQuantityReceived();
         if (receivedQ == null)
-            list.add(new FieldErrorException("fieldRequiredException", "numRequested"));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), "numRequested"));
         else if (receivedQ < 1)
-            list.add(new FieldErrorException("numRequestedMoreThanZeroException", "numRequested"));
+            list.add(new FieldErrorException(Messages.get().numRequestedMoreThanZeroException(), "numRequested"));
 
         //
         // only the inventory items that have components can be chosen to be
@@ -249,7 +250,7 @@ public class BuildKitManagerProxy {
         // as kits
         //
         if (compMan == null || compMan.count() == 0) {
-            list.add(new FormErrorException("kitAtleastOneComponentException"));
+            list.add(new FormErrorException(Messages.get().kitAtleastOneComponentException()));
         } else {
             for (int i = 0; i < compMan.count(); i++ ) {
                 component = compMan.getComponentAt(i);
@@ -257,7 +258,7 @@ public class BuildKitManagerProxy {
 
                 if (component.getInventoryLocationId() == null &&
                     !"Y".equals(compItem.getIsNotInventoried()))
-                    list.add(new TableFieldErrorException("fieldRequiredException", i,
+                    list.add(new TableFieldErrorException(Messages.get().fieldRequiredException(), i,
                                                           InventoryItemMeta.getLocationStorageLocationName(),
                                                           "componentTable"));
 
@@ -266,7 +267,7 @@ public class BuildKitManagerProxy {
                 // same
                 //
                 if ( !DataBaseUtil.isSame(storeId, compItem.getStoreId()))
-                    list.add(new TableFieldErrorException("kitAndComponentSameStoreException",
+                    list.add(new TableFieldErrorException(Messages.get().kitAndComponentSameStoreException(),
                                                           i,
                                                           InventoryItemMeta.getLocationStorageLocationName(),
                                                           "componentTable"));

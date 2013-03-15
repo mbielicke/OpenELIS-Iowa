@@ -28,16 +28,17 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.TestSectionBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class TestSectionManagerProxy {
@@ -95,7 +96,7 @@ public class TestSectionManagerProxy {
         list = new ValidationErrorsList();
 
         if (man.count() == 0) {
-            list.add(new FieldErrorException("atleastOneSection", null));
+            list.add(new FieldErrorException(Messages.get().atleastOneSection(), null));
             throw list;
         }
 
@@ -116,7 +117,7 @@ public class TestSectionManagerProxy {
             }
 
             if (idList.contains(sectId)) {
-                exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
+                exc = new TableFieldErrorException(Messages.get().fieldUniqueOnlyException(), i,
                                                    TestMeta.getSectionSectionId(), "sectionTable");
                 list.add(exc);
             } else {
@@ -155,7 +156,7 @@ public class TestSectionManagerProxy {
                 data = sectionList.get(i);
                 flagId = data.getFlagId();
                 if ( !DataBaseUtil.isSame(Constants.dictionary().TEST_SECTION_DEFAULT, flagId)) {
-                    exc = new TableFieldErrorException("allSectBlankIfDefException", i,
+                    exc = new TableFieldErrorException(Messages.get().allSectBlankIfDefException(), i,
                                                        TestMeta.getSectionFlagId(), "sectionTable");
                     list.add(exc);
                 }
@@ -170,7 +171,7 @@ public class TestSectionManagerProxy {
                 flagId = data.getFlagId();
 
                 if ( !DataBaseUtil.isSame(Constants.dictionary().TEST_SECTION_MATCH, flagId)) {
-                    exc = new TableFieldErrorException("allSectMatchFlagException", i,
+                    exc = new TableFieldErrorException(Messages.get().allSectMatchFlagException(), i,
                                                        TestMeta.getSectionFlagId(), "sectionTable");
                     list.add(exc);
                 }

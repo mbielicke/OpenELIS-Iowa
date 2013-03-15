@@ -29,8 +29,8 @@ import java.util.ArrayList;
 
 import org.openelis.bean.QcAnalyteBean;
 import org.openelis.domain.QcAnalyteViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class QcAnalyteManagerProxy {

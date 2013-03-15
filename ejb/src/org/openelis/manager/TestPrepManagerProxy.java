@@ -29,11 +29,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.openelis.bean.TestPrepBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.TestPrepViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class TestPrepManagerProxy {
@@ -115,14 +116,14 @@ public class TestPrepManagerProxy {
             if (!testPrepIdList.contains(prepId)) {
                 testPrepIdList.add(prepId);
             } else {
-                exc = new TableFieldErrorException("fieldUniqueOnlyException", i,
+                exc = new TableFieldErrorException(Messages.get().fieldUniqueOnlyException(), i,
                                                    TestMeta.getPrepPrepTestName(),"testPrepTable");
                 list.add(exc);
             }
             
             if (DataBaseUtil.isDifferent("Y",prepDO.getIsOptional())) {
                 if (numReq >= 1) {
-                    exc = new TableFieldErrorException("moreThanOnePrepTestOptionalException", i,
+                    exc = new TableFieldErrorException(Messages.get().moreThanOnePrepTestOptionalException(), i,
                                                        TestMeta.getPrepIsOptional(),"testPrepTable");
                     list.add(exc);
                 }

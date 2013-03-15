@@ -36,7 +36,7 @@ WHERE
 			<textField>
 				<reportElement x="0" y="0" width="120" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($V{INITIALS}, ", ")]]></textFieldExpression>
 			</textField>

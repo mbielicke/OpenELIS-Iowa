@@ -34,13 +34,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.entity.ShippingItem;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.ShippingMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -117,10 +118,10 @@ public class ShippingItemBean {
         list = new ValidationErrorsList();
        
         if(data.getQuantity() == null)
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getItemQuantity()));     
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),ShippingMeta.getItemQuantity()));     
         
         if(data.getDescription() == null)
-            list.add(new FieldErrorException("fieldRequiredException",ShippingMeta.getItemDescription()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),ShippingMeta.getItemDescription()));
         
         if(list.size() > 0)
             throw list;

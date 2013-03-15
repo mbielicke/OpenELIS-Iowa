@@ -36,12 +36,13 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.entity.SampleOrganization;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -81,7 +82,7 @@ public class SampleOrganizationBean {
         try {
             return (SampleOrganizationViewDO)query.getSingleResult();
         } catch (NoResultException e) {
-            throw new NotFoundException("noRecordsFound");
+            throw new NotFoundException(Messages.get().noRecordsFound());
         } catch (Exception e) {
             throw new DatabaseException(e);
         }

@@ -32,42 +32,42 @@ WHERE
 			<staticText>
 				<reportElement key="multipleUnit.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Apt/Suite #:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="multipleUnit" positionType="Float" x="105" y="0" width="250" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{multiple_unit}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="streetAddress.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Address:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="streetAddress" positionType="Float" x="105" y="12" width="250" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="cityStateZip.label" x="0" y="24" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[City, State, Zip:]]></text>
 			</staticText>
 			<textField>
 				<reportElement key="cityStateZip" positionType="Float" x="105" y="24" width="250" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{city},", ",JasperUtil.concatWithSeparator($F{state}, " ", $F{zip_code}))]]></textFieldExpression>
 			</textField>
@@ -76,7 +76,7 @@ WHERE
 					<printWhenExpression><![CDATA[!"N".equals($P{PHONE_TYPE})]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Phone:]]></text>
 			</staticText>
@@ -85,7 +85,7 @@ WHERE
 					<printWhenExpression><![CDATA["H".equals($P{PHONE_TYPE})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{home_phone}]]></textFieldExpression>
 			</textField>
@@ -94,7 +94,7 @@ WHERE
 					<printWhenExpression><![CDATA["W".equals($P{PHONE_TYPE})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{work_phone}]]></textFieldExpression>
 			</textField>
@@ -103,7 +103,7 @@ WHERE
 					<printWhenExpression><![CDATA[$P{WITH_FAX}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Fax:]]></text>
 			</staticText>
@@ -112,7 +112,7 @@ WHERE
 					<printWhenExpression><![CDATA[$P{WITH_FAX}]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{fax_phone}]]></textFieldExpression>
 			</textField>

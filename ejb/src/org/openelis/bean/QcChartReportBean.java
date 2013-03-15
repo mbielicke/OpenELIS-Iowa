@@ -31,13 +31,13 @@ import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.domain.QcChartReportViewVO.ReportType;
 import org.openelis.domain.QcChartReportViewVO.Value;
 import org.openelis.domain.QcChartResultVO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.report.qcchart.QcChartDataSource;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.InconsistencyException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

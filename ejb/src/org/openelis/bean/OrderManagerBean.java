@@ -48,8 +48,6 @@ import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
@@ -60,6 +58,8 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
 @SecurityDomain("openelis")

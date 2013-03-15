@@ -21,7 +21,7 @@ WHERE
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="text" x="0" y="0" width="702" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{text}.trim()]]></textFieldExpression>
 			</textField>

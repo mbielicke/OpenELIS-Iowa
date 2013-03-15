@@ -34,14 +34,15 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.entity.TestWorksheet;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.TestMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -119,32 +120,32 @@ public class TestWorksheetBean {
         list = new ValidationErrorsList();
         
         if (DataBaseUtil.isEmpty(data.getSubsetCapacity())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getWorksheetSubsetCapacity()));
             checkForMultiple = false;
         } else if (data.getSubsetCapacity() <= 0) {
-            list.add(new FieldErrorException("subsetCapacityMoreThanZeroException",
+            list.add(new FieldErrorException(Messages.get().subsetCapacityMoreThanZeroException(),
                                              TestMeta.getWorksheetSubsetCapacity()));
             checkForMultiple = false;
         }
         if (DataBaseUtil.isEmpty(data.getTotalCapacity())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         } else if (data.getTotalCapacity() <= 0) {
-            list.add(new FieldErrorException("totalCapacityMoreThanZeroException",
+            list.add(new FieldErrorException(Messages.get().totalCapacityMoreThanZeroException(),
                                              TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getFormatId())) {
-            list.add(new FieldErrorException("fieldRequiredException",
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
                                              TestMeta.getWorksheetFormatId()));
         }
 
         if (checkForMultiple) {
             if ( (data.getTotalCapacity() % data.getSubsetCapacity()) != 0) {
-                list.add(new FieldErrorException("totalCapacityMultipleException",
+                list.add(new FieldErrorException(Messages.get().totalCapacityMultipleException(),
                                                  TestMeta.getWorksheetTotalCapacity()));
             }
         }

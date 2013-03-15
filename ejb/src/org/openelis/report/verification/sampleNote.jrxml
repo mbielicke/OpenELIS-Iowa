@@ -27,7 +27,7 @@ ORDER BY q.reporting_sequence, sq.id]]>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="typeAndDescription" x="0" y="0" width="702" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font isBold="true" pdfFontName="Times-Bold"/>
+					<font fontName="Times New Roman" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["("+$F{type}.trim()+") - "+$F{description}.trim()]]></textFieldExpression>
 			</textField>

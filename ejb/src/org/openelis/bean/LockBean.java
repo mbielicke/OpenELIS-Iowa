@@ -38,8 +38,9 @@ import javax.persistence.Query;
 import javax.validation.ConstraintViolationException;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.entity.Lock;
-import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.ui.common.EntityLockedException;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -109,10 +110,10 @@ public class LockBean {
         if (locks.size() > 0) {
             for (Lock l : locks) {
                 if (l.getExpires() >= now) {
-                    throw new EntityLockedException("entityLockException",
+                    throw new EntityLockedException(Messages.get().entityLockException(
                                                     userCache.getSystemUser(l.getSystemUserId())
                                                              .getLoginName(),
-                                                    new Date(l.getExpires()).toString());
+                                                    new Date(l.getExpires()).toString()));
                 }
                 manager.remove(l);
                 manager.flush();
@@ -136,13 +137,13 @@ public class LockBean {
             }
             manager.flush();
         } catch (ConstraintViolationException e) {
-            throw new EntityLockedException("entityLockException",
+            throw new EntityLockedException(Messages.get().entityLockException(
                                             "unknown",
-                                            new Date(lockTimeMillis + now).toString());
+                                            new Date(lockTimeMillis + now).toString()));
         } catch (PersistenceException e) {
-            throw new EntityLockedException("entityLockException",
+            throw new EntityLockedException(Messages.get().entityLockException(
                                             "unknown",
-                                            new Date(lockTimeMillis + now).toString());
+                                            new Date(lockTimeMillis + now).toString()));
         }
     }
 
@@ -218,14 +219,14 @@ public class LockBean {
         query.setParameter("tableId", referenceTableId);
         locks = query.getResultList();
         if (locks.size() != referenceIds.size())
-            throw new EntityLockedException("expiredLockException");
+            throw new EntityLockedException(Messages.get().expiredLockException());
 
         userId = userCache.getId();
         sessionId = userCache.getSessionId();
         timeMillis = System.currentTimeMillis();
         for (Lock l : locks) {
             if ( !l.getSystemUserId().equals(userId) || !l.getSessionId().equals(sessionId))
-                throw new EntityLockedException("expiredLockException");
+                throw new EntityLockedException(Messages.get().expiredLockException());
             //
             // if the lock has expired, we are going to refresh its expiration
             // time

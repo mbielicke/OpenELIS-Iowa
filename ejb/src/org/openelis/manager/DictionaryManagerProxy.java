@@ -28,13 +28,14 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.bean.DictionaryBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.CategoryMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class DictionaryManagerProxy {
@@ -151,7 +152,7 @@ public class DictionaryManagerProxy {
                 if (!entries.contains(name)) {
                     entries.add(name);
                 } else {                    
-                    list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
+                    list.add(new TableFieldErrorException(Messages.get().fieldUniqueOnlyException(), i,
                                                           CategoryMeta.getDictionaryEntry(),
                                                           "dictEntTable"));
                 }
@@ -164,7 +165,7 @@ public class DictionaryManagerProxy {
                    try {
                        dictionary = dl.fetchBySystemName(systemName);
                        if (!dictionary.getCategoryId().equals(man.getCategoryId())) {
-                           list.add(new TableFieldErrorException("fieldUniqueException", i,
+                           list.add(new TableFieldErrorException(Messages.get().fieldUniqueException(), i,
                                                                  CategoryMeta.getDictionarySystemName(),
                                                                  "dictEntTable"));                        
                       }
@@ -173,11 +174,11 @@ public class DictionaryManagerProxy {
                    }
                    systemNames.add(systemName);
                 } else if (data.getId() == null) {
-                        list.add(new TableFieldErrorException("fieldUniqueOnlyException", i,
+                        list.add(new TableFieldErrorException(Messages.get().fieldUniqueOnlyException(), i,
                                                               CategoryMeta.getDictionarySystemName(),
                                                               "dictEntTable"));                        
                 } else {
-                    list.add(new TableFieldErrorException("fieldUniqueException", i,
+                    list.add(new TableFieldErrorException(Messages.get().fieldUniqueException(), i,
                                                           CategoryMeta.getDictionarySystemName(),
                                                               "dictEntTable"));                    
                 }

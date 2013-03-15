@@ -29,14 +29,15 @@ import java.util.ArrayList;
 
 import org.openelis.bean.InventoryLocationBean;
 import org.openelis.bean.InventoryReceiptBean;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderItemViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.TableFieldErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.meta.InventoryReceiptMeta;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.TableFieldErrorException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class InventoryReceiptManagerProxy {
@@ -244,7 +245,7 @@ public class InventoryReceiptManagerProxy {
                     qtyReceived += data.getQuantityReceived();
 
                     if (qtyOrdered < qtyReceived) {
-                        list.add(new TableFieldErrorException("numReqLessThanNumRecException",
+                        list.add(new TableFieldErrorException(Messages.get().numReqLessThanNumRecException(),
                                                               i,
                                                               InventoryReceiptMeta.getQuantityReceived(),
                                                               "receiptTable"));
