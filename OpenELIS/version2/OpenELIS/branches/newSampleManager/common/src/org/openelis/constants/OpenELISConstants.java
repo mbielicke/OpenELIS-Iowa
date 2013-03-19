@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -7585,13 +7585,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String orgId();
 
   /**
-   * Translated "Samples from this organization are to be held or refused:  ".
+   * Translated "Samples from {0} are to be held or refused   ".
    * 
-   * @return translated "Samples from this organization are to be held or refused:  "
+   * @return translated "Samples from {0} are to be held or refused   "
    */
-  @DefaultMessage("Samples from this organization are to be held or refused:  ")
+  @DefaultMessage("Samples from {0} are to be held or refused   ")
   @Key("orgMarkedAsHoldRefuseSample")
-  String orgMarkedAsHoldRefuseSample();
+  String orgMarkedAsHoldRefuseSample(String arg0);
 
   /**
    * Translated "An organization must be specified for a section flagged as \"External\"".
