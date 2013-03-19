@@ -61,7 +61,7 @@ UIRF Software License are applicable instead of those above.
           </td>
           <td class="{res.style.Prompt}"><ui:text from="{msg.started}" /></td>
           <td>
-            <c:Calendar ui:field="analysisStartedDate" begin="0" end="4" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}"/>    
+            <c:Calendar ui:field="analysisStartedDate" begin="0" end="4" width="125px" pattern="{msg.dateTimePattern}"/>    
           </td> 
         </tr>
         <tr>
@@ -79,7 +79,7 @@ UIRF Software License are applicable instead of those above.
            </td>
            <td class="{res.style.Prompt}"><ui:text from="{msg.completed}" /></td>
            <td>
-             <c:Calendar ui:field="analysisCompletedDate" begin="0" end="4" width="125px" pattern="{resource:getString($constants,'dateTimePattern')}"/>    
+             <c:Calendar ui:field="analysisCompletedDate" begin="0" end="4" width="125px" pattern="{msg.dateTimePattern}"/>    
            </td>
          </tr>
          <tr>
@@ -104,7 +104,7 @@ UIRF Software License are applicable instead of those above.
                <w:popup>
                  <t:Table visibleRows="10" header="true">
                    <t:Column width="350px" label="{msg.name}">
-                     <t:LabelCell />
+                     <t:Label />
                    </t:Column>               
                  </t:Table>
                </w:popup>
@@ -119,130 +119,60 @@ UIRF Software License are applicable instead of those above.
       </table>
       <g:HorizontalPanel>
          <g:VerticalPanel>
-            <table key="worksheetTable" style="ScreenTableWithSides" width="auto" tab = "analysisUserTable,{meta:getAnalysisCompletedDate()}" maxRows="3" showScroll="ALWAYS" title="">
-            	<col width="70" header="Worksheet">
-              		<label field="Integer"/>
-            	</col>
-            	<col width="115" header="Created">
-              		<calendar width="115" begin="0" end="2" pattern="{resource:getString($constants,'dateTimePattern')}" />
-            	</col>
-            	<col width="115" header="Status">
-              		<dropdown width="100" field="Integer" />
-            	</col>
-            	<col width="120" header="User">
-              		<label field="String"/>
-            	</col>
-            </table>
-                  <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
-        <t:Column width="70" label="{msg.worksheet}">
-          <t:LabelCell>
-            <t:LabelCell field="Integer"/>
-          </t:LabelCell>
-        </t:Column>
-        <t:Column width="115" label="{msg.contactName}">
-          <t:TextBoxCell>
-            <w:TextBox maxLength="40" required="true" />
-          </t:TextBoxCell>
-          calendar
-        </t:Column>
-        <t:Column width="100" label="{msg.workNumber}">
-          <t:TextBoxCell>
-            <w:TextBox maxLength="21" mask="{msg.phoneWithExtensionPattern}" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="90" label="{msg.homeNumber}">
-          <t:TextBoxCell>
-            <w:TextBox maxLength="16" mask="{msg.phonePattern}" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="90" label="{msg.cellNumber}">
-          <t:TextBoxCell>
-            <w:TextBox maxLength="16" mask="{msg.phonePattern}" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="90" label="{msg.faxNumber}">
-          <t:TextBoxCell>
-            <w:TextBox maxLength="16" mask="{msg.phonePattern}" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="150" label="{msg.email}">
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="130" label="{msg.aptSuite}">
-          <t:TextBoxCell>
-            <w:TextBox case="UPPER" maxLength="30" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="130" label="{msg.address}">
-          <t:TextBoxCell>
-            <w:TextBox case="UPPER" maxLength="40" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="130" sortable="true" label="{msg.city}">
-          <t:TextBoxCell>
-            <w:TextBox case="UPPER" maxLength="30" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="56" label="{msg.state}">
-          <t:DropdownCell>
-            <w:Dropdown width="40" case="UPPER" ui:field="state"/>
-          </t:DropdownCell>
-        </t:Column>
-        <t:Column width="68" label="{msg.zipcode}">
-          <t:TextBoxCell>
-            <w:TextBox mask="99999-9999" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="126" label="{msg.country}">
-          <t:DropdownCell>
-            <w:Dropdown width="110" field="String" ui:field="country"/>
-          </t:DropdownCell>
-        </t:Column>
-      </t:Table>
-	            <HorizontalPanel style="TableFooterPanel">
-                 <appButton key="selectWkshtButton" style="Button">
-                   <HorizontalPanel>
-                     <AbsolutePanel style="selectIcon" />
-                     <text>
-                       <xsl:value-of select='resource:getString($constants,"select")' />
-                     </text>
-                   </HorizontalPanel>
-                 </appButton>
-           </HorizontalPanel>
-        </g:VerticalPanel>
-            <AbsolutePanel style="Divider" />
-                  <VerticalPanel spacing="0" padding="0">
-      		<table key="analysisUserTable" tab = "{meta:getAnalysisTestName()},worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
-            	<col width="115" header="User">
-              		<autoComplete width="100" case="LOWER" field="Integer" required="true"/>
-            	</col>
-            	<col width="114" header="Action">
-              		<dropdown width="100" field="Integer" required="true"/>
-            	</col>
-            </table>
-            <HorizontalPanel style="TableFooterPanel">
-               <appButton key="addActionButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="AddRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'addRow')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="removeActionButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="RemoveRowButtonImage" />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                  </HorizontalPanel>
-                  </VerticalPanel>
-      </g:HorizontalPanel>
-    </g:VerticalPanel>
+            <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
+              <t:Column width="70" label="{msg.worksheet}">
+                <t:LabelCell>
+                  <t:Label field="Integer"/>
+                </t:LabelCell>
+              </t:Column>
+              <t:Column width="115" label="{msg.created}">
+                <t:CalendarCell>
+                  <c:Calendar width="115" begin="0" end="2" pattern="{msg.dateTimePattern}" />
+                </t:CalendarCell>
+              </t:Column>
+              <t:Column width="115" label="{msg.status}">
+                <t:DropdownCell>
+                  <w:Dropdown width="100"/>
+                </t:DropdownCell>
+              </t:Column>
+              <t:Column width="120" label="{msg.user}">
+                <t:LabelCell>
+                  <t:LabelCell/>
+                </t:LabelCell>
+              </t:Column>
+            </t:Table>
+	          <g:HorizontalPanel class="{res.style.TableFooterPanel}">
+                <w:Button ui:field="selectWkshtButton" leftIcon="{res.style.selectIcon}" text="{msg.select}" />             
+              </g:HorizontalPanel>
+            </g:VerticalPanel>
+            <g:AbsolutePanel style="{res.style.Divider}" />
+            <g:VerticalPanel spacing="0" padding="0">
+              <t:Table ui:field="analysisUserTable" visibleRows="3" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true" class = {res.style.ScreenTableWithSides}>
+                <t:Column width="115" label="{msg.user}">
+                  <t:AutoCompleteCell>
+                     <w:AutoComplete case="LOWER" required="true">
+                       <w:popup>
+                         <t:Table visibleRows="10" header="true">
+                           <t:Column  width="100px">
+                             <t:LabelCell />
+                           </t:Column>               
+                         </t:Table>
+                       </w:popup>
+                     </w:AutoComplete>
+                  </t:AutoCompleteCell>
+                </t:Column>
+                <t:Column width="114" label="{msg.action}">
+                  <t:DropdownCell>
+                    <w:Dropdown width="100"/>
+                  </t:DropdownCell>
+                </t:Column>
+              <g:HorizontalPanel style="{res.style.TableFooterPanel}">
+                <w:Button ui:field="addActionButton" leftIcon="{res.style.AddRowButtonImage}" text="{msg.addRow}" /> 
+                <w:Button ui:field="removeActionButton" leftIcon="{res.style.RemoveRowButtonImage}" text="{msg.removeRow}" /> 
+              </g:HorizontalPanel>
+          </g:VerticalPanel>
+        </g:HorizontalPanel>
+      </g:VerticalPanel>
     </g:layer>
   </g:LayoutPanel>
-</xsl:stylesheet>
+</ui:UiBinder>

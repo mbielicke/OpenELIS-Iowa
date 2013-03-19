@@ -29,10 +29,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
+
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -46,14 +48,15 @@ import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.SectionPermission;
-import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.Util;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.SystemUserVO;
+import org.openelis.ui.widget.WindowInt;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -141,7 +144,7 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
 
     private Confirm                                     changeTestConfirm;
 
-    public AnalysisTabUI(ScreenDefInt def, ScreenWindowInt window) {
+    public AnalysisTabUI(ScreenDefInt def, WindowInt window) {
 
         setDefinition(def);
         setWindow(window);
@@ -181,8 +184,8 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                 if (! DataBaseUtil.isSame(((TestMethodVO)selectedRow.data).getTestId(), analysis.getTestId())) {
                     if (changeTestConfirm == null) {
                         changeTestConfirm = new Confirm(Confirm.Type.WARN,
-                                                        consts.get("loseResultsCaption"),
-                                                        consts.get("loseResultsWarning"), "No",
+                                                        Messages.get().loseResultsCaption(),
+                                                        Messages.get().loseResultsWarning(), "No",
                                                         "Yes");
                         changeTestConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                             public void onSelection(SelectionEvent<Integer> event) {
@@ -262,9 +265,9 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                                 }
                             }
                             if (i == ttosMan.count()) {
-                                feE = new FormErrorException("testMethodSampleTypeMismatch",
+                                feE = new FormErrorException(Messages.get().testMethodSampleTypeMismatch(
                                                              tVDO.getName()+", "+tVDO.getMethodName(),
-                                                             sampleItem.getTypeOfSample());
+                                                             sampleItem.getTypeOfSample()));
                                 Window.alert(feE.getMessage());
                             }
                         } else if ("p".equals(flag)) {
@@ -300,7 +303,7 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                 
                 sampleType = sampleItem.getTypeOfSampleId();
                 if (sampleType == null) {
-                    window.setError(consts.get("sampleItemTypeRequired"));
+                    window.setError(Messages.get().sampleItemTypeRequired());
                     return;
                 }
 
@@ -311,14 +314,14 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                 //
                 // the methd
                 if (analysis.getId() == null || analysis.getId() < 0)
-                    field.query = QueryFieldUtil.parseAutocomplete(event.getMatch()) + "%";
+                    field.setQuery(QueryFieldUtil.parseAutocomplete(event.getMatch()) + "%");
                 else
-                    field.query = QueryFieldUtil.parseAutocomplete(analysis.getTestName());
+                    field.setQuery(QueryFieldUtil.parseAutocomplete(analysis.getTestName()));
                 
                 fields.add(field);
 
                 field = new QueryData();
-                field.query = String.valueOf(sampleItem.getTypeOfSampleId());
+                field.setQuery(String.valueOf(sampleItem.getTypeOfSampleId()));
                 fields.add(field);
 
                 query.setFields(fields);
@@ -788,7 +791,7 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                     case 1:
                         if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId())) {
                             analysisUserTable.setCell(r, c, data.getActionId());
-                            window.setError(consts.get("analysisUserActionException"));
+                            window.setError(Messages.get().analysisUserActionException());
                         } else {
                             data.setActionId((Integer)val);
                         }
@@ -855,11 +858,12 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                 WorksheetCompletionScreen worksheetScreen;
                 TableDataRow row;
                 try {
-                    row = worksheetTable.getSelection();
-                    worksheetScreen = new WorksheetCompletionScreen((Integer)row.key);
-
                     ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                    modal.setName(consts.get("worksheetCompletion"));
+                    modal.setName(Messages.get().worksheetCompletion());
+                    
+                    row = worksheetTable.getSelection();
+                    worksheetScreen = new WorksheetCompletionScreen((Integer)row.key,modal);
+                    
                     modal.setContent(worksheetScreen);
 
                 } catch (Exception e) {
@@ -909,7 +913,7 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                     if (!Constants.dictionary().AN_USER_AC_RELEASED.equals(action))
                         analysisUserTable.deleteRow(r);  
                     else 
-                        window.setError(consts.get("analysisUserActionException"));
+                        window.setError(Messages.get().analysisUserActionException());
                 }
             }
 

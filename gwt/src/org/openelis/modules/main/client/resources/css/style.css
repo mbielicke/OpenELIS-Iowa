@@ -12,6 +12,16 @@
     margin:4px 8px ;
 }
 
+.FormTitle {
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size:11px;    
+    -moz-user-select: none;
+    color:#486095;
+    text-align:center;
+    height:18px;
+    background:transparent url(../Images/buttonbarbg.gif) repeat-x scroll 0 0;
+}
+
 .Prompt {
 	font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
     font-size:11px;

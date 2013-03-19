@@ -3,9 +3,9 @@ package org.openelis.modules.sample1.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -13,15 +13,14 @@ import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.HasDataChangeHandlers;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.widget.Confirm;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
-import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab.Action;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -33,7 +32,7 @@ public abstract class SampleTreeUtility1 extends Screen implements HasActionHand
     protected TestPrepUtility1     testPrep;
     private Screen                parentScreen;
     private SampleManager1        manager;
-    private ScreenWindowInt       window;
+    private WindowInt       window;
     private TreeWidget            itemsTree;
     private TestPrepActionHandler testPrepActionHandler;
     private Confirm               cancelAnalysisConfirm;
@@ -42,7 +41,7 @@ public abstract class SampleTreeUtility1 extends Screen implements HasActionHand
         ORDER, PREP, REFLEX
     }
     
-    public SampleTreeUtility1(ScreenWindowInt window, TreeWidget itemsTree, Screen parentScreen) {
+    public SampleTreeUtility1(WindowInt window, TreeWidget itemsTree, Screen parentScreen) {
         this.window = window;
         this.itemsTree = itemsTree;
         this.parentScreen = parentScreen;
@@ -104,8 +103,8 @@ public abstract class SampleTreeUtility1 extends Screen implements HasActionHand
                 if (key != null && key > 0) {
                     if (cancelAnalysisConfirm == null) {
                         cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                            parentScreen.consts.get("cancelAnalysisCaption"),
-                                                            parentScreen.consts.get("cancelAnalysisMessage"),
+                                                            Messages.get().cancelAnalysisCaption(),
+                                                            Messages.get().cancelAnalysisMessage(),
                                                             "No", "Yes");
                         cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                             public void onSelection(SelectionEvent<Integer> event) {

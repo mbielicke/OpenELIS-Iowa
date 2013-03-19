@@ -33,6 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.ProviderBean;
 import org.openelis.bean.ProviderManagerBean;
 import org.openelis.domain.IdFirstLastNameVO;
+import org.openelis.domain.ProviderDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.ProviderLocationManager;
@@ -52,6 +53,10 @@ public class ProviderServlet extends RemoteServlet implements ProviderServiceInt
 
     public ProviderManager fetchById(Integer id) throws Exception {
         return providerManager.fetchById(id);
+    }
+    
+    public ArrayList<ProviderDO> fetchByLastName(String lastName) throws Exception {
+        return provider.fetchByLastName(lastName + "%", 10);
     }
 
     public ProviderManager fetchWithLocations(Integer id) throws Exception {

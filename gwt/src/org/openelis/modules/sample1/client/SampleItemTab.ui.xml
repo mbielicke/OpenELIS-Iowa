@@ -34,45 +34,47 @@ UIRF Software License are applicable instead of those above.
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel>
-    <g:layer top="0px" bottom="25px">
+    <g:layer top="0" bottom="25">
+      <g:HTMLPanel>
       <table class="{res.style.Form}">
         <tr>
           <td class="{res.style.Prompt}"><ui:text from="{msg.sampleType}" /></td>
           <td>
-            <w:Dropdown ui:field="itemTypeOfSampleId" width="150" popWidth="150" field="Integer" required="true" />
+            <w:Dropdown ui:field="typeOfSampleId" width="150" field="Integer" required="true" /> <!--  popWidth="150" -->
           </td>
         </tr>
         <tr>
           <td class="{res.style.Prompt}"><ui:text from="{msg.source}" /></td>
           <td>
-            <w:Dropdown ui:field="itemSourceOfSampleId" width="150" popWidth="150" field="Integer" required="true" />
+            <w:Dropdown ui:field="sourceOfSampleId" width="150" field="Integer" required="true" /> <!--  popWidth="150"  -->
           </td>
           <td class="{res.style.Prompt}"><ui:text from="{msg.sourceOther}" /></td>
           <td>
-            <w:TextBox ui:field="itemSourceOther" width="215px" max="40px" />
+            <w:TextBox ui:field="sourceOther" width="215"/> <!-- max="40px"  -->
           </td>
         </tr>
         <tr>
           <td class="{res.style.Prompt}"><ui:text from="{msg.container}" /></td>
           <td>
-            <w:Dropdown ui:field="itemContainerId" width="225px" popWidth="225px" "/>
+            <w:Dropdown ui:field="containerId" width="225"/> <!--  popWidth="225px"  -->
           </td>
           <td class="{res.style.Prompt}"><ui:text from="{msg.containerReference}" /></td>
           <td>
-            <w:TextBox ui:field="itemContainerReference" width="150px" max="20px" />
+            <w:TextBox ui:field="containerReference" width="150"/> <!--  max="20px" -->
           </td>
         </tr>
         <tr>
           <td class="{res.style.Prompt}"><ui:text from="{msg.qty}" /></td>
           <td>
-            <w:TextBox ui:field="itemQuantity" width="150px" max="20px" />
+            <w:TextBox ui:field="quantity" width="150"/> <!-- max="20"  -->
           </td>
           <td class="{res.style.Prompt}"><ui:text from="{msg.unit}" /></td>
           <td>
-            <w:Dropdown ui:field="itemUnitOfMeasureId" width="150px" popWidth="150px" "/>
+            <w:Dropdown ui:field="unitOfMeasureId" width="150" /> <!-- popWidth="150px"  -->
           </td>
         </tr>
       </table>
+     </g:HTMLPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>

@@ -210,8 +210,7 @@ public class OrganizationTab extends Screen {
                         
                         try {
                             if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId()))
-                                Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" +
-                                             data.getOrganizationName() + "'");
+                                Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
                             e.printStackTrace();

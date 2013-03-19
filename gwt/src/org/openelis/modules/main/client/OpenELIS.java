@@ -51,7 +51,7 @@ import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.logging.client.LoggingScreen;
 import org.openelis.modules.method.client.MethodScreen;
-import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginScreen;
+import org.openelis.modules.neonatalScreeningSampleLogin.client.NeonatalScreeningSampleLoginScreenUI;
 import org.openelis.modules.order.client.InternalOrderScreen;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.order.client.VendorOrderScreen;
@@ -130,10 +130,10 @@ public class OpenELIS extends Screen {
     OpenELISConstants msg = GWT.create(OpenELISConstants.class);
     
     @UiField
-    protected MenuItem                   preference, logout, sampleLoginLabelReport,
+    protected MenuItem preference, logout, sampleLoginLabelReport,
                     sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
-                    clinicalSampleLogin, newbornScreeningSampleLogin, animalSampleLogin,
+                    clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
                     worksheetCreation, worksheetCreation1, worksheetCompletion, addOrCancel,
                     reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
@@ -360,15 +360,16 @@ public class OpenELIS extends Screen {
             }
         });
         
-        addCommand(newbornScreeningSampleLogin, "samplenewborn", new Command() {
+        addCommand(neonatalScreeningSampleLogin, "sampleneonatal", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.newbornScreeningSampleLogin());
-                            window.setContent(new NewbornScreeningSampleLoginScreen(window));
-                            browser.addWindow(window, "newbornScreeningSampleLogin");
+                       try {                                                                                                  
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.neonatalScreeningSampleLogin());
+                            window.setSize("1000px", "800px");
+                            window.setContent(new NeonatalScreeningSampleLoginScreenUI(window));
+                            browser.addWindow(window, "neonatalScreeningSampleLogin");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE,e.getMessage(),e);
                             Window.alert(e.getMessage());

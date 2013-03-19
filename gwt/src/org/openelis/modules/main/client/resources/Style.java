@@ -10,6 +10,8 @@ public interface Style extends CssResource {
 	
 	public String Form();
 	
+	public String FormTitle();
+	
 	public String Prompt();
 	
 	public String favorite();

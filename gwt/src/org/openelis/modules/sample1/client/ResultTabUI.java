@@ -31,6 +31,7 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
@@ -39,7 +40,6 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -54,7 +54,6 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Popup;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -71,7 +70,11 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.modules.sample.client.ResultPopoutTabDef;
+import org.openelis.modules.sample.client.TestReflexUtility;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.OptionItem;
 
@@ -116,7 +119,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
 
     private TestReflexUtility                       reflexTestUtil;
     
-    public ResultTabUI(ScreenDefInt def, ScreenWindowInt window, Screen parentScreen) {
+    public ResultTabUI(ScreenDefInt def, WindowInt window, Screen parentScreen) {
         setDefinition(def);
         setWindow(window);
 
@@ -126,7 +129,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
     }
 
     public ResultTabUI() throws Exception {
-        super((ScreenDefInt)GWT.create(ResultPopoutTabDef1.class));
+        super((ScreenDefInt)GWT.create(ResultPopoutTabDef.class));
 
         // Setup link between Screen and widget Handlers
         initialize();
@@ -239,13 +242,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 isHeaderRow = ((Boolean)row.data).booleanValue();                
 
                 if (analysis.getSectionId() != null) {
-                	try {
-                		section = SectionCache.getById(analysis.getSectionId());
-                		perm = UserCache.getPermission().getSection(section.getName());
-                	} catch (Exception e) {
-                		section = null;
-                		perm = null;
-                	}
+                    try {
+                        section = SectionCache.getById(analysis.getSectionId());
+                        perm = UserCache.getPermission().getSection(section.getName());
+                    } catch (Exception e) {
+                        section = null;
+                        perm = null;
+                    }
                 }
                 
                 if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r) ||
@@ -253,11 +256,11 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     event.cancel();
                     enableButton = false;
                 } else if (!canEdit()) {
-                    window.setError(consts.get("cantUpdateReleasedException"));
+                    window.setError(Messages.get().cantUpdateReleasedException());
                     event.cancel();
                     enableButton = false;
                 } else if (section == null) { 
-					window.setError(consts.get("noSectionsForTest"));
+                    window.setError(Messages.get().noSectionsForTest());
                     event.cancel();
                     enableButton = false;
                 } else if (perm == null || (!perm.hasAssignPermission() && c == 0)) {
@@ -266,15 +269,15 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                      * section on the analysis to be able to change the reportable
                      * flag 
                      */
-                	window.setError(consts.get("noAssignTestPermission"));
+                    window.setError(Messages.get().noAssignTestPermission());
                     event.cancel();
                     enableButton = false;
                 } else if (perm == null || (!perm.hasCompletePermission() && c > 0)) {
-                    window.setError(consts.get("noCompleteTestPermission"));
+                    window.setError(Messages.get().noCompleteTestPermission());
                     event.cancel();
                     enableButton = false;
                 } else if (!canEditAnalysis()) {
-                	window.setError(consts.get("analysisCancledOrReleased"));
+                    window.setError(Messages.get().analysisCancledOrReleased());
                     event.cancel();
                     enableButton = false;
                 } else {
@@ -286,7 +289,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     testAnalyte = manager.getTestAnalyte(data.getRowGroup(),
                                                          data.getTestAnalyteId());                    
                     if (testAnalyte == null) {
-                        window.setError(consts.get("testAnalyteDefinitionChanged"));
+                        window.setError(Messages.get().testAnalyteDefinitionChanged());
                         event.cancel();
                         enableButton = false;
                     } else if (Constants.dictionary().TEST_ANALYTE_READ_ONLY.equals(testAnalyte.getTypeId()) && c > 0) {
@@ -295,7 +298,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     } else if (analysis.getUnitOfMeasureId() == null &&
                                !manager.getResultValidator(data.getResultGroup())
                                        .noUnitsSpecified()) {
-                        window.setError(consts.get("unitOfMeasureException"));
+                        window.setError(Messages.get().unitOfMeasureException());
                         event.cancel();
                         enableButton = false;
                     } else {
@@ -491,7 +494,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 }
 
                 ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("testAnalyteSelection"));
+                modal.setName(Messages.get().testAnalyteSelection());
                 modal.setContent(testAnalyteScreen);
 
                 testAnalyteScreen.setData(manager.getNonColumnTestAnalytes(rowGroup));
@@ -512,7 +515,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     if ( !onlyRowUnderHeading(r))
                         testResultsTable.deleteRow(r);
                     else
-                        window.setError(consts.get("atLeastOneResultUnderHeading"));
+                        window.setError(Messages.get().atLeastOneResultUnderHeading());
                 }
             }
 
@@ -543,7 +546,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     }
                 }
 
-                popUp = new Popup(consts.get("suggestions"), suggestionsScreen);
+                popUp = new Popup(Messages.get().suggestions(), suggestionsScreen);
 
                 suggestionsScreen.setValidator(manager.getResultValidator(data.getResultGroup()),
                                                analysis.getUnitOfMeasureId());
@@ -875,13 +878,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
         row = new TableDataRow(numOfColumns);
 
         cell = row.cells.get(0);
-        cell.setValue(consts.get("reportable"));
+        cell.setValue(Messages.get().reportable());
 
         cell = row.cells.get(1);
-        cell.setValue(consts.get("analyte"));
+        cell.setValue(Messages.get().analyte());
 
         cell = row.cells.get(2);
-        cell.setValue(consts.get("value"));
+        cell.setValue(Messages.get().value());
 
         row.style = "SubHeader";
         row.data = new Boolean(true);
@@ -946,7 +949,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 resultPopoutScreen = new ResultTabUI();
 
             ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("testResults"));
+            modal.setName(Messages.get().testResults());
 
             // having problems with losing the last cell edited. This will tell
             // the table

@@ -37,15 +37,6 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.Util;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -89,7 +80,16 @@ import org.openelis.modules.sample.client.SampleSDWISImportOrder;
 import org.openelis.modules.sample.client.SampleService;
 import org.openelis.modules.sample.client.StorageTab;
 import org.openelis.modules.standardnote.client.StandardNoteService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -1589,8 +1589,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                 orgId = data.getOrganizationId();
                 if ( !orgIds.contains(orgId)) {
                     if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId))
-                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" +
-                                     data.getOrganizationName() + "'");
+                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
                     orgIds.add(orgId);
                 }
             }

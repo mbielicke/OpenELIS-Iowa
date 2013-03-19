@@ -19,8 +19,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.SampleManager1Bean;
-import org.openelis.domain.IdAccessionVO;
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;

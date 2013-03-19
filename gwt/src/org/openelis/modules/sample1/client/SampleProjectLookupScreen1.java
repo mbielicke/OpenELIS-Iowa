@@ -28,6 +28,7 @@ package org.openelis.modules.sample1.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -258,7 +259,7 @@ public class SampleProjectLookupScreen1 extends Screen implements HasActionHandl
         sampleProjectTable.finishEditing();
         
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
             return;
         }
         

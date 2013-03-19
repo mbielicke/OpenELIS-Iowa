@@ -27,6 +27,7 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -34,12 +35,14 @@ import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
@@ -47,6 +50,7 @@ import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
@@ -54,16 +58,16 @@ import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.Window;
 
 public class SampleHistoryUtility1 {
 
-    private SampleManager   manager;
-    private ScreenWindowInt window;
+    private SampleManager1   manager;
+    private WindowInt window;
 
-    public SampleHistoryUtility1(ScreenWindowInt window) {
+    public SampleHistoryUtility1(WindowInt window) {
         this.window = window;
     }
 
@@ -74,7 +78,7 @@ public class SampleHistoryUtility1 {
         hist = new IdNameVO(manager.getSample().getId(), manager.getSample()
                                                                 .getAccessionNumber()
                                                                 .toString());
-        HistoryScreen.showHistory(OpenELIS.consts.get("historySample"),
+        HistoryScreen.showHistory(Messages.get().historySample(),
                                   Constants.table().SAMPLE,
                                   hist);
         window.clearStatus();
@@ -82,14 +86,13 @@ public class SampleHistoryUtility1 {
 
     public void historySampleEnvironmental() {
         IdNameVO hist;
-        SampleEnvironmentalManager envMan;
+        SampleEnvironmentalDO env;
 
         window.setBusy();
         try {
-            envMan = (SampleEnvironmentalManager)manager.getDomainManager();
-            hist = new IdNameVO(envMan.getEnvironmental().getId(),
-                                envMan.getEnvironmental().getLocation());
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleEnvironmental"),
+            env = manager.getSampleEnvironmental();
+            hist = new IdNameVO(env.getId(), env.getLocation());
+            HistoryScreen.showHistory(Messages.get().historySampleEnvironmental(),
                                       Constants.table().SAMPLE_ENVIRONMENTAL,
                                       hist);
         } catch (Exception e) {
@@ -102,14 +105,13 @@ public class SampleHistoryUtility1 {
 
     public void historySamplePrivateWell() {
         IdNameVO hist;
-        SamplePrivateWellManager wellMan;
+        SamplePrivateWellViewDO well;
 
         window.setBusy();
         try {
-            wellMan = (SamplePrivateWellManager)manager.getDomainManager();
-            hist = new IdNameVO(wellMan.getPrivateWell().getId(),
-                                wellMan.getPrivateWell().getLocation());
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySamplePrivateWell"),
+            well = manager.getSamplePrivateWell();
+            hist = new IdNameVO(well.getId(), well.getLocation());
+            HistoryScreen.showHistory(Messages.get().historySamplePrivateWell(),
                                       Constants.table().SAMPLE_PRIVATE_WELL,
                                       hist);
         } catch (Exception e) {
@@ -122,14 +124,13 @@ public class SampleHistoryUtility1 {
 
     public void historySampleSDWIS() {
         IdNameVO hist;
-        SampleSDWISManager sdwisMan;
+        SampleSDWISViewDO sdwis;
 
         window.setBusy();
         try {
-            sdwisMan = (SampleSDWISManager)manager.getDomainManager();
-            hist = new IdNameVO(sdwisMan.getSDWIS().getId(), sdwisMan.getSDWIS()
-                                                                     .getLocation());
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleSDWIS"),
+            sdwis = manager.getSampleSDWIS();
+            hist = new IdNameVO(sdwis.getId(), sdwis.getLocation());
+            HistoryScreen.showHistory(Messages.get().historySampleSDWIS(),
                                       Constants.table().SAMPLE_SDWIS,
                                       hist);
         } catch (Exception e) {
@@ -143,20 +144,18 @@ public class SampleHistoryUtility1 {
     public void historySampleProject() {
         int i, count;
         IdNameVO refVoList[];
-        SampleProjectManager man;
         SampleProjectViewDO data;
 
         window.setBusy();
         try {
-            man = manager.getProjects();
-            count = man.count();
+            count = manager.project.count();
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
-                data = man.getProjectAt(i);
+                data = manager.project.get(i);
                 refVoList[i] = new IdNameVO(data.getId(), data.getProjectName());
             }
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleProject"),
+            HistoryScreen.showHistory(Messages.get().historySampleProject(),
                                       Constants.table().SAMPLE_PROJECT,
                                       refVoList);
         } catch (Exception e) {
@@ -170,20 +169,18 @@ public class SampleHistoryUtility1 {
     public void historySampleOrganization() {
         int i, count;
         IdNameVO refVoList[];
-        SampleOrganizationManager man;
         SampleOrganizationViewDO data;
 
         window.setBusy();
         try {
-            man = manager.getOrganizations();
-            count = man.count();
+            count = manager.organization.count();
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
-                data = man.getOrganizationAt(i);
+                data = manager.organization.get(i);
                 refVoList[i] = new IdNameVO(data.getId(), data.getOrganizationName());
             }
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleOrganization"),
+            HistoryScreen.showHistory(Messages.get().historySampleOrganization(),
                                       Constants.table().SAMPLE_ORGANIZATION,
                                       refVoList);
             window.clearStatus();
@@ -196,17 +193,15 @@ public class SampleHistoryUtility1 {
     public void historySampleItem() {
         int i, count;
         IdNameVO refVoList[];
-        SampleItemManager man;
         SampleItemViewDO data;
         String container;
 
         window.setBusy();
         try {
-            man = manager.getSampleItems();
-            count = man.count();
+            count = manager.item.count();
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
-                data = man.getSampleItemAt(i);
+                data = manager.item.get(i);
                 container = data.getContainer();
                 if (container == null)
                     container = "";
@@ -216,7 +211,7 @@ public class SampleHistoryUtility1 {
                                                           container);
             }
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleItem"),
+            HistoryScreen.showHistory(Messages.get().historySampleItem(),
                                       Constants.table().SAMPLE_ITEM,
                                       refVoList);
             window.clearStatus();
@@ -229,37 +224,35 @@ public class SampleHistoryUtility1 {
     public void historyAnalysis() {
         int i, j, k, listIndex, itemCount, anCount;
         IdNameVO refVoList[];
-        SampleItemManager man;
-        AnalysisManager anMan;
-        AnalysisViewDO data;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
 
         window.setBusy();
         try {
-            man = manager.getSampleItems();
-            itemCount = man.count();
+            itemCount = manager.item.count();
 
             // figure out total # of analyses
             anCount = 0;
             for (i = 0; i < itemCount; i++ )
-                anCount += man.getAnalysisAt(i).count();
+                anCount += manager.analysis.count(manager.item.get(i));
 
             refVoList = new IdNameVO[anCount];
             listIndex = 0;
             for (j = 0; j < itemCount; j++ ) {
-                anMan = man.getAnalysisAt(j);
-                anCount = anMan.count();
+                item = manager.item.get(i);
+                anCount = manager.analysis.count(item);
 
                 for (k = 0; k < anCount; k++ ) {
-                    data = anMan.getAnalysisAt(k);
-                    refVoList[listIndex] = new IdNameVO(data.getId(),
-                                                        data.getTestName() +
+                    ana = manager.analysis.get(item, k);
+                    refVoList[listIndex] = new IdNameVO(ana.getId(),
+                                                        ana.getTestName() +
                                                                         " : " +
-                                                                        data.getMethodName());
+                                                                        ana.getMethodName());
                     listIndex++ ;
                 }
             }
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historyAnalysis"),
+            HistoryScreen.showHistory(Messages.get().historyAnalysis(),
                                       Constants.table().ANALYSIS,
                                       refVoList);
             window.clearStatus();
@@ -277,7 +270,7 @@ public class SampleHistoryUtility1 {
         IdNameVO[] refVoList;
         AnalysisResultManager man;
 
-        try {
+        /*try {
             man = manager.getSampleItems()
                          .getAnalysisAt(sampleItemIndex)
                          .getAnalysisResultAt(analysisIndex);
@@ -297,7 +290,7 @@ public class SampleHistoryUtility1 {
             for (i = 0; i < refVoArrayList.size(); i++ )
                 refVoList[i] = refVoArrayList.get(i);
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historyCurrentResult"),
+            HistoryScreen.showHistory(Messages.get().historyCurrentResult(),
                                       Constants.table().RESULT,
                                       refVoList);
             window.clearStatus();
@@ -305,7 +298,7 @@ public class SampleHistoryUtility1 {
         } catch (Exception e) {
             window.clearStatus();
             Window.alert("historyCurrentResult: " + e.getMessage());
-        }
+        }*/
     }
 
     public void historyStorage() {
@@ -317,7 +310,7 @@ public class SampleHistoryUtility1 {
         StorageManager storageMan;
         StorageViewDO data;
 
-        window.setBusy();
+        /*window.setBusy();
         try {
             man = manager.getSampleItems();
             itemCount = man.count();
@@ -351,14 +344,14 @@ public class SampleHistoryUtility1 {
             for (i = 0; i < refVoArrayList.size(); i++ )
                 refVoList[i] = refVoArrayList.get(i);
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historyStorage"),
+            HistoryScreen.showHistory(Messages.get().historyStorage(),
                                       Constants.table().STORAGE,
                                       refVoList);
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
             Window.alert("historyStorage: " + e.getMessage());
-        }
+        }*/
     }
 
     public void historySampleQA() {
@@ -367,24 +360,24 @@ public class SampleHistoryUtility1 {
         SampleQaEventManager man;
         SampleQaEventViewDO data;
 
-        window.setBusy();
+        /*window.setBusy();
         try {
             man = manager.getQaEvents();
-            count = man.count();
+            count = manager.qaEvent.count();
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getSampleQAAt(i);
                 refVoList[i] = new IdNameVO(data.getId(), data.getQaEventName());
             }
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleQA"),
+            HistoryScreen.showHistory(Messages.get().historySampleQA(),
                                       Constants.table().SAMPLE_QAEVENT,
                                       refVoList);
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
             Window.alert("historySampleQA: " + e.getMessage());
-        }
+        }*/
     }
 
     public void historyAnalysisQA() {
@@ -396,7 +389,7 @@ public class SampleHistoryUtility1 {
         AnalysisQaEventManager qaMan;
         AnalysisQaEventViewDO data;
 
-        window.setBusy();
+        /*window.setBusy();
         try {
             man = manager.getSampleItems();
             itemCount = man.count();
@@ -422,14 +415,14 @@ public class SampleHistoryUtility1 {
             for (i = 0; i < refVoArrayList.size(); i++ )
                 refVoList[i] = refVoArrayList.get(i);
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historyAnalysisQA"),
+            HistoryScreen.showHistory(Messages.get().historyAnalysisQA(),
                                       Constants.table().ANALYSIS_QAEVENT,
                                       refVoList);
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
             Window.alert("historyAnalysis: " + e.getMessage());
-        }
+        }*/
     }
 
     public void historyAuxData() {
@@ -439,7 +432,7 @@ public class SampleHistoryUtility1 {
         AuxDataViewDO data;
         AuxFieldViewDO fieldDO;
 
-        window.setBusy();
+        /*window.setBusy();
         try {
             man = manager.getAuxData();
             count = man.count();
@@ -450,17 +443,17 @@ public class SampleHistoryUtility1 {
                 refVoList[i] = new IdNameVO(data.getId(), fieldDO.getAnalyteName());
             }
 
-            HistoryScreen.showHistory(OpenELIS.consts.get("historyAuxData"),
+            HistoryScreen.showHistory(Messages.get().historyAuxData(),
                                       Constants.table().AUX_DATA,
                                       refVoList);
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
             Window.alert("historyAuxData: " + e.getMessage());
-        }
+        }*/
     }
 
-    public void setManager(SampleManager manager) {
+    public void setManager(SampleManager1 manager) {
         this.manager = manager;
     }
 }

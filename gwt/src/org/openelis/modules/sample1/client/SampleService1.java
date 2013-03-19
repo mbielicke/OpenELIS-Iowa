@@ -28,7 +28,7 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;

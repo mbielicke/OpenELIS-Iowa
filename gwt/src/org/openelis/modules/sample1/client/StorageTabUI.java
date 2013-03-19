@@ -35,9 +35,9 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.SectionPermission;
+import org.openelis.ui.common.SectionPermission;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -64,6 +64,7 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.storage.client.StorageService;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -82,7 +83,7 @@ public class StorageTabUI extends Screen {
     protected SampleDataBundle      bundle;
     protected StorageManager        manager;
 
-    public StorageTabUI(ScreenDefInt def, ScreenWindowInt window) {
+    public StorageTabUI(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
         setWindow(window);
 

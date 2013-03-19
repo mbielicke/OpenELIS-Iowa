@@ -28,13 +28,14 @@ package org.openelis.modules.sample1.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
@@ -50,8 +51,8 @@ import org.openelis.modules.test.client.TestReflexLookupScreen;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class TestReflexUtility extends Screen implements
-                                             HasActionHandlers<TestReflexUtility.Action> {
+public class TestReflexUtility1 extends Screen implements
+                                             HasActionHandlers<TestReflexUtility1.Action> {
     public enum Action {
         DONE
     };
@@ -171,7 +172,7 @@ public class TestReflexUtility extends Screen implements
 
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setContent(reflexPickerScreen);
-        modal.setName(consts.get("reflexTestPicker"));
+        modal.setName(Messages.get().reflexTestPicker());
         reflexPickerScreen.setBundles(reflexBundles);
     }
     

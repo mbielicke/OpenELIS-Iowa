@@ -25,99 +25,77 @@ Alternatively, the contents of this file marked
 license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
-<xsl:stylesheet
-  extension-element-prefixes="resource"
-  version="1.0"
-  xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
-  xmlns:resource="xalan://org.openelis.util.UTFResource"
-  xmlns:xalan="http://xml.apache.org/xalan"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+  xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client">
 
-  <xsl:template name="QAEventsTab">
-    <HorizontalPanel padding="0" spacing="0">
-      <VerticalPanel>
-        <table key="sampleQATable" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="analysisQATable,analysisQATable" title="" width="auto">
-          <col header="{resource:getString($constants,'sampleQAEvent')}" key="{meta:getSampleSubQaName()}" width="172">
-            <label field="String" />
-          </col>
-          <col header="{resource:getString($constants,'type')}" key="{meta:getSampleQaTypeId()}" width="90">
-            <dropdown field="Integer" width="90" />
-          </col>
-          <col key="{meta:getSampleQaIsBillable()}" width="61" header="{resource:getString($constants,'billable')}">
-            <check />
-          </col>
-        </table>        
-        <widget style="TableButtonFooter">
-          <HorizontalPanel>
-            <appButton key="removeSampleQAButton" style="Button">
-              <HorizontalPanel>
-                <AbsolutePanel style="RemoveRowButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton key="sampleQAPicker" style="Button">
-              <HorizontalPanel>
-                <AbsolutePanel style="PickerButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'qaEvents')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-          </HorizontalPanel>
-        </widget>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
+  <g:LayoutPanel>
+    <g:layer top="0px" bottom="25px">
+     <g:HorizontalPanel padding="0" spacing="0">
+       <g:VerticalPanel>
+        <t:Table ui:field="sampleQATable" visibleRows="6" class="{res.type.ScreenTableWithSides}" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
+              <t:Column width="172" label="{msg.sampleQAEvent}">
+                <t:LabelCell>
+                  <t:LabelCell field="Integer" ui:field = "ampleSubQaName"/>
+                </t:Label>
+              </t:Column>
+              <t:Column width="90" label="{msg.type}">
+                <t:DropdownCell>
+                  <w:Dropdown width="90" ui:field = "sampleQaTypeId"/>
+                </t:DropdownCell>
+              </t:Column>
+              <t:Column width="61" label="{msg.billable}">
+                <t:CheckCell>
+                  <t:Check ui:field = "sampleQaIsBillable"/>
+                </t:CheckCell>
+              </t:Column>
+         </t:Table>
+          <g:HorizontalPanel style="{res.type.TableButtonFooter}">
+            <w:Button ui:field="removeSampleQAButton" leftIcon="{res.style.RemoveRowButtonImage}" text="{msg.removeRow}" /> 
+            <w:Button ui:field="sampleQAPicker" leftIcon="{res.style.PickerButtonImage}" text="{msg.qaEvents}" /> 
+          </g:HorizontalPanel>
         <VerticalPanel height = "5"/>
-        <TablePanel style="TabSubForm">
-          <row>
-            <text key = "sampleBillableLabel" style="WarningLabel" width = "320" wordwrap = "true"/>
-          </row>
-        </TablePanel>
-      </VerticalPanel>
-      <HorizontalPanel width="10" />
-      <VerticalPanel>
-        <table key="analysisQATable" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="sampleQATable,sampleQATable" title="" width="auto">
-          <col header="{resource:getString($constants,'analysisQAEvent')}" key="{meta:getAnalysisSubQaName()}" width="172">
-            <label field="String" />
-          </col>
-          <col header="{resource:getString($constants,'type')}" key="{meta:getAnalysisQaTypeId()}" width="90">
-            <dropdown field="Integer" width="90" />
-          </col>
-          <col key="{meta:getAnalysisQaIsBillable()}" width="60" header="{resource:getString($constants,'billable')}">
-            <check />
-          </col>
+        <table class="{res.style.TabSubForm}">
+          <tr>
+            <td class="{res.style.WarningLabel}" ui:field="sampleBillableLabel"  width = "320" wordwrap = "true"/>
+          </tr>
         </table>
-        <widget style="TableButtonFooter">
-          <HorizontalPanel>
-            <appButton key="removeAnalysisQAButton" style="Button">
-              <HorizontalPanel>
-                <AbsolutePanel style="RemoveRowButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-            <appButton key="analysisQAPicker" style="Button">
-              <HorizontalPanel>
-                <AbsolutePanel style="PickerButtonImage" />
-                <text>
-                  <xsl:value-of select="resource:getString($constants,'qaEvents')" />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-          </HorizontalPanel>
-        </widget>
-        <VerticalPanel height = "5"/>
-        <TablePanel style="TabSubForm">
-          <row>
-            <text key = "analysisBillableLabel" style="WarningLabel" width = "330" wordwrap = "true"/>
-          </row>
-        </TablePanel>
-      </VerticalPanel>
-    </HorizontalPanel>
-  </xsl:template>
-</xsl:stylesheet>
+      </g:VerticalPanel>
+      <g:HorizontalPanel width="10" />
+      <g:VerticalPanel>
+        <t:Table ui:field="analysisQATable" visibleRows="6" class="{res.type.ScreenTableWithSides}" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
+              <t:Column width="172" label="{msg.analysisQAEvent}">
+                <t:LabelCell>
+                  <t:Label field="Integer" ui:field="analysisSubQaName"/>
+                </t:LabelCell>
+              </t:Column>
+              <t:Column width="90" label="{msg.type}">
+                <t:DropdownCell>
+                  <w:Dropdown width="90" ui:field="analysisQaTypeId"/>
+                </t:DropdownCell>
+              </t:Column>
+              <t:Column width="61" label="{msg.billable}">
+                <t:CheckCell>
+                  <t:Check ui:field="analysisQaIsBillable"/>
+                </t:CheckCell>
+              </t:Column>
+         </t:Table>
+          <g:HorizontalPanel style="{res.type.TableButtonFooter}">
+            <w:Button ui:field="removeAnalysisQAButton" leftIcon="{res.style.RemoveRowButtonImage}" text="{msg.removeRow}" /> 
+            <w:Button ui:field="analysisQAPicker" leftIcon="{res.style.PickerButtonImage}" text="{msg.qaEvents}" /> 
+          </g:HorizontalPanel>
+        <g:VerticalPanel height = "5"/>
+        <table class="{res.style.TabSubForm}">
+          <tr>
+            <td class="{res.style.WarningLabel}" ui:field="analysisBillableLabel" width = "330" wordwrap = "true"/>
+          </tr>
+        </table>
+      </g:VerticalPanel>
+    </g:HorizontalPanel>
+   </g:layer>
+ </g:LayoutPanel>
+</ui:UiBinder>

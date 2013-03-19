@@ -3,6 +3,7 @@ package org.openelis.modules.provider.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdFirstLastNameVO;
+import org.openelis.domain.ProviderDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
@@ -14,6 +15,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface ProviderServiceInt extends RemoteService {
 
     ProviderManager fetchById(Integer id) throws Exception;
+    
+    ArrayList<ProviderDO> fetchByLastName(String lastName) throws Exception;
 
     ProviderManager fetchWithLocations(Integer id) throws Exception;
 

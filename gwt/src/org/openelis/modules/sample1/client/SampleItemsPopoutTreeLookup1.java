@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -51,7 +52,9 @@ import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.modules.sample.client.SampleItemsPopoutTreeDef;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -180,7 +183,7 @@ public class SampleItemsPopoutTreeLookup1 extends Screen {
          * at least one analysis must be checked
          */
         if (checkedAnaRows.size() == 0) {
-            window.setError(consts.get("selectOneOrMoreAnalyses"));
+            window.setError(Messages.get().selectOneOrMoreAnalyses());
             return;
         }
         
@@ -197,7 +200,7 @@ public class SampleItemsPopoutTreeLookup1 extends Screen {
         }
         
         if (itemBundle == null) {
-            window.setError(consts.get("selectItem"));
+            window.setError(Messages.get().selectItem());
             return;
         }
         
@@ -213,14 +216,14 @@ public class SampleItemsPopoutTreeLookup1 extends Screen {
                     /*
                      * an analysis can't be moved to its own item
                      */
-                    window.setError(consts.get("analysisNotMovedToOwnItem"));
+                    window.setError(Messages.get().analysisNotMovedToOwnItem());
                     return;
                 } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) || 
                                 Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId())) {
                     /*
                      * released and cancelled analyses can't be moved
                      */
-                    window.setError(consts.get("noMoveReleasedCancelledAnalyses"));
+                    window.setError(Messages.get().noMoveReleasedCancelledAnalyses());
                     return;                    
                 } 
             }
