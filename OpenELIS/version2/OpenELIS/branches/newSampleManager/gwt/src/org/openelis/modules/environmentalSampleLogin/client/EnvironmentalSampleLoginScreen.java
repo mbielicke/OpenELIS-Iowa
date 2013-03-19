@@ -1574,7 +1574,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 orgId = sorg.getOrganizationId();
                 if (!orgIds.contains(orgId)) {
                     if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
-                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ sorg.getOrganizationName()+"'");
+                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(sorg.getOrganizationName()));
                     orgIds.add(orgId);
                 }
             }

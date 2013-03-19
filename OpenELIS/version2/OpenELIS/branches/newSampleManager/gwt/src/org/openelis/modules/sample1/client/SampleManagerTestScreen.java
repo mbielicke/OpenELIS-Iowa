@@ -30,14 +30,12 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
@@ -49,7 +47,7 @@ public class SampleManagerTestScreen extends Screen {
     protected ArrayList<SampleManager1.Load> elements;
     
     public SampleManagerTestScreen() throws Exception {
-       super((ScreenDefInt)GWT.create(SampleManagerTestDef.class));
+       //super((ScreenDefInt)GWT.create(SampleManagerTestDef.class));
 
        initialize();
     }
@@ -86,7 +84,7 @@ public class SampleManagerTestScreen extends Screen {
             ids.add(11876);
             ids.add(11883);*/
                       
-            window.setBusy(consts.get("fetching"));
+            //window.setBusy(consts.get("fetching"));
             
             SampleManager1.Load elements[] = {Load.ORGANIZATION, Load.PROJECT, Load.QA,
                                               Load.AUXDATA, Load.STORAGE, Load.NOTE,

@@ -27,6 +27,7 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.OptionLookUp;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -49,6 +50,8 @@ public class ResultSuggestionsScreen1 extends Screen {
     
     protected ResultValidator resultValidator;
     protected Integer unitId;
+    
+    protected OptionLookUp optionLookUp = GWT.create(OptionLookUp.class);
      
      public ResultSuggestionsScreen1() throws Exception {
          super((ScreenDefInt)GWT.create(ResultSuggestionsDef1.class));
@@ -91,7 +94,7 @@ public class ResultSuggestionsScreen1 extends Screen {
         suggestions = resultValidator.getRanges(unitId);
         try {
             for (OptionItem o : suggestions) {
-                message = consts.get(o.getProperty());
+                message = optionLookUp.getString(o.getProperty());
                 if (o.getValue() != null)
                     message = message.replace("{0}", o.getValue());                
                 row = new TableDataRow(message, message);

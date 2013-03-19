@@ -58,8 +58,8 @@
                   ui:field="sdwisSampleLogin" display="{msg.sdwisSampleLogin}" />
                 <w:MenuItem description="{msg.clinicalSampleLoginDescription}" enabled="false" ui:field="clinicalSampleLogin"
                   display="{msg.clinicalSampleLogin}" />
-                <w:MenuItem description="{msg.newbornScreeningSampleLoginDescription}" enabled="false" ui:field="newbornScreeningSampleLogin"
-                  display="{msg.newbornScreeningSampleLogin}" />
+                <w:MenuItem description="{msg.neonatalScreeningSampleLoginDescription}" enabled="false" ui:field="neonatalScreeningSampleLogin"
+                  display="{msg.neonatalScreeningSampleLogin}" />
                 <w:MenuItem description="{msg.animalSampleLoginDescription}" enabled="false" ui:field="animalSampleLogin"
                   display="{msg.animalSampleLogin}" />
                 <w:MenuItem description="{msg.ptSampleLoginDescription}" enabled="false" ui:field="ptSampleLogin" display="{msg.ptSampleLogin}" />

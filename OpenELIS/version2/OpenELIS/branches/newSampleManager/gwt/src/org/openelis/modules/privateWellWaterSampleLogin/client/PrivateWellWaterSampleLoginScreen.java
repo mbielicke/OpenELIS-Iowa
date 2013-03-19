@@ -38,15 +38,6 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.Util;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -90,7 +81,16 @@ import org.openelis.modules.sample.client.SamplePrivateWellImportOrder;
 import org.openelis.modules.sample.client.SampleService;
 import org.openelis.modules.sample.client.StorageTab;
 import org.openelis.modules.standardnote.client.StandardNoteService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.Util;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -1685,8 +1685,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 orgId = sorg.getOrganizationId();
                 if ( !orgIds.contains(orgId)) {
                     if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId))
-                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" +
-                                     sorg.getOrganizationName() + "'");
+                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(sorg.getOrganizationName()));
                     orgIds.add(orgId);
                 }
             }
@@ -1736,6 +1735,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
 
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId))
-            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" + name + "'");
+            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(name));
     }
 }

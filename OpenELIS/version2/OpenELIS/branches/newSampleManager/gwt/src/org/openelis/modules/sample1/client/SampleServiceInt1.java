@@ -27,7 +27,7 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.data.Query;
+import org.openelis.ui.common.data.Query;
 import org.openelis.manager.SampleManager1;
 
 import com.google.gwt.user.client.rpc.RemoteService;

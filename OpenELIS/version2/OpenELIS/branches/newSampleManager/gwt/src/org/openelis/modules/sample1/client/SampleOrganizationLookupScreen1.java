@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -37,7 +38,7 @@ import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -190,8 +191,7 @@ public class SampleOrganizationLookupScreen1 extends Screen implements HasAction
 
                         try {
                             if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(data.getOrganizationId()))
-                                Window.alert(consts.get("orgMarkedAsHoldRefuseSample") + "'" +
-                                             data.getOrganizationName() + "'");
+                                Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
                             e.printStackTrace();
@@ -425,7 +425,7 @@ public class SampleOrganizationLookupScreen1 extends Screen implements HasAction
         }
 
         if ( !superValue)
-            window.setError(consts.get("correctErrors"));
+            window.setError(Messages.get().correctErrors());
 
         return superValue;
     }

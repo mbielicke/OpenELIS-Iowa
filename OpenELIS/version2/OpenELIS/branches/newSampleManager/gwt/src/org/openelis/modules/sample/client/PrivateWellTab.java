@@ -165,7 +165,7 @@ public class PrivateWellTab extends Screen {
                     
                     try {
                         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgDO.getId())) 
-                            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ orgDO.getName()+"'");
+                            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(orgDO.getName()));
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         e.printStackTrace();
@@ -1191,7 +1191,7 @@ public class PrivateWellTab extends Screen {
                     billTo.setSelection(data.getOrganizationId(),  data.getOrganizationName());
                     
                     if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId())) 
-                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ data.getOrganizationName()+"'");
+                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(data.getOrganizationName()));
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
