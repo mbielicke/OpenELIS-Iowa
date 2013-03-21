@@ -248,7 +248,7 @@ public class ParameterTabUI extends Screen {
 
     public void draw() {
         if ( !loaded)
-            DataChangeEvent.fire(this);
+            fireDataChange();
 
         loaded = true;
     }

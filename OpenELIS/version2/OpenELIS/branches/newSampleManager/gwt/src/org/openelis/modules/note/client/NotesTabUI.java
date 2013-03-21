@@ -134,7 +134,7 @@ public class NotesTabUI extends Screen {
         if (parentManager != null && !loaded) {
             try {
                 manager = parentManager.getNotes();
-                DataChangeEvent.fire(this);
+                fireDataChange();
                 loaded = true;
             } catch (Exception e) {
                 e.printStackTrace();

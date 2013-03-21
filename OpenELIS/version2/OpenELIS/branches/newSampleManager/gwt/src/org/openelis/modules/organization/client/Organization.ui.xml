@@ -150,32 +150,38 @@
           </g:HTMLPanel>
         </g:layer>
         <g:layer top="160" bottom="0px">
-          <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX">
-            <w:tab>
+          <w:RadioPanel ui:field="radioPanel" dir="SOUTH">
+            <w:deck>
+              <!-- 
               <w:customHeader>
                 <w:TabWidget text="{msg.contact}" />
               </w:customHeader>
+              -->
               <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
                 <g:layer>
                   <o:ContactTabUI ui:field="contactTab" />
                 </g:layer>
               </g:LayoutPanel>
-            </w:tab>
+            </w:deck>
             <!-- TAB 2 -->
-            <w:tab>
+            <w:deck>
+              <!-- 
               <w:customHeader>
                 <w:TabWidget text="{msg.parameter}" />
               </w:customHeader>
+              -->
               <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
                 <g:layer>
                   <o:ParameterTabUI ui:field="parameterTab" />
                 </g:layer>
               </g:LayoutPanel>
-            </w:tab>
-            <w:tab>
+            </w:deck>
+            <w:deck>
+              <!-- 
               <w:customHeader>
                 <w:TabWidget text="{msg.note}" />
               </w:customHeader>
+              -->
               <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
                 <g:layer top="0px" bottom="30px">
                   <w:NotesPanel ui:field="notesPanel" />
@@ -186,8 +192,8 @@
                   </g:AbsolutePanel>
                 </g:layer>
               </g:LayoutPanel>
-            </w:tab>
-          </w:TabLayoutPanel>
+            </w:deck>
+          </w:RadioPanel>
         </g:layer>
       </g:LayoutPanel>
     </g:center>

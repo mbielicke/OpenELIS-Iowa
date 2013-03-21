@@ -661,7 +661,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                  * empty global DO (emptyAnalysis) allows us to do all of this   
                  */
                 if (dirty)
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
             }
             loaded = false;
         } catch (Exception e) {
@@ -703,7 +703,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                  */
                 if (manager != null) {
                     manager.reloadDefaultValues(analysis.getUnitOfMeasureId());
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                 }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
@@ -726,7 +726,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 displayManager = new TestAnalyteDisplayManager<ResultViewDO>();
                 displayManager.setDataGrid(manager.getResults());
                 if (fireDataChange)
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                 loaded = true;
             } catch (Exception e) {
                 Window.alert(e.getMessage());

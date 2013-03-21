@@ -200,7 +200,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         //setDataInTabs();
         setState(DEFAULT);
         initializeDropdowns();
-        DataChangeEvent.fire(this);
+        fireDataChange();
         
         logger.fine("Neonatal Screening Sample Login Screen Opened");
     }
@@ -1426,7 +1426,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
             manager = SampleService1.get().getInstance(Constants.domain().NEONATAL);
             // setDataInTabs();
             setState(State.ADD);
-            DataChangeEvent.fire(this);
+            fireDataChange();
             accessionNumber.setFocus(true);
             window.setDone(Messages.get().enterInformationPressCommit());
         } catch (Exception e) {
@@ -1464,7 +1464,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
                 // setDataInTabs();
                 setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
+                fireDataChange();
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
@@ -1482,7 +1482,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
                 // setDataInTabs();
                 setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
+                fireDataChange();
                 window.clearStatus();
                 // quickUpdate = false;
             } catch (ValidationErrorsList e) {
@@ -1508,7 +1508,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
                 // setDataInTabs();
                 setState(State.DEFAULT);
-                DataChangeEvent.fire(this);
+                fireDataChange();
                 window.setDone(Messages.get().queryAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
@@ -1520,7 +1520,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
                 // setDataInTabs();
                 setState(State.DEFAULT);
-                DataChangeEvent.fire(this);
+                fireDataChange();
                 window.setDone(Messages.get().addAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());

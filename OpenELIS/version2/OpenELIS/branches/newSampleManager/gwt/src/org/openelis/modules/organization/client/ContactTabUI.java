@@ -347,7 +347,7 @@ public class ContactTabUI extends Screen {
 
     public void draw() {
         if ( !loaded)
-            DataChangeEvent.fire(this);
+            fireDataChange();
 
         loaded = true;
     }
