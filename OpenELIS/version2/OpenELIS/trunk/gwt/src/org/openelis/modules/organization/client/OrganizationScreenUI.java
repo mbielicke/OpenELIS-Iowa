@@ -79,6 +79,7 @@ import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.NotesPanel;
 import org.openelis.ui.widget.QueryFieldUtil;
+import org.openelis.ui.widget.RadioPanel;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
@@ -144,7 +145,7 @@ public class OrganizationScreenUI extends Screen {
     protected AutoComplete              parentName;
 
     @UiField
-    protected TabLayoutPanel            tabPanel;
+    protected RadioPanel                radioPanel;
 
     @UiField
     protected Table                     atozTable;
@@ -178,7 +179,7 @@ public class OrganizationScreenUI extends Screen {
         initialize();
         setState(DEFAULT);
         initializeDropdowns();
-        DataChangeEvent.fire(this);
+        fireDataChange();
         
         logger.fine("Organization Screen Opened");
         
@@ -581,7 +582,7 @@ public class OrganizationScreenUI extends Screen {
         //
         // tabs
         //
-        tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+        radioPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 int i;
 
@@ -635,7 +636,7 @@ public class OrganizationScreenUI extends Screen {
         });
 
         notesTab = new NotesTabUI(window, notesPanel, standardNote);
-        addDataChangeHandler(new DataChangeHandler() {
+        addDataChangeHandler(new DataChangeEvent.Handler() {
             public void onDataChange(DataChangeEvent event) {
                 notesTab.setManager(manager);
                 if (tab == Tabs.NOTE)
@@ -770,7 +771,7 @@ public class OrganizationScreenUI extends Screen {
         manager = OrganizationManager.getInstance();
 
         setState(QUERY);
-        DataChangeEvent.fire(this);
+        fireDataChange();
 
         // clear all the tabs
         contactTab.draw();
@@ -797,7 +798,7 @@ public class OrganizationScreenUI extends Screen {
         manager.getOrganization().setIsActive("Y");
 
         setState(ADD);
-        DataChangeEvent.fire(this);
+        fireDataChange();
 
         name.setFocus(true);
         window.setDone(Messages.get().enterInformationPressCommit());
@@ -811,7 +812,7 @@ public class OrganizationScreenUI extends Screen {
             manager = manager.fetchForUpdate();
 
             setState(UPDATE);
-            DataChangeEvent.fire(this);
+            fireDataChange();
             name.setFocus(true);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -842,7 +843,7 @@ public class OrganizationScreenUI extends Screen {
                     manager = manager.add();
 
                     setState(DISPLAY);
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                     window.setDone(Messages.get().addingComplete());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
@@ -857,7 +858,7 @@ public class OrganizationScreenUI extends Screen {
                     manager = manager.update();
 
                     setState(DISPLAY);
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                     window.setDone(Messages.get().updatingComplete());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
@@ -890,7 +891,7 @@ public class OrganizationScreenUI extends Screen {
                 try {
                     manager = manager.abortUpdate();
                     setState(DISPLAY);
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     fetchById(null);
@@ -1025,7 +1026,7 @@ public class OrganizationScreenUI extends Screen {
                 return false;
             }
         }
-        DataChangeEvent.fire(this);
+        fireDataChange();
         window.clearStatus();
 
         return true;

@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/ehcache-1.2.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry kind="lib" path="lib/poi-3.6-20091214.jar" sourcepath="/usr/pub/mbielick/src/poi-3.6/src/java"/>
 	<classpathentry kind="src" path="src"/>
@@ -21,5 +20,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Security"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-UI"/>
 	<classpathentry kind="lib" path="/OpenELIS-UI/lib/gwt-i18n-server-0.17.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
