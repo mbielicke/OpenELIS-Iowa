@@ -33,10 +33,6 @@
 	test-justify:trim;
 }
 
-.Prompt:after {
-	content:":";
-}
-
 .ScreenLabelLink {
 	color:blue;
     text-decoration:underline;

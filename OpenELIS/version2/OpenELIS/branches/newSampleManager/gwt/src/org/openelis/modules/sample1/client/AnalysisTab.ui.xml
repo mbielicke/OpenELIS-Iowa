@@ -1,178 +1,188 @@
-<!--
-Exhibit A - UIRF Open-source Based Public Software License.
-  
-The contents of this file are subject to the UIRF Open-source Based
-Public Software License(the "License"); you may not use this file except
-in compliance with the License. You may obtain a copy of the License at
-openelis.uhl.uiowa.edu
-  
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-License for the specific language governing rights and limitations
-under the License.
-  
-The Original Code is OpenELIS code.
-  
-The Initial Developer of the Original Code is The University of Iowa.
-Portions created by The University of Iowa are Copyright 2006-2008. All
-Rights Reserved.
-  
-Contributor(s): ______________________________________.
-  
-Alternatively, the contents of this file marked
-"Separately-Licensed" may be used under the terms of a UIRF Software
-license ("UIRF Software License"), in which case the provisions of a
-UIRF Software License are applicable instead of those above. 
-  -->
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
-  xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
-  xmlns:s="urn:import:org.openelis.modules.sample1.client">
-
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client"
+>
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-
+  
   <g:LayoutPanel>
     <g:layer top="0px" bottom="25px">
-    <g:VerticalPanel padding="0" spacing="0">
-      <table class="{res.style.Form}">
-        <tr>
-          <td class="{res.style.Prompt}"><ui:text from="{msg.test}" /></td>
-          <td>
-             <w:AutoComplete ui:field="analysisTestName" width="150px" case="LOWER">
-               <w:popup>
-                 <t:Table visibleRows="10" header="true">
-                   <t:Column width="170px" label="{msg.test}">
-                     <t:LabelCell />
-                   </t:Column>
-                   <t:Column width="150px" label="{msg.method}">
-                     <t:LabelCell />
-                   </t:Column>
-                   <t:Column width="290px" label="{msg.description}">
-                     <t:LabelCell />
-                   </t:Column>
-                 </t:Table>
-               </w:popup>
-             </w:AutoComplete>
-           </td>
-          <td class="{res.style.Prompt}"><ui:text from="{msg.method}" /></td>
-          <td colspan="3">         
-             <w:Textbox ui:field="analysisMethodName" field = "String" width="151px" case="LOWER"/>
-          </td>
-          <td class="{res.style.Prompt}"><ui:text from="{msg.started}" /></td>
-          <td>
-            <c:Calendar ui:field="analysisStartedDate" begin="0" end="4" width="125px" pattern="{msg.dateTimePattern}"/>    
-          </td> 
-        </tr>
-        <tr>
-           <td class="{res.style.Prompt}"><ui:text from="{msg.status}" /></td>
-           <td>
-             <w:Dropdown ui:field="analysisStatusId" width="150px" popWidth="150px" field="Integer"/>
-           </td>
-           <td class="{res.style.Prompt}"><ui:text from="{msg.revision}" /></td> 
-           <td>
-             <w:Textbox ui:field="analysisRevision" width="60px" field="Integer" />
-           </td>
-           <td class="{res.style.Prompt}"><ui:text from="{msg.testReportable}" /></td>
-           <td>
-               <w:Checkbox ui:field="analysisIsReportable"/>
-           </td>
-           <td class="{res.style.Prompt}"><ui:text from="{msg.completed}" /></td>
-           <td>
-             <c:Calendar ui:field="analysisCompletedDate" begin="0" end="4" width="125px" pattern="{msg.dateTimePattern}"/>    
-           </td>
-         </tr>
-         <tr>
-           <td class="{res.style.Prompt}"><ui:text from="{msg.section}" /></td>
-           <td>
-             <w:Dropdown ui:field="analysisSectionId" width="151px" popWidth="150px" case="LOWER" field="Integer"/>
-           </td>
-           <td class="{res.style.Prompt}"><ui:text from="{msg.unit}" /></td>
-           <td colspan="3">
-              <w:Dropdown ui:field="analysisUnitOfMeasureId" width="150px" popWidth="150px" field="Integer"/>
-           </td>
-           <td class="{res.style.Prompt}"><ui:text from="{msg.released}" /></td>
-           <td>
-             <c:Calendar ui:field="analysisReleasedDate" begin="0" end="4" width="125px" pattern="{msg.dateTimePattern"/>    
-           </td> 
-       </tr>
-       <tr>
-          <td class="{res.style.Prompt}"><ui:text from="{msg.samplePrep}" /></td>
-          <td colspan="5">
+      <g:HTMLPanel width="100%">
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.test}:" />
+            </td>
             <td>
-             <w:AutoComplete ui:field="analysisSamplePrep" width="365x" case="LOWER">
-               <w:popup>
-                 <t:Table visibleRows="10" header="true">
-                   <t:Column width="350px" label="{msg.name}">
-                     <t:Label />
-                   </t:Column>               
-                 </t:Table>
-               </w:popup>
-             </w:AutoComplete>
-           </td>
-          </td>
-          <td class="{res.style.Prompt}"><ui:text from="{msg.printed}" /></td>
-          <td>
-             <c:Calendar ui:field="analysisPrintedDate" begin="0" end="4" width="125px" pattern="{msg.dateTimePattern}"/>    
-          </td> 
-        </tr>
-      </table>
-      <g:HorizontalPanel>
-         <g:VerticalPanel>
-            <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
+              <w:AutoComplete ui:field="testName" width="150px" case="LOWER">
+                <w:popup>
+                  <t:Table visibleRows="10" header="true">
+                    <t:Column width="170" label="{msg.test}">
+                      <t:LabelCell />
+                    </t:Column>
+                    <t:Column width="150" label="{msg.method}">
+                      <t:LabelCell />
+                    </t:Column>
+                    <t:Column width="290" label="{msg.description}">
+                      <t:LabelCell />
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:AutoComplete>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.method}:" />
+            </td>
+            <td colspan="3">
+              <w:TextBox ui:field="methodName" field="String" width="151px" case="LOWER" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.started}:" />
+            </td>
+            <td>
+              <c:Calendar ui:field="startedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.status}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="statusId" width="150px" field="Integer" /> <!-- popWidth="150px" -->
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.revision}:" />
+            </td>
+            <td>
+              <w:TextBox ui:field="revision" width="60px" field="Integer" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.testReportable}:" />
+            </td>
+            <td>
+              <w:CheckBox ui:field="isReportable" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.completed}:" />
+            </td>
+            <td>
+              <c:Calendar ui:field="completedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.section}:" />
+            </td>
+            <td>
+              <w:Dropdown ui:field="sectionId" width="151px" case="LOWER" field="Integer" /> <!-- popWidth="150px" -->
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.unit}:" />
+            </td>
+            <td colspan="3">
+              <w:Dropdown ui:field="unitOfMeasureId" width="150px" field="Integer" /> <!-- popWidth="150px" -->
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.released}:" />
+            </td>
+            <td>
+              <c:Calendar ui:field="releasedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+            </td>
+          </tr>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.samplePrep}:" />
+            </td>
+            <td colspan="5">
+              <w:AutoComplete ui:field="samplePrep" width="365x" case="LOWER">
+                <w:popup>
+                  <t:Table visibleRows="10" header="true">
+                    <t:Column width="350" label="{msg.name}">
+                      <t:LabelCell />
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:AutoComplete>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.printed}:" />
+            </td>
+            <td>
+              <c:Calendar ui:field="printedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+            </td>
+          </tr>
+        </table>
+        <g:HorizontalPanel>
+          <g:HTMLPanel width="100%">
+            <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS"
+              horizontalScroll="ALWAYS" header="true"
+            >
               <t:Column width="70" label="{msg.worksheet}">
                 <t:LabelCell>
-                  <t:Label field="Integer"/>
+                  <w:Label field="Integer" />
                 </t:LabelCell>
               </t:Column>
               <t:Column width="115" label="{msg.created}">
                 <t:CalendarCell>
-                  <c:Calendar width="115" begin="0" end="2" pattern="{msg.dateTimePattern}" />
+                  <c:Calendar width="115" begin="0" end="2" /> <!-- pattern="{msg.dateTimePattern}" -->
                 </t:CalendarCell>
               </t:Column>
               <t:Column width="115" label="{msg.status}">
                 <t:DropdownCell>
-                  <w:Dropdown width="100"/>
+                  <w:Dropdown width="100" />
                 </t:DropdownCell>
               </t:Column>
               <t:Column width="120" label="{msg.user}">
-                <t:LabelCell>
-                  <t:LabelCell/>
-                </t:LabelCell>
+                <t:LabelCell />
               </t:Column>
             </t:Table>
-	          <g:HorizontalPanel class="{res.style.TableFooterPanel}">
-                <w:Button ui:field="selectWkshtButton" leftIcon="{res.style.selectIcon}" text="{msg.select}" />             
-              </g:HorizontalPanel>
-            </g:VerticalPanel>
-            <g:AbsolutePanel style="{res.style.Divider}" />
-            <g:VerticalPanel spacing="0" padding="0">
-              <t:Table ui:field="analysisUserTable" visibleRows="3" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true" class = {res.style.ScreenTableWithSides}>
-                <t:Column width="115" label="{msg.user}">
-                  <t:AutoCompleteCell>
-                     <w:AutoComplete case="LOWER" required="true">
-                       <w:popup>
-                         <t:Table visibleRows="10" header="true">
-                           <t:Column  width="100px">
-                             <t:LabelCell />
-                           </t:Column>               
-                         </t:Table>
-                       </w:popup>
-                     </w:AutoComplete>
-                  </t:AutoCompleteCell>
-                </t:Column>
-                <t:Column width="114" label="{msg.action}">
-                  <t:DropdownCell>
-                    <w:Dropdown width="100"/>
-                  </t:DropdownCell>
-                </t:Column>
-              <g:HorizontalPanel style="{res.style.TableFooterPanel}">
-                <w:Button ui:field="addActionButton" leftIcon="{res.style.AddRowButtonImage}" text="{msg.addRow}" /> 
-                <w:Button ui:field="removeActionButton" leftIcon="{res.style.RemoveRowButtonImage}" text="{msg.removeRow}" /> 
-              </g:HorizontalPanel>
-          </g:VerticalPanel>
+            <g:HorizontalPanel> <!-- class="{res.style.TableFooterPanel}" -->
+              <w:Button ui:field="selectWkshtButton" text="{msg.select}" /> <!-- leftIcon="{res.style.selectIcon}" -->
+            </g:HorizontalPanel>
+          </g:HTMLPanel>
+          <g:AbsolutePanel /> <!-- style="{res.style.Divider}" -->
+          <g:HTMLPanel width="100%">
+            <t:Table ui:field="analysisUserTable" visibleRows="3" verticalScroll="ALWAYS"
+              horizontalScroll="ALWAYS" header="true"
+            > <!--class = {res.style.ScreenTableWithSides} -->
+              <t:Column width="115" label="{msg.user}">
+                <t:AutoCompleteCell>
+                  <w:AutoComplete case="LOWER" required="true">
+                    <w:popup>
+                      <t:Table visibleRows="10" header="true">
+                        <t:Column width="100">
+                          <t:LabelCell />
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                </t:AutoCompleteCell>
+              </t:Column>
+              <t:Column width="114" label="{msg.analysis_action}">
+                <t:DropdownCell>
+                  <w:Dropdown width="100" />
+                </t:DropdownCell>
+              </t:Column>
+            </t:Table>
+            <g:HorizontalPanel> <!-- style="{res.style.TableFooterPanel}" -->
+              <w:Button ui:field="addActionButton" text="{msg.addRow}" /> <!-- leftIcon="{res.style.AddRowButtonImage}" -->
+              <w:Button ui:field="removeActionButton" text="{msg.removeRow}" /> <!-- leftIcon="{res.style.RemoveRowButtonImage}" -->
+            </g:HorizontalPanel>
+          </g:HTMLPanel>
         </g:HorizontalPanel>
-      </g:VerticalPanel>
+      </g:HTMLPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>
