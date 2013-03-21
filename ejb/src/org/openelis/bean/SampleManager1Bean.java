@@ -953,7 +953,6 @@ public class SampleManager1Bean {
                 }
 
             } while (dep > 0 && ldep != dep);
-            // TODO change the exception to the actual exception
             if (dep > 0 && ldep == dep)
                 throw new InconsistencyException(Messages.get().analysis_circularReference());
 
