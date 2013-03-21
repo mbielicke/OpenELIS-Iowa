@@ -601,6 +601,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis();
 
   /**
+   * Translated "Action".
+   * 
+   * @return translated "Action"
+   */
+  @DefaultMessage("Action")
+  @Key("analysis.action")
+  String analysis_action();
+
+  /**
    * Translated "An analysis can not be its own prep analysis".
    * 
    * @return translated "An analysis can not be its own prep analysis"
@@ -7297,22 +7306,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String optionDATE_TIME();
 
   /**
-   * Translated "Dictionary entry ''{0}'' ".
+   * Translated "Dictionary entry '{0}' ".
    * 
-   * @return translated "Dictionary entry ''{0}'' "
+   * @return translated "Dictionary entry '{0}' "
    */
-  @DefaultMessage("Dictionary entry ''{0}'' ")
+  @DefaultMessage("Dictionary entry '{0}' ")
   @Key("optionDICTIONARY")
-  String optionDICTIONARY(String arg0);
+  String optionDICTIONARY();
 
   /**
-   * Translated "Numeric Range in between ''{0}''".
+   * Translated "Numeric Range in between '{0}'".
    * 
-   * @return translated "Numeric Range in between ''{0}''"
+   * @return translated "Numeric Range in between '{0}'"
    */
-  @DefaultMessage("Numeric Range in between ''{0}''")
+  @DefaultMessage("Numeric Range in between '{0}'")
   @Key("optionNUMERIC")
-  String optionNUMERIC(String arg0);
+  String optionNUMERIC();
 
   /**
    * Translated "Time in ''hh:mm'' format".
@@ -7324,13 +7333,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String optionTIME();
 
   /**
-   * Translated "Titer range in between ''{0}''".
+   * Translated "Titer range in between '{0}'".
    * 
-   * @return translated "Titer range in between ''{0}''"
+   * @return translated "Titer range in between '{0}'"
    */
-  @DefaultMessage("Titer range in between ''{0}''")
+  @DefaultMessage("Titer range in between '{0}'")
   @Key("optionTITER")
-  String optionTITER(String arg0);
+  String optionTITER();
 
   /**
    * Translated "Optional".

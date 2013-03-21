@@ -25,6 +25,12 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 
@@ -39,34 +45,26 @@ import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeCloseEvent;
-import org.openelis.gwt.event.BeforeCloseHandler;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.GetMatchesHandler;
-import org.openelis.gwt.event.HasActionHandlers;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.Popup;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableColumn;
-import org.openelis.gwt.widget.table.TableDataCell;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.event.ActionEvent;
+import org.openelis.ui.event.ActionHandler;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.GetMatchesHandler;
+import org.openelis.ui.event.HasActionHandlers;
+import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.widget.table.Table;
+import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.ui.widget.table.event.CellEditedEvent;
+import org.openelis.ui.widget.table.event.CellEditedHandler;
+import org.openelis.ui.widget.table.event.RowAddedEvent;
+import org.openelis.ui.widget.table.event.RowAddedHandler;
+import org.openelis.ui.widget.table.event.RowDeletedEvent;
+import org.openelis.ui.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
@@ -74,6 +72,8 @@ import org.openelis.modules.sample.client.ResultPopoutTabDef;
 import org.openelis.modules.sample.client.TestReflexUtility;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.OptionItem;
@@ -85,22 +85,38 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI.Action>, ActionHandler<AnalysisTabUI.Action> {
+    
+    @UiTemplate("ResultTab.ui.xml")
+    interface ResultTabUIBinder extends UiBinder<Widget, ResultTabUI> {        
+    };
+    
+    private static ResultTabUIBinder uiBinder = GWT.create(ResultTabUIBinder.class);
+    
     public enum Action {
         RESULT_HISTORY, REFLEX_ADDED
     };
 
     private boolean                                 loaded;
 
-    protected AppButton                             addResultButton, removeResultButton,
+    @UiField
+    protected Button                             addResultButton, removeResultButton,
                                                     suggestionsButton, popoutTable,
                                                     checkAllButton, uncheckAllButton;
-    protected Label                                 overrideLabel;
-    protected TableWidget                           testResultsTable;
-    private ArrayList<TableColumn>                  resultTableCols;
+    //@UiField
+    //protected Label                                 overrideLabel;
+    
+    @UiField
+    protected Table                           testResultsTable;
+   
+    //private ArrayList<TableColumn>                  resultTableCols;
 
     protected TestAnalyteLookupScreen1               testAnalyteScreen;
     protected ResultSuggestionsScreen1               suggestionsScreen;
@@ -117,9 +133,9 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
     private Integer                                 addedTestAnalyteId, addedAnalyteId;
     private String                                  addedAnalyteName;
 
-    private TestReflexUtility                       reflexTestUtil;
+    private TestReflexUtility1                       reflexTestUtil;
     
-    public ResultTabUI(ScreenDefInt def, WindowInt window, Screen parentScreen) {
+    /*public ResultTabUI(ScreenDefInt def, WindowInt window, Screen parentScreen) {
         setDefinition(def);
         setWindow(window);
 
@@ -136,6 +152,12 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
         popoutTable.setVisible(false);
         // Initialize Screen
         setState(State.DEFAULT);
+    }*/
+    
+    public ResultTabUI() {
+        initWidget(uiBinder.createAndBindUi(this));
+        
+        initialize();
     }
 
     private void initialize() {
@@ -143,16 +165,15 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
         
         emptyAnalysis = new AnalysisViewDO();
 
-        testResultsTable = (TableWidget)def.getWidget("testResultsTable");
-        addScreenHandler(testResultsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        addScreenHandler(testResultsTable, "testResultsTable", new ScreenHandler<ArrayList<Item<Integer>>>() {
             public void onDataChange(DataChangeEvent event) {
                 SectionPermission perm;
                 SectionViewDO section;
                 
-                testResultsTable.load(getTableModel());
+                testResultsTable.setModel(getTableModel());
 
-                if (testResultsTable.numRows() > 0) {
-                    popoutTable.enable(true);
+                if (testResultsTable.getRowCount() > 0) {
+                    popoutTable.setEnabled(true);
                     if (analysis.getSectionId() != null) {
                         try {
                             /*
@@ -162,9 +183,9 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                              */
                             section = SectionCache.getById(analysis.getSectionId());
                             perm = UserCache.getPermission().getSection(section.getName());
-                            if ((state == State.ADD || state == State.UPDATE) && perm.hasAssignPermission()) {
-                                checkAllButton.enable(true);
-                                uncheckAllButton.enable(true);
+                            if (isState(ADD, UPDATE) && perm.hasAssignPermission()) {
+                                checkAllButton.setEnabled(true);
+                                uncheckAllButton.setEnabled(true);
                             }
                         } catch (Exception e) {
                             section = null;
@@ -174,18 +195,18 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 }
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                testResultsTable.enable(true);
+            public void onStateChange(StateChangeEvent event) {
+                testResultsTable.setEnabled(true);
             }
         });
 
-        testResultsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
+        /*testResultsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 boolean isHeader;
-                TableDataRow row;
+                Item<Integer> row;
 
                 row = event.getItem().row;
-                isHeader = ((Boolean)row.data).booleanValue();
+                isHeader = ((Boolean)row.getData()).booleanValue();
 
                 if (isHeader)
                     event.cancel();
@@ -202,28 +223,28 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     row = testResultsTable.getSelectedRow();
                     data = displayManager.getObjectAt(row, 0);
 
-                    addResultButton.enable(true);
-                    suggestionsButton.enable(true);
+                    addResultButton.setEnabled(true);
+                    suggestionsButton.setEnabled(true);
 
                     if (Constants.dictionary().TEST_ANALYTE_REQ.equals(data.getTestAnalyteTypeId()))
-                        removeResultButton.enable(false);
+                        removeResultButton.setEnabled(false);
                     else
-                        removeResultButton.enable(true);
+                        removeResultButton.setEnabled(true);
                 } else {
-                    addResultButton.enable(false);
-                    removeResultButton.enable(false);
-                    suggestionsButton.enable(false);
-                    checkAllButton.enable(false);
-                    uncheckAllButton.enable(false);
+                    addResultButton.setEnabled(false);
+                    removeResultButton.setEnabled(false);
+                    suggestionsButton.setEnabled(false);
+                    checkAllButton.setEnabled(false);
+                    uncheckAllButton.setEnabled(false);
                 }
             }
-        });
+        });*/
 
         testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 boolean isHeaderRow, enableButton;
                 int r, c;
-                TableDataRow row;
+                Item<Integer> row;
                 ResultViewDO data;
                 SectionViewDO section;
                 TestAnalyteViewDO testAnalyte;
@@ -238,8 +259,8 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
 
                 r = event.getRow();
                 c = event.getCol();
-                row = testResultsTable.getRow(r);
-                isHeaderRow = ((Boolean)row.data).booleanValue();                
+                row = testResultsTable.getRowAt(r);
+                isHeaderRow = ((Boolean)row.getData()).booleanValue();                
 
                 if (analysis.getSectionId() != null) {
                     try {
@@ -252,7 +273,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 }
                 
                 if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r) ||
-                    !EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    !isState(ADD, UPDATE)) {
                     event.cancel();
                     enableButton = false;
                 } else if (!canEdit()) {
@@ -309,12 +330,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                              * dropdown for the result group that this cell is showing
                              * the values from is returned as the editor 
                              */
-                            tabcol = (SampleResultValueTableColumn1)testResultsTable.getColumns().get(c);
-                            tabcol.setResultGroup(data.getResultGroup());
+                            //TODO change this code
+                            //tabcol = (SampleResultValueTableColumn1)testResultsTable.getColumnAt(c);
+                            //tabcol.setResultGroup(data.getResultGroup());
                         }
                     }                                                                                   
                 }
-                suggestionsButton.enable(enableButton);
+                suggestionsButton.setEnabled(enableButton);
             }
         });
 
@@ -330,7 +352,8 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 col = event.getCol();
                 data = null;
 
-                val = (String)testResultsTable.getObject(row, col);
+              //TODO change this code
+              /*  val = (String)testResultsTable.getValueAt(row, col);
                 if (col == 0) {
                     data = displayManager.getObjectAt(row, 0);
                     data.setIsReportable(val);
@@ -352,13 +375,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                         data.setValue(val);
 
                         if ( !Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(testResult.getTypeId()))
-                            testResultsTable.setCell(row, col, val);
+                            testResultsTable.setValueAt(row, col, val);
 
                         if (reflexTestUtil == null) {
-                            reflexTestUtil = new TestReflexUtility();
+                            reflexTestUtil = new TestReflexUtility1();
 
-                            reflexTestUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
-                                public void onAction(ActionEvent<TestReflexUtility.Action> event) {
+                            reflexTestUtil.addActionHandler(new ActionHandler<TestReflexUtility1.Action>() {
+                                public void onAction(ActionEvent<TestReflexUtility1.Action> event) {
                                     if (((ArrayList<SampleDataBundle>)event.getData()).size() > 0)
                                         ActionEvent.fire(resultTab, Action.REFLEX_ADDED,
                                                          event.getData());
@@ -366,7 +389,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                             });
                         }
 
-                        reflexTestUtil.setScreen(parentScreen);
+                        //reflexTestUtil.setScreen(parentScreen);
                         reflexTestUtil.resultEntered(bundle, data);
 
                     } catch (ParseException e) {
@@ -381,7 +404,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     data.setValue(val);
                     data.setTypeId(null);
                     data.setTestResultId(null);
-                }
+                }*/
             }
         });
 
@@ -390,11 +413,12 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 int index, prowIndex, numCols;
                 Integer rg,rowGroup;
                 String val;
-                TableDataRow row;
+                Item<Integer> row;
                 ResultViewDO data;
                 TestResultDO testResult;
 
-                index = event.getIndex();
+              //TODO change this code
+                /*index = event.getIndex();
                 row = event.getRow();
                 prowIndex = index - 1;
 
@@ -448,10 +472,10 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                      * the default value set in the DO is invalid, the dropdown 
                      * for that result group won't be created because of the
                      * exception thrown during validation
-                     */
+                    
                     setDropdownForResultGroup(rg,i);
                 }
-                manager.setDefaultsLoaded(true);
+                manager.setDefaultsLoaded(true);*/
             }
         });
 
@@ -462,15 +486,15 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     index = displayManager.getIndexAt(event.getIndex());
                     manager.removeRowAt(index);
                     displayManager.setDataGrid(manager.getResults());
-                    removeResultButton.enable(false);
+                    removeResultButton.setEnabled(false);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
         });
 
-        addResultButton = (AppButton)def.getWidget("addResultButton");
-        addScreenHandler(addResultButton, new ScreenEventHandler<Object>() {
+        /*addResultButton = (Button)def.getWidget("addResultButton");
+        addScreenHandler(addResultButton, new ScreenHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int row = testResultsTable.getSelectedRow();
                 Integer rowGroup = displayManager.getObjectAt(row, 0).getRowGroup();
@@ -500,13 +524,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 testAnalyteScreen.setData(manager.getNonColumnTestAnalytes(rowGroup));
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                addResultButton.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                addResultButton.setEnabled(false);
             }
         });
 
-        removeResultButton = (AppButton)def.getWidget("removeResultButton");
-        addScreenHandler(removeResultButton, new ScreenEventHandler<Object>() {
+        removeResultButton = (Button)def.getWidget("removeResultButton");
+        addScreenHandler(removeResultButton, new ScreenHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int r;
 
@@ -519,13 +543,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 }
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                removeResultButton.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                removeResultButton.setEnabled(false);
             }
         });
 
-        suggestionsButton = (AppButton)def.getWidget("suggestionsButton");
-        addScreenHandler(suggestionsButton, new ScreenEventHandler<Object>() {
+        suggestionsButton = (Button)def.getWidget("suggestionsButton");
+        addScreenHandler(suggestionsButton, new ScreenHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int row, col;
                 ResultViewDO data;
@@ -554,46 +578,45 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 popUp.show();
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                suggestionsButton.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                suggestionsButton.setEnabled(false);
             }
         });
 
-        popoutTable = (AppButton)def.getWidget("popoutTable");
-        addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
+        popoutTable = (Button)def.getWidget("popoutTable");
+        addScreenHandler(popoutTable, new ScreenHandler<Object>() {
             public void onClick(ClickEvent event) {
                 onTablePopoutClick();
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                popoutTable.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                popoutTable.setEnabled(false);
             }
         });
         
-        checkAllButton = (AppButton)def.getWidget("checkAllButton");
-        addScreenHandler(checkAllButton, new ScreenEventHandler<Object>() {
+        checkAllButton = (Button)def.getWidget("checkAllButton");
+        addScreenHandler(checkAllButton, new ScreenHandler<Object>() {
             public void onClick(ClickEvent event) {
                 setReportableForAll("Y");
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                checkAllButton.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                checkAllButton.setEnabled(false);
             }
         });
         
-        uncheckAllButton = (AppButton)def.getWidget("uncheckAllButton");
-        addScreenHandler(uncheckAllButton, new ScreenEventHandler<Object>() {
+        uncheckAllButton = (Button)def.getWidget("uncheckAllButton");
+        addScreenHandler(uncheckAllButton, new ScreenHandler<Object>() {
             public void onClick(ClickEvent event) {
                 setReportableForAll("N");
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                uncheckAllButton.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                uncheckAllButton.setEnabled(false);
             }
-        });
+        });*/
         
-        overrideLabel = (Label)def.getWidget("overrideLabel");
-        addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
+        /*addScreenHandler(popoutTable, "overrideLabel", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     if (bundle.getSampleManager().getQaEvents().hasResultOverrideQA() ||
@@ -605,7 +628,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                     overrideLabel.setVisible(false);
                 }                    
             }
-        });
+        });*/
     }
     
     public void setData(SampleDataBundle data) {
@@ -619,13 +642,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                                   .getAnalysisAt(data.getSampleItemIndex());
                 analysis = analysisMan.getAnalysisAt(data.getAnalysisIndex());
 
-                if (state == State.ADD || state == State.UPDATE)
-                    StateChangeEvent.fire(this, State.UPDATE);
+                if (isState(ADD, UPDATE))
+                    StateChangeEvent.fire(this, UPDATE);
             } else {
                 analysisMan = null;
                 dirty = (analysis == emptyAnalysis);
                 analysis = emptyAnalysis;
-                StateChangeEvent.fire(this, State.DEFAULT);
+                StateChangeEvent.fire(this, DEFAULT);
                 /*
                  * We need to clear the tab in states like query in order to make
                  * sure that all the previous data and its associated errors get
@@ -655,7 +678,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
     }
     
     public void onAction(ActionEvent<AnalysisTabUI.Action> event) {
-        if ((state == State.ADD || state == State.UPDATE) &&
+        if (isState(ADD, UPDATE) &&
                         event.getAction() == AnalysisTabUI.Action.UNIT_CHANGED) {                   
             bundle = (SampleDataBundle)event.getData();
             try {
@@ -695,7 +718,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                 if (analysisMan == null || analysis.getTestId() == null)
                     manager = AnalysisResultManager.getInstance();
                 else {
-                    if (state == State.ADD || state == State.UPDATE)
+                    if (isState(ADD, UPDATE))
                         manager = analysisMan.getAnalysisResultAt(bundle.getAnalysisIndex());
                     else
                         manager = analysisMan.getDisplayAnalysisResultAt(bundle.getAnalysisIndex());
@@ -712,28 +735,28 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
         }
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Item<Integer>> getTableModel() {
         int i, c, len, numberOfCols;
         boolean headerFilled, validateResults;
         Integer rg;
         String val, entry;
         TestResultDO testResult;
-        ArrayList<TableDataRow> model;
-        TableDataRow hrow, row;
+        ArrayList<Item<Integer>> model;
+        Item<Integer> hrow, row;
         ResultViewDO data;
         SampleResultValueTableColumn1 tabcol;
-        ArrayList<TableColumn> cl;
+        //ArrayList<TableColumn> cl;
 
         /*
          * we are assuming there will be at least 1 non supplemental if there are
          * only supplementals in a row group it will not show a header so the user
          * wont be able to add any analytes
          */
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Item<Integer>>();
         if (manager == null || displayManager == null)
             return model;
 
-        validateResults = (state == State.ADD || state == State.UPDATE);
+        validateResults = isState(ADD, UPDATE);
         numberOfCols = displayManager.maxColumnCount();
         resizeResultTable(numberOfCols);
 
@@ -747,7 +770,8 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
          * changes for which this table is to be loaded. This only needs to happen
          * if the data is to be edited and validated. 
          */
-        if (validateResults) { 
+        //TODO change this code
+        /*if (validateResults) { 
             cl = testResultsTable.getColumns();
             for (i = 2; i < cl.size(); i++) {
                 tabcol = (SampleResultValueTableColumn1)cl.get(i);
@@ -764,7 +788,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
             }
 
             len = displayManager.columnCount(i) - 2;
-            row = new TableDataRow(numberOfCols);
+            row = new Item<Integer>(numberOfCols);
             row.data = new Boolean(false);
             
             for (c = 0; c < len; c++ ) {                
@@ -784,7 +808,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                      * because otherwise if validateResults is false, then the value
                      * that gets set in the cell for the type dictionary is the
                      * id of the record and not the entry 
-                     */
+                     
                     if (!Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
                         row.cells.get(c+2).setValue(val);
                     } else {
@@ -793,7 +817,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                         /*
                          * we have to make sure that a dictionary entry's text
                          * is validated and not its id as explained later
-                         */
+                         
                         val = entry;
                     }
                     
@@ -813,7 +837,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                          * the data in the table is reloaded with the defaults for
                          * the new unit and one of the result groups doesn't have
                          * a default for the new unit so the old value remains unchanged.                             
-                         */
+                         
                         testResult = displayManager.validateResultValue(manager,
                                                                         rg, val,
                                                                         analysis.getUnitOfMeasureId());
@@ -830,7 +854,7 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                          * have changed from what it was before validateResultValue() 
                          * was called, and we have to perform the check for the type
                          * again to set the appropriate value.    
-                         */
+                         
                         if ( !Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
                             row.cells.get(c+2).setValue(val);
                         } else {
@@ -850,13 +874,13 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
                  * the default is the value set in the DO in EJB and if the default
                  * is invalid, the dropdown for that result group won't be created
                  * because of the exception thrown during validation
-                 */
+                 
                 setDropdownForResultGroup(rg, c+2);
             }
             headerFilled = true;
             model.add(row);
         }
-        manager.setDefaultsLoaded(true);
+        manager.setDefaultsLoaded(true);*/
 
         return model;
     }
@@ -871,29 +895,24 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
         return val;
     }
 
-    private TableDataRow createHeaderRow(int numOfColumns) {
-        TableDataRow row;
-        TableDataCell cell;
+    private Item<Integer> createHeaderRow(int numOfColumns) {
+        Item<Integer> row;
 
-        row = new TableDataRow(numOfColumns);
+        row = new Item<Integer>(numOfColumns);
 
-        cell = row.cells.get(0);
-        cell.setValue(Messages.get().reportable());
+        row.setCell(0, Messages.get().reportable());
+        row.setCell(1, Messages.get().analyte());
+        row.setCell(2, Messages.get().value());
 
-        cell = row.cells.get(1);
-        cell.setValue(Messages.get().analyte());
-
-        cell = row.cells.get(2);
-        cell.setValue(Messages.get().value());
-
-        row.style = "SubHeader";
-        row.data = new Boolean(true);
+        //TODO chnage this code
+        //row.style = "SubHeader";
+        row.setData(true);
 
         return row;
     }
 
     private void resizeResultTable(int numOfCols) {
-        TableColumn col;
+        /*TableColumn col;
         int width = 206;
 
         if (numOfCols == 1)
@@ -908,19 +927,19 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
 
         for (int i = 0; i < numOfCols; i++ ) {
             col = resultTableCols.get(i);
-            col.enable(testResultsTable.isEnabled());
+            col.setEnabled(testResultsTable.isEnabled());
 
             if (i == 0)
                 col.setCurrentWidth(65);
             else
                 col.setCurrentWidth(width);
             testResultsTable.addColumn(col);
-        }
+        }*/
     }
 
     private void addResultRows(ArrayList<TestAnalyteViewDO> rows) {
         int r, maxCols;
-        TableDataRow row;
+        Item<Integer> row;
         TestAnalyteViewDO an;
 
         r = testResultsTable.getSelectedRow();
@@ -928,23 +947,23 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
 
         for (int i = 0; i < rows.size(); i++ ) {
             an = rows.get(i);
-            row = new TableDataRow(maxCols);
+            row = new Item<Integer>(maxCols);
 
-            row.data = new Boolean(false);
-            row.cells.get(0).value = an.getIsReportable();
-            row.cells.get(1).value = an.getAnalyteName();
+            row.setData(false);
+            row.setCell(0, an.getIsReportable());
+            row.setCell(1, an.getAnalyteName());
 
             addedTestAnalyteId = an.getId();
             addedAnalyteId = an.getAnalyteId();
             addedAnalyteName = an.getAnalyteName();
 
             r++ ;
-            testResultsTable.addRow(r, row);
+            testResultsTable.addRowAt(r, row);
         }
     }
 
     private void onTablePopoutClick() {
-        try {
+        /*try {
             if (resultPopoutScreen == null)
                 resultPopoutScreen = new ResultTabUI();
 
@@ -982,23 +1001,23 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
             e.printStackTrace();
             Window.alert("onTablePopoutClick: " + e.getMessage());
             return;
-        }
+        }*/
     }
     
     private void setReportableForAll(String val) {
         boolean isHeader;        
         ResultViewDO data;
-        TableDataRow row;
+        Item row;
         
-        for (int j = 0; j< testResultsTable.numRows(); j++) {
-            row = testResultsTable.getRow(j);
-            isHeader = (Boolean)row.data;
+        for (int j = 0; j< testResultsTable.getRowCount(); j++) {
+            row = testResultsTable.getRowAt(j);
+            isHeader = (Boolean)row.getData();
             if (isHeader)
                 continue;            
             data = displayManager.getObjectAt(j, 0);
             if (!DataBaseUtil.isSame(val, data.getIsReportable())) {
                 data.setIsReportable(val);
-                testResultsTable.setCell(j, 0, val);
+                testResultsTable.setValueAt(j, 0, val);
             }
         }
     }
@@ -1017,15 +1036,15 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
         boolean prevHeader, postHeader;
         int size;
 
-        size = testResultsTable.numRows();
+        size = testResultsTable.getRowCount();
         if (index == 0)
             prevHeader = false;
         else
-            prevHeader = (Boolean)testResultsTable.getRow(index - 1).data;
+            prevHeader = (Boolean)testResultsTable.getRowAt(index - 1).getData();
         if (index == size - 1)
             postHeader = true;
         else
-            postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
+            postHeader = (Boolean)testResultsTable.getRowAt(index + 1).getData();
 
         return prevHeader && postHeader;
     }
@@ -1033,24 +1052,24 @@ public class ResultTabUI extends Screen implements HasActionHandlers<ResultTabUI
     private void setDropdownForResultGroup(Integer rg, int col) {
         SampleResultValueTableColumn1 tabcol;
         ResultValidator v;
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         
         if (rg == null)
             return;
-        tabcol = (SampleResultValueTableColumn1)testResultsTable.getColumns().get(col);                    
+        /*tabcol = (SampleResultValueTableColumn1)testResultsTable.getColumns().get(col);                    
         v = manager.getResultValidator(rg);
         /* 
          * If a result group only has dictionary entries, we show a dropdown and
          * not a textbox when a user tries to edit the cell referring to that 
          * result group. The class SampleResultValueTableColumn is responsible
          * for returning the right dropdown based on the result group. 
-         */
+         
         if (v.hasOnlyDictionary()) {                            
-            model = new ArrayList<TableDataRow>();
-            model.add(new TableDataRow("", ""));
+            model = new ArrayList<Item<Integer>>();
+            model.add(new Item<Integer>("", ""));
             for (OptionItem oi : v.getDictionaryRanges())                                 
-                model.add(new TableDataRow(oi.getValue(), oi.getValue()));
+                model.add(new Item<Integer>(oi.getValue(), oi.getValue()));
             tabcol.setResultGroupModel(rg, model);
-        }
+        }*/
     }
 }
