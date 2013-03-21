@@ -527,8 +527,10 @@ public class OpenELIS extends Screen {
                             window.setContent(new OrganizationScreenUI(window));
                             browser.addWindow(window, "organization");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            e.printStackTrace();
                             Window.alert(e.getMessage());
+                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            
                         }
                     }
 
