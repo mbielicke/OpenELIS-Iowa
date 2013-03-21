@@ -631,7 +631,8 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
                     }
 
                     ActionEvent.fire(anTab, Action.CHANGED_DONT_CHECK_PREPS, null);
-                    DataChangeEvent.fire(anTab, statusId);
+                    //TODO change this code
+                    //DataChangeEvent.fire(anTab, statusId);
 
                 } catch (Exception e) {
                     Window.alert("samplePrep valueChange: " + e.getMessage());
@@ -1159,7 +1160,7 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
 
     public void draw() {
         if ( !loaded)
-            DataChangeEvent.fire(this);
+            fireDataChange();
 
         loaded = true;
     }

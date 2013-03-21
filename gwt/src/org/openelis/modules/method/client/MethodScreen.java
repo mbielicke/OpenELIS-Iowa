@@ -125,7 +125,7 @@ public class MethodScreen extends Screen {
 
         initialize();
         setState(DEFAULT);
-        DataChangeEvent.fire(this);
+        fireDataChange();
     }
 
     private void initialize() {
@@ -416,7 +416,7 @@ public class MethodScreen extends Screen {
     protected void query(ClickEvent event) {
         data = new MethodDO();
         setState(QUERY);
-        DataChangeEvent.fire(this);
+        fireDataChange();
 
         name.setFocus(true);
         window.setDone(Messages.get().enterFieldsToQuery());
@@ -437,7 +437,7 @@ public class MethodScreen extends Screen {
         data = new MethodDO();
         data.setIsActive("Y");
         setState(ADD);
-        DataChangeEvent.fire(this);
+        fireDataChange();
 
         name.setFocus(true);
         window.setDone(Messages.get().enterInformationPressCommit());
@@ -451,7 +451,7 @@ public class MethodScreen extends Screen {
             data = MethodService.get().fetchForUpdate(data.getId());
 
             setState(UPDATE);
-            DataChangeEvent.fire(this);
+            fireDataChange();
             name.setFocus(true);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -482,7 +482,7 @@ public class MethodScreen extends Screen {
                     data = MethodService.get().add(data);
 
                     setState(DISPLAY);
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                     window.setDone(Messages.get().addingComplete());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
@@ -497,7 +497,7 @@ public class MethodScreen extends Screen {
                     data = MethodService.get().update(data);
 
                     setState(DISPLAY);
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                     window.setDone(Messages.get().updatingComplete());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
@@ -529,7 +529,7 @@ public class MethodScreen extends Screen {
                 try {
                     data = MethodService.get().abortUpdate(data.getId());
                     setState(DISPLAY);
-                    DataChangeEvent.fire(this);
+                    fireDataChange();
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     fetchById(null);
@@ -568,7 +568,7 @@ public class MethodScreen extends Screen {
                 return false;
             }
         }
-        DataChangeEvent.fire(this);
+        fireDataChange();
         window.clearStatus();
 
         return true;
