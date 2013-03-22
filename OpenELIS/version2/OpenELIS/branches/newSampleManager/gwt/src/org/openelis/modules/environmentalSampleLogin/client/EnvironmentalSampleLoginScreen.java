@@ -1545,7 +1545,13 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 while (itemMan.count() > 0)
                     itemMan.removeSampleItemAt(0);                
                 
-                manager.getSample().setNextItemSequence(0);                 
+                manager.getSample().setNextItemSequence(0);
+                
+                /*
+                 * We need to copy the initial external note, if any, from the
+                 * quick entry manager
+                 */
+                manager.getExternalNote().addNote(quickEntryMan.getExternalNote().getEditingNote()); 
             }
             
             errors = envOrderImport.importOrderInfo(orderId, manager);    
