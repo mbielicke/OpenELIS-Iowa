@@ -1562,6 +1562,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     itemMan.removeSampleItemAt(0);
 
                 manager.getSample().setNextItemSequence(0);
+                
+                /*
+                 * We need to copy the initial external note, if any, from the
+                 * quick entry manager
+                 */
+                manager.getExternalNote().addNote(quickEntryMan.getExternalNote().getEditingNote());
             }
 
             errors = sdwisOrderImport.importOrderInfo(orderId, manager);

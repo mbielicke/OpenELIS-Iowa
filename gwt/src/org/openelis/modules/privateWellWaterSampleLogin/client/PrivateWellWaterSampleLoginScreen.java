@@ -116,7 +116,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class PrivateWellWaterSampleLoginScreen extends Screen implements
                                                              HasActionHandlers {
-    private boolean                          quickUpdate;
+    private boolean                           quickUpdate;
     private SampleManager                     manager, previousManager;
     protected Tabs                            tab;
     private PrivateWellWaterSampleLoginScreen screen;
@@ -1592,8 +1592,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 return;
             }
 
-            manager.getSample().setOrderId(orderId);
-
             window.setBusy(Messages.get().fetching());
 
             man = OrderManager.fetchById(orderId);
@@ -1645,6 +1643,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     itemMan.removeSampleItemAt(0);
 
                 manager.getSample().setNextItemSequence(0);
+                
+                /*
+                 * We need to copy the initial external note, if any, from the
+                 * quick entry manager
+                 */
+                manager.getExternalNote().addNote(quickEntryMan.getExternalNote().getEditingNote());
             }
 
             errors = wellOrderImport.importOrderInfo(orderId, manager);
