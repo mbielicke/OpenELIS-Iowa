@@ -165,13 +165,13 @@ public class ParameterTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 remove.setEnabled(isState(ADD, UPDATE));
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 add.setEnabled(isState(ADD, UPDATE));
             }

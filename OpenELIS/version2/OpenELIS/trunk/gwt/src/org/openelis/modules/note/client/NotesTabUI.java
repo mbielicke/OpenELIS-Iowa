@@ -61,7 +61,7 @@ public class NotesTabUI extends Screen {
             }
         });
         
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 editButton.setEnabled(isState(ADD,UPDATE));
             }
