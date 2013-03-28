@@ -62,11 +62,9 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
-import org.openelis.ui.event.DataChangeHandler;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.event.StateChangeHandler;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -145,7 +143,7 @@ public class OrganizationScreenUI extends Screen {
     protected AutoComplete              parentName;
 
     @UiField
-    protected RadioPanel                radioPanel;
+    protected TabLayoutPanel            tabPanel;
 
     @UiField
     protected Table                     atozTable;
@@ -193,7 +191,7 @@ public class OrganizationScreenUI extends Screen {
         //
         // button panel buttons
         //
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
@@ -206,7 +204,7 @@ public class OrganizationScreenUI extends Screen {
 
         addShortcut(query, 'q', CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 previous.setEnabled(isState(DISPLAY));
             }
@@ -214,7 +212,7 @@ public class OrganizationScreenUI extends Screen {
 
         addShortcut(previous, 'p', CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 next.setEnabled(isState(DISPLAY));
             }
@@ -222,7 +220,7 @@ public class OrganizationScreenUI extends Screen {
 
         addShortcut(next, 'n', CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
                 if (isState(ADD)) {
@@ -235,7 +233,7 @@ public class OrganizationScreenUI extends Screen {
 
         addShortcut(add, 'a', CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
@@ -248,7 +246,7 @@ public class OrganizationScreenUI extends Screen {
 
         addShortcut(update, 'u', CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 commit.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
             }
@@ -256,7 +254,7 @@ public class OrganizationScreenUI extends Screen {
 
         addShortcut(commit, 'm', CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 abort.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
             }
@@ -271,7 +269,7 @@ public class OrganizationScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 orgHistory.setEnabled(isState(DISPLAY));
             }
@@ -283,7 +281,7 @@ public class OrganizationScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 orgAddressHistory.setEnabled(isState(DISPLAY));
             }
@@ -295,7 +293,7 @@ public class OrganizationScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 orgContactHistory.setEnabled(isState(DISPLAY));
             }
@@ -307,7 +305,7 @@ public class OrganizationScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 orgContactAddressHistory.setEnabled(isState(DISPLAY));
             }
@@ -319,7 +317,7 @@ public class OrganizationScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 orgParameterHistory.setEnabled(isState(DISPLAY));
             }
@@ -582,7 +580,7 @@ public class OrganizationScreenUI extends Screen {
         //
         // tabs
         //
-        radioPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+        tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 int i;
 
@@ -644,7 +642,7 @@ public class OrganizationScreenUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 notesTab.setState(event.getState());
             }
@@ -698,7 +696,7 @@ public class OrganizationScreenUI extends Screen {
             }
         };
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 boolean enable;
                 enable = isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission();
