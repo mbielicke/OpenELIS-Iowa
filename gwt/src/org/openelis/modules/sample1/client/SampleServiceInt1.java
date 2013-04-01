@@ -45,7 +45,8 @@ public interface SampleServiceInt1 extends RemoteService {
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
                                                 SampleManager1.Load... elements) throws Exception;
     
-    public ArrayList<SampleManager1> fetchByQuery(Query query, SampleManager1.Load... elements) throws Exception;
+    public ArrayList<SampleManager1> fetchByQuery(Query query, 
+                                                  SampleManager1.Load... elements) throws Exception;
 
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                SampleManager1.Load... elements) throws Exception;

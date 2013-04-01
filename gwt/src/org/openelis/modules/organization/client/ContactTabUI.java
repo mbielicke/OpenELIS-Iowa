@@ -14,7 +14,7 @@ import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.event.StateChangeHandler;
+import org.openelis.ui.event.StateChangeEvent.Handler;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
@@ -232,13 +232,13 @@ public class ContactTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 remove.setEnabled(isState(ADD, UPDATE));
             }
         });
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 add.setEnabled(isState(ADD, UPDATE));
             }

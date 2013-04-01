@@ -25,92 +25,102 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
+
 import java.util.ArrayList;
-import java.util.EnumSet;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.exception.ParseException;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.event.UnselectionEvent;
-import org.openelis.gwt.widget.table.event.UnselectionHandler;
-import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.HasAuxDataInt;
-import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.widget.WindowInt;
-import org.openelis.utilcommon.ResultValidator;
+import org.openelis.ui.event.ActionEvent;
+import org.openelis.ui.event.ActionHandler;
+import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.TextBox;
+import org.openelis.ui.widget.table.Table;
+import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.ui.widget.table.event.CellEditedEvent;
+import org.openelis.ui.widget.table.event.CellEditedHandler;
+import org.openelis.ui.widget.table.event.UnselectionEvent;
+import org.openelis.ui.widget.table.event.UnselectionHandler;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 public class AuxDataTabUI extends Screen {
-    private boolean                 loaded;
 
-    protected AuxGroupLookupScreen1  auxGroupScreen;
-    protected TableWidget           auxValsTable;
-    protected AppButton             addAuxButton, removeAuxButton;
-    protected TextBox               auxMethod, auxUnits, auxDesc;
-    protected AutoComplete<Integer> ac, auxField;
-    protected boolean              queryFieldEntered;
-    protected HasAuxDataInt         parentMan;
-    protected AuxDataManager        manager;
-
-    public AuxDataTabUI(ScreenDefInt def, WindowInt window) {
-        setDefinition(def);
-        setWindow(window);
-
+    @UiTemplate("AuxDataTab.ui.xml")
+    interface AuxDataTabUIBinder extends UiBinder<Widget, AuxDataTabUI> {        
+    };
+    
+    private static AuxDataTabUIBinder uiBinder = GWT.create(AuxDataTabUIBinder.class);
+    
+    public AuxDataTabUI() {
+        initWidget(uiBinder.createAndBindUi(this));
+        
         initialize();
     }
+    
+    //private boolean                 loaded;
+
+    protected AuxGroupLookupScreen1 auxGroupScreen;
+    
+    protected AuxDataTabUI          screen; 
+    
+    @UiField
+    protected Table                 auxValsTable;
+    
+    @UiField
+    protected Button                removeAuxButton, addAuxButton;
+    
+    @UiField
+    protected TextBox<String>       auxMethod, auxUnits, auxDesc;
+    
+    protected boolean              queryFieldEntered;
+    protected HasAuxDataInt         parentMan;
+    protected SampleManager1        manager;        
 
     private void initialize() {
-        final AuxDataTabUI tab = this;
+        screen = this;
 
-        auxValsTable = (TableWidget)def.getWidget("auxValsTable");
-        addScreenHandler(auxValsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        addScreenHandler(auxValsTable, "auxValsTable", new ScreenHandler<ArrayList<Item<Integer>>>() {
             public void onDataChange(DataChangeEvent event) {
-                auxValsTable.load(getTableModel());
+                auxValsTable.setModel(getTableModel());
                 queryFieldEntered = false;
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                auxValsTable.enable(EnumSet.of(State.QUERY, State.DISPLAY)
-                                           .contains(event.getState()) ||
-                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                         .contains(event.getState())));
+            public void onStateChange(StateChangeEvent event) {                
+                auxValsTable.setEnabled(isState(QUERY, DISPLAY) || (canEdit() && isState(ADD, UPDATE)));
             }
         });
 
-        auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                AuxFieldViewDO fieldDO;
+        auxValsTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                //TODO change this code
+                /*AuxFieldViewDO fieldDO;
 
                 fieldDO = manager.getAuxFieldAt(auxValsTable.getSelectedRow());
                 if (fieldDO != null) {
@@ -121,16 +131,14 @@ public class AuxDataTabUI extends Screen {
                     auxMethod.setValue(null);
                     auxDesc.setValue(null);
                     auxUnits.setValue(null);
-                }
+                }*/
 
-                if (state == State.QUERY ||
-                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(state)))
-                    removeAuxButton.enable(true);
+                removeAuxButton.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
             };
         });
 
-        auxValsTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
-            public void onUnselection(UnselectionEvent<TableDataRow> event) {
+        auxValsTable.addUnselectionHandler(new UnselectionHandler<Integer>() {
+            public void onUnselection(UnselectionEvent<Integer> event) {
                 auxMethod.setValue(null);
                 auxDesc.setValue(null);
                 auxUnits.setValue(null);
@@ -147,8 +155,8 @@ public class AuxDataTabUI extends Screen {
 
                 window.clearStatus();
 
-                if (state == State.QUERY) {
-                    val = auxValsTable.getObject(r, c);
+                if (isState(QUERY)) {
+                    val = auxValsTable.getValueAt(r, c);
 
                     if (c == 0) {
                         event.cancel();
@@ -156,7 +164,7 @@ public class AuxDataTabUI extends Screen {
                         event.cancel();
                         window.setError(Messages.get().auxDataOneQueryException());
                     }
-                } else if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                } else if (isState(ADD, UPDATE)) {
                     if ( !canEdit())
                         event.cancel();
                 } else {
@@ -169,19 +177,19 @@ public class AuxDataTabUI extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c, i;
                 Integer avId;
-                TableDataRow row;
+                Item<Integer> row;
                 String value;
                 AuxDataViewDO data;
-                ResultValidator rv;
-                ArrayList<AuxFieldValueViewDO> values;
-                AuxFieldValueViewDO valueDO;
+                //ResultValidator rv;
+                //ArrayList<AuxFieldValueViewDO> values;
+                //AuxFieldValueViewDO valueDO;
 
                 r = event.getRow();
                 c = event.getCol();
-                value = (String)auxValsTable.getObject(r, c);
+                value = (String)auxValsTable.getValueAt(r, c);
                 data = null;
 
-                if (state == State.QUERY) {
+                if (isState(QUERY)) {
                     if (DataBaseUtil.isEmpty(value))
                         queryFieldEntered = false;
                     else
@@ -190,7 +198,7 @@ public class AuxDataTabUI extends Screen {
                 }
 
                 try {
-                    data = manager.getAuxDataAt(r);
+                    data = manager.auxData.get(r);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
@@ -201,10 +209,11 @@ public class AuxDataTabUI extends Screen {
                         data.setIsReportable(value);
                         break;
                     case 2:
-                        auxValsTable.clearCellExceptions(r, c);
+                        auxValsTable.clearExceptions(r, c);
                         if ( !DataBaseUtil.isEmpty(value)) {
-                            values = manager.getAuxValuesAt(r);
-                            row = auxValsTable.getRow(r);
+                           //TODO change this code 
+                           /* values = manager.getAuxValuesAt(r);
+                            row = auxValsTable.getRowAt(r);
                             rv = (ResultValidator)row.data;
                             try {
                                 avId = rv.validate((Integer)null, value);
@@ -223,7 +232,7 @@ public class AuxDataTabUI extends Screen {
                                 data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
                                 data.setValue(null);
                                 data.setDictionary(null);
-                            }
+                            }*/
                         } else {
                             data.setTypeId(Constants.dictionary().AUX_ALPHA_MIXED);
                             data.setValue(null);
@@ -234,128 +243,90 @@ public class AuxDataTabUI extends Screen {
             }
         });
 
-        addAuxButton = (AppButton)def.getWidget("addAuxButton");
-        addScreenHandler(addAuxButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                if (auxGroupScreen == null) {
-                    try {
-                        auxGroupScreen = new AuxGroupLookupScreen1();
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                    }
-                    auxGroupScreen.addActionHandler(new ActionHandler<AuxGroupLookupScreen1.Action>() {
-                        public void onAction(ActionEvent<AuxGroupLookupScreen1.Action> event) {
-                            groupsSelectedFromLookup((ArrayList<AuxFieldManager>)event.getData());
-                        }
-                    });
-                }
-
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(Messages.get().auxGroupSelection());
-                modal.setContent(auxGroupScreen);
-                auxGroupScreen.draw();
+        addScreenHandler(addAuxButton, "addAuxButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {                
+                addAuxButton.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
             }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addAuxButton.enable(event.getState() == State.QUERY ||
-                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                         .contains(event.getState())));
+        });
+        
+        addScreenHandler(removeAuxButton, "removeAuxButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                removeAuxButton.setEnabled(false);
             }
         });
 
-        removeAuxButton = (AppButton)def.getWidget("removeAuxButton");
-        addScreenHandler(removeAuxButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                int r;
-
-                r = auxValsTable.getSelectedRow();
-                if (r == -1)
-                    return;
-                if (Window.confirm(Messages.get().removeAuxMessage())) {
-                    auxValsTable.unselect(r);
-                    manager.removeAuxDataGroupAt(r);
-                }
-                removeAuxButton.enable(false);
-                DataChangeEvent.fire(tab);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                removeAuxButton.enable(false);
-            }
-        });
-
-        auxMethod = (TextBox)def.getWidget("auxMethod");
-        addScreenHandler(auxMethod, new ScreenEventHandler<String>() {
+        addScreenHandler(auxMethod, "auxMethod", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 auxMethod.setValue(null);
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                auxMethod.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                auxMethod.setEnabled(false);
             }
         });
 
-        auxUnits = (TextBox)def.getWidget("auxUnits");
-        addScreenHandler(auxUnits, new ScreenEventHandler<String>() {
+        addScreenHandler(auxUnits, "auxUnits", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 auxUnits.setValue(null);
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                auxUnits.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                auxUnits.setEnabled(false);
             }
         });
 
-        auxDesc = (TextBox)def.getWidget("auxDesc");
-        addScreenHandler(auxDesc, new ScreenEventHandler<String>() {
+        addScreenHandler(auxDesc, "auxDesc", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 auxDesc.setValue(null);
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                auxDesc.enable(false);
+            public void onStateChange(StateChangeEvent event) {
+                auxDesc.setEnabled(false);
             }
         });
     }
 
     private boolean canEdit() {
-        if (parentMan == null)
+        /*if (parentMan == null)
             return false;
         else if (parentMan instanceof SampleManager)
             return !Constants.dictionary().SAMPLE_RELEASED.equals( ((SampleManager)parentMan).getSample()
                                                                                              .getStatusId());
-        return true;
+        return true;*/
+        
+        return false;
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
+    private ArrayList<Item<Integer>> getTableModel() {
         int i;
-        TableDataRow row;
+        Item<Integer> row;
         AuxDataViewDO data;
-        AuxFieldViewDO field;
-        ArrayList<AuxFieldValueViewDO> values;
-        ArrayList<TableDataRow> model;
-        ResultValidator validatorItem;
+        //AuxFieldViewDO field;
+        //ArrayList<AuxFieldValueViewDO> values;
+        ArrayList<Item<Integer>> model;
+        //ResultValidator validatorItem;
 
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<Item<Integer>>();
         if (manager == null)
             return model;
 
         try {
-            for (i = 0; i < manager.count(); i++ ) {
-                data = manager.getAuxDataAt(i);
-                field = manager.getAuxFieldAt(i);
-                values = manager.getAuxValuesAt(i);
+            for (i = 0; i < manager.auxData.count(); i++ ) {
+                data = manager.auxData.get(i);
+                //field = manager.auxData.getAuxFieldAt(i);
+                //values = manager.auxData.getAuxValuesAt(i);
 
-                row = new TableDataRow(3);
-                row.cells.get(0).setValue(data.getIsReportable());
-                row.cells.get(1).setValue(field.getAnalyteName());
+                row = new Item<Integer>(3);
+                row.setCell(0, data.getIsReportable());
+                row.setCell(1, data.getAnalyteName());
                 if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
-                    row.cells.get(2).setValue(data.getDictionary());
+                    row.setCell(2, data.getDictionary());
                 else
-                    row.cells.get(2).setValue(data.getValue());
+                    row.setCell(2, data.getValue());
 
-                validatorItem = AuxDataUtil.getValidatorForValues(values);
-                row.data = validatorItem;
+                //TODO change this code
+                //validatorItem = AuxDataUtil.getValidatorForValues(values);
+                //row.data = validatorItem;
 
                 model.add(row);
             }
@@ -366,7 +337,8 @@ public class AuxDataTabUI extends Screen {
         return model;
     }
 
-    private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields) {
+  //TODO change this code
+    /*private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields) {
         ValidationErrorsList errors;
         try {
             // auxValsTable.fireEvents(false);
@@ -378,47 +350,87 @@ public class AuxDataTabUI extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+    }*/
+    
+    
+    @UiHandler("removeAuxButton")
+    protected void removeAuxButton(ClickEvent event) {
+        int r;
+
+        r = auxValsTable.getSelectedRow();
+        if (r == -1)
+            return;
+        if (Window.confirm(Messages.get().removeAuxMessage())) {
+            //auxValsTable.unselect(r);
+            //manager.removeAuxDataGroupAt(r);
+        }
+        removeAuxButton.setEnabled(false);
+        fireDataChange();
     }
 
+    @UiHandler("addAuxButton")
+    public void addAuxButton(ClickEvent event) {
+        if (auxGroupScreen == null) {
+            try {
+                auxGroupScreen = new AuxGroupLookupScreen1();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+            }
+            auxGroupScreen.addActionHandler(new ActionHandler<AuxGroupLookupScreen1.Action>() {
+                public void onAction(ActionEvent<AuxGroupLookupScreen1.Action> event) {
+                  //TODO change this code
+                    //groupsSelectedFromLookup((ArrayList<AuxFieldManager>)event.getData());
+                }
+            });
+        }
+
+        ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal.setName(Messages.get().auxGroupSelection());
+        modal.setContent(auxGroupScreen);
+        auxGroupScreen.draw();
+        
+    }
+    
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fieldList;
         AuxFieldViewDO fieldDO;
-        TableDataRow row;
+        Item<Integer> row;
         QueryData field;
 
         fieldList = new ArrayList<QueryData>();
 
-        for (int i = 0; i < auxValsTable.numRows(); i++ ) {
-            row = auxValsTable.getRow(i);
-            fieldDO = manager.getAuxFieldAt(i);
+        for (int i = 0; i < auxValsTable.getRowCount(); i++ ) {
+            row = auxValsTable.getRowAt(i);
+            //fieldDO = manager.getAuxFieldAt(i);
 
-            if (row.cells.get(2).value != null) {
+            if (row.getCell(2) != null) {
 
                 field = new QueryData();
                 field.setKey(SampleMeta.getAuxDataAuxFieldId());
                 field.setType(QueryData.Type.INTEGER);
-                field.setQuery(String.valueOf(fieldDO.getId()));
+                //TODO change this code
+                //field.setQuery(String.valueOf(fieldDO.getId()));
                 fieldList.add(field);
 
                 // aux data value
                 field = new QueryData();
                 field.setKey(SampleMeta.getAuxDataValue());
                 field.setType(QueryData.Type.STRING);
-                field.setQuery(String.valueOf(row.cells.get(2).value));
+                field.setQuery(String.valueOf(row.getCell(2)));
                 fieldList.add(field);
             }
         }
 
         return fieldList;
-    }
+    }    
 
     public void setManager(HasAuxDataInt parentMan) {
         this.parentMan = parentMan;
-        loaded = false;
+        //loaded = false;
     }
 
     public void draw() {
-        if ( !loaded) {
+        /*if ( !loaded) {
             try {
                 manager = parentMan.getAuxData();
                 loaded = true;
@@ -431,6 +443,6 @@ public class AuxDataTabUI extends Screen {
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
-        }
+        }*/
     }
 }

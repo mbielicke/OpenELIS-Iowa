@@ -52,9 +52,7 @@ import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.modules.sample.client.SampleItemsPopoutTreeDef;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -268,7 +266,7 @@ public class SampleItemsPopoutTreeLookup1 extends Screen {
                 itemRow.toggle();
                 itemRow.key = item.getId();
                 //itemRow.data = itemMan.getBundleAt(i);
-                treeUtil.updateSampleItemRow(itemRow);
+                //treeUtil.updateSampleItemNode(itemRow);
 
                 tmp = keyTable.get(item.getId());
                 if (item.getId() != null && tmp != null) {

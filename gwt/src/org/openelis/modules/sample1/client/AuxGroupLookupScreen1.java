@@ -28,10 +28,10 @@ package org.openelis.modules.sample1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldGroupDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
+import org.openelis.ui.event.ActionEvent;
+import org.openelis.ui.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.ui.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;

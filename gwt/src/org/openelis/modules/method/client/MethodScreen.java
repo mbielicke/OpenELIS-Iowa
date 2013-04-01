@@ -37,7 +37,6 @@ import java.util.ArrayList;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.constants.OpenELISConstants;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
@@ -55,7 +54,6 @@ import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.event.StateChangeHandler;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -129,7 +127,7 @@ public class MethodScreen extends Screen {
     }
 
     private void initialize() {
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
@@ -142,7 +140,7 @@ public class MethodScreen extends Screen {
         
         addShortcut(query, 'q', CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 previous.setEnabled(isState(DISPLAY));
             }
@@ -150,7 +148,7 @@ public class MethodScreen extends Screen {
         
         addShortcut(previous,'p',CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 next.setEnabled(isState(DISPLAY));
             }
@@ -158,7 +156,7 @@ public class MethodScreen extends Screen {
         
         addShortcut(next,'n',CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
                 if (isState(ADD)) {
@@ -171,7 +169,7 @@ public class MethodScreen extends Screen {
         
         addShortcut(add,'a',CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
@@ -184,7 +182,7 @@ public class MethodScreen extends Screen {
         
         addShortcut(update,'u',CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 commit.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
             }
@@ -192,7 +190,7 @@ public class MethodScreen extends Screen {
         
         addShortcut(commit,'m',CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 abort.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
             }
@@ -200,7 +198,7 @@ public class MethodScreen extends Screen {
         
         addShortcut(abort,'o',CTRL);
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 history.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
@@ -377,7 +375,7 @@ public class MethodScreen extends Screen {
             }
         };
 
-        addStateChangeHandler(new StateChangeHandler() {
+        addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 boolean enable;
                 enable = isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission();

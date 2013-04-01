@@ -25,59 +25,30 @@
  */
 package org.openelis.modules.sample1.client;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
+import org.openelis.ui.screen.Screen;
 
-import org.openelis.cache.CategoryCache;
-import org.openelis.cache.SectionCache;
-import org.openelis.cache.UserCache;
-import org.openelis.constants.Messages;
-import org.openelis.domain.AnalysisQaEventViewDO;
-import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.Constants;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventDO;
-import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisQaEventManager;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleManager;
-import org.openelis.manager.SampleQaEventManager;
-import org.openelis.modules.qaevent.client.QaeventLookupScreen;
-import org.openelis.ui.common.SectionPermission;
-import org.openelis.ui.widget.WindowInt;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Widget;
 
 public class QAEventsTabUI extends Screen {
-    private boolean                  loaded;
+    
+    @UiTemplate("QAEventsTab.ui.xml")
+    interface QAEventsTabUIBinder extends UiBinder<Widget, QAEventsTabUI> {        
+    };
+    
+    private static QAEventsTabUIBinder uiBinder = GWT.create(QAEventsTabUIBinder.class);
+    
+    public QAEventsTabUI() {
+        initWidget(uiBinder.createAndBindUi(this));
+        
+        initialize();
+        
+        initializeDropdowns();
+    }
+    
+   /* private boolean                  loaded;
     protected SampleDataBundle       bundle;
     protected SampleDataBundle.Type  type;
 
@@ -92,7 +63,7 @@ public class QAEventsTabUI extends Screen {
     protected AnalysisManager        analysisManager;
     protected AnalysisViewDO         analysis, emptyAnalysis;
     
-    protected QaeventLookupScreen    qaEventScreen;
+    protected QaeventLookupScreen    qaEventScreen;        
 
     public QAEventsTabUI(ScreenDefInt def, WindowInt window) {
         setDefinition(def);
@@ -100,11 +71,11 @@ public class QAEventsTabUI extends Screen {
 
         initialize();
         initializeDropdowns();
-    }
+    }*/
 
     private void initialize() { 
 
-        sampleBillableLabel = (Label)def.getWidget("sampleBillableLabel");
+        /*sampleBillableLabel = (Label)def.getWidget("sampleBillableLabel");
         
         sampleQATable = (TableWidget)def.getWidget("sampleQATable");
         addScreenHandler(sampleQATable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -196,7 +167,7 @@ public class QAEventsTabUI extends Screen {
                 /*
                  * allow removal of only internal qa events if sample is released
                  * or any analysis is released
-                 */
+                 
                 window.clearStatus();
                 if (!canEditSampleQA(data.getTypeId()))
                     window.setError(Messages.get().cantUpdateSampleQAEvent());
@@ -315,7 +286,7 @@ public class QAEventsTabUI extends Screen {
                 data = analysisQAManager.getAnalysisQAAt(r);
                 /*
                  * allow removal of only internal qa events if any analysis is released
-                 */
+                 
                 window.clearStatus();
                 if (!canEditAnalysisQA(data.getTypeId()))
                     window.setError(Messages.get().cantUpdateAnalysisQAEvent());
@@ -342,10 +313,10 @@ public class QAEventsTabUI extends Screen {
                                         SampleDataBundle.Type.ANALYSIS == type &&
                                         analysis.getTestId() != null);
             }
-        });
+        });*/
     }
 
-    private ArrayList<TableDataRow> getSampleQAEventTableModel() {
+    /*private ArrayList<TableDataRow> getSampleQAEventTableModel() {
         SampleQaEventViewDO qa;
         ArrayList<TableDataRow> model;
 
@@ -463,10 +434,10 @@ public class QAEventsTabUI extends Screen {
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setName(Messages.get().qaEventSelection());
         modal.setContent(qaEventScreen);
-    }
+    }*/
 
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
+        /*ArrayList<TableDataRow> model;
 
         // qa event type dropdown
         model = new ArrayList<TableDataRow>();
@@ -475,10 +446,10 @@ public class QAEventsTabUI extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
-        ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
+        ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);*/
     }
 
-    private boolean canEditSampleQA() {
+    /*private boolean canEditSampleQA() {
         return canEditSampleQA(null);
     }
     
@@ -584,5 +555,5 @@ public class QAEventsTabUI extends Screen {
             analysisBillableLabel.setText(Messages.get().analysisNotBillable());
         else
             analysisBillableLabel.setText("");
-    }
+    }*/
 }
