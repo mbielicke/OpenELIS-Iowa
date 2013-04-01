@@ -10,21 +10,21 @@ import org.openelis.manager.WorksheetManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class WorkSheetCompletionService implements WorksheetCompletionServiceInt,
+public class WorksheetCompletionService implements WorksheetCompletionServiceInt,
                                                    WorksheetCompletionServiceIntAsync {
     
-    static WorkSheetCompletionService instance;
+    static WorksheetCompletionService instance;
     
     WorksheetCompletionServiceIntAsync service;
     
-    public static WorkSheetCompletionService get() {
+    public static WorksheetCompletionService get() {
         if(instance == null)
-            instance = new WorkSheetCompletionService();
+            instance = new WorksheetCompletionService();
         
         return instance;
     }
     
-    private WorkSheetCompletionService() {
+    private WorksheetCompletionService() {
         service = (WorksheetCompletionServiceIntAsync)GWT.create(WorksheetCompletionServiceInt.class);
     }
 

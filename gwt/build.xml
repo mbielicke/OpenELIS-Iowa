@@ -97,10 +97,6 @@
 		</war>
 	</target>
 
-	<target name="deploy-openelis" depends="war">
-		<copy file="build/openelis.war" todir="/usr/pub/http/Application" />
-	</target>
-
 	<target name="clean" description="Cleans this project">
 		<delete dir="war/WEB-INF/classes" failonerror="false" />
 		<delete dir="war/openelis" failonerror="false" />
