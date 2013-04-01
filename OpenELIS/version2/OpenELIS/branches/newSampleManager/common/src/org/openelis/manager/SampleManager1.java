@@ -231,6 +231,42 @@ public class SampleManager1 implements Serializable {
     }
     
     /**
+     * Returns the unique identifiers for each data object.
+     */
+    
+    public String getSampleQAEventUid(Integer id) {
+        return "Q:"+id;
+    }
+    
+    public String getAnalysisQAEventUid(Integer id) {
+        return "E:"+id;
+    }
+    
+    public String getNoteUid(Integer id) {
+        return "N:"+id;
+    }
+    
+    public String getSampleItemUid(Integer id) {
+        return "I:"+id;
+    }
+    
+    public String getStorageUid(Integer id) {
+        return "T:"+id;
+    }
+    
+    public String getAnalysisUid(Integer id) {
+        return "A:"+id;
+    }
+    
+    public String getAnalysisUserUid(Integer id) {
+        return "U:"+id;
+    }
+    
+    public String getResultUid(Integer id) {
+        return "R:"+id;
+    }
+    
+    /**
      * Class to manage Sample Organization information
      */
     public class SampleOrganization {
@@ -735,8 +771,16 @@ public class SampleManager1 implements Serializable {
      * Class to manage sample items
      */
     public class SampleItem {
+        
         /**
-         * Returns the organization at specified index.
+         * Returns the item with the specified id
+         */
+        public SampleItemViewDO getById(Integer id) {
+            return (SampleItemViewDO)getObject(getSampleItemUid(id));
+        }
+        
+        /**
+         * Returns the item at specified index.
          */
         public SampleItemViewDO get(int i) {
             return items.get(i);
@@ -780,7 +824,7 @@ public class SampleManager1 implements Serializable {
         }
 
         /**
-         * Returns the number of i associated with this sample
+         * Returns the number of items associated with this sample
          */
         public int count() {
             if (items != null)
@@ -950,7 +994,7 @@ public class SampleManager1 implements Serializable {
          * create a hash map from analyses list
          */
         private void mapBuild() {
-            if (map == null && analysisQAs != null) {
+            if (map == null && analyses != null) {
                 map = new HashMap<Integer, ArrayList<AnalysisViewDO>>();
                 for (AnalysisViewDO data : analyses)
                     mapAdd(data);
@@ -1297,42 +1341,6 @@ public class SampleManager1 implements Serializable {
 
     }
 
-    /**
-     * Returns the unique identifiers for each data object.
-     */
-    
-    private String getSampleQAEventUid(Integer id) {
-        return "Q:"+id;
-    }
-    
-    private String getAnalysisQAEventUid(Integer id) {
-        return "E:"+id;
-    }
-    
-    private String getNoteUid(Integer id) {
-        return "N:"+id;
-    }
-    
-    private String getSampleItemUid(Integer id) {
-        return "I:"+id;
-    }
-    
-    private String getStorageUid(Integer id) {
-        return "T:"+id;
-    }
-    
-    private String getAnalysisUid(Integer id) {
-        return "A:"+id;
-    }
-    
-    private String getAnalysisUserUid(Integer id) {
-        return "U:"+id;
-    }
-    
-    private String getResultUid(Integer id) {
-        return "R:"+id;
-    }
-    
     /**
      * Adds the specified data object to the list of objects that should be
      * removed from the database.

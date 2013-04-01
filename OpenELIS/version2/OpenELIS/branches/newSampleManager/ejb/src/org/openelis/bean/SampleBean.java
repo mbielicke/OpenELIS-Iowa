@@ -159,8 +159,10 @@ public class SampleBean {
 
         if (list.isEmpty())
             throw new NotFoundException();
-
-        list = (ArrayList<IdAccessionVO>)DataBaseUtil.subList(list, first, max);
+        
+        if (max > 0)
+            list = (ArrayList<IdAccessionVO>)DataBaseUtil.subList(list, first, max);
+        
         if (list == null)
             throw new LastPageException();
 
