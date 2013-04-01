@@ -296,8 +296,8 @@ public class AnalysisBean {
             e.add(new FormErrorException(Messages.get().sample_analysisTestIdMissing(DataBaseUtil.asString(accession), DataBaseUtil.asString(sequence))));
 
         if (data.getSectionId() == null)
-            e.add(new FormErrorException(Messages.get().sample_analysisSectionIdMissing(DataBaseUtil.asString(accession), 
-                                         DataBaseUtil.asString(sequence), test, method)));
+            e.add(new FormErrorException(Messages.get().sample_analysisSectionIdMissing(accession, 
+                                         sequence, test, method)));
 
         if (data.getStartedDate() != null && data.getCompletedDate() != null &&
             data.getStartedDate().compareTo(data.getCompletedDate()) == 1)
