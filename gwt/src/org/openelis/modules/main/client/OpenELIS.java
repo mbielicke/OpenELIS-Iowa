@@ -97,6 +97,7 @@ import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
 import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
+import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
@@ -135,7 +136,7 @@ public class OpenELIS extends Screen {
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetCreation, worksheetCreation1, worksheetCompletion, addOrCancel,
+                    worksheetBuilder, worksheetCreation, worksheetCompletion, addOrCancel,
                     reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
                     vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
@@ -364,7 +365,7 @@ public class OpenELIS extends Screen {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
-                       try {                                                                                                  
+                        try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.neonatalScreeningSampleLogin());
                             window.setSize("900px", "850px");
@@ -531,7 +532,6 @@ public class OpenELIS extends Screen {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
                             remote().log(Level.SEVERE,e.getMessage(),e);
-                            
                         }
                     }
 
@@ -553,6 +553,30 @@ public class OpenELIS extends Screen {
                             window.setName(msg.worksheetCreation());
                             window.setContent(new WorksheetCreationScreen(window));
                             browser.addWindow(window, "worksheetCreation");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(worksheetBuilder, "worksheet", new Command() {
+            public void execute() {
+
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.worksheetBuilder());
+                            window.setContent(new WorksheetBuilderScreen(window));
+                            browser.addWindow(window, "worksheetBuilder");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE,e.getMessage(),e);
                             Window.alert(e.getMessage());
@@ -1829,9 +1853,7 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        
     }
-    
 
     /**
      * Returns the browser associated with this application.
@@ -1886,6 +1908,4 @@ public class OpenELIS extends Screen {
             }
         }
     }
-    
-    
 }

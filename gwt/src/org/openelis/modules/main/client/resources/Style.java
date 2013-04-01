@@ -111,4 +111,12 @@ public interface Style extends CssResource {
 	public String removeRowIcon();
 	
 	public String removeRowDisabledIcon();
+    
+    public String findIcon();
+    
+    public String findDisabledIcon();
+    
+    public String selectAllIcon();
+    
+    public String selectAllDisabledIcon();
 }

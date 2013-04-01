@@ -263,3 +263,23 @@
 	gwt-image:'removeRowDisabledIcon';
 	width:20px;
 }
+
+@sprite .findIcon {
+	gwt-image:'findIcon';
+	width:20px;
+}
+
+@sprite .findDisabledIcon {
+	gwt-image:'findDisabledIcon';
+	width:20px;
+}
+
+@sprite .selectAllIcon {
+	gwt-image:'selectAllIcon';
+	width:20px;
+}
+
+@sprite .selectAllDisabledIcon {
+	gwt-image:'selectAllDisabledIcon';
+	width:20px;
+}
