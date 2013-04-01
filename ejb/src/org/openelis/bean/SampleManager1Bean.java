@@ -239,7 +239,7 @@ public class SampleManager1Bean {
          * a given select and unroll through loops.
          */
         sms = new ArrayList<SampleManager1>();
-        if (elements != null)
+        if (elements != null && elements.length > 0)
             el = EnumSet.copyOf(Arrays.asList(elements));
         else
             el = EnumSet.noneOf(SampleManager1.Load.class);
@@ -579,7 +579,8 @@ public class SampleManager1Bean {
      * Returns a sample manager for specified accession number and requested
      * load elements
      */
-    public SampleManager1 fetchByAccession(Integer accessionNumber, SampleManager1.Load... elements) throws Exception {
+    public SampleManager1 fetchByAccession(Integer accessionNumber, 
+                                           SampleManager1.Load... elements) throws Exception {
         Query query;
         QueryData field;
         ArrayList<SampleManager1> sms; 
@@ -590,8 +591,10 @@ public class SampleManager1Bean {
         field.setQuery(accessionNumber.toString());
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
+        query.setPage(0);
+        query.setRowsPerPage(-1);
 
-        sms = fetchByQuery(query, elements);
+        sms = fetchByQuery(query,  elements);
         return sms.size() == 0 ? null : sms.get(0);
     }
 
@@ -600,10 +603,14 @@ public class SampleManager1Bean {
      * elements
      */
     public ArrayList<SampleManager1> fetchByQuery(Query query, SampleManager1.Load... elements) throws Exception {
-        ArrayList<Integer> ids;
+        int first, max;
+        ArrayList<Integer> ids;        
 
         ids = new ArrayList<Integer>();
-        for (IdAccessionVO vo : sample.query(query.getFields(), 0, -1))
+        max = query.getRowsPerPage();
+        first = query.getPage() * max;
+        
+        for (IdAccessionVO vo : sample.query(query.getFields(), first , max))
             ids.add(vo.getId());
         return fetchByIds(ids, elements);
     }
