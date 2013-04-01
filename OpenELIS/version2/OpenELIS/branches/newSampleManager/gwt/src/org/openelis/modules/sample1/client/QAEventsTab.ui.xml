@@ -1,101 +1,92 @@
 
-<!--
-Exhibit A - UIRF Open-source Based Public Software License.
-  
-The contents of this file are subject to the UIRF Open-source Based
-Public Software License(the "License"); you may not use this file except
-in compliance with the License. You may obtain a copy of the License at
-openelis.uhl.uiowa.edu
-  
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-License for the specific language governing rights and limitations
-under the License.
-  
-The Original Code is OpenELIS code.
-  
-The Initial Developer of the Original Code is The University of Iowa.
-Portions created by The University of Iowa are Copyright 2006-2008. All
-Rights Reserved.
-  
-Contributor(s): ______________________________________.
-  
-Alternatively, the contents of this file marked
-"Separately-Licensed" may be used under the terms of a UIRF Software
-license ("UIRF Software License"), in which case the provisions of a
-UIRF Software License are applicable instead of those above. 
-  -->
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
-  xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
-  xmlns:s="urn:import:org.openelis.modules.sample1.client">
-
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client"
+>
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-
   <g:LayoutPanel>
-    <g:layer top="0px" bottom="25px">
-     <g:HorizontalPanel padding="0" spacing="0">
-       <g:VerticalPanel>
-        <t:Table ui:field="sampleQATable" visibleRows="6" class="{res.type.ScreenTableWithSides}" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
-              <t:Column width="172" label="{msg.sampleQAEvent}">
-                <t:LabelCell>
-                  <t:LabelCell field="Integer" ui:field = "ampleSubQaName"/>
-                </t:Label>
-              </t:Column>
-              <t:Column width="90" label="{msg.type}">
-                <t:DropdownCell>
-                  <w:Dropdown width="90" ui:field = "sampleQaTypeId"/>
-                </t:DropdownCell>
-              </t:Column>
-              <t:Column width="61" label="{msg.billable}">
-                <t:CheckCell>
-                  <t:Check ui:field = "sampleQaIsBillable"/>
-                </t:CheckCell>
-              </t:Column>
-         </t:Table>
-          <g:HorizontalPanel style="{res.type.TableButtonFooter}">
-            <w:Button ui:field="removeSampleQAButton" leftIcon="{res.style.RemoveRowButtonImage}" text="{msg.removeRow}" /> 
-            <w:Button ui:field="sampleQAPicker" leftIcon="{res.style.PickerButtonImage}" text="{msg.qaEvents}" /> 
-          </g:HorizontalPanel>
-        <VerticalPanel height = "5"/>
-        <table class="{res.style.TabSubForm}">
-          <tr>
-            <td class="{res.style.WarningLabel}" ui:field="sampleBillableLabel"  width = "320" wordwrap = "true"/>
-          </tr>
-        </table>
-      </g:VerticalPanel>
-      <g:HorizontalPanel width="10" />
-      <g:VerticalPanel>
-        <t:Table ui:field="analysisQATable" visibleRows="6" class="{res.type.ScreenTableWithSides}" verticalScroll="ALWAYS" horizontalScroll="ALWAYS" header="true">
-              <t:Column width="172" label="{msg.analysisQAEvent}">
-                <t:LabelCell>
-                  <t:Label field="Integer" ui:field="analysisSubQaName"/>
-                </t:LabelCell>
-              </t:Column>
-              <t:Column width="90" label="{msg.type}">
-                <t:DropdownCell>
-                  <w:Dropdown width="90" ui:field="analysisQaTypeId"/>
-                </t:DropdownCell>
-              </t:Column>
-              <t:Column width="61" label="{msg.billable}">
-                <t:CheckCell>
-                  <t:Check ui:field="analysisQaIsBillable"/>
-                </t:CheckCell>
-              </t:Column>
-         </t:Table>
-          <g:HorizontalPanel style="{res.type.TableButtonFooter}">
-            <w:Button ui:field="removeAnalysisQAButton" leftIcon="{res.style.RemoveRowButtonImage}" text="{msg.removeRow}" /> 
-            <w:Button ui:field="analysisQAPicker" leftIcon="{res.style.PickerButtonImage}" text="{msg.qaEvents}" /> 
-          </g:HorizontalPanel>
-        <g:VerticalPanel height = "5"/>
-        <table class="{res.style.TabSubForm}">
-          <tr>
-            <td class="{res.style.WarningLabel}" ui:field="analysisBillableLabel" width = "330" wordwrap = "true"/>
-          </tr>
-        </table>
-      </g:VerticalPanel>
-    </g:HorizontalPanel>
-   </g:layer>
- </g:LayoutPanel>
+    <g:layer top="0px" bottom="5px">
+      <g:LayoutPanel>
+        <g:layer width="50%" left="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="20px">
+              <t:Table ui:field="sampleQATable" visibleRows="6" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true"
+              >
+                <t:Column width="172" label="{msg.sampleQAEvent}">
+                  <t:LabelCell />
+                </t:Column>
+                <t:Column width="90" label="{msg.type}">
+                  <t:DropdownCell>
+                    <w:Dropdown /> <!-- width="90" ui:field = "sampleQaTypeId" -->
+                  </t:DropdownCell>
+                </t:Column>
+                <t:Column width="61" label="{msg.billable}">
+                  <t:CheckCell>
+                    <w:Check /> <!-- ui:field = "sampleQaIsBillable" -->
+                  </t:CheckCell>
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom="0px" height="20px">
+              <g:HorizontalPanel> <!-- style="{res.type.TableButtonFooter}" -->
+                <w:Button ui:field="removeSampleQAButton" leftIcon="{res.style.removeRowIcon}"
+                  text="{msg.removeRow}" />
+                <w:Button ui:field="sampleQAPicker" text="{msg.qaEvents}" />  <!-- leftIcon="{res.style.PickerButtonImage}" -->
+              </g:HorizontalPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+        <g:layer width="50%" right="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="20px">
+              <t:Table ui:field="analysisQATable" visibleRows="6" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true"
+              >
+                <t:Column width="172" label="{msg.analysisQAEvent}">
+                  <t:LabelCell />
+                </t:Column>
+                <t:Column width="90" label="{msg.type}">
+                  <t:DropdownCell>
+                    <w:Dropdown /> <!-- width="90" ui:field = "analysisQaTypeId" -->
+                  </t:DropdownCell>
+                </t:Column>
+                <t:Column width="61" label="{msg.billable}">
+                  <t:CheckCell>
+                    <w:Check /> <!-- ui:field = "analysisQaIsBillable" -->
+                  </t:CheckCell>
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom="0px" height="20px">
+              <g:HTMLPanel>
+                <g:HorizontalPanel> <!-- style="{res.type.TableButtonFooter}" -->
+                  <w:Button ui:field="removeAnalysisQAButton" leftIcon="{res.style.removeRowIcon}"
+                    text="{msg.removeRow}" />
+                  <w:Button ui:field="analysisQAPicker" text="{msg.qaEvents}" />  <!-- leftIcon="{res.style.PickerButtonImage}" -->
+                </g:HorizontalPanel>
+                <g:HTMLPanel> <!-- class="{res.style.TabSubForm}" -->
+                  <ui:text from="{msg.resultsOverridden}"/> <!--  width="330px" ui:field="analysisBillableLabel" 
+                    class="{res.style.WarningLabel}" wordwrap = "true" -->
+                </g:HTMLPanel>
+              </g:HTMLPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
+    </g:layer>
+  </g:LayoutPanel>
 </ui:UiBinder>

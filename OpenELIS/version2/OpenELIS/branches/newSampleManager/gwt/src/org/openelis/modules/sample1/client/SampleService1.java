@@ -92,7 +92,8 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
     
     @Override
-    public ArrayList<SampleManager1> fetchByQuery(Query query, SampleManager1.Load... elements) throws Exception {
+    public ArrayList<SampleManager1> fetchByQuery(Query query,
+                                                  SampleManager1.Load... elements) throws Exception {
         Callback<ArrayList<SampleManager1>> callback;
 
         callback = new Callback<ArrayList<SampleManager1>>();

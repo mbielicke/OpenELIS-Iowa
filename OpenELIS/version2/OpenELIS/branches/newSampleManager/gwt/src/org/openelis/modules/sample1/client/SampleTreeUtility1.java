@@ -21,6 +21,7 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab.Action;
 import org.openelis.ui.widget.WindowInt;
+import org.openelis.ui.widget.tree.Node;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -154,7 +155,7 @@ public abstract class SampleTreeUtility1 extends Screen implements HasActionHand
                 newRow.data = bundles.get(i);
             } else
                 newRow = addNewTreeRowFromBundle(itemRow, bundles.get(i));
-            updateAnalysisRow(newRow);
+            //updateAnalysisRow(newRow);
             itemsTree.refreshRow(newRow);
         }
         itemsTree.fireEvents(true);
@@ -330,7 +331,7 @@ public abstract class SampleTreeUtility1 extends Screen implements HasActionHand
 
             // update the analysis manager
             //anMan.cancelAnalysisAt(bundle.getAnalysisIndex());
-            updateAnalysisRow(treeRow);
+            //updateAnalysisRow(treeRow);
             itemsTree.refreshRow(treeRow);
 
             // cleanup the other rows
@@ -345,38 +346,25 @@ public abstract class SampleTreeUtility1 extends Screen implements HasActionHand
         }
     }
 
-    public void updateSampleItemRow(TreeDataItem treeRow) {
-        SampleDataBundle bundle;
-        SampleItemViewDO siDO;
-
-        try {
-            bundle = (SampleDataBundle)treeRow.data;
-            /*siDO = manager.getSampleItems().getSampleItemAt(bundle.getSampleItemIndex());
-
-            treeRow.cells.get(0).setValue(siDO.getItemSequence() + " - " +
-                                                          formatTreeString(siDO.getContainer()));
-            treeRow.cells.get(1).setValue(formatTreeString(siDO.getTypeOfSample()));*/
-        } catch (Exception e) {
-            Window.alert("updateSampleItemRow: " + e.getMessage());
-        }
+    public void updateSampleItemNode(Node node) {
+        String uid;
+        SampleItemViewDO i;
+        
+        uid = (String)node.getData();
+        i = (SampleItemViewDO)manager.getObject(uid);
+        node.setCell(0, i.getItemSequence() + " - " + formatTreeString(i.getContainer()));
+        node.setCell(1, formatTreeString(i.getTypeOfSample()));
     }
 
-    public void updateAnalysisRow(TreeDataItem treeRow) {
-        SampleDataBundle bundle;
-        AnalysisViewDO anDO;
+    public void updateAnalysisRow(Node node) {
+        String uid;
+        AnalysisViewDO a;
 
-        try {
-            bundle = (SampleDataBundle)treeRow.data;
-            /*anDO = manager.getSampleItems()
-                          .getAnalysisAt(bundle.getSampleItemIndex())
-                          .getAnalysisAt(bundle.getAnalysisIndex());
-
-            treeRow.cells.get(0).setValue(formatTreeString(anDO.getTestName()) + " : " +
-                                                          formatTreeString(anDO.getMethodName()));
-            treeRow.cells.get(1).setValue(anDO.getStatusId());*/
-        } catch (Exception e) {
-            Window.alert("updateAnalysisRow: " + e.getMessage());
-        }
+        uid = (String)node.getData();
+        a = (AnalysisViewDO)manager.getObject(uid);
+        node.setCell(0, formatTreeString(a.getTestName()) + " : " +
+                        formatTreeString(a.getMethodName()));
+        node.setCell(1, a.getStatusId());
     }
 
     public String formatTreeString(String val) {

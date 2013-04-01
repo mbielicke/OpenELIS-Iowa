@@ -16,10 +16,10 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  
+ 
   <g:LayoutPanel>
-    <g:layer top="0px" bottom="25px">
-      <g:HTMLPanel width="100%">
+    <g:layer top="0px" bottom="110px">
+      <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
@@ -124,65 +124,79 @@
             </td>
           </tr>
         </table>
-        <g:HorizontalPanel>
-          <g:HTMLPanel width="100%">
-            <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS"
-              horizontalScroll="ALWAYS" header="true"
-            >
-              <t:Column width="70" label="{msg.worksheet}">
-                <t:LabelCell>
-                  <w:Label field="Integer" />
-                </t:LabelCell>
-              </t:Column>
-              <t:Column width="115" label="{msg.created}">
-                <t:CalendarCell>
-                  <c:Calendar width="115" begin="0" end="2" /> <!-- pattern="{msg.dateTimePattern}" -->
-                </t:CalendarCell>
-              </t:Column>
-              <t:Column width="115" label="{msg.status}">
-                <t:DropdownCell>
-                  <w:Dropdown width="100" />
-                </t:DropdownCell>
-              </t:Column>
-              <t:Column width="120" label="{msg.user}">
-                <t:LabelCell />
-              </t:Column>
-            </t:Table>
-            <g:HorizontalPanel> <!-- class="{res.style.TableFooterPanel}" -->
-              <w:Button ui:field="selectWkshtButton" text="{msg.select}" /> <!-- leftIcon="{res.style.selectIcon}" -->
-            </g:HorizontalPanel>
-          </g:HTMLPanel>
-          <g:AbsolutePanel /> <!-- style="{res.style.Divider}" -->
-          <g:HTMLPanel width="100%">
-            <t:Table ui:field="analysisUserTable" visibleRows="3" verticalScroll="ALWAYS"
-              horizontalScroll="ALWAYS" header="true"
-            > <!--class = {res.style.ScreenTableWithSides} -->
-              <t:Column width="115" label="{msg.user}">
-                <t:AutoCompleteCell>
-                  <w:AutoComplete case="LOWER" required="true">
-                    <w:popup>
-                      <t:Table visibleRows="10" header="true">
-                        <t:Column width="100">
-                          <t:LabelCell />
-                        </t:Column>
-                      </t:Table>
-                    </w:popup>
-                  </w:AutoComplete>
-                </t:AutoCompleteCell>
-              </t:Column>
-              <t:Column width="114" label="{msg.analysis_action}">
-                <t:DropdownCell>
-                  <w:Dropdown width="100" />
-                </t:DropdownCell>
-              </t:Column>
-            </t:Table>
-            <g:HorizontalPanel> <!-- style="{res.style.TableFooterPanel}" -->
-              <w:Button ui:field="addActionButton" text="{msg.addRow}" /> <!-- leftIcon="{res.style.AddRowButtonImage}" -->
-              <w:Button ui:field="removeActionButton" text="{msg.removeRow}" /> <!-- leftIcon="{res.style.RemoveRowButtonImage}" -->
-            </g:HorizontalPanel>
-          </g:HTMLPanel>
-        </g:HorizontalPanel>
       </g:HTMLPanel>
+    </g:layer>
+    <g:layer top="115px" bottom="5px">
+      <g:LayoutPanel>
+        <g:layer width="50%"  left="0px">
+          <g:LayoutPanel>
+            <g:layer top="0px" bottom="20px" >
+              <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true" title=""
+              >
+                <t:Column width="70" label="{msg.worksheet}">
+                  <t:LabelCell>
+                    <w:Label field="Integer" />
+                  </t:LabelCell>
+                </t:Column>
+                <t:Column width="115" label="{msg.created}">
+                  <t:CalendarCell>
+                    <c:Calendar width="115" begin="0" end="2" /> <!-- pattern="{msg.dateTimePattern}" -->
+                  </t:CalendarCell>
+                </t:Column>
+                <t:Column width="115" label="{msg.status}">
+                  <t:DropdownCell>
+                    <w:Dropdown width="100" />
+                  </t:DropdownCell>
+                </t:Column>
+                <t:Column width="120" label="{msg.user}">
+                  <t:LabelCell />
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom = "0px" height = "20px">
+              <g:HTMLPanel>
+                <w:Button ui:field="selectWkshtButton" text="{msg.select}" /> <!-- leftIcon="{res.style.selectIcon}" -->
+              </g:HTMLPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+        <g:layer width="50%" right = "0px">        
+          <g:LayoutPanel>
+            <g:layer top = "0px" bottom = "20px">
+              <!--<g:AbsolutePanel/> style="{res.style.Divider}" -->
+              <t:Table ui:field="analysisUserTable" visibleRows="3" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true" title=""
+              > <!--class = {res.style.ScreenTableWithSides} -->
+                <t:Column width="115" label="{msg.user}">
+                  <t:AutoCompleteCell>
+                    <w:AutoComplete case="LOWER" required="true">
+                      <w:popup>
+                        <t:Table visibleRows="10" header="true">
+                          <t:Column width="100">
+                            <t:LabelCell />
+                          </t:Column>
+                        </t:Table>
+                      </w:popup>
+                    </w:AutoComplete>
+                  </t:AutoCompleteCell>
+                </t:Column>
+                <t:Column width="114" label="{msg.analysis_action}">
+                  <t:DropdownCell>
+                    <w:Dropdown width="100" />
+                  </t:DropdownCell>
+                </t:Column>
+              </t:Table>
+            </g:layer>
+            <g:layer bottom = "0px" height = "20px">
+              <g:HorizontalPanel> <!-- style="{res.style.TableFooterPanel}" -->
+                <w:Button ui:field="addActionButton" text="{msg.addRow}" /> <!-- leftIcon="{res.style.AddRowButtonImage}" -->
+                <w:Button ui:field="removeActionButton" text="{msg.removeRow}" /> <!-- leftIcon="{res.style.RemoveRowButtonImage}" -->
+              </g:HorizontalPanel>
+            </g:layer>
+          </g:LayoutPanel>
+        </g:layer>
+      </g:LayoutPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>

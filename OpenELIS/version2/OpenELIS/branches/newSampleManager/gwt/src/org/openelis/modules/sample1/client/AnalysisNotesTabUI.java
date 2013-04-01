@@ -25,41 +25,28 @@
  */
 package org.openelis.modules.sample1.client;
 
-import java.util.EnumSet;
+import org.openelis.ui.screen.Screen;
 
-import org.openelis.cache.SectionCache;
-import org.openelis.cache.UserCache;
-import org.openelis.constants.Messages;
-import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.Constants;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.SectionViewDO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.SectionPermission;
-import org.openelis.ui.widget.WindowInt;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.NotesPanel;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.HasNotesInt;
-import org.openelis.manager.NoteManager;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.modules.note.client.EditNoteScreen;
-import org.openelis.modules.note.client.NotesTab;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Widget;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
+public class AnalysisNotesTabUI extends Screen { //extends NotesTab
 
-public class AnalysisNotesTabUI extends NotesTab {
-
-    protected AnalysisViewDO   analysis, emptyAnalysis;
+    @UiTemplate("AnalysisNotesTab.ui.xml")
+    interface AnalysisNotesTabUIBinder extends UiBinder<Widget, AnalysisNotesTabUI> {        
+    };
+    
+    private static AnalysisNotesTabUIBinder uiBinder = GWT.create(AnalysisNotesTabUIBinder.class);
+    
+    public AnalysisNotesTabUI() {
+        initWidget(uiBinder.createAndBindUi(this));
+        
+        initialize();
+    }
+    
+    /*protected AnalysisViewDO   analysis, emptyAnalysis;
     protected AnalysisManager  analysisMan;
     protected SampleDataBundle bundle;
 
@@ -88,12 +75,12 @@ public class AnalysisNotesTabUI extends NotesTab {
         this.internalEditButtonKey = internalEditButtonKey;
 
         initialize();
-    }
+    }*/
 
     // overrides the notetab initialize to control the external notes button
     public void initialize() {
         // we dont have all the info set yet, dont run through this method
-        if (internalNotesPanelKey == null)
+        /*if (internalNotesPanelKey == null)
             return;
 
         emptyAnalysis = new AnalysisViewDO();
@@ -185,10 +172,10 @@ public class AnalysisNotesTabUI extends NotesTab {
                                           EnumSet.of(State.ADD, State.UPDATE)
                                                  .contains(event.getState()));
             }
-        });
+        });*/
     }
 
-    protected void drawInternalNotes() {
+    /*protected void drawInternalNotes() {
         internalNotesPanel.clearNotes();
         for (int i = 0; i < internalManager.count(); i++ ) {
             NoteViewDO noteRow = internalManager.getNoteAt(i);
@@ -270,5 +257,5 @@ public class AnalysisNotesTabUI extends NotesTab {
 
     public void setManager(HasNotesInt parentManager) {
         throw new UnsupportedOperationException();
-    }
+    }*/
 }

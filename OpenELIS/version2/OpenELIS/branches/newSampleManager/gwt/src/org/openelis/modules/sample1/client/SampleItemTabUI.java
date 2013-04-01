@@ -32,29 +32,33 @@ import static org.openelis.ui.screen.State.UPDATE;
 import java.util.ArrayList;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.manager.SampleManager1;
+import org.openelis.meta.SampleMeta;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.ActionEvent;
 import org.openelis.ui.event.ActionHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.HasActionHandlers;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.event.StateChangeEvent.Handler;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.meta.SampleMeta;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public class SampleItemTabUI extends Screen implements HasActionHandlers<SampleItemTabUI.Action> {
@@ -68,147 +72,149 @@ public class SampleItemTabUI extends Screen implements HasActionHandlers<SampleI
     public enum Action {
         CHANGED
     };
-
-    protected SampleDataBundle  bundle;
-    protected SampleItemViewDO  sampleItem;
     
     @UiField
-    protected TextBox<String>    sourceOther, containerReference;
+    protected TextBox<String>   sourceOther, containerReference;
     
     @UiField
-    protected TextBox<Double>  quantity;
+    protected TextBox<Double>   quantity;
     
     @UiField
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
+    
+    protected SampleItemTabUI   screen;
 
-    public SampleItemTabUI() {
+    protected boolean          loaded;
+    
+    protected SampleManager1    manager;
+    
+    protected SampleItemViewDO  sampleItem;
+    
+    protected Screen            parentScreen;
+    
+    protected boolean          canEdit, canQuery;
+    
+
+    public SampleItemTabUI(Screen parentScreen, EventBus bus) {
+        this.parentScreen = parentScreen;
+        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
-        
         initialize();
         
-        initializeDropdowns();
+        manager = null;
     }
 
     private void initialize() {
-        final SampleItemTabUI itemTab = this;
-
+        ArrayList<Item<Integer>> model;
+        Item<Integer>            row;
+        
+        screen = this;
+        
         addScreenHandler(typeOfSampleId, SampleMeta.getItemTypeOfSampleId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                typeOfSampleId.setValue(sampleItem.getTypeOfSampleId());
+                typeOfSampleId.setValue(getTypeOfSampleId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                sampleItem.setTypeOfSampleId(event.getValue());
-                sampleItem.setTypeOfSample(typeOfSampleId.getDisplay());
-                ActionEvent.fire(itemTab, Action.CHANGED, null);
+                setTypeOfSample(event.getValue(), typeOfSampleId.getDisplay());
             }
 
-            public void onStateChange(StateChangeEvent event) {                
-                typeOfSampleId.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
-                typeOfSampleId.setQueryMode(isState(QUERY));
+            public void onStateChange(StateChangeEvent event) {     
+                typeOfSampleId.setEnabled(canEdit);
+                typeOfSampleId.setQueryMode(canQuery);
             }
         });
 
         addScreenHandler(sourceOfSampleId, SampleMeta.getItemSourceOfSampleId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                sourceOfSampleId.setValue(sampleItem.getSourceOfSampleId());
+                sourceOfSampleId.setValue(getSourceOfSampleId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                sampleItem.setSourceOfSampleId(event.getValue());
-                sampleItem.setSourceOfSample(sourceOfSampleId.getDisplay());
-                ActionEvent.fire(itemTab, Action.CHANGED, null);
+                setSourceOfSample(event.getValue(), sourceOfSampleId.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sourceOfSampleId.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
-                sourceOfSampleId.setQueryMode(isState(QUERY));
+                sourceOfSampleId.setEnabled(canEdit);
+                sourceOfSampleId.setQueryMode(canQuery);
             }
         });
 
         addScreenHandler(sourceOther, SampleMeta.getItemSourceOther(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                sourceOther.setValue(sampleItem.getSourceOther());
+                sourceOther.setValue(getSourceOther());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                sampleItem.setSourceOther(event.getValue());
+                setSourceOther(event);
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sourceOther.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
-                sourceOther.setQueryMode(isState(QUERY));
+                sourceOther.setEnabled(canEdit);
+                sourceOther.setQueryMode(canQuery);
             }
         });
 
         addScreenHandler(containerId, SampleMeta.getItemContainerId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                containerId.setValue(sampleItem.getContainerId());
+                containerId.setValue(getContainerId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                sampleItem.setContainerId(event.getValue());
-                sampleItem.setContainer(containerId.getDisplay());
-                ActionEvent.fire(itemTab, Action.CHANGED, null);
+                setContainer(event.getValue(), containerId.getDisplay());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                containerId.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
-                containerId.setQueryMode(isState(QUERY));
+                containerId.setEnabled(canEdit);
+                containerId.setQueryMode(canQuery);
             }
         });
 
         addScreenHandler(containerReference, SampleMeta.getItemContainerReference(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                containerReference.setValue(sampleItem.getContainerReference());
+                containerReference.setValue(getContainerReference());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                sampleItem.setContainerReference(event.getValue());
+                setContainerReference(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                containerReference.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
-                containerReference.setQueryMode(isState(QUERY));
+                containerReference.setEnabled(canEdit);
+                containerReference.setQueryMode(canQuery);
             }
         });
 
         addScreenHandler(quantity, SampleMeta.getItemQuantity(), new ScreenHandler<Double>() {
             public void onDataChange(DataChangeEvent event) {
-                quantity.setValue(sampleItem.getQuantity());
+                quantity.setValue(getQuantity());
             }
 
             public void onValueChange(ValueChangeEvent<Double> event) {
-                sampleItem.setQuantity((Double)quantity.getValue());
-
+                setQuantity(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                quantity.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
-                quantity.setQueryMode(isState(QUERY));
+                quantity.setEnabled(canEdit);
+                quantity.setQueryMode(canQuery);
             }
         });
 
         addScreenHandler(unitOfMeasureId, SampleMeta.getItemUnitOfMeasureId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                unitOfMeasureId.setValue(sampleItem.getUnitOfMeasureId());
+                unitOfMeasureId.setValue(getUnitOfMeasureId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                sampleItem.setUnitOfMeasureId(event.getValue());
+                setUnitOfMeasureId(event.getValue());
             }
 
-            public void onStateChange(StateChangeEvent event) {                              
-                unitOfMeasureId.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
-                unitOfMeasureId.setQueryMode(isState(QUERY));
+            public void onStateChange(StateChangeEvent event) {   
+                unitOfMeasureId.setEnabled(canEdit);
+                unitOfMeasureId.setQueryMode(canQuery);
             }
         });
-    }
-
-    private void initializeDropdowns() {
-        ArrayList<Item<Integer>> model;
-        Item<Integer>            row;
-
+        
         // sample type dropdown
         model = new ArrayList<Item<Integer>>();
         model.add(new Item<Integer>(null, ""));
@@ -217,7 +223,6 @@ public class SampleItemTabUI extends Screen implements HasActionHandlers<SampleI
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-
         typeOfSampleId.setModel(model);
 
         // source dropdown
@@ -228,7 +233,6 @@ public class SampleItemTabUI extends Screen implements HasActionHandlers<SampleI
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-
         sourceOfSampleId.setModel(model);
 
         // sample container dropdown
@@ -239,7 +243,6 @@ public class SampleItemTabUI extends Screen implements HasActionHandlers<SampleI
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-
         containerId.setModel(model);
 
         // unit of measure dropdown
@@ -250,56 +253,178 @@ public class SampleItemTabUI extends Screen implements HasActionHandlers<SampleI
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-
         unitOfMeasureId.setModel(model);
-    }
-
-    public void setData(SampleDataBundle data) {
-        /*try{
-            bundle = data;
-            if (data == null) {
-                sampleItem = new SampleItemViewDO();
-    
-                if (state != State.QUERY)
-                    StateChangeEvent.fire(this, State.DEFAULT);
-            } else {
-                sampleItem = data.getSampleManager().getSampleItems().getSampleItemAt(data.getSampleItemIndex());
-    
-                if (state == State.ADD || state == State.UPDATE)
-                    StateChangeEvent.fire(this, State.UPDATE);
+        
+        /*
+         * handlers for the events fired by the screen containing this tab 
+         */
+        bus.addHandlerToSource(StateChangeEvent.getType(), parentScreen, new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {                
+                setState(event.getState());
+                evaluateEdit();
             }
-            loaded = false;
-        }catch(Exception e){
-            Window.alert("sampleItemTab setData: "+e.getMessage());
-        }*/
+        });
+        
+        bus.addHandlerToSource(SelectionEvent.getType(), parentScreen, new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                String uid, oldUid;
+                AnalysisDO a;
+                                     
+                switch (event.getSelectedType()) {
+                    case SAMPLE_ITEM:
+                        uid = event.getUid();
+                        break;
+                    case ANALYSIS:
+                        a = (AnalysisDO)manager.getObject(event.getUid());
+                        uid = manager.getSampleItemUid(a.getSampleItemId());
+                        break;
+                    default:
+                        uid = null;
+                        break;
+                }             
+                
+                /*
+                 * don't redraw unless the data has changed
+                 */
+                oldUid = null;
+                if (sampleItem != null)
+                    oldUid = manager.getSampleItemUid(sampleItem.getId());
+                if (DataBaseUtil.isDifferent(oldUid, uid)) {
+                    sampleItem = null;
+                    if (uid != null) 
+                        sampleItem = (SampleItemViewDO)manager.getObject(uid);
+                    
+                    evaluateEdit();
+                    setState(state);
+                    fireDataChange();
+                }
+            }
+        });
     }
 
-    public void draw() {
-           // DataChangeEvent.fire(this);
-
-        //loaded = true;
+    public void setData(SampleManager1 manager) {        
+        if (!DataBaseUtil.isSame(this.manager, manager)) {
+            this.manager = manager;
+            evaluateEdit();
+        }        
     }
     
-    private boolean canEdit() {
-        return (bundle != null && bundle.getSampleManager() != null &&
-                !Constants.dictionary().SAMPLE_RELEASED.equals(bundle.getSampleManager().getSample().getStatusId()));
+    public void evaluateEdit() {
+        canEdit = canQuery = false;
+        if (isState(QUERY)) {
+            canEdit = canQuery = true;
+        } else if (manager != null) {
+            if (isState(ADD, UPDATE))
+                canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
+        }  
+    }
+    
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
     
     private boolean itemHasReleasedAnalyses() {
-        boolean hasReleased = true;
+        /*boolean hasReleased = true;
         
         try {
-            if (bundle != null && bundle.getSampleManager() != null)
+            if (manager != null)
                 hasReleased = bundle.getSampleManager().getSampleItems()
                                     .getAnalysisAt(bundle.getSampleItemIndex()).hasReleasedAnalysis();
         } catch (Exception anyE) {
             Window.alert("sampleItemTab itemHasReleasedAnalyses: "+anyE.getMessage());
         }
         
-        return hasReleased;
-    }
+        return hasReleased;*/
+        
+        //TODO not in original code
+        return false;
+    }    
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
+    }
+    
+    private Integer getTypeOfSampleId() {
+        if (sampleItem != null)
+            return sampleItem.getTypeOfSampleId();
+        
+        return null;
+    }
+    
+    private void setTypeOfSample(Integer typeId, String display) {
+        sampleItem.setTypeOfSampleId(typeId);
+        sampleItem.setTypeOfSample(display);
+        ActionEvent.fire(screen, Action.CHANGED, null);
+    }
+    
+    private Integer getSourceOfSampleId() {
+        if (sampleItem != null)
+            return sampleItem.getSourceOfSampleId();
+        
+        return null;
+    }
+    
+    private void setSourceOfSample(Integer sourceId, String display) {
+        sampleItem.setSourceOfSampleId(sourceId);
+        sampleItem.setSourceOfSample(display);
+        ActionEvent.fire(screen, Action.CHANGED, null);
+    }
+    
+    private String getSourceOther() {
+        if (sampleItem != null)
+            return sampleItem.getSourceOther();
+        
+        return null;
+    }
+    
+    private void setSourceOther(ValueChangeEvent<String> event) {
+        sampleItem.setSourceOther(event.getValue());
+    }
+    
+    private Integer getContainerId() {
+        if (sampleItem != null)
+            return sampleItem.getContainerId();
+        
+        return null;
+    }
+    
+    private void setContainer(Integer containerId, String display) {        
+        sampleItem.setContainerId(containerId);
+        sampleItem.setContainer(display);
+        ActionEvent.fire(screen, Action.CHANGED, null);
+    }
+    
+    private String getContainerReference() {
+        if (sampleItem != null)
+            return sampleItem.getContainerReference();
+        
+        return null; 
+    }
+
+    private void setContainerReference(String containerReference) {
+        sampleItem.setContainerReference(containerReference);
+    }
+    
+    private Double getQuantity() {
+        if (sampleItem != null)
+            return sampleItem.getQuantity();
+        
+        return null;
+    }
+    
+    private void setQuantity(Double quantity) {
+        sampleItem.setQuantity(quantity);
+    }
+    
+    private Integer getUnitOfMeasureId() {
+        if (sampleItem != null)
+            return sampleItem.getUnitOfMeasureId();
+        
+        return null;
+    }
+
+    private void setUnitOfMeasureId(Integer unitId) {
+        sampleItem.setUnitOfMeasureId(unitId);
     }
 }

@@ -25,56 +25,31 @@
  */
 package org.openelis.modules.sample1.client;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
+import org.openelis.ui.screen.Screen;
+import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.table.Table;
 
-import org.openelis.cache.SectionCache;
-import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.Constants;
-import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.domain.StorageViewDO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.ui.common.SectionPermission;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.GetMatchesEvent;
-import org.openelis.gwt.event.GetMatchesHandler;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.event.RowDeletedHandler;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleItemManager;
-import org.openelis.manager.StorageLocationManager;
-import org.openelis.manager.StorageManager;
-import org.openelis.modules.storage.client.StorageService;
-import org.openelis.ui.widget.WindowInt;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Widget;
 
 public class StorageTabUI extends Screen {
-    private boolean                 loaded;
+    
+    @UiTemplate("StorageTab.ui.xml")
+    interface StorageTabUIBinder extends UiBinder<Widget, StorageTabUI> {        
+    };
+    
+    private static StorageTabUIBinder uiBinder = GWT.create(StorageTabUIBinder.class);
+    
+    public StorageTabUI() {
+        initWidget(uiBinder.createAndBindUi(this));
+        
+        initialize();
+    }
+    
+    /*private boolean                 loaded;
 
     protected AutoComplete<Integer> location;
     protected TableWidget           storageTable;
@@ -88,10 +63,16 @@ public class StorageTabUI extends Screen {
         setWindow(window);
 
         initialize();
-    }
+    }*/
 
+    @UiField
+    protected Table           storageTable;
+    
+    @UiField
+    protected Button          addStorageButton, removeStorageButton;
+    
     private void initialize() {
-        storageTable = (TableWidget)def.getWidget("storageTable");
+        /*storageTable = (TableWidget)def.getWidget("storageTable");
         addScreenHandler(storageTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 storageTable.load(getTableModel());
@@ -285,10 +266,10 @@ public class StorageTabUI extends Screen {
                 removeStorageButton.enable(false);
             }
         });
-
+*/
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
+    /*private ArrayList<TableDataRow> getTableModel() {
         String locationName;
         StorageViewDO data;
         TableDataRow row;
@@ -417,5 +398,5 @@ public class StorageTabUI extends Screen {
         }
 
         return returnValue;
-    }
+    }*/
 }

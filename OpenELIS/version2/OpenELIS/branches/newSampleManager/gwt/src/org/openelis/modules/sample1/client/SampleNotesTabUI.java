@@ -25,38 +25,34 @@
  */
 package org.openelis.modules.sample1.client;
 
-import java.util.EnumSet;
+import org.openelis.ui.screen.Screen;
 
-import org.openelis.constants.Messages;
-import org.openelis.domain.Constants;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.NotesPanel;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.manager.NoteManager;
-import org.openelis.manager.SampleManager;
-import org.openelis.modules.note.client.EditNoteScreen;
-import org.openelis.modules.note.client.NotesTab;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.widget.WindowInt;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.ui.Widget;
 
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.user.client.Window;
-
-public class SampleNotesTabUI extends NotesTab {
-    protected String         internalNotesPanelKey;
+public class SampleNotesTabUI extends Screen { //extends NotesTab
+    
+    @UiTemplate("SampleNotesTab.ui.xml")
+    interface SampleNotesTabUIBinder extends UiBinder<Widget, SampleNotesTabUI> {        
+    };
+    
+    private static SampleNotesTabUIBinder uiBinder = GWT.create(SampleNotesTabUIBinder.class);
+    
+    public SampleNotesTabUI() {
+        initWidget(uiBinder.createAndBindUi(this));
+        
+        initialize();
+    }
+    /*protected String         internalNotesPanelKey;
     protected String         internalEditButtonKey;
 
     protected SampleManager  sampleManager;
     protected NoteManager    internalManager;
 
     protected NotesPanel     internalNotesPanel;
+    
     protected AppButton      standardNote, internalEditButton;
     protected EditNoteScreen internalEditNote;
 
@@ -74,11 +70,11 @@ public class SampleNotesTabUI extends NotesTab {
           this.internalEditButtonKey = internalEditButtonKey;
 
           initialize();
-      }
+      }*/
 
       // overrides the notetab initialize to control the external notes button
       public void initialize() {
-          // we dont have all the info set yet, dont run through this method
+         /* // we dont have all the info set yet, dont run through this method
           if (internalNotesPanelKey == null)
               return;
 
@@ -174,9 +170,10 @@ public class SampleNotesTabUI extends NotesTab {
                   else
                       internalEditButton.enable(false);
               }
-          });
+          });*/
       }
 
+      /*
       protected void drawInternalNotes() {
           internalNotesPanel.clearNotes();
           for (int i = 0; i < internalManager.count(); i++ ) {
@@ -215,5 +212,5 @@ public class SampleNotesTabUI extends NotesTab {
 
       private boolean canEdit() {
           return (sampleManager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(sampleManager.getSample().getStatusId()));
-      }
+      }*/
   }
