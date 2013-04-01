@@ -9970,13 +9970,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberNotValidException(String arg0);
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Section Missing".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing".
    * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Section Missing"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing"
    */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Section Missing")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing")
   @Key("sample.analysisSectionIdMissing")
-  String sample_analysisSectionIdMissing(String arg0,  String arg1,  String arg2,  String arg3);
+  String sample_analysisSectionIdMissing(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0}'': Item {1} - One or more tests are missing".
@@ -10267,6 +10267,7 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_receivedTooOldWarning(String arg0);
 
   /**
+<<<<<<< .working
    * Translated "Relation".
    * 
    * @return translated "Relation"
@@ -10277,12 +10278,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
 
   /**
    * Translated "Accession # ''{0}'': Item {1} - Type missing".
+=======
+   * Translated "Accession # ''{0,number,integer}'' : Item {1} - Type missing".
+>>>>>>> .merge-right.r6794
    * 
-   * @return translated "Accession # ''{0}'': Item {1} - Type missing"
+   * @return translated "Accession # ''{0,number,integer}'' : Item {1} - Type missing"
    */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - Type missing")
+  @DefaultMessage("Accession # ''{0,number,integer}'' : Item {1} - Type missing")
   @Key("sample.sampleItemTypeMissing")
-  String sample_sampleItemTypeMissing(String arg0,  String arg1);
+  String sample_sampleItemTypeMissing(Integer arg0,  Integer arg1);
 
   /**
    * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Started date can''t be after completed".
