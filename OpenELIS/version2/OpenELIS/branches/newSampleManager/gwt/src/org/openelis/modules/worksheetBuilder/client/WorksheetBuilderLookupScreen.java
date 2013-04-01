@@ -23,10 +23,21 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheetCreation.client;
+package org.openelis.modules.worksheetBuilder.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.SectionCache;
@@ -37,14 +48,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.SectionPermission;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
+import org.openelis.domain.WorksheetBuilderVO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -69,68 +73,44 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.manager.AnalysisResultManager;
-import org.openelis.meta.WorksheetCreationMeta;
+import org.openelis.meta.AnalysisViewMeta;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.test.client.TestService;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+public class WorksheetBuilderLookupScreen extends Screen
+                                          implements HasActionHandlers<WorksheetBuilderLookupScreen.Action> {
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+    private ModulePermission                          userPermission;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+    protected AppButton                               searchButton, addButton, selectAllButton;
+    protected AutoComplete<Integer>                   testId;
+    protected CalendarLookUp                          receivedDate, enteredDate;
+    protected Dropdown<Integer>                       sectionId, statusId, typeOfSampleId;
+    protected HashMap<Integer, AnalysisResultManager> analyteMap;
+    protected TableWidget                             analysesTable, analyteTable;
+    protected TextBox                                 methodName;
+    protected TextBox<Integer>                        accessionNumber;
 
-public class WorksheetCreationLookupScreen1 extends Screen 
-                                           implements HasActionHandlers<WorksheetCreationLookupScreen1.Action> {
-
-    private ModulePermission        userPermission;
-
-    protected AppButton             searchButton, addButton, selectAllButton;
-    protected AutoComplete<Integer> testId;
-    protected CalendarLookUp        receivedDate, enteredDate;
-    protected Dropdown<Integer>     sectionId, statusId, typeOfSampleId;
-    protected HashMap<Integer, ArrayList<ResultViewDO>> resultMap; 
-    protected TableWidget           analysesTable, analyteTable;
-    protected TextBox               methodName;
-    protected TextBox<Integer>      accessionNumber;
-    
     public enum Action {
         ADD
     };
 
-    public WorksheetCreationLookupScreen1() throws Exception {
-        super((ScreenDefInt)GWT.create(WorksheetCreationLookupDef1.class));
+    public WorksheetBuilderLookupScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(WorksheetBuilderLookupDef.class));
         
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Worksheet Creation Lookup Screen"));
+        
+        analyteMap = new HashMap<Integer, AnalysisResultManager>();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -169,7 +149,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
         //
         // screen fields and buttons
         //
-        testId = (AutoComplete)def.getWidget(WorksheetCreationMeta.getAnalysisTestId());
+        testId = (AutoComplete)def.getWidget(AnalysisViewMeta.getTestId());
         addScreenHandler(testId, new ScreenEventHandler<Integer>() {
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 TableDataRow selectedRow = testId.getSelection();
@@ -191,14 +171,11 @@ public class WorksheetCreationLookupScreen1 extends Screen
                 ArrayList<TableDataRow> model;
                 ArrayList<TestMethodVO> matches;
                 TableDataRow            row;
-                TestMethodVO            tmVO;                
 
                 try {
                     model = new ArrayList<TableDataRow>();
                     matches = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    for (int i = 0; i < matches.size(); i++) {
-                        tmVO = (TestMethodVO)matches.get(i);
-                        
+                    for (TestMethodVO tmVO : matches) {
                         row = new TableDataRow(5);
                         row.key = tmVO.getTestId();
                         row.cells.get(0).value = tmVO.getTestName();
@@ -221,14 +198,14 @@ public class WorksheetCreationLookupScreen1 extends Screen
             } 
         });
 
-        methodName = (TextBox)def.getWidget(WorksheetCreationMeta.getAnalysisTestMethodName());
+        methodName = (TextBox)def.getWidget(AnalysisViewMeta.getMethodName());
         addScreenHandler(methodName, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 methodName.enable(false);
             }
         });
 
-        sectionId = (Dropdown)def.getWidget(WorksheetCreationMeta.getAnalysisSectionId());
+        sectionId = (Dropdown)def.getWidget(AnalysisViewMeta.getSectionId());
         addScreenHandler(sectionId, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 sectionId.enable(true);
@@ -236,7 +213,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
             }
         });
 
-        accessionNumber = (TextBox)def.getWidget(WorksheetCreationMeta.getSampleAccessionNumber());
+        accessionNumber = (TextBox)def.getWidget(AnalysisViewMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(true);
@@ -244,7 +221,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
             }
         });
 
-        statusId = (Dropdown)def.getWidget(WorksheetCreationMeta.getAnalysisStatusId());
+        statusId = (Dropdown)def.getWidget(AnalysisViewMeta.getAnalysisStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 statusId.enable(true);
@@ -252,7 +229,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
             }
         });
 
-        typeOfSampleId = (Dropdown)def.getWidget(WorksheetCreationMeta.getSampleItemTypeOfSampleId());
+        typeOfSampleId = (Dropdown)def.getWidget(AnalysisViewMeta.getTypeOfSampleId());
         addScreenHandler(typeOfSampleId, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 typeOfSampleId.enable(true);
@@ -260,7 +237,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
             }
         });
 
-        receivedDate = (CalendarLookUp)def.getWidget(WorksheetCreationMeta.getSampleReceivedDate());
+        receivedDate = (CalendarLookUp)def.getWidget(AnalysisViewMeta.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 receivedDate.enable(true);
@@ -268,7 +245,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
             }
         });
 
-        enteredDate = (CalendarLookUp)def.getWidget(WorksheetCreationMeta.getSampleEnteredDate());
+        enteredDate = (CalendarLookUp)def.getWidget(AnalysisViewMeta.getEnteredDate());
         addScreenHandler(enteredDate, new ScreenEventHandler<Datetime>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 enteredDate.enable(true);
@@ -349,7 +326,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
         analyteTable = (TableWidget)def.getWidget("analyteTable");
         addScreenHandler(analyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onStateChange(StateChangeEvent<State> event) {
-                analysesTable.enable(true);
+                analyteTable.enable(true);
             }
         });
 
@@ -458,8 +435,8 @@ public class WorksheetCreationLookupScreen1 extends Screen
             window.setBusy(Messages.get().querying());
     
             query.setRowsPerPage(500);
-            WorksheetCreationService.get().query(query, new AsyncCallback<ArrayList<WorksheetCreationVO>>() {
-                public void onSuccess(ArrayList<WorksheetCreationVO> list) {
+            WorksheetBuilderService.get().lookupAnalyses(query, new AsyncCallback<ArrayList<WorksheetBuilderVO>>() {
+                public void onSuccess(ArrayList<WorksheetBuilderVO> list) {
                     setQueryResult(list);
                 }
     
@@ -468,7 +445,7 @@ public class WorksheetCreationLookupScreen1 extends Screen
                     if (error instanceof NotFoundException) {
                         window.setDone(Messages.get().noRecordsFound());
                     } else {
-                        Window.alert("Error: WorksheetCreationLookup call query failed; "+error.getMessage());
+                        Window.alert("Error: WorksheetBuilderLookup call lookupAnalyses failed; "+error.getMessage());
                         window.setError(Messages.get().queryFailed());
                     }
                 }
@@ -478,11 +455,9 @@ public class WorksheetCreationLookupScreen1 extends Screen
         }
     }
 
-    private void setQueryResult(ArrayList<WorksheetCreationVO> list) {
-        int                     i;
+    private void setQueryResult(ArrayList<WorksheetBuilderVO> list) {
         ArrayList<TableDataRow> model;
         TableDataRow            row;
-        WorksheetCreationVO     analysisRow;
         
         if (list == null || list.size() == 0) {
             window.setDone(Messages.get().noRecordsFound());
@@ -492,18 +467,16 @@ public class WorksheetCreationLookupScreen1 extends Screen
             window.setDone(Messages.get().queryingComplete());
 
             model = new ArrayList<TableDataRow>();
-            for (i = 0; i < list.size(); i++) {
-                analysisRow = list.get(i);
-                
+            for (WorksheetBuilderVO analysisRow : list) {
                 row = new TableDataRow(12);
                 row.key = analysisRow.getAnalysisId();
                 row.cells.get(0).value = analysisRow.getAccessionNumber();
-                row.cells.get(1).value = analysisRow.getDescription();
+                row.cells.get(1).value = analysisRow.getWorksheetDescription();
                 row.cells.get(2).value = analysisRow.getTestName();
                 row.cells.get(3).value = analysisRow.getMethodName();
                 row.cells.get(4).value = analysisRow.getSectionId();
                 row.cells.get(5).value = analysisRow.getUnitOfMeasureId();
-                row.cells.get(6).value = analysisRow.getStatusId();          
+                row.cells.get(6).value = analysisRow.getAnalysisStatusId();          
                 row.cells.get(7).value = analysisRow.getCollectionDate();
                 row.cells.get(8).value = analysisRow.getReceivedDate();
                 row.cells.get(9).value = analysisRow.getDueDays();
@@ -526,14 +499,14 @@ public class WorksheetCreationLookupScreen1 extends Screen
         int                     i;
         SectionViewDO           sectionVDO;
         StringBuffer            message;
-        WorksheetCreationVO     analysisRow;
+        WorksheetBuilderVO    analysisRow;
         ArrayList<TableDataRow> selections;
         
         i = 0;
         message = new StringBuffer();
         selections = analysesTable.getSelections();
         while (i < selections.size()) {
-            analysisRow = (WorksheetCreationVO) selections.get(i).data;
+            analysisRow = (WorksheetBuilderVO) selections.get(i).data;
             if (! isAnalysisEditable(analysisRow)) {
                 selections.remove(i);
                 
@@ -563,22 +536,22 @@ public class WorksheetCreationLookupScreen1 extends Screen
      * Returns true if analysis can be added to the worksheet and the user has
      * permission to add it.
      */
-    private boolean isAnalysisEditable(WorksheetCreationVO analysisRow) {
+    private boolean isAnalysisEditable(WorksheetBuilderVO analysisRow) {
         boolean editable;
         
         editable = false;
         if (analysisRow != null) {
             editable = canAddTest(analysisRow) &&
-                       Boolean.FALSE.equals(analysisRow.getHasQaOverride()) &&
-                       !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(analysisRow.getStatusId()) &&
-                       !Constants.dictionary().ANALYSIS_INPREP.equals(analysisRow.getStatusId()) &&
-                       !Constants.dictionary().ANALYSIS_RELEASED.equals(analysisRow.getStatusId()) &&
-                       !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysisRow.getStatusId());
+                       "N".equals(analysisRow.getAnalysisResultOverride()) &&
+                       !Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(analysisRow.getAnalysisStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_INPREP.equals(analysisRow.getAnalysisStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_RELEASED.equals(analysisRow.getAnalysisStatusId()) &&
+                       !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysisRow.getAnalysisStatusId());
         }
         return editable;
     }
 
-    private boolean canAddTest(WorksheetCreationVO analysisRow) {
+    private boolean canAddTest(WorksheetBuilderVO analysisRow) {
         boolean       allow;
         SectionViewDO section;
         SectionPermission perm;
@@ -601,26 +574,32 @@ public class WorksheetCreationLookupScreen1 extends Screen
     
     private void showAnalytes() {
         ArrayList<TableDataRow> selections;
-        WorksheetCreationVO data;
+        AnalysisResultManager arMan;
         
         if (analyteTable.isVisible()) {
             selections = analysesTable.getSelections();
             if (selections.size() == 1) {
-                data = (WorksheetCreationVO) selections.get(0).data;
-                ResultService.get().fetchByAnalysisIdForDisplay(data.getAnalysisId(), new AsyncCallback<AnalysisResultManager>() {
-                    public void onSuccess(AnalysisResultManager arMan) {
-                        loadAnalyteTable(arMan);
-                    }
-        
-                    public void onFailure(Throwable error) {
-                        analyteTable.load(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(Messages.get().noAnalytesFoundForRow());
-                        } else {
-                            Window.alert("Error: WorksheetCreationLookup call showAnalytes failed; "+error.getMessage());
+                final WorksheetBuilderVO data = (WorksheetBuilderVO) selections.get(0).data;
+                arMan = analyteMap.get(data.getAnalysisId());
+                if (arMan != null) {
+                    loadAnalyteTable(arMan);
+                } else {
+                    ResultService.get().fetchByAnalysisIdForDisplay(data.getAnalysisId(), new AsyncCallback<AnalysisResultManager>() {
+                        public void onSuccess(AnalysisResultManager arMan) {
+                            loadAnalyteTable(arMan);
+                            analyteMap.put(data.getAnalysisId(), arMan);
                         }
-                    }
-                });
+            
+                        public void onFailure(Throwable error) {
+                            analyteTable.load(null);
+                            if (error instanceof NotFoundException) {
+                                window.setDone(Messages.get().noAnalytesFoundForRow());
+                            } else {
+                                Window.alert("Error: WorksheetCreationLookup call showAnalytes failed; "+error.getMessage());
+                            }
+                        }
+                    });
+                }
             } else {
                 analyteTable.load(null);
             }            
@@ -630,8 +609,6 @@ public class WorksheetCreationLookupScreen1 extends Screen
     }
 
     public void loadAnalyteTable(AnalysisResultManager arMan) {
-        int i;
-        ArrayList<ResultViewDO> resultRow;
         ArrayList<TableDataRow> model;
         ResultViewDO result;
         TableDataRow row;
@@ -639,10 +616,8 @@ public class WorksheetCreationLookupScreen1 extends Screen
         model = null;
         if (arMan != null) {
             model = new ArrayList<TableDataRow>();
-            for (i = 0; i < arMan.getResults().size(); i++) {
-                resultRow = arMan.getRowAt(i);
+            for (ArrayList<ResultViewDO> resultRow : arMan.getResults()) {
                 result = (ResultViewDO)resultRow.get(0);
-                
                 if ("Y".equals(result.getIsReportable())) {
                     row = new TableDataRow(1);
                     row.key = result.getId();

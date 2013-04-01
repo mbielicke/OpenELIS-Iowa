@@ -23,10 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheetCreation.client;
+package org.openelis.modules.worksheetBuilder.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface WorksheetCreationLookupDef1 extends ScreenDefInt {
+public interface WorksheetBuilderLookupDef extends ScreenDefInt {
 
 }
