@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -80,6 +81,18 @@ public class PanelBean {
         }
         return data;
     }   
+    
+    public ArrayList<PanelDO> fetchByIds(Collection<Integer> ids) {
+        Query query;
+        
+        if (ids.size() == 0)
+            return new ArrayList<PanelDO>();
+        
+        query = manager.createNamedQuery("Panel.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
     
     public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(String name, Integer sampleItemType, int maxResults) throws Exception {
         List<PanelDO> panelList;
