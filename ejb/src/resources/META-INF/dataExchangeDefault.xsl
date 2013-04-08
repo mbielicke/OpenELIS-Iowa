@@ -499,6 +499,16 @@ UIRF Software License are applicable instead of those above.
           <xsl:value-of select="@printed_date" />
         </xsl:attribute>
       </xsl:if>
+      <xsl:if test="@panel_id[. != '']">
+        <xsl:attribute name="panel_id">
+          <xsl:value-of select="@panel_id" />
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="@is_preliminary[. != '']">
+        <xsl:attribute name="is_preliminary">
+          <xsl:value-of select="@is_preliminary" />
+        </xsl:attribute>
+      </xsl:if>
       <xsl:variable name="test_id" select="@test_id" />
       <test id="{@test_id}">
         <xsl:apply-templates select="//test[@id = $test_id]" />
