@@ -55,6 +55,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.PWSDO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ResultViewDO;
@@ -134,6 +135,9 @@ public class DataExchangeXMLMapperBean {
 
     @EJB
     private SectionCacheBean         sectionCache;
+    
+    @EJB
+    private PanelBean                panel;
 
     private static SimpleDateFormat  dateFormat, timeFormat;
 
@@ -156,7 +160,8 @@ public class DataExchangeXMLMapperBean {
         String testQuery[];
         ArrayList<Integer> profileIds;
         ArrayList<QueryData> fields;
-        HashSet<Integer> userIds, critTestIds, dictIds, testIds, methodIds, analyteIds, projIds, orgIds, qaIds, trailerIds, sectionIds;
+        HashSet<Integer> userIds, critTestIds, dictIds, testIds, methodIds, analyteIds,
+                         projIds, orgIds, qaIds, trailerIds, sectionIds, panelIds;
         Document doc;
         Element root, header, profiles, sampleNotes, anaNotes;
         SystemUserVO user;
@@ -190,6 +195,7 @@ public class DataExchangeXMLMapperBean {
         TestViewDO testDO;
         SectionViewDO sect;
         ArrayList<TestTrailerDO> trailerList;
+        ArrayList<PanelDO> panelList;
         ArrayList<MethodDO> methodList;
         ResultViewDO result;
         ArrayList<ResultViewDO> results;
@@ -306,6 +312,7 @@ public class DataExchangeXMLMapperBean {
         analyteIds = new HashSet<Integer>();
         trailerIds = new HashSet<Integer>();
         sectionIds = new HashSet<Integer>();
+        panelIds = new HashSet<Integer>();
         anaNotes = null;
 
         itemMan = manager.getSampleItems();
@@ -373,6 +380,9 @@ public class DataExchangeXMLMapperBean {
 
                 if (analysis.getSectionId() != null)
                     sectionIds.add(analysis.getSectionId());
+                
+                if (analysis.getPanelId() != null)
+                    panelIds.add(analysis.getPanelId());
 
                 /*
                  * create elements for results
@@ -555,6 +565,16 @@ public class DataExchangeXMLMapperBean {
                     orgIds.add(sect.getOrganizationId());
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Could not fetch section with id: " + id, e);
+            }
+        }
+        
+        if (panelIds.size() > 0) {
+            try {
+                panelList = panel.fetchByIds(trailerIds);
+                for (PanelDO panel : panelList)
+                    root.appendChild(getPanel(doc, panel));
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Could not fetch panels", e);
             }
         }
 
@@ -1114,31 +1134,51 @@ public class DataExchangeXMLMapperBean {
         return parent;
     }
 
-    public Element getSection(Document document, SectionDO method) {
+    public Element getSection(Document document, SectionDO section) {
         Element parent, child;
 
-        if (document == null || method == null)
+        if (document == null || section == null)
             return null;
 
         parent = document.createElement("section");
-        parent.setAttribute("id", method.getId().toString());
+        parent.setAttribute("id", section.getId().toString());
 
         child = document.createElement("name");
-        child.setTextContent(method.getName());
+        child.setTextContent(section.getName());
         parent.appendChild(child);
 
         child = document.createElement("description");
-        child.setTextContent(method.getDescription());
+        child.setTextContent(section.getDescription());
         parent.appendChild(child);
 
-        if (method.getParentSectionId() != null)
-            parent.setAttribute("parent_section_id", method.getParentSectionId().toString());
+        if (section.getParentSectionId() != null)
+            parent.setAttribute("parent_section_id", section.getParentSectionId().toString());
 
-        parent.setAttribute("is_external", method.getIsExternal());
+        parent.setAttribute("is_external", section.getIsExternal());
 
-        if (method.getOrganizationId() != null)
-            parent.setAttribute("organization_id", method.getOrganizationId().toString());
+        if (section.getOrganizationId() != null)
+            parent.setAttribute("organization_id", section.getOrganizationId().toString());
 
+        return parent;
+    }
+    
+    private Node getPanel(Document document, PanelDO panel) {
+        Element parent, child;
+
+        if (document == null || panel == null)
+            return null;
+        
+        parent = document.createElement("panel");
+        parent.setAttribute("id", panel.getId().toString());
+
+        child = document.createElement("name");
+        child.setTextContent(panel.getName());
+        parent.appendChild(child);
+
+        child = document.createElement("description");
+        child.setTextContent(panel.getDescription());
+        parent.appendChild(child);
+        
         return parent;
     }
 

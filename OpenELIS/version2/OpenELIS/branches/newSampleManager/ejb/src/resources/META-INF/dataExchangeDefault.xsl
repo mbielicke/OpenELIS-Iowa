@@ -499,11 +499,6 @@ UIRF Software License are applicable instead of those above.
           <xsl:value-of select="@printed_date" />
         </xsl:attribute>
       </xsl:if>
-      <xsl:if test="@panel_id[. != '']">
-        <xsl:attribute name="panel_id">
-          <xsl:value-of select="@panel_id" />
-        </xsl:attribute>
-      </xsl:if>
       <xsl:if test="@is_preliminary[. != '']">
         <xsl:attribute name="is_preliminary">
           <xsl:value-of select="@is_preliminary" />
@@ -526,13 +521,19 @@ UIRF Software License are applicable instead of those above.
       <xsl:variable name="status_id" select="@status_id" />
       <status>
         <xsl:apply-templates select="//dictionary[@id = $status_id]" />
-      </status>
+      </status> 
+      <xsl:if test="@panel_id[. != '']">
+        <xsl:variable name="panel_id" select="@panel_id" />
+        <panel>
+          <xsl:apply-templates select="//panel[@id = $panel_id]" />
+        </panel>
+      </xsl:if>    
       <xsl:variable name="analysis_id" select="@id" />
-      <!--
-        The results for this analysis
+      <!-- 
+        The qa events for this analysis
       -->
       <xsl:apply-templates select="//analysis_qaevent[@analysis_id = $analysis_id]" />
-      <!-- 
+      <!--
         The results for this analysis
       -->
       <xsl:apply-templates select="//result[@analysis_id = $analysis_id]" />
@@ -668,6 +669,18 @@ UIRF Software License are applicable instead of those above.
     </description>  
     <xsl:variable name="organization_id" select="@organization_id" />
     <xsl:apply-templates select="//organization[@id = $organization_id]" />
+  </xsl:template>
+  
+  <xsl:template match="panel">
+    <xsl:attribute name="id">
+      <xsl:value-of select="@id" />
+    </xsl:attribute>        
+    <name>
+      <xsl:value-of select="name" />
+    </name>
+    <description>
+      <xsl:value-of select="description" />
+    </description>
   </xsl:template>
   
   <xsl:template match="test_trailer">

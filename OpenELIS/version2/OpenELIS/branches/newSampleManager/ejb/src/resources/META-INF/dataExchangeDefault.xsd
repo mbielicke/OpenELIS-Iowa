@@ -316,6 +316,14 @@ UIRF Software License are applicable instead of those above.
     <xs:attribute name="is_external" type="xs:string" use = "required"/>
   </xs:complexType>
   
+  <xs:complexType name="panel">
+    <xs:sequence>    
+      <xs:element name="name" type="xs:string"/> 
+      <xs:element name="description" type="xs:string"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:integer" use = "required"/>
+  </xs:complexType>
+  
   <xs:complexType name="testTrailer">
     <xs:sequence>    
       <xs:element name="name" type="xs:string"/>                 
