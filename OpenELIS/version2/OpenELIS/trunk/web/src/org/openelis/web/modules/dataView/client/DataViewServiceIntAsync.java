@@ -17,12 +17,8 @@ public interface DataViewServiceIntAsync {
 
     void fetchEnvironmentalProjectListForWeb(AsyncCallback<ArrayList<IdNameVO>> callback);
 
-    void openQuery(AsyncCallback<DataViewVO> callback);
-
     void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback);
 
     void runReportForWebEnvironmental(DataViewVO data, AsyncCallback<ReportStatus> callback);
-
-    void saveQuery(DataViewVO data, AsyncCallback<ReportStatus> callback);
 
 }

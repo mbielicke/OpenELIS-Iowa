@@ -18,10 +18,6 @@ public interface DataViewServiceInt extends RemoteService {
 
     DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception;
 
-    DataViewVO openQuery() throws Exception;
-
-    ReportStatus saveQuery(DataViewVO data) throws Exception;
-
     ReportStatus runReport(DataViewVO data) throws Exception;
 
     ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception;

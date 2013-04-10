@@ -25,22 +25,15 @@
 */
 package org.openelis.web.modules.dataView.server;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.FileItem;
 import org.openelis.bean.DataViewBean;
 import org.openelis.bean.SystemVariableBean;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.web.modules.dataView.client.DataViewServiceInt;
@@ -66,68 +59,6 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
         return dataView.fetchAnalyteAndAuxFieldForWebEnvironmental(data);
-    }
-    
-    public void loadQuery(FileItem file) throws Exception {
-        int len;
-        byte buf[];      
-        DataViewVO data;
-        OutputStream out;
-        InputStream in;
-        File temp;        
-        SystemVariableDO list;
-        
-        out = null;
-        in = null;
-        temp = null;
-        try {
-            list = systemVariable.fetchByName("upload_save_directory");
-
-            temp = File.createTempFile("dataview", ".xml", new File(list.getValue()));
-            out = new FileOutputStream(temp);
-            buf = new byte[1024];
-            in = file.getInputStream();
-            while ( (len = in.read(buf)) > 0)
-                out.write(buf, 0, len);
-            out.close();
-
-            data = dataView.loadQuery(temp.getPath());
-            in.close(); 
-            temp.delete();
-            getThreadLocalRequest().getSession().setAttribute("dataViewQuery", data);
-        } catch (Exception e) {
-            if (in != null)
-                in.close(); 
-            if (temp != null)
-                temp.delete();
-            if (out != null) 
-                out.close();
-            throw e;
-        }       
-    }
-    
-    public DataViewVO openQuery() throws Exception {
-        DataViewVO data;
-        HttpSession session;
-        
-        session = getThreadLocalRequest().getSession();               
-        data = (DataViewVO)session.getAttribute("dataViewQuery");
-        /*
-         * we remove the VO from the session because there's no need to hold on
-         * to it beyond one request 
-         */
-        session.removeAttribute("dataViewQuery");
-        return data;
-    }
-    
-    public ReportStatus saveQuery(DataViewVO data) throws Exception {
-        ReportStatus st;
-
-        st = dataView.saveQuery(data);
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
-
-        return st;
     }
     
     public ReportStatus runReport(DataViewVO data) throws Exception {
