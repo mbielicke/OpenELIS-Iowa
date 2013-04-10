@@ -45,11 +45,6 @@ public class DataViewReportService implements DataViewServiceInt, DataViewServic
     }
 
     @Override
-    public void openQuery(AsyncCallback<DataViewVO> callback) {
-        service.openQuery(callback);
-    }
-
-    @Override
     public void runReport(DataViewVO data, AsyncCallback<ReportStatus> callback) {
         service.runReport(data, callback);
     }
@@ -57,11 +52,6 @@ public class DataViewReportService implements DataViewServiceInt, DataViewServic
     @Override
     public void runReportForWebEnvironmental(DataViewVO data, AsyncCallback<ReportStatus> callback) {
         service.runReportForWebEnvironmental(data, callback);
-    }
-
-    @Override
-    public void saveQuery(DataViewVO data, AsyncCallback<ReportStatus> callback) {
-        service.saveQuery(data, callback);
     }
 
     @Override
@@ -88,24 +78,6 @@ public class DataViewReportService implements DataViewServiceInt, DataViewServic
         
         callback = new Callback<DataViewVO>();
         service.fetchAnalyteAndAuxFieldForWebEnvironmental(data, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public DataViewVO openQuery() throws Exception {
-        Callback<DataViewVO> callback;
-        
-        callback = new Callback<DataViewVO>();
-        service.openQuery(callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ReportStatus saveQuery(DataViewVO data) throws Exception {
-        Callback<ReportStatus> callback;
-        
-        callback = new Callback<ReportStatus>();
-        service.saveQuery(data, callback);
         return callback.getResult();
     }
 
