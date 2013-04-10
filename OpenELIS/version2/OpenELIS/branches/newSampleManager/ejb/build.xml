@@ -104,7 +104,9 @@
 			<include name="lib/gwt-servlet.jar" />
 			<include name="lib/javamail.jar" />
 			<include name="lib/commons-fileupload-1.2.1.jar"/>
+			<include name="lib/commons-io-2.1.jar"/>
 			<include name="lib/gwt-i18n-server-0.17.jar"/>
+			<include name="lib/report-fonts.jar"/>
 		</fileset>
 	</ear>
 	
