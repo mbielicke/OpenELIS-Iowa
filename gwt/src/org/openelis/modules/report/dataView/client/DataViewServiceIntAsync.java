@@ -2,7 +2,6 @@ package org.openelis.modules.report.dataView.client;
 
 import java.util.ArrayList;
 
-import org.apache.commons.fileupload.FileItem;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.ReportStatus;
