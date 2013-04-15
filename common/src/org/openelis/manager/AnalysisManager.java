@@ -835,6 +835,8 @@ public class AnalysisManager implements Serializable {
         data.setSectionId(null);
         if (data.getIsReportable() == null)
             data.setIsReportable(test.getIsReportable());
+        if (data.getIsPreliminary() == null)
+            data.setIsPreliminary("N");
 
         // set the first unit for this sample type if there are any units for it
         typeOfSampleId = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
@@ -897,6 +899,7 @@ public class AnalysisManager implements Serializable {
         data.setIsReportable(null);
         data.setUnitOfMeasureId(null);
         data.setSectionId(null);
+        data.setPanelId(null);
 
         // set preanalyses data
         preAnalysisList = getPreAnalysisList(data.getId());

@@ -210,6 +210,7 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSIS_PRE_ANALYSIS_ID = "_analysis.preAnalysisId",
                     ANALYSIS_PARENT_ANALYSIS_ID = "_analysis.parentAnalysisId",
                     ANALYSIS_PARENT_RESULT_ID = "_analysis.parentResultId",
+                    ANALYSIS_IS_PRELIMINARY = "_analysis.isPreliminary",
                     ANALYSIS_IS_REPORTABLE = "_analysis.isReportable",
                     ANALYSIS_UNIT_OF_MEASURE_ID = "_analysis.unitOfMeasureId",
                     ANALYSIS_STATUS_ID = "_analysis.statusId",
@@ -218,6 +219,7 @@ public class SampleMeta implements Meta, MetaMap {
                     ANALYSIS_COMPLETED_DATE = "_analysis.completedDate",
                     ANALYSIS_RELEASED_DATE = "_analysis.releasedDate",
                     ANALYSIS_PRINTED_DATE = "_analysis.printedDate",
+                    ANALYSIS_PANEL_ID = "analysisPanelId",
                     ANALYSIS_SAMPLE_PREP = "analysisSamplePrep",
 
                     ANALYSISQA_ID = "_analysisQaevent.id",
@@ -383,11 +385,12 @@ public class SampleMeta implements Meta, MetaMap {
                                                   ANALYSIS_SECTION_ID, ANALYSIS_PRE_ANALYSIS_ID,
                                                   ANALYSIS_PARENT_ANALYSIS_ID,
                                                   ANALYSIS_PARENT_RESULT_ID,
-                                                  ANALYSIS_IS_REPORTABLE,
+                                                  ANALYSIS_IS_PRELIMINARY, ANALYSIS_IS_REPORTABLE,
                                                   ANALYSIS_UNIT_OF_MEASURE_ID, ANALYSIS_STATUS_ID,
                                                   ANALYSIS_AVAILABLE_DATE, ANALYSIS_STARTED_DATE,
                                                   ANALYSIS_COMPLETED_DATE, ANALYSIS_RELEASED_DATE,
-                                                  ANALYSIS_PRINTED_DATE, ANALYSISQA_ID,
+                                                  ANALYSIS_PRINTED_DATE, ANALYSIS_PANEL_ID, 
+                                                  ANALYSIS_SAMPLE_PREP, ANALYSISQA_ID,
                                                   ANALYSISQA_ANALYSIS_ID, ANALYSISQA_QAEVENT_ID,
                                                   ANALYSISQA_TYPE_ID, ANALYSISQA_IS_BILLABLE,
                                                   ANALYSISSUBQA_ID, ANALYSISSUBQA_NAME,
@@ -1050,6 +1053,10 @@ public class SampleMeta implements Meta, MetaMap {
         return ANALYSIS_PARENT_RESULT_ID;
     }
 
+    public static String getAnalysisIsPreliminary() {
+        return ANALYSIS_IS_PRELIMINARY;
+    }
+
     public static String getAnalysisIsReportable() {
         return ANALYSIS_IS_REPORTABLE;
     }
@@ -1080,6 +1087,10 @@ public class SampleMeta implements Meta, MetaMap {
 
     public static String getAnalysisPrintedDate() {
         return ANALYSIS_PRINTED_DATE;
+    }
+
+    public static String getAnalysisPanelId() {
+        return ANALYSIS_PANEL_ID;
     }
 
     public static String getAnalysisSamplePrep() {
