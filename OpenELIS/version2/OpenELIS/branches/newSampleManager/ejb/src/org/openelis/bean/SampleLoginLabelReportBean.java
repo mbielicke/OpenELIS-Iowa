@@ -71,7 +71,7 @@ public class SampleLoginLabelReportBean {
                                                                .setDefaultValue("1"));
 
             p.add(new Prompt("RECEIVED", Prompt.Type.DATETIME).setPrompt("Date Received:")
-                                                              .setWidth(120)
+                                                              .setWidth(128)
                                                               .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                               .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                               .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
@@ -80,13 +80,13 @@ public class SampleLoginLabelReportBean {
                                                               .setRequired(true));
 
             p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
-                                                           .setWidth(120)
+                                                           .setWidth(124)
                                                            .setOptionList(getLocations())
                                                            .setRequired(true));
 
             prn = printer.getListByType("zpl");
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(120)
+                                                          .setWidth(124)
                                                           .setOptionList(prn)
                                                           .setMutiSelect(false)
                                                           .setRequired(true));
@@ -212,19 +212,19 @@ public class SampleLoginLabelReportBean {
                                                                .setDefaultValue("1"));
 
             p.add(new Prompt("RECEIVED", Prompt.Type.DATETIME).setPrompt("Date Received:")
-                                                              .setWidth(120)
+                                                              .setWidth(128)
                                                               .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                               .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                               .setRequired(false));
 
             p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
-                                                           .setWidth(120)
+                                                           .setWidth(124)
                                                            .setOptionList(getLocations())
                                                            .setRequired(true));
 
             prn = printer.getListByType("zpl");
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(120)
+                                                          .setWidth(124)
                                                           .setOptionList(prn)
                                                           .setMutiSelect(false)
                                                           .setRequired(true));
