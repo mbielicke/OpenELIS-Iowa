@@ -63,10 +63,10 @@
               <w:Dropdown ui:field="statusId" width="150px" field="Integer" /> <!-- popWidth="150px" -->
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.revision}:" />
+              <ui:text from="{msg.preliminary}:" />
             </td>
             <td>
-              <w:TextBox ui:field="revision" width="60px" field="Integer" />
+              <w:CheckBox ui:field="isPreliminary" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.testReportable}:" />
@@ -101,6 +101,28 @@
               <c:Calendar ui:field="releasedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
             </td>
           </tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.panel}:" />
+            </td>
+            <td colspan="5">
+              <w:AutoComplete ui:field="panel" width="365x" case="LOWER">
+                <w:popup>
+                  <t:Table visibleRows="10" header="true">
+                    <t:Column width="350" label="{msg.name}">
+                      <t:LabelCell />
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:AutoComplete>
+            </td>
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.printed}:" />
+            </td>
+            <td>
+              <c:Calendar ui:field="printedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+            </td>
+          </tr>
           <tr>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.samplePrep}:" />
@@ -117,10 +139,10 @@
               </w:AutoComplete>
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.printed}:" />
+              <ui:text from="{msg.revision}:" />
             </td>
             <td>
-              <c:Calendar ui:field="printedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+              <w:TextBox ui:field="revision" width="60px" field="Integer" />
             </td>
           </tr>
         </table>

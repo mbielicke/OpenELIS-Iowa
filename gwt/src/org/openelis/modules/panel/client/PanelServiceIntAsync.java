@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.manager.PanelItemManager;
@@ -22,6 +23,8 @@ public interface PanelServiceIntAsync {
     void fetchAuxIdsByPanelId(Integer panelId, AsyncCallback<ArrayList<IdVO>> callback);
 
     void fetchById(Integer id, AsyncCallback<PanelManager> callback);
+
+    void fetchByName(String name, AsyncCallback<ArrayList<PanelDO>> callback);
 
     void fetchByNameSampleTypeWithTests(Query query, AsyncCallback<ArrayList<TestMethodVO>> callback);
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.manager.PanelItemManager;
@@ -18,6 +19,8 @@ public interface PanelServiceInt extends RemoteService {
     PanelManager fetchById(Integer id) throws Exception;
 
     PanelManager fetchWithItems(Integer id) throws Exception;
+
+    ArrayList<PanelDO> fetchByName(String name) throws Exception;
 
     ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception;
 

@@ -45,6 +45,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.services.CalendarService;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.PanelManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
@@ -122,12 +123,13 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         if (type == Type.PANEL) {
             testIds = PanelService.get().fetchTestIdsByPanelId(id);
             auxIds = PanelService.get().fetchAuxIdsByPanelId(id);
+            processTestListAndCheckPrepTests(testIds, tsVDO, id);
         } else {
             testIds = new ArrayList<IdVO>(1);
             testIds.add(new IdVO(id));
+            processTestListAndCheckPrepTests(testIds, tsVDO, null);
         }
 
-        processTestListAndCheckPrepTests(testIds, tsVDO);
         if (auxIds != null && auxIds.size() > 0)
             addAuxGroups(auxIds);
     }
@@ -179,19 +181,21 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             testIds.add(new IdVO(testDO.getTestId()));
         }
 
-        processTestListAndCheckPrepTests(testIds, null);
+        processTestListAndCheckPrepTests(testIds, null, null);
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
 
-    private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds, TestSectionViewDO tsVDO) throws Exception {
+    private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds, TestSectionViewDO tsVDO,
+                                                  Integer panelId) throws Exception {
         int addedIndex;
         IdVO idVO;
         ArrayList<Object> prepBundle;
         ArrayList<ArrayList<Object>> prepBundles;
         AnalysisManager anMan;
+        PanelManager panelMan;
         SampleDataBundle anBundle, analysisDataBundle;
         SampleManager manager;
         TestManager testMan;
@@ -229,6 +233,15 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 anMan.setTestAt(testMan, addedIndex, false);
                 if (sectionVDO != null)
                     anMan.getAnalysisAt(addedIndex).setSectionId(sectionVDO.getSectionId());
+                if (panelId != null) {
+                    try {
+                        panelMan = PanelService.get().fetchById(panelId);
+                        anMan.getAnalysisAt(addedIndex).setPanelId(panelId);
+                        anMan.getAnalysisAt(addedIndex).setPanelName(panelMan.getPanel().getName());
+                    } catch (Exception anyE) {
+                        Window.alert("error: " + anyE.getMessage());
+                    }
+                }
 
                 anBundle = anMan.getBundleAt(addedIndex);
                 bundles.add(anBundle);
