@@ -865,7 +865,8 @@ public class SDWISUnloadReportBean {
 
     private void initMethodCodes() {
         methodCodes = new HashMap<String, String>();
-        
+
+        // @formatter:off
         methodCodes.put("blue pour plate",       "9215B");
         methodCodes.put("colilert mpn sdwa am",  "9223B-QT");
         methodCodes.put("colilert mpn sdwa pm",  "9223B-18QT");
@@ -924,11 +925,13 @@ public class SDWISUnloadReportBean {
         methodCodes.put("sm 5310 b",             "5310B");
         methodCodes.put("sm 5910",               "5910B");
         methodCodes.put("sm 7500 i c 19th",      "7500-IC");
+        // @formatter:on
     }
 
     private void initContaminantIds() {
         contaminantIds = new HashMap<String, String>();
         
+        // @formatter:off
         contaminantIds.put("1,1,1,2-Tetrachloroethane",             "2986");
         contaminantIds.put("1,1,1-Trichloroethane",                 "2981");
         contaminantIds.put("1,1,2,2-Tetrachloroethane",             "2988");
@@ -1152,5 +1155,6 @@ public class SDWISUnloadReportBean {
         contaminantIds.put("UV Absorbance at 254 nm",               "2922");
         contaminantIds.put("Vinyl chloride",                        "2976");
         contaminantIds.put("Zinc",                                  "1095");
+        // @formatter:on
     }
 }

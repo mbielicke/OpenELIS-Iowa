@@ -58,38 +58,38 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "Analysis.FetchById", 
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
-                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
-                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
-                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.test t"
+                        "a.testId, a.sectionId, a.panelId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isPreliminary, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
+                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.panel p LEFT JOIN a.test t"
                       +	"  where a.id = :id"),
     @NamedQuery( name = "Analysis.UpdatePrintedDateByIds", 
                 query = " update Analysis set printedDate = :printedDate where id in (:ids)"),                  
     @NamedQuery( name = "Analysis.FetchBySampleId",
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
-                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
-                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
+                        "a.testId, a.sectionId, a.panelId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isPreliminary, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
-                        " LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.test t where si.sampleId = :id order by  si.itemSequence, t.name, t.method.name "),                       
+                        " LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.panel p LEFT JOIN a.test t where si.sampleId = :id order by  si.itemSequence, t.name, t.method.name "),                       
     @NamedQuery( name = "Analysis.FetchBySampleIdForSDWISUnload",
                  query = "select new org.openelis.domain.SDWISUnloadReportVO(a.id, si.itemSequence, t.name, t.method.name, a.sectionId, se.organizationId, a.isReportable, a.unitOfMeasureId, a.statusId, a.startedDate, a.completedDate)"
                        + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section se LEFT JOIN a.test t"
                        + " where si.sampleId = :id order by se.organizationId, a.sectionId, si.itemSequence, t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchBySampleItemId",
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
-                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
-                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
+                        "a.testId, a.sectionId, a.panelId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isPreliminary, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section s LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam"
-                      +	" LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
+                      +	" LEFT JOIN a.panel p LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchBySampleItemIds",
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
-                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, a.panelId, a.isPreliminary, t.name, t.reportingDescription, t.method.id," +
-                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
+                        "a.testId, a.sectionId, a.panelId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isPreliminary, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name, p.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section s LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam"
-                      + " LEFT JOIN a.test t where a.sampleItemId in (:ids) order by si.sampleId, si.itemSequence, t.name, t.method.name "),          
+                      + " LEFT JOIN a.panel p LEFT JOIN a.test t where a.sampleItemId in (:ids) order by si.sampleId, si.itemSequence, t.name, t.method.name "),          
     @NamedQuery( name = "Analysis.FetchForMCLViolation",
                 query = "select distinct new org.openelis.domain.MCLViolationReportVO(s.id, s.accessionNumber, s.collectionDate, s.collectionTime, ss.stateLabId, ss.facilityId, d1.entry, ss.samplePointId, ss.location, p.number0, p.name, p.alternateStNum, o.name, a.id, a.sectionId, se.name, a.unitOfMeasureId, a.startedDate, a.releasedDate, d2.entry, t.name, t.method.name)"
                       + " from Analysis a, SampleItem si, Sample s, SampleSDWIS ss, PWS p, SampleOrganization so, Organization o, Test t, Section se, Dictionary d1, Dictionary d2, Dictionary d3"
@@ -118,6 +118,9 @@ public class Analysis implements Auditable, Cloneable {
     @Column(name = "section_id")
     private Integer                     sectionId;
 
+    @Column(name = "panel_id")
+    private Integer                     panelId;
+
     @Column(name = "pre_analysis_id")
     private Integer                     preAnalysisId;
 
@@ -126,6 +129,9 @@ public class Analysis implements Auditable, Cloneable {
 
     @Column(name = "parent_result_id")
     private Integer                     parentResultId;
+
+    @Column(name = "is_preliminary")
+    private String                      isPreliminary;
 
     @Column(name = "is_reportable")
     private String                      isReportable;
@@ -151,12 +157,6 @@ public class Analysis implements Auditable, Cloneable {
     @Column(name = "printed_date")
     private Date                        printedDate;
 
-    @Column(name = "panel_id")
-    private Integer                     panelId;
-
-    @Column(name = "is_preliminary")
-    private String                      isPreliminary;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_item_id", insertable = false, updatable = false)
     private SampleItem                  sampleItem;
@@ -172,6 +172,10 @@ public class Analysis implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id", insertable = false, updatable = false)
     private Section                     section;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "panel_id", insertable = false, updatable = false)
+    private Panel                       panel;
 
     // analysis qa events
     @OneToMany(fetch = FetchType.LAZY)
@@ -230,6 +234,15 @@ public class Analysis implements Auditable, Cloneable {
             this.sectionId = sectionId;
     }
 
+    public Integer getPanelId() {
+        return panelId;
+    }
+
+    public void setPanelId(Integer panelId) {
+        if (DataBaseUtil.isDifferent(panelId, this.panelId))
+            this.panelId = panelId;
+    }
+
     public Integer getPreAnalysisId() {
         return preAnalysisId;
     }
@@ -255,6 +268,15 @@ public class Analysis implements Auditable, Cloneable {
     public void setParentResultId(Integer parentResultId) {
         if (DataBaseUtil.isDifferent(parentResultId, this.parentResultId))
             this.parentResultId = parentResultId;
+    }
+
+    public String getIsPreliminary() {
+        return isPreliminary;
+    }
+
+    public void setIsPreliminary(String isPreliminary) {
+        if (DataBaseUtil.isDifferent(isPreliminary, this.isPreliminary))
+            this.isPreliminary = isPreliminary;
     }
 
     public String getIsReportable() {
@@ -329,24 +351,6 @@ public class Analysis implements Auditable, Cloneable {
             this.printedDate = DataBaseUtil.toDate(printedDate);
     }
 
-    public Integer getPanelId() {
-        return panelId;
-    }
-
-    public void setPanelId(Integer panelId) {
-        if (DataBaseUtil.isDifferent(panelId, this.panelId))
-            this.panelId = panelId;
-    }
-
-    public String getIsPreliminary() {
-        return isPreliminary;
-    }
-
-    public void setIsPreliminary(String isPreliminary) {
-        if (DataBaseUtil.isDifferent(isPreliminary, this.isPreliminary))
-            this.isPreliminary = isPreliminary;
-    }
-
     public SampleItem getSampleItem() {
         return sampleItem;
     }
@@ -377,6 +381,14 @@ public class Analysis implements Auditable, Cloneable {
 
     public void setSection(Section section) {
         this.section = section;
+    }
+
+    public Panel getPanel() {
+        return panel;
+    }
+
+    public void setPanel(Panel panel) {
+        this.panel = panel;
     }
 
     public Collection<AnalysisQaevent> getAnalysisQAEvent() {
@@ -411,29 +423,21 @@ public class Analysis implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("sample_item_id",
-                           sampleItemId,
-                           original.sampleItemId,
+                 .setField("sample_item_id", sampleItemId, original.sampleItemId,
                            Constants.table().SAMPLE_ITEM)
                  .setField("revision", revision, original.revision)
                  .setField("test_id", testId, original.testId, Constants.table().TEST)
                  .setField("section_id", sectionId, original.sectionId, Constants.table().SECTION)
-                 .setField("pre_analysis_id",
-                           preAnalysisId,
-                           original.preAnalysisId,
+                 .setField("panel_id", panelId, original.panelId, Constants.table().PANEL)
+                 .setField("pre_analysis_id", preAnalysisId, original.preAnalysisId,
                            Constants.table().ANALYSIS)
-                 .setField("parent_analysis_id",
-                           parentAnalysisId,
-                           original.parentAnalysisId,
+                 .setField("parent_analysis_id", parentAnalysisId, original.parentAnalysisId,
                            Constants.table().ANALYSIS)
-                 .setField("parent_result_id",
-                           parentResultId,
-                           original.parentResultId,
+                 .setField("parent_result_id", parentResultId, original.parentResultId,
                            Constants.table().RESULT)
+                 .setField("is_preliminary", isPreliminary, original.isPreliminary)
                  .setField("is_reportable", isReportable, original.isReportable)
-                 .setField("unit_of_measure_id",
-                           unitOfMeasureId,
-                           original.unitOfMeasureId,
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId,
                            Constants.table().DICTIONARY)
                  .setField("status_id", statusId, original.statusId, Constants.table().DICTIONARY)
                  .setField("available_date", availableDate, original.availableDate)
