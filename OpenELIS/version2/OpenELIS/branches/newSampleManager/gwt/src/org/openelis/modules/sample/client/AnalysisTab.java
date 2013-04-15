@@ -121,9 +121,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
     private boolean                                     loaded;
 
-    protected AutoComplete<Integer>                     test, samplePrep;
+    protected AutoComplete<Integer>                     test, samplePrep, panel;
     protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId, userActionId;
-    protected CheckBox                                  isReportable;
+    protected CheckBox                                  isPreliminary, isReportable;
     protected TextBox                                   method, revision;
     protected CalendarLookUp                            startedDate, completedDate, releasedDate,
                                                         printedDate;
@@ -433,6 +433,24 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
+        isPreliminary = (CheckBox)def.getWidget(SampleMeta.getAnalysisIsPreliminary());
+        addScreenHandler(isPreliminary, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isPreliminary.setValue(analysis.getIsPreliminary());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                analysis.setIsPreliminary(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                isPreliminary.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
+                isPreliminary.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
         isReportable = (CheckBox)def.getWidget(SampleMeta.getAnalysisIsReportable());
         addScreenHandler(isReportable, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -606,6 +624,46 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             public void onStateChange(StateChangeEvent<State> event) {
                 printedDate.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 printedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        panel = (AutoComplete<Integer>)def.getWidget(SampleMeta.getAnalysisPanelId());
+        addScreenHandler(panel, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                panel.setSelection(analysis.getPanelId(), analysis.getPanelName());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                analysis.setPanelId(event.getValue());
+                analysis.setPanelName(panel.getTextBoxDisplay());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                panel.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState()));
+                panel.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        panel.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                int i;
+                PanelDO data;
+                ArrayList<PanelDO> list;
+                ArrayList<TableDataRow> model;
+                
+                try {
+                    list = PanelService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()) + "%");
+                    model = new ArrayList<TableDataRow>();
+                    
+                    for (i = 0; i < list.size(); i++) {
+                        data = list.get(i);
+                        model.add(new TableDataRow(data.getId(), data.getName()));
+                    }
+                    panel.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
             }
         });
 

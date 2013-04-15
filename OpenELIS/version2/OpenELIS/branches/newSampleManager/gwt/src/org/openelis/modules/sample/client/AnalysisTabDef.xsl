@@ -65,28 +65,28 @@ UIRF Software License are applicable instead of those above.
           </text>
           <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" tab="{meta:getAnalysisSectionId()},{meta:getAnalysisTestName()}" field="Integer" />
           <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'revision')" />:
+            Preliminary:
           </text>
-          <textbox key="{meta:getAnalysisRevision()}" width="60" field="Integer" />
+          <check key="_analysis.isPreliminary" tab="{meta:getAnalysisUnitOfMeasureId()},{meta:getAnalysisSectionId()}"/>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'testReportable')" />:
           </text>
-          <check key="{meta:getAnalysisIsReportable()}" tab = "{meta:getAnalysisUnitOfMeasureId()},{meta:getAnalysisSectionId()}"/>
+          <check key="{meta:getAnalysisIsReportable()}" tab="{meta:getAnalysisUnitOfMeasureId()},{meta:getAnalysisSectionId()}"/>
            <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'completed')" />:
           </text>
-          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="4" tab = "worksheetTable,{meta:getAnalysisStartedDate()}" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="4" tab="worksheetTable,{meta:getAnalysisStartedDate()}" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </row>
           <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'section')" />:
           </text>
-          <dropdown key="{meta:getAnalysisSectionId()}" tab = "{meta:getAnalysisIsReportable()},{meta:getAnalysisStatusId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisSectionId()}" tab="{meta:getAnalysisIsReportable()},{meta:getAnalysisStatusId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
           <widget colspan="3">
-          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" tab = "{meta:getAnalysisSamplePrep()},{meta:getAnalysisIsReportable()}" field="Integer" />
+          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="151" popWidth="151" tab="{meta:getAnalysisSamplePrep()},{meta:getAnalysisIsReportable()}" field="Integer" />
           </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'released')" />:
@@ -95,23 +95,37 @@ UIRF Software License are applicable instead of those above.
        </row>
        <row>
           <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
+            <xsl:value-of select="resource:getString($constants,'panel')" />:
           </text>
           <widget colspan="5">
-          <autoComplete key="{meta:getAnalysisSamplePrep()}"  width="365" tab = "{meta:getAnalysisStartedDate()},{meta:getAnalysisUnitOfMeasureId()}" popWidth="auto" field="Integer">
-            <col width="350" header="Name" />
+          <autoComplete key="{meta:getAnalysisPanelId()}"  width="382" tab="{meta:getAnalysisStartedDate()},{meta:getAnalysisUnitOfMeasureId()}" popWidth="auto" field="Integer">
+            <col width="367" header="Name" />
           </autoComplete>
           </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'printed')" />:
           </text>
           <calendar key="{meta:getAnalysisPrintedDate()}" width="125" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
-          </row>
+        </row>
+        <row>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
+          </text>
+          <widget colspan="5">
+          <autoComplete key="{meta:getAnalysisSamplePrep()}"  width="382" tab="{meta:getAnalysisStartedDate()},{meta:getAnalysisUnitOfMeasureId()}" popWidth="auto" field="Integer">
+            <col width="367" header="Name" />
+          </autoComplete>
+          </widget>
+          <text style="Prompt">
+            <xsl:value-of select="resource:getString($constants,'revision')" />:
+          </text>
+          <textbox key="{meta:getAnalysisRevision()}" width="55" field="Integer" />
+        </row>
       </TablePanel>
       <HorizontalPanel spacing="0" padding="0">
-                   <VerticalPanel spacing="0" padding="0">
-            <table key="worksheetTable" style="ScreenTableWithSides" width="auto" tab = "analysisUserTable,{meta:getAnalysisCompletedDate()}" maxRows="3" showScroll="ALWAYS" title="">
-            	<col width="70" header="Worksheet">
+        <VerticalPanel spacing="0" padding="0">
+          <table key="worksheetTable" style="ScreenTableWithSides" width="auto" tab="analysisUserTable,{meta:getAnalysisCompletedDate()}" maxRows="2" showScroll="ALWAYS" title="">
+	        	<col width="70" header="Worksheet">
               		<label field="Integer"/>
             	</col>
             	<col width="115" header="Created">
@@ -137,7 +151,7 @@ UIRF Software License are applicable instead of those above.
                   </VerticalPanel>
             <AbsolutePanel style="Divider" />
                   <VerticalPanel spacing="0" padding="0">
-      		<table key="analysisUserTable" tab = "{meta:getAnalysisTestName()},worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
+      		<table key="analysisUserTable" tab="{meta:getAnalysisTestName()},worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="2" showScroll="ALWAYS" title="">
             	<col width="115" header="User">
               		<autoComplete width="100" case="LOWER" field="Integer" required="true"/>
             	</col>

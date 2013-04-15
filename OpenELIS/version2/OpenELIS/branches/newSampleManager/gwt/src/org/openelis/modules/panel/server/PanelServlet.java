@@ -34,6 +34,7 @@ import org.openelis.bean.PanelBean;
 import org.openelis.bean.PanelManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
@@ -60,6 +61,10 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
         return panelManager.fetchWithItems(id);
     }
 
+    public ArrayList<PanelDO> fetchByName(String name) throws Exception {
+        return panel.fetchByName(name, 100);
+    }
+    
     public ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception {
         return panel.fetchByNameWithTests(name, 100);
     }

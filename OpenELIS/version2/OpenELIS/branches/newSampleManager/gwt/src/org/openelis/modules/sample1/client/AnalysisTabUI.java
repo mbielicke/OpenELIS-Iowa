@@ -121,7 +121,7 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
     private boolean                                     loaded;
 
     @UiField
-    protected AutoComplete                              testName, samplePrep;
+    protected AutoComplete                              testName, samplePrep, panel;
     
     @UiField
     protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId;
@@ -129,7 +129,7 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
     protected Dropdown<Integer>                         userActionId;
     
     @UiField
-    protected CheckBox                                  isReportable;
+    protected CheckBox                                  isReportable, isPreliminary;
     
     @UiField
     protected TextBox<String>                           methodName; 
@@ -442,6 +442,21 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
             }
         });
 
+        addScreenHandler(isPreliminary, SampleMeta.getAnalysisIsPreliminary(), new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                isPreliminary.setValue(analysis.getIsPreliminary());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                analysis.setIsPreliminary(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {                
+                isPreliminary.setEnabled(isState(QUERY) || (canEdit() && isState(ADD, UPDATE)));
+                isPreliminary.setQueryMode(isState(QUERY));
+            }
+        });
+
         addScreenHandler(isReportable, SampleMeta.getAnalysisIsReportable(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isReportable.setValue(analysis.getIsReportable());
@@ -598,6 +613,46 @@ public class AnalysisTabUI extends Screen implements HasActionHandlers<AnalysisT
             public void onStateChange(StateChangeEvent event) {
                 printedDate.setEnabled(isState(QUERY));
                 printedDate.setQueryMode(isState(QUERY));
+            }
+        });
+
+        addScreenHandler(panel, SampleMeta.getAnalysisPanelId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                panel.setValue(analysis.getPanelId(), analysis.getPanelName());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                analysis.setPanelId(event.getValue());
+                analysis.setPanelName(panel.getValue().getDisplay());
+            }
+
+            public void onStateChange(StateChangeEvent event) {                
+                panel.setEnabled(canEdit() && isState(ADD, UPDATE));
+                panel.setQueryMode(isState(QUERY));
+            }
+        });
+
+        panel.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                int i;
+                ArrayList<Item<Integer>> model;
+                ArrayList<PanelDO> list;
+                Item<Integer> row;
+                PanelDO data;
+
+                try {
+                    list = PanelService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+
+                    for (i = 0; i < list.size(); i++ ) {
+                        data = list.get(i);
+                        row = new Item<Integer>(data.getId(), data.getName());
+                        model.add(row);
+                    }
+                    panel.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert("panel getMatches: " + e.getMessage());
+                }
             }
         });
 

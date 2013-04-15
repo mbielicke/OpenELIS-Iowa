@@ -190,12 +190,15 @@ public class SampleMergeUtility {
         orderAna.setMethodName(qeAna.getMethodName());
         orderAna.setMethodReportingDescription(qeAna.getMethodReportingDescription());
         orderAna.setSectionId(qeAna.getSectionId());
+        orderAna.setPanelId(qeAna.getPanelId());
+        orderAna.setPanelName(qeAna.getPanelName());
         orderAna.setSectionName(qeAna.getSectionName());
         orderAna.setPreAnalysisId(qeAna.getPreAnalysisId());
         orderAna.setPreAnalysisTest(qeAna.getPreAnalysisTest());
         orderAna.setPreAnalysisMethod(qeAna.getPreAnalysisMethod());
         orderAna.setParentAnalysisId(qeAna.getParentAnalysisId());
         orderAna.setParentResultId(qeAna.getParentResultId());
+        orderAna.setIsPreliminary(qeAna.getIsPreliminary());
         orderAna.setIsReportable(qeAna.getIsReportable());
         orderAna.setUnitOfMeasureId(qeAna.getUnitOfMeasureId());
         orderAna.setStatusId(qeAna.getStatusId());
