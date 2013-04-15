@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -4876,6 +4876,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String initiated();
 
   /**
+   * Translated "Analysis Above".
+   * 
+   * @return translated "Analysis Above"
+   */
+  @DefaultMessage("Analysis Above")
+  @Key("insertAnalysisAbove")
+  String insertAnalysisAbove();
+
+  /**
+   * Translated "Analysis Below".
+   * 
+   * @return translated "Analysis Below"
+   */
+  @DefaultMessage("Analysis Below")
+  @Key("insertAnalysisBelow")
+  String insertAnalysisBelow();
+
+  /**
    * Translated "Insert From Worksheet".
    * 
    * @return translated "Insert From Worksheet"
@@ -4883,6 +4901,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Insert From Worksheet")
   @Key("insertAnalysisWorksheet")
   String insertAnalysisWorksheet();
+
+  /**
+   * Translated "From QC Table Above".
+   * 
+   * @return translated "From QC Table Above"
+   */
+  @DefaultMessage("From QC Table Above")
+  @Key("insertFromQcTableAbove")
+  String insertFromQcTableAbove();
+
+  /**
+   * Translated "From QC Table Below".
+   * 
+   * @return translated "From QC Table Below"
+   */
+  @DefaultMessage("From QC Table Below")
+  @Key("insertFromQcTableBelow")
+  String insertFromQcTableBelow();
+
+  /**
+   * Translated "From Another Worksheet Above".
+   * 
+   * @return translated "From Another Worksheet Above"
+   */
+  @DefaultMessage("From Another Worksheet Above")
+  @Key("insertFromWorksheetAbove")
+  String insertFromWorksheetAbove();
+
+  /**
+   * Translated "From Another Worksheet Below".
+   * 
+   * @return translated "From Another Worksheet Below"
+   */
+  @DefaultMessage("From Another Worksheet Below")
+  @Key("insertFromWorksheetBelow")
+  String insertFromWorksheetBelow();
 
   /**
    * Translated "Insert QC From Lookup".
@@ -8269,6 +8323,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String preferenceDescription();
 
   /**
+   * Translated "Preliminary".
+   * 
+   * @return translated "Preliminary"
+   */
+  @DefaultMessage("Preliminary")
+  @Key("preliminary")
+  String preliminary();
+
+  /**
    * Translated "Prep Test & Reflex Test".
    * 
    * @return translated "Prep Test & Reflex Test"
@@ -9970,11 +10033,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberNotValidException(String arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing")
   @Key("sample.analysisSectionIdMissing")
   String sample_analysisSectionIdMissing(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
@@ -10267,7 +10330,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_receivedTooOldWarning(String arg0);
 
   /**
-<<<<<<< .working
    * Translated "Relation".
    * 
    * @return translated "Relation"
@@ -10277,14 +10339,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_relation();
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - Type missing".
-=======
-   * Translated "Accession # ''{0,number,integer}'' : Item {1} - Type missing".
->>>>>>> .merge-right.r6794
+   * Translated "Accession # ''{0,number}'' : Item {1,number} - Type missing".
    * 
-   * @return translated "Accession # ''{0,number,integer}'' : Item {1} - Type missing"
+   * @return translated "Accession # ''{0,number}'' : Item {1,number} - Type missing"
    */
-  @DefaultMessage("Accession # ''{0,number,integer}'' : Item {1} - Type missing")
+  @DefaultMessage("Accession # ''{0,number}'' : Item {1,number} - Type missing")
   @Key("sample.sampleItemTypeMissing")
   String sample_sampleItemTypeMissing(Integer arg0,  Integer arg1);
 
@@ -13520,6 +13579,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheetAnalysisSelection();
 
   /**
+   * Translated "Worksheet Builder (2.0)".
+   * 
+   * @return translated "Worksheet Builder (2.0)"
+   */
+  @DefaultMessage("Worksheet Builder (2.0)")
+  @Key("worksheetBuilder")
+  String worksheetBuilder();
+
+  /**
+   * Translated "Worksheet Builder Lookup (2.0)".
+   * 
+   * @return translated "Worksheet Builder Lookup (2.0)"
+   */
+  @DefaultMessage("Worksheet Builder Lookup (2.0)")
+  @Key("worksheetBuilderLookup")
+  String worksheetBuilderLookup();
+
+  /**
    * Translated "Worksheet Completion".
    * 
    * @return translated "Worksheet Completion"
@@ -13565,15 +13642,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheetCreation();
 
   /**
-   * Translated "Worksheet Creation (2.0)".
-   * 
-   * @return translated "Worksheet Creation (2.0)"
-   */
-  @DefaultMessage("Worksheet Creation (2.0)")
-  @Key("worksheetCreation1")
-  String worksheetCreation1();
-
-  /**
    * Translated "Create a list of analyses for batch/run processing.".
    * 
    * @return translated "Create a list of analyses for batch/run processing."
@@ -13590,15 +13658,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Worksheet Creation Lookup")
   @Key("worksheetCreationLookup")
   String worksheetCreationLookup();
-
-  /**
-   * Translated "Worksheet Creation Lookup (2.0)".
-   * 
-   * @return translated "Worksheet Creation Lookup (2.0)"
-   */
-  @DefaultMessage("Worksheet Creation Lookup (2.0)")
-  @Key("worksheetCreationLookup1")
-  String worksheetCreationLookup1();
 
   /**
    * Translated "Worksheets cannot be changed once they have been saved.\nAre you sure you would like to save this worksheet?".
