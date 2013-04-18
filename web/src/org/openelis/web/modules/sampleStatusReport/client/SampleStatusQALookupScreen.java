@@ -27,9 +27,8 @@ package org.openelis.web.modules.sampleStatusReport.client;
 
 import java.util.ArrayList;
 
-import org.openelis.web.cache.DictionaryCache;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
-import org.openelis.domain.Constants;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -38,12 +37,8 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-//import org.openelis.manager.AnalysisQaEventManager;
-//import org.openelis.manager.SampleQaEventManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -53,7 +48,7 @@ import com.google.gwt.user.client.Window;
 
 public class SampleStatusQALookupScreen extends Screen {
 
-    protected TableWidget qaLookupTable;
+    protected TextArea qaLookupTextArea;
     protected Integer     id;
     protected Type        type;
     protected AppButton   okButton;
@@ -79,21 +74,14 @@ public class SampleStatusQALookupScreen extends Screen {
 
     private void initialize() {
 
-        qaLookupTable = (TableWidget)def.getWidget("sampleStatusQALookUpTable");
-        addScreenHandler(qaLookupTable,
-                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 qaLookupTable.load(getTableModel());
-                             }
+        qaLookupTextArea = (TextArea)def.getWidget("sampleStatusQALookupTextArea");
+        addScreenHandler(qaLookupTextArea, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                loadQaText();
+            }
 
-                             public void onStateChange(StateChangeEvent<State> event) {
-                                 qaLookupTable.enable(true);
-                             }
-                         });
-
-        qaLookupTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                event.cancel();
+            public void onStateChange(StateChangeEvent<State> event) {
+                qaLookupTextArea.enable(false);
             }
         });
 
@@ -115,51 +103,40 @@ public class SampleStatusQALookupScreen extends Screen {
         DataChangeEvent.fire(this);
     }
 
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        SampleQaEventViewDO sampleData;
-        AnalysisQaEventViewDO analysisData;
-        TableDataRow row;
-        /*
-        SampleQaEventManager sqm;
-        AnalysisQaEventManager aqm;
+    private void loadQaText() {
+        StringBuffer text;
+        ArrayList<SampleQaEventViewDO> sampleData;
+        ArrayList<AnalysisQaEventViewDO> analysisData;
 
-        model = new ArrayList<TableDataRow>();
-
+        text = new StringBuffer();
         if (Type.SAMPLE.equals(type)) {
             try {
-          //      sqm = SampleQaEventManager.fetchBySampleId(id);
-                for (int i = 0; i < sqm.count(); i++ ) {
-                    sampleData = sqm.getSampleQAAt(i);
-                    if ( !Constants.dictionary().QAEVENT_INTERNAL.equals(sampleData.getTypeId())) {
-                        row = new TableDataRow(1);
-                        row.cells.get(0).setValue(sampleData.getQaEventReportingText());
-                        model.add(row);
-                    }
+                sampleData = SampleStatusReportService.get().getSampleQaEventsBySampleId(id);
+                for (SampleQaEventViewDO sqeVDO : sampleData) {
+                    if (text.length() > 0)
+                        text.append("\n");
+                    text.append(sqeVDO.getQaEventReportingText());
                 }
             } catch (NotFoundException e) {
-                window.setError(Messages.get().noResultsFound"));
+                window.setError(Messages.get().noRecordsFound());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
         } else if (Type.ANALYSIS.equals(type)) {
             try {
-                aqm = AnalysisQaEventManager.fetchByAnalysisId(id);
-                for (int i = 0; i < aqm.count(); i++ ) {
-                    analysisData = aqm.getAnalysisQAAt(i);
-                    if ( !Constants.dictionary().QAEVENT_INTERNAL.equals(analysisData.getTypeId())) {
-                        row = new TableDataRow(1);
-                        row.cells.get(0).setValue(analysisData.getQaEventReportingText());
-                        model.add(row);
-                    }
+                analysisData = SampleStatusReportService.get().getAnalysisQaEventsByAnalysisId(id);
+                for (AnalysisQaEventViewDO aqeVDO : analysisData) {
+                    if (text.length() > 0)
+                        text.append("\n");
+                    text.append(aqeVDO.getQaEventReportingText());
                 }
             } catch (NotFoundException e) {
-                window.setError(Messages.get().noResultsFound"));
+                window.setError(Messages.get().noRecordsFound());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
         }
-        */
-        return model;
+
+        qaLookupTextArea.setText(text.toString());
     }
 }

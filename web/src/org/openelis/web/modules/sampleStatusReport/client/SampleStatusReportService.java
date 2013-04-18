@@ -2,7 +2,9 @@ package org.openelis.web.modules.sampleStatusReport.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
@@ -40,6 +42,18 @@ public class SampleStatusReportService implements SampleStatusReportServiceInt,
     }
 
     @Override
+    public void getSampleQaEventsBySampleId(Integer id,
+                                            AsyncCallback<ArrayList<SampleQaEventViewDO>> callback) {
+        service.getSampleQaEventsBySampleId(id, callback);
+    }
+
+    @Override
+    public void getAnalysisQaEventsByAnalysisId(Integer id,
+                                                AsyncCallback<ArrayList<AnalysisQaEventViewDO>> callback) {
+        service.getAnalysisQaEventsByAnalysisId(id, callback);
+    }
+
+    @Override
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(Query query) throws Exception {
         Callback<ArrayList<SampleStatusWebReportVO>> callback;
         
@@ -57,4 +71,21 @@ public class SampleStatusReportService implements SampleStatusReportServiceInt,
         return callback.getResult();
     }
 
+    @Override
+    public ArrayList<SampleQaEventViewDO> getSampleQaEventsBySampleId(Integer id) throws Exception {
+        Callback<ArrayList<SampleQaEventViewDO>> callback;
+        
+        callback = new Callback<ArrayList<SampleQaEventViewDO>>();
+        service.getSampleQaEventsBySampleId(id, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<AnalysisQaEventViewDO> getAnalysisQaEventsByAnalysisId(Integer id) throws Exception {
+        Callback<ArrayList<AnalysisQaEventViewDO>> callback;
+        
+        callback = new Callback<ArrayList<AnalysisQaEventViewDO>>();
+        service.getAnalysisQaEventsByAnalysisId(id, callback);
+        return callback.getResult();
+    }
 }

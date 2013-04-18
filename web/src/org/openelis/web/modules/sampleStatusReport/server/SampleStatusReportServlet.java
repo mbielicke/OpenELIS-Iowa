@@ -6,7 +6,9 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.SampleStatusReportBean;
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
@@ -28,4 +30,11 @@ public class SampleStatusReportServlet extends RemoteServlet implements SampleSt
         return sampleStatusReport.getProjectList();
     }
 
+    public ArrayList<SampleQaEventViewDO> getSampleQaEventsBySampleId(Integer id) throws Exception {
+        return sampleStatusReport.getSampleQaEventsBySampleId(id);
+    }
+
+    public ArrayList<AnalysisQaEventViewDO> getAnalysisQaEventsByAnalysisId(Integer id) throws Exception {
+        return sampleStatusReport.getAnalysisQaEventsByAnalysisId(id);
+    }
 }
