@@ -53,11 +53,7 @@ UIRF Software License are applicable instead of those above.
 
     <screen id="SampleStatusQALookUp" name="{resource:getString($constants,'qaLookUp')}">
       <VerticalPanel spacing="0">
-        <table key="sampleStatusQALookUpTable" style="ScreenTableWithSides" width="650" maxRows="7" showScroll="ALWAYS" title="">
-          <col key="qaEvent" width="1200" sort="false" header="{resource:getString($constants,'QAEvent')}">
-            <label field="String" />
-          </col>
-        </table>
+        <textarea key="sampleStatusQALookupTextArea" height="300px" width="600px" />
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
            <xsl:call-template name="okButton">
              <xsl:with-param name="language">

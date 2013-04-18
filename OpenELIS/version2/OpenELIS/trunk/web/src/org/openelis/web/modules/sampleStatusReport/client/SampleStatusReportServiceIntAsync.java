@@ -2,7 +2,9 @@ package org.openelis.web.modules.sampleStatusReport.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.ui.common.data.Query;
 
@@ -15,4 +17,9 @@ public interface SampleStatusReportServiceIntAsync {
 
     void getSampleStatusProjectList(AsyncCallback<ArrayList<IdNameVO>> callback);
 
+    void getSampleQaEventsBySampleId(Integer id,
+                                     AsyncCallback<ArrayList<SampleQaEventViewDO>> callback);
+
+    void getAnalysisQaEventsByAnalysisId(Integer id,
+                                         AsyncCallback<ArrayList<AnalysisQaEventViewDO>> callback);
 }

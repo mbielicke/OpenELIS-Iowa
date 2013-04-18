@@ -2,7 +2,9 @@ package org.openelis.web.modules.sampleStatusReport.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.ui.common.data.Query;
 
@@ -16,4 +18,7 @@ public interface SampleStatusReportServiceInt extends RemoteService {
 
     ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception;
 
+    ArrayList<SampleQaEventViewDO> getSampleQaEventsBySampleId(Integer id) throws Exception;
+
+    ArrayList<AnalysisQaEventViewDO> getAnalysisQaEventsByAnalysisId(Integer id) throws Exception;
 }
