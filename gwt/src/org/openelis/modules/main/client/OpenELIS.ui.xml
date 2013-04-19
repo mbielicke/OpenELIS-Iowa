@@ -126,17 +126,17 @@
                   ui:field="inventoryItem" display="{msg.inventoryItem}" />
               </w:Menu>
               <w:Menu label="{msg.report}">
-                <w:Menu display="{msg.login}" showBelow="false">
+                <w:Menu display="{msg.login}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="verificationReport" display="{msg.verificationReport}" />
                   <w:MenuItem enabled="false" ui:field="testRequestFormReport" display="{msg.TRFReport}" />
                   <w:MenuItem enabled="false" ui:field="orderRequestForm" display="{msg.orderRequestForm}" />
                   <w:MenuItem enabled="false" ui:field="holdRefuseOrganization" display="{msg.holdRefuseOrganization}" />
                 </w:Menu>
-                <w:Menu display="{msg.reference}" showBelow="false">
+                <w:Menu display="{msg.reference}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="testReport" display="{msg.testReport}" />
                   <w:MenuItem enabled="false" ui:field="billingReport" display="{msg.billingReport}" />
                 </w:Menu>
-                <w:Menu display="{msg.summary}" showBelow="false">
+                <w:Menu display="{msg.summary}" enabled="true" showBelow="false">
                   <w:MenuItem enabled="false" ui:field="sampleInhouseReport" display="{msg.sampleInhouseReport}" />
                   <w:MenuItem enabled="false" ui:field="volumeReport" display="{msg.volumeReport}" />
                   <w:MenuItem enabled="false" ui:field="toDoAnalyteReport" display="{msg.toDoAnalyteReport}" />
