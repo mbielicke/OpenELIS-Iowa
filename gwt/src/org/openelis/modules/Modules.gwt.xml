@@ -58,7 +58,6 @@
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
-    <inherits name="org.openelis.modules.sampleManagerTest.SampleManagerTest"/>
     <inherits name="org.openelis.modules.report.Report"/>
     <inherits name="org.openelis.modules.report.dataView.DataView"/>
     <inherits name="org.openelis.modules.report.finalReportSingleReprint.FinalReportSingleReprint"/>

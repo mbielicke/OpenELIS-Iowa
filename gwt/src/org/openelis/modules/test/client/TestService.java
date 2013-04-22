@@ -114,12 +114,6 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     }
 
     @Override
-    public void fetchUnitsForWorksheetAutocomplete(Query query,
-                                                   AsyncCallback<ArrayList<IdNameVO>> callback) {
-        service.fetchUnitsForWorksheetAutocomplete(query, callback);
-    }
-
-    @Override
     public void fetchWithAnalytesAndResults(Integer testId, AsyncCallback<TestManager> callback) {
         service.fetchWithAnalytesAndResults(testId, callback);
     }
@@ -228,15 +222,6 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
         
         callback = new Callback<TestTypeOfSampleManager>();
         service.fetchSampleTypeByTestId(testId, callback);
-        return callback.getResult();
-    }
-
-    @Override
-    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Query query) throws Exception {
-        Callback<ArrayList<IdNameVO>> callback;
-        
-        callback = new Callback<ArrayList<IdNameVO>>();
-        service.fetchUnitsForWorksheetAutocomplete(query, callback);
         return callback.getResult();
     }
 

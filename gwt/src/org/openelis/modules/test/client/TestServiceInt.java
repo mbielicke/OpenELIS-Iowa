@@ -2,7 +2,6 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
@@ -37,8 +36,6 @@ public interface TestServiceInt extends RemoteService {
     ArrayList<TestMethodVO> fetchList() throws Exception;
 
     TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception;
-
-    ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Query query) throws Exception;
 
     TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception;
 

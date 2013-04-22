@@ -264,7 +264,7 @@ public class QuickEntryScreen extends Screen {
                     try {
                         tm = TestManager.fetchById(typeDO.getTestId());
                         tsm = tm.getTestSections();
-                        for (i = 0; i < tsm.count(); i++ ) {
+                        for (i = 0; i < tsm.count(); i++) {
                             tsVDO = tsm.getSectionAt(i);
                             if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(tsVDO.getFlagId()))
                                 defaultSectionId = tsVDO.getSectionId();
@@ -286,9 +286,9 @@ public class QuickEntryScreen extends Screen {
                             testVO = testIds.get(i);
                             tm = TestManager.fetchById(testVO.getId());
                             tsm = tm.getTestSections();
-                            for (j = 0; j < tsm.count(); j++ ) {
+                            for (j = 0; j < tsm.count(); j++) {
                                 tsVDO = tsm.getSectionAt(j);
-                                if ( !panelSections.containsKey(tsVDO.getSectionId())) {
+                                if (!panelSections.containsKey(tsVDO.getSectionId())) {
                                     panelSections.put(tsVDO.getSectionId(), tsVDO);
                                     if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(tsVDO.getFlagId()))
                                         defaultSectionId = tsVDO.getSectionId();
@@ -356,18 +356,16 @@ public class QuickEntryScreen extends Screen {
         });
 
         quickEntryTable = (TableWidget)def.getWidget("quickEntryTable");
-        addScreenHandler(quickEntryTable,
-                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 quickEntryTable.load(getTableModel());
-                             }
-
-                             public void onStateChange(StateChangeEvent<State> event) {
-                                 quickEntryTable.enable(EnumSet.of(State.ADD)
-                                                               .contains(event.getState()));
-                             }
-                         });
-
+        addScreenHandler(quickEntryTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                quickEntryTable.load(getTableModel());
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                quickEntryTable.enable(EnumSet.of(State.ADD).contains(event.getState()));
+            }
+        });
+        
         quickEntryTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
                 if (quickEntryTable.getSelectedRow() != -1)
@@ -463,7 +461,7 @@ public class QuickEntryScreen extends Screen {
                 item.count = 0;
             } catch (ValidationErrorsList e) {
                 errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
-                for (i = 0; i < e.size(); i++ )
+                for (i = 0; i < e.size(); i++)
                     errorsList.add(new FormErrorException(Messages.get().rowError(
                                                           manager.getSample()
                                                                  .getAccessionNumber()
@@ -480,8 +478,8 @@ public class QuickEntryScreen extends Screen {
                                                       e.getMessage())));
             }
         }
-
-        for (i = 0; i < removables.size(); i++ )
+        
+        for (i = 0; i < removables.size(); i++)
             managers.remove(removables.get(i));
 
         if (errorsList.size() > 0) {
@@ -533,16 +531,16 @@ public class QuickEntryScreen extends Screen {
             } else {
                 receivedDate.setValue(recDate.getValue());
             }
-        } else if (val.matches("[TP][0-9]*\\-[0-9]*")) { // test & panel
+        } else if (val.matches("[TP][0-9]*\\-[0-9]*")) {    // test & panel
             try {
                 testMethodSampleType.setValue(val, true);
             } catch (Exception e) {
                 ex = new Exception(Messages.get().invalidEntryException(val));
                 window.setError(ex.getMessage());
             }
-        } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) { // tube #
+        } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {    // tube #
             tubeNumber.setValue(val);
-        } else if (val.matches("NEW")) { // new accession #
+        } else if (val.matches("NEW")) {                    // new accession #
             if (validateFields()) {
                 if (accNumUtil == null)
                     accNumUtil = new AccessionNumberUtility();
@@ -557,8 +555,7 @@ public class QuickEntryScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
             }
-        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) { // accession
-                                                                            // #
+        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) { // accession #
             if (validateFields()) {
                 if (accNumUtil == null)
                     accNumUtil = new AccessionNumberUtility();
@@ -675,7 +672,7 @@ public class QuickEntryScreen extends Screen {
                     managers.put(sManager.getSample().getAccessionNumber(),
                                  new Item(sManager, 1));
                 else if (i > 0)
-                    item.count++ ;
+                    item.count++;
 
                 updateQuickEntryRowFromBundle(quickEntryTable.numRows() - 1);
             }
@@ -767,7 +764,7 @@ public class QuickEntryScreen extends Screen {
                 sampleMan.getSample().setReceivedDate(receivedDate.getValue());
             } else {
                 sampleMan = item.sampleManager;
-                item.count++ ;
+                item.count++;
             }
 
             itemMan = sampleMan.getSampleItems();
@@ -896,12 +893,12 @@ public class QuickEntryScreen extends Screen {
                 manager = item.sampleManager;
                 sampleDO = manager.getSample();
 
-                for (i = 0; i < manager.getSampleItems().count(); i++ ) { // items
+                for (i = 0; i < manager.getSampleItems().count(); i++) { // items
                     itemMan = manager.getSampleItems();
                     anMan = itemMan.getAnalysisAt(i);
                     itemDO = itemMan.getSampleItemAt(i);
 
-                    for (j = 0; j < anMan.count(); j++ ) { // analyses
+                    for (j = 0; j < anMan.count(); j++) { // analyses
                         anDO = anMan.getAnalysisAt(j);
                         if (anDO.getId() < 0) {
                             row = new TableDataRow(6);
@@ -967,25 +964,23 @@ public class QuickEntryScreen extends Screen {
     }
 
     private void updateRecievedDate() {
-        CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE,
-                                     new AsyncCallback<Datetime>() {
-                                         public void onSuccess(Datetime currentDate) {
-                                             if (currentDateTime.getValue() != null &&
-                                                 "Y".equals(currentDateTime.getValue())) {
-                                                 receivedDate.setValue(currentDate);
-                                                 Timer timer = new Timer() {
-                                                     public void run() {
-                                                         updateRecievedDate();
-                                                     }
-                                                 };
-                                                 timer.schedule(55000);
-                                             }
-                                         }
+        CalendarService.get().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE, new AsyncCallback<Datetime>() {
+            public void onSuccess(Datetime currentDate) {
+                if (currentDateTime.getValue() != null && "Y".equals(currentDateTime.getValue())) {
+                    receivedDate.setValue(currentDate);
+                    Timer timer = new Timer() {
+                        public void run() {
+                            updateRecievedDate();
+                        }
+                    };
+                    timer.schedule(55000);
+                }
+            }
 
-                                         public void onFailure(Throwable caught) {
-                                             Window.alert(caught.getMessage());
-                                         }
-                                     });
+            public void onFailure(Throwable caught) {
+                Window.alert(caught.getMessage());
+            }
+        });
     }
 
     private class Item {

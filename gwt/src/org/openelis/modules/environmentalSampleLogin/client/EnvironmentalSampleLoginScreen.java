@@ -1490,12 +1490,10 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         try {
             if (manager.getSample().getAccessionNumber() == null) {
                 Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
-                orderNumber.setFieldValue(manager.getSample().getOrderId());
+                orderNumber.setFieldValue(null);
                 return;
             }            
 
-            manager.getSample().setOrderId(orderId);
-            
             window.setBusy(Messages.get().fetching());
             
             man = OrderManager.fetchById(orderId);
@@ -1546,14 +1544,21 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 while (itemMan.count() > 0)
                     itemMan.removeSampleItemAt(0);                
                 
-                manager.getSample().setNextItemSequence(0);                 
+                manager.getSample().setNextItemSequence(0);
+                
+                /*
+                 * We need to copy the initial external note, if any, from the
+                 * quick entry manager
+                 */
+                manager.getExternalNote().addNote(quickEntryMan.getExternalNote().getEditingNote());
             }
             
             errors = envOrderImport.importOrderInfo(orderId, manager);    
 
             if (quickEntryMan != null)
               SampleMergeUtility.mergeTests(manager, quickEntryMan);            
-                                      
+
+            manager.getSample().setOrderId(orderId);
             setDataInTabs();
             DataChangeEvent.fire(screen);                       
             window.clearStatus();
@@ -1574,7 +1579,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 orgId = sorg.getOrganizationId();
                 if (!orgIds.contains(orgId)) {
                     if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
-                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample()+ "'"+ sorg.getOrganizationName()+"'");
+                        Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(sorg.getOrganizationName()));
                     orgIds.add(orgId);
                 }
             }

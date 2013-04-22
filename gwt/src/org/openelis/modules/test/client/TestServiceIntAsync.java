@@ -2,7 +2,6 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
@@ -49,8 +48,6 @@ public interface TestServiceIntAsync {
     void fetchTestMethodSampleTypeList(AsyncCallback<ArrayList<TestMethodSampleTypeVO>> callback);
 
     void fetchTestResultByTestId(Integer testId, AsyncCallback<TestResultManager> callback);
-
-    void fetchUnitsForWorksheetAutocomplete(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void fetchWithAnalytesAndResults(Integer testId, AsyncCallback<TestManager> callback);
 

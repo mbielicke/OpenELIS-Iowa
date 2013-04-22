@@ -27,6 +27,17 @@ package org.openelis.modules.worksheetCreation.client;
 
 import java.util.ArrayList;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
@@ -36,13 +47,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.SectionPermission;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -69,32 +73,16 @@ import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
-public class WorksheetCreationLookupScreen extends Screen
-                                                         implements
-                                                         HasActionHandlers<WorksheetCreationLookupScreen.Action> {
+public class WorksheetCreationLookupScreen extends Screen 
+                                           implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
     private ModulePermission        userPermission;
 
     protected AppButton             searchButton, addButton, selectAllButton;
@@ -278,13 +266,12 @@ public class WorksheetCreationLookupScreen extends Screen
         // analysis search results table
         //
         analysesTable = (TableWidget)def.getWidget("analysesTable");
-        addScreenHandler(analysesTable,
-                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
-                             public void onStateChange(StateChangeEvent<State> event) {
-                                 analysesTable.enable(true);
-                                 analysesTable.enableMultiSelect(true);
-                             }
-                         });
+        addScreenHandler(analysesTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysesTable.enable(true);
+                analysesTable.enableMultiSelect(true);
+            }
+        });
 
         analysesTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent event) {
@@ -354,7 +341,7 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         dictList = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<TableDataRow>();
-        // model.add(new TableDataRow(null, ""));
+//        model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
             model.add(new TableDataRow(resultDO.getId(), resultDO.getEntry()));
         statusId.setModel(model);
@@ -406,7 +393,7 @@ public class WorksheetCreationLookupScreen extends Screen
     protected void executeQuery() {
         Query query;
 
-        if ( !validate()) {
+        if (!validate()) {
             window.setError(Messages.get().correctErrors());
             return;
         }
@@ -428,7 +415,8 @@ public class WorksheetCreationLookupScreen extends Screen
                     if (error instanceof NotFoundException) {
                         window.setDone(Messages.get().noRecordsFound());
                     } else {
-                        Window.alert("Error: WorksheetCreationLookup call query failed; "+error.getMessage());
+                        Window.alert("Error: WorksheetCreationLookup call query failed; " +
+                                     error.getMessage());
                         window.setError(Messages.get().queryFailed());
                     }
                 }
@@ -452,7 +440,7 @@ public class WorksheetCreationLookupScreen extends Screen
             window.setDone(Messages.get().queryingComplete());
 
             model = new ArrayList<TableDataRow>();
-            for (i = 0; i < list.size(); i++ ) {
+            for (i = 0; i < list.size(); i++) {
                 analysisRow = list.get(i);
 
                 row = new TableDataRow(11);
@@ -491,8 +479,8 @@ public class WorksheetCreationLookupScreen extends Screen
         message = new StringBuffer();
         selections = analysesTable.getSelections();
         while (i < selections.size()) {
-            analysisRow = (WorksheetCreationVO)selections.get(i).data;
-            if ( !isAnalysisEditable(analysisRow)) {
+            analysisRow = (WorksheetCreationVO) selections.get(i).data;
+            if (! isAnalysisEditable(analysisRow)) {
                 selections.remove(i);
 
                 message.append(Messages.get().accessionNum())
@@ -510,7 +498,7 @@ public class WorksheetCreationLookupScreen extends Screen
                 }
                 message.append("\n");
             } else {
-                i++ ;
+                i++;
             }
         }
 
