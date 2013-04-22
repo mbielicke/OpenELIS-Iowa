@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/tschmidt/juno/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -5740,15 +5740,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String loadFromInstrumentFile();
 
   /**
-   * Translated "Load Template".
-   * 
-   * @return translated "Load Template"
-   */
-  @DefaultMessage("Load Template")
-  @Key("loadTemplate")
-  String loadTemplate();
-
-  /**
    * Translated "Loading...".
    * 
    * @return translated "Loading..."
@@ -6593,15 +6584,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("There are no active tests in the system with this name and method")
   @Key("noActiveTestsException")
   String noActiveTestsException();
-
-  /**
-   * Translated "No Analytes Found For Selected Row".
-   * 
-   * @return translated "No Analytes Found For Selected Row"
-   */
-  @DefaultMessage("No Analytes Found For Selected Row")
-  @Key("noAnalytesFoundForRow")
-  String noAnalytesFoundForRow();
 
   /**
    * Translated "You do not have assign permission for this test".
@@ -7540,13 +7522,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String orgId();
 
   /**
-   * Translated "Samples from this organization are to be held or refused:  ".
+   * Translated "Samples from {0} are to be held or refused   ".
    * 
-   * @return translated "Samples from this organization are to be held or refused:  "
+   * @return translated "Samples from {0} are to be held or refused   "
    */
-  @DefaultMessage("Samples from this organization are to be held or refused:  ")
+  @DefaultMessage("Samples from {0} are to be held or refused   ")
   @Key("orgMarkedAsHoldRefuseSample")
-  String orgMarkedAsHoldRefuseSample();
+  String orgMarkedAsHoldRefuseSample(String arg0);
 
   /**
    * Translated "An organization must be specified for a section flagged as \"External\"".
@@ -8213,6 +8195,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Change your default settings including your current geographical location.")
   @Key("preferenceDescription")
   String preferenceDescription();
+
+  /**
+   * Translated "Preliminary".
+   * 
+   * @return translated "Preliminary"
+   */
+  @DefaultMessage("Preliminary")
+  @Key("preliminary")
+  String preliminary();
 
   /**
    * Translated "Prep Test & Reflex Test".
@@ -9916,11 +9907,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberNotValidException(String arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2,number}, {3,number} - Section Missing")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing")
   @Key("sample.analysisSectionIdMissing")
   String sample_analysisSectionIdMissing(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
@@ -10042,11 +10033,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_receivedTooOldWarning(String arg0);
 
   /**
-   * Translated "Accession # ''{0,number,integer}'' : Item {1} - Type missing".
+   * Translated "Accession # ''{0,number}'' : Item {1,number} - Type missing".
    * 
-   * @return translated "Accession # ''{0,number,integer}'' : Item {1} - Type missing"
+   * @return translated "Accession # ''{0,number}'' : Item {1,number} - Type missing"
    */
-  @DefaultMessage("Accession # ''{0,number,integer}'' : Item {1} - Type missing")
+  @DefaultMessage("Accession # ''{0,number}'' : Item {1,number} - Type missing")
   @Key("sample.sampleItemTypeMissing")
   String sample_sampleItemTypeMissing(Integer arg0,  Integer arg1);
 
@@ -12769,15 +12760,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String uncheckAll();
 
   /**
-   * Translated "Undo QCs".
-   * 
-   * @return translated "Undo QCs"
-   */
-  @DefaultMessage("Undo QCs")
-  @Key("undoQc")
-  String undoQc();
-
-  /**
    * Translated "Ungroup Analytes".
    * 
    * @return translated "Ungroup Analytes"
@@ -13291,15 +13273,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheetCreation();
 
   /**
-   * Translated "Worksheet Creation (2.0)".
-   * 
-   * @return translated "Worksheet Creation (2.0)"
-   */
-  @DefaultMessage("Worksheet Creation (2.0)")
-  @Key("worksheetCreation1")
-  String worksheetCreation1();
-
-  /**
    * Translated "Create a list of analyses for batch/run processing.".
    * 
    * @return translated "Create a list of analyses for batch/run processing."
@@ -13316,15 +13289,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Worksheet Creation Lookup")
   @Key("worksheetCreationLookup")
   String worksheetCreationLookup();
-
-  /**
-   * Translated "Worksheet Creation Lookup (2.0)".
-   * 
-   * @return translated "Worksheet Creation Lookup (2.0)"
-   */
-  @DefaultMessage("Worksheet Creation Lookup (2.0)")
-  @Key("worksheetCreationLookup1")
-  String worksheetCreationLookup1();
 
   /**
    * Translated "Worksheets cannot be changed once they have been saved.\nAre you sure you would like to save this worksheet?".
@@ -13370,15 +13334,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Worksheet File Upload")
   @Key("worksheetFileUpload")
   String worksheetFileUpload();
-
-  /**
-   * Translated "Format".
-   * 
-   * @return translated "Format"
-   */
-  @DefaultMessage("Format")
-  @Key("worksheetFormat")
-  String worksheetFormat();
 
   /**
    * Translated "Error loading column name/index mappings (from).\nResults will be copied by index.".

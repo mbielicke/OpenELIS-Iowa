@@ -45,25 +45,27 @@ public class AnalysisViewDO extends AnalysisDO {
     //
     protected Integer         methodId;
     protected String          testName, testReportingDescription, methodName,
-                              methodReportingDescription, preAnalysisTest, preAnalysisMethod,
-                              sectionName;
+                              methodReportingDescription, preAnalysisTest, preAnalysisMethod, sectionName,
+                              panelName;
 
     public AnalysisViewDO() {
     }
 
     // analysis and test name,method name, and status
     public AnalysisViewDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
-                          Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId,
-                          Integer parentResultId, String isReportable, Integer unitOfMeasureId,
-                          Integer statusId, Date availableDate, Date startedDate,
-                          Date completedDate, Date releasedDate, Date printedDate,
-                          String testName, String testReportingDescription, Integer methodId,
-                          String methodName, String methodReportingDescription,
-                          String preAnalysisTest, String preAnalysisMethod, String sectionName) {
+                          Integer sectionId, Integer panelId, Integer preAnalysisId,
+                          Integer parentAnalysisId, Integer parentResultId, String isPreliminary,
+                          String isReportable, Integer unitOfMeasureId, Integer statusId,
+                          Date availableDate, Date startedDate, Date completedDate,
+                          Date releasedDate, Date printedDate, String testName,
+                          String testReportingDescription, Integer methodId, String methodName,
+                          String methodReportingDescription, String preAnalysisTest,
+                          String preAnalysisMethod, String sectionName, String panelName) {
 
-        super(id, sampleItemId, revision, testId, sectionId, preAnalysisId, parentAnalysisId,
-              parentResultId, isReportable, unitOfMeasureId, statusId, availableDate, startedDate,
-              completedDate, releasedDate, printedDate);
+        super(id, sampleItemId, revision, testId, sectionId, panelId, preAnalysisId,
+              parentAnalysisId, parentResultId, isPreliminary, isReportable, unitOfMeasureId,
+              statusId, availableDate, startedDate, completedDate, releasedDate,
+              printedDate);
 
         setTestName(testName);
         setTestReportingDescription(testReportingDescription);
@@ -72,7 +74,8 @@ public class AnalysisViewDO extends AnalysisDO {
         setMethodReportingDescription(methodReportingDescription);
         setPreAnalysisTest(preAnalysisTest);
         setPreAnalysisMethod(preAnalysisMethod);
-        setSectionName(sectionName);        
+        setSectionName(sectionName);
+        setPanelName(panelName);
     }
 
     public String getTestName() {
@@ -106,7 +109,7 @@ public class AnalysisViewDO extends AnalysisDO {
     public void setMethodName(String methodName) {
         this.methodName = DataBaseUtil.trim(methodName);
     }
-    
+
     public String getMethodReportingDescription() {
         return methodReportingDescription;
     }
@@ -131,11 +134,19 @@ public class AnalysisViewDO extends AnalysisDO {
         this.preAnalysisMethod = DataBaseUtil.trim(preAnalysisMethod);
     }
 
+    public String getSectionName() {
+        return sectionName;
+    }
+
     public void setSectionName(String sectionName) {
         this.sectionName = DataBaseUtil.trim(sectionName);
     }
 
-    public String getSectionName() {
-        return sectionName;
+    public String getPanelName() {
+        return panelName;
+    }
+
+    public void setPanelName(String panelName) {
+        this.panelName = DataBaseUtil.trim(panelName);
     }
 }
