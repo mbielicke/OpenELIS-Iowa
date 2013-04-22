@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -57,13 +58,12 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class PanelBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager             manager;
+    private EntityManager          manager;
 
-    private static final PanelMeta    meta = new PanelMeta();
+    private static final PanelMeta meta = new PanelMeta();
 
     public PanelDO fetchById(Integer id) throws Exception {
         Query query;
@@ -79,46 +79,70 @@ public class PanelBean {
             throw new DatabaseException(e);
         }
         return data;
-    }   
+    }
     
-    public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(String name, Integer sampleItemType, int maxResults) throws Exception {
+    public ArrayList<PanelDO> fetchByIds(Collection<Integer> ids) {
+        Query query;
+
+        if (ids.size() == 0)
+            return new ArrayList<PanelDO>();
+
+        query = manager.createNamedQuery("Panel.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<PanelDO> fetchByName(String name, int maxResults) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Panel.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(String name,
+                                                                  Integer sampleItemType,
+                                                                  int maxResults) throws Exception {
         List<PanelDO> panelList;
         List<TestMethodVO> testList;
         ArrayList<TestMethodVO> returnList;
         PanelDO panelDO;
         TestMethodVO testDO;
-        int i,j;
-        
-        //check for panels first
+        int i, j;
+
+        // check for panels first
         Query query = manager.createNamedQuery("Panel.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
         panelList = query.getResultList();
-        
-        //if the list isnt full find tests
+
+        // if the list isnt full find tests
         testList = new ArrayList<TestMethodVO>();
-        if(panelList.size() < maxResults){
+        if (panelList.size() < maxResults) {
             query = manager.createNamedQuery("Test.FetchByNameSampleItemType");
             query.setParameter("name", name);
             query.setParameter("typeId", sampleItemType);
             query.setMaxResults(maxResults);
             testList = query.getResultList();
         }
-        
+
         returnList = new ArrayList<TestMethodVO>();
-        for(i=0; i<panelList.size(); i++){
+        for (i = 0; i < panelList.size(); i++) {
             panelDO = panelList.get(i);
             testDO = new TestMethodVO();
-            
+
             testDO.setTestId(panelDO.getId());
             testDO.setTestName(panelDO.getName());
             testDO.setTestDescription(panelDO.getDescription());
-            
+
             returnList.add(testDO);
         }
-        
-        j=0;
-        while(i<maxResults && j<testList.size()){
+
+        j = 0;
+        while (i < maxResults && j < testList.size()) {
             testDO = testList.get(j);
             returnList.add(testDO);
             i++;
@@ -127,44 +151,44 @@ public class PanelBean {
 
         return returnList;
     }
-    
+
     public ArrayList<TestMethodVO> fetchByNameWithTests(String name, int maxResults) throws Exception {
         List<PanelDO> panelList;
         List<TestMethodVO> testList;
         ArrayList<TestMethodVO> returnList;
         PanelDO panelDO;
         TestMethodVO testDO;
-        int i,j;
-        
-        //check for panels first
+        int i, j;
+
+        // check for panels first
         Query query = manager.createNamedQuery("Panel.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
         panelList = query.getResultList();
-        
-        //if the list isnt full find tests
+
+        // if the list isnt full find tests
         testList = new ArrayList<TestMethodVO>();
-        if(panelList.size() < maxResults){
+        if (panelList.size() < maxResults) {
             query = manager.createNamedQuery("Test.FetchWithMethodByName");
             query.setParameter("name", name);
             query.setMaxResults(maxResults);
             testList = query.getResultList();
         }
-        
+
         returnList = new ArrayList<TestMethodVO>();
-        for(i=0; i<panelList.size(); i++){
+        for (i = 0; i < panelList.size(); i++) {
             panelDO = panelList.get(i);
             testDO = new TestMethodVO();
-            
+
             testDO.setTestId(panelDO.getId());
             testDO.setTestName(panelDO.getName());
             testDO.setTestDescription(panelDO.getDescription());
-            
+
             returnList.add(testDO);
         }
-        
-        j=0;
-        while(i<maxResults && j<testList.size()){
+
+        j = 0;
+        while (i < maxResults && j < testList.size()) {
             testDO = testList.get(j);
             returnList.add(testDO);
             i++;
@@ -173,7 +197,7 @@ public class PanelBean {
 
         return returnList;
     }
-    
+
     public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception {
         int i;
         List<PanelItemDO> panelItemList;
@@ -181,34 +205,34 @@ public class PanelBean {
         TestViewDO testDO;
         ArrayList<IdVO> returnList;
         IdVO idVO;
-        
-        //fetch the panelitems
+
+        // fetch the panelitems
         Query query = manager.createNamedQuery("PanelItem.FetchByPanelId");
         query.setParameter("id", panelId);
         panelItemList = query.getResultList();
-        
-        //fetch the testid from each row by test name, method name
+
+        // fetch the testid from each row by test name, method name
         returnList = new ArrayList<IdVO>();
         query = manager.createNamedQuery("Test.FetchActiveByNameMethodName");
         for (i = 0; i < panelItemList.size(); i++) {
             panelItem = panelItemList.get(i);
-            
+
             if (!"T".equals(panelItem.getType()))
                 continue;
-            
+
             query.setParameter("name", panelItem.getName());
-            query.setParameter("methodName", panelItem.getMethodName());            
+            query.setParameter("methodName", panelItem.getMethodName());
             try {
                 testDO = (TestViewDO)query.getSingleResult();
                 idVO = new IdVO();
                 idVO.setId(testDO.getId());
-                
+
                 returnList.add(idVO);
             } catch (NoResultException e) {
-                //do nothing
+                // do nothing
             }
         }
-        
+
         return returnList;
     }
 
@@ -220,39 +244,38 @@ public class PanelBean {
         ArrayList<IdVO> returnList;
         IdVO idVO;
         Query query;
-        
-        //fetch the panelitems
+
+        // fetch the panelitems
         query = manager.createNamedQuery("PanelItem.FetchByPanelId");
         query.setParameter("id", panelId);
         panelItemList = query.getResultList();
-        
-        //fetch the testid from each row by test name, method name
+
+        // fetch the testid from each row by test name, method name
         returnList = new ArrayList<IdVO>();
         query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
         for (i = 0; i < panelItemList.size(); i++) {
             panelItem = panelItemList.get(i);
-            
+
             if (!"A".equals(panelItem.getType()))
                 continue;
-            
+
             query.setParameter("name", panelItem.getName());
             try {
                 auxDO = (AuxFieldGroupDO)query.getSingleResult();
                 idVO = new IdVO();
                 idVO.setId(auxDO.getId());
-                
+
                 returnList.add(idVO);
             } catch (NoResultException e) {
-                //do nothing
+                // do nothing
             }
         }
-        
+
         return returnList;
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                     throws Exception {
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List list;
@@ -296,7 +319,7 @@ public class PanelBean {
     public PanelDO update(PanelDO data) throws Exception {
         Panel entity;
 
-        if ( !data.isChanged())
+        if (!data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -327,7 +350,8 @@ public class PanelBean {
         list = new ValidationErrorsList();
         name = data.getName();
         if (DataBaseUtil.isEmpty(name)) {
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), PanelMeta.getName()));
+            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
+                                             PanelMeta.getName()));
             throw list;
         }
 
@@ -336,7 +360,8 @@ public class PanelBean {
         try {
             panel = (PanelDO)query.getSingleResult();
             if (DataBaseUtil.isDifferent(panel.getId(), data.getId()))
-                list.add(new FieldErrorException(Messages.get().fieldUniqueException(), PanelMeta.getName()));
+                list.add(new FieldErrorException(Messages.get().fieldUniqueException(),
+                                                 PanelMeta.getName()));
         } catch (NoResultException ignE) {
             // do nothing
         }

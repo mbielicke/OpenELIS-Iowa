@@ -155,9 +155,11 @@ public class AnalysisBean {
         entity.setRevision(data.getRevision());
         entity.setTestId(data.getTestId());
         entity.setSectionId(data.getSectionId());
+        entity.setPanelId(data.getPanelId());
         entity.setPreAnalysisId(data.getPreAnalysisId());
         entity.setParentAnalysisId(data.getParentAnalysisId());
         entity.setParentResultId(data.getParentResultId());
+        entity.setIsPreliminary(data.getIsPreliminary());
         entity.setIsReportable(data.getIsReportable());
         entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         entity.setStatusId(data.getStatusId());
@@ -186,9 +188,11 @@ public class AnalysisBean {
         entity.setRevision(data.getRevision());
         entity.setTestId(data.getTestId());
         entity.setSectionId(data.getSectionId());
+        entity.setPanelId(data.getPanelId());
         entity.setPreAnalysisId(data.getPreAnalysisId());
         entity.setParentAnalysisId(data.getParentAnalysisId());
         entity.setParentResultId(data.getParentResultId());
+        entity.setIsPreliminary(data.getIsPreliminary());
         entity.setIsReportable(data.getIsReportable());
         entity.setUnitOfMeasureId(data.getUnitOfMeasureId());
         entity.setStatusId(data.getStatusId());

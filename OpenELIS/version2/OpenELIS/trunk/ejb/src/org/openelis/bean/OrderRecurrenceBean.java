@@ -179,65 +179,85 @@ public class OrderRecurrenceBean {
     }                                                                                                                                                                                              
                         
     private boolean frequencyValid(OrderRecurrenceDO data) {
-        int bday, bmon, byr, nday, nmon, nyr, emon, eyr, nmons, dfyr, iter;
+        int bday, bmon, byr, nday, nmon, nyr, emon, eyr, nmons, iter;
         Integer freq, unit;
         Datetime bdt, edt;
-        
+
         freq = data.getFrequency();
         unit = data.getUnitId();
         bdt = data.getActiveBegin();
         edt = data.getActiveEnd();
-        
+
         bday = bdt.getDate().getDate();
-        bmon = bdt.getDate().getMonth();
-        byr = bdt.getDate().getYear();                                   
-        emon = edt.getDate().getMonth();
+        bmon = bdt.getDate().getMonth()+1;
+        byr = bdt.getDate().getYear();
+        emon = edt.getDate().getMonth()+1;
         eyr = edt.getDate().getYear();
-        
-        dfyr = eyr-byr; 
+
         nyr = byr;
-        nday = bday;                    
-        nmon = bmon;        
-        if (Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS.equals(unit)) {             
-            if (dfyr > 0) 
-                nmons = bmon + (dfyr-1)*11 + emon;
-            else 
-                nmons = emon - bmon;             
-            iter = freq;                    
-            while (iter < nmons) {                
+        nday = bday;
+        nmon = bmon;
+        if (Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS.equals(unit)) {
+            /*
+             * We calculate the number of months (nmons) between the one that
+             * begin date is in and the one that end date is in, inclusive of
+             * the latter.
+             */
+            nmons = (emon - bmon) + ((eyr - nyr) * 12);
+            iter = freq;
+            while (iter < nmons) {
+                /*
+                 * Here, "iter" is used to keep track of how close to end date's
+                 * month we are, which is "nmons" months after begin date's
+                 * month. We can't use "nmon", which is the month that the
+                 * currently created date is in for this purpose, because its
+                 * value is always betweeen 0 and 11, whereas "nmons" can be
+                 * more than 11.
+                 */
                 nmon += freq;
                 if (nmon > 11) {
+                    /*
+                     * we use 12 and not 11 to calculate the remainder because
+                     * otherwise when "nmon" is 12 the remainder is 1 i.e. the
+                     * 2nd month and not 0 or the 1st month
+                     */
                     nmon %= 12;
-                    nyr++;      
+                    nyr++ ;
                 }
+                /*
+                 * we have to check to make sure than any month that we generate
+                 * a date for has the number of days as specified in the begin
+                 * date, otherwise the dates created won't conform to the
+                 * frequency
+                 */
                 switch (nmon) {
-                    case 1:       
-                        if (nday > 29 || ((nyr % 4 != 0) && nday > 28))
-                            return false;                                    
-                        break;
-                    case 3:
-                    case 5:
-                    case 8:
-                    case 10:
-                        if (nday > 30)
+                    case 2:
+                        if (nday > 29 || ( (nyr % 4 != 0) && nday > 28)) {
                             return false;
+                        }
+                        break;
+                    case 4:
+                    case 6:
+                    case 9:
+                    case 11:
+                        if (nday > 30) {
+                            return false;
+                        }
                         break;
                 }
-                
                 iter += freq;
             }
         } else if (Constants.dictionary().ORDER_RECURRENCE_UNIT_YEARS.equals(unit)) {
-            if (nmon != 1 || nday <= 28) {
+            if (nmon != 1 || nday <= 28)
                 return true;
-            } else {
-                while (nyr < eyr) {
-                    nyr += freq;
-                    if (nyr % 4 != 0) 
-                        return false;                    
+            while (nyr < eyr) {
+                nyr += freq;
+                if (nyr % 4 != 0) {
+                    return false;
                 }
             }
         }
-        
-        return true;        
+
+        return true;       
     }
 }

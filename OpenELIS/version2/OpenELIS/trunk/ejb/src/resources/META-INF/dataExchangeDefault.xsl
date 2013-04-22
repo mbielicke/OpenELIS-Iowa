@@ -466,6 +466,11 @@ UIRF Software License are applicable instead of those above.
           <xsl:value-of select="@pre_analysis_id" />
         </xsl:attribute>
       </xsl:if>
+      <xsl:if test="@parent_analysis_id[. != '']">
+        <xsl:attribute name="parent_analysis_id">
+          <xsl:value-of select="@parent_analysis_id" />
+        </xsl:attribute>
+      </xsl:if>
       <xsl:if test="@parent_result_id[. != '']">
         <xsl:attribute name="parent_result_id">
           <xsl:value-of select="@parent_result_id" />
@@ -499,6 +504,16 @@ UIRF Software License are applicable instead of those above.
           <xsl:value-of select="@printed_date" />
         </xsl:attribute>
       </xsl:if>
+      <xsl:if test="@panel_id[. != '']">
+        <xsl:attribute name="panel_id">
+          <xsl:value-of select="@panel_id" />
+        </xsl:attribute>
+      </xsl:if>    
+      <xsl:if test="@is_preliminary[. != '']">
+        <xsl:attribute name="is_preliminary">
+          <xsl:value-of select="@is_preliminary" />
+        </xsl:attribute>
+      </xsl:if>
       <xsl:variable name="test_id" select="@test_id" />
       <test id="{@test_id}">
         <xsl:apply-templates select="//test[@id = $test_id]" />
@@ -516,13 +531,13 @@ UIRF Software License are applicable instead of those above.
       <xsl:variable name="status_id" select="@status_id" />
       <status>
         <xsl:apply-templates select="//dictionary[@id = $status_id]" />
-      </status>
+      </status> 
       <xsl:variable name="analysis_id" select="@id" />
-      <!--
-        The results for this analysis
+      <!-- 
+        The qa events for this analysis
       -->
       <xsl:apply-templates select="//analysis_qaevent[@analysis_id = $analysis_id]" />
-      <!-- 
+      <!--
         The results for this analysis
       -->
       <xsl:apply-templates select="//result[@analysis_id = $analysis_id]" />
@@ -658,6 +673,18 @@ UIRF Software License are applicable instead of those above.
     </description>  
     <xsl:variable name="organization_id" select="@organization_id" />
     <xsl:apply-templates select="//organization[@id = $organization_id]" />
+  </xsl:template>
+  
+  <xsl:template match="panel">
+    <xsl:attribute name="id">
+      <xsl:value-of select="@id" />
+    </xsl:attribute>        
+    <name>
+      <xsl:value-of select="name" />
+    </name>
+    <description>
+      <xsl:value-of select="description" />
+    </description>
   </xsl:template>
   
   <xsl:template match="test_trailer">

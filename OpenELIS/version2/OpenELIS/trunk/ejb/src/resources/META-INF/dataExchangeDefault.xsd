@@ -255,6 +255,7 @@ UIRF Software License are applicable instead of those above.
     <xs:attribute name="sample_item_id" type="xs:integer" use = "required" />
     <xs:attribute name="revision" type="xs:integer" use = "required" />
     <xs:attribute name="pre_analysis_id" type="xs:integer" />
+    <xs:attribute name="parent_analysis_id" type="xs:integer" />
     <xs:attribute name="parent_result_id" type="xs:integer" />
     <xs:attribute name="is_reportable" type="xs:string" use = "required"/>
     <xs:attribute name="available_date" type="xs:dateTime"/>
@@ -262,6 +263,8 @@ UIRF Software License are applicable instead of those above.
     <xs:attribute name="completed_date" type="xs:dateTime"/>
     <xs:attribute name="released_date" type="xs:dateTime"/>
     <xs:attribute name="printed_date" type="xs:dateTime"/>
+    <xs:attribute name="panel_id" type="xs:integer" />
+    <xs:attribute name="is_preliminary" type="xs:string"/>
   </xs:complexType>
   
   <xs:complexType name="test">
@@ -312,6 +315,14 @@ UIRF Software License are applicable instead of those above.
     <xs:attribute name="id" type="xs:integer" use = "required"/>
     <xs:attribute name="parent_section_id" type="xs:integer"/>
     <xs:attribute name="is_external" type="xs:string" use = "required"/>
+  </xs:complexType>
+  
+  <xs:complexType name="panel">
+    <xs:sequence>    
+      <xs:element name="name" type="xs:string"/> 
+      <xs:element name="description" type="xs:string"/>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:integer" use = "required"/>
   </xs:complexType>
   
   <xs:complexType name="testTrailer">

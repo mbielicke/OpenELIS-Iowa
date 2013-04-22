@@ -200,6 +200,34 @@ public class SampleStatusReportBean {
 
         return projectList;
     }
+    
+    @RolesAllowed("w_status-select")
+    public ArrayList<SampleQaEventViewDO> getSampleQaEventsBySampleId(Integer id) throws Exception {
+        ArrayList<SampleQaEventViewDO> list, extList;
+        
+        extList = new ArrayList<SampleQaEventViewDO>();
+        list = sampleQa.fetchBySampleId(id);
+        for (SampleQaEventViewDO sqeVDO : list) {
+            if (!Constants.dictionary().QAEVENT_INTERNAL.equals(sqeVDO.getTypeId()))
+                extList.add(sqeVDO);
+        }
+        
+        return extList;
+    }
+
+    @RolesAllowed("w_status-select")
+    public ArrayList<AnalysisQaEventViewDO> getAnalysisQaEventsByAnalysisId(Integer id) throws Exception {
+        ArrayList<AnalysisQaEventViewDO> list, extList;
+        
+        extList = new ArrayList<AnalysisQaEventViewDO>();
+        list = analysisQa.fetchByAnalysisId(id);
+        for (AnalysisQaEventViewDO aqeVDO : list) {
+            if (!Constants.dictionary().QAEVENT_INTERNAL.equals(aqeVDO.getTypeId()))
+                extList.add(aqeVDO);
+        }
+        
+        return extList;
+    }
 
     private ArrayList<IdAccessionVO> getPrivateSamples(ArrayList<QueryData> fields,
                                                        String clause) throws Exception {

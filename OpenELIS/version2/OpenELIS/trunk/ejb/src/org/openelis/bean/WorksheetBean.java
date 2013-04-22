@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -37,12 +38,16 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.entity.Worksheet;
+import org.openelis.manager.WorksheetAnalysisManager;
+import org.openelis.manager.WorksheetItemManager;
+import org.openelis.manager.WorksheetManager;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -63,10 +68,16 @@ public class WorksheetBean {
     private EntityManager                        manager;
 
     @EJB
-    private InstrumentLogBean                  instrumentLog;
-    
+    private AnalysisBean                         analysis;
+
     @EJB
-    private UserCacheBean                      userCache;
+    private InstrumentLogBean                    instrumentLog;
+
+    @EJB
+    private UserCacheBean                        userCache;
+
+    @EJB
+    private WorksheetManagerBean                 worksheetManager;
 
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
 
@@ -98,7 +109,7 @@ public class WorksheetBean {
         query.setParameter("id", id);
         try {
             data = (ArrayList<WorksheetViewDO>)query.getResultList();
-            for (i = 0; i < data.size(); i++ ) {
+            for (i = 0; i < data.size(); i++) {
                 worksheet = data.get(i);
                 if (worksheet.getSystemUserId() != null) {
                     user = userCache.getSystemUser(worksheet.getSystemUserId());
@@ -115,13 +126,19 @@ public class WorksheetBean {
     }
 
     @SuppressWarnings({"unchecked", "static-access"})
-    public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first,
-                                            int max) throws Exception {
-        int i;
+    public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        int i, j, k;
+        Integer analysisId, testId, methodId;
         Query query;
         QueryBuilderV2 builder;
+        ArrayList<AnalysisViewDO> waList;
         ArrayList<WorksheetViewDO> list;
+        HashMap<String, AnalysisViewDO> analysisMap;
+        AnalysisViewDO aVDO;
         SystemUserVO user;
+        WorksheetAnalysisManager waManager;
+        WorksheetItemManager wiManager;
+        WorksheetManager wManager;
         WorksheetViewDO worksheet;
 
         builder = new QueryBuilderV2();
@@ -135,8 +152,7 @@ public class WorksheetBean {
                           WorksheetCompletionMeta.getSubsetCapacity() + ", " +
                           WorksheetCompletionMeta.getRelatedWorksheetId() + ", " +
                           WorksheetCompletionMeta.getInstrumentId() + ", " +
-                          WorksheetCompletionMeta.getInstrumentName() + ", " +
-                          WorksheetCompletionMeta.getDescription() + ") ");
+                          WorksheetCompletionMeta.getInstrumentName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCompletionMeta.getId());
 
@@ -148,7 +164,7 @@ public class WorksheetBean {
         if (list.isEmpty())
             throw new NotFoundException();
 
-        for (i = 0; i < list.size(); i++ ) {
+        for (i = 0; i < list.size(); i++) {
             worksheet = list.get(i);
 
             if (worksheet.getSystemUserId() != null) {
@@ -156,6 +172,28 @@ public class WorksheetBean {
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }
+
+            waList = new ArrayList<AnalysisViewDO>();
+            analysisMap = new HashMap<String, AnalysisViewDO>();
+            wManager = worksheetManager.fetchById(worksheet.getId());
+            wiManager = wManager.getItems();
+            for (j = 0; j < wiManager.count(); j++) {
+                waManager = wiManager.getWorksheetAnalysisAt(j);
+                for (k = 0; k < waManager.count(); k++) {
+                    analysisId = waManager.getWorksheetAnalysisAt(k).getAnalysisId();
+                    if (analysisId != null) {
+                        aVDO = analysis.fetchById(analysisId);
+                        testId = aVDO.getTestId();
+                        methodId = aVDO.getMethodId();
+                        if (!analysisMap.containsKey(testId + "," + methodId)) {
+                            analysisMap.put(testId + "," + methodId, aVDO);
+                            waList.add(aVDO);
+                        }
+                    }
+                }
+            }
+
+            worksheet.setTestList(waList);
         }
 
         list = DataBaseUtil.subList(list, first, max);
@@ -179,7 +217,6 @@ public class WorksheetBean {
         entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
         entity.setInstrumentId(data.getInstrumentId());
-        entity.setDescription(data.getDescription());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -201,13 +238,13 @@ public class WorksheetBean {
         InstrumentLogDO ilDO;
         Worksheet entity;
 
-        if ( !data.isChanged())
+        if (!data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Worksheet.class, data.getId());
 
-        if ( !DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
+        if (!DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
             if (data.getInstrumentId() != null) {
                 try {
                     ilDO = instrumentLog.fetchByInstrumentIdWorksheetId(entity.getInstrumentId(),
@@ -221,35 +258,27 @@ public class WorksheetBean {
                     ilEntity.setEventBegin(data.getCreatedDate());
                     manager.persist(ilEntity);
                 }
-                if (ilEntity.getTypeId()
-                            .equals(Constants.dictionary().INSTRUMENT_LOG_PENDING)) {
-                    if (data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                        data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                if (ilEntity.getTypeId().equals(Constants.dictionary().INSTRUMENT_LOG_PENDING)) {
+                    if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
+                        data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                         ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
-                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
-                                                                  Datetime.MINUTE));
-                    } else if (data.getStatusId()
-                                   .equals(Constants.dictionary().WORKSHEET_VOID)) {
+                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                    } else if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
                         manager.remove(ilEntity);
                     }
                 }
             }
         } else {
             if (entity.getInstrumentId() == null) {
-                if ( !data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
+                if (!data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
                     ilEntity = new InstrumentLog();
                     ilEntity.setInstrumentId(data.getInstrumentId());
                     ilEntity.setWorksheetId(data.getId());
                     ilEntity.setEventBegin(data.getCreatedDate());
-                    if (data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                        data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                    if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
+                        data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                         ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
-                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
-                                                                  Datetime.MINUTE));
+                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                     } else {
                         ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_PENDING);
                     }
@@ -266,8 +295,7 @@ public class WorksheetBean {
                                     .equals(Constants.dictionary().INSTRUMENT_LOG_PENDING)) {
                             if (data.getStatusId()
                                     .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                                data.getStatusId()
-                                    .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                                data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                                 ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
                                 ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
                                                                           Datetime.MINUTE));
@@ -286,10 +314,8 @@ public class WorksheetBean {
                         ilEntity.setInstrumentId(data.getInstrumentId());
                         ilEntity.setWorksheetId(data.getId());
                         ilEntity.setEventBegin(data.getCreatedDate());
-                        if (data.getStatusId()
-                                .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                            data.getStatusId()
-                                .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                        if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
+                            data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                             ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
                             ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
                                                                       Datetime.MINUTE));
@@ -309,7 +335,6 @@ public class WorksheetBean {
         entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
         entity.setInstrumentId(data.getInstrumentId());
-        entity.setDescription(data.getDescription());
 
         return data;
     }

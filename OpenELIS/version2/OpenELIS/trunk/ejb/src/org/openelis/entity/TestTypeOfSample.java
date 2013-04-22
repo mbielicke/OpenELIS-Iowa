@@ -52,12 +52,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "TestTypeOfSample.FetchByTestId",
                 query = "select distinct new org.openelis.domain.TestTypeOfSampleDO(ts.id, ts.testId, ts.typeOfSampleId,ts.unitOfMeasureId) "
-                      + " from TestTypeOfSample ts where ts.testId = :id"),
-    @NamedQuery( name = "TestTypeOfSample.FetchUnitsForWorksheetAutocomplete",
-                query = "select distinct new org.openelis.domain.IdNameVO(ts.unitOfMeasureId, ud.entry) "
-                      + " from TestTypeOfSample ts LEFT JOIN ts.unitDictionary ud"
-                      + " where ts.testId = :testId and ts.typeOfSampleId = :typeOfSampleId"
-                      + " and ud.entry like :unitOfMeasure")})
+                      + " from TestTypeOfSample ts where ts.testId = :id")})
 @Entity
 @Table(name = "test_type_of_sample")
 @EntityListeners({AuditUtil.class})

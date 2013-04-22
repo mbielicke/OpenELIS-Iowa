@@ -208,7 +208,9 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="18" width="118" height="10"/>
+				<reportElement x="2" y="18" width="118" height="10">
+					<printWhenExpression><![CDATA[Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -240,7 +242,7 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[Associate Directors]]></text>
+				<text><![CDATA[Associate Director]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="28" width="175" height="10"/>
