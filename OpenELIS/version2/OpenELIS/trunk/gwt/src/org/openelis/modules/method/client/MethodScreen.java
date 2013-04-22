@@ -334,7 +334,7 @@ public class MethodScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<IdNameVO>(atozTable, atozPrev, atozNext) {
+        nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
