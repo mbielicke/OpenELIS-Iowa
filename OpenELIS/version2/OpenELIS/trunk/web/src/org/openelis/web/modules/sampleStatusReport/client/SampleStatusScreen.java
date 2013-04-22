@@ -277,16 +277,15 @@ public class SampleStatusScreen extends Screen {
         });
 
         sampleEntTable = (TableWidget)def.getWidget("sampleEntTable");
-        addScreenHandler(sampleEntTable,
-                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 sampleEntTable.load(getTableModel());
-                             }
+        addScreenHandler(sampleEntTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleEntTable.load(getTableModel());
+            }
 
-                             public void onStateChange(StateChangeEvent<State> event) {
-                                 sampleEntTable.enable(true);
-                             }
-                         });
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleEntTable.enable(true);
+            }
+        });
 
         sampleEntTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -494,9 +493,9 @@ public class SampleStatusScreen extends Screen {
                 row.cells.get(3).setValue(temp1);
                 row.cells.get(4).setValue(data.getReceivedDate());
                 row.cells.get(5).setValue(data.getClientReference());
-                if ( (QAEventType.OVERRIDE).equals(data.getSampleQA()))
+                if ((QAEventType.OVERRIDE).equals(data.getSampleQA()))
                     row.cells.get(6).setValue("No Result");
-                else if ( (QAEventType.WARNING).equals(data.getSampleQA()))
+                else if ((QAEventType.WARNING).equals(data.getSampleQA()))
                     row.cells.get(6).setValue("Warning");
 
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
@@ -510,7 +509,7 @@ public class SampleStatusScreen extends Screen {
                          .setValue(Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ? completed : inProgress);
                 if ( (QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("No Result");
-                else if ( (QAEventType.WARNING).equals(data.getAnalysisQA()))
+                else if ((QAEventType.WARNING).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("Warning");
                 row.data = "ANALYSIS:" + data.getAnalysisId();
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
@@ -523,7 +522,7 @@ public class SampleStatusScreen extends Screen {
                          .setValue(Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ? completed : inProgress);
                 if ( (QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("No Result");
-                else if ( (QAEventType.WARNING).equals(data.getAnalysisQA()))
+                else if ((QAEventType.WARNING).equals(data.getAnalysisQA()))
                     row.cells.get(6).setValue("Warning");
                 row.data = "ANALYSIS:" + data.getAnalysisId();
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";

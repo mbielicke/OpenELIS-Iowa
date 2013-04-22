@@ -165,7 +165,7 @@ public class SessionTimer {
             //Application.logger().log(Level.SEVERE, e.getMessage(), e);
         }
 
-        Window.open("OpenELIS.html", "_self", null);
+        Window.open("/openelis/OpenELIS.html", "_self", null);
     }
 
 }
