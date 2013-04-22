@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
@@ -53,6 +54,11 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
     @Override
     public void fetchById(Integer id, AsyncCallback<PanelManager> callback) {
         service.fetchById(id, callback);
+    }
+
+    @Override
+    public void fetchByName(String name, AsyncCallback<ArrayList<PanelDO>> callback) {
+        service.fetchByName(name, callback);
     }
 
     @Override
@@ -111,6 +117,15 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
         
         callback = new Callback<PanelManager>();
         service.fetchWithItems(id, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<PanelDO> fetchByName(String name) throws Exception {
+        Callback<ArrayList<PanelDO>> callback;
+        
+        callback = new Callback<ArrayList<PanelDO>>();
+        service.fetchByName(name, callback);
         return callback.getResult();
     }
 

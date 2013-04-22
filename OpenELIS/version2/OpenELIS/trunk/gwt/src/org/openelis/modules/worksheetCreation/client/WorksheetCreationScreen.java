@@ -29,6 +29,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
@@ -49,10 +56,6 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -97,23 +100,20 @@ import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetService;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 public class WorksheetCreationScreen extends Screen {
 
     private boolean                            isTemplateLoaded, isSaved, wasExitCalled;
-    private Integer                            formatId;
     private int                                tempId, qcStartIndex;
+    private Integer                            formatId;
     private String                             typeLastBothString, typeLastRunString,
                                                typeLastSubsetString, typeRandString;
 
@@ -566,7 +566,8 @@ public class WorksheetCreationScreen extends Screen {
                                             formatId = data.getWorksheetFormatId();
                                         else
                                             formatId = Constants.dictionary().WF_TOTAL;
-                                    } else if (Constants.dictionary().WF_TOTAL.equals(formatId) && data.getWorksheetFormatId() == null) {
+                                    } else if (Constants.dictionary().WF_TOTAL.equals(formatId) &&
+                                               data.getWorksheetFormatId() == null) {
                                         // if a worksheet format is not specified
                                         // in the test definition we default it 
                                         // to DefaultTotal, therefore tests with
@@ -626,6 +627,7 @@ public class WorksheetCreationScreen extends Screen {
                 org.openelis.ui.widget.Window win = new org.openelis.ui.widget.Window(false);
                 win.setName(wcLookupScreen.getName());
                 win.setContent(wcLookupScreen);
+                wcLookupScreen.setWindow(win);
                 OpenELIS.getBrowser().addWindow(win,"wcLookupScreen");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -892,13 +894,13 @@ public class WorksheetCreationScreen extends Screen {
     }
 
     private void loadQCTemplate() {
-        int                    i, j;
-        ArrayList<Object>      dataList;
+        int i, j;
+        ArrayList<Object> dataList;
         ArrayList<QcLotViewDO> list;
-        Preferences            prefs;
-        QcLotViewDO            qcDO = null, tempQc;
-        TableDataRow           qcRow;
-        TestWorksheetItemDO    twiDO;
+        Preferences prefs;
+        QcLotViewDO qcDO = null, tempQc;
+        TableDataRow qcRow;
+        TestWorksheetItemDO twiDO;
         
         try {
             if (twManager == null) {
@@ -1168,7 +1170,7 @@ public class WorksheetCreationScreen extends Screen {
         for (k = 0; k < lastOf.size() && i < testWorksheetDO.getTotalCapacity();) {
             row = qcItems[i];
             if (row != null &&
-                   Constants.dictionary().POS_FIXED_ALWAYS.equals(((TestWorksheetItemDO)((ArrayList<Object>)row.data).get(0)).getTypeId())) {
+                Constants.dictionary().POS_FIXED_ALWAYS.equals(((TestWorksheetItemDO)((ArrayList<Object>)row.data).get(0)).getTypeId())) {
                 row.cells.get(0).value = i + 1;
                 items.add(row);
             } else {

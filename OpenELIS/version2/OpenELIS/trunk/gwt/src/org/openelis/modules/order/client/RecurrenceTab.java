@@ -285,7 +285,7 @@ public class RecurrenceTab extends Screen {
     }
 
     private ArrayList<TableDataRow> getModelByMonth(Datetime now) {
-        int bday, bmon, byr, nday, nmon, nyr, emon, eyr, nmons, dfyr, iter;
+        int bday, bmon, byr, nday, nmon, nyr, emon, eyr, nmons, iter;
         Integer freq;
         Date nd;
         Datetime bdt, edt, next;
@@ -297,20 +297,16 @@ public class RecurrenceTab extends Screen {
         edt = recurrence.getActiveEnd();
 
         bday = bdt.getDate().getDate();
-        bmon = bdt.getDate().getMonth();
+        bmon = bdt.getDate().getMonth()+1;
         byr = bdt.getDate().getYear();
-        emon = edt.getDate().getMonth();
+        emon = edt.getDate().getMonth()+1;
         eyr = edt.getDate().getYear();
 
         nday = bday;
         nmon = bmon;
         nyr = byr;
-        dfyr = eyr - nyr;
 
-        if (dfyr > 0)
-            nmons = bmon + (dfyr - 1) * 11 + emon;
-        else
-            nmons = emon - bmon;
+        nmons = (emon - bmon) + ((eyr - nyr) * 12);
         /*
          * if today is the begin date then show it, also if begin date is after
          * today, show it as the first date
@@ -334,7 +330,7 @@ public class RecurrenceTab extends Screen {
                 nmon %= 12;
                 nyr++ ;
             }
-            nd = new Date(nyr, nmon, nday);
+            nd = new Date(nyr, nmon-1, nday);
             if (now.after(nd))
                 continue;
 
@@ -392,7 +388,7 @@ public class RecurrenceTab extends Screen {
     }
 
     private boolean validateFrequency() {
-        int bday, bmon, byr, nday, nmon, nyr, emon, eyr, nmons, dfyr, iter;
+        int bday, bmon, byr, nday, nmon, nyr, emon, eyr, nmons, iter;
         Integer freq, unit;
         Datetime bdt, edt;
 
@@ -402,12 +398,11 @@ public class RecurrenceTab extends Screen {
         edt = recurrence.getActiveEnd();
 
         bday = bdt.getDate().getDate();
-        bmon = bdt.getDate().getMonth();
+        bmon = bdt.getDate().getMonth()+1;
         byr = bdt.getDate().getYear();
-        emon = edt.getDate().getMonth();
+        emon = edt.getDate().getMonth()+1;
         eyr = edt.getDate().getYear();
 
-        dfyr = eyr - byr;
         nyr = byr;
         nday = bday;
         nmon = bmon;
@@ -415,15 +410,9 @@ public class RecurrenceTab extends Screen {
             /*
              * We calculate the number of months (nmons) between the one that
              * begin date is in and the one that end date is in, inclusive of
-             * the latter. Since months in Date start at 0, we multiply the
-             * difference between the years (dyr) by 11 and not 12, if the year
-             * that end date is in is not the same as the one that begin date is
-             * in.
+             * the latter.
              */
-            if (dfyr > 0)
-                nmons = bmon + (dfyr - 1) * 11 + emon;
-            else
-                nmons = emon - bmon;
+            nmons = (emon - bmon) + ((eyr - nyr) * 12);
             iter = freq;
             while (iter < nmons) {
                 /*
@@ -451,16 +440,16 @@ public class RecurrenceTab extends Screen {
                  * frequency
                  */
                 switch (nmon) {
-                    case 1:
+                    case 2:
                         if (nday > 29 || ( (nyr % 4 != 0) && nday > 28)) {
                             recurrenceFrequency.addException(new Exception(Messages.get().notAllDatesValid()));
                             return false;
                         }
                         break;
-                    case 3:
-                    case 5:
-                    case 8:
-                    case 10:
+                    case 4:
+                    case 6:
+                    case 9:
+                    case 11:
                         if (nday > 30) {
                             recurrenceFrequency.addException(new Exception(Messages.get().notAllDatesValid()));
                             return false;

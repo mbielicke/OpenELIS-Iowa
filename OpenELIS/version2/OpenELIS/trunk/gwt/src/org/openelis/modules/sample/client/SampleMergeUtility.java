@@ -58,8 +58,7 @@ public class SampleMergeUtility {
                 orderSampleItem = fromOrderItemMan.getSampleItemAt(fromOrderItemMan.addSampleItem());
                 qeSampleItem = quickEntryItemMan.getSampleItemAt(i);
                 SampleDuplicateUtil.duplicateSampleItem(orderSampleItem, qeSampleItem);
-                fromOrderItemMan.setSampleItemAt(orderSampleItem, i);
-                orderSampleItem.setSampleId(qeSampleItem.getSampleId());
+                orderSampleItem.setSampleId(quickEntryMan.getSample().getId());
                 fromOrderItemMan.setAnalysisAt(quickEntryItemMan.getAnalysisAt(i), i);
                 duplicateStorage(fromOrderItemMan.getStorageAt(i) ,quickEntryItemMan.getStorageAt(i));
             }
@@ -192,11 +191,14 @@ public class SampleMergeUtility {
         orderAna.setMethodReportingDescription(qeAna.getMethodReportingDescription());
         orderAna.setSectionId(qeAna.getSectionId());
         orderAna.setSectionName(qeAna.getSectionName());
+        orderAna.setPanelId(qeAna.getPanelId());
+        orderAna.setPanelName(qeAna.getPanelName());
         orderAna.setPreAnalysisId(qeAna.getPreAnalysisId());
         orderAna.setPreAnalysisTest(qeAna.getPreAnalysisTest());
         orderAna.setPreAnalysisMethod(qeAna.getPreAnalysisMethod());
         orderAna.setParentAnalysisId(qeAna.getParentAnalysisId());
         orderAna.setParentResultId(qeAna.getParentResultId());
+        orderAna.setIsPreliminary(qeAna.getIsPreliminary());
         orderAna.setIsReportable(qeAna.getIsReportable());
         orderAna.setUnitOfMeasureId(qeAna.getUnitOfMeasureId());
         orderAna.setStatusId(qeAna.getStatusId());

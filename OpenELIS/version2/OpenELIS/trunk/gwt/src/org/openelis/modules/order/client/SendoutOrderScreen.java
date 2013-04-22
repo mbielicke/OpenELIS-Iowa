@@ -1970,6 +1970,6 @@ public class SendoutOrderScreen extends Screen {
 
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId))
-            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample() + "'" + name + "'");
+            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(name));
     }
 }
