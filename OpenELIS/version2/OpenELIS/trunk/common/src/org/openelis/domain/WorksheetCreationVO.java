@@ -37,8 +37,7 @@ public class WorksheetCreationVO implements Serializable {
     protected Boolean  hasQaOverride;
     protected Integer  analysisId, accessionNumber, dueDays, preAnalysisId, priority,
                        privateWellOrgId, sampleId, sectionId, statusId, testId, 
-                       timeHolding, timeTaAverage, typeOfSampleId, unitOfMeasureId,
-                       worksheetFormatId;
+                       timeHolding, timeTaAverage, worksheetFormatId;
     protected String   description, domain, envLocation, methodName, privateWellLocation, 
                        privateWellReportToName, sdwisLocation, testName;
     protected Datetime collectionDate, collectionTime, expireDate, receivedDate;
@@ -52,10 +51,9 @@ public class WorksheetCreationVO implements Serializable {
                                Date receivedDate, String envLocation, Integer priority,
                                String sdwisLocation, String privateWellLocation,
                                Integer privateWellOrgId, String privateWellReportToName,
-                               Integer typeOfSampleId, Integer testId, String testName,
-                               String methodName, Integer timeHolding, Integer timeTaAverage,
-                               Integer sectionId, Integer preAnalysisId, Integer statusId,
-                               Integer unitOfMeasureId, Integer worksheetFormatId) {
+                               Integer testId, String testName, String methodName,
+                               Integer timeHolding, Integer timeTaAverage, Integer sectionId,
+                               Integer preAnalysisId, Integer statusId, Integer worksheetFormatId) {
         setAnalysisId(analysisId);
         setSampleId(sampleId);
         setDomain(domain);
@@ -77,8 +75,6 @@ public class WorksheetCreationVO implements Serializable {
         setSectionId(sectionId);
         setPreAnalysisId(preAnalysisId);
         setStatusId(statusId);
-        setTypeOfSampleId(typeOfSampleId);
-        setUnitOfMeasureId(unitOfMeasureId);
         setWorksheetFormatId(worksheetFormatId);
     }
 
@@ -264,22 +260,6 @@ public class WorksheetCreationVO implements Serializable {
 
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
-    }
-
-    public Integer getTypeOfSampleId() {
-        return typeOfSampleId;
-    }
-
-    public void setTypeOfSampleId(Integer typeOfSampleId) {
-        this.typeOfSampleId = typeOfSampleId;
-    }
-
-    public Integer getUnitOfMeasureId() {
-        return unitOfMeasureId;
-    }
-
-    public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-        this.unitOfMeasureId = unitOfMeasureId;
     }
 
     public Integer getWorksheetFormatId() {

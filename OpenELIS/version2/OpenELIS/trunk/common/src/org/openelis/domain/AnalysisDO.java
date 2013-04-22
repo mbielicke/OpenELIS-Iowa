@@ -31,7 +31,7 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
 /**
- * Class represents the fields in database table analysis.  
+ * Class represents the fields in database table analysis.
  */
 
 public class AnalysisDO extends DataObject {
@@ -39,26 +39,30 @@ public class AnalysisDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, sampleItemId, revision, testId, sectionId, preAnalysisId,
-                              parentAnalysisId, parentResultId, unitOfMeasureId, statusId;
-    protected String          isReportable;
+                              parentAnalysisId, parentResultId, unitOfMeasureId,
+                              statusId, panelId;
+    protected String          isReportable, isPreliminary;
     protected Datetime        availableDate, startedDate, completedDate, releasedDate, printedDate;
 
     public AnalysisDO() {
     }
 
     public AnalysisDO(Integer id, Integer sampleItemId, Integer revision, Integer testId,
-                      Integer sectionId, Integer preAnalysisId, Integer parentAnalysisId,
-                      Integer parentResultId, String isReportable, Integer unitOfMeasureId,
-                      Integer statusId, Date availableDate, Date startedDate, Date completedDate,
+                      Integer sectionId, Integer panelId, Integer preAnalysisId,
+                      Integer parentAnalysisId, Integer parentResultId, String isPreliminary,
+                      String isReportable, Integer unitOfMeasureId, Integer statusId,
+                      Date availableDate, Date startedDate, Date completedDate,
                       Date releasedDate, Date printedDate) {
         setId(id);
         setSampleItemId(sampleItemId);
         setRevision(revision);
         setTestId(testId);
         setSectionId(sectionId);
+        setPanelId(panelId);
         setPreAnalysisId(preAnalysisId);
         setParentAnalysisId(parentAnalysisId);
         setParentResultId(parentResultId);
+        setIsPreliminary(isPreliminary);
         setIsReportable(isReportable);
         setUnitOfMeasureId(unitOfMeasureId);
         setStatusId(statusId);
@@ -115,6 +119,15 @@ public class AnalysisDO extends DataObject {
         _changed = true;
     }
 
+    public Integer getPanelId() {
+        return panelId;
+    }
+
+    public void setPanelId(Integer panelId) {
+        this.panelId = panelId;
+        _changed = true;
+    }
+
     public Integer getPreAnalysisId() {
         return preAnalysisId;
     }
@@ -139,6 +152,15 @@ public class AnalysisDO extends DataObject {
 
     public void setParentResultId(Integer parentResultId) {
         this.parentResultId = parentResultId;
+        _changed = true;
+    }
+
+    public String getIsPreliminary() {
+        return isPreliminary;
+    }
+
+    public void setIsPreliminary(String isPreliminary) {
+        this.isPreliminary = DataBaseUtil.trim(isPreliminary);
         _changed = true;
     }
 
