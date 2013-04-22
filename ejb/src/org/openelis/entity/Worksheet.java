@@ -31,10 +31,10 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Worksheet.FetchById",
-                query = "select new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name,w.description) "
+                query = "select new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name) "
                       + " from Worksheet w left join w.instrument i where w.id = :id"),
     @NamedQuery( name = "Worksheet.FetchByAnalysisId",
-                query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name,w.description) "
+                query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name) "
                       + " from Worksheet w left join w.worksheetItem wi left join wi.worksheetAnalysis wa left join w.instrument i where wa.analysisId = :id")})
 
 @Entity
@@ -67,9 +67,6 @@ public class Worksheet implements Auditable, Cloneable {
 
     @Column(name = "instrument_id")
     private Integer                   instrumentId;
-
-    @Column(name = "description")
-    private String                    description;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_id")
@@ -170,15 +167,6 @@ public class Worksheet implements Auditable, Cloneable {
         this.instrument = instrument;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        if (DataBaseUtil.isDifferent(description, this.description))
-            this.description = description;
-    }
-
     public void setClone() {
         try {
             original = (Worksheet)this.clone();
@@ -201,8 +189,7 @@ public class Worksheet implements Auditable, Cloneable {
                  .setField("format_id", formatId, original.formatId, Constants.table().DICTIONARY)
                  .setField("subset_capacity", subsetCapacity, original.subsetCapacity)
                  .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId, Constants.table().WORKSHEET)
-                 .setField("instrument_id", instrumentId, original.instrumentId, Constants.table().INSTRUMENT)
-                 .setField("description", description, original.description);
+                 .setField("instrument_id", instrumentId, original.instrumentId, Constants.table().INSTRUMENT);
 
         return audit;
     }

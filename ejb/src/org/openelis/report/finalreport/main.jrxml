@@ -317,7 +317,9 @@
 				<text><![CDATA[http://www.shl.uiowa.edu]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="30" width="118" height="10"/>
+				<reportElement x="2" y="30" width="118" height="10">
+					<printWhenExpression><![CDATA[Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -328,7 +330,7 @@
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[Associate Directors]]></text>
+				<text><![CDATA[Associate Director]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="120" y="50" width="150" height="10"/>

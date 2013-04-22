@@ -345,18 +345,6 @@ public class DataViewBean {
         return status;
     }
 
-    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-    public DataViewVO loadQuery(String path) throws Exception {
-        DataViewVO data;
-        XMLDecoder dec;
-
-        dec = new XMLDecoder(new FileInputStream(path));
-        data = (DataViewVO)dec.readObject();
-        dec.close();
-
-        return data;
-    }
-
     private DataViewVO fetchAnalyteAndAuxField(DataViewVO data, String moduleName) throws Exception {
         int i;
         boolean excludeOverride, excludeResults, excludeAuxData;
