@@ -34,18 +34,25 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetManagerProxy {
 
     public WorksheetManager fetchById(Integer id) throws Exception {
+        SystemUserVO user;
         WorksheetManager manager;
         WorksheetViewDO data;
 
         data = EJBFactory.getWorksheet().fetchById(id);
+        if (data != null && data.getSystemUserId() != null) {
+            user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+            if (user != null)
+                data.setSystemUser(user.getLoginName());
+        }
+        
         manager = WorksheetManager.getInstance();
-
         manager.setWorksheet(data);
 
         return manager;

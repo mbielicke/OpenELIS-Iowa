@@ -76,9 +76,6 @@ public class TestTypeOfSampleBean {
         query.setParameter("unitOfMeasure", unitOfMeasure);
         unitList = (ArrayList<IdNameVO>)query.getResultList();
 
-        if (unitList.isEmpty())
-            throw new NotFoundException();
-
         return DataBaseUtil.toArrayList(unitList);
     }
 
