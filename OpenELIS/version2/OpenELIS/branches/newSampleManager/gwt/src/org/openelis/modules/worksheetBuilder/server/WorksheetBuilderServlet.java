@@ -32,6 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.WorksheetBuilderBean;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.WorksheetBuilderVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
@@ -45,7 +46,7 @@ public class WorksheetBuilderServlet extends RemoteServlet implements WorksheetB
     @EJB
     WorksheetBuilderBean worksheetBuilder;
 
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
+    public ArrayList<IdVO> query(Query query) throws Exception {
         return worksheetBuilder.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     

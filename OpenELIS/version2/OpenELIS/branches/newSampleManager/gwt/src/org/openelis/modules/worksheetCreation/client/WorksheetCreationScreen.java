@@ -626,6 +626,7 @@ public class WorksheetCreationScreen extends Screen {
                 org.openelis.ui.widget.Window win = new org.openelis.ui.widget.Window(false);
                 win.setName(wcLookupScreen.getName());
                 win.setContent(wcLookupScreen);
+                wcLookupScreen.setWindow(win);
                 OpenELIS.getBrowser().addWindow(win,"wcLookupScreen");
             } catch (Exception e) {
                 e.printStackTrace();
