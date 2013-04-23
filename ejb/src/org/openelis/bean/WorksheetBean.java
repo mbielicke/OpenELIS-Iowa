@@ -148,6 +148,10 @@ public class WorksheetBean {
         if (list.isEmpty())
             throw new NotFoundException();
 
+        list = DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
         for (i = 0; i < list.size(); i++ ) {
             worksheet = list.get(i);
 
@@ -157,10 +161,6 @@ public class WorksheetBean {
                     worksheet.setSystemUser(user.getLoginName());
             }
         }
-
-        list = DataBaseUtil.subList(list, first, max);
-        if (list == null)
-            throw new LastPageException();
 
         return list;
     }
