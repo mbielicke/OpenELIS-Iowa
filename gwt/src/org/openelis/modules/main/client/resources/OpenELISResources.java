@@ -149,11 +149,11 @@ public interface OpenELISResources extends ClientBundle {
     ImageResource findIcon();
     
     @Source("images/finddisabled.png")
-    ImageResource findDisabledicon();
+    ImageResource findDisabledIcon();
     
     @Source("images/selectallbuttonimage.png")
     ImageResource selectAllIcon();
     
     @Source("images/selectallbuttonimagedisabled.png")
-    ImageResource selectAllDisabledicon();
+    ImageResource selectAllDisabledIcon();
 }

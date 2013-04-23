@@ -3,6 +3,7 @@ package org.openelis.modules.worksheetBuilder.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.WorksheetBuilderVO;
 import org.openelis.ui.common.data.Query;
 
@@ -12,7 +13,7 @@ public interface WorksheetBuilderServiceIntAsync {
 
     void getColumnNames(Integer formatId, AsyncCallback<ArrayList<IdNameVO>> callback);
 
-    void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
+    void query(Query query, AsyncCallback<ArrayList<IdVO>> callback);
 
     void lookupAnalyses(Query query, AsyncCallback<ArrayList<WorksheetBuilderVO>> callback);
 

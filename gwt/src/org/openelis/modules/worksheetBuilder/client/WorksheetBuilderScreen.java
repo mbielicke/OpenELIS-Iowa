@@ -49,6 +49,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcLotViewDO;
@@ -135,6 +136,7 @@ import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetService;
+import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderLookupScreenUI.Action;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -860,13 +862,13 @@ public class WorksheetBuilderScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<IdNameVO>(def) {
+        nav = new ScreenNavigator<IdVO>(def) {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(13);
-                WorksheetBuilderService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
+                WorksheetBuilderService.get().query(query, new AsyncCallback<ArrayList<IdVO>>() {
+                    public void onSuccess(ArrayList<IdVO> result) {
                         setQueryResult(result);
                     }
 
@@ -886,18 +888,18 @@ public class WorksheetBuilderScreen extends Screen {
                 });
             }
 
-            public boolean fetch(IdNameVO entry) {
+            public boolean fetch(IdVO entry) {
                 return fetchById((entry == null) ? null : entry.getId());
             }
 
             public ArrayList<TableDataRow> getModel() {
-                ArrayList<IdNameVO> list;
+                ArrayList<IdVO> list;
                 ArrayList<TableDataRow> model;
 
                 list = nav.getQueryResult();
                 model = new ArrayList<TableDataRow>();
                 if (list != null) {
-                    for (IdNameVO entry : list)
+                    for (IdVO entry : list)
                         model.add(new TableDataRow(entry.getId(), entry.getId()));
                 }
                 return model;
@@ -1101,7 +1103,7 @@ public class WorksheetBuilderScreen extends Screen {
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(Messages.get().updatingComplete());
-                wbLookupScreen.getWindow().close();
+//                wbLookupScreen.getWindow().close();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1133,7 +1135,7 @@ public class WorksheetBuilderScreen extends Screen {
                 fetchById(null);
             }
             window.setDone(Messages.get().updateAborted());
-            wbLookupScreen.getWindow().close();
+//            wbLookupScreen.getWindow().close();
         } else {
             window.clearStatus();
         }
@@ -1343,7 +1345,7 @@ public class WorksheetBuilderScreen extends Screen {
                 DataChangeEvent.fire(wcs);
                 window.setDone(Messages.get().savingComplete());
                 
-                wbLookupScreen.getWindow().close();
+//                wbLookupScreen.getWindow().close();
             }
             
             public void onFailure(Throwable error) {
@@ -1389,7 +1391,7 @@ public class WorksheetBuilderScreen extends Screen {
         DataChangeEvent.fire(this);
         window.clearStatus();
         
-        wbLookupScreen.getWindow().close();
+//        wbLookupScreen.getWindow().close();
     }
 
     protected void worksheetHistory() {
@@ -1638,6 +1640,8 @@ public class WorksheetBuilderScreen extends Screen {
     protected void openLookupWindow() {
         org.openelis.ui.widget.Window win;
         
+        win = new org.openelis.ui.widget.Window(false);
+        win.setName(Messages.get().worksheetBuilderLookup());
         if (wbLookupScreen == null) {
             try {
                 wbLookupScreen = new WorksheetBuilderLookupScreen();
@@ -1725,8 +1729,7 @@ public class WorksheetBuilderScreen extends Screen {
             }
         }
 
-        win = new org.openelis.ui.widget.Window(false);
-        win.setName(wbLookupScreen.getName());
+        wbLookupScreen.setWindow(win);
         win.setContent(wbLookupScreen);
         OpenELIS.getBrowser().addWindow(win, "wbLookupScreen");
     }
