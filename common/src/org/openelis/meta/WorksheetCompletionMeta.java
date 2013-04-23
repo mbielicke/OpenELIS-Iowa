@@ -109,7 +109,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 SAMP_DESCRIPTION                = "_sample.description",   // combined field for all domain descriptions
                                 ANALYSIS_STATUS_ID              = "_analysis.status_id",
                                 ANALYSIS_TEST_NAME              = "_analysis.test.name",
-                                ANALYSIS_TEST_METHOD_NAME       = "_analysis.test.method.name";
+                                ANALYSIS_TEST_METHOD_NAME       = "_analysis.test.method.name",
+                                ANALYSIS_UNIT_OF_MEASURE_ID     = "_analysis.unitOfMeasureId";
     
 
     private static HashSet<String> names;
@@ -415,6 +416,10 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
     public static String getAnalysisTestMethodName() {
         return ANALYSIS_TEST_METHOD_NAME;
+    }
+
+    public static String getAnalysisUnitOfMeasureId() {
+        return ANALYSIS_UNIT_OF_MEASURE_ID;
     }
 
     public static HashSet<String> getNames() {
