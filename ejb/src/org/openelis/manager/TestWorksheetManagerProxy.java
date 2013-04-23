@@ -26,10 +26,11 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.TestWorksheetAnalyteBean;
 import org.openelis.bean.TestWorksheetBean;
 import org.openelis.bean.TestWorksheetItemBean;
@@ -266,6 +267,8 @@ public class TestWorksheetManagerProxy {
 
         prevDO = null;
 
+        Collections.sort(items, new TestWorksheetItemComparator());
+        
         for (i = 0; i < size; i++ ) {
             currDO = items.get(i);
 
@@ -387,5 +390,15 @@ public class TestWorksheetManagerProxy {
         }
 
         return false;
+    }
+    
+    private class TestWorksheetItemComparator implements Comparator<TestWorksheetItemDO> {
+        public int compare(TestWorksheetItemDO twiDO1, TestWorksheetItemDO twiDO2) {
+            if (twiDO1.getPosition() == null) {
+                return (twiDO2.getPosition() == null) ? 0 : 1;
+            } else {
+                return (twiDO2.getPosition() == null) ? -1 : twiDO1.getPosition().compareTo(twiDO2.getPosition());
+            }
+        }
     }
 }
