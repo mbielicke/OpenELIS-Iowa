@@ -136,7 +136,6 @@ import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetService;
-import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderLookupScreenUI.Action;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
