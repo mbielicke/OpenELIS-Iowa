@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -3301,11 +3301,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String endingQueryException();
 
   /**
-   * Translated "Please enter the accession number before loading an order".
+   * Translated "The accession number must be entered before loading an order".
    * 
-   * @return translated "Please enter the accession number before loading an order"
+   * @return translated "The accession number must be entered before loading an order"
    */
-  @DefaultMessage("Please enter the accession number before loading an order")
+  @DefaultMessage("The accession number must be entered before loading an order")
   @Key("enterAccNumBeforeOrderLoad")
   String enterAccNumBeforeOrderLoad();
 
@@ -4822,6 +4822,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String inProgress();
 
   /**
+   * Translated "The entry {0} under category {1} has been deactivate".
+   * 
+   * @return translated "The entry {0} under category {1} has been deactivate"
+   */
+  @DefaultMessage("The entry {0} under category {1} has been deactivate")
+  @Key("inactiveDictionaryException")
+  String inactiveDictionaryException(String arg0,  String arg1);
+
+  /**
    * Translated "''{0}, {1}'' cannot be imported because there is no matching active test".
    * 
    * @return translated "''{0}, {1}'' cannot be imported because there is no matching active test"
@@ -6073,11 +6082,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String logoutDescription();
 
   /**
-   * Translated "Logs ".
+   * Translated "Logs".
    * 
-   * @return translated "Logs "
+   * @return translated "Logs"
    */
-  @DefaultMessage("Logs ")
+  @DefaultMessage("Logs")
   @Key("logs")
   String logs();
 
@@ -10006,31 +10015,31 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample();
 
   /**
-   * Translated "Accession # ''{0}'': Number is already entered into the system".
+   * Translated "Accession # ''{0,number}'': Number is already entered into the system".
    * 
-   * @return translated "Accession # ''{0}'': Number is already entered into the system"
+   * @return translated "Accession # ''{0,number}'': Number is already entered into the system"
    */
-  @DefaultMessage("Accession # ''{0}'': Number is already entered into the system")
+  @DefaultMessage("Accession # ''{0,number}'': Number is already entered into the system")
   @Key("sample.accessionNumberDuplicate")
-  String sample_accessionNumberDuplicate(String arg0);
+  String sample_accessionNumberDuplicate(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0}'': Number is not in use yet".
+   * Translated "Accession # ''{0,number}'': Number is not in use yet".
    * 
-   * @return translated "Accession # ''{0}'': Number is not in use yet"
+   * @return translated "Accession # ''{0,number}'': Number is not in use yet"
    */
-  @DefaultMessage("Accession # ''{0}'': Number is not in use yet")
+  @DefaultMessage("Accession # ''{0,number}'': Number is not in use yet")
   @Key("sample.accessionNumberNotInUse")
-  String sample_accessionNumberNotInUse(String arg0);
+  String sample_accessionNumberNotInUse(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0}'': Number is invalid".
+   * Translated "Accession # ''{0,number}'': Number is invalid".
    * 
-   * @return translated "Accession # ''{0}'': Number is invalid"
+   * @return translated "Accession # ''{0,number}'': Number is invalid"
    */
-  @DefaultMessage("Accession # ''{0}'': Number is invalid")
+  @DefaultMessage("Accession # ''{0,number}'': Number is invalid")
   @Key("sample.accessionNumberNotValidException")
-  String sample_accessionNumberNotValidException(String arg0);
+  String sample_accessionNumberNotValidException(Integer arg0);
 
   /**
    * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing".
@@ -10301,6 +10310,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0}'': {1}, {2} - One or more result values invalid")
   @Key("sample.oneOrMoreResultValuesInvalid")
   String sample_oneOrMoreResultValuesInvalid(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order".
+   * 
+   * @return translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order")
+  @Key("sample.orderIdInvalidException")
+  String sample_orderIdInvalidException(Integer arg0,  Integer arg1);
 
   /**
    * Translated "Provider (L,F)".
