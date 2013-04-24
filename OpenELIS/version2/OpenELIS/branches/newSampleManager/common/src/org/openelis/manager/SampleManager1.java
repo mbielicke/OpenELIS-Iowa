@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
@@ -40,6 +41,8 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
@@ -153,24 +156,24 @@ public class SampleManager1 implements Serializable {
 
     public String getUid(SampleQaEventDO data) {
         return getSampleQAEventUid(data.getId());
-    } 
-    
+    }
+
     public String getUid(AnalysisQaEventDO data) {
         return getAnalysisQAEventUid(data.getId());
-    }    
-    
+    }
+
     public String getUid(NoteDO data) {
         return getNoteUid(data.getId());
     }
-    
+
     public String getUid(SampleItemDO data) {
         return getSampleItemUid(data.getId());
     }
-    
+
     public String getUid(AnalysisDO data) {
         return getAnalysisUid(data.getId());
     }
-    
+
     public String getUid(StorageDO data) {
         return getStorageUid(data.getId());
     }
@@ -182,90 +185,90 @@ public class SampleManager1 implements Serializable {
     public String getUid(ResultDO data) {
         return getResultUid(data.getId());
     }
-    
+
     /**
      * Returns the data object using its Uid.
      */
     public DataObject getObject(String uid) {
         if (doMap == null) {
             doMap = new HashMap<String, DataObject>();
-            
-            if (sampleQAs != null) 
+
+            if (sampleQAs != null)
                 for (SampleQaEventDO data : sampleQAs)
                     doMap.put(getSampleQAEventUid(data.getId()), data);
-            
-            if (analysisQAs != null) 
+
+            if (analysisQAs != null)
                 for (AnalysisQaEventDO data : analysisQAs)
                     doMap.put(getAnalysisQAEventUid(data.getId()), data);
-            
-            if (sampleNotes != null) 
+
+            if (sampleNotes != null)
                 for (NoteDO data : sampleNotes)
                     doMap.put(getNoteUid(data.getId()), data);
-            
-            if (analysisNotes != null) 
+
+            if (analysisNotes != null)
                 for (NoteDO data : analysisNotes)
                     doMap.put(getNoteUid(data.getId()), data);
-            
-            if (items != null) 
+
+            if (items != null)
                 for (SampleItemDO data : items)
                     doMap.put(getSampleItemUid(data.getId()), data);
-            
-            if (storages != null) 
+
+            if (storages != null)
                 for (StorageDO data : storages)
                     doMap.put(getStorageUid(data.getId()), data);
-            
-            if (analyses != null) 
+
+            if (analyses != null)
                 for (AnalysisDO data : analyses)
-                    doMap.put(getAnalysisUid(data.getId()), data);         
-            
-            if (users != null) 
+                    doMap.put(getAnalysisUid(data.getId()), data);
+
+            if (users != null)
                 for (AnalysisUserDO data : users)
                     doMap.put(getAnalysisUserUid(data.getId()), data);
-            
-            if (results != null) 
+
+            if (results != null)
                 for (ResultDO data : results)
                     doMap.put(getResultUid(data.getId()), data);
-            
+
         }
         return doMap.get(uid);
     }
-    
+
     /**
      * Returns the unique identifiers for each data object.
      */
-    
+
     public String getSampleQAEventUid(Integer id) {
-        return "Q:"+id;
+        return "Q:" + id;
     }
-    
+
     public String getAnalysisQAEventUid(Integer id) {
-        return "E:"+id;
+        return "E:" + id;
     }
-    
+
     public String getNoteUid(Integer id) {
-        return "N:"+id;
+        return "N:" + id;
     }
-    
+
     public String getSampleItemUid(Integer id) {
-        return "I:"+id;
+        return "I:" + id;
     }
-    
+
     public String getStorageUid(Integer id) {
-        return "T:"+id;
+        return "T:" + id;
     }
-    
+
     public String getAnalysisUid(Integer id) {
-        return "A:"+id;
+        return "A:" + id;
     }
-    
+
     public String getAnalysisUserUid(Integer id) {
-        return "U:"+id;
+        return "U:" + id;
     }
-    
+
     public String getResultUid(Integer id) {
-        return "R:"+id;
+        return "R:" + id;
     }
-    
+
     /**
      * Class to manage Sample Organization information
      */
@@ -277,9 +280,6 @@ public class SampleManager1 implements Serializable {
             return organizations.get(i);
         }
 
-        /**
-         * Returns a new organization
-         */
         public SampleOrganizationViewDO add() {
             SampleOrganizationViewDO data;
 
@@ -287,6 +287,24 @@ public class SampleManager1 implements Serializable {
             if (organizations == null)
                 organizations = new ArrayList<SampleOrganizationViewDO>();
             organizations.add(data);
+
+            return data;
+        }
+
+        public SampleOrganizationViewDO add(OrganizationDO organization) {
+            SampleOrganizationViewDO data;
+            AddressDO addr;
+
+            data = add();
+            data.setOrganizationId(organization.getId());
+            data.setOrganizationName(organization.getName());
+            addr = organization.getAddress();
+            data.setOrganizationMultipleUnit(addr.getMultipleUnit());
+            data.setOrganizationStreetAddress(addr.getStreetAddress());
+            data.setOrganizationCity(addr.getCity());
+            data.setOrganizationState(addr.getState());
+            data.setOrganizationZipCode(addr.getZipCode());
+            data.setOrganizationCountry(addr.getCountry());
 
             return data;
         }
@@ -354,9 +372,21 @@ public class SampleManager1 implements Serializable {
             SampleProjectViewDO data;
 
             data = new SampleProjectViewDO();
+            data.setIsPermanent("Y");
             if (projects == null)
                 projects = new ArrayList<SampleProjectViewDO>();
             projects.add(data);
+
+            return data;
+        }
+
+        public SampleProjectViewDO add(ProjectDO project) {
+            SampleProjectViewDO data;
+
+            data = add();
+            data.setProjectId(project.getId());
+            data.setProjectName(project.getName());
+            data.setProjectDescription(project.getDescription());
 
             return data;
         }
@@ -771,14 +801,14 @@ public class SampleManager1 implements Serializable {
      * Class to manage sample items
      */
     public class SampleItem {
-        
+
         /**
          * Returns the item with the specified id
          */
         public SampleItemViewDO getById(Integer id) {
             return (SampleItemViewDO)getObject(getSampleItemUid(id));
         }
-        
+
         /**
          * Returns the item at specified index.
          */

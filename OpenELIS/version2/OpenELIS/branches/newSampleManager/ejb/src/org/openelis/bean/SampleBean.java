@@ -645,12 +645,10 @@ public class SampleBean {
         // that by the time we insert it will still be unique, and will
         // slow us down.
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
-            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotValidException(
-                                         DataBaseUtil.asString(data.getAccessionNumber()))));
+            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotValidException(data.getAccessionNumber())));
 
         if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
-            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotInUse(
-                                         DataBaseUtil.asString(data.getAccessionNumber()))));
+            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotInUse(data.getAccessionNumber())));
 
         // domain
         d = data.getDomain();

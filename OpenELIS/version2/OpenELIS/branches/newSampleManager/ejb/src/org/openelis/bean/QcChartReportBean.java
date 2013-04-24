@@ -97,12 +97,8 @@ public class QcChartReportBean {
         resultList = null;
         try {
             if (worksheetCreatedDateFrom != null && worksheetCreatedDateTo != null) {
-                startDate = ReportUtil.getDatetime(Datetime.YEAR,
-                                                   Datetime.DAY,
-                                                   worksheetCreatedDateFrom);
-                endDate = ReportUtil.getDatetime(Datetime.YEAR,
-                                                 Datetime.DAY,
-                                                 worksheetCreatedDateTo);
+                startDate = ReportUtil.getDate(worksheetCreatedDateFrom);
+                endDate = ReportUtil.getDate(worksheetCreatedDateTo);
                 resultList = worksheetAnalysis.fetchByDateForQcChart(startDate.getDate(),
                                                                      endDate.getDate(),
                                                                      qcName);
