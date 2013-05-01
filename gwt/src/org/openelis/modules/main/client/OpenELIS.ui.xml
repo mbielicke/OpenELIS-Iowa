@@ -27,7 +27,7 @@
     <g:center>
       <g:LayoutPanel>
         <g:layer top="0px" height="30px">
-          <g:AbsolutePanel styleName="{libRes.menuCss.topMenuBar}" width="100%">
+          <g:AbsolutePanel width="100%">
             <w:MenuBar>
               <w:Menu label="{msg.application}">
                 <w:MenuItem description="{msg.preferenceDescription}" enabled="true" icon="{res.style.preferenceIcon}" ui:field="preference"

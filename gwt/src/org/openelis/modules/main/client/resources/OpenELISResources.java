@@ -16,6 +16,10 @@ public interface OpenELISResources extends ClientBundle {
 	@ImageOptions(repeatStyle=RepeatStyle.Horizontal)
 	ImageResource topMenuBG();
 	
+	@Source("images/app_background.png")
+	@ImageOptions(repeatStyle=RepeatStyle.Both)
+	ImageResource AppBackground();
+	
 	@Source("images/cog_edit.png")
 	ImageResource EditSettings();
 
