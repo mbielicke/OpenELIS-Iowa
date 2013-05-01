@@ -50,7 +50,7 @@
             <g:HorizontalPanel>
               <w:Button css="{uiRes.buttonPanel}" ui:field="query" leftIcon="{uiRes.buttonPanel.QueryButtonImage}" text="{msg.query}"
                 toggles="true" />
-              <w:Button css="{uiRes.buttonPanel}" ui:field="previous" leftIcon="{uiRes.buttonPanel.PreviousButtonImage" text="{msg.previous}" />
+              <w:Button css="{uiRes.buttonPanel}" ui:field="previous" leftIcon="{uiRes.buttonPanel.PreviousButtonImage}" text="{msg.previous}" />
               <w:Button css="{uiRes.buttonPanel}" ui:field="next" leftIcon="{uiRes.buttonPanel.NextButtonImage}" text="{msg.next}" />
               <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
               <w:Button css="{uiRes.buttonPanel}" ui:field="add" leftIcon="{uiRes.buttonPanel.AddButtonImage}" text="{msg.add}"
