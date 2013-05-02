@@ -63,6 +63,7 @@ import org.openelis.ui.widget.AtoZButtons;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
@@ -102,6 +103,8 @@ public class MethodScreen extends Screen {
     protected Button                   query, previous, next, add, update, commit, abort, atozNext,
                                        atozPrev, optionsButton;
 
+    @UiField
+    protected Menu                     optionsMenu;
     @UiField
     protected MenuItem                 history;
     @UiField
@@ -202,8 +205,9 @@ public class MethodScreen extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                history.setEnabled(isState(DISPLAY));
+                optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
+                history.setEnabled(isState(DISPLAY));
             }
         });
 

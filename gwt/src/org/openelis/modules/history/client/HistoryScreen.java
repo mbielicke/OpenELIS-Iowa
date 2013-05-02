@@ -36,6 +36,9 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -69,8 +72,10 @@ public class HistoryScreen extends Screen {
     protected AppButton                nextButton, previousButton;
     protected static HistoryScreen     instance;     
     
-    protected HistoryScreen() throws Exception {
+    protected HistoryScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(HistoryDef.class));
+        
+        setWindow(window);
         
         initialize();
         setState(State.DEFAULT);
@@ -133,24 +138,36 @@ public class HistoryScreen extends Screen {
         }
     }
 
-    public static void showHistory(String title, Integer referenceTableId, IdNameVO... referenceId) {        
+    public static void showHistory(String title, Integer referenceTableId, IdNameVO... referenceId) {
+        boolean newWindow;
+        org.openelis.ui.widget.Window win;
+
+        newWindow = false;
         if (instance == null) {
+            newWindow = true;
+            win = new org.openelis.ui.widget.Window(false);
             try {
-                instance = new HistoryScreen();
+                instance = new HistoryScreen(win);
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert(e.getMessage());
                 return;
             }
+            win.setContent(instance);
+            win.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+                public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
+                    instance = null;
+                }
+            });
         }
-        instance.initializeWindow(title);
+        
+        instance.window.setName(title);
         instance.setReferenceVoList(referenceId);
         instance.setReferenceTableId(referenceTableId);
-        DataChangeEvent.fire(instance); 
-    }
-    
-    protected void initializeWindow(String title) {
-        //OpenELIS.getBrowser().addScreen(this);
+        DataChangeEvent.fire(instance);
+        
+        if (newWindow)
+            OpenELIS.getBrowser().addWindow(instance.window, "historyScreen");
     }
     
     protected void setReferenceVoList(IdNameVO[] referenceVOList) {
