@@ -208,7 +208,7 @@
                   ui:field="systemVariable" display="{msg.systemVariable}" />
                 <w:MenuItem description="{msg.pwsInformationDescription}" enabled="false" icon="{res.style.sdwisSampleLoginIcon}"
                   ui:field="pws" display="{msg.pwsInformation}" />
-                <w:MenuItem description="{msg.cronDescription}" ui:field="cron" display="{msg.cron}" />
+                <w:MenuItem description="{msg.cronDescription}" enabled="false" ui:field="cron" display="{msg.cron}" />
               </w:Menu>
             </w:MenuBar>
           </g:AbsolutePanel>
