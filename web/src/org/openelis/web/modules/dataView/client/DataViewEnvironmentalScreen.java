@@ -1166,7 +1166,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             data.setAuxFields(temp.getAuxFields());
             loadDeck();
         } catch (NotFoundException e) {
-            Window.alert(Messages.get().noSamplesFoundChangeSearch());
+            window.setError(Messages.get().noSamplesFoundChangeSearch());
+            return;
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }

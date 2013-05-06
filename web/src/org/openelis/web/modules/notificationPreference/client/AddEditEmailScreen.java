@@ -176,6 +176,7 @@ public class AddEditEmailScreen extends Screen implements
     
     public void clearFields(AddEditEmailVO data) {       
         this.data = data;
+        window.clearStatus();
         DataChangeEvent.fire(this);
         setFocus(email);
     }

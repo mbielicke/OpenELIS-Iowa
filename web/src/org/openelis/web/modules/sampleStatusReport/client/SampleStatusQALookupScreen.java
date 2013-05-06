@@ -117,6 +117,7 @@ public class SampleStatusQALookupScreen extends Screen {
                         text.append("\n");
                     text.append(sqeVDO.getQaEventReportingText());
                 }
+                window.clearStatus();
             } catch (NotFoundException e) {
                 window.setError(Messages.get().noRecordsFound());
             } catch (Exception e) {
@@ -130,6 +131,7 @@ public class SampleStatusQALookupScreen extends Screen {
                         text.append("\n");
                     text.append(aqeVDO.getQaEventReportingText());
                 }
+                window.clearStatus();
             } catch (NotFoundException e) {
                 window.setError(Messages.get().noRecordsFound());
             } catch (Exception e) {
