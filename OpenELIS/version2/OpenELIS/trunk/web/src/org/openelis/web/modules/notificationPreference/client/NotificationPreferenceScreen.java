@@ -315,7 +315,7 @@ public class NotificationPreferenceScreen extends Screen {
              * this user's system user module for this screen   
              */
             if (idList == null) {
-                Window.alert(Messages.get().noPermToAddEmailException());               
+                window.setError(Messages.get().noPermToAddEmailException());               
                 return;
             }
         }
@@ -382,6 +382,7 @@ public class NotificationPreferenceScreen extends Screen {
         
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG, false);
         modal.setContent(addEditEmailScreen, l+60, h+10);
+        addEditEmailScreen.setWindow(modal);
         addEditEmailScreen.setState(state);
         addEditEmailScreen.clearFields(data);
     }
