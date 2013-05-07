@@ -258,7 +258,7 @@
 	width: 20px;
 }
 
-@sprite .addRowDisabledIcon {
+@sprite .button-Disabled .addRowIcon {
 	gwt-image: 'addRowDisabledIcon';
 	width: 20px;
 }
@@ -268,7 +268,7 @@
 	width: 20px;
 }
 
-@sprite .removeRowDisabledIcon {
+@sprite .button-Disabled .removeRowIcon {
 	gwt-image: 'removeRowDisabledIcon';
 	width: 20px;
 }
