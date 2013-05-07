@@ -1,8 +1,11 @@
 package org.openelis.modules.main.client.resources;
 
+import org.openelis.ui.resources.ButtonCSS;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.resources.client.CssResource.Import;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
@@ -10,6 +13,7 @@ public interface OpenELISResources extends ClientBundle {
 	public static final OpenELISResources INSTANCE = GWT.create(OpenELISResources.class);
 	
 	@Source("css/style.css")
+	@Import(ButtonCSS.class)
 	Style style();
 	
 	@Source("images/topmenubg.gif")
