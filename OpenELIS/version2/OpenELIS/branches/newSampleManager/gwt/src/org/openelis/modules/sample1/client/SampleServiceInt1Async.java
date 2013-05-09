@@ -27,8 +27,10 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.ui.common.data.Query;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1.Load;
+import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -41,20 +43,32 @@ public interface SampleServiceInt1Async {
     public void fetchByIds(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
                            AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception;
 
+    public void fetchForUpdate(Integer sampleIds, SampleManager1.Load elements[],
+                               AsyncCallback<SampleManager1> callback) throws Exception;
+
     public void fetchForUpdate(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
                                AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception;
+
+    public void unlock(Integer sampleId, Load elements[], AsyncCallback<SampleManager1> callback) throws Exception;
+
+    public void unlock(ArrayList<Integer> sampleIds, Load elements[],
+                       AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception;
 
     public void fetchByAnalyses(ArrayList<Integer> analysisIds, SampleManager1.Load elements[],
                                 AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception;
 
     public void getInstance(String domain, AsyncCallback<SampleManager1> callback) throws Exception;
 
-    public void add(SampleManager1 sm, boolean ignoreWarnings,
-                    AsyncCallback<SampleManager1> callback) throws Exception;
-
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback) throws Exception;
-    
-    public void fetchByQuery(Query query, SampleManager1.Load elements[],
-                              AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception;
+
+    public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                             SampleManager1.Load elements[],
+                             AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception;
+
+    public void setAccessionNumber(SampleManager1 sm, Integer accession,
+                                   AsyncCallback<SampleManager1> callback) throws Exception;
+
+    public void setOrderId(SampleManager1 sm, Integer orderId,
+                           AsyncCallback<SampleTestReturnVO> callback) throws Exception;
 }

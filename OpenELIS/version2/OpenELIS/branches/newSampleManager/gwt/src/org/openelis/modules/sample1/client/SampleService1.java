@@ -28,10 +28,11 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.ui.common.data.Query;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
+import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -50,16 +51,16 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     private static SampleService1  instance;
 
     public static SampleService1 get() {
-        if(instance == null)
+        if (instance == null)
             instance = new SampleService1();
-        
+
         return instance;
     }
-    
+
     private SampleService1() {
         service = (SampleServiceInt1Async)GWT.create(SampleServiceInt1.class);
     }
-    
+
     @Override
     public SampleManager1 getInstance(String domain) throws Exception {
         Callback<SampleManager1> callback;
@@ -68,42 +69,43 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         service.getInstance(domain, callback);
         return callback.getResult();
     }
-    
+
     @Override
     public void getInstance(String domain, AsyncCallback<SampleManager1> callback) throws Exception {
         service.getInstance(domain, callback);
     }
-    
+
     @Override
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
-                                                      SampleManager1.Load... elements) throws Exception {
+                                                SampleManager1.Load... elements) throws Exception {
         Callback<ArrayList<SampleManager1>> callback;
 
         callback = new Callback<ArrayList<SampleManager1>>();
         service.fetchByIds(sampleIds, elements, callback);
         return callback.getResult();
     }
-    
+
     @Override
-    public void fetchByIds(ArrayList<Integer> sampleIds,
-                                 SampleManager1.Load elements[],
-                                 AsyncCallback<ArrayList<SampleManager1>> callback)  throws Exception {
+    public void fetchByIds(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
+                           AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
         service.fetchByIds(sampleIds, elements, callback);
     }
-    
+
     @Override
-    public ArrayList<SampleManager1> fetchByQuery(Query query,
+    public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception {
         Callback<ArrayList<SampleManager1>> callback;
 
         callback = new Callback<ArrayList<SampleManager1>>();
-        service.fetchByQuery(query, elements, callback);
+        service.fetchByQuery(fields, first, max, elements, callback);
         return callback.getResult();
     }
-    
+
     @Override
-    public void fetchByQuery(Query query, SampleManager1.Load elements[], AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception { 
-        service.fetchByQuery(query, elements, callback);
+    public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                             SampleManager1.Load elements[],
+                             AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+        service.fetchByQuery(fields, first, max, elements, callback);
     }
 
     @Override
@@ -112,45 +114,76 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         Callback<ArrayList<SampleManager1>> callback;
 
         callback = new Callback<ArrayList<SampleManager1>>();
-        service.fetchByAnalyses(analysisIds,elements, callback);
+        service.fetchByAnalyses(analysisIds, elements, callback);
         return callback.getResult();
     }
-    
+
     @Override
     public void fetchByAnalyses(ArrayList<Integer> analysisIds, Load elements[],
                                 AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
-        service.fetchByAnalyses(analysisIds,elements, callback);
+        service.fetchByAnalyses(analysisIds, elements, callback);
     }
 
     @Override
-    public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds, SampleManager1.Load ...elements) throws Exception {
-        Callback<ArrayList<SampleManager1>> callback;
-
-        callback = new Callback<ArrayList<SampleManager1>>();
-        service.fetchForUpdate(sampleIds,elements, callback);
-        return callback.getResult();
-    }
-    
-    @Override
-    public void fetchForUpdate(ArrayList<Integer> sampleIds, SampleManager1.Load elements[], 
-                               AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
-        service.fetchForUpdate(sampleIds,elements, callback);
-    }
-    
-    @Override
-    public SampleManager1 add(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
+    public SampleManager1 fetchForUpdate(Integer sampleId, SampleManager1.Load... elements) throws Exception {
         Callback<SampleManager1> callback;
 
         callback = new Callback<SampleManager1>();
-        service.add(sm, ignoreWarnings, callback);
+        service.fetchForUpdate(sampleId, elements, callback);
         return callback.getResult();
     }
-    
+
     @Override
-    public void add(SampleManager1 sm, boolean ignoreWarnings, AsyncCallback<SampleManager1> callback) throws Exception {
-        service.add(sm, ignoreWarnings, callback);
+    public void fetchForUpdate(Integer sampleId, SampleManager1.Load elements[],
+                               AsyncCallback<SampleManager1> callback) throws Exception {
+        service.fetchForUpdate(sampleId, elements, callback);
     }
-    
+
+    @Override
+    public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds,
+                                                    SampleManager1.Load... elements) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.fetchForUpdate(sampleIds, elements, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void fetchForUpdate(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
+                               AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+        service.fetchForUpdate(sampleIds, elements, callback);
+    }
+
+    @Override
+    public void unlock(Integer sampleId, Load[] elements, AsyncCallback<SampleManager1> callback) throws Exception {
+        service.unlock(sampleId, elements, callback);
+    }
+
+    @Override
+    public SampleManager1 unlock(Integer sampleId, Load... elements) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.unlock(sampleId, elements, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void unlock(ArrayList<Integer> sampleIds, Load[] elements,
+                       AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+        service.unlock(sampleIds, elements, callback);
+    }
+
+    @Override
+    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
+        Callback<ArrayList<SampleManager1>> callback;
+
+        callback = new Callback<ArrayList<SampleManager1>>();
+        service.unlock(sampleIds, elements, callback);
+        return callback.getResult();
+    }
+
     @Override
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
         Callback<SampleManager1> callback;
@@ -159,9 +192,41 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         service.update(sm, ignoreWarnings, callback);
         return callback.getResult();
     }
-    
+
     @Override
-    public void update(SampleManager1 sm, boolean ignoreWarnings, AsyncCallback<SampleManager1> callback) throws Exception {
+    public void update(SampleManager1 sm, boolean ignoreWarnings,
+                       AsyncCallback<SampleManager1> callback) throws Exception {
         service.update(sm, ignoreWarnings, callback);
+    }
+
+    @Override
+    public void setAccessionNumber(SampleManager1 sm, Integer accession,
+                                   AsyncCallback<SampleManager1> callback) throws Exception {
+        service.setAccessionNumber(sm, accession, callback);
+    }
+
+    @Override
+    public SampleManager1 setAccessionNumber(SampleManager1 sm, Integer accession) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.setAccessionNumber(sm, accession, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void setOrderId(SampleManager1 sm, Integer orderId,
+                           AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+        service.setOrderId(sm, orderId, callback);
+        
+    }
+
+    @Override
+    public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception {
+        Callback<SampleTestReturnVO> callback;
+
+        callback = new Callback<SampleTestReturnVO>();
+        service.setOrderId(sm, orderId, callback);
+        return callback.getResult();
     }
 }

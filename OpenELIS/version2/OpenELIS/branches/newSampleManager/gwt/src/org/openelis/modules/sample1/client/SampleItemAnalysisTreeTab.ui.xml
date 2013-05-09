@@ -17,57 +17,46 @@
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel>
-    <!--end button panel code -->
-    <g:layer top="0px" bottom="0px">
-      <g:HTMLPanel width="100%">
-        <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.itemsAndAnalyses}" /></td> -->
-        <table>
-          <tr>
-            <r:Tree ui:field="itemsTestsTree" width="auto" visibleRows="4" verticalScroll="ALWAYS"
-              horizontalScroll="ALWAYS" header="true"
-            >
-              <r:Column width="280" label="{msg.itemAnalyses}" />
-              <r:Column width="130" label="{msg.typeStatus}" />
-              <r:Leaf key="sampleItem">
-                <r:LeafColumn>
-                  <t:LabelCell />
-                </r:LeafColumn>
-                <r:LeafColumn>
-                  <t:LabelCell />
-                </r:LeafColumn>
-              </r:Leaf>
-              <r:Leaf key="analysis">
-                <r:LeafColumn>
-                  <t:LabelCell />
-                </r:LeafColumn>
-                <r:LeafColumn>
-                  <t:DropdownCell>
-                    <w:Dropdown ui:field="analysisStatus" width="110px" case="LOWER" field="Integer" /> <!-- popWidth="110" -->
-                  </t:DropdownCell>
-                </r:LeafColumn>
-              </r:Leaf>
-            </r:Tree>
-          </tr>
-          <tr>
-            <g:HorizontalPanel> <!-- style="{res.style.TreeButtonFooter}" -->
-              <g:AbsolutePanel>
-                <w:Button ui:field="addItem" leftIcon="{res.style.addRowIcon}" text="{msg.addItem}" />
-              </g:AbsolutePanel>
-              <g:AbsolutePanel>
-                <w:Button ui:field="addAnalysis" leftIcon="{res.style.addRowIcon}"
-                  text="{msg.addAnalysis}" />
-              </g:AbsolutePanel>
-              <g:AbsolutePanel>
-                <w:Button ui:field="removeRow" leftIcon="{res.style.removeRowIcon}"
-                  text="{msg.removeRow}" />
-              </g:AbsolutePanel>
-              <g:AbsolutePanel>
-                <w:Button ui:field="popoutTree" text="{msg.popout}" /> <!-- leftIcon="{res.style.popoutButtonImage}" -->
-              </g:AbsolutePanel>
-            </g:HorizontalPanel>
-          </tr>
-        </table>
-      </g:HTMLPanel>
+    <g:layer top = "0px" bottom="40px">
+      <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.itemsAndAnalyses}" /></td> -->
+      <r:Tree ui:field="itemsTestsTree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+        <r:Column width="280" label="{msg.itemAnalyses}" />
+        <r:Column width="130" label="{msg.typeStatus}" />
+        <r:Leaf key="sampleItem">
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+        </r:Leaf>
+        <r:Leaf key="analysis">
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:DropdownCell>
+              <w:Dropdown ui:field="analysisStatus" width="110px" case="LOWER" field="Integer" /> <!-- popWidth="110" -->
+            </t:DropdownCell>
+          </r:LeafColumn>
+        </r:Leaf>
+      </r:Tree>
+    </g:layer>
+    <g:layer bottom="0px" height="40px">
+      <g:HorizontalPanel> <!-- style="{res.style.TreeButtonFooter}" -->
+        <g:AbsolutePanel>
+          <w:Button ui:field="addItem" leftIcon="{res.style.addRowIcon}" text="{msg.addItem}" />
+        </g:AbsolutePanel>
+        <g:AbsolutePanel>
+          <w:Button ui:field="addAnalysis" leftIcon="{res.style.addRowIcon}" text="{msg.addAnalysis}" />
+        </g:AbsolutePanel>
+        <g:AbsolutePanel>
+          <w:Button ui:field="removeRow" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
+        </g:AbsolutePanel>
+        <g:AbsolutePanel>
+          <w:Button ui:field="popoutTree" text="{msg.popout}" /> <!-- leftIcon="{res.style.popoutButtonImage}" -->
+        </g:AbsolutePanel>
+      </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>

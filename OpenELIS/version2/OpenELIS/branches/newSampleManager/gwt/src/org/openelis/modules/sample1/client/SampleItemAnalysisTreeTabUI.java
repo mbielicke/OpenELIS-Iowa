@@ -25,8 +25,8 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
@@ -42,13 +42,14 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.event.StateChangeEvent.Handler;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.tree.Node;
 import org.openelis.ui.widget.tree.Tree;
 import org.openelis.ui.widget.tree.event.NodeAddedEvent;
@@ -150,7 +151,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen { //implements HasAction
              }
 
              public void onStateChange(StateChangeEvent event) {
-                 itemsTestsTree.setEnabled(isState(ADD, UPDATE));
+                 itemsTestsTree.setEnabled(isState(DISPLAY, ADD, UPDATE));
              }
          });        
 
@@ -193,14 +194,14 @@ public class SampleItemAnalysisTreeTabUI extends Screen { //implements HasAction
              public void onUnselection(UnselectionEvent<TreeDataItem> event) {
                  ActionEvent.fire(treeTab, Action.REFRESH_TABS, null);
              }
-         });
+         });*/
 
-         itemsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+        itemsTestsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
              public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                  // never allowed to edit tree..use tabs
                  event.cancel();
              }
-         });*/
+         });
 
         itemsTestsTree.addNodeAddedHandler(new NodeAddedHandler() {
             public void onNodeAdded(NodeAddedEvent event) {
@@ -372,6 +373,11 @@ public class SampleItemAnalysisTreeTabUI extends Screen { //implements HasAction
                  evaluatePopout();
                  //setState(state);
                  fireDataChange();
+                 /*
+                  * clear the tabs showing the data related to the nodes in the 
+                  * tree e.g. sample item, analysis or results 
+                  */
+                 bus.fireEvent(new SelectionEvent(SelectedType.NONE, null));   
              }
          });
      }
