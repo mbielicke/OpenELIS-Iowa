@@ -123,6 +123,9 @@ public interface OpenELISResources extends ClientBundle {
 	@Source("images/note.gif")
 	ImageResource note();
 	
+	@Source("images/standardnotebuttonimagedisabled.gif")
+	ImageResource noteDisabled();
+	
 	@Source("images/page.png")
 	ImageResource page();
 	

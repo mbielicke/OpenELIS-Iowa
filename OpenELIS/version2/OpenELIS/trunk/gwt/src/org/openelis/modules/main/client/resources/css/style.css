@@ -223,6 +223,11 @@
 	width: 20px;
 }
 
+@sprite .button-Disabled .standardNoteIcon {
+	gwt-image: 'noteDisabled';
+	width :20px;
+}
+
 @sprite .trailerForTestIcon {
 	gwt-image: 'page';
 	width: 20px;
