@@ -194,8 +194,10 @@ public class OrganizationScreenUI extends Screen {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 query.setEnabled(isState(QUERY,DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
-                if (isState(QUERY)) 
+                if (isState(QUERY)){ 
                     query.lock();
+                    query.setPressed(true);
+                }
             }
         });
 
@@ -219,12 +221,11 @@ public class OrganizationScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                add.setEnabled(isState(ADD,DEFAULT, DISPLAY) && userPermission.hasAddPermission());
                 if (isState(ADD)) {
-                    add.setPressed(true);
                     add.lock();
-                } else
-                    add.setPressed(false);
+                    add.setPressed(true);
+                }
             }
         });
 
@@ -233,8 +234,10 @@ public class OrganizationScreenUI extends Screen {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 update.setEnabled(isState(UPDATE,DISPLAY) && userPermission.hasUpdatePermission());
-                if (isState(UPDATE)) 
+                if (isState(UPDATE)) {
                     update.lock();
+                    update.setPressed(true);
+                }
             }
         });
 
