@@ -64,7 +64,7 @@
               <ui:text from="{msg.qty}:" />
             </td>
             <td>
-              <w:TextBox ui:field="quantity" width="150px" maxLength="20" />
+              <w:TextBox ui:field="quantity" width="150px" maxLength="20" field="Double"/>
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.unit}:" />

@@ -25,13 +25,9 @@
  */
 package org.openelis.modules.neonatalScreeningSampleLogin.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -47,23 +43,28 @@ import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.modules.sample1.client.AnalysisTabUI;
+import org.openelis.modules.sample1.client.AuxDataTabUI;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleItemAnalysisTreeTabUI;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
+import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleOrganizationLookupScreen1;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.sample1.client.SampleProjectLookupScreen1;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
@@ -101,7 +102,9 @@ import com.google.gwt.user.client.ui.Widget;
 public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
     @UiTemplate("NeonatalScreeningSampleLogin.ui.xml")
-    interface NeonatalScreeningSampleLoginUiBinder extends UiBinder<Widget, NeonatalScreeningSampleLoginScreenUI> {
+    interface NeonatalScreeningSampleLoginUiBinder
+                                                  extends
+                                                  UiBinder<Widget, NeonatalScreeningSampleLoginScreenUI> {
     };
 
     private static NeonatalScreeningSampleLoginUiBinder uiBinder = GWT.create(NeonatalScreeningSampleLoginUiBinder.class);
@@ -117,7 +120,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                     gestationalAge, weight, transfusionAge, collectionAge;
 
     @UiField
-    protected TextBox                                   clientReference, patientLastName,
+    protected TextBox<String>                           clientReference, patientLastName,
                     patientFirstName, patientAddrMultipleUnit, patientAddrStreetAddress,
                     patientAddrCity, patientAddrZipCode, nextOfKinLastName, nextOfKinMiddleName,
                     nextOfKinFirstName, nextOfKinAddrHomePhone, nextOfKinAddrMultipleUnit,
@@ -161,6 +164,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
     @UiField(provided = true)
     protected SampleItemTabUI                           sampleItemTab;
 
+    @UiField(provided = true)
+    protected AnalysisTabUI                             analysisTab;
+    
+    @UiField(provided = true)
+    protected SampleNotesTabUI                          sampleNotesTab;
+    
+    @UiField(provided = true)
+    protected AuxDataTabUI                              auxDataTab;
+
     protected ArrayList<SampleManager1>                 queriedList;
 
     protected int                                       queryIndex;
@@ -169,22 +181,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
     protected NeonatalScreeningSampleLoginScreenUI      screen;
 
-    protected Tabs                                      tab;
-
     protected SampleHistoryUtility1                     historyUtility;
 
     protected SampleProjectLookupScreen1                projectLookUp;
 
     protected SampleOrganizationLookupScreen1           organizationLookUp;
 
-    private enum Tabs {
-        SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
-        AUX_DATA
-    };
-
     public NeonatalScreeningSampleLoginScreenUI(WindowInt window) throws Exception {
         super();
-
         setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("sampleneonatal");
@@ -194,40 +198,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         sampleItemAnalysisTreeTab = new SampleItemAnalysisTreeTabUI(this, bus);
         sampleItemTab = new SampleItemTabUI(this, bus);
-
+        analysisTab = new AnalysisTabUI(this, bus);
+        sampleNotesTab = new SampleNotesTabUI(this, bus);
+        auxDataTab =  new AuxDataTabUI(this, bus);
         initWidget(uiBinder.createAndBindUi(this));
 
-        tab = Tabs.SAMPLE_ITEM;
         manager = null;
-
-        try {
-            CategoryCache.getBySystemNames("sample_status",
-                                           "analysis_status",
-                                           "user_action",
-                                           "type_of_sample",
-                                           "source_of_sample",
-                                           "sample_container",
-                                           "unit_of_measure",
-                                           "qaevent_type",
-                                           "aux_field_value_type",
-                                           "organization_type",
-                                           "worksheet_status",
-                                           "parameter_type",
-                                           "gender",
-                                           "race",
-                                           "ethnicity",
-                                           "patient_relation",
-                                           "feeding");
-        } catch (Exception e) {
-            Window.alert("NeonatalScreeningSampleLoginScreen: missing dictionary entry; " +
-                         e.getMessage());
-            window.close();
-        }
 
         initialize();
         setData();
         setState(DEFAULT);
-        initializeDropdowns();
         fireDataChange();
 
         logger.fine("Neonatal Screening Sample Login Screen Opened");
@@ -237,6 +217,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
+        ArrayList<Item<Integer>> model;
+        Item<Integer> row;
+        
         screen = this;
 
         //
@@ -560,7 +543,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientLastName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientLastName.setValue(getPatientLastName());
+                                 patientLastName.setValue(getPatientLastName());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -578,7 +561,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientFirstName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientFirstName.setValue(getPatientFirstName());
+                                 patientFirstName.setValue(getPatientFirstName());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -596,7 +579,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientGenderId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientGenderId.setValue(getPatientGenderId());
+                                 patientGenderId.setValue(getPatientGenderId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -614,7 +597,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientRaceId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientRaceId.setValue(getPatientRaceId());
+                                 patientRaceId.setValue(getPatientRaceId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -632,7 +615,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientEthnicityId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientEthnicityId.setValue(getPatientEthnicityId());
+                                 patientEthnicityId.setValue(getPatientEthnicityId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -650,7 +633,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientBirthDate(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientBirthDate.setValue(getPatientBirthDate());
+                                 patientBirthDate.setValue(getPatientBirthDate());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -668,7 +651,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientBirthTime(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientBirthTime.setValue(getPatientBirthTime());
+                                 patientBirthTime.setValue(getPatientBirthTime());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -686,7 +669,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientAddrMultipleUnit(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
+                                 patientAddrMultipleUnit.setValue(getPatientAddressMultipleUnit());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -705,7 +688,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientAddrStreetAddress(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
+                                 patientAddrStreetAddress.setValue(getPatientAddressStreetAddress());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -724,7 +707,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientAddrCity(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientAddrCity.setValue(getPatientAddressCity());
+                                 patientAddrCity.setValue(getPatientAddressCity());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -742,7 +725,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientAddrState(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientAddrState.setValue(getPatientAddressState());
+                                 patientAddrState.setValue(getPatientAddressState());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -760,7 +743,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoPatientAddrZipCode(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // patientAddrZipCode.setValue(getPatientAddressZipCode());
+                                 patientAddrZipCode.setValue(getPatientAddressZipCode());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -778,7 +761,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinLastName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinLastName.setValue(getNextOfKinLastName());
+                                 nextOfKinLastName.setValue(getNextOfKinLastName());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -814,7 +797,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinFirstName(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinFirstName.setValue(getNextOfKinFirstName());
+                                 nextOfKinFirstName.setValue(getNextOfKinFirstName());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -832,7 +815,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinRelationId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinRelationId.setValue(getNeonatalNextOfKinRelationId());
+                                 nextOfKinRelationId.setValue(getNeonatalNextOfKinRelationId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -850,7 +833,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinGenderId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinGenderId.setValue(getNextOfKinGenderId());
+                                 nextOfKinGenderId.setValue(getNextOfKinGenderId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -868,7 +851,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinRaceId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinRaceId.setValue(getNextOfKinRaceId());
+                                 nextOfKinRaceId.setValue(getNextOfKinRaceId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -886,7 +869,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinEthnicityId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinEthnicityId.setValue(getNextOfKinEthnicityId());
+                                 nextOfKinEthnicityId.setValue(getNextOfKinEthnicityId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -904,7 +887,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinBirthDate(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinBirthDate.setValue(getNextOfKinBirthDate());
+                                 nextOfKinBirthDate.setValue(getNextOfKinBirthDate());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -922,7 +905,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinAddrHomePhone(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinAddrHomePhone.setValue(getNextOfKinAddressHomePhone());
+                                 nextOfKinAddrHomePhone.setValue(getNextOfKinAddressHomePhone());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -941,7 +924,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinAddrMultipleUnit(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinAddrMultipleUnit.setValue(getNextOfKinAddressMultipleUnit());
+                                 nextOfKinAddrMultipleUnit.setValue(getNextOfKinAddressMultipleUnit());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -960,7 +943,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinAddrStreetAddress(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinAddrStreetAddress.setValue(getNextOfKinAddressStreetAddress());
+                                 nextOfKinAddrStreetAddress.setValue(getNextOfKinAddressStreetAddress());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -979,7 +962,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinAddrCity(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinAddrCity.setValue(getNextOfKinAddressCity());
+                                 nextOfKinAddrCity.setValue(getNextOfKinAddressCity());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -997,7 +980,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinAddrState(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinAddrState.setValue(getNextOfKinAddressState());
+                                 nextOfKinAddrState.setValue(getNextOfKinAddressState());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -1015,7 +998,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoNextOfKinAddrZipCode(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // nextOfKinAddrZipCode.setValue(getNextOfKinAddressZipCode());
+                                 nextOfKinAddrZipCode.setValue(getNextOfKinAddressZipCode());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -1031,7 +1014,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(isNicu, SampleMeta.getNeoIsNicu(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                // isNicu.setValue(getNeonatalIsNicu());
+                isNicu.setValue(getNeonatalIsNicu());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -1046,7 +1029,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(birthOrder, SampleMeta.getNeoBirthOrder(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                // birthOrder.setValue(getNeonatalBirthOrder());
+                birthOrder.setValue(getNeonatalBirthOrder());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1063,7 +1046,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoGestationalAge(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // gestationalAge.setValue(getNeonatalGestationalAge());
+                                 gestationalAge.setValue(getNeonatalGestationalAge());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1079,7 +1062,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(feedingId, SampleMeta.getNeoFeedingId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                // feedingId.setValue(getNeonatalFeedingId());
+                feedingId.setValue(getNeonatalFeedingId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1094,7 +1077,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(weight, SampleMeta.getNeoWeight(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                // weight.setValue(getNeonatalWeight());
+                weight.setValue(getNeonatalWeight());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1111,7 +1094,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoIsTransfused(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // isTransfused.setValue(getNeonatalIsTransfused());
+                                 isTransfused.setValue(getNeonatalIsTransfused());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -1129,7 +1112,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoTransfusionDate(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // transfusionDate.setValue(getNeonatalTransfusionDate());
+                                 transfusionDate.setValue(getNeonatalTransfusionDate());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -1145,7 +1128,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(transfusionAge, "transfusionAge", new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                // transfusionAge.setValue(getNeonatalTransfusionAge());
+                transfusionAge.setValue(getNeonatalTransfusionAge());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1156,7 +1139,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(isRepeat, SampleMeta.getNeoIsRepeat(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                // isRepeat.setValue(getNeonatalIsRepeat());
+                isRepeat.setValue(getNeonatalIsRepeat());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -1173,7 +1156,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoCollectionAge(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // collectionAge.setValue(getNeonatalCollectionAge());
+                                 collectionAge.setValue(getNeonatalCollectionAge());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1191,7 +1174,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoIsCollectionValid(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // isCollectionValid.setValue(getNeonatalIsCollectionValid());
+                                 isCollectionValid.setValue(getNeonatalIsCollectionValid());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
@@ -1205,41 +1188,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                              }
                          });
 
-        /*
-         * addItemButton = (AppButton)def.getWidget("addItemButton");
-         * addScreenHandler(addItemButton, new ScreenEventHandler<Object>() {
-         * public void onClick(ClickEvent event) { // FIXME add on click handler
-         * }
-         * 
-         * public void onStateChange(StateChangeEvent<State> event) { } });
-         * 
-         * addAnalysisButton = (AppButton)def.getWidget("addAnalysisButton");
-         * addScreenHandler(addAnalysisButton, new ScreenEventHandler<Object>()
-         * { public void onClick(ClickEvent event) { // FIXME add on click
-         * handler }
-         * 
-         * public void onStateChange(StateChangeEvent<State> event) { } });
-         * 
-         * removeRowButton = (AppButton)def.getWidget("removeRowButton");
-         * addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
-         * public void onClick(ClickEvent event) { // FIXME add on click handler
-         * }
-         * 
-         * public void onStateChange(StateChangeEvent<State> event) { } });
-         * 
-         * popoutTree = (AppButton)def.getWidget("popoutTree");
-         * addScreenHandler(popoutTree, new ScreenEventHandler<Object>() {
-         * public void onClick(ClickEvent event) { // FIXME add on click handler
-         * }
-         * 
-         * public void onStateChange(StateChangeEvent<State> event) { } });
-         */
-
         addScreenHandler(providerLastName,
                          SampleMeta.getNeoProviderLastName(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // setProviderSelection();
+                                 setProviderSelection();
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1263,7 +1216,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                          SampleMeta.getNeoProviderFirstName(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 // providerFirstName.setValue(getProviderFirstName());
+                                 providerFirstName.setValue(getProviderFirstName());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1339,7 +1292,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(birthHospitalName, SampleMeta.getBillTo(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                // setBirthHospitalSelection();
+                setBirthHospitalSelection();
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1373,7 +1326,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         addScreenHandler(formNumber, SampleMeta.getNeoFormNumber(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                // formNumber.setValue(getNeonatalFormNumber());
+                formNumber.setValue(getNeonatalFormNumber());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -1387,22 +1340,21 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         });
 
         /*
-         * tabPanel.addBeforeSelectionHandler(new
-         * BeforeSelectionHandler<Integer>() { public void
-         * onBeforeSelection(BeforeSelectionEvent<Integer> event) { int i;
-         * 
-         * // tab screen order should be the same as enum or this will // not
-         * work i = event.getItem().intValue(); tab = Tabs.values()[i];
-         * 
-         * window.setBusy(Messages.get().loadingMessage()); drawTabs();
-         * window.clearStatus(); } });
+         * tabs
          */
+        tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
             public Object getQuery() {
                 return sampleItemTab.getQueryFields();
             }
         });
+
+        addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
+            public Object getQuery() {
+                return analysisTab.getQueryFields();
+            }
+        });                       
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -1412,11 +1364,30 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                 }
             }
         });
-    }
-
-    private void initializeDropdowns() {
-        ArrayList<Item<Integer>> model;
-        Item<Integer> row;
+        
+        try {
+            CategoryCache.getBySystemNames("sample_status",
+                                           "analysis_status",
+                                           "user_action",
+                                           "type_of_sample",
+                                           "source_of_sample",
+                                           "sample_container",
+                                           "unit_of_measure",
+                                           "qaevent_type",
+                                           "aux_field_value_type",
+                                           "organization_type",
+                                           "worksheet_status",
+                                           "parameter_type",
+                                           "gender",
+                                           "race",
+                                           "ethnicity",
+                                           "patient_relation",
+                                           "feeding");
+        } catch (Exception e) {
+            Window.alert("NeonatalScreeningSampleLoginScreen: missing dictionary entry; " +
+                         e.getMessage());
+            window.close();
+        }    
 
         model = new ArrayList<Item<Integer>>();
         model.add(new Item<Integer>(null, ""));
@@ -1525,10 +1496,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
     @UiHandler("add")
     protected void add(ClickEvent event) {
+        /*
+         * clear the query list
+         */
+        queriedList = null;
+
         try {
             manager = SampleService1.get().getInstance(Constants.domain().NEONATAL);
         } catch (Exception e) {
             Window.alert(e.getMessage());
+            // TODO log to the server
             return;
         }
         setData();
@@ -1536,10 +1513,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         fireDataChange();
         accessionNumber.setFocus(true);
         window.setDone(Messages.get().enterInformationPressCommit());
-        /*
-         * get rid of the query list
-         */
-        queriedList = null;
     }
 
     @UiHandler("update")
@@ -1549,8 +1522,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
-        Query query;
-
         finishEditing();
         clearErrors();
         // manager.setStatusWithError(false);
@@ -1562,79 +1533,71 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         switch (super.state) {
             case QUERY:
-                queriedList = null;
-                query = new Query();
-                query.setFields(getQueryFields());
-                query.setPage(0);
-                query.setRowsPerPage(-1);
-                window.setBusy(Messages.get().querying());
-                try {
-                    queriedList = SampleService1.get()
-                                                .fetchByQuery(query,
-                                                              SampleManager1.Load.ANALYSISUSER,
-                                                              SampleManager1.Load.AUXDATA,
-                                                              SampleManager1.Load.NOTE,
-                                                              SampleManager1.Load.ORGANIZATION,
-                                                              SampleManager1.Load.PROJECT,
-                                                              SampleManager1.Load.QA,
-                                                              SampleManager1.Load.RESULT,
-                                                              SampleManager1.Load.STORAGE);
-                    queryIndex = 0;
-                    manager = queriedList.get(queryIndex);
-                    setState(DISPLAY);
-                    setData();
-                    fireDataChange();
-                    window.clearStatus();
-                } catch (NotFoundException e) {
-                    window.setDone(Messages.get().noRecordsFound());
-                    setState(State.DEFAULT);
-                } catch (Exception e) {
-                    Window.alert("Error: neonatalsample call query failed; " + e.getMessage());
-                    e.printStackTrace();
-                    window.setError(Messages.get().queryFailed());
-                }
+                commitQuery();
                 break;
             case ADD:
-                window.setBusy(Messages.get().adding());
-                try {
-                    manager = SampleService1.get().add(manager, false);
-
-                    setData();
-                    setState(State.DISPLAY);
-                    fireDataChange();
-                    window.clearStatus();
-                } catch (ValidationErrorsList e) {
-                    showErrors(e);
-                    // TODO change this code
-                    // if ( !e.hasErrors() && e.hasWarnings())
-                    // showWarningsDialog(e);
-                } catch (Exception e) {
-                    Window.alert("commitAdd(): " + e.getMessage());
-                    window.clearStatus();
-                }
+                commitUpdate(false);
                 break;
             case UPDATE:
-                window.setBusy(Messages.get().updating());
-                try {
-                    manager = SampleService1.get().update(manager, false);
+                commitUpdate(false);
+                break;
+        }
+    }
 
-                    setData();
-                    setState(State.DISPLAY);
-                    fireDataChange();
-                    window.clearStatus();
-                    // quickUpdate = false;
-                } catch (ValidationErrorsList e) {
-                    showErrors(e);
-                    // TODO change this code
-                    // if ( !e.hasErrors() && e.hasWarnings())
-                    // showWarningsDialog(e);
-                } catch (Exception e) {
-                    Window.alert("commitUpdate(): " + e.getMessage());
-                    window.clearStatus();
-                }
-                break;
-            default:
-                break;
+    protected void commitQuery() {
+        queriedList = null;
+        window.setBusy(Messages.get().querying());
+        try {
+            queriedList = SampleService1.get().fetchByQuery(getQueryFields(),
+                                                            0,
+                                                            -1,
+                                                            SampleManager1.Load.ANALYSISUSER,
+                                                            SampleManager1.Load.AUXDATA,
+                                                            SampleManager1.Load.NOTE,
+                                                            SampleManager1.Load.ORGANIZATION,
+                                                            SampleManager1.Load.PROJECT,
+                                                            SampleManager1.Load.QA,
+                                                            SampleManager1.Load.RESULT,
+                                                            SampleManager1.Load.STORAGE);
+            queryIndex = 0;
+            manager = queriedList.get(queryIndex);
+            setState(DISPLAY);
+            setData();
+            fireDataChange();
+            window.clearStatus();
+        } catch (NotFoundException e) {
+            window.setDone(Messages.get().noRecordsFound());
+            setState(State.DEFAULT);
+        } catch (Exception e) {
+            Window.alert("Error: neonatalsample call query failed; " + e.getMessage());
+            e.printStackTrace();
+            window.setError(Messages.get().queryFailed());
+        }
+    }
+
+    protected void commitUpdate(boolean ignoreWarning) {
+        if (state == ADD)
+            window.setBusy(Messages.get().adding());
+        else
+            window.setBusy(Messages.get().updating());
+
+        try {
+            manager = SampleService1.get().update(manager, ignoreWarning);
+
+            setData();
+            setState(State.DISPLAY);
+            fireDataChange();
+            window.clearStatus();
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+            if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                showWarningsDialog(e);
+        } catch (Exception e) {
+            if (state == ADD)
+                Window.alert("commitAdd(): " + e.getMessage());
+            else
+                Window.alert("commitUpdate(): " + e.getMessage());
+            window.clearStatus();
         }
     }
 
@@ -1647,7 +1610,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         if (state == State.QUERY) {
             try {
                 manager = null;
-
                 setData();
                 setState(State.DEFAULT);
                 fireDataChange();
@@ -1658,8 +1620,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
             }
         } else if (state == State.ADD) {
             try {
+                if (manager.getSample().getId() != null) {
+                    /*
+                     * the screen was loaded from a Quick Entry sample which is
+                     * still locked, thus it needs to be unlocked here
+                     */
+                    SampleService1.get().unlock(manager.getSample().getId());
+                }
                 manager = null;
-
                 setData();
                 setState(State.DEFAULT);
                 fireDataChange();
@@ -1669,24 +1637,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                 window.clearStatus();
             }
         } else if (state == State.UPDATE) {
-            /*
-             * try { manager = manager.abortUpdate();
-             * 
-             * quickUpdate = false; if
-             * (SampleManager.QUICK_ENTRY.equals(manager.
-             * getSample().getDomain())) { manager =
-             * SampleManager.getInstance();
-             * manager.getSample().setDomain(SampleManager
-             * .ENVIRONMENTAL_DOMAIN_FLAG);
-             * 
-             * setDataInTabs(); setState(State.DEFAULT); } else {
-             * setDataInTabs(); setState(State.DISPLAY); }
-             * DataChangeEvent.fire(this); window.clearStatus(); } catch
-             * (Exception e) { Window.alert(e.getMessage());
-             * window.clearStatus(); }
-             */
-        } else {
-            window.clearStatus();
+            try {
+                manager = SampleService1.get().unlock(manager.getSample().getId());
+                setData();
+                setState(DISPLAY);
+                fireDataChange();
+                window.setDone(Messages.get().updateAborted());
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                window.clearStatus();
+            }
         }
     }
 
@@ -1703,6 +1663,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
     protected void duplicate() {
 
+    }
+
+    private void showWarningsDialog(ValidationErrorsList warnings) {
+        StringBuffer txt;
+
+        txt = new StringBuffer();
+        txt.append(Messages.get().warningDialogLine1()).append("\n");
+        for (Exception ex : warnings.getErrorList())
+            txt.append(" * ").append(ex.getMessage()).append("\n");
+        
+        txt.append("\n").append(Messages.get().warningDialogLastLine());
+        if (Window.confirm(txt.toString()))
+            commitUpdate(true);
     }
 
     private void historySample() {
@@ -1766,35 +1739,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                                                                                          .getStatusId()));
     }
 
-    private void drawTabs() {
-        switch (tab) {
-            case SAMPLE_ITEM:
-                // sampleItemTab.draw();
-                break;
-            case ANALYSIS:
-                // analysisTab.draw();
-                break;
-            case TEST_RESULT:
-                // testResultsTab.draw();
-                break;
-            case ANALYSIS_NOTES:
-                // analysisNotesTab.draw();
-                break;
-            case SAMPLE_NOTES:
-                // sampleNotesTab.draw();
-                break;
-            case STORAGE:
-                // storageTab.draw();
-                break;
-            case QA_EVENTS:
-                // qaEventsTab.draw();
-                break;
-            case AUX_DATA:
-                // auxDataTab.draw();
-                break;
-        }
-    }
-
+    /*
+     * getters and setters
+     */
     private Integer getAccessionNumber() {
         if (manager == null)
             return null;
@@ -1802,66 +1749,37 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
     }
 
     private void setAccessionNumber(Integer accNum) {
-        /*
-         * Integer oldNumber, orderId; SampleManager quickEntryMan;
-         * 
-         * oldNumber = manager.getSample().getAccessionNumber(); if (oldNumber
-         * != null) { if (quickUpdate) {
-         * Window.alert(consts.get("cantChangeQuickEntryAccessionNumber"));
-         * accessionNumber.setValue(Util.toString(oldNumber));
-         * setFocus(accessionNumber); return; } else if (
-         * !Window.confirm(consts.get("accessionNumberEditConfirm"))) {
-         * accessionNumber.setValue(Util.toString(oldNumber));
-         * setFocus(accessionNumber); return; } }
-         * 
-         * try { manager.getSample().setAccessionNumber(event.getValue());
-         * 
-         * if (accessionNumUtil == null) accessionNumUtil = new
-         * AccessionNumberUtility();
-         * 
-         * window.setBusy(consts.get("fetching")); quickEntryMan =
-         * accessionNumUtil.validateAccessionNumber(manager.getSample());
-         * 
-         * if (quickEntryMan == null) { window.clearStatus(); return; } else if
-         * (manager.getSample().getOrderId() != null) {
-         * Window.alert(consts.get("cantLoadQEIfOrderNumPresent"));
-         * quickEntryMan.abortUpdate();
-         * accessionNumber.setValue(Util.toString(oldNumber));
-         * setFocus(accessionNumber); window.clearStatus(); return; }
-         * 
-         * if (state == State.ADD) { orderId = manager.getSample().getOrderId();
-         * if (orderId != null) { SampleMergeUtility.mergeTests(manager,
-         * quickEntryMan); manager.setSample(quickEntryMan.getSample());
-         * manager.getSample().setOrderId(orderId); } else { manager =
-         * quickEntryMan; }
-         * 
-         * manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG)
-         * ; manager.createEmptyDomainManager();
-         * 
-         * /* When a sample is entered through quick entry we don't know what
-         * domain the sample belongs to, thus it isn't possible for the flag
-         * "isHazardous" to be set at that point because it isn't specified for
-         * all samples but only for environmental ones. Also, we add the
-         * standard note, if any, defined through a system variable for this
-         * domain, because it isn't present in the manager fetched from the
-         * back-end.
-         * 
-         * setDefaults(); DeferredCommand.addCommand(new Command() { public void
-         * execute() { setFocus(null); setDataInTabs(); setState(State.UPDATE);
-         * DataChangeEvent.fire(screen); window.clearStatus(); quickUpdate =
-         * true; } }); } else { quickEntryMan.abortUpdate();
-         * window.clearStatus(); throw new
-         * Exception(consts.get("quickEntryNumberExists")); } } catch
-         * (ValidationErrorsList e) { showErrors(e);
-         * accessionNumber.setValue(Util.toString(oldNumber));
-         * manager.getSample().setAccessionNumber(oldNumber);
-         * setFocus(accessionNumber); } catch (Exception e) {
-         * Window.alert(e.getMessage());
-         * accessionNumber.setValue(Util.toString(oldNumber));
-         * manager.getSample().setAccessionNumber(oldNumber);
-         * setFocus(accessionNumber); } window.clearStatus();
-         */
+        ValidationErrorsList errors;
 
+        if (accNum == null || accNum < 0) {
+            window.setError(Messages.get().sample_accessionNumberNotValidException(accNum));
+            return;
+        }
+
+        if (getAccessionNumber() != null) {
+            if ( !Window.confirm(Messages.get().accessionNumberEditConfirm())) {
+                accessionNumber.setValue(getAccessionNumber());
+                accessionNumber.setFocus(true);
+                return;
+            }
+        }
+
+        window.setBusy(Messages.get().fetching());
+        try {
+            manager = SampleService1.get().setAccessionNumber(manager, accNum);
+            setData();
+            fireDataChange();
+            window.clearStatus();
+        } catch (FormErrorException e) {
+            errors = new ValidationErrorsList();
+            errors.add(e);
+            showErrors(errors);
+            accessionNumber.setValue(getAccessionNumber());
+            accessionNumber.setFocus(true);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.clearStatus();
+        }
     }
 
     private Integer getOrderId() {
@@ -1870,9 +1788,41 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         return manager.getSample().getOrderId();
     }
 
-    private void setOrderId(Integer orderId) {
-        // TODO add code for loading the order if necessary
-        manager.getSample().setOrderId(orderId);
+    private void setOrderId(Integer ordId) {
+        ValidationErrorsList errors;
+        SampleTestReturnVO data;
+        
+        if (ordId == null) {
+            setOrderId(ordId);
+            return;
+        }  
+        
+        if (getAccessionNumber() == null) {
+            Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
+            orderId.setValue(null);
+            return;
+        }   
+        
+        try {
+            window.setBusy(Messages.get().fetching());
+            data = SampleService1.get().setOrderId(manager, ordId);
+            manager = data.getManager();
+            setData();
+            fireDataChange();
+            if (data.getErrors() != null && data.getErrors().size() > 0)
+                showErrors(data.getErrors());
+            else
+                window.clearStatus();
+        } catch (FormErrorException e) {
+            errors = new ValidationErrorsList();
+            errors.add(e);
+            showErrors(errors);
+            orderId.setValue(getOrderId());
+            orderId.setFocus(true);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.clearStatus();
+        }
     }
 
     private Datetime getCollectionDate() {
@@ -2299,23 +2249,23 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         manager.getSampleNeonatal().setProviderId(providerId);
     }
 
-    public String getNeonatalProviderLastName() {
+    private String getNeonatalProviderLastName() {
         if (manager == null)
             return null;
         return manager.getSampleNeonatal().getProviderLastName();
     }
 
-    public void setNeonatalProviderLastName(String providerlastName) {
+    private void setNeonatalProviderLastName(String providerlastName) {
         manager.getSampleNeonatal().setProviderlastName(providerlastName);
     }
 
-    public String getNeonatalProviderFirstName() {
+    private String getNeonatalProviderFirstName() {
         if (manager == null)
             return null;
         return manager.getSampleNeonatal().getProviderFirstName();
     }
 
-    public void setNeonatalProviderFirstName(String providerFirstName) {
+    private void setNeonatalProviderFirstName(String providerFirstName) {
         manager.getSampleNeonatal().setProviderFirstName(providerFirstName);
     }
 
@@ -2709,12 +2659,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
          */
         sampleItemAnalysisTreeTab.setData(manager);
         sampleItemTab.setData(manager);
-
+        analysisTab.setData(manager);
+        sampleNotesTab.setData(manager);
+        auxDataTab.setData(manager);
         /*
-         * analysisTab.setData(null); testResultsTab.setData(null);
-         * analysisNotesTab.setData(null); sampleNotesTab.setManager(manager);
-         * storageTab.setData(null); qaEventsTab.setData(null);
-         * qaEventsTab.setManager(manager); auxDataTab.setManager(manager);
+         * testResultsTab.setData(null); analysisNotesTab.setData(null);
+         * storageTab.setData(null);
+         * qaEventsTab.setData(null); qaEventsTab.setManager(manager);
          */
     }
 }

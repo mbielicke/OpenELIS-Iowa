@@ -25,192 +25,240 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.ui.screen.State.*;
+
+import org.openelis.domain.Constants;
+import org.openelis.domain.NoteViewDO;
+import org.openelis.manager.SampleManager1;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
+import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.NotesPanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SampleNotesTabUI extends Screen { //extends NotesTab
-    
+public class SampleNotesTabUI extends Screen { // extends NotesTab
+
     @UiTemplate("SampleNotesTab.ui.xml")
-    interface SampleNotesTabUIBinder extends UiBinder<Widget, SampleNotesTabUI> {        
+    interface SampleNotesTabUIBinder extends UiBinder<Widget, SampleNotesTabUI> {
     };
-    
+
     private static SampleNotesTabUIBinder uiBinder = GWT.create(SampleNotesTabUIBinder.class);
-    
-    public SampleNotesTabUI() {
+
+    @UiField
+    protected NotesPanel                  sampleExtNotesPanel, sampleIntNotesPanel;
+
+    @UiField
+    protected Button                      sampleExtNoteButton, sampleIntNoteButton;
+    // protected EditNoteScreen internalEditNote;
+
+    // protected NoteViewDO internalNote;
+
+    protected Screen                      parentScreen;
+
+    protected SampleManager1              manager, displayedManager;
+
+    protected boolean                     canEdit, canQuery, isVisible;
+
+    public SampleNotesTabUI(Screen parentScreen, EventBus bus) {
+        this.parentScreen = parentScreen;
+        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
-        
         initialize();
+
+        manager = null;
+        displayedManager = null;
     }
-    /*protected String         internalNotesPanelKey;
-    protected String         internalEditButtonKey;
 
-    protected SampleManager  sampleManager;
-    protected NoteManager    internalManager;
+    public void initialize() {
+        addScreenHandler(sampleExtNotesPanel, "sampleExtNotesPanel", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                drawExternalNote();
+            }
+        });
 
-    protected NotesPanel     internalNotesPanel;
-    
-    protected AppButton      standardNote, internalEditButton;
-    protected EditNoteScreen internalEditNote;
+        addScreenHandler(sampleExtNoteButton, "sampleExtNoteButton", new ScreenHandler<Object>() {
+            /*
+             * public void onClick(ClickEvent event) { showEditWindow(); }
+             */
 
-    protected NoteViewDO     internalNote;
+            public void onStateChange(StateChangeEvent event) {
+                sampleExtNoteButton.setEnabled(canEdit);
+            }
+        });
 
-    private Integer          sampleReleasedId;
+        addScreenHandler(sampleIntNotesPanel, "sampleIntNotesPanel", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                drawInternalNotes();
+            }
+        });
 
-    public SampleNotesTabUI(ScreenDefInt def, WindowInt window, String externalNotesPanelKey,
-                            String externalEditButtonKey, String internalNotesPanelKey,
-                            String internalEditButtonKey) {
+        addScreenHandler(sampleIntNoteButton, "sampleIntNoteButton", new ScreenHandler<Object>() {
+            /*
+             * public void onClick(ClickEvent event) { if (internalEditNote ==
+             * null) { try { internalEditNote = new EditNoteScreen();
+             * internalEditNote.addActionHandler(new
+             * ActionHandler<EditNoteScreen.Action>() { public void
+             * onAction(ActionEvent<EditNoteScreen.Action> event) { if
+             * (event.getAction() == EditNoteScreen.Action.OK) { if
+             * (internalNote.getText() == null ||
+             * internalNote.getText().trim().length() == 0)
+             * internalManager.removeEditingNote();
+             * 
+             * loaded = false; draw(); } } });
+             * 
+             * } catch (Exception e) { e.printStackTrace();
+             * Window.alert("error: " + e.getMessage()); return; } }
+             * 
+             * ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+             * modal.setName(Messages.get().standardNote());
+             * modal.setContent(internalEditNote);
+             * 
+             * internalNote = null; try { internalNote =
+             * internalManager.getEditingNote(); } catch (Exception e) {
+             * e.printStackTrace(); Window.alert("error!"); }
+             * internalNote.setSystemUser(userName);
+             * internalNote.setSystemUserId(userId);
+             * internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR,
+             * Datetime.SECOND)); internalEditNote.setNote(internalNote); }
+             */
 
-          super(def, window, externalNotesPanelKey, externalEditButtonKey);
+            public void onStateChange(StateChangeEvent event) {
+                sampleIntNoteButton.setEnabled(canEdit);
+            }
+        });
 
-          this.internalNotesPanelKey = internalNotesPanelKey;
-          this.internalEditButtonKey = internalEditButtonKey;
+        addVisibleHandler(new VisibleEvent.Handler() {
+            public void onVisibleOrInvisible(VisibleEvent event) {
+                isVisible = event.isVisible();
+                displayNotes();
+            }
+        });
 
-          initialize();
-      }*/
+        /*
+         * handlers for the events fired by the screen containing this tab
+         */
+        bus.addHandlerToSource(StateChangeEvent.getType(),
+                               parentScreen,
+                               new StateChangeEvent.Handler() {
+                                   public void onStateChange(StateChangeEvent event) {
+                                       setState(event.getState());
+                                       evaluateEdit();
+                                   }
+                               });
 
-      // overrides the notetab initialize to control the external notes button
-      public void initialize() {
-         /* // we dont have all the info set yet, dont run through this method
-          if (internalNotesPanelKey == null)
-              return;
+        bus.addHandlerToSource(DataChangeEvent.getType(),
+                               parentScreen,
+                               new DataChangeEvent.Handler() {
+                                   public void onDataChange(DataChangeEvent event) {
+                                       displayNotes();
+                                   }
+                               });
+    }
 
-          notesPanel = (NotesPanel)def.getWidget(notesPanelKey);
-          addScreenHandler(notesPanel, new ScreenEventHandler<String>() {
-              public void onDataChange(DataChangeEvent event) {
-                  drawNotes();
-              }
+    public void setData(SampleManager1 manager) {
+        if ( !DataBaseUtil.isSame(this.manager, manager)) {
+            displayedManager = this.manager;
+            this.manager = manager;
+            evaluateEdit();
+        }
+    }
 
-              public void onStateChange(StateChangeEvent<State> event) {
-                  if (event.getState() == State.ADD)
-                      notesPanel.clearNotes();
-              }
-          });
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
 
-          standardNote = (AppButton)def.getWidget(editButtonKey);
-          addScreenHandler(standardNote, new ScreenEventHandler<Object>() {
-              public void onClick(ClickEvent event) {
-                  showEditWindow();
-              }
+    private void evaluateEdit() {
+        canEdit = false;
+        if (manager != null && isState(ADD, UPDATE))
+            canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                            .getStatusId());
+    }
 
-              public void onStateChange(StateChangeEvent<State> event) {
-                  boolean enable;
-                  
-                  try {
-                      enable = canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
-                  } catch (Exception anyE) {
-                      enable = false;
-                  }
-                  standardNote.enable(enable);
-              }
-          });
+    private void displayNotes() {
+        int count1, count2;
+        Integer id1, id2;
+        boolean dataChanged;
 
-          internalNotesPanel = (NotesPanel)def.getWidget(internalNotesPanelKey);
-          addScreenHandler(internalNotesPanel, new ScreenEventHandler<String>() {
-              public void onDataChange(DataChangeEvent event) {
-                  drawInternalNotes();
-              }
+        if ( !isVisible)
+            return;
 
-              public void onStateChange(StateChangeEvent<State> event) {
-                  if (event.getState() == State.ADD)
-                      internalNotesPanel.clearNotes();
-              }
-          });
+        /*
+         * compare external notes
+         */
+        id1 = null;
+        id2 = null;
+        if (displayedManager != null && displayedManager.sampleExternalNote.get() != null)
+            id1 = displayedManager.sampleExternalNote.get().getId();
 
-          internalEditButton = (AppButton)def.getWidget(internalEditButtonKey);
-          addScreenHandler(internalEditButton, new ScreenEventHandler<Object>() {
-              public void onClick(ClickEvent event) {
-                  if (internalEditNote == null) {
-                      try {
-                          internalEditNote = new EditNoteScreen();
-                          internalEditNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
-                              public void onAction(ActionEvent<EditNoteScreen.Action> event) {
-                                  if (event.getAction() == EditNoteScreen.Action.OK) {
-                                      if (internalNote.getText() == null ||
-                                          internalNote.getText().trim().length() == 0)
-                                          internalManager.removeEditingNote();
+        if (manager != null && manager.sampleExternalNote.get() != null)
+            id2 = manager.sampleExternalNote.get().getId();
 
-                                      loaded = false;
-                                      draw();
-                                  }
-                              }
-                          });
+        dataChanged = DataBaseUtil.isDifferent(id1, id2);
 
-                      } catch (Exception e) {
-                          e.printStackTrace();
-                          Window.alert("error: " + e.getMessage());
-                          return;
-                      }
-                  }
+        if ( !dataChanged) {
+            /*
+             * compare internal notes
+             */
+            count1 = displayedManager == null ? 0 : displayedManager.sampleInternalNote.count();
+            count2 = manager == null ? 0 : manager.sampleInternalNote.count();
 
-                  ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                  modal.setName(Messages.get().standardNote());
-                  modal.setContent(internalEditNote);
+            if (count1 == count2) {
+                if (count1 > 0)
+                    dataChanged = DataBaseUtil.isDifferent(displayedManager.sampleInternalNote.get(0)
+                                                                                              .getId(),
+                                                           manager.sampleInternalNote.get(0)
+                                                                                     .getId());
+            } else {
+                dataChanged = true;
+            }
+        }
 
-                  internalNote = null;
-                  try {
-                      internalNote = internalManager.getEditingNote();
-                  } catch (Exception e) {
-                      e.printStackTrace();
-                      Window.alert("error!");
-                  }
-                  internalNote.setSystemUser(userName);
-                  internalNote.setSystemUserId(userId);
-                  internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-                  internalEditNote.setNote(internalNote);
-              }
+        if (dataChanged) {
+            displayedManager = manager;
+            evaluateEdit();
+            setState(state);
+            fireDataChange();
+        }
+    }
 
-              public void onStateChange(StateChangeEvent<State> event) {
+    private void drawExternalNote() {
+        NoteViewDO n;
 
-                  if (event.getState() == State.ADD || event.getState() == State.UPDATE)
-                      internalEditButton.enable(true);
-                  else
-                      internalEditButton.enable(false);
-              }
-          });*/
-      }
+        sampleExtNotesPanel.clearNotes();
+        if (manager != null) {
+            n = manager.sampleExternalNote.get();
+            if (n != null)
+                sampleExtNotesPanel.addNote(n.getSubject(),
+                                            n.getSystemUser(),
+                                            n.getText(),
+                                            n.getTimestamp());
+        }
+    }
 
-      /*
-      protected void drawInternalNotes() {
-          internalNotesPanel.clearNotes();
-          for (int i = 0; i < internalManager.count(); i++ ) {
-              NoteViewDO noteRow = internalManager.getNoteAt(i);
-              internalNotesPanel.addNote(noteRow.getSubject(), noteRow.getSystemUser(),
-                                         noteRow.getText(), noteRow.getTimestamp());
-          }
-      }
+    private void drawInternalNotes() {
+        NoteViewDO n;
 
-      public void setManager(SampleManager sampleManager) {
-          this.sampleManager = sampleManager;
-          loaded = false;
-      }
-
-      public void draw() {
-          if ( !loaded) {
-              try {
-                  if (sampleManager == null ) {
-                      internalManager = NoteManager.getInstance();
-                      internalManager.setIsExternal(false);
-                      manager = NoteManager.getInstance();
-                      manager.setIsExternal(true);
-                  } else {
-                      manager = sampleManager.getExternalNote();
-                      internalManager = sampleManager.getInternalNotes();
-                  }   
-
-                  DataChangeEvent.fire(this);
-                  loaded = true;
-
-              } catch (Exception e) {
-                  Window.alert(e.getMessage());
-              }
-          }
-      }
-
-      private boolean canEdit() {
-          return (sampleManager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(sampleManager.getSample().getStatusId()));
-      }*/
-  }
+        sampleIntNotesPanel.clearNotes();
+        if (manager != null) {
+            for (int i = 0; i < manager.sampleInternalNote.count(); i++ ) {
+                n = manager.sampleInternalNote.get(i);
+                sampleIntNotesPanel.addNote(n.getSubject(),
+                                            n.getSystemUser(),
+                                            n.getText(),
+                                            n.getTimestamp());
+            }
+        }
+    }
+}
