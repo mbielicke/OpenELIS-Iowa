@@ -134,12 +134,9 @@ public class MethodScreen extends Screen {
     private void initialize() {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
-                if (isState(QUERY)) {
+                query.setEnabled(isState(QUERY,DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                if (isState(QUERY)) 
                     query.lock();
-                    query.setPressed(true);
-                } else
-                    query.setPressed(false);
             }
         });
         
@@ -163,12 +160,9 @@ public class MethodScreen extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
-                if (isState(ADD)) {
+                add.setEnabled(isState(ADD,DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                if (isState(ADD)) 
                     add.lock();
-                    add.setPressed(true);
-                } else
-                    add.setPressed(false);
             }
         });
         
@@ -176,12 +170,9 @@ public class MethodScreen extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
-                if (isState(UPDATE)) {
+                update.setEnabled(isState(UPDATE,DISPLAY) && userPermission.hasUpdatePermission());
+                if (isState(UPDATE)) 
                     update.lock();
-                    update.setPressed(true);
-                } else
-                    update.setPressed(false);
             }
         });
         
