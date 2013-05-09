@@ -163,18 +163,26 @@ public class SampleManager1Accessor {
         sm.auxilliary.add(auxilliary);
     }
     
-    public static ArrayList<NoteViewDO> getSampleNotes(SampleManager1 sm) {
-        return sm.sampleNotes;
+    public static NoteViewDO getSampleExternalNote(SampleManager1 sm) {
+        return sm.sampleExtNote;
     }
     
-    public static void setSampleNotes(SampleManager1 sm, ArrayList<NoteViewDO> sampleNotes) {
-        sm.sampleNotes = sampleNotes;
+    public static void setSampleExternalNote(SampleManager1 sm, NoteViewDO sampleExternalNote) {
+        sm.sampleExtNote = sampleExternalNote;
     }
     
-    public static void addSampleNote(SampleManager1 sm, NoteViewDO sampleNote) {
-        if (sm.sampleNotes == null)
-            sm.sampleNotes = new ArrayList<NoteViewDO>();
-        sm.sampleNotes.add(sampleNote);
+    public static ArrayList<NoteViewDO> getSampleInternalNotes(SampleManager1 sm) {
+        return sm.sampleIntNotes;
+    }
+    
+    public static void setSampleInternalNotes(SampleManager1 sm, ArrayList<NoteViewDO> sampleInternalNotes) {
+        sm.sampleIntNotes = sampleInternalNotes;
+    }
+    
+    public static void addSampleInternalNote(SampleManager1 sm, NoteViewDO sampleInternalNote) {
+        if (sm.sampleIntNotes == null)
+            sm.sampleIntNotes = new ArrayList<NoteViewDO>();
+        sm.sampleIntNotes.add(sampleInternalNote);
     }
 
     public static ArrayList<SampleItemViewDO> getItems(SampleManager1 sm) {
@@ -219,18 +227,32 @@ public class SampleManager1Accessor {
         sm.analyses.add(analysis);
     }
     
-    public static ArrayList<NoteViewDO> getAnalysisNotes(SampleManager1 sm) {
-        return sm.analysisNotes;
+    public static ArrayList<NoteViewDO> getAnalysisExternalNotes(SampleManager1 sm) {
+        return sm.analysisExtNotes;
     }
     
-    public static void setAnalysisNotes(SampleManager1 sm, ArrayList<NoteViewDO> analysisNotes) {
-        sm.analysisNotes = analysisNotes;
+    public static void setAnalysisExternalNotes(SampleManager1 sm, ArrayList<NoteViewDO> analysisExtNotes) {
+        sm.analysisExtNotes = analysisExtNotes;
     }
     
-    public static void addAnalysisNote(SampleManager1 sm, NoteViewDO analysisNotes) {
-        if (sm.analysisNotes == null)
-            sm.analysisNotes = new ArrayList<NoteViewDO>();
-        sm.analysisNotes.add(analysisNotes);
+    public static void addAnalysisExternalNote(SampleManager1 sm, NoteViewDO analysisExtNote) {
+        if (sm.analysisExtNotes == null)
+            sm.analysisExtNotes = new ArrayList<NoteViewDO>();
+        sm.analysisExtNotes.add(analysisExtNote);
+    }
+    
+    public static ArrayList<NoteViewDO> getAnalysisInternalNotes(SampleManager1 sm) {
+        return sm.analysisIntNotes;
+    }
+    
+    public static void setAnalysisInternalNotes(SampleManager1 sm, ArrayList<NoteViewDO> analysisIntNotes) {
+        sm.analysisIntNotes = analysisIntNotes;
+    }
+    
+    public static void addAnalysisInternalNote(SampleManager1 sm, NoteViewDO analysisIntNotes) {
+        if (sm.analysisIntNotes == null)
+            sm.analysisIntNotes = new ArrayList<NoteViewDO>();
+        sm.analysisIntNotes.add(analysisIntNotes);
     }
 
     public static ArrayList<AnalysisUserViewDO> getUsers(SampleManager1 sm) {

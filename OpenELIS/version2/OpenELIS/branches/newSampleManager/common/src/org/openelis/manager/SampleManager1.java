@@ -59,6 +59,7 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
+import org.openelis.domain.TestDO;
 
 /**
  * This class encapsulates a sample and all its related information including
@@ -85,7 +86,9 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
     protected ArrayList<AuxDataViewDO>            auxilliary;
-    protected ArrayList<NoteViewDO>               sampleNotes, analysisNotes;
+    protected NoteViewDO                          sampleExtNote;
+    protected ArrayList<NoteViewDO>               sampleIntNotes, analysisExtNotes,
+                                                   analysisIntNotes;
     protected ArrayList<SampleItemViewDO>         items;
     protected ArrayList<AnalysisViewDO>           analyses;
     protected ArrayList<AnalysisQaEventViewDO>    analysisQAs;
@@ -93,19 +96,21 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<AnalysisUserViewDO>       users;
     protected ArrayList<ResultViewDO>             results;
     protected ArrayList<DataObject>               removed;
-    protected int                                 nextUID      = -1;
+    protected int                                 nextUID              = -1;
 
-    transient public final SampleOrganization     organization = new SampleOrganization();
-    transient public final SampleProject          project      = new SampleProject();
-    transient public final QAEvent                qaEvent      = new QAEvent();
-    transient public final AuxData                auxData      = new AuxData();
-    transient public final SampleNote             sampleNote   = new SampleNote();
-    transient public final AnalysisNote           analysisNote = new AnalysisNote();
-    transient public final SampleItem             item         = new SampleItem();
-    transient public final Analysis               analysis     = new Analysis();
-    transient public final Storage                storage      = new Storage();
-    transient public final AnalysisUser           analysisUser = new AnalysisUser();
-    transient public final Result                 result       = new Result();
+    transient public final SampleOrganization     organization         = new SampleOrganization();
+    transient public final SampleProject          project              = new SampleProject();
+    transient public final QAEvent                qaEvent              = new QAEvent();
+    transient public final AuxData                auxData              = new AuxData();
+    transient public final SampleExternalNote     sampleExternalNote   = new SampleExternalNote();
+    transient public final SampleInternalNote     sampleInternalNote   = new SampleInternalNote();
+    transient public final AnalysisExternalNote   analysisExternalNote = new AnalysisExternalNote();
+    transient public final AnalysisInternalNote   analysisInternalNote = new AnalysisInternalNote();
+    transient public final SampleItem             item                 = new SampleItem();
+    transient public final Analysis               analysis             = new Analysis();
+    transient public final Storage                storage              = new Storage();
+    transient public final AnalysisUser           analysisUser         = new AnalysisUser();
+    transient public final Result                 result               = new Result();
     transient private HashMap<String, DataObject> doMap;
 
     /**
@@ -173,6 +178,10 @@ public class SampleManager1 implements Serializable {
     public String getUid(AnalysisDO data) {
         return getAnalysisUid(data.getId());
     }
+    
+    public String getUid(TestDO data) {
+        return getTestUid(data.getId());
+    }
 
     public String getUid(StorageDO data) {
         return getStorageUid(data.getId());
@@ -201,12 +210,12 @@ public class SampleManager1 implements Serializable {
                 for (AnalysisQaEventDO data : analysisQAs)
                     doMap.put(getAnalysisQAEventUid(data.getId()), data);
 
-            if (sampleNotes != null)
-                for (NoteDO data : sampleNotes)
+            if (sampleIntNotes != null)
+                for (NoteDO data : sampleIntNotes)
                     doMap.put(getNoteUid(data.getId()), data);
 
-            if (analysisNotes != null)
-                for (NoteDO data : analysisNotes)
+            if (analysisIntNotes != null)
+                for (NoteDO data : analysisIntNotes)
                     doMap.put(getNoteUid(data.getId()), data);
 
             if (items != null)
@@ -254,11 +263,15 @@ public class SampleManager1 implements Serializable {
     }
 
     public String getStorageUid(Integer id) {
-        return "T:" + id;
+        return "S:" + id;
     }
 
     public String getAnalysisUid(Integer id) {
         return "A:" + id;
+    }
+    
+    public String getTestUid(Integer id) {
+        return "T:" + id;
     }
 
     public String getAnalysisUserUid(Integer id) {
@@ -683,117 +696,93 @@ public class SampleManager1 implements Serializable {
     }
 
     /**
-     * Class to manage sample notes
+     * Class to manage sample external notes
      */
-    public class SampleNote {
-        transient int     extE, intE;
-        transient boolean searched;
+    public class SampleExternalNote {
 
         /**
          * Returns the sample's one (1) external note
          */
         public NoteViewDO get() {
-            map();
-            return sampleNotes.get(extE);
-        }
-
-        /**
-         * Returns the sample's internal note at specified index.
-         */
-        public NoteViewDO get(int i) {
-            map();
-            return sampleNotes.get( (extE == -1 || extE > i) ? i : i + 1);
+            return sampleExtNote;
         }
 
         /**
          * Returns the editing note. For external, there is only 1 note and that
          * note can be edited regardless of whether its committed to the
-         * database or not. For internal, only the currently uncommitted note
-         * can be edited. If no editing note currently exists, one is created
-         * and returned.
+         * database or not.
          */
-        public NoteViewDO getEditing(boolean isExternal) {
-            NoteViewDO data;
-
-            map();
-            if (isExternal && extE != -1)
-                data = sampleNotes.get(extE);
-            else if ( !isExternal && intE != -1)
-                data = sampleNotes.get(intE);
-            else {
-                data = new NoteViewDO();
-                data.setIsExternal(isExternal ? "Y" : "N");
-                sampleNotes.add(0, data);
-                //
-                // adjust so we don't need to search
-                //
-                if (isExternal) {
-                    extE = 0;
-                    intE = (intE == -1) ? -1 : intE + 1;
-                } else {
-                    intE = 0;
-                    extE = (extE == -1) ? -1 : extE + 1;
-                }
+        public NoteViewDO getEditing() {
+            if (sampleExtNote == null) {
+                sampleExtNote = new NoteViewDO();
+                sampleExtNote.setIsExternal("Y");
             }
 
-            return data;
+            return sampleExtNote;
         }
 
         /**
          * Removes the editing note. For external, the entire external note is
-         * removed. For internal, only the uncommitted note is removed.
+         * removed.
          */
-        public void removeEditing(boolean isExternal) {
+        public void removeEditing() {
+            if (sampleExtNote != null && sampleExtNote.getId() != null && sampleExtNote.getId() > 0)
+                removeDataObject(sampleExtNote);
+        }
+    }
+
+    /**
+     * Class to manage sample internal notes
+     */
+    public class SampleInternalNote {
+
+        /**
+         * Returns the sample's internal note at specified index.
+         */
+        public NoteViewDO get(int i) {
+            return sampleIntNotes.get(i);
+        }
+
+        /**
+         * Returns the editing note. For internal, only the currently
+         * uncommitted note can be edited. If no editing note currently exists,
+         * one is created and returned.
+         */
+        public NoteViewDO getEditing() {
             NoteViewDO data;
 
-            map();
-            data = sampleNotes.remove(isExternal ? extE : intE);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
-            //
-            // adjust so we don't need to search
-            //
-            if (isExternal) {
-                intE = (intE > extE) ? intE - 1 : intE;
-                extE = -1;
-            } else {
-                extE = (extE > intE) ? extE - 1 : extE;
-                intE = -1;
+            if (sampleIntNotes == null)
+                sampleIntNotes = new ArrayList<NoteViewDO>(1);
+
+            if (sampleIntNotes.size() == 0 ||
+                (sampleIntNotes.get(0).getId() != null && sampleIntNotes.get(0).getId() > 0)) {
+                data = new NoteViewDO();
+                data.setIsExternal("N");
+                sampleIntNotes.add(0, data);
+            }
+
+            return sampleIntNotes.get(0);
+        }
+
+        /**
+         * Removes the editing note. For internal, only the uncommitted note is
+         * removed.
+         */
+        public void removeEditing() {
+            NoteViewDO data;
+
+            if (sampleIntNotes != null && sampleIntNotes.size() > 0) {
+                data = sampleIntNotes.get(0);
+                if (data.getId() == null && data.getId() < 0)
+                    sampleIntNotes.remove(0);
             }
         }
 
         /**
-         * Returns the number of internal/external note(s)
+         * Returns the number of internal note(s)
          */
-        public int count(boolean isExternal) {
-            map();
-            if (isExternal)
-                return (extE == -1) ? 0 : 1;
-            else
-                return (sampleNotes == null) ? 0 : sampleNotes.size() - (extE == -1 ? 0 : 1);
-        }
-
-        /*
-         * find the index to external and internal editable notes
-         */
-        private void map() {
-            NoteViewDO data;
-
-            if ( !searched) {
-                searched = true;
-                extE = -1;
-                intE = -1;
-                if (sampleNotes != null)
-                    for (int i = 0; i < sampleNotes.size(); i++ ) {
-                        data = sampleNotes.get(i);
-                        if ("Y".equals(data.getIsExternal()))
-                            extE = i;
-                        else if (data.getId() == null || data.getId() < 1)
-                            intE = i;
-                        if (extE != -1 && intE != -1)
-                            break;
-                    }
-            }
+        public int count() {
+            return (sampleIntNotes == null) ? 0 : sampleIntNotes.size();
         }
     }
 
@@ -1049,92 +1038,152 @@ public class SampleManager1 implements Serializable {
     }
 
     /**
-     * Class to manage analysis notes
+     * Class to manage analysis external notes
      */
-    public class AnalysisNote {
-        transient protected HashMap<Integer, ArrayList<NoteViewDO>> map = null;
-        transient int                                               extE, intE;
+    public class AnalysisExternalNote {
+        transient protected HashMap<Integer, NoteViewDO> map = null;
 
         /**
          * Returns the analysis's one (1) external note
          */
         public NoteViewDO get(AnalysisDO analysis) {
-            map(analysis.getId());
-            return map.get(analysis.getId()).get(extE);
-        }
-
-        /**
-         * Returns the analysis's internal note at specified index.
-         */
-        public NoteViewDO get(AnalysisDO analysis, int i) {
-            map(analysis.getId());
-            return map.get(analysis.getId()).get( (extE == -1 || extE > i) ? i : i + 1);
+            map();
+            return map.get(analysis.getId());
         }
 
         /**
          * Returns the editing note. For external, there is only 1 note and that
          * note can be edited regardless of whether its committed to the
-         * database or not. For internal, only the currently uncommitted note
-         * can be edited. If no editing note currently exists, one is created
-         * and returned.
+         * database or not.
          */
-        public NoteViewDO getEditing(AnalysisDO analysis, boolean isExternal) {
+        public NoteViewDO getEditing(AnalysisDO analysis) {
             NoteViewDO data;
 
-            map(analysis.getId());
-            if (isExternal && extE != -1)
-                data = map.get(analysis.getId()).get(extE);
-            else if ( !isExternal && intE != -1)
-                data = map.get(analysis.getId()).get(intE);
-            else {
+            map();
+            if (map.get(analysis.getId()) == null) {
                 data = new NoteViewDO();
-                data.setIsExternal(isExternal ? "Y" : "N");
+                data.setIsExternal("Y");
                 data.setReferenceId(analysis.getId());
-                analysisNotes.add(data);
-                map.get(analysis.getId()).add(0, data);
+                analysisExtNotes.add(data);
+                map.put(analysis.getId(), data);
             }
 
-            return data;
+            return map.get(analysis.getId());
         }
 
         /**
          * Removes the editing note. For external, the entire external note is
-         * removed. For internal, only the uncommitted note is removed.
+         * removed
          */
-        public void removeEditing(AnalysisDO analysis, boolean isExternal) {
+        public void removeEditing(AnalysisDO analysis) {
             NoteViewDO data;
 
-            map(analysis.getId());
-            data = map.get(analysis.getId()).remove(isExternal ? extE : intE);
-            analysisNotes.remove(data);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            map();
+            data = map.get(analysis.getId());
+            if (data != null) {
+                analysisExtNotes.remove(data);
+                if (data.getId() != null && data.getId() > 0)
+                    removeDataObject(data);
+            }
         }
-
-        /**
-         * Returns the number of internal/external note(s)
-         */
-        public int count(AnalysisDO analysis, boolean isExternal) {
-            map(analysis.getId());
-            if (isExternal)
-                return (extE == -1) ? 0 : 1;
-            else
-                return (analysisNotes == null) ? 0 : map.get(analysis.getId()).size() -
-                                                     (extE == -1 ? 0 : 1);
-        }
-
+        
         /*
          * find the index to external and internal editable notes
          */
-        private void map(Integer id) {
+        private void map() {
+            if (analysisExtNotes != null) {
+                if (map == null) {
+                    map = new HashMap<Integer, NoteViewDO>();
+                    for (NoteViewDO data : analysisExtNotes)
+                        map.put(data.getId(), data);
+                }                
+            }
+        }
+    }
+
+    /**
+     * Class to manage analysis internal notes
+     */
+    public class AnalysisInternalNote {
+        transient protected HashMap<Integer, ArrayList<NoteViewDO>> map = null;
+
+        /**
+         * Returns the analysis's internal note at specified index.
+         */
+        public NoteViewDO get(AnalysisDO analysis, int i) {
+            map();
+            return map.get(analysis.getId()).get(i);
+        }
+
+        /**
+         * Returns the editing note. For internal, only the currently
+         * uncommitted note can be edited. If no editing note currently exists,
+         * one is created and returned.
+         */
+        public NoteViewDO getEditing(AnalysisDO analysis) {
+            NoteViewDO data;
             ArrayList<NoteViewDO> l;
 
-            extE = -1;
-            intE = -1;
-            if (analysisNotes != null) {
+            map();
+            l = map.get(analysis.getId());
+            if (l == null) {
+                l = new ArrayList<NoteViewDO>();
+                map.put(analysis.getId(), l);
+            }
+
+            if (l.size() == 0 || l.get(0).getId() != null || l.get(0).getId() > 0) {
+                data = new NoteViewDO();
+                data.setIsExternal("N");
+                data.setReferenceId(analysis.getId());
+                analysisIntNotes.add(data);
+                l.add(0, data);
+            }
+
+            return l.get(0);
+        }
+
+        /**
+         * Removes the editing note. For internal, only the uncommitted note is
+         * removed.
+         */
+        public void removeEditing(AnalysisDO analysis) {
+            NoteViewDO data;
+            ArrayList<NoteViewDO> l;
+
+            map();
+            l = map.get(analysis.getId());
+            if (l != null && l.size() > 0) {
+                data = l.remove(0);
+                analysisIntNotes.remove(data);
+                if (data.getId() != null && data.getId() > 0)
+                    removeDataObject(data);
+            }
+        }
+
+        /**
+         * Returns the number of internal note(s)
+         */
+        public int count(AnalysisDO analysis) {
+            ArrayList<NoteViewDO> l;
+
+            map();
+            if (analysisIntNotes == null)
+                return 0;
+
+            l = map.get(analysis.getId());
+            return (l == null) ? 0 : l.size();
+        }
+        
+        /*
+         * find the index to internal editable notes
+         */
+        private void map() {
+            ArrayList<NoteViewDO> l;
+
+            if (analysisIntNotes != null) {
                 if (map == null) {
                     map = new HashMap<Integer, ArrayList<NoteViewDO>>();
-                    for (NoteViewDO data : analysisNotes) {
+                    for (NoteViewDO data : analysisIntNotes) {
                         l = map.get(data.getId());
                         if (l == null) {
                             l = new ArrayList<NoteViewDO>();
@@ -1142,16 +1191,7 @@ public class SampleManager1 implements Serializable {
                         }
                         l.add(data);
                     }
-                }
-                l = map.get(id);
-                for (int i = 0; i < l.size(); i++ ) {
-                    if ("Y".equals(l.get(i).getIsExternal()))
-                        extE = i;
-                    else if (l.get(i).getId() == null || l.get(i).getId() < 1)
-                        intE = i;
-                    if (extE != -1 && intE != -1)
-                        break;
-                }
+                }                
             }
         }
     }

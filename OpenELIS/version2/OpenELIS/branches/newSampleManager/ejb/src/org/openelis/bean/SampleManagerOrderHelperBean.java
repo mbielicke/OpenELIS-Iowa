@@ -29,6 +29,7 @@ import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,35 +42,37 @@ import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.domain.SampleTestAddVO;
+import org.openelis.domain.SampleTestRequestVO;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.TestManager;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.NotFoundException;
@@ -110,6 +113,12 @@ public class SampleManagerOrderHelperBean {
     @EJB
     private AnalysisHelperBean        analysisHelper;
 
+    @EJB
+    private UserCacheBean             userCache;
+
+    @EJB
+    private SampleManager1Bean        sampleManager1;
+
     private static final Logger       log = Logger.getLogger("openelis");
 
     private static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
@@ -137,14 +146,16 @@ public class SampleManagerOrderHelperBean {
      * related to invalid data encountered during the process to the
      * ValidationErrorsList
      */
-    public SampleTestAddVO importSendoutOrder(SampleManager1 sm, Integer orderId, ValidationErrorsList e) throws Exception {
-        Integer groupId;
+    public SampleTestReturnVO importSendoutOrder(SampleManager1 sm, Integer orderId,
+                                                 ValidationErrorsList e) throws Exception {
+        Integer domainGrpId;
         SampleDO data;
         OrderManager om;
         AuxDataViewDO aux;
         AuxDataManager am;
-        SampleTestAddVO sta;
-        ArrayList<AuxDataViewDO> fieldAux, extraAux;
+        SampleTestReturnVO ret;
+        HashMap<Integer, AuxDataViewDO> auxGrp;
+        HashMap<Integer, HashMap<Integer, AuxDataViewDO>> auxGrps;
 
         data = getSample(sm);
         try {
@@ -159,57 +170,59 @@ public class SampleManagerOrderHelperBean {
                                                                                  orderId));
         }
 
+        data.setOrderId(orderId);
         /*
-         * split the aux list, one to copy into fields, one to add to sample aux
-         * data
+         * make a hash of aux groups
          */
-        groupId = getAuxGroupId(data);
+        domainGrpId = getDomainAuxGroupId(data);
         am = om.getAuxData();
-        fieldAux = new ArrayList<AuxDataViewDO>();
-        extraAux = new ArrayList<AuxDataViewDO>();
+        auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
         for (int i = 0; i < am.count(); i++ ) {
             aux = am.getAuxDataAt(i);
-            if (aux.getGroupId().equals(groupId))
-                fieldAux.add(aux);
-            else
-                extraAux.add(aux);
+            auxGrp = auxGrps.get(aux.getGroupId());
+            if (auxGrp == null) {
+                auxGrp = new HashMap<Integer, AuxDataViewDO>();
+                auxGrps.put(aux.getGroupId(), auxGrp);
+            }
+            auxGrp.put(aux.getAnalyteId(), aux);
         }
 
         /*
          * fieldAux are consumed by sample, sample domain, project
          */
-        if (fieldAux.size() > 0) {
-            copyGeneralFields(sm, fieldAux, e);
+        auxGrp = auxGrps.get(domainGrpId);
+        if (auxGrp != null) {
+            copyGeneralFields(sm, auxGrp, e);
             if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
-                copyEnvironmentalFields(getSampleEnvironmental(sm), fieldAux, e);
+                copyEnvironmentalFields(getSampleEnvironmental(sm), auxGrp, e);
             else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-                copyPrivateWellFields(getSamplePrivateWell(sm), fieldAux, e);
+                copyPrivateWellFields(getSamplePrivateWell(sm), auxGrp, e);
             else if (Constants.domain().SDWIS.equals(data.getDomain()))
-                copySDWISFields(getSampleSDWIS(sm), fieldAux, e);
+                copySDWISFields(getSampleSDWIS(sm), auxGrp, e);
+            auxGrps.remove(domainGrpId);
         }
 
         copyOrganizations(sm, om, e);
         copySampleItems(sm, om, e);
-        sta = copyAnalyses(sm, om, e);
+        ret = copyTests(sm, om, e);
         copyNotes(sm, om);
-        copyAuxData(sm, extraAux, e);
-        
-        return sta;
+        copyAuxData(sm, auxGrps, e);
+
+        return ret;
     }
 
     /**
      * Sets values of fields independent of domain from the corresponding aux
      * data in the list. Adds warnings or throws exception for invalid data.
      */
-    private void copyGeneralFields(SampleManager1 sm, ArrayList<AuxDataViewDO> fieldAux,
+    private void copyGeneralFields(SampleManager1 sm, HashMap<Integer, AuxDataViewDO> grp,
                                    ValidationErrorsList e) throws Exception {
         String extId;
         SampleDO sample;
         ArrayList<ProjectDO> projects;
 
         sample = getSample(sm);
-
-        for (AuxDataViewDO data : fieldAux) {
+        for (AuxDataViewDO data : grp.values()) {
             extId = data.getAnalyteExternalId();
             if (SMPL_COLLECTED_DATE.equals(extId)) {
                 sample.setCollectionDate(ReportUtil.getDate(data.getValue()));
@@ -238,11 +251,11 @@ public class SampleManagerOrderHelperBean {
      * the list. Adds warnings or throws exception for invalid data.
      */
     private void copyEnvironmentalFields(SampleEnvironmentalDO env,
-                                         ArrayList<AuxDataViewDO> fieldAux, ValidationErrorsList e) throws Exception {
+                                         HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
         Integer p;
         String extId;
 
-        for (AuxDataViewDO data : fieldAux) {
+        for (AuxDataViewDO data : grp.values()) {
             extId = data.getAnalyteExternalId();
             if (IS_HAZARDOUS.equals(extId)) {
                 try {
@@ -289,11 +302,11 @@ public class SampleManagerOrderHelperBean {
      * list. Adds warnings or throws exception for invalid data.
      */
     private void copyPrivateWellFields(SamplePrivateWellViewDO well,
-                                       ArrayList<AuxDataViewDO> fieldAux, ValidationErrorsList e) throws Exception {
+                                       HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
         Integer w;
         String extId;
 
-        for (AuxDataViewDO data : fieldAux) {
+        for (AuxDataViewDO data : grp.values()) {
             extId = data.getAnalyteExternalId();
             if (LOCATION.equals(extId)) {
                 well.setLocation(data.getValue());
@@ -321,13 +334,13 @@ public class SampleManagerOrderHelperBean {
      * Sets values of SDWIS fields from the corresponding aux data in the list.
      * Adds warnings or throws exception for invalid data.
      */
-    private void copySDWISFields(SampleSDWISViewDO sdwis, ArrayList<AuxDataViewDO> fieldAux,
+    private void copySDWISFields(SampleSDWISViewDO sdwis, HashMap<Integer, AuxDataViewDO> grp,
                                  ValidationErrorsList e) throws Exception {
         Integer dictId;
         String extId;
         PWSDO pwsDO;
 
-        for (AuxDataViewDO data : fieldAux) {
+        for (AuxDataViewDO data : grp.values()) {
             extId = data.getAnalyteExternalId();
             if (PWS_ID.equals(extId) && data.getValue() != null) {
                 try {
@@ -415,74 +428,86 @@ public class SampleManagerOrderHelperBean {
         }
     }
 
-    private void copyAuxData(SampleManager1 sm, ArrayList<AuxDataViewDO> extraAux,
+    /**
+     * Add to sample the aux groups specified in the order
+     */
+    private void copyAuxData(SampleManager1 sm,
+                             HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps,
                              ValidationErrorsList e) throws Exception {
-        int j, lastAuxFieldIndex;
-        AuxDataViewDO data;
-        AuxFieldManager afman;
-        AuxFieldViewDO auxfData;
-        AuxFieldGroupManager afgMan;
+        int i;
+        Integer prevId;
+        AuxDataViewDO aux1, aux2;
+        AuxFieldViewDO af;
+        AuxFieldManager afm;
+        HashMap<Integer, AuxDataViewDO> grp;
 
-        afgMan = null;
-        lastAuxFieldIndex = 0;
-
-        for (int i = 0; i < extraAux.size(); i++ ) {
-            data = extraAux.get(i);
-            /*
-             * get a new manager if this aux group's id is encountered for the
-             * first time
-             */
-            if (afgMan == null || !data.getGroupId().equals(afgMan.getGroup().getId())) {
-                afgMan = AuxFieldGroupManager.fetchById(data.getGroupId());
-                lastAuxFieldIndex = 0;
-            }
-            afman = afgMan.getFields();
-
-            if (afman.count() < lastAuxFieldIndex) {
-                e.add(new FormErrorException(Messages.get()
-                                                     .orderAuxDataNotFoundError(data.getAnalyteName())));
-                continue;
-            }
-
-            auxfData = afgMan.getFields().getAuxFieldAt(lastAuxFieldIndex);
-            /*
-             * find out if the aux field in the aux group at this index is the
-             * same as the one that this aux data is linked to in the order
-             */
-            if (data.getAuxFieldId().equals(auxfData.getId())) {
-                /*
-                 * if it matches then add the aux data to the sample
-                 */
-                // afvman =
-                // auxFieldGroupMan.getFields().getValuesAt(lastAuxFieldIndex);
-                // manager.getAuxData().addAuxDataFieldAndValues(auxData,
-                // auxfData, afvman.getValues());
-                addAuxilliary(sm, createAuxData(data));
-                lastAuxFieldIndex++ ;
-                continue;
-            } else {
-                j = 0;
-                /*
-                 * if it doesn't match then find where the aux field is and add
-                 * the aux data to the sample
-                 */
-                while (j < afman.count()) {
-                    auxfData = afman.getAuxFieldAt(j);
-                    if (data.getAuxFieldId().equals(auxfData.getId())) {
-                        // afvman = auxFieldGroupMan.getFields().getValuesAt(j);
-                        // manager.getAuxData().addAuxDataFieldAndValues(auxData,
-                        // auxfData, afvman.getValues());
-                        addAuxilliary(sm, createAuxData(data));
-                        continue;
+        /*
+         * set the values of the sample's aux data from the order
+         */
+        if (getAuxilliary(sm) != null) {
+            prevId = null;
+            for (AuxDataViewDO a : getAuxilliary(sm)) {
+                grp = grps.get(a.getGroupId());
+                if (grp != null) {
+                    aux1 = grp.get(a.getAnalyteId());
+                    if (aux1 != null) {
+                        a.setIsReportable(aux1.getIsReportable());
+                        a.setValue(aux1.getValue());
+                        a.setDictionary(aux1.getDictionary());
                     }
                 }
-            }
 
-            e.add(new FormErrorException(Messages.get()
-                                                 .orderAuxDataNotFoundError(data.getAnalyteName())));
+                /*
+                 * this makes sure that after this loop ends, the map only
+                 * contains groups not present in the sample
+                 */
+                if (prevId != null && !prevId.equals(a.getGroupId()))
+                    grps.remove(prevId);
+                prevId = a.getGroupId();
+            }
+            /*
+             * this makes sure that the last group in the sample gets removed
+             * from the map, which won't happen in the loop above
+             */
+            if (prevId != null)
+                grps.remove(prevId);
+        }
+
+        /*
+         * fields for the aux group present in the order but not in the sample
+         * are fetched and aux data for them is added to the sample
+         */
+        for (Entry<Integer, HashMap<Integer, AuxDataViewDO>> entry : grps.entrySet()) {
+            afm = AuxFieldManager.fetchByGroupIdWithValues(entry.getKey());
+            for (i = 0; i < afm.count(); i++ ) {
+                af = afm.getAuxFieldAt(i);
+                if ("N".equals(af.getIsActive()))
+                    continue;
+                aux1 = new AuxDataViewDO();
+                aux1.setAuxFieldId(af.getId());
+                aux1.setGroupId(entry.getKey());
+                aux1.setAnalyteId(af.getAnalyteId());
+                aux1.setAnalyteName(af.getAnalyteName());
+                aux2 = entry.getValue().get(af.getAnalyteId());
+                // TODO validate the value
+                if (aux2 != null) {
+                    aux1.setIsReportable(aux2.getIsReportable());
+                    aux1.setValue(aux2.getValue());
+                } else {
+                    aux1.setIsReportable(af.getIsReportable());
+                    aux1.setValue(getDefault(afm.getValuesAt(i)));
+                }
+                addAuxilliary(sm, aux1);
+            }
         }
     }
 
+    /**
+     * Loads sample items in the SampleManager from the containers in the order.
+     * Resets sequences in the items to match the containers. Also resets the
+     * next item sequence in the sample to be greater than the sequence of the
+     * last item.
+     */
     private void copySampleItems(SampleManager1 sm, OrderManager om, ValidationErrorsList e) throws Exception {
         int i;
         OrderContainerDO oc;
@@ -562,30 +587,33 @@ public class SampleManagerOrderHelperBean {
         /*
          * resequence the rest of the sample items
          */
-        for (i = ocm.count(); i < items.size(); i++ )
-            items.get(i).setItemSequence(i);
-
-        getSample(sm).setNextItemSequence(i);
+        if (items != null) {
+            for (i = ocm.count(); i < items.size(); i++ )
+                items.get(i).setItemSequence(i);
+            getSample(sm).setNextItemSequence(i);
+        }
     }
 
-    private SampleTestAddVO copyAnalyses(SampleManager1 sm, OrderManager om, ValidationErrorsList e) throws Exception {
-        int min;
-        OrderTestViewDO ot;
+    /**
+     * Adds analyses to the sample from the tests specifed in the order. Adds
+     * any unresolved prep tests to the returned VO.
+     */
+    private SampleTestReturnVO copyTests(SampleManager1 sm, OrderManager om, ValidationErrorsList e) throws Exception {
+        int i, j, min;
         OrderTestManager otm;
         SampleItemViewDO item;
-        SampleTestAddVO sta;
-        AnalysisViewDO ana;
+        SampleTestReturnVO ret;
+        ArrayList<Integer> analyteIds;
+        ArrayList<SampleTestRequestVO> tests;
         HashMap<Integer, SampleItemViewDO> items;
-        HashMap<Integer, AnalysisViewDO> analyses;
-        ArrayList<Integer> prepIds;
 
-        sta = new SampleTestAddVO();
-        sta.setManager(sm);
-        sta.setErrors(e);
-        
+        ret = new SampleTestReturnVO();
+        ret.setManager(sm);
+        ret.setErrors(e);
+
         otm = om.getTests();
         if (otm.count() == 0)
-            return sta;
+            return ret;
 
         /*
          * If there are no sample items then add one. Otherwise, add all tests
@@ -605,30 +633,38 @@ public class SampleManagerOrderHelperBean {
             min = Math.min(min, si.getItemSequence());
         }
 
-        /*
-         * prepare the list of tests to be added to the sample
-         */
-        analyses = new HashMap<Integer, AnalysisViewDO>();
-        if (getAnalyses(sm) != null) {
-            for (AnalysisViewDO a : getAnalyses(sm)) {
-                if (analyses.get(a.getTestId()) == null && !Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()))
-                    analyses.put(a.getTestId(), a);
-            }
-        }
-        
-        for (int i = 0; i < otm.count(); i++ ) {
+        tests = new ArrayList<SampleTestRequestVO>();
+        for (i = 0; i < otm.count(); i++ ) {
             item = items.get(otm.getTestAt(i).getItemSequence());
             if (item == null)
                 item = items.get(min);
-            
-            ana = analysisHelper.addAnalysis(sm, item.getId(), otm.getTestAt(i).getTestId(), e);
-            //if (prepIds != null)
-              //  for (Integer id : prepIds) 
-                //    sta.addTest(item.getId(), otm.getTestAt(i).getTestId(), id, true);
+
+            analyteIds = null;
+            if (otm.getAnalytesAt(i).count() > 0) {
+                analyteIds = new ArrayList<Integer>();
+                for (j = 0; j < otm.getAnalytesAt(i).count(); j++ )
+                    analyteIds.add(otm.getAnalytesAt(i).getAnalyteAt(j).getAnalyteId());
+            }
+            tests.add(new SampleTestRequestVO(item.getId(),
+                                              otm.getTestAt(i).getTestId(),
+                                              null,
+                                              null,
+                                              null,
+                                              false,
+                                              analyteIds));
         }
 
-        // TODO mark results reportable
-        return sta;
+        ret = sampleManager1.addTests(sm, tests);
+        /*
+         * add the errors found during importing the order to the ones found
+         * while adding tests, because the object returned by the above method
+         * is different from the one created at the start of this method
+         */
+        if (ret.getErrors() != null)
+            for (Exception ex : ret.getErrors().getErrorList())
+                e.add(ex);
+        ret.setErrors(e);
+        return ret;
     }
 
     /**
@@ -716,6 +752,10 @@ public class SampleManagerOrderHelperBean {
         }
     }
 
+    /**
+     * Adds an internal note to the sample from the "sample" note defined in the
+     * order.
+     */
     private void copyNotes(SampleManager1 sm, OrderManager om) throws Exception {
         NoteViewDO note;
         NoteManager nm;
@@ -725,20 +765,25 @@ public class SampleManagerOrderHelperBean {
         if (nm.count() == 0)
             return;
 
-        /*
-         * note = sm.sampleNote.getEditing(false); user =
-         * userCache.getSystemUser(); note.setSystemUserId(user.getId());
-         * note.setSystemUser(user.getLoginName());
-         * note.setSubject(Messages.get().orderNoteSubject());
-         * note.setText(nm.getNoteAt(0).getText());
-         */
+        note = new NoteViewDO();
+        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+        note.setIsExternal("N");
+        user = userCache.getSystemUser();
+        note.setSystemUserId(user.getId());
+        note.setSystemUser(user.getLoginName());
+        note.setSubject(Messages.get().orderNoteSubject());
+        note.setText(nm.getNoteAt(0).getText());
+        if (getSampleInternalNotes(sm) != null)
+            getSampleInternalNotes(sm).add(0, note);
+        else
+            addSampleInternalNote(sm, note);
     }
 
     /**
      * Returns the id of an aux field group. This id is specific to a group of
      * aux prompts that mimic sample specific fields.
      */
-    private Integer getAuxGroupId(SampleDO data) throws Exception {
+    private Integer getDomainAuxGroupId(SampleDO data) throws Exception {
         String name;
         SystemVariableDO sys;
         AuxFieldGroupDO aux;
@@ -804,23 +849,10 @@ public class SampleManagerOrderHelperBean {
         return false;
     }
 
-    private AuxDataViewDO createAuxData(AuxDataViewDO orderAux) {
-        AuxDataViewDO data;
-
-        data = new AuxDataViewDO();
-        data.setAuxFieldId(orderAux.getAuxFieldId());
-        data.setIsReportable(orderAux.getIsReportable());
-        data.setTypeId(orderAux.getTypeId());
-        data.setValue(orderAux.getValue());
-        data.setDictionary(orderAux.getDictionary());
-        data.setGroupId(orderAux.getGroupId());
-        data.setAnalyteId(orderAux.getAnalyteId());
-        data.setAnalyteName(orderAux.getAnalyteName());
-        data.setAnalyteExternalId(orderAux.getAnalyteExternalId());
-
-        return data;
-    }
-
+    /**
+     * Returns a newly created OrganizationDO, filled from the
+     * OrderOrganizationViewDO
+     */
     private OrganizationDO createOrganization(OrderOrganizationViewDO org) {
         OrganizationDO data;
         AddressDO addr;
@@ -853,16 +885,21 @@ public class SampleManagerOrderHelperBean {
         }
     }
 
-    private AnalysisViewDO getAnalysisForTest(SampleManager1 sm, SampleItemDO item, Integer testId) {
-        AnalysisViewDO ana;
+    /**
+     * Returns the default value, if any, defined for a particular aux field
+     */
+    private String getDefault(AuxFieldValueManager afvm) {
+        AuxFieldValueViewDO afv;
 
-        for (int i = 0; i < sm.analysis.count(item); i++ ) {
-            ana = sm.analysis.get(item, i);
-            if (testId.equals(ana.getTestId()))
-                return ana;
+        if (afvm.count() == 0)
+            return null;
+
+        for (int i = 0; i < afvm.count(); i++ ) {
+            afv = afvm.getAuxFieldValueAt(i);
+            if (Constants.dictionary().AUX_DEFAULT.equals(afv.getTypeId()))
+                return afv.getValue();
         }
 
         return null;
     }
-
 }
