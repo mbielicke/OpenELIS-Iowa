@@ -33,18 +33,17 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 /**
  * This class is used for transporting the data needed for adding tests to a
- * SampleManager and any errors or warnings resulting from trying to do so
+ * sample and any errors or warnings resulting from trying to do so
  */
+public class SampleTestReturnVO implements Serializable {
 
-public class SampleTestAddVO implements Serializable {
+    private static final long              serialVersionUID = 1L;
 
-    private static final long      serialVersionUID = 1L;
+    protected SampleManager1                 manager;
 
-    protected SampleManager1       manager;
+    protected ValidationErrorsList           errors;
 
-    protected ValidationErrorsList errors;
-
-    protected ArrayList<AddTest>   tests;
+    protected ArrayList<SampleTestRequestVO> tests;
 
     public SampleManager1 getManager() {
         return manager;
@@ -62,46 +61,18 @@ public class SampleTestAddVO implements Serializable {
         this.errors = errors;
     }
 
-    public void addTest(Integer sampleItemId, Integer testId, Integer prepTestId, boolean isPrep) {
+    public void addTest(Integer sampleItemId, Integer testId, Integer analysisId,
+                        Integer resultId, Integer panelId, boolean allowDuplicate,
+                        ArrayList<Integer> reportableAnalytes) {
         if (tests == null)
-            tests = new ArrayList<AddTest>();
+            tests = new ArrayList<SampleTestRequestVO>(1);
 
-        tests.add(new AddTest(sampleItemId, testId, prepTestId, isPrep));
+        tests.add(new SampleTestRequestVO(sampleItemId, testId, analysisId,
+                                          resultId, panelId, allowDuplicate,
+                                          reportableAnalytes));
     }
 
-    public ArrayList<AddTest> getTests() {
+    public ArrayList<SampleTestRequestVO> getTests() {
         return tests;
-    }
-
-    public class AddTest implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        protected boolean         isPrep;
-
-        protected Integer         testId, prepTestId, sampleItemId;
-
-        protected AddTest(Integer sampleItemId, Integer testId, Integer prepTestId, boolean isPrep) {
-            this.sampleItemId = sampleItemId;
-            this.testId = testId;
-            this.prepTestId = prepTestId;
-            this.isPrep = isPrep;
-        }
-
-        public Integer getSampleItemId() {
-            return sampleItemId;
-        }
-
-        public Integer getTestId() {
-            return testId;
-        }
-
-        public Integer getPrepTestId() {
-            return prepTestId;
-        }
-
-        public boolean isPrep() {
-            return isPrep;
-        }
     }
 }

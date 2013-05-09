@@ -29,8 +29,7 @@ import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashSet;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -64,47 +63,57 @@ import org.openelis.ui.common.ValidationErrorsList;
 public class AnalysisHelperBean {
 
     @EJB
-    private TestBean            test;
+    private TestManagerBean testManager;
 
-    private static final Logger log = Logger.getLogger("openelis");
+    /**
+     * Returns TestManagers for given test ids. For those tests that are not
+     * active, the method looks for the active version of the same tests.
+     */
+    public HashMap<Integer, TestManager> getTestManagers(ArrayList<Integer> testIds,
+                                                         ValidationErrorsList e) throws Exception {
+        TestViewDO t;
+        ArrayList<TestManager> tms;
+        HashMap<Integer, TestManager> map;
+
+        tms = testManager.fetchByIds(testIds);
+        map = new HashMap<Integer, TestManager>();
+        for (TestManager tm : tms) {
+            t = tm.getTest();
+
+            /*
+             * if test not active, try to find an active test with this name and
+             * method, make sure the old id points to the new manager
+             */
+            if ("N".equals(t.getIsActive())) {
+                try {
+                    tm = testManager.fetchActiveByNameMethodName(t.getName(), t.getMethodName());
+                    map.put(t.getId(), tm);
+                    t = tm.getTest();
+                } catch (NotFoundException ex) {
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .inactiveTestOnOrderException(t.getName(),
+                                                                                     t.getMethodName())));
+                    continue;
+                }
+            }
+            map.put(t.getId(), tm);
+        }
+
+        return map;
+    }
 
     /**
      * For each test in the VO that passes validation, adds an analysis and
      * results to the manager. Adds validation errors, to the returned VO
      */
-    public AnalysisViewDO addAnalysis(SampleManager1 sm, Integer itemId, Integer addTestId,                                       
-                                       ValidationErrorsList e) throws Exception {
+    public AnalysisViewDO addAnalysis(SampleManager1 sm, Integer itemId, TestManager tm,
+                                      ValidationErrorsList e) throws Exception {
         AnalysisViewDO ana;
         TestViewDO t;
-        TestManager tm;
         TestSectionViewDO ts;
         ArrayList<TestTypeOfSampleDO> types;
 
-        try {
-            tm = TestManager.fetchWithPrepTestsSampleTypes(addTestId);
-            t = tm.getTest();
-        } catch (Exception ex) {
-            log.log(Level.SEVERE, "Missing/invalid test '" + addTestId + "'", ex);
-            throw ex;
-        }
-
-        /*
-         * if test not active, try to find an active test with this name and
-         * method
-         */
-        ana = null;
-        if ("N".equals(t.getIsActive())) {
-            try {
-                t = test.fetchActiveByNameMethodName(t.getName(), t.getMethodName());
-                tm = TestManager.fetchWithPrepTestsSampleTypes(t.getId());
-                t = tm.getTest();
-            } catch (NotFoundException ex) {
-                e.add(new FormErrorWarning(Messages.get()
-                                                   .inactiveTestOnOrderException(t.getName(),
-                                                                                 t.getMethodName())));
-                return ana;
-            }
-        }
+        t = tm.getTest();
         /*
          * find out if this user has permission to add this test
          */
@@ -115,9 +124,6 @@ public class AnalysisHelperBean {
                                                                               t.getMethodName())));
         }
 
-        /*
-         * create the analysis and set the default unit
-         */
         ana = new AnalysisViewDO();
         ana.setId(sm.getNextUID());
         ana.setRevision(0);
@@ -125,6 +131,11 @@ public class AnalysisHelperBean {
         ana.setTestName(t.getName());
         ana.setMethodId(t.getMethodId());
         ana.setMethodName(t.getMethodName());
+        /*
+         * if there is a default section then set it
+         */
+        if (ts != null)
+            ana.setSectionId(ts.getSectionId());
         ana.setIsReportable(t.getIsReportable());
         ana.setIsPreliminary("N");
 
@@ -141,79 +152,116 @@ public class AnalysisHelperBean {
             }
         }
 
-        /*
-         * if there is a default section then set it
-         */
-        if (ts != null)
-            ana.setSectionId(ts.getSectionId());
+        ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+        ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
 
         org.openelis.manager.SampleManager1Accessor.addAnalysis(sm, ana);
-        
-        addResults(sm, tm, ana);
-        
+
         return ana;
     }
 
-    public void addResults(SampleManager1 sm, TestManager tm, AnalysisViewDO ana) throws Exception {
+    /**
+     * Adds results for this analysis from the analytes in the TestManager
+     */
+    public void addResults(SampleManager1 sm, TestManager tm, Integer analysisId,
+                           ArrayList<Integer> analyteIds) throws Exception {
+        String reportable;
+        boolean addRow;
         ResultViewDO r;
         TestAnalyteManager tam;
+        HashSet<Integer> ids;
+
+        ids = null;
+        if (analyteIds != null)
+            ids = new HashSet<Integer>(analyteIds);
 
         tam = tm.getTestAnalytes();
-        for (ArrayList<TestAnalyteViewDO> tas : tam.getAnalytes()) {
-            for (TestAnalyteViewDO ta : tas) {
+        /*
+         * By default add analytes that are not supplemental. Add
+         * supplemental analytes that are in id list. The id list
+         * overrides reportable flag.
+         */
+        for (ArrayList<TestAnalyteViewDO> list : tam.getAnalytes()) {
+            for (TestAnalyteViewDO data : list) {
+                reportable = data.getIsReportable();
+                if ("N".equals(data.getIsColumn())) {
+                    addRow = !Constants.dictionary().TEST_ANALYTE_SUPLMTL.equals(data.getTypeId());
+                    if (ids != null) {
+                        if (ids.contains(data.getAnalyteId())) {
+                            reportable = "Y";
+                            addRow = true;
+                        } else {
+                            reportable = "N";
+                        }
+                    }
+                    
+                    if ( !addRow)
+                        break;
+                }
+
                 r = new ResultViewDO();
                 r.setId(sm.getNextUID());
-                r.setTestAnalyteId(ta.getId());
-                r.setTestAnalyteTypeId(ta.getTypeId());
-                r.setIsColumn(ta.getIsColumn());
-                r.setIsReportable(ta.getIsReportable());
-                r.setAnalyteId(ta.getAnalyteId());
-                r.setAnalyte(ta.getAnalyteName());
-                r.setResultGroup(ta.getResultGroup());
-                r.setRowGroup(ta.getRowGroup());
+                r.setAnalysisId(analysisId);
+                r.setTestAnalyteId(data.getId());
+                r.setTestAnalyteTypeId(data.getTypeId());
+                r.setIsColumn(data.getIsColumn());
+                r.setIsReportable(reportable);
+                r.setAnalyteId(data.getAnalyteId());
+                r.setAnalyte(data.getAnalyteName());
+                r.setResultGroup(data.getResultGroup());
+                r.setRowGroup(data.getRowGroup());
                 addResult(sm, r);
             }
         }
     }
-    
-    public ArrayList<Integer> findPrepTests(HashMap<Integer, AnalysisViewDO> analyses,
-                                            AnalysisViewDO ana, TestManager tm,
-                                            ArrayList<Integer> prepIds) throws Exception {
-         int i;
-         boolean foundPrep;
-         AnalysisViewDO prep;
-         TestPrepManager tpm;
-         /*
-          * if this test requires prep tests, first look in the list of existing
-          * analyses otherwise add the prep test to the list shown to the user to
-          * choose a prep test
-          */
-         
-         tpm = tm.getPrepTests();
-         foundPrep = false;
-         for (i = 0; i < tpm.count(); i++ ) {
-             prep = analyses.get(tpm.getPrepAt(i).getPrepTestId());
-             if (prep != null) {
-                 ana.setPreAnalysisId(prep.getId());
-                 ana.setPreAnalysisTest(prep.getTestName());
-                 ana.setPreAnalysisMethod(prep.getMethodName());
-                 if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) ||
-                     Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
-                     ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
-                     ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                 } else {
-                     ana.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
-                 }
-                 foundPrep = true;
-                 break;
-             }
-         }
 
-         if ( !foundPrep && tpm.count() > 0) {
-             prepIds = new ArrayList<Integer>();
-             for (i = 0; i < tpm.count(); i++ )
-                 prepIds.add(tpm.getPrepAt(i).getPrepTestId());            
-         }
-         return prepIds;
-     }
+    /**
+     * This method finds and links a prep analysis to the passed analysis. If an
+     * existing analysis is not found, the method returns list of prep tests
+     * could be added to satisfy the prep requirement.
+     */
+    public ArrayList<Integer> setPrepForAnalysis(AnalysisViewDO analysis,
+                                                 HashMap<Integer, AnalysisViewDO> analyses,
+                                                 TestManager tm) throws Exception {
+        int i;
+        AnalysisViewDO prep;
+        TestPrepManager tpm;
+        ArrayList<Integer> prepIds;
+
+        /*
+         * if this test requires prep tests, first look in the list of existing
+         * analyses otherwise add the prep test to the list shown to the user to
+         * choose a prep test
+         */
+        tpm = tm.getPrepTests();
+        for (i = 0; i < tpm.count(); i++ ) {
+            prep = analyses.get(tpm.getPrepAt(i).getPrepTestId());
+            if (prep != null) {
+                analysis.setPreAnalysisId(prep.getId());
+                analysis.setPreAnalysisTest(prep.getTestName());
+                analysis.setPreAnalysisMethod(prep.getMethodName());
+                if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
+                    analysis.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+                    analysis.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                } else {
+                    analysis.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
+                }
+                return null;
+            }
+        }
+
+        prepIds = null;
+        if (tpm.count() > 0) {
+            prepIds = new ArrayList<Integer>();
+            for (i = 0; i < tpm.count(); i++ )
+                prepIds.add(tpm.getPrepAt(i).getPrepTestId());
+        }
+        return prepIds;
+    }
+
+    public void setAnalysesToPrep(AnalysisViewDO prep, HashMap<Integer, AnalysisViewDO> analyses,
+                                  TestManager tm) throws Exception {
+
+    }
 }
