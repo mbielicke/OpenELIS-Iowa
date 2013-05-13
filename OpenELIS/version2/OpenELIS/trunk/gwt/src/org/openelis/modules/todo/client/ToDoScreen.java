@@ -46,6 +46,7 @@ import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
@@ -71,6 +72,8 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
     private OtherTab                  otherTab;
     private WorksheetTab              worksheetTab;
     
+    private ToDoScreen                source;
+    
     public enum Action {
         SHOW_SAMPLE
     };
@@ -89,7 +92,14 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
         initialize();
         mySection.setValue("Y");
         setState(State.DEFAULT);
-        DataChangeEvent.fire(this);
+        
+        Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+                DataChangeEvent.fire(source);
+            }
+        });
+        
     }
 
     private void initialize() {
