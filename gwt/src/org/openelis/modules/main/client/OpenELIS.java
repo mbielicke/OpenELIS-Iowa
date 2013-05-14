@@ -647,12 +647,16 @@ public class OpenELIS extends Screen {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
+                        ToDoScreen screen;
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.toDo());
-                            window.setContent(new ToDoScreen(window));
+                            screen = new ToDoScreen(window);
+                            window.setContent(screen);
+                            screen.initialize();
                             browser.addWindow(window, "toDo");
                         } catch (Throwable e) {
+                            e.printStackTrace();
                             remote().log(Level.SEVERE,e.getMessage(),e);
                             Window.alert(e.getMessage());
                         }
