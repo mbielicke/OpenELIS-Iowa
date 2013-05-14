@@ -150,7 +150,7 @@
           </g:HTMLPanel>
         </g:layer>
         <g:layer top="160" bottom="0px">
-          <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>
                 <w:TabWidget text="{msg.contact}" />
