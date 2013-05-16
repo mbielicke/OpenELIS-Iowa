@@ -31,6 +31,7 @@ import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.domain.QcChartReportViewVO.ReportType;
 import org.openelis.domain.QcChartReportViewVO.Value;
 import org.openelis.domain.QcChartResultVO;
+import org.openelis.meta.QcChartMeta;
 import org.openelis.report.qcchart.QcChartDataSource;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -61,8 +62,8 @@ public class QcChartReportBean {
     private static final Logger    log = Logger.getLogger("openelis");
 
     public QcChartReportViewVO fetchForQcChart(ArrayList<QueryData> paramList) throws Exception {
-        Integer plot, qc, number;
-        String analyteName, worksheetCreatedDateFrom, worksheetCreatedDateTo, numInstances, qcName, plotType, systemName, qcType;
+        Integer plot, qc, number, location;
+        String analyteName, worksheetCreatedDateFrom, worksheetCreatedDateTo, numInstances, qcName, plotType, systemName, qcType, qcLocation;
         Datetime startDate, endDate;
         QcChartReportViewVO.Value vo;
         QcChartReportViewVO data, qcChartVO;
@@ -74,22 +75,22 @@ public class QcChartReportBean {
 
         param = ReportUtil.getMapParameter(paramList);
 
-        worksheetCreatedDateFrom = ReportUtil.getSingleParameter(param,
-                                                                 "WORKSHEET_CREATED_DATE_FROM");
-        worksheetCreatedDateTo = ReportUtil.getSingleParameter(param,
-                                                               "WORKSHEET_CREATED_DATE_TO");
-        numInstances = ReportUtil.getSingleParameter(param, "NUM_INSTANCES");
-        qcName = ReportUtil.getSingleParameter(param, "QC_NAME");
-        qcType = ReportUtil.getSingleParameter(param, "QC_TYPE");
-        plotType = ReportUtil.getSingleParameter(param, "PLOT_TYPE");
+        worksheetCreatedDateFrom = ReportUtil.getSingleParameter(param, QcChartMeta.getWorksheetCreatedDateFrom());
+        worksheetCreatedDateTo = ReportUtil.getSingleParameter(param, QcChartMeta.getWorksheetCreatedDateTo());
+        numInstances = ReportUtil.getSingleParameter(param, QcChartMeta.getNumInstances());
+        qcName = ReportUtil.getSingleParameter(param, QcChartMeta.getQCName());
+        qcType = ReportUtil.getSingleParameter(param, QcChartMeta.getQCType());
+        plotType = ReportUtil.getSingleParameter(param, QcChartMeta.getPlotType());
+        qcLocation = ReportUtil.getSingleParameter(param, QcChartMeta.getLocationId());
 
         try {
             plot = Integer.parseInt(plotType);
             qc = Integer.parseInt(qcType);
+            location = Integer.parseInt(qcLocation);
         } catch (Exception e) {
-            throw new InconsistencyException("You must specify a valid plot type or qc type or number of instances.");
+            throw new InconsistencyException("You must specify a valid plot type, qc type, or location.");
         }
-
+        
         /*
          * The report can be run either by dates or number of instances going
          * back from now.
@@ -101,10 +102,10 @@ public class QcChartReportBean {
                 endDate = ReportUtil.getDate(worksheetCreatedDateTo);
                 resultList = worksheetAnalysis.fetchByDateForQcChart(startDate.getDate(),
                                                                      endDate.getDate(),
-                                                                     qcName);
+                                                                     qcName, location);
             } else if (numInstances != null) {
                 number = Integer.parseInt(numInstances);
-                resultList = worksheetAnalysis.fetchByInstancesForQcChart(number, qcName);
+                resultList = worksheetAnalysis.fetchByInstancesForQcChart(number, qcName, location);
             }
             if (resultList.size() == 0)
                 throw new NotFoundException("No data found for the query. Please change your query parameters.");

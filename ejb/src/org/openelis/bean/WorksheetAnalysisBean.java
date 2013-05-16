@@ -77,6 +77,16 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public WorksheetAnalysisDO fetchById(Integer id) throws Exception {
         Query query;
         WorksheetAnalysisDO data;
@@ -126,17 +136,18 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName) throws Exception {
+    public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName, Integer qcLocation) throws Exception {
         Query query;
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByDateForQcChart");
         query.setParameter("startedDate", dateFrom);
         query.setParameter("endDate", dateTo);
         query.setParameter("qcName", qcName);
+        query.setParameter("qcLocation", qcLocation);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName) throws Exception {
+    public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName, Integer qcLocation) throws Exception {
         Integer id;
         Query query;
         ArrayList<Object[]> list;
@@ -144,6 +155,7 @@ public class WorksheetAnalysisBean {
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByInstancesForQcChart");
         query.setParameter("qcName", qcName);
+        query.setParameter("qcLocation", qcLocation);
         query.setMaxResults(numInstances);
 
         list = DataBaseUtil.toArrayList(query.getResultList());

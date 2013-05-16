@@ -29,7 +29,18 @@ import org.openelis.ui.common.DataBaseUtil;
                 		"wqr.value23,wqr.value24,wqr.value25,wqr.value26,wqr.value27," +
                 		"wqr.value28,wqr.value29,wqr.value30,a.id,a.name) "
                       + " from WorksheetQcResult wqr LEFT JOIN wqr.qcAnalyte qca LEFT JOIN qca.analyte a "+
-                        " where wqr.worksheetAnalysisId = :id order by wqr.sortOrder")})
+                        " where wqr.worksheetAnalysisId = :id order by wqr.sortOrder"),
+    @NamedQuery( name = "WorksheetQcResult.FetchByWorksheetAnalysisIds",
+                query = "select new org.openelis.domain.WorksheetQcResultViewDO(wqr.id,wqr.worksheetAnalysisId," +
+                        "wqr.sortOrder,wqr.qcAnalyteId,wqr.typeId,wqr.value1,wqr.value2," +
+                        "wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
+                        "wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
+                        "wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
+                        "wqr.value18,wqr.value19,wqr.value20,wqr.value21,wqr.value22," +
+                        "wqr.value23,wqr.value24,wqr.value25,wqr.value26,wqr.value27," +
+                        "wqr.value28,wqr.value29,wqr.value30,a.id,a.name) "
+                      + " from WorksheetQcResult wqr LEFT JOIN wqr.qcAnalyte qca LEFT JOIN qca.analyte a "+
+                        " where wqr.worksheetAnalysisId in (ids) order by wqr.worksheetAnalysisId, wqr.sortOrder")})
 @Entity
 @Table(name = "worksheet_qc_result")
 public class WorksheetQcResult {

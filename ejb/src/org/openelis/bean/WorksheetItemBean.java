@@ -85,6 +85,16 @@ public class WorksheetItemBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetItemDO> fetchByWorksheetIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("WorksheetItem.FetchByWorksheetIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public WorksheetItemDO add(WorksheetItemDO data) throws Exception {
         WorksheetItem entity;
 
