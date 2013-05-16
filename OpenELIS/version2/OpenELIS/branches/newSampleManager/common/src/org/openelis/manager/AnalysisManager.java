@@ -284,6 +284,7 @@ public class AnalysisManager implements Serializable {
         }
 
         if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_ON_HOLD.equals(data.getStatusId()) ||
             Constants.dictionary().ANALYSIS_REQUEUE.equals(data.getStatusId()))
             data.setStatusId(Constants.dictionary().ANALYSIS_INITIATED);
         else if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(data.getStatusId()))
@@ -307,7 +308,7 @@ public class AnalysisManager implements Serializable {
         //
         // make sure the status is completed, initiated, on hold or logged-in
         //
-        if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(data.getStatusId()) &&
+        if (!Constants.dictionary().ANALYSIS_COMPLETED.equals(data.getStatusId()) &&
             !Constants.dictionary().ANALYSIS_ON_HOLD.equals(data.getStatusId()) &&
             !Constants.dictionary().ANALYSIS_INITIATED.equals(data.getStatusId()) &&
             !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId())) {
