@@ -31,25 +31,37 @@ import java.util.HashSet;
 import org.openelis.ui.common.Meta;
 import org.openelis.ui.common.MetaMap;
 
-public class QcListMeta implements Meta, MetaMap {
+public class QcChartMeta implements Meta, MetaMap {
 
-    private static final String     QC_NAME = "_qc.name",
-                    QC_TYPE = "_qc.typeId",
-                    WORKSHEET_CREATED_DATE  = "_worksheet.createdDate",
-                    WORKSHEET_CREATED_DATE_FROM = "_worksheet.createdDateFrom",
-                    WORKSHEET_CREATED_DATE_TO = "_worksheet.createdDateTo";
+    private static final String LOCATION_ID = "_qcLot.locationId",
+                                NUM_INSTANCES = "formonly.numInstances",
+                                PLOT_TYPE = "formonly.plotType",
+                                QC_NAME = "_qc.name",
+                                QC_TYPE = "_qc.typeId",
+                                WORKSHEET_CREATED_DATE_FROM = "_worksheet.createdDateFrom",
+                                WORKSHEET_CREATED_DATE_TO = "_worksheet.createdDateTo";
 
     private static HashSet<String> names;
 
     static {
-        names = new HashSet<String>(Arrays.asList(QC_NAME,
-                                                  QC_TYPE,
-                                                  WORKSHEET_CREATED_DATE,
+        names = new HashSet<String>(Arrays.asList(LOCATION_ID, NUM_INSTANCES,
+                                                  PLOT_TYPE, QC_NAME, QC_TYPE,
                                                   WORKSHEET_CREATED_DATE_FROM,
-                                                  WORKSHEET_CREATED_DATE_TO
-                                                  ));
+                                                  WORKSHEET_CREATED_DATE_TO));
     }
     
+    public static String getLocationId() {
+        return LOCATION_ID;
+    }
+
+    public static String getNumInstances() {
+        return NUM_INSTANCES;
+    }
+
+    public static String getPlotType() {
+        return PLOT_TYPE;
+    }
+
     public static String getQCName() {
         return QC_NAME;
     }
@@ -58,10 +70,6 @@ public class QcListMeta implements Meta, MetaMap {
         return QC_TYPE;
     }
 
-    public static String getWorksheetCreatedDate() {
-        return WORKSHEET_CREATED_DATE;
-    }
-    
     public static String getWorksheetCreatedDateFrom() {
         return WORKSHEET_CREATED_DATE_FROM;
     }
