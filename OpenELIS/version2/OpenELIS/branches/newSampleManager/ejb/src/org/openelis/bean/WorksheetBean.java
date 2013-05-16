@@ -38,6 +38,7 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -87,6 +88,16 @@ public class WorksheetBean {
     }
 
     @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetViewDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+        
+        query = manager.createNamedQuery("Worksheet.FetchByIds");
+        query.setParameter("ids", ids);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    @SuppressWarnings("unchecked")
     public ArrayList<WorksheetViewDO> fetchByAnalysisId(Integer id) throws Exception {
         int i;
         Query query;
@@ -115,8 +126,37 @@ public class WorksheetBean {
     }
 
     @SuppressWarnings({"unchecked", "static-access"})
-    public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first,
-                                            int max) throws Exception {
+    public ArrayList<IdVO> fetchByQuery(ArrayList<QueryData> fields, int first,
+                                        int max) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        ArrayList<IdVO> list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdVO(" +
+                          WorksheetCompletionMeta.getId() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(WorksheetCompletionMeta.getId());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = (ArrayList<IdVO>)query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return list;
+    }
+
+    @SuppressWarnings({"unchecked", "static-access"})
+    public ArrayList<WorksheetViewDO> fetchByQueryForLookup(ArrayList<QueryData> fields,
+                                                            int first, int max) throws Exception {
         int i;
         Query query;
         QueryBuilderV2 builder;
