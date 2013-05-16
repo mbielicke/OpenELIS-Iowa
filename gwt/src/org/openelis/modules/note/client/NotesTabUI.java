@@ -99,6 +99,7 @@ public class NotesTabUI extends Screen {
         }
 
         modal = new ModalWindow();
+        modal.setSize("518px","569px");
         modal.setName(Messages.get().noteEditor());
         modal.setContent(editNote);
 

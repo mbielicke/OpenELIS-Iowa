@@ -97,11 +97,10 @@ import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
 import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
-import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreen;
+import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreenUI;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.messages.Messages;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
 import org.openelis.ui.widget.MenuItem;
@@ -573,9 +572,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.worksheetBuilder());
-                            window.setContent(new WorksheetBuilderScreen(window));
+                            window.setSize("1050px", "500px");
+                            window.setContent(new WorksheetBuilderScreenUI(window));
                             browser.addWindow(window, "worksheetBuilder");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE,e.getMessage(),e);

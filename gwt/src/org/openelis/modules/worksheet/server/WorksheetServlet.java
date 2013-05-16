@@ -54,7 +54,7 @@ public class WorksheetServlet extends RemoteServlet implements WorkSheetServiceI
     WorksheetBean        worksheet;
 
     public ArrayList<WorksheetViewDO> query(Query query) throws Exception {
-        return worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return worksheet.fetchByQueryForLookup(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public WorksheetManager fetchById(Integer id) throws Exception {

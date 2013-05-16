@@ -28,7 +28,7 @@ UIRF Software License are applicable instead of those above.
   extension-element-prefixes="resource"
   version="1.0"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.QcListMeta"
+  xmlns:meta="xalan://org.openelis.meta.QcChartMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -68,7 +68,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"end")' />:
                 </text>
-                <calendar begin="0" end="2" key="{meta:getWorksheetCreatedDateTo()}" pattern="{resource:getString($constants,'datePattern')}" tab="numInstances,{meta:getWorksheetCreatedDateFrom()}" width="90" />
+                <calendar begin="0" end="2" key="{meta:getWorksheetCreatedDateTo()}" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getNumInstances()},{meta:getWorksheetCreatedDateFrom()}" width="90" />
               </row>
             </TablePanel>
           </VerticalPanel>
@@ -110,7 +110,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"noToRetrieve")' />:
                 </text>
                 <widget>
-                  <textbox field="Integer" key="numInstances" max="30" tab="{meta:getQCName()},{meta:getWorksheetCreatedDateTo()}" width="50" />
+                  <textbox field="Integer" key="{meta:getNumInstances()}" max="30" tab="{meta:getQCName()},{meta:getWorksheetCreatedDateTo()}" width="50" />
                 </widget>
               </row>
             </TablePanel>
@@ -165,7 +165,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'name')" />:
               </text>
               <widget colspan="3">
-                <autoComplete field="String" key="{meta:getQCName()}" required="true" tab="plot,numInstances" width="230">
+                <autoComplete field="String" key="{meta:getQCName()}" required="true" tab="{meta:getLocationId()},{meta:getNumInstances()}" width="230">
                   <col header="{resource:getString($constants,'name')}" width="175">
                     <label field="String" />
                   </col>
@@ -174,19 +174,25 @@ UIRF Software License are applicable instead of those above.
                   </col>
                 </autoComplete>
               </widget>
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"location")' />:
+              </text>
+              <widget colspan="4">
+                <dropdown field="Integer" key="{meta:getLocationId()}" tab="{meta:getPlotType()},{meta:getQCName()}" width="75" />
+              </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"plotUsing")' />:
               </text>
               <widget colspan="4">
-                <dropdown field="Integer" key="plot" tab="plotDataTable,{meta:getQCName()}" width="175" />
+                <dropdown field="Integer" key="{meta:getPlotType()}" tab="plotDataTable,{meta:getLocationId()}" width="175" />
               </widget>
             </row>
           </TablePanel>
         </VerticalPanel>
         <widget valign="top">
-          <table key="plotDataTable" maxRows="9" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getWorksheetCreatedDateFrom()},plot" title="" width="auto">
+          <table key="plotDataTable" maxRows="9" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getWorksheetCreatedDateFrom()},{meta:getPlotType()}" title="" width="auto">
             <col align="left" header="{resource:getString($constants,'plot')}" width="30">
               <check />
             </col>
