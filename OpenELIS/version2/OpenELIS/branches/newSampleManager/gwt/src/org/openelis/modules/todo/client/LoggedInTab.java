@@ -86,7 +86,7 @@ public class LoggedInTab extends Screen {
         initializeDropdowns();
     }
     
-    private void initialize() {                
+    private void initialize() {
         table = (TableWidget)def.getWidget("loggedInTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
