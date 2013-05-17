@@ -27,6 +27,8 @@ public interface TestServiceIntAsync {
     void fetchActiveByNameMethodName(Query query, AsyncCallback<TestViewDO> callback);
 
     void fetchById(Integer testId, AsyncCallback<TestManager> callback);
+    
+    void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<TestManager>> callback);
 
     void fetchByName(String name, AsyncCallback<ArrayList<TestMethodVO>> callback);
 

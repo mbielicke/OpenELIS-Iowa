@@ -55,6 +55,11 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     @Override
     public void fetchById(Integer testId, AsyncCallback<TestManager> callback) {
         service.fetchById(testId, callback);
+    }       
+    
+    @Override
+    public void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<TestManager>> callback) {
+        service.fetchByIds(ids, callback);
     }
 
     @Override
@@ -160,11 +165,20 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     }
 
     @Override
-    public TestManager fetchById(Integer testId) throws Exception {
+    public TestManager fetchById(Integer id) throws Exception {
         Callback<TestManager> callback;
         
         callback = new Callback<TestManager>();
-        service.fetchById(testId, callback);
+        service.fetchById(id, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        Callback<ArrayList<TestManager>> callback;
+        
+        callback = new Callback<ArrayList<TestManager>>();
+        service.fetchByIds(ids, callback);
         return callback.getResult();
     }
 
@@ -374,5 +388,4 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
         service.abortUpdate(testId, callback);
         return callback.getResult();
     }
-
 }

@@ -31,34 +31,45 @@ import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 
+import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProviderDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.AuxDataTabUI;
+import org.openelis.modules.sample1.client.ResultTabUI;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
 import org.openelis.modules.sample1.client.SampleItemAnalysisTreeTabUI;
+import org.openelis.modules.sample1.client.SampleItemChangeEvent;
 import org.openelis.modules.sample1.client.SampleItemTabUI;
 import org.openelis.modules.sample1.client.SampleNotesTabUI;
 import org.openelis.modules.sample1.client.SampleOrganizationLookupScreen1;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
 import org.openelis.modules.sample1.client.SampleProjectLookupScreen1;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.ModulePermission;
@@ -99,7 +110,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class NeonatalScreeningSampleLoginScreenUI extends Screen {
+public class NeonatalScreeningSampleLoginScreenUI extends Screen implements CacheProvider {
 
     @UiTemplate("NeonatalScreeningSampleLogin.ui.xml")
     interface NeonatalScreeningSampleLoginUiBinder
@@ -166,10 +177,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
     @UiField(provided = true)
     protected AnalysisTabUI                             analysisTab;
-    
+
+    @UiField(provided = true)
+    protected ResultTabUI                               resultTab;
+
     @UiField(provided = true)
     protected SampleNotesTabUI                          sampleNotesTab;
-    
+
     @UiField(provided = true)
     protected AuxDataTabUI                              auxDataTab;
 
@@ -187,6 +201,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
     protected SampleOrganizationLookupScreen1           organizationLookUp;
 
+    protected HashMap<String, Object>                   cache;
+
     public NeonatalScreeningSampleLoginScreenUI(WindowInt window) throws Exception {
         super();
         setWindow(window);
@@ -199,8 +215,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         sampleItemAnalysisTreeTab = new SampleItemAnalysisTreeTabUI(this, bus);
         sampleItemTab = new SampleItemTabUI(this, bus);
         analysisTab = new AnalysisTabUI(this, bus);
+        resultTab = new ResultTabUI(this, bus);
         sampleNotesTab = new SampleNotesTabUI(this, bus);
-        auxDataTab =  new AuxDataTabUI(this, bus);
+        auxDataTab = new AuxDataTabUI(this, bus);
         initWidget(uiBinder.createAndBindUi(this));
 
         manager = null;
@@ -219,7 +236,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
     private void initialize() {
         ArrayList<Item<Integer>> model;
         Item<Integer> row;
-        
+
         screen = this;
 
         //
@@ -1354,7 +1371,17 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
             public Object getQuery() {
                 return analysisTab.getQueryFields();
             }
-        });                       
+        });
+
+        bus.addHandler(SampleItemChangeEvent.getType(), new SampleItemChangeEvent.Handler() {
+            @Override
+            public void onSampleItemChange(SampleItemChangeEvent event) {                
+                if (SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(event.getAction()))                    
+                    sampleItemChanged(event.getUid());
+            }
+
+
+        });
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
@@ -1364,7 +1391,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                 }
             }
         });
-        
+
         try {
             CategoryCache.getBySystemNames("sample_status",
                                            "analysis_status",
@@ -1387,7 +1414,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
             Window.alert("NeonatalScreeningSampleLoginScreen: missing dictionary entry; " +
                          e.getMessage());
             window.close();
-        }    
+        }
 
         model = new ArrayList<Item<Integer>>();
         model.add(new Item<Integer>(null, ""));
@@ -1486,10 +1513,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
             window.setError(Messages.get().noMoreRecordInDir());
             return;
         }
-        System.out.println(queryIndex);
         manager = queriedList.get( ++queryIndex);
-        setState(DISPLAY);
         setData();
+        setState(DISPLAY);
         fireDataChange();
         window.clearStatus();
     }
@@ -1509,7 +1535,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
             return;
         }
         setData();
-        setState(State.ADD);
+        setState(ADD);
         fireDataChange();
         accessionNumber.setFocus(true);
         window.setDone(Messages.get().enterInformationPressCommit());
@@ -1561,8 +1587,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                                                             SampleManager1.Load.STORAGE);
             queryIndex = 0;
             manager = queriedList.get(queryIndex);
-            setState(DISPLAY);
             setData();
+            setState(DISPLAY);
             fireDataChange();
             window.clearStatus();
         } catch (NotFoundException e) {
@@ -1583,9 +1609,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
 
         try {
             manager = SampleService1.get().update(manager, ignoreWarning);
-
             setData();
-            setState(State.DISPLAY);
+            setState(DISPLAY);
             fireDataChange();
             window.clearStatus();
         } catch (ValidationErrorsList e) {
@@ -1599,6 +1624,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                 Window.alert("commitUpdate(): " + e.getMessage());
             window.clearStatus();
         }
+        cache = null;
     }
 
     @UiHandler("abort")
@@ -1607,18 +1633,18 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         clearErrors();
         window.setBusy(Messages.get().cancelChanges());
 
-        if (state == State.QUERY) {
+        if (state == QUERY) {
             try {
                 manager = null;
                 setData();
-                setState(State.DEFAULT);
+                setState(DEFAULT);
                 fireDataChange();
                 window.setDone(Messages.get().queryAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 window.clearStatus();
             }
-        } else if (state == State.ADD) {
+        } else if (state == ADD) {
             try {
                 if (manager.getSample().getId() != null) {
                     /*
@@ -1629,14 +1655,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                 }
                 manager = null;
                 setData();
-                setState(State.DEFAULT);
+                setState(DEFAULT);
                 fireDataChange();
                 window.setDone(Messages.get().addAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 window.clearStatus();
             }
-        } else if (state == State.UPDATE) {
+        } else if (state == UPDATE) {
             try {
                 manager = SampleService1.get().unlock(manager.getSample().getId());
                 setData();
@@ -1648,6 +1674,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
                 window.clearStatus();
             }
         }
+
+        cache = null;
+    }
+
+    protected void duplicate() {
+
     }
 
     public ArrayList<QueryData> getQueryFields() {
@@ -1661,8 +1693,83 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         return list;
     }
 
-    protected void duplicate() {
+    @Override
+    public <T> T get(Object key, Class<?> c) {
+        String cacheKey;
 
+        cacheKey = null;
+        if (c == TestManager.class)
+            cacheKey = "tm:" + key;
+
+        return (T)cache.get(cacheKey);
+    }
+
+    protected void buildCache() throws Exception {
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        ArrayList<Integer> testIds;
+        ArrayList<TestManager> tms;
+
+        if (cache == null)
+            cache = new HashMap<String, Object>();
+
+        /*
+         * the list of tests to be fetched
+         */
+        testIds = new ArrayList<Integer>();
+        for (int i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (int j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if (get(ana.getTestId(), TestManager.class) == null)
+                    testIds.add(ana.getTestId());
+            }
+        }
+
+        if (testIds.size() > 0) {
+            tms = TestService.get().fetchByIds(testIds);
+            for (TestManager tm : tms)
+                cache.put("tm:" + tm.getTest().getId(), tm);
+        }
+    }
+    
+    private void sampleItemChanged(String uid) {
+        boolean found;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestManager tm;
+        ArrayList<TestTypeOfSampleDO> types;
+        
+        try {
+            item = (SampleItemViewDO)manager.getObject(uid);
+            /*
+             * show error in tree if test doesn't have this sample type 
+             */
+            for (int i = 0; i < manager.analysis.count(item); i++ ) {
+                ana = manager.analysis.get(item, i);
+                tm = get(ana.getTestId(), TestManager.class);
+                types = tm.getSampleTypes().getTypesBySampleType(item.getTypeOfSampleId());
+
+                found = false;
+                for (TestTypeOfSampleDO t : types) {
+                    if (DataBaseUtil.isSame(item.getTypeOfSampleId(),
+                                            t.getTypeOfSampleId())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( !found) {
+                    // TODO add error
+                }
+            }
+            bus.fireEvent(new AnalysisChangeEvent(null,
+                                                  AnalysisChangeEvent.Action.SAMPLE_TYPE_CHANGED));
+            // TODO notify the tree tab to refresh itself to show errors
+            // and the changed sample type
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void showWarningsDialog(ValidationErrorsList warnings) {
@@ -1672,7 +1779,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         txt.append(Messages.get().warningDialogLine1()).append("\n");
         for (Exception ex : warnings.getErrorList())
             txt.append(" * ").append(ex.getMessage()).append("\n");
-        
+
         txt.append("\n").append(Messages.get().warningDialogLastLine());
         if (Window.confirm(txt.toString()))
             commitUpdate(true);
@@ -1767,6 +1874,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         window.setBusy(Messages.get().fetching());
         try {
             manager = SampleService1.get().setAccessionNumber(manager, accNum);
+            buildCache();
             setData();
             fireDataChange();
             window.clearStatus();
@@ -1791,22 +1899,23 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
     private void setOrderId(Integer ordId) {
         ValidationErrorsList errors;
         SampleTestReturnVO data;
-        
+
         if (ordId == null) {
             setOrderId(ordId);
             return;
-        }  
-        
+        }
+
         if (getAccessionNumber() == null) {
             Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
             orderId.setValue(null);
             return;
-        }   
-        
+        }
+
         try {
             window.setBusy(Messages.get().fetching());
             data = SampleService1.get().setOrderId(manager, ordId);
             manager = data.getManager();
+            buildCache();
             setData();
             fireDataChange();
             if (data.getErrors() != null && data.getErrors().size() > 0)
@@ -2660,12 +2769,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen {
         sampleItemAnalysisTreeTab.setData(manager);
         sampleItemTab.setData(manager);
         analysisTab.setData(manager);
+        resultTab.setData(manager);
         sampleNotesTab.setData(manager);
         auxDataTab.setData(manager);
         /*
-         * testResultsTab.setData(null); analysisNotesTab.setData(null);
-         * storageTab.setData(null);
-         * qaEventsTab.setData(null); qaEventsTab.setManager(manager);
+         * analysisNotesTab.setData(null); storageTab.setData(null);
+         * qaEventsTab.setData(null);
          */
     }
 }

@@ -64,8 +64,12 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
     @EJB
     TestTypeOfSampleBean testType;
 
-    public TestManager fetchById(Integer testId) throws Exception {
-        return testManager.fetchById(testId);
+    public TestManager fetchById(Integer ids) throws Exception {
+        return testManager.fetchById(ids);
+    }
+    
+    public ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        return testManager.fetchByIds(ids);
     }
 
     public ArrayList<TestMethodVO> fetchByName(String name) throws Exception {

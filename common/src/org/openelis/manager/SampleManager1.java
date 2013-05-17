@@ -60,6 +60,7 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.TestDO;
+import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * This class encapsulates a sample and all its related information including
@@ -88,7 +89,7 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<AuxDataViewDO>            auxilliary;
     protected NoteViewDO                          sampleExtNote;
     protected ArrayList<NoteViewDO>               sampleIntNotes, analysisExtNotes,
-                                                   analysisIntNotes;
+                    analysisIntNotes;
     protected ArrayList<SampleItemViewDO>         items;
     protected ArrayList<AnalysisViewDO>           analyses;
     protected ArrayList<AnalysisQaEventViewDO>    analysisQAs;
@@ -178,7 +179,7 @@ public class SampleManager1 implements Serializable {
     public String getUid(AnalysisDO data) {
         return getAnalysisUid(data.getId());
     }
-    
+
     public String getUid(TestDO data) {
         return getTestUid(data.getId());
     }
@@ -269,7 +270,7 @@ public class SampleManager1 implements Serializable {
     public String getAnalysisUid(Integer id) {
         return "A:" + id;
     }
-    
+
     public String getTestUid(Integer id) {
         return "T:" + id;
     }
@@ -1086,7 +1087,7 @@ public class SampleManager1 implements Serializable {
                     removeDataObject(data);
             }
         }
-        
+
         /*
          * find the index to external and internal editable notes
          */
@@ -1096,7 +1097,7 @@ public class SampleManager1 implements Serializable {
                     map = new HashMap<Integer, NoteViewDO>();
                     for (NoteViewDO data : analysisExtNotes)
                         map.put(data.getId(), data);
-                }                
+                }
             }
         }
     }
@@ -1173,7 +1174,7 @@ public class SampleManager1 implements Serializable {
             l = map.get(analysis.getId());
             return (l == null) ? 0 : l.size();
         }
-        
+
         /*
          * find the index to internal editable notes
          */
@@ -1191,7 +1192,7 @@ public class SampleManager1 implements Serializable {
                         }
                         l.add(data);
                     }
-                }                
+                }
             }
         }
     }
@@ -1315,6 +1316,22 @@ public class SampleManager1 implements Serializable {
         }
 
         /**
+         * Returns true if for given analysis a row group begins at specified
+         * row
+         */
+        public boolean isHeader(AnalysisDO analysis, int r) {
+            int rg1, rg2;
+
+            if (r == 0)
+                return true;
+            
+            mapBuild();
+            rg1 = map.get(analysis.getId()).get(r).get(0).getRowGroup();
+            rg2 = map.get(analysis.getId()).get(r - 1).get(0).getRowGroup();
+            return rg1 != rg2;
+        }
+
+        /**
          * Removes the specified result row from analysis
          */
         public void remove(AnalysisDO analysis, int r) {
@@ -1344,6 +1361,22 @@ public class SampleManager1 implements Serializable {
         public int count(AnalysisDO analysis, int r) {
             mapBuild();
             return map.get(analysis.getId()).get(r).size();
+        }
+        
+        /**
+         * Returns the number of result columns for specified analysis's row
+         */
+        public int maxColumns(AnalysisDO analysis) {
+            int n;
+            ArrayList<ArrayList<ResultViewDO>> rl;
+            
+            mapBuild();
+            n = 0;
+            rl = map.get(analysis.getId());
+            for (ArrayList<ResultViewDO> l: rl)
+                n = Math.max(l.size(), n);
+            
+            return n;
         }
 
         /*
