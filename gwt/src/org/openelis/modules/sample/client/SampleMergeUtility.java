@@ -57,7 +57,7 @@ public class SampleMergeUtility {
             for (i = 0; i < quickEntryItemMan.count(); i++) {
                 orderSampleItem = fromOrderItemMan.getSampleItemAt(fromOrderItemMan.addSampleItem());
                 qeSampleItem = quickEntryItemMan.getSampleItemAt(i);
-                SampleDuplicateUtil.duplicateSampleItem(orderSampleItem, qeSampleItem);                
+                SampleDuplicateUtil.duplicateSampleItem(orderSampleItem, qeSampleItem);
                 orderSampleItem.setSampleId(quickEntryMan.getSample().getId());
                 fromOrderItemMan.setAnalysisAt(quickEntryItemMan.getAnalysisAt(i), i);
                 duplicateStorage(fromOrderItemMan.getStorageAt(i) ,quickEntryItemMan.getStorageAt(i));
@@ -190,9 +190,9 @@ public class SampleMergeUtility {
         orderAna.setMethodName(qeAna.getMethodName());
         orderAna.setMethodReportingDescription(qeAna.getMethodReportingDescription());
         orderAna.setSectionId(qeAna.getSectionId());
+        orderAna.setSectionName(qeAna.getSectionName());
         orderAna.setPanelId(qeAna.getPanelId());
         orderAna.setPanelName(qeAna.getPanelName());
-        orderAna.setSectionName(qeAna.getSectionName());
         orderAna.setPreAnalysisId(qeAna.getPreAnalysisId());
         orderAna.setPreAnalysisTest(qeAna.getPreAnalysisTest());
         orderAna.setPreAnalysisMethod(qeAna.getPreAnalysisMethod());

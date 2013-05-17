@@ -422,6 +422,7 @@ public abstract class ImportOrder {
                                                                   afvman.getValues());
                     return;
                 }
+                j++;
             }
         }
 

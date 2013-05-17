@@ -77,7 +77,7 @@ UIRF Software License are applicable instead of those above.
           </appButton>
         </HorizontalPanel>
         <VerticalPanel height="5" />
-        <TabPanel height="550" key="tabPanel" width="625">
+        <TabPanel height="552" key="tabPanel" width="625">
           <tab text="{resource:getString($constants,'loggedIn')}">
             <VerticalPanel>
               <widget valign="top">

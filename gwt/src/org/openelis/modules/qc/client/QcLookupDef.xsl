@@ -73,10 +73,10 @@ UIRF Software License are applicable instead of those above.
                   <col key="{meta:getName()}" width="150" sort="false" header="{resource:getString($constants,'name')}">
                     <label field="String" />
                   </col>
-                  <col key="{meta:getQcLotLotNumber()}" width="150" sort="false" header="{resource:getString($constants,'lotNumber')}">
+                  <col key="{meta:getQcLotLotNumber()}" width="150" sort="true" header="{resource:getString($constants,'lotNumber')}">
                     <label field="String" />
                   </col>
-                  <col key="{meta:getQcLotLocationId()}" width="80" sort="false" header="{resource:getString($constants,'location')}">
+                  <col key="{meta:getQcLotLocationId()}" width="80" sort="true" filter="true" header="{resource:getString($constants,'location')}">
 	                <dropdown width="80" field="Integer" />
                   </col>
                   <col key="{meta:getQcLotUsableDate()}" width="130" sort="true" header="{resource:getString($constants,'usableDate')}">
