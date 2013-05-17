@@ -35,12 +35,6 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.ReportStatus;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -58,6 +52,12 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.project.client.ProjectService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
@@ -76,14 +76,14 @@ public class DataViewScreen extends Screen {
     private DataViewVO           data;
     private DataViewScreen       screen;
     private TextBox              analysisTestName, analysisMethodName, accessionNumberFrom,
-                    accessionNumberTo, clientReference, reportToOrganizationName;
+                                 accessionNumberTo, clientReference, reportToOrganizationName;
     private CheckBox             excludeResultOverride, excludeResults, excludeAuxData;
     private Dropdown<Integer>    analysisStatusId, projectId;
     private Dropdown<String>     analysisIsReportable;
     private CalendarLookUp       analysisCompletedDateFrom, analysisCompletedDateTo,
-                    analysisReleasedDateFrom, analysisReleasedDateTo, collectionDateFrom,
-                    collectionDateTo, receivedDateFrom, receivedDateTo, enteredDateFrom,
-                    enteredDateTo;
+                                 analysisReleasedDateFrom, analysisReleasedDateTo, collectionDateFrom,
+                                 collectionDateTo, receivedDateFrom, receivedDateTo, enteredDateFrom,
+                                 enteredDateTo;
     private CommonTab            commonTab;
     private EnvironmentalTab     environmentalTab;
     private PrivateWellTab       privateWellTab;
@@ -807,7 +807,6 @@ public class DataViewScreen extends Screen {
         return fields;
     }
 
-    // TODO REWRITE
     protected void saveQuery() {
         try {
             window.clearStatus();

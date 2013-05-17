@@ -61,6 +61,7 @@ import org.openelis.ui.widget.AtoZButtons;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
@@ -101,6 +102,8 @@ public class MethodScreen extends Screen {
                                        atozPrev, optionsButton;
 
     @UiField
+    protected Menu                     optionsMenu;
+    @UiField
     protected MenuItem                 history;
     @UiField
     protected AtoZButtons              atozButtons;
@@ -129,12 +132,11 @@ public class MethodScreen extends Screen {
     private void initialize() {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                query.setEnabled(isState(QUERY,DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
-                } else
-                    query.setPressed(false);
+                }
             }
         });
         
@@ -158,12 +160,11 @@ public class MethodScreen extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(DEFAULT, DISPLAY) && userPermission.hasAddPermission());
-                if (isState(ADD)) {
+                add.setEnabled(isState(ADD,DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                if (isState(ADD)) { 
                     add.lock();
                     add.setPressed(true);
-                } else
-                    add.setPressed(false);
+                }
             }
         });
         
@@ -171,12 +172,11 @@ public class MethodScreen extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE,DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
-                } else
-                    update.setPressed(false);
+                }
             }
         });
         
@@ -200,8 +200,9 @@ public class MethodScreen extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                history.setEnabled(isState(DISPLAY));
+                optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
+                history.setEnabled(isState(DISPLAY));
             }
         });
 
@@ -332,7 +333,7 @@ public class MethodScreen extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<IdNameVO>(atozTable, atozPrev, atozNext) {
+        nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 

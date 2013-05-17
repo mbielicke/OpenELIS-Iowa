@@ -46,6 +46,7 @@ import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
@@ -70,7 +71,7 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
     private ToBeVerifiedTab           toBeVerifiedTab;
     private OtherTab                  otherTab;
     private WorksheetTab              worksheetTab;
-    
+
     public enum Action {
         SHOW_SAMPLE
     };
@@ -83,17 +84,11 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
         super((ScreenDefInt)GWT.create(ToDoDef.class));
         
         setWindow(window);
-
-        tab = Tabs.LOGGED_IN;
-    
-        initialize();
-        mySection.setValue("Y");
-        setState(State.DEFAULT);
-        DataChangeEvent.fire(this);
     }
 
-    private void initialize() {
+    public void initialize() {
         screen = this;
+        tab = Tabs.LOGGED_IN;
         
         mySection = (CheckBox)def.getWidget("mySection");
         addScreenHandler(mySection, new ScreenEventHandler<String>() {
@@ -284,7 +279,11 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
             public void onStateChange(StateChangeEvent<State> event) {
                 otherTab.setState(event.getState());
             }
-        });             
+        });
+
+        mySection.setValue("Y");
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
     }
     
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

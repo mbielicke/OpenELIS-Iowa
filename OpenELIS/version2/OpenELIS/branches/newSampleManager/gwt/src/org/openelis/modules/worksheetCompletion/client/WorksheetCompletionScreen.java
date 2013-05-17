@@ -36,8 +36,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -380,7 +378,7 @@ public class WorksheetCompletionScreen extends Screen {
                         row.cells.get(2).value = iVDO.getTypeId();
                         row.cells.get(3).value = iVDO.getLocation();
                         row.data = iVDO;
-                        
+
                         if (!"Y".equals(iVDO.getIsActive()))
                             row.enabled = false;
 
@@ -562,7 +560,7 @@ public class WorksheetCompletionScreen extends Screen {
                 }
                 
                 public void onFailure(Throwable error) {
-                    if (error instanceof NotFoundException ) {
+                    if (error instanceof NotFoundException) {
                         fetchById(null);
                         window.setDone(Messages.get().noRecordsFound());
                     } else {
@@ -746,7 +744,7 @@ public class WorksheetCompletionScreen extends Screen {
         WorksheetCompletionService.get().saveForEdit(manager, new AsyncCallback<WorksheetManager>() {
             public void onSuccess(WorksheetManager wMan) {
                 SystemUserVO userVO;
-                
+
                 userVO = null;
                 try {
                     userVO = UserCache.getSystemUser(manager.getWorksheet()

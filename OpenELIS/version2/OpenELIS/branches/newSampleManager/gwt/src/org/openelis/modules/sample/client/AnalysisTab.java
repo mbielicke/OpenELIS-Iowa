@@ -913,17 +913,18 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         selectWkshtButton = (AppButton)def.getWidget("selectWkshtButton");
         addScreenHandler(selectWkshtButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                WorksheetCompletionScreen worksheetScreen;
+                ScreenWindow modal;
                 TableDataRow row;
+                WorksheetCompletionScreen worksheetScreen;
+                
                 try {
-                    ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                    modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
                     modal.setName(Messages.get().worksheetCompletion());
                     
                     row = worksheetTable.getSelection();
                     worksheetScreen = new WorksheetCompletionScreen((Integer)row.key,modal);
                     
                     modal.setContent(worksheetScreen);
-
                 } catch (Exception e) {
                     Window.alert("openCompletionScreen: " + e.getMessage());
                 }

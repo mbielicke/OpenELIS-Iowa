@@ -1502,7 +1502,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 window.clearStatus();
                 return;
             }
-            
         } catch (NotFoundException e) {                    
             orderNumber.addException(new Exception(Messages.get().orderIdInvalidException()));
             window.clearStatus();
@@ -1551,14 +1550,14 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                  * We need to copy the initial external note, if any, from the
                  * quick entry manager
                  */
-                manager.getExternalNote().addNote(quickEntryMan.getExternalNote().getEditingNote()); 
+                manager.getExternalNote().addNote(quickEntryMan.getExternalNote().getEditingNote());
             }
             
             errors = envOrderImport.importOrderInfo(orderId, manager);    
 
             if (quickEntryMan != null)
               SampleMergeUtility.mergeTests(manager, quickEntryMan);            
-                                 
+
             manager.getSample().setOrderId(orderId);
             setDataInTabs();
             DataChangeEvent.fire(screen);                       

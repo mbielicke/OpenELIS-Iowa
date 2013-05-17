@@ -71,6 +71,8 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.meta.WorksheetCreationMeta;
+import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
@@ -78,12 +80,9 @@ import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.meta.WorksheetCreationMeta;
-import org.openelis.modules.test.client.TestService;
 
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
-
     private ModulePermission        userPermission;
 
     protected AppButton             searchButton, addButton, selectAllButton;
@@ -416,7 +415,8 @@ public class WorksheetCreationLookupScreen extends Screen
                     if (error instanceof NotFoundException) {
                         window.setDone(Messages.get().noRecordsFound());
                     } else {
-                        Window.alert("Error: WorksheetCreationLookup call query failed; "+error.getMessage());
+                        Window.alert("Error: WorksheetCreationLookup call query failed; " +
+                                     error.getMessage());
                         window.setError(Messages.get().queryFailed());
                     }
                 }
