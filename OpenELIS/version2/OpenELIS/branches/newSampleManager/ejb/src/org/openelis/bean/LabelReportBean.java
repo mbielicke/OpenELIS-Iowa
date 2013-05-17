@@ -53,9 +53,9 @@ public class LabelReportBean {
             s = accession + "-" + container;
         f.print("^XA");
         f.print("^LH0,0");
-        f.print("^FO10,35^AE^BCN,50,N,N,N^FD"+s+"^FS");             // barcoded accession
-        f.print("^FO10,85^AE^FD"+s+"   ("+location+")^FS");         // readable accession + location
-        f.print("^FO10,130^AE^BCN,50,Y,N,N^FD"+received+"^FS");     // barcoded/readable received
+        f.print("^FO50,35^AE^B3N,N,80,N,N^FD"+s+"^FS");             // barcoded accession
+        f.print("^FO50,120^AE^FD"+s+"   ("+location+")^FS");        // readable accession + location
+        f.print("^FO50,160^AE^BCN,80,Y,N,N^FD"+received+"^FS");     // barcoded/readable received
         f.print("^PQ1,,1,^XZ");
     }
     

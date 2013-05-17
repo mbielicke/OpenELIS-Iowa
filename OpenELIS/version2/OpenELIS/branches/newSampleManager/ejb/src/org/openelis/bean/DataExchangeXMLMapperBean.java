@@ -1025,6 +1025,9 @@ public class DataExchangeXMLMapperBean {
         if (analysis.getParentAnalysisId() != null)
             parent.setAttribute("parent_analysis_id", analysis.getParentAnalysisId().toString());
 
+        if (analysis.getParentResultId() != null)
+            parent.setAttribute("parent_result_id", analysis.getParentResultId().toString());
+
         if (analysis.getIsPreliminary() != null)
             parent.setAttribute("is_preliminary", analysis.getIsPreliminary());
 

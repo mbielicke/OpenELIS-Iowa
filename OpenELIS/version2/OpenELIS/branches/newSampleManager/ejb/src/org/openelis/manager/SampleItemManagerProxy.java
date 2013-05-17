@@ -79,7 +79,6 @@ public class SampleItemManagerProxy {
                 man.getAnalysisAt(i).setSampleItemId(data.getId());
         }
 
-        // addAnalyses(man);
         updateAnalyses(man);
 
         return man;
