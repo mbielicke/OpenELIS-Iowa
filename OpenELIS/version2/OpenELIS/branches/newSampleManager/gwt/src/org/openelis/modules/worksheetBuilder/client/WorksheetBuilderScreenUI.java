@@ -113,7 +113,7 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet.client.WorksheetService;
-import org.openelis.modules.worksheet.client.WorksheetService1;
+import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderLookupScreenUI.Action;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationService;
 import org.openelis.ui.common.DataBaseUtil;

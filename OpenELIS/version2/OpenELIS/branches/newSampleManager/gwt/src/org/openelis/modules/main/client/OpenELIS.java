@@ -574,7 +574,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.worksheetBuilder());
-                            window.setSize("1050px", "500px");
+                            window.setSize("1075px", "500px");
                             window.setContent(new WorksheetBuilderScreenUI(window));
                             browser.addWindow(window, "worksheetBuilder");
                         } catch (Throwable e) {

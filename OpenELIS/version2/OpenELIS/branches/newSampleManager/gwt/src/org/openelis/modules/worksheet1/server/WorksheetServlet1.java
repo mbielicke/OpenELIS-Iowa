@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheet.server;
+package org.openelis.modules.worksheet1.server;
 
 import java.util.ArrayList;
 
@@ -35,10 +35,10 @@ import org.openelis.bean.WorksheetManager1Bean;
 import org.openelis.domain.IdVO;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.modules.worksheet.client.WorksheetServiceInt1;
+import org.openelis.modules.worksheet1.client.WorksheetServiceInt1;
 import org.openelis.ui.common.data.Query;
 
-@WebServlet("/openelis/worksheet")
+@WebServlet("/openelis/worksheet1")
 public class WorksheetServlet1 extends RemoteServlet implements WorksheetServiceInt1 {
 
     private static final long serialVersionUID = 1L;

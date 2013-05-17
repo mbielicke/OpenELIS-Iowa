@@ -1,4 +1,4 @@
-package org.openelis.modules.worksheet.client;
+package org.openelis.modules.worksheet1.client;
 
 import java.util.ArrayList;
 
