@@ -54,6 +54,7 @@
     <inherits name="org.openelis.modules.test.Test"/>
     <inherits name="org.openelis.modules.verification.Verification"/>
     <inherits name="org.openelis.modules.worksheet.Worksheet"/>
+    <inherits name="org.openelis.modules.worksheet1.Worksheet1"/>
     <inherits name="org.openelis.modules.worksheetBuilder.WorksheetBuilder"/>
     <inherits name="org.openelis.modules.worksheetCompletion.WorksheetCompletion"/>
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
