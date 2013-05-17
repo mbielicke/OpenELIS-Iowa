@@ -17,7 +17,7 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  <g:LayoutPanel>
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" height="30px">
       <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonPanelContainer}" width="100%">
         <g:HorizontalPanel>

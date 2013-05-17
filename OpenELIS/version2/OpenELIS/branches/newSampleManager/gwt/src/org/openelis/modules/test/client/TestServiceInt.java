@@ -23,6 +23,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface TestServiceInt extends RemoteService {
 
     TestManager fetchById(Integer testId) throws Exception;
+    
+    ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception;
 
     ArrayList<TestMethodVO> fetchByName(String name) throws Exception;
 

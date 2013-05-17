@@ -574,6 +574,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String allTests();
 
   /**
+   * Translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
+   * 
+   * @return translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   */
+  @DefaultMessage("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  @Key("alphabet")
+  String alphabet();
+
+  /**
    * Translated "The \"Analyte\" and \"Type\" fields are required for each analyte".
    * 
    * @return translated "The \"Analyte\" and \"Type\" fields are required for each analyte"

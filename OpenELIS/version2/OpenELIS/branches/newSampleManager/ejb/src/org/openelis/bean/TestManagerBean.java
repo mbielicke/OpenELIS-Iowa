@@ -48,7 +48,6 @@ import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")

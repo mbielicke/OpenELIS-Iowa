@@ -20,56 +20,16 @@
   
   <g:LayoutPanel>
     <g:layer top="0px" bottom="25px">
-      <t:Table ui:field="testResultsTable" verticalScroll="ALWAYS" visibleRows="10"
+      <t:Table ui:field="resultsTable" verticalScroll="ALWAYS" visibleRows="10"
         horizontalScroll="ALWAYS" header="true" title=""
       > <!-- width="{string($widthParam)}" maxRows="{string($maxRowsParam)}" -->
-        <t:Column width="65" label=""> <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
+        <t:Column width="65" label="A"> <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
+          <t:CheckBoxCell />
+        </t:Column>
+        <t:Column width="200" label="B">  <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
           <t:LabelCell />
         </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
-          <t:LabelCell />
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultValueTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultValueTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultValueTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultValueTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultValueTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultValueTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
-        </t:Column>
-        <t:Column width="200" label="">  <!--class="org.openelis.modules.sample.client.SampleResultValueTableColumn" -->
+        <t:Column width="200" label="C">  <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
           <t:TextBoxCell>
             <w:TextBox maxLength="80" />
           </t:TextBoxCell>

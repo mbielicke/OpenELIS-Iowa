@@ -25,9 +25,7 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 
@@ -43,7 +41,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
@@ -65,10 +62,6 @@ public class SampleItemTabUI extends Screen {
 
     private static SampleItemTabUIBinder uiBinder = GWT.create(SampleItemTabUIBinder.class);
 
-    public enum Action {
-        CHANGED
-    };
-
     @UiField
     protected TextBox<String> sourceOther, containerReference;
 
@@ -88,7 +81,7 @@ public class SampleItemTabUI extends Screen {
 
     protected Screen            parentScreen;
 
-    protected boolean           canEdit, canQuery, isVisible;
+    protected boolean          canEdit, isVisible;
 
     public SampleItemTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -118,8 +111,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 typeOfSampleId.setEnabled(canEdit);
-                                 typeOfSampleId.setQueryMode(canQuery);
+                                 typeOfSampleId.setEnabled(isState(QUERY) ||
+                                                           (isState(ADD, UPDATE) && canEdit));
+                                 typeOfSampleId.setQueryMode(isState(QUERY));
                              }
                          });
 
@@ -135,8 +129,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sourceOfSampleId.setEnabled(canEdit);
-                                 sourceOfSampleId.setQueryMode(canQuery);
+                                 sourceOfSampleId.setEnabled(isState(QUERY) ||
+                                                             (isState(ADD, UPDATE) && canEdit));
+                                 sourceOfSampleId.setQueryMode(isState(QUERY));
                              }
                          });
 
@@ -150,8 +145,9 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sourceOther.setEnabled(canEdit);
-                sourceOther.setQueryMode(canQuery);
+                sourceOther.setEnabled(isState(QUERY) ||
+                                       (isState(ADD, UPDATE) && canEdit));
+                sourceOther.setQueryMode(isState(QUERY));
             }
         });
 
@@ -167,8 +163,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 containerId.setEnabled(canEdit);
-                                 containerId.setQueryMode(canQuery);
+                                 containerId.setEnabled(isState(QUERY) ||
+                                                        (isState(ADD, UPDATE) && canEdit));
+                                 containerId.setQueryMode(isState(QUERY));
                              }
                          });
 
@@ -184,8 +181,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 containerReference.setEnabled(canEdit);
-                                 containerReference.setQueryMode(canQuery);
+                                 containerReference.setEnabled(isState(QUERY) ||
+                                                               (isState(ADD, UPDATE) && canEdit));
+                                 containerReference.setQueryMode(isState(QUERY));
                              }
                          });
 
@@ -199,8 +197,9 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                quantity.setEnabled(canEdit);
-                quantity.setQueryMode(canQuery);
+                quantity.setEnabled(isState(QUERY) ||
+                                    (isState(ADD, UPDATE) && canEdit));
+                quantity.setQueryMode(isState(QUERY));
             }
         });
 
@@ -216,8 +215,9 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 unitOfMeasureId.setEnabled(canEdit);
-                                 unitOfMeasureId.setQueryMode(canQuery);
+                                 unitOfMeasureId.setEnabled(isState(QUERY) ||
+                                                            (isState(ADD, UPDATE) && canEdit));
+                                 unitOfMeasureId.setQueryMode(isState(QUERY));
                              }
                          });
 
@@ -281,8 +281,8 @@ public class SampleItemTabUI extends Screen {
                                parentScreen,
                                new StateChangeEvent.Handler() {
                                    public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
                                        evaluateEdit();
+                                       setState(event.getState());
                                    }
                                });
 
@@ -310,26 +310,15 @@ public class SampleItemTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if ( !DataBaseUtil.isSame(this.manager, manager)) {
-            this.manager = manager;
-            evaluateEdit();
-        }
+        if ( !DataBaseUtil.isSame(this.manager, manager))
+            this.manager = manager;        
     }
-    
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-    
+
     private void evaluateEdit() {
-        canEdit = canQuery = false;
-        if (isState(QUERY)) {
-            canEdit = canQuery = true;
-        } else if (manager != null) {
-            if (isState(ADD, UPDATE))
-                canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                .getStatusId());
-        }
+        canEdit = false;
+        if (manager != null)
+            canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                .getStatusId());        
     }
 
     private void displaySampleItem(String uid) {
@@ -362,6 +351,8 @@ public class SampleItemTabUI extends Screen {
     private void setTypeOfSample(Integer typeId, String display) {
         sampleItem.setTypeOfSampleId(typeId);
         sampleItem.setTypeOfSample(display);
+        bus.fireEvent(new SampleItemChangeEvent(displayedUid,
+                                                SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED));
     }
 
     private Integer getSourceOfSampleId() {
@@ -397,7 +388,8 @@ public class SampleItemTabUI extends Screen {
     private void setContainer(Integer containerId, String display) {
         sampleItem.setContainerId(containerId);
         sampleItem.setContainer(display);
-        // ActionEvent.fire(screen, Action.CHANGED, null);
+        bus.fireEvent(new SampleItemChangeEvent(displayedUid,
+                      SampleItemChangeEvent.Action.CONTAINER_CHANGED));
     }
 
     private String getContainerReference() {
