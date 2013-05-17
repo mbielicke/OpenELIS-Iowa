@@ -466,6 +466,11 @@ UIRF Software License are applicable instead of those above.
           <xsl:value-of select="@pre_analysis_id" />
         </xsl:attribute>
       </xsl:if>
+      <xsl:if test="@parent_analysis_id[. != '']">
+        <xsl:attribute name="parent_analysis_id">
+          <xsl:value-of select="@parent_analysis_id" />
+        </xsl:attribute>
+      </xsl:if>
       <xsl:if test="@parent_result_id[. != '']">
         <xsl:attribute name="parent_result_id">
           <xsl:value-of select="@parent_result_id" />
@@ -499,6 +504,11 @@ UIRF Software License are applicable instead of those above.
           <xsl:value-of select="@printed_date" />
         </xsl:attribute>
       </xsl:if>
+      <xsl:if test="@panel_id[. != '']">
+        <xsl:attribute name="panel_id">
+          <xsl:value-of select="@panel_id" />
+        </xsl:attribute>
+      </xsl:if>    
       <xsl:if test="@is_preliminary[. != '']">
         <xsl:attribute name="is_preliminary">
           <xsl:value-of select="@is_preliminary" />
@@ -522,12 +532,6 @@ UIRF Software License are applicable instead of those above.
       <status>
         <xsl:apply-templates select="//dictionary[@id = $status_id]" />
       </status> 
-      <xsl:if test="@panel_id[. != '']">
-        <xsl:variable name="panel_id" select="@panel_id" />
-        <panel>
-          <xsl:apply-templates select="//panel[@id = $panel_id]" />
-        </panel>
-      </xsl:if>    
       <xsl:variable name="analysis_id" select="@id" />
       <!-- 
         The qa events for this analysis

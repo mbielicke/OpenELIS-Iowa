@@ -15,7 +15,6 @@
 	    <exclude name="WEB-INF/lib/gwt-servlet.jar" />
 	    <exclude name="WEB-INF/classes/org/openelis/manager/*"/>
     </war>
-	  
 
 	<delete file="build/openelis.jar" />
 	<copy file="src/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />
@@ -88,8 +87,7 @@
 		</fileset>
 		<fileset dir=".">
 			<include name="lib/openelis-lib.jar" />
-			<include name="lib/ui.jar"/>
-			<include name="lib/gwt-dev.jar"/>
+			<include name="lib/ui.jar" />
 			<include name="lib/commons-collections-3.2.1.jar"/>
 			<include name="lib/poi-3.6-20091214.jar" />
 			<include name="lib/iText-2.1.7.jar" />

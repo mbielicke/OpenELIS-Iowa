@@ -64,10 +64,10 @@ public class WorksheetBean {
     private EntityManager                        manager;
 
     @EJB
-    private InstrumentLogBean                  instrumentLog;
+    private InstrumentLogBean                    instrumentLog;
     
     @EJB
-    private UserCacheBean                      userCache;
+    private UserCacheBean                        userCache;
 
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
 
@@ -109,7 +109,7 @@ public class WorksheetBean {
         query.setParameter("id", id);
         try {
             data = (ArrayList<WorksheetViewDO>)query.getResultList();
-            for (i = 0; i < data.size(); i++ ) {
+            for (i = 0; i < data.size(); i++) {
                 worksheet = data.get(i);
                 if (worksheet.getSystemUserId() != null) {
                     user = userCache.getSystemUser(worksheet.getSystemUserId());
@@ -192,7 +192,7 @@ public class WorksheetBean {
         if (list == null)
             throw new LastPageException();
 
-        for (i = 0; i < list.size(); i++ ) {
+        for (i = 0; i < list.size(); i++) {
             worksheet = list.get(i);
 
             if (worksheet.getSystemUserId() != null) {
@@ -241,13 +241,13 @@ public class WorksheetBean {
         InstrumentLogDO ilDO;
         Worksheet entity;
 
-        if ( !data.isChanged())
+        if (!data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Worksheet.class, data.getId());
 
-        if ( !DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
+        if (!DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
             if (data.getInstrumentId() != null) {
                 try {
                     ilDO = instrumentLog.fetchByInstrumentIdWorksheetId(entity.getInstrumentId(),
@@ -261,35 +261,27 @@ public class WorksheetBean {
                     ilEntity.setEventBegin(data.getCreatedDate());
                     manager.persist(ilEntity);
                 }
-                if (ilEntity.getTypeId()
-                            .equals(Constants.dictionary().INSTRUMENT_LOG_PENDING)) {
-                    if (data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                        data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                if (ilEntity.getTypeId().equals(Constants.dictionary().INSTRUMENT_LOG_PENDING)) {
+                    if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
+                        data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                         ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
-                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
-                                                                  Datetime.MINUTE));
-                    } else if (data.getStatusId()
-                                   .equals(Constants.dictionary().WORKSHEET_VOID)) {
+                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                    } else if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
                         manager.remove(ilEntity);
                     }
                 }
             }
         } else {
             if (entity.getInstrumentId() == null) {
-                if ( !data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
+                if (!data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
                     ilEntity = new InstrumentLog();
                     ilEntity.setInstrumentId(data.getInstrumentId());
                     ilEntity.setWorksheetId(data.getId());
                     ilEntity.setEventBegin(data.getCreatedDate());
-                    if (data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                        data.getStatusId()
-                            .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                    if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
+                        data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                         ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
-                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
-                                                                  Datetime.MINUTE));
+                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                     } else {
                         ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_PENDING);
                     }
@@ -306,8 +298,7 @@ public class WorksheetBean {
                                     .equals(Constants.dictionary().INSTRUMENT_LOG_PENDING)) {
                             if (data.getStatusId()
                                     .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                                data.getStatusId()
-                                    .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                                data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                                 ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
                                 ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
                                                                           Datetime.MINUTE));
@@ -326,10 +317,8 @@ public class WorksheetBean {
                         ilEntity.setInstrumentId(data.getInstrumentId());
                         ilEntity.setWorksheetId(data.getId());
                         ilEntity.setEventBegin(data.getCreatedDate());
-                        if (data.getStatusId()
-                                .equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
-                            data.getStatusId()
-                                .equals(Constants.dictionary().WORKSHEET_FAILED)) {
+                        if (data.getStatusId().equals(Constants.dictionary().WORKSHEET_COMPLETE) ||
+                            data.getStatusId().equals(Constants.dictionary().WORKSHEET_FAILED)) {
                             ilEntity.setTypeId(Constants.dictionary().INSTRUMENT_LOG_COMPLETED);
                             ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR,
                                                                       Datetime.MINUTE));

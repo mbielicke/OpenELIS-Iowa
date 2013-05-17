@@ -94,9 +94,9 @@ public class WorksheetManagerProxy {
 
         manager = fetchById(id);
         wiMan = manager.getItems();
-        for (i = 0; i < wiMan.count(); i++ ) {
+        for (i = 0; i < wiMan.count(); i++) {
             waMan = wiMan.getWorksheetAnalysisAt(i);
-            for (j = 0; j < waMan.count(); j++ ) {
+            for (j = 0; j < waMan.count(); j++) {
                 if (waMan.getWorksheetAnalysisAt(j).getAnalysisId() != null) {
                     waMan.getBundleAt(j);
                     waMan.getWorksheetResultAt(j);
@@ -126,7 +126,7 @@ public class WorksheetManagerProxy {
 
             iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
-                sManager = (SampleManager)iter.next();
+                sManager = (SampleManager) iter.next();
                 if (manager.getLockedManagers()
                            .containsKey(sManager.getSample().getAccessionNumber())) {
                     lock.validateLock(Constants.table().SAMPLE, sManager.getSample().getId());
@@ -169,9 +169,9 @@ public class WorksheetManagerProxy {
             iter = manager.getSampleManagers().values().iterator();
             sManCount = manager.getSampleManagers().values().size();
             sManIndex = 0;
-            status = (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
+            status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
             while (iter.hasNext()) {
-                sManager = (SampleManager)iter.next();
+                sManager = (SampleManager) iter.next();
                 if (manager.getLockedManagers()
                            .containsKey(sManager.getSample().getAccessionNumber())) {
                     lock.validateLock(Constants.table().SAMPLE, sManager.getSample().getId());
@@ -180,7 +180,7 @@ public class WorksheetManagerProxy {
                     manager.getLockedManagers().remove(sManager.getSample()
                                                                .getAccessionNumber());
                 }
-                status.setPercentComplete( ( ++sManIndex / sManCount) * 40 + 55);
+                status.setPercentComplete((++sManIndex / sManCount) * 40 + 55);
                 session.setAttribute("WorksheetUpdateStatus", status);
             }
         }
@@ -219,7 +219,7 @@ public class WorksheetManagerProxy {
 
             iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
-                sManager = (SampleManager)iter.next();
+                sManager = (SampleManager) iter.next();
                 try {
                     sManager.validate();
                 } catch (Exception e) {

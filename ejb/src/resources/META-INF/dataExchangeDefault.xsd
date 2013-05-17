@@ -255,6 +255,7 @@ UIRF Software License are applicable instead of those above.
     <xs:attribute name="sample_item_id" type="xs:integer" use = "required" />
     <xs:attribute name="revision" type="xs:integer" use = "required" />
     <xs:attribute name="pre_analysis_id" type="xs:integer" />
+    <xs:attribute name="parent_analysis_id" type="xs:integer" />
     <xs:attribute name="parent_result_id" type="xs:integer" />
     <xs:attribute name="is_reportable" type="xs:string" use = "required"/>
     <xs:attribute name="available_date" type="xs:dateTime"/>

@@ -39,11 +39,11 @@ import net.sf.ehcache.Element;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
-import org.openelis.ui.common.ModulePermission.ModuleFlags;
-import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -321,5 +321,4 @@ public class UserCacheBean  {
 
         return data;
     }
-    
 }
