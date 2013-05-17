@@ -1,15 +1,16 @@
-.AppBackground {
-	background : lightgrey;
+@sprite .AppBackground {
+	gwt-image: 'AppBackground';
+	opacity: 0.8;
 }
 
 .WhiteContentPanel {
-	background:white;
+	background: white;
 }
 
 .Form {
-    font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
-    font-size:11px;
-    margin:4px 8px ;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	margin: 4px 8px;
 }
 
 .FormTitle {
@@ -23,31 +24,35 @@
 }
 
 .Prompt {
-	font-family:Verdana,Geneva,Arial,Helvetica,sans-serif;
-    font-size:11px;
-    -moz-user-select: none;
-	color:gray;
-	padding:2px 0 2px 2px;
-	text-align:right;
-	vertical-align:top;
-	test-justify:trim;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	-moz-user-select: none;
+	color: gray;
+	padding: 2px 0 2px 2px;
+	text-align: right;
+	vertical-align: top;
+	test-justify: trim;
+
+.Prompt:after {
+	content: ":";
 }
 
 .ScreenLabelLink {
-	color:blue;
-    text-decoration:underline;
-    cursor:pointer;
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
 }
 
-@sprite .favorite .LeftMenuPanePanelClosed{
-    height:100%;
-    width:5px;
-    gwt-image:'topMenuBG';
+@sprite .favorite .LeftMenuPanePanelClosed {
+	height: 100%;
+	width: 5px;
+	gwt-image: 'topMenuBG';
 }
-@sprite .favorite .LeftMenuPanePanelOpen{
-    height:100%;
-    gwt-image:'topMenuBG';
-    border-right: 1px solid black;
+
+@sprite .favorite .LeftMenuPanePanelOpen {
+	height: 100%;
+	gwt-image: 'topMenuBG';
+	border-right: 1px solid black;
 }
 
 .favoritesMenuContainer {
@@ -55,223 +60,241 @@
 }
 
 @sprite .EditSettings {
-	gwt-image:'EditSettings';
-	width:20px;
+	gwt-image: 'EditSettings';
+	width: 20px;
+
 }
 
 @sprite .preferenceIcon {
-	gwt-image:'preferenceIcon';
-	width:20px;
+	gwt-image: 'preferenceIcon';
+	width: 20px;
+
 }
 
 @sprite .logoutIcon {
-	gwt-image:'logoutIcon';
-	width:20px;
+	gwt-image: 'logoutIcon';
+	width: 20px;
+
 }
 
 @sprite .quickEntryIcon {
-	gwt-image:'quickEntryIcon';
-	width:20px;
+	gwt-image: 'quickEntryIcon';
+	width: 20px;
 }
 
 @sprite .QCIcon {
-	gwt-image:'QCIcon';
-	width:20px;
+	gwt-image: 'QCIcon';
+	width: 20px;
 }
 
 @sprite .sdwisSampleLoginIcon {
-	gwt-image:'cup';
-	width:20px;	
+	gwt-image: 'cup';
+	width: 20px;
 }
 
 @sprite .trackingIcon {
-	gwt-image:'trackingIcon';
-	width:20px;
+	gwt-image: 'trackingIcon';
+	width: 20px;
 }
 
 @sprite .environmentalSampleLoginIcon {
-	gwt-image:'worldAdd';
-	width:20px;
-	
+	gwt-image: 'worldAdd';
+	width: 20px;
 }
 
 @sprite .privateWellWaterSampleLoginIcon {
-	gwt-image:'house';
-	width:20px;
+	gwt-image: 'house';
+	width: 20px;
 }
 
 @sprite .projectIcon {
-	gwt-image:'add';
-	width:20px;
+	gwt-image: 'add';
+	width: 20px;
 }
 
 @sprite .providerIcon {
-	gwt-image:'providerIcon';
-	width:20px;
+	gwt-image: 'providerIcon';
+	width: 20px;
 }
 
 @sprite .organizationIcon {
-	gwt-image:'organizationIcon';
-	width:20px;
+	gwt-image: 'organizationIcon';
+	width: 20px;
 }
 
 @sprite .worksheetCreationIcon {
-	gwt-image:'worksheetCreationIcon';
-	width:20px;
+	gwt-image: 'worksheetCreationIcon';
+	width: 20px;
 }
 
 @sprite .worksheetCompletionIcon {
-	gwt-image:'worksheetCompletionIcon';
-	width:20px;
+	gwt-image: 'worksheetCompletionIcon';
+	width: 20px;
 }
 
 @sprite .addOrCancelIcon {
-	gwt-image:'addOrCancelIcon';
-	width:20px;
+	gwt-image: 'addOrCancelIcon';
+	width: 20px;
 }
 
 @sprite .reviewAndReleaseIcon {
-	gwt-image:'reviewAndReleaseIcon';
-	width:20px;
+	gwt-image: 'reviewAndReleaseIcon';
+	width: 20px;
 }
 
 @sprite .toDoIcon {
-	gwt-image:'toDoIcon';
-	width:20px;
+	gwt-image: 'toDoIcon';
+	width: 20px;
 }
 
 @sprite .labelForIcon {
-	gwt-image:'labelForIcon';
-	width:20px;
+	gwt-image: 'labelForIcon';
+	width: 20px;
 }
 
 @sprite .storageIcon {
-	gwt-image:'storageIcon';
-	width:20px;
+	gwt-image: 'storageIcon';
+	width: 20px;
 }
 
 @sprite .orderIcon {
-	gwt-image:'orderIcon';
-	width:20px;
+	gwt-image: 'orderIcon';
+	width: 20px;
 }
 
 @sprite .fillOrderIcon {
-	gwt-image:'fillOrderIcon';
-	width:20px;
+	gwt-image: 'fillOrderIcon';
+	width: 20px;
 }
 
 @sprite .shippingIcon {
-	gwt-image:'shippingIcon';
-	width:20px;
+	gwt-image: 'shippingIcon';
+	width: 20px;
 }
 
 @sprite .inventoryReceiptIcon {
-	gwt-image:'inventoryReceiptIcon';
-	width:20px;
+	gwt-image: 'inventoryReceiptIcon';
+	width: 20px;
 }
 
 @sprite .inventoryIcon {
-	gwt-image:'inventoryIcon';
-	width:20px;
+	gwt-image: 'inventoryIcon';
+	width: 20px;
 }
 
 @sprite .testIcon {
-	gwt-image:'testIcon';
-	width:20px;
+	gwt-image: 'testIcon';
+	width: 20px;
 }
 
 @sprite .methodIcon {
-	gwt-image:'methodIcon';
-	width:20px;
+	gwt-image: 'methodIcon';
+	width: 20px;
 }
 
 @sprite .panelIcon {
-	gwt-image:'calculator';
-	width:20px;
+	gwt-image: 'calculator';
+	width: 20px;
 }
 
 @sprite .QAEventIcon {
-	gwt-image:'tick';
-	width:20px;
+	gwt-image: 'tick';
+	width: 20px;
 }
+
 @sprite .labSectionIcon {
-	gwt-image:'group';
-	width:20px;
+	gwt-image: 'group';
+	width: 20px;
 }
+
 @sprite .analyteIcon {
-	gwt-image:'map';
-	width:20px;
+	gwt-image: 'map';
+	width: 20px;
 }
+
 @sprite .dictionaryIcon {
-	gwt-image:'dictionaryIcon';
-	width:20px;
+	gwt-image: 'dictionaryIcon';
+	width: 20px;
 }
+
 @sprite .auxiliaryPromptIcon {
-	gwt-image:'lightbulb';
-	width:20px;
+	gwt-image: 'lightbulb';
+	width: 20px;
 }
+
 @sprite .labelIcon {
-	gwt-image:'inventoryReceiptIcon';
-	width:20px;
+	gwt-image: 'inventoryReceiptIcon';
+	width: 20px;
 }
+
 @sprite .standardNoteIcon {
-	gwt-image:'note';
-	width:20px;
+	gwt-image: 'note';
+	width: 20px;
 }
+
+@sprite .button-Disabled .standardNoteIcon {
+	gwt-image: 'noteDisabled';
+	width :20px;
+}
+
 @sprite .trailerForTestIcon {
-	gwt-image:'page';
-	width:20px;
+	gwt-image: 'page';
+	width: 20px;
 }
+
 @sprite .storageUnitIcon {
-	gwt-image:'packageIcon';
-	width:20px;
+	gwt-image: 'packageIcon';
+	width: 20px;
 }
+
 @sprite .storageLocationIcon {
-	gwt-image:'basket';
-	width:20px;
+	gwt-image: 'basket';
+	width: 20px;
 }
+
 @sprite .instrumentIcon {
-	gwt-image:'instrumentIcon';
-	width:20px;
+	gwt-image: 'instrumentIcon';
+	width: 20px;
 }
+
 @sprite .systemVariableIcon {
-	gwt-image:'brick';
-	width:20px;
+	gwt-image: 'brick';
+	width: 20px;
 }
 
 @sprite .historyIcon {
-	gwt-image:'history';
-	width:20px;
+	gwt-image: 'history';
+	width: 20px;
 }
 
 @sprite .addRowIcon {
-	gwt-image:'addRowIcon';
-	width:20px;
+	gwt-image: 'addRowIcon';
+	width: 20px;
 }
 
-@sprite .addRowDisabledIcon {
-	gwt-image:'addRowDisabledIcon';
-	width:20px;
+@sprite .button-Disabled .addRowIcon {
+	gwt-image: 'addRowDisabledIcon';
+	width: 20px;
 }
 
 @sprite .removeRowIcon {
-	gwt-image:'removeRowIcon';
-	width:20px;
+	gwt-image: 'removeRowIcon';
+	width: 20px;
 }
 
-@sprite .removeRowDisabledIcon {
-	gwt-image:'removeRowDisabledIcon';
-	width:20px;
+@sprite .button-Disabled .removeRowIcon {
+	gwt-image: 'removeRowDisabledIcon';
+	width: 20px;
 }
 
 @sprite .findIcon {
-	gwt-image:'findIcon';
-	width:20px;
+	gwt-image: 'findIcon';
+	width: 20px;
 }
 
-@sprite .findDisabledIcon {
-	gwt-image:'findDisabledIcon';
-	width:20px;
+@sprite .button-Disabled .findIcon {
+	gwt-image: 'findDisabledIcon';
+	width: 20px;
 }
 
 @sprite .selectAllIcon {
@@ -279,7 +302,7 @@
 	width:20px;
 }
 
-@sprite .selectAllDisabledIcon {
-	gwt-image:'selectAllDisabledIcon';
-	width:20px;
+@sprite .button-Disabled .selectAllIcon {
+	gwt-image: 'selectAllDisabledIcon';
+	width: 20px;
 }
