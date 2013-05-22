@@ -40,10 +40,10 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.modules.worksheet.client.WorkSheetServiceInt;
+import org.openelis.modules.worksheet.client.WorksheetServiceInt;
 
 @WebServlet("/openelis/worksheet")
-public class WorksheetServlet extends RemoteServlet implements WorkSheetServiceInt {
+public class WorksheetServlet extends RemoteServlet implements WorksheetServiceInt {
 
     private static final long serialVersionUID = 1L;
     

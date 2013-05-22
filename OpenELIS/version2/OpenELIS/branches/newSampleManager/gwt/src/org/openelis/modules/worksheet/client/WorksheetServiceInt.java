@@ -14,7 +14,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath("worksheet")
-public interface WorkSheetServiceInt extends RemoteService {
+public interface WorksheetServiceInt extends RemoteService {
 
     ArrayList<WorksheetViewDO> query(Query query) throws Exception;
 

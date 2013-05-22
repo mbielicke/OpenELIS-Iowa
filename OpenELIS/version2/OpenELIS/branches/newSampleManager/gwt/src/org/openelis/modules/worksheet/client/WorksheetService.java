@@ -14,11 +14,11 @@ import org.openelis.manager.WorksheetResultManager;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class WorksheetService implements WorkSheetServiceInt, WorkSheetServiceIntAsync {
+public class WorksheetService implements WorksheetServiceInt, WorksheetServiceIntAsync {
     
     static WorksheetService instance;
     
-    WorkSheetServiceIntAsync service;
+    WorksheetServiceIntAsync service;
     
     public static WorksheetService get() {
         if(instance == null)
@@ -28,7 +28,7 @@ public class WorksheetService implements WorkSheetServiceInt, WorkSheetServiceIn
     }
     
     private WorksheetService() {
-        service = (WorkSheetServiceIntAsync)GWT.create(WorkSheetServiceInt.class);
+        service = (WorksheetServiceIntAsync)GWT.create(WorksheetServiceInt.class);
     }
 
     @Override

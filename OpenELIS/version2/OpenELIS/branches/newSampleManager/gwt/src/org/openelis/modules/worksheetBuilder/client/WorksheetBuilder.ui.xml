@@ -25,7 +25,7 @@
 -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
-             xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:ws="urn:import:org.openelis.modules.worksheet.client"
+             xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:ws="urn:import:org.openelis.modules.worksheet1.client"
              xmlns:wb="urn:import:org.openelis.modules.worksheetBuilder.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
@@ -34,7 +34,7 @@
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:west size="250">
-      <w:TabLayoutPanel barHeight="25" barUnit="PX">
+      <w:TabLayoutPanel barHeight="18" barUnit="PX">
         <w:tab>
           <w:customHeader>
             <w:TabWidget text="A to Z"/>
@@ -42,15 +42,15 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <g:LayoutPanel>
-                <g:layer top="0px" bottom="27px">
-                  <t:Table ui:field="atozTable" visibleRows="20" horizontalScroll="ALWAYS"
+                <g:layer top="0px" bottom="20px">
+                  <t:Table ui:field="atozTable" visibleRows="17" horizontalScroll="ALWAYS"
                            verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
                     <t:Column width="175" label="{msg.worksheetNumber}">
                       <t:LabelCell/>
                     </t:Column>
                   </t:Table>
                 </g:layer>
-                <g:layer bottom="0px" height="27px">
+                <g:layer bottom="0px" height="20px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
                       <w:Button ui:field="atozPrev" leftIcon="{uiRes.buttonPanel.PreviousButtonImage}"
@@ -208,7 +208,7 @@
           </g:HTMLPanel>
         </g:layer>
         <g:layer top="135px" bottom="0px">
-          <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX">
+          <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>
                 <w:TabWidget text="{msg.worksheet}"/>

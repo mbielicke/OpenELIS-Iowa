@@ -41,9 +41,9 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -108,11 +108,13 @@ import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.SelectedType;
+import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
-import org.openelis.modules.worksheet.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet.client.WorksheetService;
+import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderLookupScreenUI.Action;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationService;
 import org.openelis.ui.common.DataBaseUtil;
@@ -171,7 +173,7 @@ public class WorksheetItemTabUI extends Screen {
     private static WorksheetItemTabUiBinder             uiBinder = GWT.create(WorksheetItemTabUiBinder.class);
 
     private boolean                                     addRowDirection, canEdit,
-                                                        tableLoaded;
+                                                        isVisible, tableLoaded;
     private int                                         tempId, qcStartIndex;
     private String                                      typeLastBothString, typeLastRunString,
                                                         typeLastSubsetString, typeRandString;
@@ -210,7 +212,6 @@ public class WorksheetItemTabUI extends Screen {
     protected HashMap<Integer, Exception>               qcErrors;
     protected HashMap<MenuItem, Integer>                templateMap;
     protected HashMap<String, ArrayList<Item<Integer>>> unitModels;
-    protected HashMap<Integer, SampleManager1>          sampleManagers;
     protected QcLookupScreen                            qcLookupScreen;
 //    protected TableDataRow                              qcItems[];
     protected TestWorksheetDO                           testWorksheetDO;
@@ -240,25 +241,13 @@ public class WorksheetItemTabUI extends Screen {
 //        qcLastRunList = new ArrayList<TableDataRow>();
 //        qcLastBothList = new ArrayList<TableDataRow>();
         qcStartIndex = 0;
-        sampleManagers = new HashMap<Integer, SampleManager1>();
         tempId = -1;
         templateMap = new HashMap<MenuItem, Integer>();
-
-        try {
-            CategoryCache.getBySystemNames("analysis_status", "instrument_type",
-                                           "type_of_sample", "test_worksheet_format",
-                                           "test_worksheet_item_type", "unit_of_measure",
-                                           "worksheet_status");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     /**
      * Setup state and data change handles for every widget on the screen
      */
-//    @SuppressWarnings("unchecked")
     private void initialize() {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
@@ -276,11 +265,21 @@ public class WorksheetItemTabUI extends Screen {
         });
 
         worksheetItemTable.addSelectionHandler(new SelectionHandler<Integer>() {
-            public void onSelection(SelectionEvent event) {
-                if (worksheetItemTable.getSelectedRow() != -1 &&
-                    isState(ADD, UPDATE) && canEdit)
-                    removeRowButton.setEnabled(true);
-//                showAnalytes();
+            public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+                Row row;
+                SelectionEvent selEvent;
+                
+                if (worksheetItemTable.getSelectedRow() != -1) {
+                    if (isState(ADD, UPDATE) && canEdit)
+                        removeRowButton.setEnabled(true);
+                    row = worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow());
+                    selEvent = new SelectionEvent(SelectedType.NONE, manager.getUid(((RowItem)row.getData()).worksheetAnalysis));
+                } else {
+                    removeRowButton.setEnabled(false);
+                    selEvent = new SelectionEvent(SelectedType.NONE, null);
+                }
+                
+                bus.fireEvent(selEvent);
             }
         });
         
@@ -515,6 +514,29 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
+        addVisibleHandler(new VisibleEvent.Handler() {
+            public void onVisibleOrInvisible(VisibleEvent event) {
+                isVisible = event.isVisible();
+                displayItemData();
+            }
+        });
+
+        /*
+         * handlers for the events fired by the screen containing this tab
+         */
+        bus.addHandlerToSource(StateChangeEvent.getType(), parentScreen, new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                evaluateEdit();
+                setState(event.getState());
+            }
+        });
+
+        bus.addHandlerToSource(DataChangeEvent.getType(), parentScreen, new DataChangeEvent.Handler() {
+            public void onDataChange(DataChangeEvent event) {
+                displayItemData();
+            }
+        });
+
         try {            
             typeLastSubsetString = DictionaryCache.getById(Constants.dictionary().POS_LAST_OF_SUBSET).getEntry();
             typeLastRunString = DictionaryCache.getById(Constants.dictionary().POS_LAST_OF_RUN).getEntry();
@@ -522,7 +544,7 @@ public class WorksheetItemTabUI extends Screen {
             typeRandString = DictionaryCache.getById(Constants.dictionary().POS_RANDOM).getEntry();
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            window.close();
+            parentScreen.getWindow().close();
         }
 
         //
@@ -553,15 +575,78 @@ public class WorksheetItemTabUI extends Screen {
 
     private void evaluateEdit() {
         canEdit = false;
-        if (manager != null && isState(ADD, UPDATE))
+        if (manager != null)
             canEdit = Constants.dictionary().WORKSHEET_WORKING.equals(manager.getWorksheet()
                                                                              .getStatusId());
+    }
+
+    private void displayItemData() {
+        int i, a, count1, count2, count3, count4;
+        boolean dataChanged;
+        WorksheetAnalysisDO waDO1, waDO2;
+        WorksheetItemDO wiDO1, wiDO2;
+
+        if ( !isVisible)
+            return;
+
+        count1 = displayedManager == null ? 0 : displayedManager.item.count();
+        count2 = manager == null ? 0 : manager.item.count();
+
+        /*
+         * find out if there's any difference between the item data of the two
+         * managers
+         */
+        if (count1 == count2) {
+            dataChanged = false;
+            if (count1 != 0) {
+                items:
+                for (i = 0; i < count1; i++ ) {
+                    wiDO1 = displayedManager.item.get(i);
+                    wiDO2 = manager.item.get(i);
+                    count2 = displayedManager.analysis.count(wiDO1);
+                    count3 = manager.analysis.count(wiDO2);
+                    if (count2 == count3) {
+                        for (a = 0; a < count2; a++ ) {
+                            waDO1 = displayedManager.analysis.get(wiDO1, a);
+                            waDO2 = manager.analysis.get(wiDO2, a);
+                            count3 = displayedManager.result.count(waDO1);
+                            count4 = manager.result.count(waDO2);
+                            if (count3 == count4) {
+                            } else {
+                                dataChanged = true;
+                                break items;
+                            }
+                            count3 = displayedManager.qcResult.count(waDO1);
+                            count4 = manager.qcResult.count(waDO2);
+                            if (count3 == count4) {
+                            } else {
+                                dataChanged = true;
+                                break items;
+                            }
+                        }
+                    } else {
+                        dataChanged = true;
+                        break;
+                    }
+                }
+            }
+        } else {
+            dataChanged = true;
+        }
+
+        if (dataChanged) {
+            displayedManager = manager;
+            evaluateEdit();
+            setState(state);
+            fireDataChange();
+        }
     }
 
     private ArrayList<Item<Object>> getTableModel() {
         int i, j, pos;
         AnalysisViewDO aVDO = null;
         ArrayList<Item<Object>> model;
+        ArrayList<SampleOrganizationViewDO> orgs;
         DictionaryDO dictDO;
         Integer accessionNumber;
         QcLotViewDO qcLotVDO;
@@ -574,7 +659,6 @@ public class WorksheetItemTabUI extends Screen {
         Item<Object> row;
         TestManager tManager = null;
         WorksheetAnalysisDO waDO;
-        WorksheetAnalysisManager waManager;
         WorksheetItemDO wiDO;
         
         qcLinkModel.clear();
@@ -605,7 +689,7 @@ public class WorksheetItemTabUI extends Screen {
                                 accessionNumber = Integer.valueOf(waDO.getAccessionNumber().substring(1));
                             else
                                 accessionNumber = Integer.valueOf(waDO.getAccessionNumber());
-                            sManager = sampleManagers.get(accessionNumber);
+                            sManager = ((WorksheetBuilderScreenUI)parentScreen).sampleManagers.get(accessionNumber);
                             sDO = sManager.getSample();
 
                             aVDO = (AnalysisViewDO) sManager.getObject("A:"+waDO.getAnalysisId());
@@ -619,24 +703,30 @@ public class WorksheetItemTabUI extends Screen {
                                 location = sManager.getSampleEnvironmental().getLocation();
                                 if (location != null && location.length() > 0)
                                     description = "[loc]" + location;
-                                soVDO = sManager.organization.getByType(Constants.dictionary().ORG_REPORT_TO).get(0);
-                                if (soVDO != null && soVDO.getOrganizationName() != null &&
-                                    soVDO.getOrganizationName().length() > 0) {
-                                    if (description.length() > 0)
-                                        description += " ";
-                                    description += "[rpt]" + soVDO.getOrganizationName();
+                                orgs = sManager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
+                                if (orgs.size() > 0) {
+                                    soVDO = orgs.get(0);
+                                    if (soVDO != null && soVDO.getOrganizationName() != null &&
+                                        soVDO.getOrganizationName().length() > 0) {
+                                        if (description.length() > 0)
+                                            description += " ";
+                                        description += "[rpt]" + soVDO.getOrganizationName();
+                                    }
                                 }
                             } else if (Constants.domain().SDWIS.equals(sManager.getSample()
                                                                                       .getDomain())) {
                                 location = sManager.getSampleSDWIS().getLocation();
                                 if (location != null && location.length() > 0)
                                     description = "[loc]" + location;
-                                soVDO = sManager.organization.getByType(Constants.dictionary().ORG_REPORT_TO).get(0);
-                                if (soVDO != null && soVDO.getOrganizationName() != null &&
-                                    soVDO.getOrganizationName().length() > 0) {
-                                    if (description.length() > 0)
-                                        description += " ";
-                                    description += "[rpt]" + soVDO.getOrganizationName();
+                                orgs = sManager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
+                                if (orgs.size() > 0) {
+                                    soVDO = orgs.get(0);
+                                    if (soVDO != null && soVDO.getOrganizationName() != null &&
+                                        soVDO.getOrganizationName().length() > 0) {
+                                        if (description.length() > 0)
+                                            description += " ";
+                                        description += "[rpt]" + soVDO.getOrganizationName();
+                                    }
                                 }
                             } else if (Constants.domain().PRIVATEWELL.equals(sManager.getSample()
                                                                                      .getDomain())) {
