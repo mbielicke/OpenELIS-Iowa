@@ -27,7 +27,7 @@ import org.openelis.ui.common.Datetime;
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemIds",
                 query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
-                        "from WorksheetAnalysis wa where wa.worksheetItemId in (ids) order by wa.worksheetItemId"),
+                        "from WorksheetAnalysis wa where wa.worksheetItemId in (:ids) order by wa.worksheetItemId"),
     @NamedQuery( name = "WorksheetAnalysis.FetchById",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
                         "from WorksheetAnalysis wa where wa.id = :id"),
