@@ -73,12 +73,18 @@ public class WorksheetBean {
 
     public WorksheetViewDO fetchById(Integer id) throws Exception {
         Query query;
+        SystemUserVO user;
         WorksheetViewDO data;
 
         query = manager.createNamedQuery("Worksheet.FetchById");
         query.setParameter("id", id);
         try {
             data = (WorksheetViewDO)query.getSingleResult();
+            if (data.getSystemUserId() != null) {
+                user = userCache.getSystemUser(data.getSystemUserId());
+                if (user != null)
+                    data.setSystemUser(user.getLoginName());
+            }
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -89,12 +95,25 @@ public class WorksheetBean {
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetViewDO> fetchByIds(ArrayList<Integer> ids) {
+        int i;
+        ArrayList<WorksheetViewDO> data;
         Query query;
+        SystemUserVO user;
+        WorksheetViewDO worksheet;
         
         query = manager.createNamedQuery("Worksheet.FetchByIds");
         query.setParameter("ids", ids);
+        data = DataBaseUtil.toArrayList(query.getResultList());
+        for (i = 0; i < data.size(); i++) {
+            worksheet = data.get(i);
+            if (worksheet.getSystemUserId() != null) {
+                user = userCache.getSystemUser(worksheet.getSystemUserId());
+                if (user != null)
+                    worksheet.setSystemUser(user.getLoginName());
+            }
+        }
         
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return data;
     }
     
     @SuppressWarnings("unchecked")

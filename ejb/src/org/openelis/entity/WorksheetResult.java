@@ -40,7 +40,7 @@ import org.openelis.ui.common.DataBaseUtil;
                         "wr.value24,wr.value25,wr.value26,wr.value27,wr.value28," +
                         "wr.value29,wr.value30,a.name,a.externalId,ta.resultGroup)"
                       + " from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
-                        " where wr.worksheetAnalysisId in (ids) order by wr.worksheetAnalysisId, wr.resultRow")})
+                        " where wr.worksheetAnalysisId in (:ids) order by wr.worksheetAnalysisId, wr.resultRow")})
 @Entity
 @Table(name = "worksheet_result")
 public class WorksheetResult {

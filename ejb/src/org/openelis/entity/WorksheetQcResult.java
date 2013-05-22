@@ -40,7 +40,7 @@ import org.openelis.ui.common.DataBaseUtil;
                         "wqr.value23,wqr.value24,wqr.value25,wqr.value26,wqr.value27," +
                         "wqr.value28,wqr.value29,wqr.value30,a.id,a.name) "
                       + " from WorksheetQcResult wqr LEFT JOIN wqr.qcAnalyte qca LEFT JOIN qca.analyte a "+
-                        " where wqr.worksheetAnalysisId in (ids) order by wqr.worksheetAnalysisId, wqr.sortOrder")})
+                        " where wqr.worksheetAnalysisId in (:ids) order by wqr.worksheetAnalysisId, wqr.sortOrder")})
 @Entity
 @Table(name = "worksheet_qc_result")
 public class WorksheetQcResult {
