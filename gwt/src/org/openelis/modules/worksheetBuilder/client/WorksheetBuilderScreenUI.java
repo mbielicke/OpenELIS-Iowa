@@ -25,31 +25,21 @@
 */
 package org.openelis.modules.worksheetBuilder.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.Iterator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
@@ -58,73 +48,35 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentViewDO;
-import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleDO;
-import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.domain.TestWorksheetDO;
-import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetBuilderVO;
 import org.openelis.domain.WorksheetItemDO;
-import org.openelis.domain.WorksheetQcResultViewDO;
-import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.Preferences;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleDomainInt;
-import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.manager.SamplePrivateWellManager;
-import org.openelis.manager.SampleSDWISManager;
-import org.openelis.manager.TestManager;
-import org.openelis.manager.TestTypeOfSampleManager;
-import org.openelis.manager.TestWorksheetManager;
-import org.openelis.manager.WorksheetAnalysisManager;
-import org.openelis.manager.WorksheetItemManager;
-import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.manager.WorksheetQcResultManager;
-import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetBuilderMeta;
-import org.openelis.modules.analysis.client.AnalysisService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.note.client.NotesTabUI;
-import org.openelis.modules.qc.client.QcLookupScreen;
-import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.sample1.client.SampleService1;
-import org.openelis.modules.test.client.TestService;
-import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
-import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
-import org.openelis.modules.worksheet.client.WorksheetLookupScreenUI;
-import org.openelis.modules.worksheet.client.WorksheetNotesTabUI;
-import org.openelis.modules.worksheet.client.WorksheetService;
+import org.openelis.modules.sample1.client.SelectionEvent;
+import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
+import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
 import org.openelis.modules.worksheet1.client.WorksheetService1;
-import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderLookupScreenUI.Action;
-import org.openelis.modules.worksheetCreation.client.WorksheetCreationService;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SystemUserVO;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.ActionEvent;
@@ -138,29 +90,21 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
-import org.openelis.ui.services.CalendarService;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.ModalWindow;
-import org.openelis.ui.widget.NotesPanel;
 import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
-import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.ui.widget.table.event.CellEditedEvent;
-import org.openelis.ui.widget.table.event.CellEditedHandler;
-import org.openelis.ui.widget.table.event.UnselectionEvent;
-import org.openelis.ui.widget.table.event.UnselectionHandler;
 
 public class WorksheetBuilderScreenUI extends Screen {
 
@@ -170,17 +114,12 @@ public class WorksheetBuilderScreenUI extends Screen {
     
     private static WorksheetBuilderUiBinder             uiBinder = GWT.create(WorksheetBuilderUiBinder.class);
 
-    private int                                         tempId, qcStartIndex;
-    private String                                      typeLastBothString, typeLastRunString,
-                                                        typeLastSubsetString, typeRandString;
     private ModulePermission                            userPermission;
     private ScreenNavigator<IdVO>                       nav;
-    private WorksheetBuilderScreenUI                    screen;
     private WorksheetManager1                           manager;
 
     @UiField
-    protected AutoComplete                              instrumentName, systemUserId/*,
-                                                        unitOfMeasureId*/;
+    protected AutoComplete                              instrumentName, systemUserId;
     @UiField
     protected Calendar                                  createdDate;
     @UiField
@@ -207,24 +146,11 @@ public class WorksheetBuilderScreenUI extends Screen {
     
     
     protected ArrayList<Integer>                        formatIds;
-    protected ArrayList<Item<Integer>>                  qcLinkModel;
-//    protected ArrayList<TableDataRow>                   qcLastRunList, qcLastBothList,
-//                                                        testWorksheetItems;
-    protected Confirm                                   worksheetRemoveDuplicateQCConfirm,
-                                                        worksheetRemoveQCConfirm, 
-                                                        worksheetRemoveLastOfQCConfirm, 
-                                                        worksheetSaveConfirm, worksheetExitConfirm;
-    protected HashMap<Integer, Exception>               qcErrors;
+    protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
     protected HashMap<MenuItem, Integer>                templateMap;
-    protected HashMap<String, ArrayList<Item<Integer>>> unitModels;
     protected HashMap<Integer, SampleManager1>          sampleManagers;
-    protected QcLookupScreen                            qcLookupScreen;
-//    protected TableDataRow                              qcItems[];
-    protected TestWorksheetDO                           testWorksheetDO;
-    protected TestWorksheetManager                      twManager;
-    protected WorksheetAnalysisSelectionScreen          waSelectionScreen;
     protected WorksheetBuilderLookupScreenUI            wbLookupScreen;
-    protected WorksheetLookupScreenUI                   wLookupScreen, wAnaLookupScreen;
+    protected WorksheetLookupScreenUI                   wLookupScreen;
     
     public WorksheetBuilderScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -241,13 +167,6 @@ public class WorksheetBuilderScreenUI extends Screen {
         formatIds = new ArrayList<Integer>();
         sampleManagers = new HashMap<Integer, SampleManager1>();
 
-        try {
-            CategoryCache.getBySystemNames("test_worksheet_format", "worksheet_status");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-        
         initialize();
         setData();
         setState(DEFAULT);
@@ -262,8 +181,6 @@ public class WorksheetBuilderScreenUI extends Screen {
     private void initialize() {
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
-
-        screen = this;
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
@@ -333,16 +250,16 @@ public class WorksheetBuilderScreenUI extends Screen {
 
         addShortcut(abort, 'o', CTRL);
 
-        worksheetHistory.addCommand(new Command() {
-            @Override
-            public void execute() {
-                worksheetHistory();
-            }
-        });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 worksheetHistory.setEnabled(isState(DISPLAY));
+            }
+        });
+        worksheetHistory.addCommand(new Command() {
+            @Override
+            public void execute() {
+                worksheetHistory();
             }
         });
 
@@ -406,7 +323,6 @@ public class WorksheetBuilderScreenUI extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<SystemUserVO> users;
                 ArrayList<Item<Integer>> model;
-                Item<Integer> row;
                 
                 try {
                     users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
@@ -564,7 +480,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(13);
+                query.setRowsPerPage(17);
                 WorksheetService1.get().fetchByQuery(query, new AsyncCallback<ArrayList<IdVO>>() {
                     public void onSuccess(ArrayList<IdVO> result) {
                         setQueryResult(result);
@@ -625,7 +541,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                 //
                 //  only the reportable field can be edited
                 //
-                if (event.getCol() != 0)
+                if (!isState(ADD, UPDATE) || event.getCol() != 0)
                     event.cancel();
             }
         });
@@ -639,6 +555,16 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
         });
 
+        try {
+            CategoryCache.getBySystemNames("analysis_status", "instrument_type",
+                                           "type_of_sample", "test_worksheet_format",
+                                           "test_worksheet_item_type", "unit_of_measure",
+                                           "worksheet_status");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+        
         //
         // load worksheet status dropdown model
         //
@@ -658,6 +584,12 @@ public class WorksheetBuilderScreenUI extends Screen {
         for (DictionaryDO resultDO : dictList)
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         formatId.setModel(model);
+
+        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                showAnalytes(event.getUid());
+            }
+        });
     }
     
     /*
@@ -1107,6 +1039,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                         sampleManagers.put(sManager.getSample().getAccessionNumber(), sManager);
                 }
                 
+                setData();
                 setState(DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
@@ -1144,7 +1077,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                             row = (Item<Integer>)event.getData();
                             if (row != null) {
                                 wVDO = (WorksheetViewDO)row.getData();
-                                manager.getWorksheet().setRelatedWorksheetId(wVDO.getId());
+                                setRelatedWorksheetId(wVDO.getId());
                                 relatedWorksheetId.fireEvent(new DataChangeEvent());
                             }
                         }
@@ -1164,82 +1097,54 @@ public class WorksheetBuilderScreenUI extends Screen {
         }
     }
 
-    private void showAnalytes() {
-/*
-        ArrayList<TableDataRow> selections;
+    private void showAnalytes(String uid) {
+        DataObject data;
         
-        if (analyteTable.isVisible()) {
-            selections = worksheetItemTable.getSelections();
-            if (selections.size() == 1) {
-                if (selections.get(0).data instanceof WorksheetAnalysisDO) {
-                    ResultService.get().fetchByAnalysisIdForDisplay(((WorksheetAnalysisDO)selections.get(0).data).getAnalysisId(),
-                                                                    new AsyncCallback<AnalysisResultManager>() {
-                        public void onSuccess(AnalysisResultManager arMan) {
-                            loadAnalyteTable(arMan);
-                        }
-            
-                        public void onFailure(Throwable error) {
-                            analyteTable.load(null);
-                            if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().noAnalytesFoundForRow());
-                            } else {
-                                Window.alert("Error: WorksheetCreation call showAnalytes failed; "+error.getMessage());
-                            }
-                        }
-                    });
-                } else if (selections.get(0).data instanceof WorksheetBuilderVO) {
-                    ResultService.get().fetchByAnalysisIdForDisplay(((WorksheetBuilderVO)selections.get(0).data).getAnalysisId(),
-                                                                    new AsyncCallback<AnalysisResultManager>() {
-                        public void onSuccess(AnalysisResultManager arMan) {
-                            loadAnalyteTable(arMan);
-                        }
-            
-                        public void onFailure(Throwable error) {
-                            analyteTable.load(null);
-                            if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().noAnalytesFoundForRow());
-                            } else {
-                                Window.alert("Error: WorksheetCreation call showAnalytes failed; "+error.getMessage());
-                            }
-                        }
-                    });
-                } else {
-                    analyteTable.load(null);
+        data = manager.getObject(uid);
+        if (data instanceof WorksheetAnalysisDO) {
+            ResultService.get().fetchByAnalysisIdForDisplay(((WorksheetAnalysisDO)data).getAnalysisId(),
+                                                            new AsyncCallback<AnalysisResultManager>() {
+                public void onSuccess(AnalysisResultManager arMan) {
+                    loadAnalyteTable(arMan);
                 }
-            } else {
-                analyteTable.load(null);
-            }            
+    
+                public void onFailure(Throwable error) {
+                    analyteTable.setModel(null);
+                    if (error instanceof NotFoundException) {
+                        window.setDone(Messages.get().noAnalytesFoundForRow());
+                    } else {
+                        Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
+                    }
+                }
+            });
         } else {
-            analyteTable.load(null);
+            analyteTable.setModel(null);
         }
-*/
     }
 
     public void loadAnalyteTable(AnalysisResultManager arMan) {
-/*
         int i;
         ArrayList<ResultViewDO> resultRow;
-        ArrayList<TableDataRow> model;
+        ArrayList<Item<Integer>> model;
         ResultViewDO result;
-        TableDataRow row;
+        Item<Integer> row;
 
         model = null;
         if (arMan != null) {
-            model = new ArrayList<TableDataRow>();
+            model = new ArrayList<Item<Integer>>();
             for (i = 0; i < arMan.getResults().size(); i++) {
                 resultRow = arMan.getRowAt(i);
                 result = (ResultViewDO)resultRow.get(0);
 
-                row = new TableDataRow(2);
-                row.key = result.getId();
-                row.cells.get(0).value = result.getIsReportable();
-                row.cells.get(1).value = result.getAnalyte();
-                row.data = result;
+                row = new Item<Integer>(2);
+                row.setKey(result.getId());
+                row.setCell(0, result.getIsReportable());
+                row.setCell(1, result.getAnalyte());
+                row.setData(result);
                 model.add(row);
             }
         }
-        analyteTable.load(model);
-*/
+        analyteTable.setModel(model);
     }
 
     /**

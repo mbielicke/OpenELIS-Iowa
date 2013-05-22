@@ -12,7 +12,7 @@ import org.openelis.manager.WorksheetResultManager;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public interface WorkSheetServiceIntAsync {
+public interface WorksheetServiceIntAsync {
 
     void abortUpdate(Integer id, AsyncCallback<WorksheetManager> callback);
 

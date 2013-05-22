@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.worksheet.client;
+package org.openelis.modules.worksheet1.client;
 
 import static org.openelis.ui.screen.State.QUERY;
 
@@ -48,6 +48,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.meta.WorksheetCompletionMeta;
+import org.openelis.modules.worksheet.client.WorksheetService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;

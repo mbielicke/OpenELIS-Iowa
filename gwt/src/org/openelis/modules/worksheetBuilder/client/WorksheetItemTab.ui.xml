@@ -33,7 +33,7 @@
 
   <g:LayoutPanel>
     <g:layer top="0px" bottom="30px">
-      <t:Table ui:field="worksheetItemTable" visibleRows="9" horizontalScroll="ALWAYS"
+      <t:Table ui:field="worksheetItemTable" visibleRows="10" horizontalScroll="ALWAYS"
                verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
         <t:Column width="50" label="{msg.position}">
           <t:LabelCell/>
