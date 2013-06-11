@@ -37,6 +37,7 @@ import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -906,19 +907,14 @@ public class AnalyteParameterScreen extends Screen {
 
     private ArrayList<TableDataRow> getQcModel(String search) {
         ArrayList<TableDataRow> model;
-        ArrayList<QcLotViewDO> list;
+        ArrayList<QcDO> list;
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
         try {
             list  = QcService.get().fetchActiveByName(search);
-            for (QcLotViewDO data: list) {
-                row = new TableDataRow(2);
-                row.key = data.getQcId();
-                row.cells.get(0).setValue(getQcLabel(data.getQcId(), data.getQcName()));
-                row.cells.get(1).setValue(data.getLotNumber());
-                model.add(row);
-            }
+            for (QcDO data: list)
+                model.add(new TableDataRow(data.getId(), getQcLabel(data.getId(), data.getName())));
         } catch (NotFoundException e) {
             // do nothing
         } catch (Exception e) {

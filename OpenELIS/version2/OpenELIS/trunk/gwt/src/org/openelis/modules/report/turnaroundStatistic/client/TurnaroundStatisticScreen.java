@@ -68,6 +68,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.meta.SampleMeta;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.preferences.client.PrinterService;
 import org.openelis.modules.test.client.TestService;
@@ -574,10 +575,16 @@ public class TurnaroundStatisticScreen extends Screen {
 
         fromDate = data.getReleasedDateFrom();
         toDate = data.getReleasedDateTo();
-        if(fromDate != null && toDate != null) {
+        if (fromDate != null && toDate != null) {
             field = new QueryData();
-            field.setKey(SampleMeta.getAnalysisReleasedDate());
-            field.setQuery(DataBaseUtil.concatWithSeparator(fromDate.toString(), "..", toDate.toString()));
+            field.setKey(SampleWebMeta.getAnalysisReleasedDateFrom());
+            field.setQuery(releasedDateFrom.getStringValue());
+            field.setType(QueryData.Type.DATE);
+            fields.add(field);
+
+            field = new QueryData();
+            field.setKey(SampleWebMeta.getAnalysisReleasedDateTo());
+            field.setQuery(releasedDateTo.getStringValue());
             field.setType(QueryData.Type.DATE);
             fields.add(field);
         }

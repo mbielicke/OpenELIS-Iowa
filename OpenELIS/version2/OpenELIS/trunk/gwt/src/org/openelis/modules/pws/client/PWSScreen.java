@@ -119,15 +119,9 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
 
         tab = Tabs.FACILITY;
         manager = PWSManager.getInstance();
-        initialize();
-        setState(State.DEFAULT);
-        DataChangeEvent.fire(this);
-
-        if (pwsNumber0 != null)
-            queryByPwsNumer0();
     }
 
-    private void initialize() {
+    public void initialize() {
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -588,6 +582,12 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
                 }
             }
         });
+        
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
+
+        if (pwsNumber0 != null)
+            queryByPwsNumer0();
     }
 
     /*
