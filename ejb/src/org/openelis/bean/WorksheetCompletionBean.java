@@ -146,8 +146,11 @@ public class WorksheetCompletionBean {
         File outFile;
         FileInputStream in;
         FileOutputStream out;
+        HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap;
         HashMap<Integer, String> statusMap;
         HashMap<String, String> tCellNames;
+        HashMap<Integer, AnalyteDO> analytes;
+        HashMap<Integer, QcAnalyteViewDO> qcAnalytes;
         Cell cell;
         CellRangeAddressList statusColumn, reportableColumn;
         DVConstraint statusConstraint, reportableConstraint;
@@ -225,6 +228,9 @@ public class WorksheetCompletionBean {
 
         r = 1;
         o = 1;
+        analytes = new HashMap<Integer, AnalyteDO>();
+        qcAnalytes = new HashMap<Integer, QcAnalyteViewDO>();
+        apMap = new HashMap<String, HashMap<Integer, AnalyteParameterViewDO>>();
         for (i = 0; i < manager.getItems().count(); i++) {
             wiDO = manager.getItems().getWorksheetItemAt(i);
             waManager = manager.getItems().getWorksheetAnalysisAt(i);
@@ -372,7 +378,9 @@ public class WorksheetCompletionBean {
                                                        aVDO.getTestId(),
                                                        arManager,
                                                        wrManager,
-                                                       isEditable);
+                                                       isEditable,
+                                                       analytes,
+                                                       apMap);
                     }
 
                     //
@@ -496,7 +504,9 @@ public class WorksheetCompletionBean {
                                                          cellNameIndex,
                                                          tCellNames,
                                                          qcLotVDO.getQcId(),
-                                                         wqrManager);
+                                                         wqrManager,
+                                                         qcAnalytes,
+                                                         apMap);
                     }
 
                     //
@@ -533,13 +543,15 @@ public class WorksheetCompletionBean {
                     // users (override)
                     cell = oRow.createCell(5);
                     cell.setCellStyle(styles.get("row_edit"));
-                    try {
-                        userVO = userCache.getSystemUser(waDO.getQcSystemUserId());
-                        if (userVO != null)
-                            cell.setCellValue(userVO.getLoginName());
-                    } catch (Exception anyE) {
-                        System.out.println("Error loading QC System User: " +
-                                           anyE.getMessage());
+                    if (waDO.getQcSystemUserId() != null) {
+                        try {
+                            userVO = userCache.getSystemUser(waDO.getQcSystemUserId());
+                            if (userVO != null)
+                                cell.setCellValue(userVO.getLoginName());
+                        } catch (Exception anyE) {
+                            System.out.println("Error loading QC System User: " +
+                                               anyE.getMessage());
+                        }
                     }
                     cellName = wb.createName();
                     cellName.setNameName("analysis_users." + cellNameIndex);
@@ -1129,10 +1141,13 @@ public class WorksheetCompletionBean {
                                            Integer testId,
                                            AnalysisResultManager arManager,
                                            WorksheetResultManager wrManager,
-                                           boolean isEditable) {
-        boolean queriedAP;
+                                           boolean isEditable,
+                                           HashMap<Integer, AnalyteDO> analytes,
+                                           HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) {
         int c, i, r;
         String cellNameIndex, name;
+        ArrayList<AnalyteParameterViewDO> anaParams;
+        HashMap<Integer, AnalyteParameterViewDO> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteDO aDO;
@@ -1175,7 +1190,6 @@ public class WorksheetCompletionBean {
                                         (row.getRowNum() + 1));
 
             apVDO = null;
-            queriedAP = false;
             for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
 
@@ -1204,11 +1218,15 @@ public class WorksheetCompletionBean {
                 }
                 if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wrVDO.getValueAt(c - 9) == null) {
-                        if (!queriedAP) {
+                        pMap = apMap.get("T"+testId);
+                        if (pMap == null) {
+                            pMap = new HashMap<Integer, AnalyteParameterViewDO>();
+                            apMap.put("T"+testId, pMap);
                             try {
-                                apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wrVDO.getAnalyteId(),
-                                                                                                                testId,
-                                                                                                                Constants.table().TEST);
+                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(testId,
+                                                                                                           Constants.table().TEST);
+                                for (AnalyteParameterViewDO anaParam : anaParams)
+                                    pMap.put(anaParam.getAnalyteId(), anaParam);
                             } catch (NotFoundException nfE) {
                                 continue;
                             } catch (Exception anyE) {
@@ -1216,16 +1234,15 @@ public class WorksheetCompletionBean {
                                         "Error retrieving analyte parameters for an analysis on worksheet.",
                                         anyE);
                                 continue;
-                            } finally {
-                                queriedAP = true;
                             }
                         }
 
-                        if (apVDO != null && "p_1".equals(name)) {
+                        apVDO = pMap.get(wrVDO.getAnalyteId());
+                        if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP1()));
-                        } else if (apVDO != null && "p_2".equals(name)) {
+                        } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP2()));
-                        } else if (apVDO != null && "p_3".equals(name)) {
+                        } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP3()));
                         }
                     }
@@ -1235,7 +1252,11 @@ public class WorksheetCompletionBean {
             for (c = 0; c < arManager.getRowAt(wrVDO.getResultRow()).size(); c++) {
                 rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
                 try {
-                    aDO = analyteLocal.fetchById(rVDO.getAnalyteId());
+                    aDO = analytes.get(rVDO.getAnalyteId());
+                    if (aDO == null) {
+                        aDO = analyteLocal.fetchById(rVDO.getAnalyteId());
+                        analytes.put(rVDO.getAnalyteId(), aDO);
+                    }
                     if (!"Y".equals(rVDO.getIsColumn()))
                         cellName = sheet.getWorkbook().getName("final_value."+
                                                                cellNameIndex);
@@ -1268,11 +1289,14 @@ public class WorksheetCompletionBean {
                                              String nameIndexPrefix,
                                              HashMap<String, String> cellNames,
                                              Integer qcId,
-                                             WorksheetQcResultManager wqrManager) {
-        boolean queriedAP;
+                                             WorksheetQcResultManager wqrManager,
+                                             HashMap<Integer, QcAnalyteViewDO> qcAnalytes,
+                                             HashMap<String, HashMap<Integer, AnalyteParameterViewDO>> apMap) {
         int c, i, r;
         Object value;
         String cellNameIndex, name;
+        ArrayList<AnalyteParameterViewDO> anaParams;
+        HashMap<Integer, AnalyteParameterViewDO> pMap;
         Cell cell, tCell;
         Name cellName;
         AnalyteParameterViewDO apVDO;
@@ -1304,7 +1328,6 @@ public class WorksheetCompletionBean {
             cell.setCellValue("N");
 
             apVDO = null;
-            queriedAP = false;
             for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
 
@@ -1330,11 +1353,15 @@ public class WorksheetCompletionBean {
                 }
                 if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wqrVDO.getValueAt(c - 9) == null) {
-                        if (!queriedAP) {
+                        pMap = apMap.get("Q"+qcId);
+                        if (pMap == null) {
+                            pMap = new HashMap<Integer, AnalyteParameterViewDO>();
+                            apMap.put("Q"+qcId, pMap);
                             try {
-                                apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getAnalyteId(),
-                                                                                                                qcId,
-                                                                                                                Constants.table().QC);
+                                anaParams = analyteParameterLocal.fetchActiveByReferenceIdReferenceTableId(qcId,
+                                                                                                           Constants.table().QC);
+                                for (AnalyteParameterViewDO anaParam : anaParams)
+                                    pMap.put(anaParam.getAnalyteId(), apVDO);
                             } catch (NotFoundException nfE) {
                                 continue;
                             } catch (Exception anyE) {
@@ -1342,16 +1369,15 @@ public class WorksheetCompletionBean {
                                         "Error retrieving analyte parameters for a qc on worksheet.",
                                         anyE);
                                 continue;
-                            } finally {
-                                queriedAP = true;
                             }
                         }
 
-                        if (apVDO != null && "p_1".equals(name)) {
+                        apVDO = pMap.get(wqrVDO.getAnalyteId());
+                        if (apVDO != null && "p_1".equals(name) && apVDO.getP1() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP1()));
-                        } else if (apVDO != null && "p_2".equals(name)) {
+                        } else if (apVDO != null && "p_2".equals(name) && apVDO.getP2() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP2()));
-                        } else if (apVDO != null && "p_3".equals(name)) {
+                        } else if (apVDO != null && "p_3".equals(name) && apVDO.getP3() != null) {
                             setCellValue(cell, String.valueOf(apVDO.getP3()));
                         }
                     }
@@ -1359,7 +1385,11 @@ public class WorksheetCompletionBean {
             }
 
             try {
-                qcaVDO = qcAnalyteLocal.fetchById(wqrVDO.getQcAnalyteId());
+                qcaVDO = qcAnalytes.get(wqrVDO.getQcAnalyteId());
+                if (qcaVDO == null) {
+                    qcaVDO = qcAnalyteLocal.fetchById(wqrVDO.getQcAnalyteId());
+                    qcAnalytes.put(wqrVDO.getQcAnalyteId(), qcaVDO);
+                }
                 cellName = sheet.getWorkbook().getName("expected_value." + cellNameIndex);
                 if (cellName != null && !cellName.isDeleted()) {
                     cell = getCellForName(sheet, cellName.getNameName());
@@ -1626,7 +1656,6 @@ public class WorksheetCompletionBean {
     private SampleDataBundle lockManagerIfNeeded(WorksheetManager manager,
                                                  WorksheetAnalysisDO waDO,
                                                  SampleDataBundle bundle) throws Exception {
-        String params[];
         Iterator<SampleManager> iter;
         SampleDataBundle newBundle;
         SampleManager sManager, tempManager;

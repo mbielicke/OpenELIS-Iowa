@@ -93,7 +93,18 @@ public class QcBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<QcLotViewDO> fetchActiveByName(String name, int max) throws Exception {
+    @SuppressWarnings("unchecked")
+    public ArrayList<QcDO> fetchActiveByName(String name, int max) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Qc.FetchActiveByName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<QcLotViewDO> fetchActiveLotByName(String name, int max) throws Exception {
         return qcLot.fetchActiveByQcName(name, max);
     }
 

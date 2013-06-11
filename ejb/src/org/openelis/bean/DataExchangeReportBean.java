@@ -249,7 +249,8 @@ public class DataExchangeReportBean {
         FileOutputStream out;
         InputStream in;
         SampleManager man;
-        ClassLoader loader;        
+        ClassLoader loader;
+        Process cp;
         
         out = null;
         in = null;
@@ -298,6 +299,10 @@ public class DataExchangeReportBean {
                     in.close();
                     byteOut.close();
                     out.close();
+
+                    cp = Runtime.getRuntime().exec("chmod ugo+rw "+tempFile.getAbsolutePath());
+                    if (cp.waitFor() != 0)
+                        throw new Exception("Change of ownership failed; Please report this error.");
                 }
                 
                 if (status != null)
