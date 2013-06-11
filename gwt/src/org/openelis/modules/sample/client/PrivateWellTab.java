@@ -128,13 +128,13 @@ public class PrivateWellTab extends Screen {
                 if (getWellManager().getPrivateWell().getOrganizationId() == null) {
                     orgName.setSelection(getWellManager().getPrivateWell().getReportToName(),
                                          getWellManager().getPrivateWell().getReportToName());
-                    enableReportToFields(state == State.QUERY ||
-                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                              .contains(state)));
+//                    enableReportToFields(state == State.QUERY ||
+//                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                              .contains(state)));
                 } else {
                     orgName.setSelection(getWellManager().getPrivateWell().getOrganization().getId().toString(),
                                          getWellManager().getPrivateWell().getOrganization().getName());
-                    enableReportToFields(false);
+//                    enableReportToFields(false);
                 }
             }
 
@@ -142,7 +142,7 @@ public class PrivateWellTab extends Screen {
                 OrganizationDO orgDO;
                 SamplePrivateWellViewDO wellDO;
                 TableDataRow selectedRow;
-                boolean enableAddressValues = false;
+//                boolean enableAddressValues = false;
 
                 selectedRow = orgName.getSelection();
                 if (selectedRow != null)
@@ -161,7 +161,7 @@ public class PrivateWellTab extends Screen {
                     wellDO.setOrganization(orgDO);
                     wellDO.setReportToName(null);
                     
-                    enableAddressValues = false;   
+//                    enableAddressValues = false;   
                     
                     try {
                         if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgDO.getId())) 
@@ -170,21 +170,21 @@ public class PrivateWellTab extends Screen {
                         Window.alert(e.getMessage());
                         e.printStackTrace();
                     }
-                } else if (selectedRow != null) { 
-                    //
-                    // it's a free text entry we only want to clear out the
-                    // address values if it was an org before
-                    //
-                    wellOrganizationId.setValue("");
-
-                    if (wellDO.getOrganizationId() != null)
-                       setAddress(null);
-                    
-                    wellDO.setOrganizationId(null);
-                    wellDO.setOrganization(null);
-                    wellDO.setReportToName(event.getValue());
-
-                    enableAddressValues = true;
+//                } else if (selectedRow != null) { 
+//                    //
+//                    // it's a free text entry we only want to clear out the
+//                    // address values if it was an org before
+//                    //
+//                    wellOrganizationId.setValue("");
+//
+//                    if (wellDO.getOrganizationId() != null)
+//                       setAddress(null);
+//                    
+//                    wellDO.setOrganizationId(null);
+//                    wellDO.setOrganization(null);
+//                    wellDO.setReportToName(event.getValue());
+//
+//                    enableAddressValues = true;
                 } else {
                     // it's a clear out
                     wellOrganizationId.setValue("");
@@ -195,28 +195,30 @@ public class PrivateWellTab extends Screen {
                     wellDO.setOrganization(null);
                     wellDO.setReportToName(null);
 
-                    enableAddressValues = true;
+//                    enableAddressValues = true;
                 }
 
-                enableReportToFields(enableAddressValues);
+//                enableReportToFields(enableAddressValues);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                boolean enable;
-                
-                enable = event.getState() == State.QUERY ||
-                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
-                
-                orgName.enable(enable);
+//                boolean enable;
+//                
+//                enable = event.getState() == State.QUERY ||
+//                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+//                
+//                orgName.enable(enable);
+                orgName.enable(event.getState() == State.QUERY ||
+                               (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState())));
                 orgName.setQueryMode(event.getState() == State.QUERY);
-
-                enableReportToFields(enable && getWellManager().getPrivateWell().getOrganizationId() == null);
+//
+//                enableReportToFields(enable && getWellManager().getPrivateWell().getOrganizationId() == null);
             }
         });
         
         orgName.addKeyDownHandler(new KeyDownHandler() {
             public void onKeyDown(KeyDownEvent event) {
-                String repName;
+//                String repName;
                 SamplePrivateWellViewDO data, prevData;
                 OrganizationDO prevOrg;                
                 
@@ -232,16 +234,17 @@ public class PrivateWellTab extends Screen {
                         data.setOrganizationId(prevOrg.getId());
                         data.setReportToName(null);                        
                         orgName.setSelection(prevOrg.getId().toString(), prevOrg.getName());
-                        enableReportToFields(false);
+//                        enableReportToFields(false);
                     } else {
-                        wellOrganizationId.setValue("");
-                        setAddress(prevData.getReportToAddress());
-                        data.setOrganization(null);
-                        data.setOrganizationId(null);                        
-                        repName = prevData.getReportToName();
-                        data.setReportToName(repName);                        
-                        orgName.setSelection(repName, repName);
-                        enableReportToFields(true);
+                        Window.alert("Cannot copy previous non-organization");
+//                        wellOrganizationId.setValue("");
+//                        setAddress(prevData.getReportToAddress());
+//                        data.setOrganization(null);
+//                        data.setOrganizationId(null);                        
+//                        repName = prevData.getReportToName();
+//                        data.setReportToName(repName);                        
+//                        orgName.setSelection(repName, repName);
+//                        enableReportToFields(true);
                     }                     
                     
                     event.preventDefault();
@@ -265,8 +268,8 @@ public class PrivateWellTab extends Screen {
                 try {
                     list = OrganizationService.get().fetchByIdOrName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
-                    model.add(new TableDataRow(event.getMatch(), event.getMatch(),
-                                               null, null, null));
+//                    model.add(new TableDataRow(event.getMatch(), event.getMatch(),
+//                                               null, null, null));
 
                     i = 0;
                     while (i < maxRows && i < list.size()) {
@@ -321,38 +324,37 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getWellManager().getPrivateWell()
-                            .getReportToAddress()
-                            .setMultipleUnit(event.getValue());
+                getWellManager().getPrivateWell().getReportToAddress().setMultipleUnit(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                addressMultipleUnit.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 addressMultipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        addressMultipleUnit.addKeyDownHandler(new KeyDownHandler() {            
-            public void onKeyDown(KeyDownEvent event) {
-                String multi;
-                SamplePrivateWellViewDO data, prevData;
-                AddressDO addr;
-                
-                if (canCopyFromPrevious(event)) {
-                    data = getWellManager().getPrivateWell();
-                    prevData = getPreviousWellManager().getPrivateWell();
-                    multi = "";
-                    addr = prevData.getReportToAddress();
-                    if (addr != null)
-                        multi = addr.getMultipleUnit();
-                    data.getReportToAddress().setMultipleUnit(multi);
-                    addressMultipleUnit.setValue(multi);
-                    
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFocusToNext(addressMultipleUnit);
-                }
-            }
-        });
+//        addressMultipleUnit.addKeyDownHandler(new KeyDownHandler() {            
+//            public void onKeyDown(KeyDownEvent event) {
+//                String multi;
+//                SamplePrivateWellViewDO data, prevData;
+//                AddressDO addr;
+//                
+//                if (canCopyFromPrevious(event)) {
+//                    data = getWellManager().getPrivateWell();
+//                    prevData = getPreviousWellManager().getPrivateWell();
+//                    multi = "";
+//                    addr = prevData.getReportToAddress();
+//                    if (addr != null)
+//                        multi = addr.getMultipleUnit();
+//                    data.getReportToAddress().setMultipleUnit(multi);
+//                    addressMultipleUnit.setValue(multi);
+//                    
+//                    event.preventDefault();
+//                    event.stopPropagation();
+//                    setFocusToNext(addressMultipleUnit);
+//                }
+//            }
+//        });
 
         reportToAttn = (TextBox)def.getWidget(SampleMeta.getWellReportToAttention());
         addScreenHandler(reportToAttn, new ScreenEventHandler<String>() {
@@ -404,38 +406,37 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getWellManager().getPrivateWell()
-                            .getReportToAddress()
-                            .setStreetAddress(event.getValue());
+                getWellManager().getPrivateWell().getReportToAddress().setStreetAddress(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                addressStreetAddress.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 addressStreetAddress.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        addressStreetAddress.addKeyDownHandler(new KeyDownHandler() {            
-            public void onKeyDown(KeyDownEvent event) {
-                String strt;
-                SamplePrivateWellViewDO data, prevData;
-                AddressDO addr;
-                
-                if (canCopyFromPrevious(event)) {
-                    data = getWellManager().getPrivateWell();
-                    prevData = getPreviousWellManager().getPrivateWell();
-                    strt = "";
-                    addr = prevData.getReportToAddress();
-                    if (addr != null)
-                        strt = addr.getStreetAddress();
-                    data.getReportToAddress().setStreetAddress(strt);
-                    addressStreetAddress.setValue(strt);
-                    
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFocusToNext(addressStreetAddress);
-                }
-            }
-        });
+//        addressStreetAddress.addKeyDownHandler(new KeyDownHandler() {            
+//            public void onKeyDown(KeyDownEvent event) {
+//                String strt;
+//                SamplePrivateWellViewDO data, prevData;
+//                AddressDO addr;
+//                
+//                if (canCopyFromPrevious(event)) {
+//                    data = getWellManager().getPrivateWell();
+//                    prevData = getPreviousWellManager().getPrivateWell();
+//                    strt = "";
+//                    addr = prevData.getReportToAddress();
+//                    if (addr != null)
+//                        strt = addr.getStreetAddress();
+//                    data.getReportToAddress().setStreetAddress(strt);
+//                    addressStreetAddress.setValue(strt);
+//                    
+//                    event.preventDefault();
+//                    event.stopPropagation();
+//                    setFocusToNext(addressStreetAddress);
+//                }
+//            }
+//        });
 
         addressCity = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressCity());
         addScreenHandler(addressCity, new ScreenEventHandler<String>() {
@@ -454,32 +455,33 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                addressCity.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 addressCity.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        addressCity.addKeyDownHandler(new KeyDownHandler() {            
-            public void onKeyDown(KeyDownEvent event) {
-                String city;
-                SamplePrivateWellViewDO data, prevData;
-                AddressDO addr;
-                
-                if (canCopyFromPrevious(event)) {
-                    data = getWellManager().getPrivateWell();
-                    prevData = getPreviousWellManager().getPrivateWell();
-                    city = "";
-                    addr = prevData.getReportToAddress();
-                    if (addr != null)
-                        city = addr.getCity();
-                    data.getReportToAddress().setCity(city);
-                    addressCity.setValue(city);
-                    
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFocusToNext(addressCity);
-                }
-            }
-        });
+//        addressCity.addKeyDownHandler(new KeyDownHandler() {            
+//            public void onKeyDown(KeyDownEvent event) {
+//                String city;
+//                SamplePrivateWellViewDO data, prevData;
+//                AddressDO addr;
+//                
+//                if (canCopyFromPrevious(event)) {
+//                    data = getWellManager().getPrivateWell();
+//                    prevData = getPreviousWellManager().getPrivateWell();
+//                    city = "";
+//                    addr = prevData.getReportToAddress();
+//                    if (addr != null)
+//                        city = addr.getCity();
+//                    data.getReportToAddress().setCity(city);
+//                    addressCity.setValue(city);
+//                    
+//                    event.preventDefault();
+//                    event.stopPropagation();
+//                    setFocusToNext(addressCity);
+//                }
+//            }
+//        });
         
         addressWorkPhone = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressWorkPhone());
         addScreenHandler(addressWorkPhone, new ScreenEventHandler<String>() {
@@ -498,32 +500,33 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                addressWorkPhone.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 addressWorkPhone.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        addressWorkPhone.addKeyDownHandler(new KeyDownHandler() {            
-            public void onKeyDown(KeyDownEvent event) {
-                String phone;
-                SamplePrivateWellViewDO data, prevData;
-                AddressDO addr;
-                
-                if (canCopyFromPrevious(event)) {
-                    data = getWellManager().getPrivateWell();
-                    prevData = getPreviousWellManager().getPrivateWell();
-                    phone = "";
-                    addr = prevData.getReportToAddress();
-                    if (addr != null)
-                        phone = addr.getWorkPhone();
-                    data.getReportToAddress().setWorkPhone(phone);
-                    addressWorkPhone.setValue(phone);
-                    
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFocusToNext(addressWorkPhone);
-                }
-            }
-        });
+//        addressWorkPhone.addKeyDownHandler(new KeyDownHandler() {            
+//            public void onKeyDown(KeyDownEvent event) {
+//                String phone;
+//                SamplePrivateWellViewDO data, prevData;
+//                AddressDO addr;
+//                
+//                if (canCopyFromPrevious(event)) {
+//                    data = getWellManager().getPrivateWell();
+//                    prevData = getPreviousWellManager().getPrivateWell();
+//                    phone = "";
+//                    addr = prevData.getReportToAddress();
+//                    if (addr != null)
+//                        phone = addr.getWorkPhone();
+//                    data.getReportToAddress().setWorkPhone(phone);
+//                    addressWorkPhone.setValue(phone);
+//                    
+//                    event.preventDefault();
+//                    event.stopPropagation();
+//                    setFocusToNext(addressWorkPhone);
+//                }
+//            }
+//        });
 
         addressState = (Dropdown)def.getWidget(SampleMeta.getWellReportToAddressState());
         addScreenHandler(addressState, new ScreenEventHandler<String>() {
@@ -542,32 +545,33 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                addressState.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 addressState.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        addressState.addKeyDownHandler(new KeyDownHandler() {            
-            public void onKeyDown(KeyDownEvent event) {
-                String state;
-                SamplePrivateWellViewDO data, prevData;
-                AddressDO addr;
-                
-                if (canCopyFromPrevious(event)) {
-                    data = getWellManager().getPrivateWell();
-                    prevData = getPreviousWellManager().getPrivateWell();
-                    state = "";
-                    addr = prevData.getReportToAddress();
-                    if (addr != null)
-                        state = addr.getState();
-                    data.getReportToAddress().setState(state);
-                    addressState.setValue(state);
-                    
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFocusToNext(addressState);
-                }
-            }
-        });
+//        addressState.addKeyDownHandler(new KeyDownHandler() {            
+//            public void onKeyDown(KeyDownEvent event) {
+//                String state;
+//                SamplePrivateWellViewDO data, prevData;
+//                AddressDO addr;
+//                
+//                if (canCopyFromPrevious(event)) {
+//                    data = getWellManager().getPrivateWell();
+//                    prevData = getPreviousWellManager().getPrivateWell();
+//                    state = "";
+//                    addr = prevData.getReportToAddress();
+//                    if (addr != null)
+//                        state = addr.getState();
+//                    data.getReportToAddress().setState(state);
+//                    addressState.setValue(state);
+//                    
+//                    event.preventDefault();
+//                    event.stopPropagation();
+//                    setFocusToNext(addressState);
+//                }
+//            }
+//        });
 
         addressZipCode = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressZipCode());
         addScreenHandler(addressZipCode, new ScreenEventHandler<String>() {
@@ -586,32 +590,33 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                addressZipCode.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 addressZipCode.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        addressZipCode.addKeyDownHandler(new KeyDownHandler() {            
-            public void onKeyDown(KeyDownEvent event) {
-                String zip;
-                SamplePrivateWellViewDO data, prevData;
-                AddressDO addr;
-                
-                if (canCopyFromPrevious(event)) {
-                    data = getWellManager().getPrivateWell();
-                    prevData = getPreviousWellManager().getPrivateWell();
-                    zip = "";
-                    addr = prevData.getReportToAddress();
-                    if (addr != null)
-                        zip = addr.getZipCode();
-                    data.getReportToAddress().setZipCode(zip);
-                    addressZipCode.setValue(zip);
-                    
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFocusToNext(addressZipCode);
-                }
-            }
-        });
+//        addressZipCode.addKeyDownHandler(new KeyDownHandler() {            
+//            public void onKeyDown(KeyDownEvent event) {
+//                String zip;
+//                SamplePrivateWellViewDO data, prevData;
+//                AddressDO addr;
+//                
+//                if (canCopyFromPrevious(event)) {
+//                    data = getWellManager().getPrivateWell();
+//                    prevData = getPreviousWellManager().getPrivateWell();
+//                    zip = "";
+//                    addr = prevData.getReportToAddress();
+//                    if (addr != null)
+//                        zip = addr.getZipCode();
+//                    data.getReportToAddress().setZipCode(zip);
+//                    addressZipCode.setValue(zip);
+//                    
+//                    event.preventDefault();
+//                    event.stopPropagation();
+//                    setFocusToNext(addressZipCode);
+//                }
+//            }
+//        });
 
         addressFaxPhone = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressFaxPhone());
         addScreenHandler(addressFaxPhone, new ScreenEventHandler<String>() {
@@ -630,32 +635,33 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
+                addressFaxPhone.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 addressFaxPhone.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        addressFaxPhone.addKeyDownHandler(new KeyDownHandler() {            
-            public void onKeyDown(KeyDownEvent event) {
-                String fax;
-                SamplePrivateWellViewDO data, prevData;
-                AddressDO addr;
-                
-                if (canCopyFromPrevious(event)) {
-                    data = getWellManager().getPrivateWell();
-                    prevData = getPreviousWellManager().getPrivateWell();
-                    fax = "";
-                    addr = prevData.getReportToAddress();
-                    if (addr != null)
-                        fax = addr.getFaxPhone();
-                    data.getReportToAddress().setFaxPhone(fax);
-                    addressFaxPhone.setValue(fax);
-                    
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setFocusToNext(addressFaxPhone);
-                }
-            }
-        });
+//        addressFaxPhone.addKeyDownHandler(new KeyDownHandler() {            
+//            public void onKeyDown(KeyDownEvent event) {
+//                String fax;
+//                SamplePrivateWellViewDO data, prevData;
+//                AddressDO addr;
+//                
+//                if (canCopyFromPrevious(event)) {
+//                    data = getWellManager().getPrivateWell();
+//                    prevData = getPreviousWellManager().getPrivateWell();
+//                    fax = "";
+//                    addr = prevData.getReportToAddress();
+//                    if (addr != null)
+//                        fax = addr.getFaxPhone();
+//                    data.getReportToAddress().setFaxPhone(fax);
+//                    addressFaxPhone.setValue(fax);
+//                    
+//                    event.preventDefault();
+//                    event.stopPropagation();
+//                    setFocusToNext(addressFaxPhone);
+//                }
+//            }
+//        });
 
         wellLocation = (TextBox)def.getWidget(SampleMeta.getWellLocation());
         addScreenHandler(wellLocation, new ScreenEventHandler<String>() {
@@ -1391,15 +1397,15 @@ public class PrivateWellTab extends Screen {
         }
     }
 
-    private void enableReportToFields(boolean enable) {
-        addressMultipleUnit.enable(enable);
-        addressStreetAddress.enable(enable);
-        addressCity.enable(enable);
-        addressState.enable(enable);
-        addressZipCode.enable(enable);
-        addressWorkPhone.enable(enable);
-        addressFaxPhone.enable(enable);
-    }
+//    private void enableReportToFields(boolean enable) {
+//        addressMultipleUnit.enable(enable);
+//        addressStreetAddress.enable(enable);
+//        addressCity.enable(enable);
+//        addressState.enable(enable);
+//        addressZipCode.enable(enable);
+//        addressWorkPhone.enable(enable);
+//        addressFaxPhone.enable(enable);
+//    }
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;

@@ -870,7 +870,7 @@ public class SDWISTab extends Screen {
             });
 
             modal.setContent(pwsScreen);
-
+            pwsScreen.initialize();
         } catch (Exception e) {
             Window.alert("openPWSScreen: " + e.getMessage());
         }

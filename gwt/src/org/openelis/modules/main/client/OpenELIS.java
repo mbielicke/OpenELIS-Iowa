@@ -180,7 +180,8 @@ public class OpenELIS extends Screen {
 
         /*
         DeferredCommand.addCommand(new Command() {
-            public void execute() {
+            public void execute() {        initialize();
+
                 favoritesCollapse.setHeight(Window.getClientHeight() + "px");
                 browser.resize();
             }
@@ -1354,10 +1355,13 @@ public class OpenELIS extends Screen {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
+                        PWSScreen screen;
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.pwsName());
-                            window.setContent(new PWSScreen(window));
+                            screen = new PWSScreen(window);
+                            window.setContent(screen);
+                            screen.initialize();
                             browser.addWindow(window, "pws");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE,e.getMessage(),e);
