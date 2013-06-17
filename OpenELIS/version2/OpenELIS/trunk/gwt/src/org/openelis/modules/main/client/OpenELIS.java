@@ -25,7 +25,7 @@
  */
 package org.openelis.modules.main.client;
 
-import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.modules.main.client.Logger.remote;
 
 import java.util.logging.Level;
 
@@ -83,6 +83,7 @@ import org.openelis.modules.report.client.VerificationReportScreen;
 import org.openelis.modules.report.client.VolumeReportScreen;
 import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
+import org.openelis.modules.report.kitTracking.client.KitTrackingUI;
 import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
@@ -100,7 +101,6 @@ import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.messages.Messages;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Browser;
 import org.openelis.ui.widget.MenuItem;
@@ -142,7 +142,7 @@ public class OpenELIS extends Screen {
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
                     billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
                     sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
-                    turnAroundStatisticReport, sdwisUnloadReport, dataView, qcChart, finalReport,
+                    turnAroundStatisticReport, kitTrackingReport, sdwisUnloadReport, dataView, qcChart, finalReport,
                     orderRecurrence, finalReportBatch, finalReportBatchReprint, test, method,
                     panel, QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
                     exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
@@ -1802,6 +1802,31 @@ public class OpenELIS extends Screen {
                             browser.addWindow(window, "turnAroundStatisticReport");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE,e.getMessage(),e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addCommand(kitTrackingReport, "sendoutorder", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.kitTrackingReport());
+                            window.setSize("400px", "330px");
+                            window.setContent(new KitTrackingUI(window));
+                            browser.addWindow(window, "kitTrackingReport");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            e.printStackTrace();
                             Window.alert(e.getMessage());
                         }
                     }

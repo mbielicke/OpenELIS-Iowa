@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.todo.client.ToDoServiceInt
+path: 6057518037331BE959878C2771E945FB.gwt.rpc

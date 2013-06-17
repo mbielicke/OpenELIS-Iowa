@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.main.client.OpenELISServiceInt
+path: 0019AC58A244D1C4D5D6D6C3497DBEC9.gwt.rpc

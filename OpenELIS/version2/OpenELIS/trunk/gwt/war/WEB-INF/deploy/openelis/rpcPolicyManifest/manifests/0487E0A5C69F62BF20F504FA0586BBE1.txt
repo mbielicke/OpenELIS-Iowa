@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.systemvariable.client.SystemVariableServiceInt
+path: 094D2B70104A2AFCCC972772B0D3D586.gwt.rpc

@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.kitTracking.client.KitTrackingReportServiceInt
+path: 2C64C087A46CF38A0010691C227F51A6.gwt.rpc

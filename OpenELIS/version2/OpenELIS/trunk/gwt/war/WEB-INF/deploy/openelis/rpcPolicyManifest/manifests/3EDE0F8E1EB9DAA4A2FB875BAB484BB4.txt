@@ -1,0 +1,2 @@
+serviceClass: org.openelis.cache.CategoryCacheServiceInt
+path: EF846ACCB10C6EEE66EAD7A5C66A04FC.gwt.rpc
