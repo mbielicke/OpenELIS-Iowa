@@ -44,9 +44,11 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisReportFlagsDO;
+import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.ResultDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
@@ -101,7 +103,10 @@ public class BillingReportBean {
     private AnalysisReportFlagsBean analysisReportFlags; 
     
     @EJB
-    private DictionaryBean           dictionary;
+    private DictionaryCacheBean      dictionaryCache;
+    
+    @EJB
+    private AnalyteBean				 analyte;
     
     private static final String    RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
                                       MISC_BILLING = "billing misc charges by no method",
@@ -116,8 +121,10 @@ public class BillingReportBean {
 
     @Asynchronous
     @TransactionTimeout(600)
-    public void runReport() throws Exception {        
-        String poAnalyteName, billDir;
+    public void runReport() throws Exception {    
+    	Integer sectionAnalyteId;
+        String poAnalyteName, billDir, sectionAnalyteName;
+        ArrayList<AnalyteDO> analytes;
         ArrayList<Object[]> resultList;
         Date lastRunDate, currentRunDate, now;
         SystemVariableDO lastRun;
@@ -128,6 +135,17 @@ public class BillingReportBean {
 
         // System variable that points to the analyte in the aux group 
         poAnalyteName = ReportUtil.getSystemVariableValue("billing_po");
+        
+        // System variable that points to the analyte for the billing section 
+        sectionAnalyteName = ReportUtil.getSystemVariableValue("billing_section");
+        
+        analytes = analyte.fetchByName(sectionAnalyteName, 1);
+        if (analytes.size() > 0) {
+        	sectionAnalyteId = analytes.get(0).getId();
+        } else {
+        	log.severe("Analyte '" + sectionAnalyteName + "' is not available");
+            return;
+        }
         
         billDir = ReportUtil.getSystemVariableValue("billing_directory");
         if (billDir == null) {
@@ -174,7 +192,7 @@ public class BillingReportBean {
         try {
             tempFile = File.createTempFile("billingReport", ".txt", new File(billDir));
             out = new FileWriter(tempFile);
-            outputBilling(out, currentRunDate, poAnalyteName, resultList);  
+            outputBilling(out, currentRunDate, poAnalyteName, sectionAnalyteId, resultList);  
             out.close();
             
             lastRun.setValue(df.format(now));
@@ -196,11 +214,11 @@ public class BillingReportBean {
     }
     
     private void outputBilling(FileWriter out, Date currentDate, String poAnalyteName,
-                              ArrayList<Object[]> resultList) throws Exception {
-        int i, billableAnalytes;
+                             Integer sectionAnalyteId, ArrayList<Object[]> resultList) throws Exception {
+        int i, billableAnalytes, billSum;
         boolean sampleZeroCharge, anaZeroCharge, needCharge, needCredit;
         Integer billedAnalytes, samId, prevSamId, accession, anaId, statusId, testId;
-        String billedZero, clientCode;
+        String billedZero, clientCode, priceOverride;
         Object[] row;
         String domain, clientReference, billingType, lastName, projectName,
                domainInfo, testName, methodName, section, labCode, currentDateStr,
@@ -216,6 +234,7 @@ public class BillingReportBean {
         AnalysisReportFlagsDO anaRepFlags;
         ArrayList<SampleQaEventViewDO> sampleQas;
         ArrayList<AnalysisQaEventViewDO> anaQas; 
+        ArrayList<ResultDO> results;
         StringBuilder hdr, dtrcr, dtrch;
 
         hdr = new StringBuilder();
@@ -330,12 +349,14 @@ public class BillingReportBean {
              * then the change for all analyses is zero
              */
             anaZeroCharge = sampleZeroCharge;
+            priceOverride = "";
             if (!sampleZeroCharge) {                
                 try {
                     anaQas = analysisQaevent.fetchByAnalysisId(anaId);
                     for (AnalysisQaEventViewDO aqa : anaQas) {                        
                         if ("N".equals(aqa.getIsBillable())) {
                             anaZeroCharge = true;
+                            priceOverride = ZERO_BILL;
                             break;
                         }
                     }
@@ -348,21 +369,17 @@ public class BillingReportBean {
             }
 
             try {
-                billableAnalytes = result.fetchForBillingByAnalysisId(anaId).size();
+            	results = result.fetchForBillingByAnalysisId(anaId);
+                billableAnalytes = results.size();
             } catch (NotFoundException e) {
+            	results = null;
                 billableAnalytes = 0;
             } catch (Exception e) {
                 log.severe("Problem with fetching results for analysis with id "+ anaId);
                 throw e;
             }          
 
-            /*
-             * section's name is in the format "virology-ic" 
-             */
-            tokens = section.split("-");
-            labCode = "";
-            if (tokens.length >= 2) 
-                labCode = tokens[1];            
+         
             procedure = testName + " by " + methodName;
             /*
              * if the values set for the fields billed_analytes and
@@ -393,11 +410,40 @@ public class BillingReportBean {
             needCharge = false;
             if (billed == null || billableAnalytes != billedAnalytes ||
                 !billedZero.equals(anaZeroCharge ? "Y" : "N")) {                
-                if (!Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId) && ("Y".equals(anaReportable) ||
-                    MISC_BILLING.equals(procedure) || RUSH_BILLING.equals(procedure))) 
-                    needCharge = true;
+                if (!Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) { 
+                	if (("Y".equals(anaReportable) || RUSH_BILLING.equals(procedure))) {
+                        needCharge = true;
+                	} else if (MISC_BILLING.equals(procedure)) {
+                		billSum = 0;
+                		if (results != null) {
+	                		for (ResultDO r:results) {
+	                			if (DataBaseUtil.isEmpty(r.getValue()))
+	                				continue;
+	                			/*
+	                			 * get the section and calculate the billing charge
+	                			 */
+	                			if (r.getAnalyteId().equals(sectionAnalyteId)) 
+	                				section = dictionaryCache.getById(Integer.parseInt(r.getValue())).getEntry();
+	                			else
+	                				billSum += Integer.parseInt(r.getValue());
+	                		}
+                		}
+                		if (billSum > 0) 
+                			priceOverride = String.valueOf(billSum);
+                		needCharge = true;
+                	}
+                }
+                    
             }            
                 
+            /*
+             * section's name is in the format "virology-ic" 
+             */
+            tokens = section.split("-");
+            labCode = "";
+            if (tokens.length >= 2) 
+                labCode = tokens[1];   
+            
             if (needCredit) {
                 dtrcr.append("DTR").append("|")
                 .append(df.format(billed)).append("|")
@@ -410,7 +456,7 @@ public class BillingReportBean {
                 .append(labCode.toUpperCase()).append("|")
                 .append(section).append("|");  
             }
-            
+
             if (needCharge) {            
                 dtrch.append("DTR").append("|")
                      .append(currentDateStr).append("|")
@@ -419,7 +465,7 @@ public class BillingReportBean {
                      .append(procedure).append("|")
                      .append("CH").append("|")
                      .append(billableAnalytes).append("|")
-                     .append(anaZeroCharge ? ZERO_BILL: "").append("|")
+                     .append(priceOverride).append("|")
                      .append(labCode.toUpperCase()).append("|")
                      .append(section).append("|");
             }
