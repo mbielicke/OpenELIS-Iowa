@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionServiceInt
+path: F52761A0FA75689F122467B2BEC075B5.gwt.rpc

@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.dataExchange.client.DataExchangeReportServiceInt
+path: B5A0C309B171A8D58A415C4DB3F34AE3.gwt.rpc
