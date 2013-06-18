@@ -249,10 +249,10 @@ public class SampleManager1Accessor {
         sm.analysisIntNotes = analysisIntNotes;
     }
     
-    public static void addAnalysisInternalNote(SampleManager1 sm, NoteViewDO analysisIntNotes) {
+    public static void addAnalysisInternalNote(SampleManager1 sm, NoteViewDO analysisIntNote) {
         if (sm.analysisIntNotes == null)
             sm.analysisIntNotes = new ArrayList<NoteViewDO>();
-        sm.analysisIntNotes.add(analysisIntNotes);
+        sm.analysisIntNotes.add(analysisIntNote);
     }
 
     public static ArrayList<AnalysisUserViewDO> getUsers(SampleManager1 sm) {

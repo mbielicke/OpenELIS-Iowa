@@ -60,7 +60,6 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.TestDO;
-import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * This class encapsulates a sample and all its related information including
@@ -819,6 +818,7 @@ public class SampleManager1 implements Serializable {
             sample.setNextItemSequence(seq + 1);
 
             data = new SampleItemViewDO();
+            data.setId(getNextUID());            
             data.setItemSequence(seq);
             if (items == null)
                 items = new ArrayList<SampleItemViewDO>();
@@ -1049,6 +1049,8 @@ public class SampleManager1 implements Serializable {
          */
         public NoteViewDO get(AnalysisDO analysis) {
             map();
+            if (map == null)
+                return null;
             return map.get(analysis.getId());
         }
 
@@ -1059,6 +1061,9 @@ public class SampleManager1 implements Serializable {
          */
         public NoteViewDO getEditing(AnalysisDO analysis) {
             NoteViewDO data;
+
+            if (analysisExtNotes == null)
+                analysisExtNotes = new ArrayList<NoteViewDO>(1);
 
             map();
             if (map.get(analysis.getId()) == null) {
@@ -1096,7 +1101,7 @@ public class SampleManager1 implements Serializable {
                 if (map == null) {
                     map = new HashMap<Integer, NoteViewDO>();
                     for (NoteViewDO data : analysisExtNotes)
-                        map.put(data.getId(), data);
+                        map.put(data.getReferenceId(), data);
                 }
             }
         }
@@ -1113,6 +1118,8 @@ public class SampleManager1 implements Serializable {
          */
         public NoteViewDO get(AnalysisDO analysis, int i) {
             map();
+            if (map == null)
+                return null;
             return map.get(analysis.getId()).get(i);
         }
 
@@ -1125,6 +1132,9 @@ public class SampleManager1 implements Serializable {
             NoteViewDO data;
             ArrayList<NoteViewDO> l;
 
+            if (analysisIntNotes == null)
+                analysisIntNotes = new ArrayList<NoteViewDO>(1);
+
             map();
             l = map.get(analysis.getId());
             if (l == null) {
@@ -1132,7 +1142,7 @@ public class SampleManager1 implements Serializable {
                 map.put(analysis.getId(), l);
             }
 
-            if (l.size() == 0 || l.get(0).getId() != null || l.get(0).getId() > 0) {
+            if (l.size() == 0 || (l.get(0).getId() != null && l.get(0).getId() > 0)) {
                 data = new NoteViewDO();
                 data.setIsExternal("N");
                 data.setReferenceId(analysis.getId());
@@ -1185,10 +1195,10 @@ public class SampleManager1 implements Serializable {
                 if (map == null) {
                     map = new HashMap<Integer, ArrayList<NoteViewDO>>();
                     for (NoteViewDO data : analysisIntNotes) {
-                        l = map.get(data.getId());
+                        l = map.get(data.getReferenceId());
                         if (l == null) {
                             l = new ArrayList<NoteViewDO>();
-                            map.put(data.getId(), l);
+                            map.put(data.getReferenceId(), l);
                         }
                         l.add(data);
                     }
@@ -1267,7 +1277,7 @@ public class SampleManager1 implements Serializable {
          * create a hash map from analysis user list.
          */
         private void mapBuild() {
-            if (map == null && analysisQAs != null) {
+            if (map == null && users != null) {
                 map = new HashMap<Integer, ArrayList<AnalysisUserViewDO>>();
                 for (AnalysisUserViewDO data : users)
                     mapAdd(data);
@@ -1324,7 +1334,7 @@ public class SampleManager1 implements Serializable {
 
             if (r == 0)
                 return true;
-            
+
             mapBuild();
             rg1 = map.get(analysis.getId()).get(r).get(0).getRowGroup();
             rg2 = map.get(analysis.getId()).get(r - 1).get(0).getRowGroup();
@@ -1352,7 +1362,10 @@ public class SampleManager1 implements Serializable {
          */
         public int count(AnalysisDO analysis) {
             mapBuild();
-            return map.get(analysis.getId()).size();
+            if (map != null && map.get(analysis.getId()) != null)
+                return map.get(analysis.getId()).size();
+            else
+                return 0;
         }
 
         /**
@@ -1362,20 +1375,24 @@ public class SampleManager1 implements Serializable {
             mapBuild();
             return map.get(analysis.getId()).get(r).size();
         }
-        
+
         /**
          * Returns the number of result columns for specified analysis's row
          */
         public int maxColumns(AnalysisDO analysis) {
             int n;
             ArrayList<ArrayList<ResultViewDO>> rl;
-            
+
             mapBuild();
             n = 0;
             rl = map.get(analysis.getId());
-            for (ArrayList<ResultViewDO> l: rl)
-                n = Math.max(l.size(), n);
-            
+            if (rl != null) {
+                for (ArrayList<ResultViewDO> l : rl)
+                    n = Math.max(l.size(), n);
+            } else {
+                n = 0;
+            }
+
             return n;
         }
 

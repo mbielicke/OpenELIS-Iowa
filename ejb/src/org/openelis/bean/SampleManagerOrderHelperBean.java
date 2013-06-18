@@ -39,7 +39,6 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldValueViewDO;
@@ -70,7 +69,6 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.manager.TestManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -489,14 +487,15 @@ public class SampleManagerOrderHelperBean {
                 aux1.setAnalyteId(af.getAnalyteId());
                 aux1.setAnalyteName(af.getAnalyteName());
                 aux2 = entry.getValue().get(af.getAnalyteId());
-                // TODO validate the value
+                // TODO validate the value and set the type
                 if (aux2 != null) {
                     aux1.setIsReportable(aux2.getIsReportable());
+                    aux1.setTypeId(aux2.getTypeId());
                     aux1.setValue(aux2.getValue());
                 } else {
                     aux1.setIsReportable(af.getIsReportable());
                     aux1.setValue(getDefault(afm.getValuesAt(i)));
-                }
+                }                
                 addAuxilliary(sm, aux1);
             }
         }

@@ -50,6 +50,7 @@ import org.openelis.domain.DataObject;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.PatientDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -68,6 +69,7 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.security.manager.ApplicationManagerAccessor;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -84,75 +86,81 @@ import org.openelis.ui.common.data.QueryData;
 public class SampleManager1Bean {
 
     @EJB
-    private LockBean                     lock;
+    private LockBean                       lock;
 
     @EJB
-    private SampleBean                   sample;
+    private SampleBean                     sample;
 
     @EJB
-    private SampleEnvironmentalBean      sampleEnvironmental;
+    private SampleEnvironmentalBean        sampleEnvironmental;
 
     @EJB
-    private SampleSDWISBean              sampleSDWIS;
+    private SampleSDWISBean                sampleSDWIS;
 
     @EJB
-    private SamplePrivateWellBean        samplePrivate;
+    private SamplePrivateWellBean          samplePrivate;
 
     @EJB
-    private SampleNeonatalBean           sampleNeonatal;
+    private SampleNeonatalBean             sampleNeonatal;
 
     @EJB
-    private SampleOrganizationBean       sampleOrganization;
+    private SampleOrganizationBean         sampleOrganization;
 
     @EJB
-    private SampleProjectBean            sampleProject;
+    private SampleProjectBean              sampleProject;
 
     @EJB
-    private SampleQAEventBean            sampleQA;
+    private SampleQAEventBean              sampleQA;
 
     @EJB
-    private AuxDataBean                  auxdata;
+    private AuxDataBean                    auxdata;
 
     @EJB
-    private NoteBean                     note;
+    private NoteBean                       note;
 
     @EJB
-    private SampleItemBean               item;
+    private SampleItemBean                 item;
 
     @EJB
-    private StorageBean                  storage;
+    private StorageBean                    storage;
 
     @EJB
-    private AnalysisBean                 analysis;
+    private AnalysisBean                   analysis;
 
     @EJB
-    private AnalysisQAEventBean          analysisQA;
+    private AnalysisQAEventBean            analysisQA;
 
     @EJB
-    private AnalysisUserBean             user;
+    private AnalysisUserBean               user;
 
     @EJB
-    private ResultBean                   result;
+    private ResultBean                     result;
 
     @EJB
-    private TestManagerBean              test;
+    private TestManagerBean                test;
 
     @EJB
-    private SystemVariableBean           systemVariable;
+    private SystemVariableBean             systemVariable;
 
     @EJB
-    private UserCacheBean                userCache;
+    private UserCacheBean                  userCache;
 
     @EJB
-    private SampleManagerOrderHelperBean sampleManagerOrderHelper;
+    private SampleManagerOrderHelperBean   sampleManagerOrderHelper;
 
     @EJB
-    private PanelBean                    panel;
+    private PanelBean                      panel;
 
     @EJB
-    private AnalysisHelperBean           analysisHelper;
+    private AnalysisHelperBean             analysisHelper;
 
-    private static final Logger          log = Logger.getLogger("openelis");
+    @EJB
+    private PatientBean                    patient;
+
+    @EJB
+    private SampleManagerAuxDataHelperBean sampleManagerAuxDataHelper;
+
+    private static final Logger            log = Logger.getLogger("openelis");
 
     /**
      * Returns a new instance of sample manager with pre-initailized sample and
@@ -374,7 +382,10 @@ public class SampleManager1Bean {
         if (el.contains(SampleManager1.Load.NOTE)) {
             for (NoteViewDO data : note.fetchByIds(ids1, Constants.table().ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
-                addAnalysisInternalNote(sm, data);
+                if ("Y".equals(data.getIsExternal()))
+                    addAnalysisExternalNote(sm, data);
+                else
+                    addAnalysisInternalNote(sm, data);
             }
         }
 
@@ -842,6 +853,7 @@ public class SampleManager1Bean {
         ArrayList<Integer> locks;
         ArrayList<TestManager> tms;
         NoteViewDO ext;
+        PatientDO pat;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
 
         /*
@@ -958,6 +970,21 @@ public class SampleManager1Bean {
                     samplePrivate.update(getSamplePrivateWell(sm));
                 }
             } else if (getSampleNeonatal(sm) != null) {
+                /*
+                 * add/update patient and next of kin
+                 */
+                if (getSampleNeonatal(sm).getPatient().getId() == null)
+                    pat = patient.add(getSampleNeonatal(sm).getPatient());
+                else
+                    pat = patient.update(getSampleNeonatal(sm).getPatient());
+                getSampleNeonatal(sm).getPatient().setId(pat.getId());
+
+                if (getSampleNeonatal(sm).getNextOfKin().getId() == null)
+                    pat = patient.add(getSampleNeonatal(sm).getNextOfKin());
+                else
+                    pat = patient.update(getSampleNeonatal(sm).getNextOfKin());
+                getSampleNeonatal(sm).getNextOfKin().setId(pat.getId());
+
                 if (getSampleNeonatal(sm).getId() == null) {
                     getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
                     sampleNeonatal.add(getSampleNeonatal(sm));
@@ -966,7 +993,7 @@ public class SampleManager1Bean {
                 }
             }
 
-            if (getOrganizations(sm) == null) {
+            if (getOrganizations(sm) != null) {
                 for (SampleOrganizationViewDO data : getOrganizations(sm)) {
                     if (data.getId() == null) {
                         data.setSampleId(getSample(sm).getId());
@@ -999,8 +1026,12 @@ public class SampleManager1Bean {
                 }
             }
 
+            so = 0;
             if (getAuxilliary(sm) != null) {
                 for (AuxDataViewDO data : getAuxilliary(sm)) {
+                    so++ ;
+                    if ( !DataBaseUtil.isSame(so, data.getSortOrder()))
+                        data.setSortOrder(so);
                     if (data.getId() == null) {
                         data.setReferenceTableId(Constants.table().SAMPLE);
                         data.setReferenceId(getSample(sm).getId());
@@ -1038,6 +1069,7 @@ public class SampleManager1Bean {
             for (SampleItemViewDO data : getItems(sm)) {
                 if (data.getId() < 0) {
                     tmpid = data.getId();
+                    data.setSampleId(getSample(sm).getId());
                     item.add(data);
                 } else {
                     tmpid = data.getId();
@@ -1141,43 +1173,66 @@ public class SampleManager1Bean {
                 throw new InconsistencyException(Messages.get().analysis_circularReference());
 
             // add/update analysis notes
-            for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
-                if (data.getId() == null) {
-                    data.setReferenceTableId(Constants.table().ANALYSIS);
-                    data.setReferenceId(amap.get(data.getReferenceId()));
-                    note.add(data);
-                } else if (data.isChanged()) {
-                    note.update(data);
+            if (getAnalysisInternalNotes(sm) != null) {
+                for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
+                    if (data.getId() == null) {
+                        data.setReferenceTableId(Constants.table().ANALYSIS);
+                        data.setReferenceId(amap.get(data.getReferenceId()));
+                        note.add(data);
+                    } else if (data.isChanged()) {
+                        note.update(data);
+                    }
+                }
+            }
+
+            if (getAnalysisExternalNotes(sm) != null) {
+                for (NoteViewDO data : getAnalysisExternalNotes(sm)) {
+                    if (data.getId() == null) {
+                        data.setReferenceTableId(Constants.table().ANALYSIS);
+                        data.setReferenceId(amap.get(data.getReferenceId()));
+                        note.add(data);
+                    } else if (data.isChanged()) {
+                        note.update(data);
+                    }
                 }
             }
 
             // add/update analysis qa events
-            for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
-                if (data.getId() == null) {
-                    data.setAnalysisId(amap.get(data.getAnalysisId()));
-                    analysisQA.add(data);
-                } else if (data.isChanged()) {
-                    analysisQA.update(data);
+            if (getAnalysisQAs(sm) != null) {
+                for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
+                    if (data.getId() == null) {
+                        data.setAnalysisId(amap.get(data.getAnalysisId()));
+                        analysisQA.add(data);
+                    } else if (data.isChanged()) {
+                        analysisQA.update(data);
+                    }
                 }
             }
 
             // add/update analysis users
-            for (AnalysisUserViewDO data : getUsers(sm)) {
-                if (data.getId() == null) {
-                    data.setAnalysisId(amap.get(data.getAnalysisId()));
-                    user.add(data);
-                } else if (data.isChanged()) {
-                    user.update(data);
+            if (getUsers(sm) != null) {
+                for (AnalysisUserViewDO data : getUsers(sm)) {
+                    if (data.getId() == null) {
+                        data.setAnalysisId(amap.get(data.getAnalysisId()));
+                        user.add(data);
+                    } else if (data.isChanged()) {
+                        user.update(data);
+                    }
                 }
             }
 
             // add/update storage
-            for (StorageViewDO data : getStorages(sm)) {
-                if (data.getId() == null) {
-                    data.setReferenceId(amap.get(data.getReferenceId()));
-                    storage.add(data);
-                } else if (data.isChanged()) {
-                    storage.update(data);
+            if (getStorages(sm) != null) {
+                for (StorageViewDO data : getStorages(sm)) {
+                    if (data.getId() == null) {
+                        if (Constants.table().SAMPLE_ITEM.equals(data.getReferenceTableId()))
+                            data.setReferenceId(imap.get(data.getReferenceId()));
+                        else if (Constants.table().ANALYSIS.equals(data.getReferenceTableId()))
+                            data.setReferenceId(amap.get(data.getReferenceId()));
+                        storage.add(data);
+                    } else if (data.isChanged()) {
+                        storage.update(data);
+                    }
                 }
             }
         }
@@ -1282,6 +1337,7 @@ public class SampleManager1Bean {
         TestManager tm;
         HashMap<Integer, TestManager> tms;
         ArrayList<Integer> testIds;
+        ArrayList<SampleTestRequestVO> panelTests;
         ArrayList<IdVO> pts;
 
         /*
@@ -1304,27 +1360,36 @@ public class SampleManager1Bean {
          */
         testIds = new ArrayList<Integer>();
         e = new ValidationErrorsList();
+        panelTests = null;
         for (SampleTestRequestVO test : tests) {
             if (test.getTestId() != null) {
                 testIds.add(test.getTestId());
             } else if (test.getPanelId() != null) {
                 pts = panel.fetchTestIdsFromPanel(test.getPanelId());
+                /*
+                 * this new list is created here because adding to the original
+                 * list makes a ConcurrentModificationException thrown
+                 */
+                panelTests = new ArrayList<SampleTestRequestVO>();
                 for (IdVO pt : pts) {
                     testIds.add(pt.getId());
                     /*
                      * the tests defined in the panel are added as analytical
                      * tests
                      */
-                    tests.add(new SampleTestRequestVO(test.getSampleItemId(),
-                                                      pt.getId(),
-                                                      null,
-                                                      null,
-                                                      test.getPanelId(),
-                                                      false,
-                                                      null));
+                    panelTests.add(new SampleTestRequestVO(test.getSampleItemId(),
+                                                           pt.getId(),
+                                                           null,
+                                                           null,
+                                                           test.getPanelId(),
+                                                           false,
+                                                           null));
                 }
             }
         }
+
+        if (panelTests != null)
+            tests.addAll(panelTests);
 
         tms = analysisHelper.getTestManagers(testIds, e);
 
@@ -1376,6 +1441,24 @@ public class SampleManager1Bean {
         }
 
         return ret;
+    }
+
+    /**
+     * TODO change comment Adds/removes aux data to or from the sample based on
+     * the list of group ids
+     */
+    public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        ArrayList<AuxDataViewDO> auxiliary;
+        
+        auxiliary = getAuxilliary(sm);
+        if (auxiliary == null) {
+            auxiliary = new ArrayList<AuxDataViewDO>();
+            setAuxilliary(sm, auxiliary);
+        }
+        
+        sampleManagerAuxDataHelper.addAuxGroups(auxiliary, groupIds);
+        
+        return sm;
     }
 
     /**
@@ -1494,45 +1577,30 @@ public class SampleManager1Bean {
             /*
              * each analysis must be valid for sample item type
              */
-            amap.clear();
-            if (getAnalyses(sm) != null) {
-                for (AnalysisViewDO data : getAnalyses(sm)) {
-                    amap.put(data.getId(), data);
-                    if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged())
-                        try {
-                            analysis.validate(data,
-                                              tms.get(data.getTestId()),
-                                              accession,
-                                              imap.get(data.getSampleItemId()),
-                                              ignoreWarning);
-                            if (data.isChanged())
-                                validatePermission(getSample(sm).getAccessionNumber(),
-                                                   data,
-                                                   permission);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
+            /*
+             * amap.clear(); if (getAnalyses(sm) != null) { for (AnalysisViewDO
+             * data : getAnalyses(sm)) { amap.put(data.getId(), data); if
+             * (data.isChanged() ||
+             * imap.get(data.getSampleItemId()).isChanged()) try {
+             * analysis.validate(data, tms.get(data.getTestId()), accession,
+             * imap.get(data.getSampleItemId()), ignoreWarning); if
+             * (data.isChanged())
+             * validatePermission(getSample(sm).getAccessionNumber(), data,
+             * permission); } catch (Exception err) {
+             * DataBaseUtil.mergeException(e, err); } } }
+             */
 
             /*
              * results must be valid for the group
              */
-            if (getResults(sm) != null) {
-                for (ResultViewDO data : getResults(sm)) {
-                    ana = amap.get(data.getAnalysisId());
-                    if (data.isChanged() || ana.isChanged())
-                        try {
-                            result.validate(data,
-                                            tms.get(ana.getTestId()),
-                                            accession,
-                                            amap.get(data.getAnalysisId()),
-                                            ignoreWarning);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
+            /*
+             * if (getResults(sm) != null) { for (ResultViewDO data :
+             * getResults(sm)) { ana = amap.get(data.getAnalysisId()); if
+             * (data.isChanged() || ana.isChanged()) try { result.validate(data,
+             * tms.get(ana.getTestId()), accession,
+             * amap.get(data.getAnalysisId()), ignoreWarning); } catch
+             * (Exception err) { DataBaseUtil.mergeException(e, err); } } }
+             */
         }
 
         if (e.size() > 0)
@@ -1590,6 +1658,7 @@ public class SampleManager1Bean {
         setStorages(tosm, getStorages(fromsm));
         setAnalyses(tosm, getAnalyses(fromsm));
         setAnalysisQAs(tosm, getAnalysisQAs(fromsm));
+        setAnalysisExternalNotes(tosm, getAnalysisExternalNotes(fromsm));
         setAnalysisInternalNotes(tosm, getAnalysisInternalNotes(fromsm));
         setUsers(tosm, getUsers(fromsm));
         setResults(tosm, getResults(fromsm));
