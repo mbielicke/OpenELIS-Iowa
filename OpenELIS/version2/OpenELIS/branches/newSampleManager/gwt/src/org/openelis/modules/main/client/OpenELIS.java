@@ -367,7 +367,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.neonatalScreeningSampleLogin());
-                            window.setSize("900px", "850px");
+                            window.setSize("900px", "950px");
                             window.setContent(new NeonatalScreeningSampleLoginScreenUI(window));
                             browser.addWindow(window, "neonatalScreeningSampleLogin");
                         } catch (Throwable e) {

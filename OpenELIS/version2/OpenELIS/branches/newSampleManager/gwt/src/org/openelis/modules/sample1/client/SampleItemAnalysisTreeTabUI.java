@@ -38,15 +38,18 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.manager.SampleManager1;
+import org.openelis.modules.sample1.client.AddTestEvent.AddType;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.tree.Node;
@@ -67,8 +70,7 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SampleItemAnalysisTreeTabUI extends Screen { // implements
-                                                          // HasActionHandlers<SampleItemAnalysisTreeTab1.Action>
+public class SampleItemAnalysisTreeTabUI extends Screen {
 
     @UiTemplate("SampleItemAnalysisTreeTab.ui.xml")
     interface SampleItemAnalysisTreeTabUIBinder extends
@@ -78,21 +80,22 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
     private static SampleItemAnalysisTreeTabUIBinder uiBinder = GWT.create(SampleItemAnalysisTreeTabUIBinder.class);
 
     @UiField
-    protected Tree                        itemsTestsTree;
+    protected Tree                                   itemsTestsTree;
 
     @UiField
-    protected Button                      removeRow, addItem, addAnalysis, popoutTree;
+    protected Button                                 addItemButton, addAnalysisButton,
+                                                      removeRowButton, popoutTreeButton;
 
     @UiField
-    protected Dropdown<Integer>           analysisStatus;
+    protected Dropdown<Integer>                      analysisStatus;
 
-    protected Screen                      parentScreen;
+    protected Screen                                 screen, parentScreen;
 
-    protected SampleManager1              manager;
+    protected SampleManager1                         manager;
 
-    protected SampleItemAnalysisTreeTabUI screen;
+    protected TestLookupUI                           testLookup;
 
-    protected boolean                     canEdit;
+    protected boolean                               canEdit;
 
     public SampleItemAnalysisTreeTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -107,7 +110,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
         Item<Integer> row;
         ArrayList<Item<Integer>> model;
         ArrayList<DictionaryDO> list;
-
+        
         screen = this;
 
         addScreenHandler(itemsTestsTree, "itemsTestsTree", new ScreenHandler<String>() {
@@ -147,7 +150,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
                     selEvent = new SelectionEvent(SelectedType.ANALYSIS, uid);
                 }
 
-                removeRow.setEnabled(enable);
+                removeRowButton.setEnabled(enable);
 
                 if (selEvent != null)
                     bus.fireEvent(selEvent);
@@ -185,14 +188,12 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
                         }
                     }
                     node.setData(manager.getUid(item));
-
-                    // treeUtility.updateSampleItemRow(addedRow);
-                    // itemsTestsTree.refreshNode(addedRow);
+                    setItemDisplay(node, item);
                 } else if ("analysis".equals(node.getType())) {
                     parent = node.getParent();
                     uid = (String)parent.getData();
                     item = (SampleItemViewDO)manager.getObject(uid);
-                    // ana = manager.analysis.add(item);
+                    // ana = manager.item. analysis.add(item);
                     // addedIndex = anMan.addAnalysis();
                     // node.setData(manager.getUid(ana));
 
@@ -221,27 +222,27 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
             }
         });
 
-        addScreenHandler(addItem, "addItem", new ScreenHandler<Object>() {
+        addScreenHandler(addItemButton, "addItem", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                addItem.setEnabled(canEdit && isState(ADD, UPDATE));
+                addItemButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
-        addScreenHandler(addAnalysis, "addAnalysis", new ScreenHandler<Object>() {
+        addScreenHandler(addAnalysisButton, "addAnalysis", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                addAnalysis.setEnabled(canEdit && isState(ADD, UPDATE));
+                addAnalysisButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
-        addScreenHandler(removeRow, "removeRow", new ScreenHandler<Object>() {
+        addScreenHandler(removeRowButton, "removeRow", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                removeRow.setEnabled(canEdit && isState(ADD, UPDATE));
+                removeRowButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
-        addScreenHandler(popoutTree, "popoutTree", new ScreenHandler<Object>() {
+        addScreenHandler(popoutTreeButton, "popoutTree", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                popoutTree.setEnabled(isState(DISPLAY, ADD, UPDATE));
+                popoutTreeButton.setEnabled(isState(DISPLAY, ADD, UPDATE));
             }
         });
 
@@ -300,38 +301,100 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
 
     public void setData(SampleManager1 manager) {
         if ( !DataBaseUtil.isSame(this.manager, manager))
-            this.manager = manager;        
+            this.manager = manager;
     }
 
-   public void setState(State state) {
+    public void setState(State state) {
         this.state = state;
-        evaluateEdit();
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
-    @UiHandler("addItem")
+    @UiHandler("addItemButton")
     protected void addItem(ClickEvent event) {
-        // treeUtility.onAddItemButtonClick();
+        Node node;
+
+        node = new Node(2);
+        node.setType("sampleItem");
+        node.setOpen(true);
+        itemsTestsTree.addNode(node);
+        itemsTestsTree.refreshNode(node);
+        itemsTestsTree.selectNodeAt(node);
+        com.google.gwt.event.logical.shared.SelectionEvent.fire(itemsTestsTree,
+                                                                itemsTestsTree.getSelectedNode());
     }
 
-    @UiHandler("addAnalysis")
+    @UiHandler("addAnalysisButton")
     protected void addAnalysis(ClickEvent event) {
+        Node inode;
+        ModalWindow modal;
+        final SampleItemViewDO item;
+
         if (itemsTestsTree.getSelectedNode() == -1 && itemsTestsTree.getRowCount() > 1) {
-            window.setError(Messages.get().sampleItemSelectedToAddAnalysis());
+            parentScreen.getWindow().setError(Messages.get().sampleItemSelectedToAddAnalysis());
             return;
         }
-        // treeUtility.onAddAnalysisButtonClick();
+
+        /*
+         * add a sample item to the manager if there none present
+         */
+        if (itemsTestsTree.getSelectedNode() == -1) {
+            if (itemsTestsTree.getRowCount() == 0)
+                addItem(null);
+            else
+                itemsTestsTree.selectNodeAt(0);
+        }
+
+        /*
+         * find the sample item to get its sample type
+         */
+        inode = itemsTestsTree.getNodeAt(itemsTestsTree.getSelectedNode());
+
+        if ( !"sampleItem".equals(inode.getType()))
+            inode = inode.getParent();
+
+        item = (SampleItemViewDO)manager.getObject((String)inode.getData());
+
+        if (testLookup == null) {
+            testLookup = new TestLookupUI() {
+                @Override
+                public void ok() {
+                    AddTestEvent.AddType type;
+                    
+                    if (testLookup.getTest().getMethodId() != null)
+                        type = AddType.TEST;
+                    else
+                        type = AddType.PANEL;
+                    
+                    screen.getEventBus().fireEvent(new AddTestEvent(type,
+                                                   item.getId(),
+                                                   testLookup.getSampletypeId(),
+                                                   testLookup.getTest().getTestId()));
+                }
+
+                @Override
+                public void cancel() {
+                    //ignore
+                }
+            };
+        }
+
+        modal = new ModalWindow();
+        modal.setSize("275px", "150px");
+        modal.setName(Messages.get().sample_testLookup());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(testLookup);
+
+        testLookup.setSampleTypeId(item.getTypeOfSampleId());
+        testLookup.setWindow(modal);
     }
 
-    @UiHandler("removeRow")
+    @UiHandler("removeRowButton")
     protected void removeRow(ClickEvent event) {
-        // treeUtil.onRemoveRowButtonClick();
-
         if (itemsTestsTree.getSelectedNode() == -1)
-            removeRow.setEnabled(false);
+            removeRowButton.setEnabled(false);
     }
 
-    @UiHandler("popoutTree")
+    @UiHandler("popoutTreeButton")
     protected void popoutTree(ClickEvent event) {
     }
 
@@ -341,11 +404,10 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
         AnalysisViewDO ana;
         SampleItemViewDO item;
 
-        root = null;
+        root = new Node();
         if (manager == null)
             return root;
 
-        root = new Node();
         for (i = 0; i < manager.item.count(); i++ ) {
             item = manager.item.get(i);
 
@@ -353,8 +415,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
             inode.setType("sampleItem");
             inode.setOpen(true);
             inode.setData(manager.getUid(item));
-            inode.setCell(0, getDisplay(item.getItemSequence(), " - ", item.getContainer()));
-            inode.setCell(1, getDisplay(item.getTypeOfSample()));
+            setItemDisplay(inode, item);
             root.add(inode);
 
             for (j = 0; j < manager.analysis.count(item); j++ ) {
@@ -363,8 +424,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
                 anode = new Node(2);
                 anode.setType("analysis");
                 anode.setData(manager.getUid(ana));
-                anode.setCell(0, getDisplay(ana.getTestName(), " : ", ana.getMethodName()));
-                anode.setCell(1, ana.getStatusId());
+                setAnalysisDisplay(anode, ana);
                 inode.add(anode);
             }
         }
@@ -378,11 +438,11 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
             canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                             .getStatusId());
     }
-    
+
     private void sampleItemChanged(String uid, SampleItemChangeEvent.Action action) {
         Node node;
         SampleItemViewDO item;
-        
+
         node = itemsTestsTree.getNodeAt(itemsTestsTree.getSelectedNode());
         if ("analysis".equals(node.getType()))
             node = node.getParent();
@@ -392,11 +452,11 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
         if (SampleItemChangeEvent.Action.CONTAINER_CHANGED.equals(action))
             node.setCell(0, getDisplay(item.getItemSequence(), " - ", item.getContainer()));
         else if (SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(action))
-             node.setCell(1, getDisplay(item.getTypeOfSample()));
-        
+            node.setCell(1, getDisplay(item.getTypeOfSample()));
+
         itemsTestsTree.refreshNode(node);
     }
-    
+
     private void analysisChanged(String uid) {
         Node node;
         AnalysisViewDO item;
@@ -409,6 +469,16 @@ public class SampleItemAnalysisTreeTabUI extends Screen { // implements
         node.setCell(1, item.getStatusId());
 
         itemsTestsTree.refreshNode(node);
+    }
+
+    private void setItemDisplay(Node node, SampleItemViewDO item) {
+        node.setCell(0, getDisplay(item.getItemSequence(), " - ", item.getContainer()));
+        node.setCell(1, getDisplay(item.getTypeOfSample()));
+    }
+
+    private void setAnalysisDisplay(Node node, AnalysisViewDO ana) {
+        node.setCell(0, getDisplay(ana.getTestName(), " : ", ana.getMethodName()));
+        node.setCell(1, ana.getStatusId());
     }
 
     /**

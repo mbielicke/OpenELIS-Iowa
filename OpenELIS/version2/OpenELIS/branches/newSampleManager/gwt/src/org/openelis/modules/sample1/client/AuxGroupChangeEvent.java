@@ -25,55 +25,52 @@
  */
 package org.openelis.modules.sample1.client;
 
+import java.util.ArrayList;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * The event used to inform the handler that some data e.g. a sample item or
- * analysis was selected in a tree or table showing a sample's data. The type
- * and unique identifier for the selected record are specified through
- * selectedType and uid respectively.
+ * This class is used to notify the handler the list of aux groups in a sample
+ * has changed
  */
-public class SelectionEvent extends GwtEvent<SelectionEvent.Handler> {
+public class AuxGroupChangeEvent extends GwtEvent<AuxGroupChangeEvent.Handler> {
 
-    private static Type<SelectionEvent.Handler> TYPE;
-    private SelectedType                        selectedType;
-    private String                              uid;
+    private static Type<AuxGroupChangeEvent.Handler> TYPE;
+    private ArrayList<Integer>                       currentGroupIds, newGroupIds;
 
-    public SelectionEvent(SelectedType selectedType, String uid) {
-        assert selectedType != null;
-
-        this.selectedType = selectedType;
-        this.uid = uid;
+    public AuxGroupChangeEvent(ArrayList<Integer> currentGroupIds, ArrayList<Integer> newGroupIds) {
+        this.currentGroupIds = currentGroupIds;
+        this.newGroupIds = newGroupIds;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<SelectionEvent.Handler> getAssociatedType() {
+    public Type<AuxGroupChangeEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<SelectionEvent.Handler> getType() {
+    public static Type<AuxGroupChangeEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<SelectionEvent.Handler>();
+            TYPE = new Type<AuxGroupChangeEvent.Handler>();
         }
         return TYPE;
     }
 
-    public SelectedType getSelectedType() {
-        return selectedType;
+    public ArrayList<Integer> getCurrentGroupIds() {
+        return currentGroupIds;
     }
 
-    public String getUid() {
-        return uid;
+    public ArrayList<Integer> getNewGroupIds() {
+        return newGroupIds;
     }
 
     public static interface Handler extends EventHandler {
-        public void onSelection(SelectionEvent event);
+        public void onAuxGroupChange(AuxGroupChangeEvent event);
     }
-    
+
     @Override
     protected void dispatch(Handler handler) {
-        handler.onSelection(this);
+        handler.onAuxGroupChange(this);
     }
 }

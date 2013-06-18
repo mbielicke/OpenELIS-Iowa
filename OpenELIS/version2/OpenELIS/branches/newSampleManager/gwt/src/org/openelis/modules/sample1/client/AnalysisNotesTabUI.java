@@ -25,237 +25,376 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.ui.screen.State.*;
+
+import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
+import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.SectionViewDO;
+import org.openelis.manager.SampleManager1;
+import org.openelis.modules.note.client.EditNoteLookupUI;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
+import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.ModalWindow;
+import org.openelis.ui.widget.NotesPanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class AnalysisNotesTabUI extends Screen { //extends NotesTab
+public class AnalysisNotesTabUI extends Screen {
 
     @UiTemplate("AnalysisNotesTab.ui.xml")
-    interface AnalysisNotesTabUIBinder extends UiBinder<Widget, AnalysisNotesTabUI> {        
+    interface AnalysisNotesTabUIBinder extends UiBinder<Widget, AnalysisNotesTabUI> {
     };
-    
+
     private static AnalysisNotesTabUIBinder uiBinder = GWT.create(AnalysisNotesTabUIBinder.class);
+
+    @UiField
+    protected NotesPanel                    externalNotePanel, internalNotePanel;
+
+    @UiField
+    protected Button                        editNoteButton, addNoteButton;
+
+    protected Screen                        parentScreen;
+
+    protected EditNoteLookupUI              editNoteLookup;
+
+    protected SampleManager1                manager, displayedManager;
+
+    protected AnalysisViewDO                analysis;
     
-    public AnalysisNotesTabUI() {
+    protected boolean                      canEdit, isVisible;
+
+    protected String                        displayedUid;
+
+    public AnalysisNotesTabUI(Screen parentScreen, EventBus bus) {
+        this.parentScreen = parentScreen;
+        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
-        
         initialize();
-    }
-    
-    /*protected AnalysisViewDO   analysis, emptyAnalysis;
-    protected AnalysisManager  analysisMan;
-    protected SampleDataBundle bundle;
 
-    protected String           internalNotesPanelKey;
-    protected String           internalEditButtonKey;
-
-    protected NoteManager      internalManager;
-
-    protected NotesPanel       internalNotesPanel;
-    protected AppButton        standardNote, internalEditButton;
-    protected EditNoteScreen   internalEditNote;
-    protected NoteViewDO       internalNote;
-
-    public AnalysisNotesTabUI(ScreenDefInt def, WindowInt window,
-                            String notesPanelKey, String editButtonKey) {
-        super(def, window, notesPanelKey, editButtonKey);
+        manager = null;
+        displayedManager = null;
+        displayedUid = null;
     }
 
-    public AnalysisNotesTabUI(ScreenDefInt def, WindowInt window,
-                            String externalNotesPanelKey, String externalEditButtonKey,
-                            String internalNotesPanelKey, String internalEditButtonKey) {
-
-        super(def, window, externalNotesPanelKey, externalEditButtonKey);
-
-        this.internalNotesPanelKey = internalNotesPanelKey;
-        this.internalEditButtonKey = internalEditButtonKey;
-
-        initialize();
-    }*/
-
-    // overrides the notetab initialize to control the external notes button
-    public void initialize() {
-        // we dont have all the info set yet, dont run through this method
-        /*if (internalNotesPanelKey == null)
-            return;
-
-        emptyAnalysis = new AnalysisViewDO();
-
-        notesPanel = (NotesPanel)def.getWidget(notesPanelKey);
-        addScreenHandler(notesPanel, new ScreenEventHandler<String>() {
+    private void initialize() {
+        addScreenHandler(externalNotePanel, "analysisExtNotePanel", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                drawNotes();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD)
-                    notesPanel.clearNotes();
+                drawExternalNote();
             }
         });
 
-        standardNote = (AppButton)def.getWidget(editButtonKey);
-        addScreenHandler(standardNote, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                showEditWindow();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                standardNote.enable( !isReleased() &&
-                                    canEdit() &&
-                                    EnumSet.of(State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
+        addScreenHandler(editNoteButton, "editNoteButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                editNoteButton.setEnabled(isState(ADD, UPDATE) &&
+                                          canEdit &&
+                                          !Constants.dictionary().ANALYSIS_RELEASED.equals(getStatusId()));
             }
         });
 
-        internalNotesPanel = (NotesPanel)def.getWidget(internalNotesPanelKey);
-        addScreenHandler(internalNotesPanel, new ScreenEventHandler<String>() {
+        addScreenHandler(internalNotePanel, "analysisIntNotePanel", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 drawInternalNotes();
             }
+        });
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                if (event.getState() == State.ADD)
-                    internalNotesPanel.clearNotes();
+        addScreenHandler(addNoteButton, "addNoteButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                addNoteButton.setEnabled(isState(ADD, UPDATE) && canEdit);
             }
         });
 
-        internalEditButton = (AppButton)def.getWidget(internalEditButtonKey);
-        addScreenHandler(internalEditButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                if (internalEditNote == null) {
-                    try {
-                        internalEditNote = new EditNoteScreen();
-                        internalEditNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
-                            public void onAction(ActionEvent<EditNoteScreen.Action> event) {
-                                if (event.getAction() == EditNoteScreen.Action.OK) {
-                                    if (internalNote.getText() == null ||
-                                        internalNote.getText().trim().length() == 0)
-                                        internalManager.removeEditingNote();
+        addVisibleHandler(new VisibleEvent.Handler() {
+            public void onVisibleOrInvisible(VisibleEvent event) {
+                String uid;
 
-                                    loaded = false;
-                                    draw();
-                                }
-                            }
-                        });
+                isVisible = event.isVisible();
+                if (analysis != null)
+                    uid = manager.getUid(analysis);
+                else
+                    uid = null;
 
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Window.alert("error: " + e.getMessage());
-                        return;
+                displayNotes(uid);
+            }
+        });
+
+        /*
+         * handlers for the events fired by the screen containing this tab
+         */
+        bus.addHandlerToSource(StateChangeEvent.getType(),
+                               parentScreen,
+                               new StateChangeEvent.Handler() {
+                                   public void onStateChange(StateChangeEvent event) {
+                                       evaluateEdit();
+                                       setState(event.getState());
+                                   }
+                               });
+
+        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                String uid;
+
+                switch (event.getSelectedType()) {
+                    case ANALYSIS:
+                        uid = event.getUid();
+                        break;
+                    default:
+                        uid = null;
+                        break;
+                }
+
+                displayNotes(uid);
+            }
+        });
+    }
+
+    public void setData(SampleManager1 manager) {
+        if ( !DataBaseUtil.isSame(this.manager, manager)) {
+            displayedManager = this.manager;
+            this.manager = manager;
+        }
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    @UiHandler("editNoteButton")
+    protected void editNote(ClickEvent event) {
+        showNoteLookup(true);
+    }
+
+    @UiHandler("addNoteButton")
+    protected void addNote(ClickEvent event) {
+        showNoteLookup(false);
+    }
+
+    private void displayNotes(String uid) {
+        int count1, count2;
+        Integer id1, id2;
+        boolean dataChanged;
+
+        /*
+         * don't redraw unless the data has changed
+         */
+        if (uid != null)
+            analysis = (AnalysisViewDO)manager.getObject(uid);
+        else
+            analysis = null;
+
+        if ( !isVisible)
+            return;
+
+        if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+            displayedUid = uid;
+            dataChanged = true;
+        } else {
+            /*
+             * compare external notes
+             */
+            id1 = null;
+            id2 = null;
+            if (displayedManager != null &&
+                displayedManager.analysisExternalNote.get(analysis) != null)
+                id1 = displayedManager.analysisExternalNote.get(analysis).getId();
+
+            if (manager != null && manager.analysisExternalNote.get(analysis) != null)
+                id2 = manager.analysisExternalNote.get(analysis).getId();
+
+            dataChanged = DataBaseUtil.isDifferent(id1, id2);
+
+            if ( !dataChanged) {
+                /*
+                 * compare internal notes
+                 */
+                count1 = displayedManager == null ? 0
+                                                 : displayedManager.analysisInternalNote.count(analysis);
+                count2 = manager == null ? 0 : manager.analysisInternalNote.count(analysis);
+
+                if (count1 == count2) {
+                    if (count1 > 0)
+                        dataChanged = DataBaseUtil.isDifferent(displayedManager.analysisInternalNote.get(analysis,
+                                                                                                         0)
+                                                                                                    .getId(),
+                                                               manager.analysisInternalNote.get(analysis,
+                                                                                                0)
+                                                                                           .getId());
+                } else {
+                    dataChanged = true;
+                }
+            }
+        }
+
+        if (dataChanged) {
+            displayedManager = manager;
+            evaluateEdit();
+            setState(state);
+            fireDataChange();
+        }
+    }
+
+    private void drawExternalNote() {
+        NoteViewDO n;
+
+        externalNotePanel.clearNotes();
+        if (analysis != null) {
+            n = manager.analysisExternalNote.get(analysis);
+            if (n != null)
+                externalNotePanel.addNote(n.getSubject(),
+                                             n.getSystemUser(),
+                                             n.getText(),
+                                             n.getTimestamp());
+        }
+    }
+
+    private void drawInternalNotes() {
+        NoteViewDO n;
+
+        internalNotePanel.clearNotes();
+        if (analysis != null) {
+            for (int i = 0; i < manager.analysisInternalNote.count(analysis); i++ ) {
+                n = manager.analysisInternalNote.get(analysis, i);
+                internalNotePanel.addNote(n.getSubject(),
+                                             n.getSystemUser(),
+                                             n.getText(),
+                                             n.getTimestamp());
+            }
+        }
+    }
+
+    private void evaluateEdit() {
+        Integer sectId, statId;
+        SectionPermission perm;
+        SectionViewDO sect;
+
+        canEdit = false;
+        if (manager != null) {
+            sectId = getSectionId();
+            statId = getStatusId();
+            if (sectId != null) {
+                try {
+                    sect = SectionCache.getById(sectId);
+                    perm = UserCache.getPermission().getSection(sect.getName());
+                    canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
+                              perm != null &&
+                              (perm.hasAssignPermission() || perm.hasCompletePermission());
+                } catch (Exception anyE) {
+                    Window.alert("canEdit:" + anyE.getMessage());
+                }
+            }
+        }
+    }
+
+    private void showNoteLookup(boolean isExternal) {
+        String subject, text;
+        NoteViewDO note;
+        ModalWindow modal;
+
+        if (editNoteLookup == null) {
+            editNoteLookup = new EditNoteLookupUI() {
+                public void ok() {
+                    /*
+                     * isExternal is not used for this check because its value
+                     * doesn't change in this inner class after the object is
+                     * created, even though different values for it may get passed
+                     * to showNoteLookup on subsequent calls
+                     */
+                    if (editNoteLookup.getHasSubject()) {
+                        setNoteFields(manager.analysisInternalNote.getEditing(analysis),
+                                      editNoteLookup.getSubject(),
+                                      editNoteLookup.getText());
+                        drawInternalNotes();
+                    } else {
+                        setNoteFields(manager.analysisExternalNote.getEditing(analysis),
+                                      null,
+                                      editNoteLookup.getText());
+                        drawExternalNote();
                     }
                 }
 
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(Messages.get().standardNote());
-                modal.setContent(internalEditNote);
-
-                internalNote = null;
-                try {
-                    internalNote = internalManager.getEditingNote();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
+                public void cancel() {
+                    // ignore
                 }
-                internalNote.setSystemUser(userName);
-                internalNote.setSystemUserId(userId);
-                internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR,
-                                                               Datetime.SECOND));
-                internalEditNote.setNote(internalNote);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                internalEditButton.enable(canEdit() &&
-                                          EnumSet.of(State.ADD, State.UPDATE)
-                                                 .contains(event.getState()));
-            }
-        });*/
-    }
-
-    /*protected void drawInternalNotes() {
-        internalNotesPanel.clearNotes();
-        for (int i = 0; i < internalManager.count(); i++ ) {
-            NoteViewDO noteRow = internalManager.getNoteAt(i);
-            internalNotesPanel.addNote(noteRow.getSubject(),
-                                       noteRow.getSystemUser(),
-                                       noteRow.getText(),
-                                       noteRow.getTimestamp());
+            };
         }
-    }
 
-    public void draw() {
-        if ( !loaded) {
-            try {
-                if (analysisMan == null || bundle == null) {
-                    internalManager = NoteManager.getInstance();
-                    internalManager.setIsExternal(false);
-                    manager = NoteManager.getInstance();
-                    manager.setIsExternal(true);
-                } else {
-                    internalManager = analysisMan.getInternalNotesAt(bundle.getAnalysisIndex());
-                    manager = analysisMan.getExternalNoteAt(bundle.getAnalysisIndex());
-                }
-
-                DataChangeEvent.fire(this);
-                loaded = true;
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-        }
-    }
-
-    private boolean isReleased() {
-        return (analysis != null && Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId()));
-    }
-
-    private boolean canEdit() {
-        SectionPermission perm;
-        SectionViewDO sectionVDO;
-
-        if (analysis != null && analysis.getSectionId() != null) {
-            try {
-                sectionVDO = SectionCache.getById(analysis.getSectionId());
-                perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                return !Constants.dictionary().ANALYSIS_CANCELLED.equals(analysis.getStatusId()) &&
-                       perm != null &&
-                       (perm.hasAssignPermission() || perm.hasCompletePermission());
-            } catch (Exception anyE) {
-                Window.alert("canEdit:" + anyE.getMessage());
-            }
-        }
-        return false;
-    }
-
-    public void setData(SampleDataBundle data) {
-        if (data != null && data.getSampleManager() != null &&
-            SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
-
-            try {
-                analysisMan = data.getSampleManager()
-                                  .getSampleItems()
-                                  .getAnalysisAt(data.getSampleItemIndex());
-                analysis = analysisMan.getAnalysisAt(data.getAnalysisIndex());
-                this.bundle = data;
-
-                if (state == State.ADD || state == State.UPDATE)
-                    StateChangeEvent.fire(this, State.UPDATE);
-
-            } catch (Exception e) {
-                Window.alert("AnalysisNotesTab.setData: " + e.getMessage());
+        note = null;
+        subject = null;
+        text = null;
+        /*
+         * If the analysis has an internal/external editing note as requested by
+         * the user then set the note's subject and text in the lookup. If there
+         * isn't such a note then don't create one until the user enters its
+         * subject and text.
+         */
+        if (isExternal) {
+            note = manager.analysisExternalNote.get(analysis);
+            if (note != null) {
+                subject = note.getSubject();
+                text = note.getText();
             }
         } else {
-            analysisMan = null;
-            analysis = emptyAnalysis;
-            StateChangeEvent.fire(this, State.DEFAULT);
+            if (manager.analysisInternalNote.count(analysis) > 0)
+                note = manager.analysisInternalNote.get(analysis, 0);
+
+            if (note != null && note.getId() == null) {
+                subject = note.getSubject();
+                text = note.getText();
+            }
         }
 
-        loaded = false;
+        modal = new ModalWindow();
+        modal.setSize("620px", "550px");
+        modal.setName(Messages.get().noteEditor());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(editNoteLookup);
+
+        editNoteLookup.setWindow(modal);
+        editNoteLookup.setSubject(subject);
+        editNoteLookup.setText(text);
+        editNoteLookup.setHasSubject( !isExternal);
     }
 
-    public void setManager(HasNotesInt parentManager) {
-        throw new UnsupportedOperationException();
-    }*/
+    private Integer getSectionId() {
+        if (analysis != null)
+            return analysis.getSectionId();
+
+        return null;
+    }
+
+    private Integer getStatusId() {
+        if (analysis != null)
+            return analysis.getStatusId();
+
+        return null;
+    }
+
+    private void setNoteFields(NoteViewDO note, String subject, String text) {
+        note.setSubject(subject);
+        note.setText(text);
+        note.setSystemUser(UserCache.getPermission().getLoginName());
+        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
+        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+    }
 }

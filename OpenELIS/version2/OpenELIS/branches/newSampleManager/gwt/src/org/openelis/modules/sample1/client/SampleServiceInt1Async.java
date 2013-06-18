@@ -27,6 +27,7 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
@@ -71,4 +72,13 @@ public interface SampleServiceInt1Async {
 
     public void setOrderId(SampleManager1 sm, Integer orderId,
                            AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+
+    public void addTest(SampleManager1 sm, SampleTestRequestVO test,
+                 AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+    
+    public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
+                        AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+
+    public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
+                      AsyncCallback<SampleManager1> callback) throws Exception;
 }

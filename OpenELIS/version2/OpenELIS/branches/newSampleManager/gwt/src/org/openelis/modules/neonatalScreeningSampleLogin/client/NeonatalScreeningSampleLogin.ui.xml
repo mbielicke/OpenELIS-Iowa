@@ -67,7 +67,7 @@
     <!--end button panel code -->
     <g:layer top="30px" bottom="0px">
       <g:LayoutPanel>
-        <g:layer top="0px" height="60px">
+        <g:layer top="0px" height="70px">
           <g:HTMLPanel>
             <table class="{res.style.Form}">
               <tr>
@@ -93,14 +93,14 @@
                   <ui:text from="{msg.collected}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="collectionDate" width="90px" begin="0" end="2" /> <!-- pattern="{msg.datePattern}" maxValue="0" -->
+                  <c:Calendar ui:field="collectionDate" width="90px" begin="0" end="2" /> <!-- maxValue="0" -->
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.time}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="collectionTime" width="60px" mask="{msg.timeMask}"
-                    pattern="{msg.timePattern}" field="Date" maxLength="5" /> <!-- begin="3" end="5" -->
+                  <w:TimeBox ui:field="collectionTime" width="60px" mask="{msg.timeMask}"
+                    pattern="{msg.timePattern}" field="Date" begin="3" end="5"/>
                 </td>
               </tr>
               <tr>
@@ -108,7 +108,7 @@
                   <ui:text from="{msg.received}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" /> <!-- pattern="{msg.dateTimePattern}" -->
+                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4"/> 
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.status}:" />
@@ -127,7 +127,7 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="65px" height="300px">
+        <g:layer top="60px" height="350px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" width="33%">
               <g:HTMLPanel width="100%">
@@ -156,13 +156,13 @@
                       <ui:text from="{msg.gender}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="patientGenderId" width="60px" field="String" />
+                      <w:Dropdown ui:field="patientGenderId" width="60px" dropHeight = "100px"  field="String" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.race}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="patientRaceId" width="65px" field="String" />
+                      <w:Dropdown ui:field="patientRaceId" width="65px"  dropWidth = "200px" field="String" />
                     </td>
                   </tr>
                   <tr>
@@ -170,7 +170,7 @@
                       <ui:text from="{msg.sample_ethnicity}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="patientEthnicityId" width="80px" field="String" />
+                      <w:Dropdown ui:field="patientEthnicityId" width="80px" dropHeight = "100px" field="String" />
                     </td>
                   </tr>
                   <tr>
@@ -181,8 +181,8 @@
                       <c:Calendar ui:field="patientBirthDate" width="90px" begin="0" end="2" />
                     </td>
                     <td colspan="3">
-                      <w:TextBox ui:field="patientBirthTime" field="Date" width="60px"
-                        mask="{msg.timeMask}" pattern="{msg.timePattern}" /> <!-- begin="3" end="5" -->
+                      <w:TimeBox ui:field="patientBirthTime" field="Date" width="60px"
+                        mask="{msg.timeMask}" pattern="{msg.timePattern}"  begin="3" end="5"/>
                     </td>
                   </tr>
                   <tr>
@@ -264,7 +264,7 @@
                       <ui:text from="{msg.sample_relation}:" />
                     </td>
                     <td colspan="5">
-                      <w:Dropdown ui:field="nextOfKinRelationId" width="80px" field="Integer" />
+                      <w:Dropdown ui:field="nextOfKinRelationId" width="80px" dropHeight = "100px" field="Integer" />
                     </td>
                   </tr>
                   <tr>
@@ -272,13 +272,13 @@
                       <ui:text from="{msg.gender}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="nextOfKinGenderId" width="60px" field="String" />
+                      <w:Dropdown ui:field="nextOfKinGenderId" width="60px" dropHeight = "100px" field="Integer" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.race}:" />
                     </td>
                     <td colspan="2">
-                      <w:Dropdown ui:field="nextOfKinRaceId" width="65px" field="String" />
+                      <w:Dropdown ui:field="nextOfKinRaceId" width="65px" dropWidth = "200px" field="Integer" />
                     </td>
                   </tr>
                   <tr>
@@ -286,7 +286,7 @@
                       <ui:text from="{msg.sample_ethnicity}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="nextOfKinEthnicityId" width="65px" field="String" />
+                      <w:Dropdown ui:field="nextOfKinEthnicityId" width="65px" dropHeight = "75px" dropWidth = "100px" field="Integer" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.birth}:" />
@@ -372,7 +372,7 @@
                       <ui:text from="{msg.sample_feeding}:" />
                     </td>
                     <td colspan="3">
-                      <w:Dropdown ui:field="feedingId" field="String" width="75px" />
+                      <w:Dropdown ui:field="feedingId" field="Integer" width="75px" dropHeight = "120px"/>
                     </td>
                   </tr>
                   <tr>
@@ -432,12 +432,11 @@
                     </td>
                   </tr>
                 </table>
-                <g:HTMLPanel height="3" />
               </g:HTMLPanel>
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer top="355px" bottom="0px">
+        <g:layer top="440px" height="160px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left = "0px" width = "50%">
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
@@ -562,7 +561,7 @@
                       <ui:text from="{msg.barcode}:" />
                     </td>
                     <td colspan="3">
-                      <w:TextBox field="Integer" ui:field="formNumber" width="150px" />
+                      <w:TextBox field="String" ui:field="formNumber" width="150px" />
                     </td>
                   </tr>
                 </table>
@@ -572,7 +571,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="520px" bottom="0px">
+    <g:layer top="600px" bottom="0px">
       <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX">
         <w:tab>
           <w:customHeader>
