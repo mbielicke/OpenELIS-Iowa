@@ -29,51 +29,61 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * The event used to inform the handler that some data e.g. a sample item or
- * analysis was selected in a tree or table showing a sample's data. The type
- * and unique identifier for the selected record are specified through
- * selectedType and uid respectively.
+ * This class is used to notify the handler that a test or panel was chosen by a
+ * user to be added to a sample
  */
-public class SelectionEvent extends GwtEvent<SelectionEvent.Handler> {
+public class AddTestEvent extends GwtEvent<AddTestEvent.Handler> {
 
-    private static Type<SelectionEvent.Handler> TYPE;
-    private SelectedType                        selectedType;
-    private String                              uid;
+    public enum AddType {
+        TEST, PANEL
+    }
 
-    public SelectionEvent(SelectedType selectedType, String uid) {
-        assert selectedType != null;
+    private static Type<AddTestEvent.Handler> TYPE;
+    private AddType                           addType;
+    private Integer                           addId, sampleTypeId, sampleItemId;
 
-        this.selectedType = selectedType;
-        this.uid = uid;
+    public AddTestEvent(AddType addType, Integer sampleItemId, Integer sampleTypeId, Integer addId) {
+        this.addType = addType;
+        this.sampleItemId = sampleItemId;
+        this.sampleTypeId = sampleTypeId;
+        this.addId = addId;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<SelectionEvent.Handler> getAssociatedType() {
+    public Type<AddTestEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<SelectionEvent.Handler> getType() {
+    public static Type<AddTestEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<SelectionEvent.Handler>();
+            TYPE = new Type<AddTestEvent.Handler>();
         }
         return TYPE;
     }
 
-    public SelectedType getSelectedType() {
-        return selectedType;
+    public AddType getAddType() {
+        return addType;
     }
 
-    public String getUid() {
-        return uid;
+    public Integer getSampleItemId() {
+        return sampleItemId;
+    }
+    
+    public Integer getSampleTypeId() {
+        return sampleTypeId;
+    }
+
+    public Integer getId() {
+        return addId;
     }
 
     public static interface Handler extends EventHandler {
-        public void onSelection(SelectionEvent event);
+        public void onAddTest(AddTestEvent event);
     }
-    
+
     @Override
     protected void dispatch(Handler handler) {
-        handler.onSelection(this);
+        handler.onAddTest(this);
     }
 }

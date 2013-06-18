@@ -28,6 +28,7 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager1;
@@ -227,6 +228,53 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
         callback = new Callback<SampleTestReturnVO>();
         service.setOrderId(sm, orderId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void addTest(SampleManager1 sm, SampleTestRequestVO test,
+                           AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+        service.addTest(sm, test, callback);
+        
+    }
+
+    @Override
+    public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
+        Callback<SampleTestReturnVO> callback;
+
+        callback = new Callback<SampleTestReturnVO>();
+        service.addTest(sm, test, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
+                           AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+        service.addTests(sm, tests, callback);
+        
+    }
+
+    @Override
+    public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
+        Callback<SampleTestReturnVO> callback;
+
+        callback = new Callback<SampleTestReturnVO>();
+        service.addTests(sm, tests, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
+                             AsyncCallback<SampleManager1> callback) throws Exception {
+        service.addAuxGroups(sm, groupIds, callback);
+    }
+
+    @Override
+    public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.addAuxGroups(sm, groupIds, callback);
         return callback.getResult();
     }
 }

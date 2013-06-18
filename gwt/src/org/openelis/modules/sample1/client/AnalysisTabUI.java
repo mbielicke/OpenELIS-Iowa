@@ -41,6 +41,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
@@ -48,7 +49,6 @@ import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisUserManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
@@ -56,15 +56,19 @@ import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.worksheet.client.WorksheetService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -74,11 +78,11 @@ import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
+import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
@@ -97,7 +101,10 @@ public class AnalysisTabUI extends Screen {
     private static AnalysisTabUIBinder uiBinder = GWT.create(AnalysisTabUIBinder.class);
 
     @UiField
-    protected AutoComplete             testName, samplePrep, panel;
+    protected TextBox<String>          testName;
+
+    @UiField
+    protected AutoComplete             methodName, samplePrep, panel;
 
     @UiField
     protected Dropdown<Integer>        sectionId, unitOfMeasureId, statusId;
@@ -108,13 +115,11 @@ public class AnalysisTabUI extends Screen {
     protected CheckBox                 isReportable, isPreliminary;
 
     @UiField
-    protected TextBox<String>          methodName;
-
-    @UiField
     protected TextBox<Integer>         revision;
 
     @UiField
     protected Calendar                 startedDate, completedDate, releasedDate, printedDate;
+
     @UiField
     protected Table                    worksheetTable, analysisUserTable;
 
@@ -123,17 +128,19 @@ public class AnalysisTabUI extends Screen {
 
     protected Screen                   parentScreen;
 
-    protected boolean                 canEdit, isVisible;
+    protected boolean                  canEdit, isVisible;
 
     protected SampleManager1           manager;
 
     protected AnalysisViewDO           analysis;
 
+    protected SampleItemViewDO         sampleItem;
+
     protected String                   displayedUid;
 
     protected Confirm                  changeTestConfirm;
 
-    protected ArrayList<Item<Integer>> allUnitsModel;
+    protected ArrayList<Item<Integer>> allUnitsModel, allSectionsModel;
 
     public AnalysisTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -151,61 +158,11 @@ public class AnalysisTabUI extends Screen {
 
         addScreenHandler(testName, SampleMeta.getAnalysisTestName(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                testName.setValue(getTestId(), getTestName());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                AutoCompleteValue selectedRow;
-
-                selectedRow = testName.getValue();
-                //
-                // we allow test&method to change if analysis has not been
-                // committed. However,
-                // if analysis has been committed, then we will only allow
-                // method to be changed.
-                // For those cases that the user blanks the entire field
-                // (selecting nothing;
-                // selectedRow == null), we will put the test back in the
-                // dropdown.
-                //
-                if (getId() == null || getId() < 0) {
-                    testChanged();
-                    return;
-                } else if (selectedRow == null) {
-                    testName.setValue(getTestId(), getTestName());
-                    methodName.setValue(getMethodName());
-                    return;
-                }
-
-                if ( !DataBaseUtil.isSame( ((TestMethodVO)selectedRow.getData()).getTestId(),
-                                          getTestId())) {
-                    if (changeTestConfirm == null) {
-                        changeTestConfirm = new Confirm(Confirm.Type.WARN,
-                                                        Messages.get().loseResultsCaption(),
-                                                        Messages.get().loseResultsWarning(),
-                                                        "No",
-                                                        "Yes");
-                        changeTestConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
-                            public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
-                                switch (event.getSelectedItem().intValue()) {
-                                    case 0:
-                                        testName.setValue(getTestId(), getTestName());
-                                        methodName.setValue(getMethodName());
-                                        break;
-                                    case 1:
-                                        testChanged();
-                                        break;
-                                }
-                            }
-                        });
-                    }
-                    changeTestConfirm.show();
-                }
+                testName.setValue(getTestName());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                testName.setEnabled(isState(QUERY) ||
-                                    (isState(ADD, UPDATE) && canEdit));
+                testName.setEnabled(isState(QUERY));
                 testName.setQueryMode(isState(QUERY));
             }
         });
@@ -214,18 +171,72 @@ public class AnalysisTabUI extends Screen {
                          SampleMeta.getAnalysisMethodName(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 methodName.setValue(getMethodName());
+                                 methodName.setValue(getMethodId(), getMethodName());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setMethodId(event.getValue());
+
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 methodName.setEnabled(isState(QUERY));
+                                 methodName.setEnabled(isState(QUERY) ||
+                                                       (isState(ADD, UPDATE) && canEdit));
                                  methodName.setQueryMode(isState(QUERY));
                              }
                          });
+
+        methodName.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                Integer sampleType, key;
+                ArrayList<QueryData> fields;
+                ArrayList<Item<Integer>> model;
+                ArrayList<TestMethodVO> tests;
+                Query query;
+                QueryData field;
+                Item<Integer> row;
+
+                sampleType = sampleItem.getTypeOfSampleId();
+                if (sampleType == null) {
+                    window.setError(Messages.get().sampleItemTypeRequired());
+                    return;
+                }
+
+                field = new QueryData();
+                try {
+                    field.setQuery(QueryFieldUtil.parseAutocomplete(analysis.getTestName()));
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    return;
+                }
+
+                fields = new ArrayList<QueryData>();
+                query = new Query();
+                fields.add(field);
+
+                field = new QueryData();
+                field.setQuery(String.valueOf(sampleItem.getTypeOfSampleId()));
+                fields.add(field);
+
+                query.setFields(fields);
+                query.setRowsPerPage(100);
+
+                try {
+                    tests = PanelService.get().fetchByNameSampleTypeWithTests(query);
+                    model = new ArrayList<Item<Integer>>();
+
+                    for (TestMethodVO t : tests) {
+                        row = new Item<Integer>(t.getMethodId(),
+                                                t.getMethodName(),
+                                                t.getMethodDescription());
+                        row.setData(t);
+                        model.add(row);
+                    }
+                    methodName.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
 
         addScreenHandler(statusId, SampleMeta.getAnalysisStatusId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -325,6 +336,7 @@ public class AnalysisTabUI extends Screen {
                          SampleMeta.getAnalysisSectionId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
+                                 sectionId.setValue(getSectionId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -332,6 +344,7 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
+                                 sectionId.setModel(getSectionsModel());
                                  sectionId.setEnabled(isState(QUERY) ||
                                                       (isState(ADD, UPDATE) && canEdit));
                                  sectionId.setQueryMode(isState(QUERY));
@@ -349,8 +362,8 @@ public class AnalysisTabUI extends Screen {
                                  setUnitOfMeasureId(event.getValue());
                              }
 
-                             public void onStateChange(StateChangeEvent event) {                                 
-                                 unitOfMeasureId.setModel(getUnitsModel());                                 
+                             public void onStateChange(StateChangeEvent event) {
+                                 unitOfMeasureId.setModel(getUnitsModel());
                                  unitOfMeasureId.setEnabled(isState(QUERY) ||
                                                             (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasureId.setQueryMode(isState(QUERY));
@@ -432,13 +445,15 @@ public class AnalysisTabUI extends Screen {
                          SampleMeta.getAnalysisSamplePrep(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 String testMethodString = null;
+                                 String tmLabel;
+
+                                 tmLabel = null;
 
                                  if (getPreAnalysisTest() != null)
-                                     testMethodString = getPreAnalysisTest() + " : " +
-                                                        getPreAnalysisMethod();
+                                     tmLabel = getPreAnalysisTest() + " : " +
+                                               getPreAnalysisMethod();
 
-                                 samplePrep.setValue(getPreAnalysisId(), testMethodString);
+                                 samplePrep.setValue(getPreAnalysisId(), tmLabel);
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -478,8 +493,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                panel.setEnabled(isState(QUERY) ||
-                                 (isState(ADD, UPDATE) && canEdit));
+                panel.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
                 panel.setQueryMode(isState(QUERY));
             }
         });
@@ -522,21 +536,9 @@ public class AnalysisTabUI extends Screen {
             }
         });
 
-        // TODO change this code
-        /*
-         * worksheetTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-         * public void onSelection(SelectionEvent<TableRow> event) {
-         * selectWkshtButton.setEnabled(true); } });
-         * 
-         * worksheetTable.addBeforeCellEditedHandler(new
-         * BeforeCellEditedHandler() { public void
-         * onBeforeCellEdited(BeforeCellEditedEvent event) { // this table
-         * cannot be edited event.cancel(); } });
-         */
-
         addScreenHandler(analysisUserTable,
                          "analysisUserTable",
-                         new ScreenHandler<Item<Integer>>() {
+                         new ScreenHandler<ArrayList<Row>>() {
                              public void onDataChange(DataChangeEvent event) {
                                  analysisUserTable.setModel(getAnalysisUserTableModel());
                              }
@@ -568,7 +570,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                addActionButton.setEnabled((isState(ADD, UPDATE) && canEdit));
+                addActionButton.setEnabled( (isState(ADD, UPDATE) && canEdit));
             }
         });
 
@@ -579,7 +581,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                removeActionButton.setEnabled((isState(ADD, UPDATE) && canEdit));
+                removeActionButton.setEnabled( (isState(ADD, UPDATE) && canEdit));
             }
         });
 
@@ -619,6 +621,12 @@ public class AnalysisTabUI extends Screen {
         for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
             if ("Y".equals(d.getIsActive()))
                 allUnitsModel.add(new Item<Integer>(d.getId(), d.getEntry()));
+        }
+
+        allSectionsModel = new ArrayList<Item<Integer>>();
+        allSectionsModel.add(new Item<Integer>(null, ""));
+        for (SectionDO s : SectionCache.getList()) {
+            allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
         }
 
         /*
@@ -665,17 +673,45 @@ public class AnalysisTabUI extends Screen {
         });
     }
 
-    private ArrayList<Item<Integer>> getSectionsModel(TestSectionManager sectionManager) {
+    public void setData(SampleManager1 manager) {
+        if ( !DataBaseUtil.isSame(this.manager, manager))
+            this.manager = manager;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    /**
+     * returns the model for sections dropdown. In query and display, all
+     * sections are returned. In add, update, sections specific to the analysis'
+     * test are returned.
+     */
+    private ArrayList<Item<Integer>> getSectionsModel() {
         ArrayList<Item<Integer>> model;
-        TestSectionViewDO section;
+        TestSectionManager tsm;
+        TestSectionViewDO ts;
+
+        if (isState(DISPLAY, QUERY))
+            return allSectionsModel;
 
         model = new ArrayList<Item<Integer>>();
         model.add(new Item<Integer>(null, ""));
 
-        if (sectionManager != null) {
-            for (int i = 0; i < sectionManager.count(); i++ ) {
-                section = sectionManager.getSectionAt(i);
-                model.add(new Item<Integer>(section.getSectionId(), section.getSection()));
+        if (analysis != null && isState(ADD, UPDATE)) {
+            try {
+                /*
+                 * create the model from the sections associated with the
+                 * analysis' test
+                 */
+                tsm = getTestManager(analysis.getTestId()).getTestSections();
+                for (int i = 0; i < tsm.count(); i++ ) {
+                    ts = tsm.getSectionAt(i);
+                    model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
             }
         }
 
@@ -683,16 +719,15 @@ public class AnalysisTabUI extends Screen {
     }
 
     /**
-     * returns the model for units dropdown. In query and isplay, all the units
-     * are returned. In add, update, units specific for sample item's sample
-     * type are returned.
+     * returns the model for units dropdown. In query and display, all units are
+     * returned. In add, update, units specific to the sample item's sample type
+     * are returned.
      */
     private ArrayList<Item<Integer>> getUnitsModel() {
         ArrayList<Item<Integer>> model;
-        DictionaryDO entry;
+        DictionaryDO d;
         TestTypeOfSampleDO type;
         TestTypeOfSampleManager tsm;
-        SampleItemViewDO item;
 
         if (isState(DISPLAY, QUERY))
             return allUnitsModel;
@@ -701,81 +736,91 @@ public class AnalysisTabUI extends Screen {
         model.add(new Item<Integer>(null, ""));
         if (analysis != null && isState(ADD, UPDATE)) {
             try {
-                item = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
+                /*
+                 * create the model from the units associated with the sample
+                 * item's sample type
+                 */
                 tsm = getTestManager(analysis.getTestId()).getSampleTypes();
                 for (int i = 0; i < tsm.count(); i++ ) {
                     type = tsm.getTypeAt(i);
                     if (type.getUnitOfMeasureId() != null &&
-                        DataBaseUtil.isSame(item.getTypeOfSampleId(), type.getTypeOfSampleId())) {
-                        entry = DictionaryCache.getById(type.getUnitOfMeasureId());
-                        model.add(new Item<Integer>(entry.getId(), entry.getEntry()));
+                        DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(),
+                                            type.getTypeOfSampleId())) {
+                        d = DictionaryCache.getById(type.getUnitOfMeasureId());
+                        model.add(new Item<Integer>(d.getId(), d.getEntry()));
                     }
                 }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
-                e.printStackTrace();
             }
         }
         return model;
     }
 
-    private void testChanged() {
-    }
+    private ArrayList<Row> getWorksheetTableModel() {
+        ArrayList<Row> model;
+        ArrayList<WorksheetViewDO> ws;
+        Row row;
 
-    private ArrayList<Item<Integer>> getWorksheetTableModel() {
-        ArrayList<Item<Integer>> model;
-        ArrayList<WorksheetViewDO> worksheets;
-        WorksheetViewDO wksht;
-        AnalysisViewDO anDO;
-        Item<Integer> row;
-
-        model = new ArrayList<Item<Integer>>();
-        if (manager == null)
+        model = new ArrayList<Row>();
+        if (analysis == null)
             return model;
 
+        if (analysis.getId() > 0) {
+            try {
+                ws = WorksheetService.get().fetchByAnalysisId(analysis.getId());
+
+                for (WorksheetViewDO w : ws) {
+                    row = new Row(4);
+                    row.setCell(0, w.getId());
+                    row.setCell(1, w.getCreatedDate());
+                    row.setCell(2, w.getStatusId());
+                    row.setCell(3, w.getSystemUser());
+                    model.add(row);
+                }
+            } catch (Exception e) {
+                Window.alert("getWorksheetTableModel: " + e.getMessage());
+            }
+        }
         return model;
     }
 
-    private ArrayList<Item<Integer>> getAnalysisUserTableModel() {
-        ArrayList<Item<Integer>> model;
-        AnalysisUserManager userMan;
-        AnalysisUserViewDO userDO;
+    private ArrayList<Row> getAnalysisUserTableModel() {
+        ArrayList<Row> model;
+        AnalysisUserViewDO user;
+        Row row;
 
-        model = new ArrayList<Item<Integer>>();
-        if (manager == null)
+        model = new ArrayList<Row>();
+        if (analysis == null)
             return model;
 
-        // TODO change this code
-        /*
-         * try { userMan = manager.getAnalysisUserAt(bundle.getAnalysisIndex());
-         * for (int iter = 0; iter < userMan.count(); iter++ ) { userDO =
-         * userMan.getAnalysisUserAt(iter);
-         * 
-         * Item<Integer> row = new Item<Integer>(2); row.setKey(userDO.getId());
-         * 
-         * row.setCell(0, new Item<Integer>(userDO.getSystemUserId(),
-         * userDO.getSystemUser())); row.setCell(1, userDO.getActionId());
-         * 
-         * model.add(row); } } catch (Exception e) {
-         * Window.alert("getAnalysisUserTableModel: " + e.getMessage()); return
-         * null; }
-         */
-        return model;
-    }
+        try {
+            for (int i = 0; i < manager.analysisUser.count(analysis); i++ ) {
+                user = manager.analysisUser.get(analysis, i);
 
-    public void setData(SampleManager1 manager) {
-        if ( !DataBaseUtil.isSame(this.manager, manager))
-            this.manager = manager;        
+                row = new Row(2);
+                row.setCell(0, new AutoCompleteValue(user.getSystemUserId(), user.getSystemUser()));
+                row.setCell(1, user.getActionId());
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert("getAnalysisUserTableModel: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return model;
     }
 
     private void displayAnalysis(String uid) {
         /*
          * don't redraw unless the data has changed
          */
-        if (uid != null)
+        if (uid != null) {
             analysis = (AnalysisViewDO)manager.getObject(uid);
-        else
+            sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
+        } else {
             analysis = null;
+            sampleItem = null;
+        }
 
         if ( !isVisible)
             return;
@@ -805,7 +850,7 @@ public class AnalysisTabUI extends Screen {
         SectionViewDO sect;
 
         canEdit = false;
-        if (manager != null) {
+        if (manager != null && analysis != null) {
             sectId = getSectionId();
             statId = getStatusId();
 
@@ -825,13 +870,6 @@ public class AnalysisTabUI extends Screen {
                 Window.alert("canEdit:" + anyE.getMessage());
             }
         }
-    }
-
-    private Integer getId() {
-        if (analysis != null)
-            return analysis.getId();
-
-        return null;
     }
 
     private Integer getRevision() {
@@ -870,8 +908,11 @@ public class AnalysisTabUI extends Screen {
         return null;
     }
 
-    private void setMethodId(Integer methodId) {
-        analysis.setMethodId(methodId);
+    private Integer getMethodId() {
+        if (analysis != null)
+            return analysis.getMethodId();
+
+        return null;
     }
 
     private String getMethodName() {
@@ -955,8 +996,7 @@ public class AnalysisTabUI extends Screen {
 
     private void setUnitOfMeasureId(Integer unitOfMeasureId) {
         analysis.setUnitOfMeasureId(unitOfMeasureId);
-        bus.fireEvent(new AnalysisChangeEvent(displayedUid,
-                                              AnalysisChangeEvent.Action.UNIT_CHANGED));
+        bus.fireEvent(new AnalysisChangeEvent(displayedUid, AnalysisChangeEvent.Action.UNIT_CHANGED));
     }
 
     private Integer getStatusId() {

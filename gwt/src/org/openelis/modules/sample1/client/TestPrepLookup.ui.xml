@@ -1,4 +1,3 @@
-
 <!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
   to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
   in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
@@ -16,46 +15,49 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  <g:LayoutPanel>
-    <g:layer top = "0px" bottom="40px">
-      <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.itemsAndAnalyses}" /></td> -->
-      <r:Tree ui:field="itemsTestsTree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <r:Column width="280" label="{msg.itemAnalyses}" />
-        <r:Column width="130" label="{msg.typeStatus}" />
-        <r:Leaf key="sampleItem">
-          <r:LeafColumn>
-            <t:LabelCell />
-          </r:LeafColumn>
-          <r:LeafColumn>
-            <t:LabelCell />
-          </r:LeafColumn>
-        </r:Leaf>
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="40px">
+      <g:HorizontalPanel>
+        <g:HorizontalPanel width="250px" />
+        <w:Button ui:field="copyToEmptyButton" text="{msg.copyToEmpty}" /> <!-- leftIcon="{res.style.EditMultipleButtonImage}" -->
+        <w:Button ui:field="copyToAllButton" text="{msg.copyToAll}" /> <!-- leftIcon="{res.style.EditMultipleButtonImage}" -->
+      </g:HorizontalPanel>
+    </g:layer>
+    <g:layer top="45px" height="200px">
+      <r:Tree ui:field="prepTestTree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+        <r:Column width="250" label="{msg.analysisPrepTestMethod}" />
+        <r:Column width="200" label="{msg.section}" />
+        <r:Column width="50" label="{msg.select}" />
         <r:Leaf key="analysis">
           <r:LeafColumn>
             <t:LabelCell />
           </r:LeafColumn>
           <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+        </r:Leaf>
+        <r:Leaf key="prepTest">
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+          <r:LeafColumn>
             <t:DropdownCell>
-              <w:Dropdown ui:field="analysisStatus" width="110px" field="Integer" /> <!-- popWidth="110" -->
+              <w:Dropdown width="200px" field="Integer" ui:field = "prepSection"/>
             </t:DropdownCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:CheckBoxCell />
           </r:LeafColumn>
         </r:Leaf>
       </r:Tree>
     </g:layer>
-    <g:layer bottom="0px" height="40px">
-      <g:HorizontalPanel> <!-- style="{res.style.TreeButtonFooter}" -->
-        <g:AbsolutePanel>
-          <w:Button ui:field="addItemButton" leftIcon="{res.style.addRowIcon}" text="{msg.addItem}" />
-        </g:AbsolutePanel>
-        <g:AbsolutePanel>
-          <w:Button ui:field="addAnalysisButton" leftIcon="{res.style.addRowIcon}" text="{msg.addAnalysis}" />
-        </g:AbsolutePanel>
-        <g:AbsolutePanel>
-          <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
-        </g:AbsolutePanel>
-        <g:AbsolutePanel>
-          <w:Button ui:field="popoutTreeButton" text="{msg.popout}" /> <!-- leftIcon="{res.style.popoutButtonImage}" -->
-        </g:AbsolutePanel>
+    <g:layer bottom="0px" height="40px"> <!-- style="BottomButtonPanelContainer" -->
+      <g:HorizontalPanel>
+        <w:Button ui:field="okButton" text="{msg.ok}" />
+        <w:Button ui:field="cancelButton" text="{msg.cancel}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

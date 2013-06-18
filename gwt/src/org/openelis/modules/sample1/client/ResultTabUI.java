@@ -34,17 +34,8 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.Popup;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.modules.sample.client.ResultSuggestionsScreen;
-import org.openelis.modules.sample.client.TestAnalyteLookupScreen;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
@@ -58,14 +49,12 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 public class ResultTabUI extends Screen {
@@ -115,7 +104,7 @@ public class ResultTabUI extends Screen {
                 resultsTable.setEnabled(true);
             }
         });
-        
+
         addScreenHandler(addResultButton, "addResultButton", new ScreenHandler<Object>() {
 
             public void onStateChange(StateChangeEvent event) {
@@ -141,22 +130,22 @@ public class ResultTabUI extends Screen {
                 popoutTable.setEnabled(false);
             }
         });
-        
+
         addScreenHandler(checkAllButton, "checkAllButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 checkAllButton.setEnabled(false);
             }
         });
-        
+
         addScreenHandler(uncheckAllButton, "uncheckAllButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 uncheckAllButton.setEnabled(false);
             }
         });
-        
+
         addScreenHandler(popoutTable, "popoutTable", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                                 
+
             }
         });
 
@@ -220,13 +209,13 @@ public class ResultTabUI extends Screen {
         if (uid != null)
             analysis = (AnalysisViewDO)manager.getObject(uid);
         else
-            analysis = null;        
+            analysis = null;
 
         if ( !isVisible)
             return;
 
         resultsTable.setVisible(analysis != null);
-        
+
         if (DataBaseUtil.isDifferent(displayedUid, uid)) {
             displayedUid = uid;
             evaluateEdit();
@@ -269,7 +258,7 @@ public class ResultTabUI extends Screen {
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();
-        if (analysis == null) 
+        if (analysis == null)
             return model;
 
         resizeTable();
@@ -326,18 +315,22 @@ public class ResultTabUI extends Screen {
     private void resizeTable() {
         int currNumCols, reqNumCols;
 
-        reqNumCols = manager.result.maxColumns(analysis)+2;       
-        currNumCols = resultsTable.getColumnCount();     
-        
+        reqNumCols = manager.result.maxColumns(analysis) + 2;
+        currNumCols = resultsTable.getColumnCount();
+
         if (reqNumCols == currNumCols)
             return;
-        
-        if (reqNumCols > currNumCols)  {
+
+        /*
+         * add columns to the table if it has less columns than needed to show
+         * all column analytes, otherwise remove columns
+         */
+        if (reqNumCols > currNumCols) {
             for (int i = currNumCols; i < reqNumCols; i++ )
-                resultsTable.addColumn(null, Messages.get().alphabet().substring(i, i+1));
+                resultsTable.addColumn(null, Messages.get().alphabet().substring(i, i + 1));
         } else {
-            for (int i = currNumCols; i > reqNumCols; i--)
-                resultsTable.removeColumnAt(i-1);                
+            for (int i = currNumCols; i > reqNumCols; i-- )
+                resultsTable.removeColumnAt(i - 1);
         }
     }
 }

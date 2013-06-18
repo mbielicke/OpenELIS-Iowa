@@ -41,6 +41,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.TextBox;
@@ -313,14 +314,19 @@ public class SampleItemTabUI extends Screen {
         if ( !DataBaseUtil.isSame(this.manager, manager))
             this.manager = manager;        
     }
+    
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
 
     private void evaluateEdit() {
         canEdit = false;
-        if (manager != null)
+        if (manager != null && sampleItem != null)
             canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                                 .getStatusId());        
     }
-
+    
     private void displaySampleItem(String uid) {
         /*
          * don't redraw unless the data has changed

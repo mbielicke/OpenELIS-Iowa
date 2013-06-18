@@ -19,6 +19,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.SampleManager1Bean;
+import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleManager1;
@@ -79,5 +80,17 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     
     public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception {
         return sampleManager1.setOrderId(sm, orderId);
+    }
+    
+    public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
+        return sampleManager1.addTest(sm, test);
+    }
+    
+    public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
+        return sampleManager1.addTests(sm, tests);
+    }
+    
+    public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        return sampleManager1.addAuxGroups(sm, groupIds);
     }
 }

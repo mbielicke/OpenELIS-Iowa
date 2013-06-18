@@ -29,7 +29,7 @@
         </t:Column>
         <t:Column width="259" label="{msg.location}">
           <t:AutoCompleteCell>
-            <w:AutoComplete width="215" case="LOWER" required="true">
+            <w:AutoComplete ui:field = "location" width="215" case="LOWER" required="true">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
                   <t:Column width="140" label="{msg.parent}">
@@ -52,9 +52,9 @@
           </t:CalendarCell>
         </t:Column>
         <t:Column width="136" label="{msg.checkOut}">
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
+          <t:CalendarCell>
+            <c:Calendar begin="0" end="4" required="true" /> <!-- width="110" pattern="{resource:getString($constants,'dateTimePattern')}" -->
+          </t:CalendarCell>
         </t:Column>
       </t:Table>
     </g:layer>

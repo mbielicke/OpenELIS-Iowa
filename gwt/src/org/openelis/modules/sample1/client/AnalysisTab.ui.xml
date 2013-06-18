@@ -16,9 +16,8 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
- 
   <g:LayoutPanel>
-    <g:layer top="0px" bottom="110px">
+    <g:layer top="0px" bottom="90px">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
@@ -26,12 +25,18 @@
               <ui:text from="{msg.test}:" />
             </td>
             <td>
-              <w:AutoComplete ui:field="testName" width="150px" case="LOWER">
+              <w:TextBox ui:field="testName" field="String" width="151px" case="LOWER" />
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.method}:" />
+            </td>
+            <td colspan="3">
+              <w:AutoComplete ui:field="methodName" width="150px" case="LOWER">
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
-                    <t:Column width="170" label="{msg.test}">
+                    <!--  <t:Column width="170" label="{msg.test}">
                       <t:LabelCell />
-                    </t:Column>
+                    </t:Column> -->
                     <t:Column width="150" label="{msg.method}">
                       <t:LabelCell />
                     </t:Column>
@@ -41,12 +46,6 @@
                   </t:Table>
                 </w:popup>
               </w:AutoComplete>
-            </td>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.method}:" />
-            </td>
-            <td colspan="3">
-              <w:TextBox ui:field="methodName" field="String" width="151px" case="LOWER" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.started}:" />
@@ -101,28 +100,26 @@
               <c:Calendar ui:field="releasedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
             </td>
           </tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.panel}:" />
-            </td>
-            <td colspan="5">
-              <w:AutoComplete ui:field="panel" width="365x" case="LOWER">
-                <w:popup>
-                  <t:Table visibleRows="10" header="true">
-                    <t:Column width="350" label="{msg.name}">
-                      <t:LabelCell />
-                    </t:Column>
-                  </t:Table>
-                </w:popup>
-              </w:AutoComplete>
-            </td>
-          <tr>
+          <td class="{res.style.Prompt}">
+            <ui:text from="{msg.panel}:" />
+          </td>
+          <td colspan="5">
+            <w:AutoComplete ui:field="panel" width="365x" case="LOWER">
+              <w:popup>
+                <t:Table visibleRows="10" header="true">
+                  <t:Column width="350" label="{msg.name}">
+                    <t:LabelCell />
+                  </t:Column>
+                </t:Table>
+              </w:popup>
+            </w:AutoComplete>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.printed}:" />
             </td>
             <td>
               <c:Calendar ui:field="printedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
             </td>
-          </tr>
+          </td>
           <tr>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.samplePrep}:" />
@@ -148,11 +145,11 @@
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="115px" bottom="5px">
+    <g:layer top="140px" bottom="5px">
       <g:LayoutPanel>
-        <g:layer width="50%"  left="0px">
+        <g:layer width="50%" left="0px">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="20px" >
+            <g:layer top="0px" bottom="20px">
               <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true" title=""
               >
@@ -176,16 +173,16 @@
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom = "0px" height = "20px">
+            <g:layer bottom="0px" height="20px">
               <g:HTMLPanel>
                 <w:Button ui:field="selectWkshtButton" text="{msg.select}" /> <!-- leftIcon="{res.style.selectIcon}" -->
               </g:HTMLPanel>
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer width="50%" right = "0px">        
+        <g:layer width="50%" right="0px">
           <g:LayoutPanel>
-            <g:layer top = "0px" bottom = "20px">
+            <g:layer top="0px" bottom="20px">
               <!--<g:AbsolutePanel/> style="{res.style.Divider}" -->
               <t:Table ui:field="analysisUserTable" visibleRows="3" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true" title=""
@@ -210,7 +207,7 @@
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom = "0px" height = "20px">
+            <g:layer bottom="0px" height="20px">
               <g:HorizontalPanel> <!-- style="{res.style.TableFooterPanel}" -->
                 <w:Button ui:field="addActionButton" text="{msg.addRow}" /> <!-- leftIcon="{res.style.AddRowButtonImage}" -->
                 <w:Button ui:field="removeActionButton" text="{msg.removeRow}" /> <!-- leftIcon="{res.style.RemoveRowButtonImage}" -->

@@ -26,7 +26,7 @@
 package org.openelis.modules.sample1.client;
 
 import org.openelis.domain.Constants;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.manager.OrganizationParameterManager;
 
 public class SampleOrganizationUtility1 {

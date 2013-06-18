@@ -33,7 +33,7 @@
                    </tr> 
                    <tr>
                     <td>
-                      <w:NotesPanel ui:field="sampleExtNotesPanel" /> <!-- width="351px" height="190" style="ScreenTableWithSides" -->
+                      <w:NotesPanel ui:field="externalNotePanel" /> <!-- width="351px" height="190" style="ScreenTableWithSides" -->
                     </td>                    
                   </tr>
                 </table>
@@ -41,7 +41,7 @@
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>
-                <w:Button ui:field="sampleExtNoteButton" leftIcon="{res.style.standardNoteIcon}"
+                <w:Button ui:field="editNoteButton" leftIcon="{res.style.standardNoteIcon}"
                   text="{msg.editNote}" />
               </g:AbsolutePanel>
             </g:layer>
@@ -60,7 +60,7 @@
                    </tr> 
                    <tr>
                     <td>
-                      <w:NotesPanel ui:field="sampleIntNotesPanel" /> <!-- width="351px" height="190" style="ScreenTableWithSides" -->
+                      <w:NotesPanel ui:field="internalNotePanel" /> <!-- width="351px" height="190" style="ScreenTableWithSides" -->
                     </td>
                   </tr>
                 </table>
@@ -68,7 +68,7 @@
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>
-                <w:Button ui:field="sampleIntNoteButton" leftIcon="{res.style.standardNoteIcon}"
+                <w:Button ui:field="addNoteButton" leftIcon="{res.style.standardNoteIcon}"
                   text="{msg.addNote}" />
               </g:AbsolutePanel>
             </g:layer>

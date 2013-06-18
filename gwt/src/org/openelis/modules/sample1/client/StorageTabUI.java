@@ -25,197 +25,129 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.ui.screen.State.*;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+
+import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
+import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.Constants;
+import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.StorageLocationViewDO;
+import org.openelis.domain.StorageViewDO;
+import org.openelis.ui.event.GetMatchesEvent;
+import org.openelis.ui.event.GetMatchesHandler;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.SampleManager1;
+import org.openelis.modules.storage.client.StorageService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.SectionPermission;
+import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
+import org.openelis.ui.widget.AutoComplete;
+import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public class StorageTabUI extends Screen {
-    
+
     @UiTemplate("StorageTab.ui.xml")
-    interface StorageTabUIBinder extends UiBinder<Widget, StorageTabUI> {        
+    interface StorageTabUIBinder extends UiBinder<Widget, StorageTabUI> {
     };
-    
+
     private static StorageTabUIBinder uiBinder = GWT.create(StorageTabUIBinder.class);
-    
-    public StorageTabUI() {
+
+    @UiField
+    protected Table                   storageTable;
+
+    @UiField
+    protected Button                  addStorageButton, removeStorageButton;
+
+    @UiField
+    protected AutoComplete            location;
+
+    protected String                  displayedUid;
+
+    protected Screen                  parentScreen;
+
+    protected boolean                 canEdit, isVisible;
+
+    protected SampleManager1          manager;
+
+    protected AnalysisViewDO          analysis;
+
+    protected SampleItemViewDO        sampleItem;
+
+    public StorageTabUI(Screen parentScreen, EventBus bus) {
+        this.parentScreen = parentScreen;
+        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
-        
         initialize();
+
+        manager = null;
+        displayedUid = null;
     }
-    
-    /*private boolean                 loaded;
 
-    protected AutoComplete<Integer> location;
-    protected TableWidget           storageTable;
-    protected AppButton             addStorageButton, removeStorageButton;
-
-    protected SampleDataBundle      bundle;
-    protected StorageManager        manager;
-
-    public StorageTabUI(ScreenDefInt def, WindowInt window) {
-        setDefinition(def);
-        setWindow(window);
-
-        initialize();
-    }*/
-
-    @UiField
-    protected Table           storageTable;
-    
-    @UiField
-    protected Button          addStorageButton, removeStorageButton;
-    
     private void initialize() {
-        /*storageTable = (TableWidget)def.getWidget("storageTable");
-        addScreenHandler(storageTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        addScreenHandler(storageTable, "storageTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                storageTable.load(getTableModel());
+                storageTable.setModel(getTableModel());
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                storageTable.enable(canEdit() &&
-                                    EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
-                storageTable.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        location = ((AutoComplete<Integer>)storageTable.getColumns().get(1).colWidget);
-        storageTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int row, col;
-                Object val;
-                StorageViewDO data;
-                StorageLocationViewDO sloc;
-                Datetime checkin, checkout;
-                TableDataRow selection, tableRow;
-                
-                row = event.getRow();
-                col = event.getCol();
-                tableRow = storageTable.getRow(row);
-                try {
-                    data = manager.getStorageAt(row);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    return;
-                }
-
-                val = tableRow.cells.get(col).value;
-                
-                switch (col) {
-                    case 0:
-                        data.setSystemUserId((Integer)val);
-                        break;
-                    case 1:
-                        selection = location.getSelection();
-                        if (selection != null) {
-                            sloc = (StorageLocationViewDO)selection.data;
-                            data.setStorageLocationId(sloc.getId());
-                            data.setStorageLocationName(sloc.getName());
-                            data.setStorageLocationLocation(sloc.getLocation());
-                            data.setStorageUnitDescription(sloc.getStorageUnitDescription());
-                        } else {
-                            data.setStorageLocationId(null);
-                            data.setStorageLocationName(null);
-                            data.setStorageLocationLocation(null);
-                            data.setStorageUnitDescription(null);
-                        }                       
-                        break;
-                    case 2:
-                        data.setCheckin((Datetime)val);
-
-                        checkin = (Datetime)tableRow.cells.get(2).value;
-                        checkout = (Datetime)tableRow.cells.get(3).value;
-
-                        if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                            storageTable.setCellException(row, col,
-                                                          new LocalizedException("checkinDateAfterCheckoutDateException"));
-                        break;
-                    case 3:
-                        data.setCheckout((Datetime)val);
-
-                        checkin = (Datetime)tableRow.cells.get(2).value;
-                        checkout = (Datetime)tableRow.cells.get(3).value;
-
-                        if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                            storageTable.setCellException(row, col,
-                                                          new LocalizedException("checkinDateAfterCheckoutDateException"));
-                        break;
-                }
-            }
-        });
-        
-        storageTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-                //always allow selection
-            }
-        });
-
-        storageTable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
-                    removeStorageButton.enable(true);
-            }
-        });
-        
-        storageTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-                try {
-                    TableDataRow selectedRow = storageTable.getRow(0);
-                    StorageViewDO storageDO = new StorageViewDO();
-                    storageDO.setCheckin((Datetime)selectedRow.cells.get(2).value);
-                    storageDO.setSystemUserId(UserCache.getPermission().getSystemUserId());
-                    storageDO.setUserName(UserCache.getPermission().getLoginName());
-
-                    manager.addStorage(storageDO);
-                    removeStorageButton.enable(true);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        storageTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
-                try {
-                    manager.removeStorageAt(event.getIndex());
-                    removeStorageButton.enable(false);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
+            public void onStateChange(StateChangeEvent event) {
+                storageTable.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                storageTable.setQueryMode(isState(QUERY));
             }
         });
 
         location.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                String locationName;
-                TableDataRow row;
-                StorageLocationViewDO data;
+                Item<Integer> row;
+                ArrayList<Item<Integer>> model;
                 ArrayList<StorageLocationViewDO> list;
-                ArrayList<TableDataRow> model;
 
-                window.setBusy();
+                //TODO how to use "window" in a tab
+                //window.setBusy();
 
                 try {
-                    list = StorageService.get().fetchAvailableByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < list.size(); i++ ) {
-                        row = new TableDataRow(3);
-                        data = list.get(i);
+                    list = StorageService.get()
+                                         .fetchAvailableByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (StorageLocationViewDO data : list) {
+                        row = new Item<Integer>(3);
 
-                        locationName = StorageLocationManager.getLocationForDisplay(data.getName(), data.getStorageUnitDescription(),
-                                                                                    data.getLocation());
-                        row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getStorageUnitDescription();
-                        row.cells.get(2).value = data.getLocation();
-                        row.display = locationName;
-                        row.data = data;
+                        row.setCell(0, data.getName());
+                        row.setCell(1, data.getStorageUnitDescription());
+                        row.setCell(2, data.getLocation());
+                        //TODO what should be done about the display?
+                        /*row.s .display = locationName;
+                        locationName = getStorageLocation(data.getName(),
+                                                          data.getStorageUnitDescription(),
+                                                          data.getLocation());*/
+                        row.setData(data);
+                        row.setKey(data.getId());
                         model.add(row);
                     }
                     location.showAutoMatches(model);
@@ -223,180 +155,191 @@ public class StorageTabUI extends Screen {
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-                window.clearStatus();
+                
+                //window.clearStatus();
             }
         });
 
-        addStorageButton = (AppButton)def.getWidget("addStorageButton");
-        addScreenHandler(addStorageButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                Datetime date = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-
-                if (storageTable.numRows() > 0 && storageTable.getCell(0, 3).value == null) {
-                    manager.getStorageAt(0).setCheckout(date);
-                    storageTable.setCell(0, 3, date);
-                }
-
-                TableDataRow newRow = new TableDataRow(4);
-                newRow.cells.get(0).value = UserCache.getPermission().getLoginName();
-                newRow.cells.get(2).value = date;
-                storageTable.addRow(0, newRow);
-                storageTable.selectRow(0);
-                storageTable.scrollToSelection();
-                storageTable.startEditing(0, 1);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addStorageButton.enable(canEdit() &&
-                                        EnumSet.of(State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+        addScreenHandler(addStorageButton, "addStorageButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                addStorageButton.setEnabled(isState(ADD, UPDATE) && canEdit);
             }
         });
 
-        removeStorageButton = (AppButton)def.getWidget("removeStorageButton");
-        addScreenHandler(removeStorageButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                int selectedRow = storageTable.getSelectedRow();
-                if (selectedRow > -1 && storageTable.numRows() > 0) {
-                    storageTable.deleteRow(selectedRow);
-                }
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                removeStorageButton.enable(false);
+        addScreenHandler(removeStorageButton, "removeStorageButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                removeStorageButton.setEnabled(false);
             }
         });
-*/
+
+        /*
+         * handlers for the events fired by the screen containing this tab
+         */
+        bus.addHandlerToSource(StateChangeEvent.getType(),
+                               parentScreen,
+                               new StateChangeEvent.Handler() {
+                                   public void onStateChange(StateChangeEvent event) {
+                                       evaluateEdit();
+                                       setState(event.getState());
+                                   }
+                               });
+
+        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                String uid;
+
+                if (SelectedType.ANALYSIS.equals(event.getSelectedType()) ||
+                    SelectedType.SAMPLE_ITEM.equals(event.getSelectedType()))
+                    uid = event.getUid();
+                else
+                    uid = null;
+
+                displayStorage(uid);
+            }
+        });
+
+        addVisibleHandler(new VisibleEvent.Handler() {
+            public void onVisibleOrInvisible(VisibleEvent event) {
+                String uid;
+
+                isVisible = event.isVisible();
+                if (analysis != null)
+                    uid = manager.getUid(analysis);
+                else if (sampleItem != null)
+                    uid = manager.getUid(sampleItem);
+                else
+                    uid = null;
+
+                displayStorage(uid);
+            }
+        });
     }
 
-    /*private ArrayList<TableDataRow> getTableModel() {
-        String locationName;
-        StorageViewDO data;
-        TableDataRow row;
-        ArrayList<TableDataRow> model;
+    public void setData(SampleManager1 manager) {
+        if ( !DataBaseUtil.isSame(this.manager, manager))
+            this.manager = manager;
+    }
+    
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
 
-        model = new ArrayList<TableDataRow>();
-        if (manager == null)
-            return model;
+    private ArrayList<Row> getTableModel() {
+        ArrayList<Row> model;
 
-        try {
-            for (int iter = 0; iter < manager.count(); iter++ ) {
-                data = manager.getStorageAt(iter);
-
-                row = new TableDataRow(4);
-                row.key = data.getId();
-
-                row.cells.get(0).value = data.getUserName();
-                locationName = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(), 
-                                                                            data.getStorageUnitDescription(),
-                                                                            data.getStorageLocationLocation());
-                row.cells.get(1).value = new TableDataRow(data.getStorageLocationId(),
-                                                          locationName);
-                row.cells.get(2).value = data.getCheckin();
-                row.cells.get(3).value = data.getCheckout();
-
-                model.add(row);
-            }
-        } catch (Exception e) {
-
-            e.printStackTrace();
-            return null;
+        model = new ArrayList<Row>();
+        if (analysis != null) {
+            for (int i = 0; i < manager.storage.count(analysis); i++ )
+                model.add(createStorageRow(manager.storage.get(analysis, i)));
+        } else if (sampleItem != null) {
+            for (int i = 0; i < manager.storage.count(sampleItem); i++ )
+                model.add(createStorageRow(manager.storage.get(sampleItem, i)));
         }
-
         return model;
     }
 
-    public boolean canEdit() {
-        AnalysisViewDO    anDO;
+    private Row createStorageRow(StorageViewDO s) {
+        Row row;
+        AutoCompleteValue val;
+
+        row = new Row(4);
+        row.setCell(0, s.getUserName());
+
+        val = new AutoCompleteValue(s.getStorageLocationId(),
+                                    getStorageLocation(s.getStorageLocationName(),
+                                                       s.getStorageUnitDescription(),
+                                                       s.getStorageLocationLocation()));
+        row.setCell(1, val);
+        row.setCell(2, s.getCheckin());
+        row.setCell(3, s.getCheckout());
+
+        return row;
+    }
+
+    private void displayStorage(String uid) {
+        Object obj;
+        /*
+         * don't redraw unless the data has changed
+         */
+        if (uid != null) {
+            obj = manager.getObject(uid);
+            if (obj instanceof AnalysisViewDO) {
+                analysis = (AnalysisViewDO)obj;
+                sampleItem = null;
+            } else if (obj instanceof SampleItemViewDO) {
+                sampleItem = (SampleItemViewDO)obj;
+                analysis = null;
+            }
+        } else {
+            analysis = null;
+            sampleItem = null;
+        }
+
+        if ( !isVisible)
+            return;
+
+        // TODO compare prev and new data
+        if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+            displayedUid = uid;
+            evaluateEdit();
+            setState(state);
+            fireDataChange();
+        }
+    }
+
+    private void evaluateEdit() {
+        Integer sectId, statId;
         SectionPermission perm;
-        SectionViewDO     sectionVDO;
+        SectionViewDO sect;
 
-        if (bundle != null) {
-            if (SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) {
+        canEdit = false;
+        if (manager != null) {
+            if (analysis != null) {
+                sectId = getSectionId();
+                statId = getStatusId();
                 try {
-                    anDO = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
-                    if (anDO != null && anDO.getSectionId() != null) {
-                        sectionVDO = SectionCache.getById(anDO.getSectionId());
-                        perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                        return !Constants.dictionary().ANALYSIS_CANCELLED.equals(anDO.getStatusId()) &&
-                               perm != null &&
-                               (perm.hasAssignPermission() || perm.hasCompletePermission());
+                    if (sectId != null) {
+                        sect = SectionCache.getById(sectId);
+                        perm = UserCache.getPermission().getSection(sect.getName());
+                        canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
+                                  perm != null &&
+                                  (perm.hasAssignPermission() || perm.hasCompletePermission());
                     }
-                } catch(Exception e) {
-                    Window.alert("storageTab canEdit: "+e.getMessage());
-                    return false;
+                } catch (Exception e) {
+                    Window.alert("storageTab canEdit: " + e.getMessage());
                 }
-            } else {
-                return true;
+            } else if (sampleItem != null) {
+                canEdit = true;
             }
         }
-            
-        return false;
     }
 
-    public void setData(SampleDataBundle data) {
-        bundle= data;
-        manager = null;
-        loaded = false;
+    private Integer getSectionId() {
+        if (analysis != null)
+            return analysis.getSectionId();
+
+        return null;
     }
 
-    public void draw() {
-        SampleItemManager itemMan;
-        AnalysisManager anMan;
-        
-        try {
-            if ( !loaded) {
-                if(bundle == null){
-                    manager = StorageManager.getInstance();
-                    StateChangeEvent.fire(this, State.DEFAULT);
-                    
-                }else if(bundle.getType().equals(SampleDataBundle.Type.SAMPLE_ITEM)){
-                    itemMan = bundle.getSampleManager().getSampleItems();
-                    manager = itemMan.getStorageAt(bundle.getSampleItemIndex());
+    private Integer getStatusId() {
+        if (analysis != null)
+            return analysis.getStatusId();
 
-                    if (state == State.ADD || state == State.UPDATE)
-                        StateChangeEvent.fire(this, State.UPDATE);
-                    
-                }else if(bundle.getType().equals(SampleDataBundle.Type.ANALYSIS)){
-                    anMan = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-                    manager = anMan.getStorageAt(bundle.getAnalysisIndex());
-
-                    if (state == State.ADD || state == State.UPDATE)
-                        StateChangeEvent.fire(this, State.UPDATE);
-                    
-                }
-            }
-
-            DataChangeEvent.fire(this);
-
-        } catch (Exception e) {
-            Window.alert("storageTab draw: "+ e.getMessage());
-        }
-
-        loaded = true;
+        return null;
     }
 
-    public boolean validate() {
-        if ( !loaded)
-            return true;
+    private String getStorageLocation(String name, String description, String location) {
+        ArrayList<String> loc;
 
-        Datetime checkout, checkin;
-        boolean returnValue = true;
+        loc = new ArrayList<String>();
 
-        for (int i = 0; i < storageTable.numRows(); i++ ) {
-            checkin = (Datetime)storageTable.getObject(i, 2);
-            checkout = (Datetime)storageTable.getObject(i, 3);
+        loc.add(name);
+        loc.add(", ");
+        loc.add(description);
+        loc.add(" ");
+        loc.add(location);
 
-            if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0) {
-                storageTable.setCellException(
-                                              i,
-                                              3,
-                                              new LocalizedException(
-                                                                     "checkinDateAfterCheckoutDateException"));
-                returnValue = false;
-            }
-        }
-
-        return returnValue;
-    }*/
+        return DataBaseUtil.concatWithSeparator(loc, "");
+    }
 }

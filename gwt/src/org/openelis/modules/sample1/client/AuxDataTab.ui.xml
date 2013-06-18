@@ -3,7 +3,7 @@
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
-  <!-- this tab uses xsl:when and xsl:otherwise to determine the layout of the widgets-->
+  <!-- this tab uses xsl:when and xsl:otherwise to determine the layout of the widgets -->
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
@@ -26,10 +26,30 @@
       </t:Table>
     </g:layer>
     <g:layer bottom="30px" height="25px">
-      <g:HorizontalPanel>
-        <w:Button ui:field="removeAuxButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
-        <w:Button ui:field="addAuxButton" text="{msg.auxGroups}" /> <!-- leftIcon="{res.style.PickerButtonImage}" -->
-      </g:HorizontalPanel>
+      <g:HTMLPanel>
+        <table class="{res.style.Form}">
+          <tr>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.auxGroups}" />
+            </td>
+            <td>
+              <w:MultiDropdown ui:field="auxGroups" width="150px" dropWidth = "320px" field = "Integer">
+                <w:popup>
+                  <t:Table header="true">
+                    <t:Column width="150" label="{msg.name}">
+                      <t:LabelCell />
+                    </t:Column>
+                    <t:Column width="150" label="{msg.description}">
+                      <t:LabelCell />
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:MultiDropdown>
+            </td>
+          </tr>
+        </table>
+      </g:HTMLPanel>
+      <!-- popWidth="150px" -->
     </g:layer>
     <g:layer bottom="5px" height="30px">
       <g:HTMLPanel>
