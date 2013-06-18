@@ -110,7 +110,7 @@ public class SampleNeonatalBean {
     public SampleNeonatalDO update(SampleNeonatalDO data) throws Exception {
         SampleNeonatal entity;
         
-        if (!data.isChanged() && !data.getPatient().isChanged() && data.getNextOfKin().isChanged())
+        if (!data.isChanged() && !data.getPatient().isChanged() && !data.getNextOfKin().isChanged())
             return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);

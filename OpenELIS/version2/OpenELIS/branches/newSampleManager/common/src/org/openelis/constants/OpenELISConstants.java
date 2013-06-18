@@ -10123,6 +10123,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_cantAddOrgTypeToDomainException();
 
   /**
+   * Translated "Please choose a test or panel".
+   * 
+   * @return translated "Please choose a test or panel"
+   */
+  @DefaultMessage("Please choose a test or panel")
+  @Key("sample.chooseTestOrPanel")
+  String sample_chooseTestOrPanel();
+
+  /**
    * Translated "City, State, Zip".
    * 
    * @return translated "City, State, Zip"
@@ -10382,6 +10391,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Started date can''t be after completed")
   @Key("sample.startedDateInvalidError")
   String sample_startedDateInvalidError(String arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Test Lookup".
+   * 
+   * @return translated "Test Lookup"
+   */
+  @DefaultMessage("Test Lookup")
+  @Key("sample.testLookup")
+  String sample_testLookup();
 
   /**
    * Translated "Trans Age".
