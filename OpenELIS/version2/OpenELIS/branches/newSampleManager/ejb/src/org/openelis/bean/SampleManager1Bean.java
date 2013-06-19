@@ -69,7 +69,6 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.security.manager.ApplicationManagerAccessor;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
@@ -158,9 +157,9 @@ public class SampleManager1Bean {
     private PatientBean                    patient;
 
     @EJB
-    private SampleManagerAuxDataHelperBean sampleManagerAuxDataHelper;
+    private AuxDataHelperBean              auxDataHelper;
 
-    private static final Logger            log = Logger.getLogger("openelis");
+    private static final Logger           log = Logger.getLogger("openelis");
 
     /**
      * Returns a new instance of sample manager with pre-initailized sample and
@@ -1456,7 +1455,17 @@ public class SampleManager1Bean {
             setAuxilliary(sm, auxiliary);
         }
         
-        sampleManagerAuxDataHelper.addAuxGroups(auxiliary, groupIds);
+        auxDataHelper.addAuxGroups(auxiliary, groupIds);
+        
+        return sm;
+    }
+    
+    /**
+     * TODO change comment Adds/removes aux data to or from the sample based on
+     * the list of group ids
+     */
+    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        auxDataHelper.removeAuxGroups(getAuxilliary(sm), groupIds);
         
         return sm;
     }

@@ -93,4 +93,8 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         return sampleManager1.addAuxGroups(sm, groupIds);
     }
+    
+    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        return sampleManager1.removeAuxGroups(sm, groupIds);
+    }
 }

@@ -277,4 +277,20 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         service.addAuxGroups(sm, groupIds, callback);
         return callback.getResult();
     }
+
+    @Override
+    public void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
+                                AsyncCallback<SampleManager1> callback) throws Exception {
+        service.removeAuxGroups(sm, groupIds, callback);
+        
+    }
+
+    @Override
+    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.removeAuxGroups(sm, groupIds, callback);
+        return callback.getResult();
+    }
 }
