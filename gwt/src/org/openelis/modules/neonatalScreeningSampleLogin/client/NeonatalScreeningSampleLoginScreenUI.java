@@ -1466,42 +1466,41 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 newCount = newIds == null ? 0 : newIds.size();
 
                 ids = new ArrayList<Integer>();
-                if (currCount > 0) {
-                    /*
-                     * groups present in the newly selected list but not in the
-                     * existing list are to be added to the sample
-                     */
-                    for (i = 0; i < newCount; i++ ) {
-                        if ( !currIds.contains(newIds.get(i)))
-                            ids.add(newIds.get(i));
-                    }
-                    
-                    if (ids.size() > 0) {
-                        try {
-                            manager = SampleService1.get().addAuxGroups(manager, ids);
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                        }
-                    }
+                
+                /*
+                 * groups present in the newly selected list but not in the
+                 * existing list are to be added to the sample
+                 */
+                for (i = 0; i < newCount; i++ ) {
+                    if (currCount == 0 || !currIds.contains(newIds.get(i)))
+                        ids.add(newIds.get(i));
                 }
                 
-                ids.clear();
-                if (newCount > 0) {
-                    /*
-                     * groups present in the existing list but not in the newly
-                     * selected list are to be removed from the sample
-                     */
-                    for (i = 0; i < currCount; i++ ) {
-                        if ( !newIds.contains(currIds.get(i)))
-                            ids.add(currIds.get(i));
+                if (ids.size() > 0) {
+                    try {
+                        manager = SampleService1.get().addAuxGroups(manager, ids);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        return;
                     }
-                    
-                    if (ids.size() > 0) {
-                        try {
-                            //manager = SampleService1.get().removeAuxGroups(manager, ids);                        
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                        }
+                }               
+                
+                ids.clear();
+                /*
+                 * groups present in the existing list but not in the newly
+                 * selected list are to be removed from the sample
+                 */
+                for (i = 0; i < currCount; i++ ) {
+                    if (newCount == 0 || !newIds.contains(currIds.get(i)))
+                        ids.add(currIds.get(i));
+                }
+
+                if (ids.size() > 0) {
+                    try {
+                        manager = SampleService1.get().removeAuxGroups(manager, ids);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        return;
                     }
                 }
 

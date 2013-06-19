@@ -81,4 +81,7 @@ public interface SampleServiceInt1Async {
 
     public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
                       AsyncCallback<SampleManager1> callback) throws Exception;
+
+    public void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
+                         AsyncCallback<SampleManager1> callback) throws Exception;
 }

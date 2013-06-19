@@ -27,6 +27,9 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.ejb.Stateless;
+
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
@@ -35,25 +38,44 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 
 /**
- * This class is used for adding aux data to or removing it from a sample
+ * This class is used for adding or removing aux data associated with a sample
+ * or order etc.
  */
 
-public class SampleManagerAuxDataHelperBean {
+@Stateless
+@SecurityDomain("openelis")
+public class AuxDataHelperBean {
 
     /**
-     * Adds the aux groups specified by the list of ids to the list of aux data.
+     * Adds aux groups specified by the list of ids to the list of aux data, if
+     * the group isn't already present in the list of aux data.
      */
     public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, ArrayList<Integer> groupIds) throws Exception {
         int i;
+        Integer prevId;
+        ArrayList<Integer> addIds;
         AuxDataViewDO aux;
         AuxFieldViewDO af;
         AuxFieldManager afm;
 
+        addIds = new ArrayList<Integer>();
+        prevId = null;
+        /*
+         * make sure that only the groups not already in the list of aux data
+         * get added to it
+         */
+        for (AuxDataViewDO a : auxiliary) {
+            if ( !a.getGroupId().equals(prevId)) {
+                if ( !groupIds.contains(a.getGroupId()))
+                    addIds.add(a.getGroupId());
+                prevId = a.getGroupId();
+            }
+        }
+
         /*
          * fields for the aux group are fetched and aux data for them is added
-         * to the sample
          */
-        for (Integer id : groupIds) {
+        for (Integer id : addIds) {
             afm = AuxFieldManager.fetchByGroupIdWithValues(id);
             for (i = 0; i < afm.count(); i++ ) {
                 af = afm.getAuxFieldAt(i);
@@ -81,28 +103,24 @@ public class SampleManagerAuxDataHelperBean {
                                                     ArrayList<Integer> groupIds) {
         boolean remove;
         Integer prevId;
-        ArrayList<AuxDataViewDO> removeList;
+        ArrayList<AuxDataViewDO> removed;
 
-        removeList = new ArrayList<AuxDataViewDO>();
+        removed = new ArrayList<AuxDataViewDO>();
         prevId = null;
         remove = false;
 
         for (AuxDataViewDO aux : auxiliary) {
             if ( !aux.getGroupId().equals(prevId)) {
-                /*
-                 * to avoid unneccessary linear search, the following check is
-                 * performed only when the group changes
-                 */
                 remove = groupIds.contains(aux.getGroupId());
                 prevId = aux.getGroupId();
             }
             if (remove) {
-                removeList.add(aux);
+                removed.add(aux);
                 auxiliary.remove(aux);
             }
         }
 
-        return removeList;
+        return removed;
     }
 
     /**
