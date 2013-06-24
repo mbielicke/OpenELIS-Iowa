@@ -349,10 +349,8 @@ public class SampleManager1Bean {
         for (SampleItemViewDO data : item.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             addItem(sm, data);
-            if ( !map2.containsKey(data.getId())) {
-                ids2.add(data.getId());
-                map2.put(data.getId(), sm);
-            }
+            ids2.add(data.getId());
+            map2.put(data.getId(), sm);
         }
 
         if (el.contains(SampleManager1.Load.STORAGE)) {
@@ -370,10 +368,8 @@ public class SampleManager1Bean {
         for (AnalysisViewDO data : analysis.fetchBySampleItemIds(ids2)) {
             sm = map2.get(data.getSampleItemId());
             addAnalysis(sm, data);
-            if ( !map1.containsKey(data.getId())) {
-                ids1.add(data.getId());
-                map1.put(data.getId(), sm);
-            }
+            ids1.add(data.getId());
+            map1.put(data.getId(), sm);
         }
         ids2 = null;
         map2 = null;
@@ -551,10 +547,8 @@ public class SampleManager1Bean {
         for (AnalysisViewDO data : analysis.fetchBySampleItemIds(ids2)) {
             sm = map2.get(data.getSampleItemId());
             addAnalysis(sm, data);
-            if ( !map1.containsKey(data.getId())) {
-                ids1.add(data.getId());
-                map1.put(data.getId(), sm);
-            }
+            ids1.add(data.getId());
+            map1.put(data.getId(), sm);
         }
         ids2 = null;
         map2 = null;

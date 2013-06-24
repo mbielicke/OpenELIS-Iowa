@@ -1466,6 +1466,8 @@ public class SampleManager1 implements Serializable {
      * removed from the database.
      */
     private void removeDataObject(DataObject data) {
+        if (removed == null)
+            removed = new ArrayList<DataObject>();
         removed.add(data);
     }
 }
