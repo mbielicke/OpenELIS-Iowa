@@ -30,7 +30,6 @@ import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -228,6 +227,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected TestPrepLookupUI                          testPrepLookup;
 
+    protected Long                                      day      = 86400000L;
+
+    /**
+     * Check the permissions for this screen, intialize the tabs and widgets
+     */
     public NeonatalScreeningSampleLoginScreenUI(WindowInt window) throws Exception {
         super();
         setWindow(window);
@@ -349,7 +353,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
         duplicate.addCommand(new Command() {
             public void execute() {
-                duplicate();
+
             }
         });
 
@@ -1305,11 +1309,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(reportToName, SampleMeta.getOrgName(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                setReportToSelection();
+                setOrganizationSelection(reportToName, Constants.dictionary().ORG_REPORT_TO);
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                getReportToFromSelection();
+                getOrganizationFromSelection(reportToName, Constants.dictionary().ORG_REPORT_TO);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1337,11 +1341,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(birthHospitalName, SampleMeta.getBillTo(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                setBirthHospitalSelection();
+                setOrganizationSelection(birthHospitalName, Constants.dictionary().ORG_BIRTH_HOSPITAL);
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                getBirthHospitalFromSelection();
+                getOrganizationFromSelection(birthHospitalName, Constants.dictionary().ORG_BIRTH_HOSPITAL);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1456,59 +1460,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         bus.addHandler(AuxGroupChangeEvent.getType(), new AuxGroupChangeEvent.Handler() {
             @Override
             public void onAuxGroupChange(AuxGroupChangeEvent event) {
-                int i, currCount, newCount;
-                ArrayList<Integer> currIds, newIds, ids;
-
-                currIds = event.getCurrentGroupIds();
-                newIds = event.getNewGroupIds();
-
-                currCount = currIds == null ? 0 : currIds.size();
-                newCount = newIds == null ? 0 : newIds.size();
-
-                ids = new ArrayList<Integer>();
-                
-                /*
-                 * groups present in the newly selected list but not in the
-                 * existing list are to be added to the sample
-                 */
-                for (i = 0; i < newCount; i++ ) {
-                    if (currCount == 0 || !currIds.contains(newIds.get(i)))
-                        ids.add(newIds.get(i));
-                }
-                
-                if (ids.size() > 0) {
-                    try {
-                        manager = SampleService1.get().addAuxGroups(manager, ids);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        return;
-                    }
-                }               
-                
-                ids.clear();
-                /*
-                 * groups present in the existing list but not in the newly
-                 * selected list are to be removed from the sample
-                 */
-                for (i = 0; i < currCount; i++ ) {
-                    if (newCount == 0 || !newIds.contains(currIds.get(i)))
-                        ids.add(currIds.get(i));
-                }
-
-                if (ids.size() > 0) {
-                    try {
-                        manager = SampleService1.get().removeAuxGroups(manager, ids);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        return;
-                    }
-                }
-
-                evaluateEdit();
-                setData();
-                setState(state);
-                fireDataChange();
-                window.clearStatus();
+                addRemoveAuxGroups(event);
             }
         });
 
@@ -1521,6 +1473,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
+        /*
+         * load models in the dropdowns
+         */
         model = new ArrayList<Item<Integer>>();
         model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("sample_status")) {
@@ -1837,10 +1792,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         cache = null;
     }
 
-    protected void duplicate() {
-
-    }
-
+    /**
+     * Overridden to customize the list of query fields
+     */
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fields;
         QueryData field;
@@ -1854,6 +1808,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         return fields;
     }
 
+    /**
+     * Returns the object that has the specified key and is of the specified
+     * class, from the cache
+     */
     @Override
     public <T> T get(Object key, Class<?> c) {
         String cacheKey;
@@ -1863,115 +1821,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             cacheKey = "tm:" + key;
 
         return (T)cache.get(cacheKey);
-    }
-
-    /*
-     * protected void buildCache() throws Exception { SampleItemViewDO item;
-     * AnalysisViewDO ana; ArrayList<Integer> testIds; ArrayList<TestManager>
-     * tms;
-     * 
-     * if (cache == null) cache = new HashMap<String, Object>();
-     * 
-     * /* the list of tests to be fetched
-     * 
-     * testIds = new ArrayList<Integer>(); for (int i = 0; i <
-     * manager.item.count(); i++ ) { item = manager.item.get(i); for (int j = 0;
-     * j < manager.analysis.count(item); j++ ) { ana =
-     * manager.analysis.get(item, j); if (get(ana.getTestId(),
-     * TestManager.class) == null) testIds.add(ana.getTestId()); } }
-     * 
-     * if (testIds.size() > 0) { tms = TestService.get().fetchByIds(testIds);
-     * for (TestManager tm : tms) cache.put("tm:" + tm.getTest().getId(), tm); }
-     * }
-     */
-
-    /**
-     * creates or updates the cache of objects like TestManager that are used
-     * frequently by the different parts of the screen
-     */
-    protected void buildCache(SampleTestReturnVO ret) throws Exception {
-        ArrayList<Integer> testIds;
-        SampleItemViewDO item;
-        AnalysisViewDO ana;
-        ArrayList<TestManager> tms;
-
-        if (cache == null)
-            cache = new HashMap<String, Object>();
-
-        /*
-         * the list of tests to be fetched
-         */
-        testIds = new ArrayList<Integer>();
-        for (int i = 0; i < manager.item.count(); i++ ) {
-            item = manager.item.get(i);
-            for (int j = 0; j < manager.analysis.count(item); j++ ) {
-                ana = manager.analysis.get(item, j);
-                if (get(ana.getTestId(), TestManager.class) == null)
-                    testIds.add(ana.getTestId());
-            }
-        }
-
-        if (ret != null && ret.getTests() != null) {
-            for (SampleTestRequestVO t : ret.getTests())
-                testIds.add(t.getTestId());
-        }
-
-        if (testIds.size() > 0) {
-            tms = TestService.get().fetchByIds(testIds);
-            for (TestManager tm : tms)
-                cache.put("tm:" + tm.getTest().getId(), tm);
-        }
-    }
-
-    private void sampleItemChanged(String uid) {
-        boolean found;
-        SampleItemViewDO item;
-        AnalysisViewDO ana;
-        TestManager tm;
-        ArrayList<TestTypeOfSampleDO> types;
-
-        try {
-            item = (SampleItemViewDO)manager.getObject(uid);
-            /*
-             * show error in tree if test doesn't have this sample type
-             */
-            for (int i = 0; i < manager.analysis.count(item); i++ ) {
-                ana = manager.analysis.get(item, i);
-                tm = get(ana.getTestId(), TestManager.class);
-                types = tm.getSampleTypes().getTypesBySampleType(item.getTypeOfSampleId());
-
-                found = false;
-                for (TestTypeOfSampleDO t : types) {
-                    if (DataBaseUtil.isSame(item.getTypeOfSampleId(), t.getTypeOfSampleId())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if ( !found) {
-                    // TODO add error
-                }
-            }
-            bus.fireEvent(new AnalysisChangeEvent(null,
-                                                  AnalysisChangeEvent.Action.SAMPLE_TYPE_CHANGED));
-            // TODO notify the tree tab to refresh itself to show errors
-            // and the changed sample type
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private void showWarningsDialog(ValidationErrorsList warnings) {
-        StringBuffer txt;
-
-        txt = new StringBuffer();
-        txt.append(Messages.get().warningDialogLine1()).append("\n");
-        for (Exception ex : warnings.getErrorList())
-            txt.append(" * ").append(ex.getMessage()).append("\n");
-
-        txt.append("\n").append(Messages.get().warningDialogLastLine());
-        if (Window.confirm(txt.toString()))
-            commitUpdate(true);
     }
 
     private void historySample() {
@@ -2024,11 +1873,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void historyAuxData() {
         historyUtility.setManager(manager);
         historyUtility.historyAuxData();
-    }
-
-    private void evaluateEdit() {
-        canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                            .getStatusId()));
     }
 
     /*
@@ -2119,37 +1963,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
     }
 
-    private void getProviderMatches(GetMatchesEvent event) {
-        ProviderDO data;
-        ArrayList<ProviderDO> list;
-        Item<Integer> row;
-        ArrayList<Item<Integer>> model;
-
-        window.setBusy();
-        try {
-            list = ProviderService.get()
-                                  .fetchByLastName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-            model = new ArrayList<Item<Integer>>();
-            for (int i = 0; i < list.size(); i++ ) {
-                row = new Item<Integer>(3);
-                data = list.get(i);
-
-                row.setKey(data.getId());
-                row.setData(data);
-                row.setCell(0, data.getLastName());
-                row.setCell(1, data.getFirstName());
-                row.setCell(2, data.getMiddleName());
-
-                model.add(row);
-            }
-            providerLastName.showAutoMatches(model);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
     private void setProjectSelection() {
         SampleProjectViewDO p;
 
@@ -2201,477 +2014,59 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
     }
 
-    private SampleProjectViewDO getFirstPermanentProject() {
-        ArrayList<SampleProjectViewDO> p;
-
-        if (manager == null)
-            return null;
-
-        p = manager.project.getByType("Y");
-
-        return p != null ? p.get(0) : null;
-    }
-
-    private void getProjectMatches(GetMatchesEvent event) {
-        Item<Integer> row;
-        ArrayList<ProjectDO> list;
-        ArrayList<Item<Integer>> model;
-
-        window.setBusy();
-        try {
-            list = ProjectService.get()
-                                 .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-            model = new ArrayList<Item<Integer>>();
-            for (ProjectDO p : list) {
-                row = new Item<Integer>(4);
-
-                row.setKey(p.getId());
-                row.setCell(0, p.getName());
-                row.setCell(1, p.getDescription());
-                row.setData(p);
-                model.add(row);
-            }
-            projectName.showAutoMatches(model);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
-    private void setReportToSelection() {
-        ArrayList<SampleOrganizationViewDO> orgs;
-
-        if (manager == null) {
-            reportToName.setValue(null, "");
-            return;
-        }
-
-        orgs = manager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
-
-        if (orgs != null)
-            reportToName.setValue(orgs.get(0).getOrganizationId(), orgs.get(0)
-                                                                       .getOrganizationName());
-        else
-            reportToName.setValue(null, "");
-    }
-
-    private void getReportToFromSelection() {
-        AutoCompleteValue row;
-        ArrayList<SampleOrganizationViewDO> sorgs;
+    private void setOrganizationSelection(AutoComplete widget, Integer type) {
         SampleOrganizationViewDO sorg;
-        OrganizationDO org;
 
-        row = reportToName.getValue();
-        if (row == null || row.getId() == null) {
-            sorgs = manager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
-            if (sorgs != null)
-                manager.organization.remove(sorgs.get(0));
-
-            reportToName.setValue(null, "");
-            return;
-        }
-
-        sorgs = manager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
-        if (sorgs == null) {
-            sorg = manager.organization.add();
-            sorg.setTypeId(Constants.dictionary().ORG_REPORT_TO);
-        } else {
-            sorg = sorgs.get(0);
-        }
-
-        org = (OrganizationDO)row.getData();
-        if (org != null)
-            getSampleOrganization(org, sorg);
-
-        reportToName.setValue(sorg.getOrganizationId(), sorg.getOrganizationName());
-
-        try {
-            showHoldRefuseWarning(sorg.getOrganizationId(), sorg.getOrganizationName());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-    }
-
-    private void setBirthHospitalSelection() {
-        ArrayList<SampleOrganizationViewDO> orgs;
-
-        if (manager == null) {
-            birthHospitalName.setValue(null, "");
-            return;
-        }
-
-        orgs = manager.organization.getByType(Constants.dictionary().ORG_BIRTH_HOSPITAL);
-
-        if (orgs != null)
-            birthHospitalName.setValue(orgs.get(0).getOrganizationId(), orgs.get(0)
-                                                                            .getOrganizationName());
+        sorg = getSampleOrganization(type);
+        if (sorg != null)
+            widget.setValue(sorg.getOrganizationId(), sorg.getOrganizationName());
         else
-            birthHospitalName.setValue(null, "");
+            widget.setValue(null, "");
     }
 
-    private void getBirthHospitalFromSelection() {
+    private void getOrganizationFromSelection(AutoComplete widget, Integer type) {
         AutoCompleteValue row;
-        ArrayList<SampleOrganizationViewDO> sorgs;
-        SampleOrganizationViewDO sorg;
         OrganizationDO org;
+        SampleOrganizationViewDO sorg;
 
-        row = birthHospitalName.getValue();
+        sorg = getSampleOrganization(type);
+        row = widget.getValue();
         if (row == null || row.getId() == null) {
-            sorgs = manager.organization.getByType(Constants.dictionary().ORG_BIRTH_HOSPITAL);
-            if (sorgs != null)
-                manager.organization.remove(sorgs.get(0));
-
-            birthHospitalName.setValue(null, "");
-            return;
-        }
-
-        sorgs = manager.organization.getByType(Constants.dictionary().ORG_BIRTH_HOSPITAL);
-        if (sorgs == null) {
-            sorg = manager.organization.add();
-            sorg.setTypeId(Constants.dictionary().ORG_BIRTH_HOSPITAL);
-        } else {
-            sorg = sorgs.get(0);
-        }
-
-        org = (OrganizationDO)row.getData();
-        if (org != null)
-            getSampleOrganization(org, sorg);
-
-        birthHospitalName.setValue(sorg.getOrganizationId(), sorg.getOrganizationName());
-
-        try {
-            showHoldRefuseWarning(sorg.getOrganizationId(), sorg.getOrganizationName());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-    }
-
-    private void getOrganizationMatches(String match, AutoComplete widget) {
-        Item<Integer> row;
-        OrganizationDO data;
-        ArrayList<OrganizationDO> list;
-        ArrayList<Item<Integer>> model;
-
-        window.setBusy();
-        try {
-            list = OrganizationService.get()
-                                      .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
-            model = new ArrayList<Item<Integer>>();
-            for (int i = 0; i < list.size(); i++ ) {
-                row = new Item<Integer>(4);
-                data = list.get(i);
-
-                row.setKey(data.getId());
-                row.setData(data);
-                row.setCell(0, data.getName());
-                row.setCell(1, data.getAddress().getStreetAddress());
-                row.setCell(2, data.getAddress().getCity());
-                row.setCell(3, data.getAddress().getState());
-
-                model.add(row);
-            }
-            widget.showAutoMatches(model);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
-    private void addTest(SampleTestRequestVO test) {
-        SampleTestReturnVO ret;
-
-        try {
-            ret = SampleService1.get().addTest(manager, test);
-            showAddedTests(ret);
-        } catch (Exception ex) {
-            Window.alert(ex.getMessage());
-        }
-    }
-
-    private void addTests(ArrayList<SampleTestRequestVO> tests) {
-        SampleTestReturnVO ret;
-
-        try {
-            ret = SampleService1.get().addTests(manager, tests);
-            showAddedTests(ret);
-        } catch (Exception ex) {
-            Window.alert(ex.getMessage());
-        }
-    }
-
-    private void showAddedTests(SampleTestReturnVO ret) throws Exception {
-        manager = ret.getManager();
-        evaluateEdit();
-        setData();
-        setState(state);
-        fireDataChange();
-        if (ret.getErrors() != null && ret.getErrors().size() > 0) {
-            showErrors(ret.getErrors());
-        } else {
             /*
-             * update cache with the newly added tests and the requested prep
-             * tests, if any
+             * this method is called only when the report-to changes and if
+             * there isn't a report-to selected currently, then there must have
+             * been before, thus it needs to be removed from the manager
              */
-            buildCache(ret);
-            if (ret.getTests() != null && ret.getTests().size() > 0)
-                showPrepLookup(ret);
-        }
-    }
-
-    private void showPrepLookup(SampleTestReturnVO ret) {
-        ModalWindow modal;
-
-        if (testPrepLookup == null) {
-            testPrepLookup = new TestPrepLookupUI(this) {
-                @Override
-                public void ok() {
-                    Node parent;
-                    TestPrepViewDO tp;
-                    AnalysisViewDO ana;
-                    ArrayList<Node> selNodes;
-                    ArrayList<SampleTestRequestVO> tests;
-
-                    selNodes = testPrepLookup.getSelectedPrepNodes();
-                    tests = new ArrayList<SampleTestRequestVO>();
-                    for (Node n : selNodes) {
-                        parent = n.getParent();
-                        ana = parent.getData();
-                        tp = n.getData();
-                        /*
-                         * create a list of prep tests selected by the user to
-                         * be added to the sample
-                         */
-                        tests.add(new SampleTestRequestVO(ana.getSampleItemId(),
-                                                          tp.getPrepTestId(),
-                                                          ana.getId(),
-                                                          null,
-                                                          null,
-                                                          false,
-                                                          null));
-                    }
-
-                    if (tests.size() > 0)
-                        addTests(tests);
-                }
-
-                @Override
-                public void cancel() {
-                    // ignore
-                }
-
-                @Override
-                public Node getTests() {
-                    Integer anaId;
-                    Node root, anode, pnode;
-                    AnalysisViewDO ana;
-                    SampleManager1 sm;
-                    TestManager anaTM, prepTM;
-                    TestSectionManager tsm;
-                    TestPrepViewDO tp;
-
-                    root = new Node();
-                    sm = data.getManager();
-                    anaId = null;
-                    ana = null;
-                    anode = null;
-
-                    for (SampleTestRequestVO test : data.getTests()) {
-                        if ( !test.getAnalysisId().equals(anaId)) {
-                            ana = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(test.getAnalysisId()));
-                            /*
-                             * the node for the analysis
-                             */
-                            anode = new Node(3);
-                            anode.setType("analysis");
-                            anode.setOpen(true);
-                            anode.setCell(0, DataBaseUtil.concatWithSeparator(ana.getTestName(),
-                                                                              ", ",
-                                                                              ana.getMethodName()));
-                            anode.setData(ana);
-
-                            root.add(anode);
-                            anaId = test.getAnalysisId();
-                        }
-
-                        prepTM = screen.get(test.getTestId(), TestManager.class);
-                        /*
-                         * the node for the prep test
-                         */
-                        pnode = new Node(3);
-                        pnode.setType("prepTest");
-                        pnode.setCell(0, DataBaseUtil.concatWithSeparator(prepTM.getTest()
-                                                                                .getName(),
-                                                                          ", ",
-                                                                          prepTM.getTest()
-                                                                                .getMethodName()));
-
-                        try {
-                            tsm = prepTM.getTestSections();
-                            /*
-                             * set the default section if there is one
-                             */
-                            if (tsm.getDefaultSection() != null)
-                                pnode.setCell(1, tsm.getDefaultSection().getSectionId());
-
-                            anaTM = screen.get(ana.getTestId(), TestManager.class);
-                            /*
-                             * find out if the prep test is required for this
-                             * analysis' test
-                             */
-                            tp = getPrepTest(anaTM.getPrepTests(), prepTM.getTest().getId());
-                            if ("Y".equals(tp.getIsOptional()))
-                                pnode.setCell(2, "N");
-                            else
-                                pnode.setCell(2, "Y");
-                            pnode.setData(tp);
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                            continue;
-                        }
-
-                        anode.add(pnode);
-                    }
-
-                    return root;
-                }
-            };
-        }
-
-        modal = new ModalWindow();
-        modal.setSize("520px", "350px");
-        modal.setName(Messages.get().prepTestPicker());
-        modal.setCSS(UIResources.INSTANCE.popupWindow());
-        modal.setContent(testPrepLookup);
-
-        testPrepLookup.setSectionModel(getSectionModel(ret));
-        testPrepLookup.setData(ret);
-        testPrepLookup.setWindow(modal);
-    }
-
-    /**
-     * returns the prep test from the manager that has this prep test id
-     */
-    private TestPrepViewDO getPrepTest(TestPrepManager tpm, Integer prepTestId) {
-        for (int i = 0; i < tpm.count(); i++ ) {
-            if (tpm.getPrepAt(i).getPrepTestId().equals(prepTestId))
-                return tpm.getPrepAt(i);
-        }
-
-        return null;
-    }
-
-    /**
-     * creates the mode for the section dropdown on the lookup screen for
-     * selecting the prep test for an analysis
-     */
-    private ArrayList<Item<Integer>> getSectionModel(SampleTestReturnVO ret) {
-        int i;
-        TestManager tm;
-        TestSectionManager tsm;
-        TestSectionViewDO ts;
-        HashSet<Integer> ids;
-        ArrayList<Item<Integer>> model;
-
-        ids = new HashSet<Integer>();
-        model = new ArrayList<Item<Integer>>();
-
-        for (SampleTestRequestVO test : ret.getTests()) {
-            tm = get(test.getTestId(), TestManager.class);
-
-            try {
-                tsm = tm.getTestSections();
+            manager.organization.remove(sorg);
+            widget.setValue(null, "");
+        } else {
+            org = (OrganizationDO)row.getData();
+            if (sorg == null) {
                 /*
-                 * add this test's sections to the model for the dropdown for
-                 * sections
+                 * a report-to was selected by the user but there isn't one
+                 * present in the manager, thus it needs to be added
                  */
-                for (i = 0; i < tsm.count(); i++ ) {
-                    ts = tsm.getSectionAt(i);
-                    if ( !ids.contains(ts.getSectionId())) {
-                        model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
-                        ids.add(ts.getSectionId());
-                    }
-                }
+                sorg = manager.organization.add(org);
+                sorg.setTypeId(type);
+            } else {
+                /*
+                 * the organization was changed, thus the report-to needs to be
+                 * updated
+                 */
+                loadSampleOrganization(org, sorg);
+            }
+
+            widget.setValue(org.getId(), org.getName());
+            /*
+             * warn the user if samples from this organization are to held or
+             * refused
+             */
+            try {
+                showHoldRefuseWarning(org.getId(), org.getName());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
-                continue;
             }
         }
-
-        return model;
-    }
-
-    private void showOrganizationLookup() {
-        /*
-         * try { if (organizationLookUp == null) { organizationLookUp = new
-         * SampleOrganizationLookupScreen1();
-         * 
-         * organizationLookUp.addActionHandler(new
-         * ActionHandler<SampleOrganizationLookupScreen1.Action>() { public void
-         * onAction(ActionEvent<SampleOrganizationLookupScreen1.Action> event) {
-         * if (event.getAction() == SampleOrganizationLookupScreen1.Action.OK) {
-         * DataChangeEvent.fire(screen, reportToName);
-         * DataChangeEvent.fire(screen, birthHospitalName); } } }); }
-         * 
-         * modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-         * modal.setName(Messages.get().sampleOrganization());
-         * modal.setContent(organizationLookUp);
-         * 
-         * //TODO change this code //organizationLookUp.setScreenState(state);
-         * organizationLookUp.setManager(manager);
-         * 
-         * } catch (Exception e) { e.printStackTrace();
-         * Window.alert(e.getMessage()); return; }
-         */
-    }
-
-    private void getSampleOrganization(OrganizationDO org, SampleOrganizationViewDO data) {
-        AddressDO addr;
-
-        addr = org.getAddress();
-        data.setOrganizationId(org.getId());
-        data.setOrganizationName(org.getName());
-        data.setOrganizationMultipleUnit(addr.getMultipleUnit());
-        data.setOrganizationStreetAddress(addr.getStreetAddress());
-        data.setOrganizationCity(addr.getCity());
-        data.setOrganizationState(addr.getState());
-        data.setOrganizationZipCode(addr.getZipCode());
-        data.setOrganizationCountry(addr.getCountry());
-    }
-
-    private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
-        if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(orgId))
-            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(name));
-    }
-
-    /**
-     * If the status of the sample showing on the screen is changed from
-     * Released to something else, on changing the state, the status stays
-     * Released and the widgets in the tabs stay disabled. Also, if the status
-     * changes from something else to Released, the widgets are not disabled.
-     * This is because the data in the tabs is set in their handlers of
-     * DataChangeEvent which is fired after StateChangeEvent and the handlers of
-     * the latter in the widgets are responsible for enabling or disabling the
-     * widgets. That is why we need to set the data in the tabs before changing
-     * the state.
-     */
-    private void setData() {
-        /*
-         * environmentalTab.setData(manager);
-         * environmentalTab.setPreviousData(previousManager);
-         */
-        sampleItemAnalysisTreeTab.setData(manager);
-        sampleItemTab.setData(manager);
-        analysisTab.setData(manager);
-        resultTab.setData(manager);
-        analysisNotesTab.setData(manager);
-        sampleNotesTab.setData(manager);
-        storageTab.setData(manager);
-        auxDataTab.setData(manager);
-        /*
-         * qaEventsTab.setData(null);
-         */
     }
 
     private Datetime getCollectionDate() {
@@ -2715,7 +2110,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager.getSample().setStatusId(statusId);
     }
 
-    public String getClientReference() {
+    private String getClientReference() {
         if (manager == null)
             return null;
         return manager.getSample().getClientReference();
@@ -3068,7 +2463,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     private Integer getNeonatalTransfusionAge() {
         Datetime cd, td;
-        Long day, diff;
+        Long diff;
         Double numDays;
 
         cd = getCollectionDate();
@@ -3077,7 +2472,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             return null;
 
         diff = cd.getDate().getTime() - td.getDate().getTime();
-        day = 86400000L;
         numDays = diff.doubleValue() / day.doubleValue();
 
         return numDays.intValue();
@@ -3187,4 +2581,507 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             return null;
         return manager.getSampleNeonatal().getProviderFirstName();
     }
+
+    /**
+     * Sets the latest manager in the tabs
+     */
+    private void setData() {
+        sampleItemAnalysisTreeTab.setData(manager);
+        sampleItemTab.setData(manager);
+        analysisTab.setData(manager);
+        resultTab.setData(manager);
+        analysisNotesTab.setData(manager);
+        sampleNotesTab.setData(manager);
+        storageTab.setData(manager);
+        auxDataTab.setData(manager);
+        /*
+         * qaEventsTab.setData(null);
+         */
+    }
+
+    /**
+     * fills the sample organization with the organization's data
+     */
+    private void loadSampleOrganization(OrganizationDO org, SampleOrganizationViewDO data) {
+        AddressDO addr;
+
+        addr = org.getAddress();
+        data.setOrganizationId(org.getId());
+        data.setOrganizationName(org.getName());
+        data.setOrganizationMultipleUnit(addr.getMultipleUnit());
+        data.setOrganizationStreetAddress(addr.getStreetAddress());
+        data.setOrganizationCity(addr.getCity());
+        data.setOrganizationState(addr.getState());
+        data.setOrganizationZipCode(addr.getZipCode());
+        data.setOrganizationCountry(addr.getCountry());
+    }
+
+    /**
+     * warn the user if samples from this organization are to held or refused
+     */
+    private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
+        if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(orgId))
+            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(name));
+    }
+
+    /**
+     * creates or updates the cache of objects like TestManager that are used
+     * frequently by the different parts of the screen
+     */
+    private void buildCache(SampleTestReturnVO ret) throws Exception {
+        ArrayList<Integer> testIds;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        ArrayList<TestManager> tms;
+
+        if (cache == null)
+            cache = new HashMap<String, Object>();
+
+        /*
+         * the list of tests to be fetched
+         */
+        testIds = new ArrayList<Integer>();
+        for (int i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (int j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if (get(ana.getTestId(), TestManager.class) == null)
+                    testIds.add(ana.getTestId());
+            }
+        }
+
+        if (ret != null && ret.getTests() != null) {
+            for (SampleTestRequestVO t : ret.getTests())
+                testIds.add(t.getTestId());
+        }
+
+        if (testIds.size() > 0) {
+            tms = TestService.get().fetchByIds(testIds);
+            for (TestManager tm : tms)
+                cache.put("tm:" + tm.getTest().getId(), tm);
+        }
+    }
+
+    private void sampleItemChanged(String uid) {
+        boolean found;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestManager tm;
+        ArrayList<TestTypeOfSampleDO> types;
+
+        try {
+            item = (SampleItemViewDO)manager.getObject(uid);
+            /*
+             * show error in tree if test doesn't have this sample type
+             */
+            for (int i = 0; i < manager.analysis.count(item); i++ ) {
+                ana = manager.analysis.get(item, i);
+                tm = get(ana.getTestId(), TestManager.class);
+                types = tm.getSampleTypes().getTypesBySampleType(item.getTypeOfSampleId());
+
+                found = false;
+                for (TestTypeOfSampleDO t : types) {
+                    if (DataBaseUtil.isSame(item.getTypeOfSampleId(), t.getTypeOfSampleId())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if ( !found) {
+                    // TODO add error
+                }
+            }
+            bus.fireEvent(new AnalysisChangeEvent(null,
+                                                  AnalysisChangeEvent.Action.SAMPLE_TYPE_CHANGED));
+            // TODO notify the tree tab to refresh itself to show errors
+            // and the changed sample type
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showWarningsDialog(ValidationErrorsList warnings) {
+        StringBuffer txt;
+
+        txt = new StringBuffer();
+        txt.append(Messages.get().warningDialogLine1()).append("\n");
+        for (Exception ex : warnings.getErrorList())
+            txt.append(" * ").append(ex.getMessage()).append("\n");
+
+        txt.append("\n").append(Messages.get().warningDialogLastLine());
+        if (Window.confirm(txt.toString()))
+            commitUpdate(true);
+    }
+
+    private void addRemoveAuxGroups(AuxGroupChangeEvent event) {
+        if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+            try {
+                switch (event.getAction()) {
+                    case ADD:
+                        manager = SampleService1.get().addAuxGroups(manager, event.getGroupIds());
+                        break;
+                    case REMOVE:
+                        manager = SampleService1.get()
+                                                .removeAuxGroups(manager, event.getGroupIds());
+                        break;
+                }
+                setData();
+                setState(state);
+                fireDataChange();
+                window.clearStatus();
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+            }
+        }
+    }
+
+    private void evaluateEdit() {
+        canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                            .getStatusId()));
+    }
+
+    private void getProviderMatches(GetMatchesEvent event) {
+        ProviderDO data;
+        ArrayList<ProviderDO> list;
+        Item<Integer> row;
+        ArrayList<Item<Integer>> model;
+
+        window.setBusy();
+        try {
+            list = ProviderService.get()
+                                  .fetchByLastName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+            model = new ArrayList<Item<Integer>>();
+            for (int i = 0; i < list.size(); i++ ) {
+                row = new Item<Integer>(3);
+                data = list.get(i);
+
+                row.setKey(data.getId());
+                row.setData(data);
+                row.setCell(0, data.getLastName());
+                row.setCell(1, data.getFirstName());
+                row.setCell(2, data.getMiddleName());
+
+                model.add(row);
+            }
+            providerLastName.showAutoMatches(model);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+
+    private SampleProjectViewDO getFirstPermanentProject() {
+        ArrayList<SampleProjectViewDO> p;
+
+        if (manager == null)
+            return null;
+
+        p = manager.project.getByType("Y");
+        if (p != null && p.size() > 0)
+            return p.get(0);
+        return null;
+    }
+
+    private void getProjectMatches(GetMatchesEvent event) {
+        Item<Integer> row;
+        ArrayList<ProjectDO> list;
+        ArrayList<Item<Integer>> model;
+
+        window.setBusy();
+        try {
+            list = ProjectService.get()
+                                 .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+            model = new ArrayList<Item<Integer>>();
+            for (ProjectDO p : list) {
+                row = new Item<Integer>(4);
+
+                row.setKey(p.getId());
+                row.setCell(0, p.getName());
+                row.setCell(1, p.getDescription());
+                row.setData(p);
+                model.add(row);
+            }
+            projectName.showAutoMatches(model);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+
+    private void getOrganizationMatches(String match, AutoComplete widget) {
+        Item<Integer> row;
+        OrganizationDO data;
+        ArrayList<OrganizationDO> list;
+        ArrayList<Item<Integer>> model;
+
+        window.setBusy();
+        try {
+            list = OrganizationService.get()
+                                      .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
+            model = new ArrayList<Item<Integer>>();
+            for (int i = 0; i < list.size(); i++ ) {
+                row = new Item<Integer>(4);
+                data = list.get(i);
+
+                row.setKey(data.getId());
+                row.setData(data);
+                row.setCell(0, data.getName());
+                row.setCell(1, data.getAddress().getStreetAddress());
+                row.setCell(2, data.getAddress().getCity());
+                row.setCell(3, data.getAddress().getState());
+
+                model.add(row);
+            }
+            widget.showAutoMatches(model);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }
+
+    /**
+     * returns the organization of the specified type from the manager
+     */
+    private SampleOrganizationViewDO getSampleOrganization(Integer type) {
+        ArrayList<SampleOrganizationViewDO> orgs;
+
+        if (manager == null)
+            return null;
+
+        orgs = manager.organization.getByType(type);
+        if (orgs != null && orgs.size() > 0)
+            return orgs.get(0);
+
+        return null;
+    }
+
+    private void addTest(SampleTestRequestVO test) {
+        SampleTestReturnVO ret;
+
+        try {
+            ret = SampleService1.get().addTest(manager, test);
+            showAddedTests(ret);
+        } catch (Exception ex) {
+            Window.alert(ex.getMessage());
+        }
+    }
+
+    private void addTests(ArrayList<SampleTestRequestVO> tests) {
+        SampleTestReturnVO ret;
+
+        try {
+            ret = SampleService1.get().addTests(manager, tests);
+            showAddedTests(ret);
+        } catch (Exception ex) {
+            Window.alert(ex.getMessage());
+        }
+    }
+
+    private void showAddedTests(SampleTestReturnVO ret) throws Exception {
+        manager = ret.getManager();
+        evaluateEdit();
+        setData();
+        setState(state);
+        fireDataChange();
+        if (ret.getErrors() != null && ret.getErrors().size() > 0) {
+            showErrors(ret.getErrors());
+        } else {
+            /*
+             * update cache with the newly added tests and the requested prep
+             * tests, if any
+             */
+            buildCache(ret);
+            if (ret.getTests() != null && ret.getTests().size() > 0)
+                showPrepLookup(ret);
+        }
+    }
+
+    /**
+     * shows the pop up screen for prep tests loaded using the manager
+     */
+    private void showPrepLookup(SampleTestReturnVO ret) {
+        ModalWindow modal;
+
+        if (testPrepLookup == null) {
+            testPrepLookup = new TestPrepLookupUI(this) {
+                @Override
+                public void ok() {
+                    Node parent;
+                    TestPrepViewDO tp;
+                    AnalysisViewDO ana;
+                    ArrayList<Node> selNodes;
+                    ArrayList<SampleTestRequestVO> tests;
+
+                    selNodes = testPrepLookup.getSelectedPrepNodes();
+                    tests = new ArrayList<SampleTestRequestVO>();
+                    for (Node n : selNodes) {
+                        parent = n.getParent();
+                        ana = parent.getData();
+                        tp = n.getData();
+                        /*
+                         * create a list of prep tests selected by the user to
+                         * be added to the sample
+                         */
+                        tests.add(new SampleTestRequestVO(ana.getSampleItemId(),
+                                                          tp.getPrepTestId(),
+                                                          ana.getId(),
+                                                          null,
+                                                          null,
+                                                          false,
+                                                          null));
+                    }
+
+                    if (tests.size() > 0)
+                        addTests(tests);
+                }
+
+                @Override
+                public void cancel() {
+                    // ignore
+                }
+
+                @Override
+                public Node getTests() {
+                    Integer anaId;
+                    Node root, anode, pnode;
+                    AnalysisViewDO ana;
+                    SampleManager1 sm;
+                    TestManager anaTM, prepTM;
+                    TestSectionManager tsm;
+                    TestPrepViewDO tp;
+
+                    root = new Node();
+                    sm = data.getManager();
+                    anaId = null;
+                    ana = null;
+                    anode = null;
+
+                    for (SampleTestRequestVO test : data.getTests()) {
+                        if ( !test.getAnalysisId().equals(anaId)) {
+                            ana = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(test.getAnalysisId()));
+                            /*
+                             * the node for the analysis
+                             */
+                            anode = new Node(3);
+                            anode.setType("analysis");
+                            anode.setOpen(true);
+                            anode.setCell(0, DataBaseUtil.concatWithSeparator(ana.getTestName(),
+                                                                              ", ",
+                                                                              ana.getMethodName()));
+                            anode.setData(ana);
+
+                            root.add(anode);
+                            anaId = test.getAnalysisId();
+                        }
+
+                        prepTM = screen.get(test.getTestId(), TestManager.class);
+                        /*
+                         * the node for the prep test
+                         */
+                        pnode = new Node(3);
+                        pnode.setType("prepTest");
+                        pnode.setCell(0, DataBaseUtil.concatWithSeparator(prepTM.getTest()
+                                                                                .getName(),
+                                                                          ", ",
+                                                                          prepTM.getTest()
+                                                                                .getMethodName()));
+
+                        try {
+                            tsm = prepTM.getTestSections();
+                            /*
+                             * set the default section if there is one
+                             */
+                            if (tsm.getDefaultSection() != null)
+                                pnode.setCell(1, tsm.getDefaultSection().getSectionId());
+
+                            anaTM = screen.get(ana.getTestId(), TestManager.class);
+                            /*
+                             * find out if the prep test is required for this
+                             * analysis' test
+                             */
+                            tp = getPrepTest(anaTM.getPrepTests(), prepTM.getTest().getId());
+                            if ("Y".equals(tp.getIsOptional()))
+                                pnode.setCell(2, "N");
+                            else
+                                pnode.setCell(2, "Y");
+                            pnode.setData(tp);
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            continue;
+                        }
+
+                        anode.add(pnode);
+                    }
+
+                    return root;
+                }
+            };
+        }
+
+        modal = new ModalWindow();
+        modal.setSize("520px", "350px");
+        modal.setName(Messages.get().prepTestPicker());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(testPrepLookup);
+
+        testPrepLookup.setSectionModel(getSectionModel(ret));
+        testPrepLookup.setData(ret);
+        testPrepLookup.setWindow(modal);
+    }
+
+    /**
+     * returns from the manager, the prep test that has this prep test id
+     */
+    private TestPrepViewDO getPrepTest(TestPrepManager tpm, Integer prepTestId) {
+        for (int i = 0; i < tpm.count(); i++ ) {
+            if (tpm.getPrepAt(i).getPrepTestId().equals(prepTestId))
+                return tpm.getPrepAt(i);
+        }
+
+        return null;
+    }
+
+    /**
+     * creates the mode for the section dropdown on the lookup screen for
+     * selecting the prep test for an analysis
+     */
+    private ArrayList<Item<Integer>> getSectionModel(SampleTestReturnVO ret) {
+        int i;
+        TestManager tm;
+        TestSectionManager tsm;
+        TestSectionViewDO ts;
+        HashSet<Integer> ids;
+        ArrayList<Item<Integer>> model;
+
+        ids = new HashSet<Integer>();
+        model = new ArrayList<Item<Integer>>();
+
+        for (SampleTestRequestVO test : ret.getTests()) {
+            tm = get(test.getTestId(), TestManager.class);
+
+            try {
+                tsm = tm.getTestSections();
+                /*
+                 * add this test's sections to the model for the dropdown for
+                 * sections
+                 */
+                for (i = 0; i < tsm.count(); i++ ) {
+                    ts = tsm.getSectionAt(i);
+                    if ( !ids.contains(ts.getSectionId())) {
+                        model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
+                        ids.add(ts.getSectionId());
+                    }
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                continue;
+            }
+        }
+
+        return model;
+    }
+
 }
