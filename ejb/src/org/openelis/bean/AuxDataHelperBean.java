@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.ejb.Stateless;
 
@@ -58,7 +59,7 @@ public class AuxDataHelperBean {
         AuxFieldViewDO af;
         AuxFieldManager afm;
 
-        addIds = new ArrayList<Integer>();
+        addIds = new ArrayList<Integer>(groupIds);
         prevId = null;
         /*
          * make sure that only the groups not already in the list of aux data
@@ -66,8 +67,8 @@ public class AuxDataHelperBean {
          */
         for (AuxDataViewDO a : auxiliary) {
             if ( !a.getGroupId().equals(prevId)) {
-                if ( !groupIds.contains(a.getGroupId()))
-                    addIds.add(a.getGroupId());
+                if (groupIds.contains(a.getGroupId()))
+                    addIds.remove(a.getGroupId());
                 prevId = a.getGroupId();
             }
         }
@@ -103,20 +104,24 @@ public class AuxDataHelperBean {
                                                     ArrayList<Integer> groupIds) {
         boolean remove;
         Integer prevId;
+        AuxDataViewDO aux;
+        Iterator<AuxDataViewDO> iter;
         ArrayList<AuxDataViewDO> removed;
 
-        removed = new ArrayList<AuxDataViewDO>();
         prevId = null;
         remove = false;
-
-        for (AuxDataViewDO aux : auxiliary) {
+        removed = new ArrayList<AuxDataViewDO>();
+        iter = auxiliary.iterator();
+        
+        while (iter.hasNext()) {
+            aux = iter.next();
             if ( !aux.getGroupId().equals(prevId)) {
                 remove = groupIds.contains(aux.getGroupId());
                 prevId = aux.getGroupId();
             }
             if (remove) {
                 removed.add(aux);
-                auxiliary.remove(aux);
+                iter.remove();
             }
         }
 
