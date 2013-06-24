@@ -26,30 +26,10 @@
       </t:Table>
     </g:layer>
     <g:layer bottom="30px" height="25px">
-      <g:HTMLPanel>
-        <table class="{res.style.Form}">
-          <tr>
-            <td class="{res.style.Prompt}">
-              <ui:text from="{msg.auxGroups}" />
-            </td>
-            <td>
-              <w:MultiDropdown ui:field="auxGroups" width="150px" dropWidth = "320px" field = "Integer">
-                <w:popup>
-                  <t:Table header="true">
-                    <t:Column width="150" label="{msg.name}">
-                      <t:LabelCell />
-                    </t:Column>
-                    <t:Column width="150" label="{msg.description}">
-                      <t:LabelCell />
-                    </t:Column>
-                  </t:Table>
-                </w:popup>
-              </w:MultiDropdown>
-            </td>
-          </tr>
-        </table>
-      </g:HTMLPanel>
-      <!-- popWidth="150px" -->
+      <g:HorizontalPanel>
+        <w:Button ui:field="removeAuxButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />       
+        <w:Button ui:field="addAuxButton" text="{msg.auxGroups}" />
+      </g:HorizontalPanel>
     </g:layer>
     <g:layer bottom="5px" height="30px">
       <g:HTMLPanel>

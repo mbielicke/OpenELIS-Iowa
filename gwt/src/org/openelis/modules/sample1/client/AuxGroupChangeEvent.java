@@ -36,12 +36,19 @@ import com.google.gwt.event.shared.GwtEvent;
  */
 public class AuxGroupChangeEvent extends GwtEvent<AuxGroupChangeEvent.Handler> {
 
+    public enum Action {
+        ADD, REMOVE
+    }
+    
     private static Type<AuxGroupChangeEvent.Handler> TYPE;
-    private ArrayList<Integer>                       currentGroupIds, newGroupIds;
+    private Action                                      action;
+    private ArrayList<Integer>                       groupIds;
 
-    public AuxGroupChangeEvent(ArrayList<Integer> currentGroupIds, ArrayList<Integer> newGroupIds) {
-        this.currentGroupIds = currentGroupIds;
-        this.newGroupIds = newGroupIds;
+    public AuxGroupChangeEvent(Action action, ArrayList<Integer> groupIds) {
+        assert action != null;
+        
+        this.action = action; 
+        this.groupIds = groupIds;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -57,12 +64,12 @@ public class AuxGroupChangeEvent extends GwtEvent<AuxGroupChangeEvent.Handler> {
         return TYPE;
     }
 
-    public ArrayList<Integer> getCurrentGroupIds() {
-        return currentGroupIds;
+    public Action getAction() {
+        return action;
     }
-
-    public ArrayList<Integer> getNewGroupIds() {
-        return newGroupIds;
+    
+    public ArrayList<Integer> getGroupIds() {
+        return groupIds;
     }
 
     public static interface Handler extends EventHandler {
