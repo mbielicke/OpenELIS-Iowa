@@ -85,81 +85,81 @@ import org.openelis.ui.common.data.QueryData;
 public class SampleManager1Bean {
 
     @EJB
-    private LockBean                       lock;
+    private LockBean                     lock;
 
     @EJB
-    private SampleBean                     sample;
+    private SampleBean                   sample;
 
     @EJB
-    private SampleEnvironmentalBean        sampleEnvironmental;
+    private SampleEnvironmentalBean      sampleEnvironmental;
 
     @EJB
-    private SampleSDWISBean                sampleSDWIS;
+    private SampleSDWISBean              sampleSDWIS;
 
     @EJB
-    private SamplePrivateWellBean          samplePrivate;
+    private SamplePrivateWellBean        samplePrivate;
 
     @EJB
-    private SampleNeonatalBean             sampleNeonatal;
+    private SampleNeonatalBean           sampleNeonatal;
 
     @EJB
-    private SampleOrganizationBean         sampleOrganization;
+    private SampleOrganizationBean       sampleOrganization;
 
     @EJB
-    private SampleProjectBean              sampleProject;
+    private SampleProjectBean            sampleProject;
 
     @EJB
-    private SampleQAEventBean              sampleQA;
+    private SampleQAEventBean            sampleQA;
 
     @EJB
-    private AuxDataBean                    auxdata;
+    private AuxDataBean                  auxdata;
 
     @EJB
-    private NoteBean                       note;
+    private NoteBean                     note;
 
     @EJB
-    private SampleItemBean                 item;
+    private SampleItemBean               item;
 
     @EJB
-    private StorageBean                    storage;
+    private StorageBean                  storage;
 
     @EJB
-    private AnalysisBean                   analysis;
+    private AnalysisBean                 analysis;
 
     @EJB
-    private AnalysisQAEventBean            analysisQA;
+    private AnalysisQAEventBean          analysisQA;
 
     @EJB
-    private AnalysisUserBean               user;
+    private AnalysisUserBean             user;
 
     @EJB
-    private ResultBean                     result;
+    private ResultBean                   result;
 
     @EJB
-    private TestManagerBean                test;
+    private TestManagerBean              testManager;
 
     @EJB
-    private SystemVariableBean             systemVariable;
+    private SystemVariableBean           systemVariable;
 
     @EJB
-    private UserCacheBean                  userCache;
+    private UserCacheBean                userCache;
 
     @EJB
-    private SampleManagerOrderHelperBean   sampleManagerOrderHelper;
+    private SampleManagerOrderHelperBean sampleManagerOrderHelper;
 
     @EJB
-    private PanelBean                      panel;
+    private PanelBean                    panel;
 
     @EJB
-    private AnalysisHelperBean             analysisHelper;
+    private AnalysisHelperBean           analysisHelper;
 
     @EJB
-    private PatientBean                    patient;
+    private PatientBean                  patient;
 
     @EJB
-    private AuxDataHelperBean              auxDataHelper;
+    private AuxDataHelperBean            auxDataHelper;
 
-    private static final Logger           log = Logger.getLogger("openelis");
+    private static final Logger          log = Logger.getLogger("openelis");
 
     /**
      * Returns a new instance of sample manager with pre-initailized sample and
@@ -844,7 +844,7 @@ public class SampleManager1Bean {
         Integer tmpid, id, so;
         HashSet<Integer> ids;
         ArrayList<Integer> locks;
-        ArrayList<TestManager> tms;
+        HashMap<Integer, TestManager> tms;
         NoteViewDO ext;
         PatientDO pat;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
@@ -858,7 +858,10 @@ public class SampleManager1Bean {
             for (AnalysisViewDO an : getAnalyses(sm))
                 ids.add(an.getTestId());
         }
-        tms = test.fetchByIds(new ArrayList<Integer>(ids));
+        tms = new HashMap<Integer, TestManager>();
+        for (TestManager tm : testManager.fetchByIds(new ArrayList<Integer>(ids)))
+            tms.put(tm.getTest().getId(), tm);
+
         validate(sms, tms, ignoreWarnings);
         tms = null;
 
@@ -1442,25 +1445,25 @@ public class SampleManager1Bean {
      */
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> auxiliary;
-        
+
         auxiliary = getAuxilliary(sm);
         if (auxiliary == null) {
             auxiliary = new ArrayList<AuxDataViewDO>();
             setAuxilliary(sm, auxiliary);
         }
-        
+
         auxDataHelper.addAuxGroups(auxiliary, groupIds);
-        
+
         return sm;
     }
-    
+
     /**
      * TODO change comment Adds/removes aux data to or from the sample based on
      * the list of group ids
      */
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         auxDataHelper.removeAuxGroups(getAuxilliary(sm), groupIds);
-        
+
         return sm;
     }
 
@@ -1494,7 +1497,7 @@ public class SampleManager1Bean {
      * Validates the sample manager for add or update. The routine throws a list
      * of exceptions/warnings listing all the problems for each sample.
      */
-    protected void validate(ArrayList<SampleManager1> sms, ArrayList<TestManager> tms,
+    protected void validate(ArrayList<SampleManager1> sms, HashMap<Integer, TestManager> tms,
                             boolean ignoreWarning) throws Exception {
         int cnt;
         AnalysisViewDO ana;
@@ -1580,30 +1583,48 @@ public class SampleManager1Bean {
             /*
              * each analysis must be valid for sample item type
              */
-            /*
-             * amap.clear(); if (getAnalyses(sm) != null) { for (AnalysisViewDO
-             * data : getAnalyses(sm)) { amap.put(data.getId(), data); if
-             * (data.isChanged() ||
-             * imap.get(data.getSampleItemId()).isChanged()) try {
-             * analysis.validate(data, tms.get(data.getTestId()), accession,
-             * imap.get(data.getSampleItemId()), ignoreWarning); if
-             * (data.isChanged())
-             * validatePermission(getSample(sm).getAccessionNumber(), data,
-             * permission); } catch (Exception err) {
-             * DataBaseUtil.mergeException(e, err); } } }
-             */
+
+            amap.clear();
+            if (getAnalyses(sm) != null) {
+                for (AnalysisViewDO data : getAnalyses(sm)) {
+                    amap.put(data.getId(), data);
+                    if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged())
+                        try {
+                            analysis.validate(data,
+                                              tms.get(data.getTestId()),
+                                              accession,
+                                              imap.get(data.getSampleItemId()),
+                                              ignoreWarning);
+                            if (data.isChanged())
+                                validatePermission(getSample(sm).getAccessionNumber(),
+                                                   data,
+                                                   permission);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
 
             /*
              * results must be valid for the group
              */
-            /*
-             * if (getResults(sm) != null) { for (ResultViewDO data :
-             * getResults(sm)) { ana = amap.get(data.getAnalysisId()); if
-             * (data.isChanged() || ana.isChanged()) try { result.validate(data,
-             * tms.get(ana.getTestId()), accession,
-             * amap.get(data.getAnalysisId()), ignoreWarning); } catch
-             * (Exception err) { DataBaseUtil.mergeException(e, err); } } }
-             */
+
+            if (getResults(sm) != null) {
+                for (ResultViewDO data : getResults(sm)) {
+                    ana = amap.get(data.getAnalysisId());
+                    if (data.isChanged() || ana.isChanged())
+                        try {
+                            result.validate(data,
+                                            tms.get(ana.getTestId()),
+                                            accession,
+                                            amap.get(data.getAnalysisId()),
+                                            ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
+
         }
 
         if (e.size() > 0)
