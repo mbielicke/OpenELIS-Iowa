@@ -619,6 +619,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_action();
 
   /**
+   * Translated "Cannot copy blank section".
+   * 
+   * @return translated "Cannot copy blank section"
+   */
+  @DefaultMessage("Cannot copy blank section")
+  @Key("analysis.cantCopyBlankSect")
+  String analysis_cantCopyBlankSect();
+
+  /**
    * Translated "An analysis can not be its own prep analysis".
    * 
    * @return translated "An analysis can not be its own prep analysis"
@@ -10564,11 +10573,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleItemTypeMissing(String arg0);
 
   /**
-   * Translated "Sample item type is required on parent row before selecting test".
+   * Translated "Sample type is required before selecting test".
    * 
-   * @return translated "Sample item type is required on parent row before selecting test"
+   * @return translated "Sample type is required before selecting test"
    */
-  @DefaultMessage("Sample item type is required on parent row before selecting test")
+  @DefaultMessage("Sample type is required before selecting test")
   @Key("sampleItemTypeRequired")
   String sampleItemTypeRequired();
 

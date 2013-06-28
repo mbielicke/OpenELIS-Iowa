@@ -25,6 +25,8 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
@@ -55,6 +57,17 @@ public class AuxFieldGroupManagerBean {
 
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
         return AuxFieldGroupManager.fetchById(id);
+    }
+    
+    public ArrayList<AuxFieldGroupManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        ArrayList<AuxFieldGroupManager> managers;
+
+        managers = new ArrayList<AuxFieldGroupManager>();
+
+        for (Integer id : ids)
+            managers.add(AuxFieldGroupManager.fetchById(id));
+
+        return managers;
     }
 
     public AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception {

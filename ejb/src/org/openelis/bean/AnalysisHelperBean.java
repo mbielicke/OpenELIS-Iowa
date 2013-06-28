@@ -259,9 +259,4 @@ public class AnalysisHelperBean {
         }
         return prepIds;
     }
-
-    public void setAnalysesToPrep(AnalysisViewDO prep, HashMap<Integer, AnalysisViewDO> analyses,
-                                  TestManager tm) throws Exception {
-
-    }
 }
