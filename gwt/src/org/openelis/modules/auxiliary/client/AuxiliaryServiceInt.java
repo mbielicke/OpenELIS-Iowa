@@ -19,6 +19,8 @@ public interface AuxiliaryServiceInt extends RemoteService {
 
     // manager methods
     AuxFieldGroupManager fetchGroupById(Integer id) throws Exception;
+    
+    ArrayList<AuxFieldGroupManager> fetchByIds(ArrayList<Integer> ids) throws Exception;
 
     AuxFieldGroupManager fetchGroupByIdWithFields(Integer id) throws Exception;
 

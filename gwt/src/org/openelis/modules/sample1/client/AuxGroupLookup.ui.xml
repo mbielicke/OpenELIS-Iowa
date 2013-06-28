@@ -1,3 +1,4 @@
+
 <!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
   to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
   in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
@@ -9,52 +10,26 @@
   may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
   of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
-  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
-  xmlns:t='urn:import:org.openelis.ui.widget.table'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
+  xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" height="40px">
-      <g:HorizontalPanel>
-        <g:HorizontalPanel width="250px" />
-        <w:Button ui:field="copyToEmptyButton" text="{msg.copyToEmpty}" /> <!-- leftIcon="{res.style.EditMultipleButtonImage}" -->
-        <w:Button ui:field="copyToAllButton" text="{msg.copyToAll}" /> <!-- leftIcon="{res.style.EditMultipleButtonImage}" -->
-      </g:HorizontalPanel>
+    <g:layer top="0px" bottom="30px">
+      <t:Table ui:field="table" verticalScroll="ALWAYS" visibleRows="10"
+        horizontalScroll="ALWAYS" header="true"
+      >
+        <t:Column width="205" label="{msg.name}">
+          <t:LabelCell />
+        </t:Column>
+        <t:Column width="265" label="{msg.description}">
+          <t:LabelCell />
+        </t:Column>
+      </t:Table>
     </g:layer>
-    <g:layer top="45px" height="200px">
-      <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <r:Column width="250" label="{msg.analysisPrepTestMethod}" />
-        <r:Column width="200" label="{msg.section}" />
-        <r:Column width="50" label="{msg.select}" />
-        <r:Leaf key="analysis">
-          <r:LeafColumn>
-            <t:LabelCell />
-          </r:LeafColumn>
-          <r:LeafColumn>
-            <t:LabelCell />
-          </r:LeafColumn>
-          <r:LeafColumn>
-            <t:LabelCell />
-          </r:LeafColumn>
-        </r:Leaf>
-        <r:Leaf key="prepTest">
-          <r:LeafColumn>
-            <t:LabelCell />
-          </r:LeafColumn>
-          <r:LeafColumn>
-            <t:DropdownCell>
-              <w:Dropdown width="200px" field="Integer" ui:field = "prepSection"/>
-            </t:DropdownCell>
-          </r:LeafColumn>
-          <r:LeafColumn>
-            <t:CheckBoxCell />
-          </r:LeafColumn>
-        </r:Leaf>
-      </r:Tree>
-    </g:layer>
-    <g:layer bottom="0px" height="40px"> <!-- style="BottomButtonPanelContainer" -->
+    <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel>
         <w:Button ui:field="okButton" text="{msg.ok}" />
         <w:Button ui:field="cancelButton" text="{msg.cancel}" />

@@ -256,17 +256,23 @@ public class SampleNotesTabUI extends Screen {
                 public void ok() {
                     /*
                      * isExternal is not used for this check because its value
-                     * doesn't change in this inner class after the object is
+                     * doesn't change in this inner class after the lookup is
                      * created, even though subsequent calls to showNoteLookup
                      * may have different values passed to it 
                      */
                     if (editNoteLookup.getHasSubject()) {
-                        setNoteFields(manager.sampleInternalNote.getEditing(),
-                                      editNoteLookup.getSubject(),
-                                      editNoteLookup.getText());
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) 
+                            manager.sampleInternalNote.removeEditing();
+                        else 
+                            setNoteFields(manager.sampleInternalNote.getEditing(),
+                                          editNoteLookup.getSubject(),
+                                          editNoteLookup.getText());
                         drawInternalNotes();
                     } else {
-                        setNoteFields(manager.sampleExternalNote.getEditing(),
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) 
+                            manager.sampleExternalNote.removeEditing();
+                        else 
+                            setNoteFields(manager.sampleExternalNote.getEditing(),
                                       null,
                                       editNoteLookup.getText());
                         drawExternalNote();
@@ -298,7 +304,7 @@ public class SampleNotesTabUI extends Screen {
             if (manager.sampleInternalNote.count() > 0)
                 note = manager.sampleInternalNote.get(0);
 
-            if (note != null && note.getId() == null) {
+            if (note != null && note.getId() < 0) {
                 subject = note.getSubject();
                 text = note.getText();
             }

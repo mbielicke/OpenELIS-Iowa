@@ -62,6 +62,11 @@ public class AuxiliaryService extends RemoteServlet implements AuxiliaryServiceI
         return auxFieldGroupManager.fetchById(id);
     }
 
+    @Override
+    public ArrayList<AuxFieldGroupManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        return auxFieldGroupManager.fetchByIds(ids);
+    }
+
     public AuxFieldGroupManager fetchGroupByIdWithFields(Integer id) throws Exception {
         return auxFieldGroupManager.fetchByIdWithFields(id);
     }

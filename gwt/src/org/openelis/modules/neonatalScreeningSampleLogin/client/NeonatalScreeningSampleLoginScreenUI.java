@@ -41,6 +41,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
@@ -54,11 +55,13 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.project.client.ProjectService;
@@ -1341,11 +1344,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(birthHospitalName, SampleMeta.getBillTo(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                setOrganizationSelection(birthHospitalName, Constants.dictionary().ORG_BIRTH_HOSPITAL);
+                setOrganizationSelection(birthHospitalName,
+                                         Constants.dictionary().ORG_BIRTH_HOSPITAL);
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                getOrganizationFromSelection(birthHospitalName, Constants.dictionary().ORG_BIRTH_HOSPITAL);
+                getOrganizationFromSelection(birthHospitalName,
+                                             Constants.dictionary().ORG_BIRTH_HOSPITAL);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1636,7 +1641,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                           SampleManager1.Load.STORAGE);
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            // TODO log to the server
+            logger.severe(e.getMessage());
+            window.clearStatus();
             return;
         }
         evaluateEdit();
@@ -1651,7 +1657,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected void commit(ClickEvent event) {
         finishEditing();
         clearErrors();
-        // manager.setStatusWithError(false);
 
         if ( !validate()) {
             window.setError(Messages.get().correctErrors());
@@ -1778,6 +1783,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                       SampleManager1.Load.QA,
                                                       SampleManager1.Load.RESULT,
                                                       SampleManager1.Load.STORAGE);
+                buildCache(null);
                 evaluateEdit();
                 setData();
                 setState(DISPLAY);
@@ -1809,8 +1815,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * Returns the object that has the specified key and is of the specified
-     * class, from the cache
+     * Returns from the cache, the object that has the specified key and is of
+     * the specified class
      */
     @Override
     public <T> T get(Object key, Class<?> c) {
@@ -2629,10 +2635,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * frequently by the different parts of the screen
      */
     private void buildCache(SampleTestReturnVO ret) throws Exception {
-        ArrayList<Integer> testIds;
+        int i, j;
+        ArrayList<Integer> ids;
         SampleItemViewDO item;
         AnalysisViewDO ana;
+        AuxDataViewDO aux;
         ArrayList<TestManager> tms;
+        ArrayList<AuxFieldGroupManager> afgms; 
 
         if (cache == null)
             cache = new HashMap<String, Object>();
@@ -2640,25 +2649,48 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         /*
          * the list of tests to be fetched
          */
-        testIds = new ArrayList<Integer>();
-        for (int i = 0; i < manager.item.count(); i++ ) {
+        ids = new ArrayList<Integer>();
+        for (i = 0; i < manager.item.count(); i++ ) {
             item = manager.item.get(i);
-            for (int j = 0; j < manager.analysis.count(item); j++ ) {
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
                 ana = manager.analysis.get(item, j);
                 if (get(ana.getTestId(), TestManager.class) == null)
-                    testIds.add(ana.getTestId());
+                    ids.add(ana.getTestId());
             }
         }
 
         if (ret != null && ret.getTests() != null) {
             for (SampleTestRequestVO t : ret.getTests())
-                testIds.add(t.getTestId());
+                ids.add(t.getTestId());
         }
 
-        if (testIds.size() > 0) {
-            tms = TestService.get().fetchByIds(testIds);
+        if (ids.size() > 0) {
+            /*
+             * cache TestManagers 
+             */
+            tms = TestService.get().fetchByIds(ids);
             for (TestManager tm : tms)
                 cache.put("tm:" + tm.getTest().getId(), tm);
+        }
+        
+
+        /*
+         * the list of aux field groups to be fetched
+         */
+        ids.clear();
+        for (i = 0; i < manager.auxData.count(); i++ ) {
+            aux = manager.auxData.get(i);
+            if (get(aux.getGroupId(), AuxFieldGroupManager.class) == null)
+                ids.add(aux.getGroupId());
+        }
+        
+        if (ids.size() > 0) {
+            /*
+             * cache AuxFieldGroupManagers 
+             */
+            afgms = AuxiliaryService.get().fetchByIds(ids);
+            for (AuxFieldGroupManager afgm : afgms)
+                cache.put("am:" + afgm.getGroup().getId(), afgm);
         }
     }
 
@@ -2719,6 +2751,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 switch (event.getAction()) {
                     case ADD:
                         manager = SampleService1.get().addAuxGroups(manager, event.getGroupIds());
+                        buildCache(null);
                         break;
                     case REMOVE:
                         manager = SampleService1.get()
@@ -2891,7 +2924,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         } else {
             /*
              * update cache with the newly added tests and the requested prep
-             * tests, if any
+             * tests
              */
             buildCache(ret);
             if (ret.getTests() != null && ret.getTests().size() > 0)

@@ -32,7 +32,6 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.ui.common.FormErrorException;
@@ -79,7 +78,7 @@ public abstract class TestPrepLookupUI extends Screen {
                     cancelButton;
 
     @UiField
-    protected Tree                        prepTestTree;
+    protected Tree                        tree;
 
     @UiField
     protected Dropdown<Integer>           prepSection;
@@ -102,22 +101,22 @@ public abstract class TestPrepLookupUI extends Screen {
 
     private void initialize() {
 
-        addScreenHandler(prepTestTree, "prepTestTree", new ScreenHandler<String>() {
+        addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                prepTestTree.setRoot(getTests());
+                tree.setRoot(getTests());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                prepTestTree.setEnabled(true);
+                tree.setEnabled(true);
             }
         });
 
-        prepTestTree.addSelectionHandler(new SelectionHandler<Integer>() {
+        tree.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 boolean enable;
                 Node selection;
 
-                selection = prepTestTree.getNodeAt(event.getSelectedItem());
+                selection = tree.getNodeAt(event.getSelectedItem());
                 if (selection != null && "prepTest".equals(selection.getType()))
                     enable = true;
                 else
@@ -128,13 +127,13 @@ public abstract class TestPrepLookupUI extends Screen {
             }
         });
 
-        prepTestTree.addBeforeNodeCloseHandler(new BeforeNodeCloseHandler() {
+        tree.addBeforeNodeCloseHandler(new BeforeNodeCloseHandler() {
             public void onBeforeNodeClose(BeforeNodeCloseEvent event) {
                 event.cancel();
             }
         });
         
-        prepTestTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+        tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int i;
                 Node node;
@@ -143,7 +142,7 @@ public abstract class TestPrepLookupUI extends Screen {
                 TestSectionManager tsm;
                 TestManager tm;
 
-                node = prepTestTree.getNodeAt(event.getRow());
+                node = tree.getNodeAt(event.getRow());
                 if ( !"prepTest".equals(node.getType()) || event.getCol() == 0) {
                     event.cancel();
                     return;
@@ -214,7 +213,7 @@ public abstract class TestPrepLookupUI extends Screen {
     public void setData(SampleTestReturnVO data) {
         this.data = data;
         /*
-         * set the model in the dropdown for sections
+         * set the model in the dropdown for sections in the tree
          */
         prepSection.setModel(sectionModel);
         setState(state);
@@ -258,8 +257,8 @@ public abstract class TestPrepLookupUI extends Screen {
         
         errors = new ValidationErrorsList();
         
-        for (i = 0; i < prepTestTree.getRoot().getChildCount(); i++) {
-            parent = prepTestTree.getRoot().getChildAt(i);
+        for (i = 0; i < tree.getRoot().getChildCount(); i++) {
+            parent = tree.getRoot().getChildAt(i);
             
             for (j = 0; j < parent.getChildCount(); j++) {
                 child = parent.getChildAt(j);
@@ -298,19 +297,19 @@ public abstract class TestPrepLookupUI extends Screen {
         TestPrepViewDO tp;
         TestManager tm;
 
-        prepTestTree.finishEditing();
+        tree.finishEditing();
 
         sectionId = null;
-        selection = prepTestTree.getNodeAt(prepTestTree.getSelectedNode());
+        selection = tree.getNodeAt(tree.getSelectedNode());
         sectionId = (Integer)selection.getCell(1);
 
         if (sectionId == null) {
-            Window.alert("Cannot copy blank section");
+            Window.alert(Messages.get().analysis_cantCopyBlankSect());
             return;
         }
 
-        for (i = 0; i < prepTestTree.getRowCount(); i++ ) {
-            item = prepTestTree.getNodeAt(i);            
+        for (i = 0; i < tree.getRowCount(); i++ ) {
+            item = tree.getNodeAt(i);            
             if ("prepTest".equals(item.getType()) && item.getCell(1) == null) {                
                 tp = item.getData();
                 tm = ((CacheProvider)parentScreen).get(tp.getPrepTestId(),
@@ -340,18 +339,18 @@ public abstract class TestPrepLookupUI extends Screen {
         TestPrepViewDO tp;
         TestManager tm;
 
-        prepTestTree.finishEditing();
+        tree.finishEditing();
 
-        selection = prepTestTree.getNodeAt(prepTestTree.getSelectedNode());
+        selection = tree.getNodeAt(tree.getSelectedNode());
         sectionId = (Integer)selection.getCell(1);
 
         if (sectionId == null) {
-            Window.alert("Cannot copy blank section");
+            Window.alert(Messages.get().analysis_cantCopyBlankSect());
             return;
         }
 
-        for (i = 0; i < prepTestTree.getRowCount(); i++ ) {
-            item = prepTestTree.getNodeAt(i);
+        for (i = 0; i < tree.getRowCount(); i++ ) {
+            item = tree.getNodeAt(i);
             if ("prepTest".equals(item.getType())) {
                 tp = item.getData();
                 tm = ((CacheProvider)parentScreen).get(tp.getPrepTestId(),
@@ -370,5 +369,4 @@ public abstract class TestPrepLookupUI extends Screen {
             }
         }
     }
-    
 }

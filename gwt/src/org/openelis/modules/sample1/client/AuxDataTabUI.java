@@ -29,6 +29,7 @@ import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.Constants;
@@ -38,11 +39,13 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
@@ -74,8 +77,6 @@ public class AuxDataTabUI extends Screen {
 
     private static AuxDataTabUIBinder uiBinder = GWT.create(AuxDataTabUIBinder.class);
 
-    protected AuxGroupLookupScreen1   auxGroupScreen;
-
     @UiField
     protected Table                   auxValsTable;
 
@@ -86,11 +87,13 @@ public class AuxDataTabUI extends Screen {
     protected Button                 addAuxButton, removeAuxButton;
 
     protected Screen                  parentScreen;
+    
+    protected AuxGroupLookupUI        auxGroupLookup;
 
     protected boolean                canEdit, canQuery, isVisible;
 
     protected SampleManager1          manager, displayedManager;
-
+    
     public AuxDataTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
         setEventBus(bus);
@@ -120,6 +123,7 @@ public class AuxDataTabUI extends Screen {
 
         auxValsTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
+                removeAuxButton.setEnabled(true);
                 /*
                  * AuxFieldViewDO fieldDO;
                  * 
@@ -320,14 +324,82 @@ public class AuxDataTabUI extends Screen {
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }   
     
-    @UiHandler("addAuxButton")
-    protected void addAuxButton(ClickEvent event) {
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> fieldList;
+        Item<Integer> row;
+        QueryData field;
 
+        fieldList = new ArrayList<QueryData>();
+
+        for (int i = 0; i < auxValsTable.getRowCount(); i++ ) {
+            row = auxValsTable.getRowAt(i);
+            // fieldDO = manager.getAuxFieldAt(i);
+
+            if (row.getCell(2) != null) {
+
+                field = new QueryData();
+                field.setKey(SampleMeta.getAuxDataAuxFieldId());
+                field.setType(QueryData.Type.INTEGER);
+                // TODO change this code
+                // field.setQuery(String.valueOf(fieldDO.getId()));
+                fieldList.add(field);
+
+                // aux data value
+                field = new QueryData();
+                field.setKey(SampleMeta.getAuxDataValue());
+                field.setType(QueryData.Type.STRING);
+                field.setQuery(String.valueOf(row.getCell(2)));
+                fieldList.add(field);
+            }
+        }
+
+        return fieldList;
+    }
+    
+    @UiHandler("addAuxButton")
+    protected void addAux(ClickEvent event) {
+        ModalWindow modal;
+        
+        if (auxGroupLookup == null) {
+            auxGroupLookup = new AuxGroupLookupUI() {
+                @Override
+                public void ok() {
+                    addAuxGroups(auxGroupLookup.getGroupIds());
+                }
+                
+                @Override
+                public void cancel() {
+                    //ignore
+                }
+            };
+        }
+        
+        modal = new ModalWindow();
+        modal.setSize("500px", "325px");
+        modal.setName(Messages.get().auxGroupSelection());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(auxGroupLookup);
+
+        auxGroupLookup.setWindow(modal);
+        auxGroupLookup.setData();
     }
     
     @UiHandler("removeAuxButton")
-    protected void removeAuxButton(ClickEvent event) {
+    protected void removeAux(ClickEvent event) {
+        int r;
+        AuxDataViewDO data;
+        ArrayList<Integer> ids;
 
+        r = auxValsTable.getSelectedRow();
+        if (r == -1)
+            return;
+        if (Window.confirm(Messages.get().removeAuxMessage())) {
+            data = (AuxDataViewDO)auxValsTable.getRowAt(r).getData();
+            ids = new ArrayList<Integer>(1);
+            ids.add(data.getGroupId());
+            bus.fireEvent(new AuxGroupChangeEvent(AuxGroupChangeEvent.Action.REMOVE, ids));
+        }
+        removeAuxButton.setEnabled(false);
     }
 
     private void setAuxMethod(String method) {
@@ -420,76 +492,15 @@ public class AuxDataTabUI extends Screen {
             // TODO change this code
             // validatorItem = AuxDataUtil.getValidatorForValues(values);
             // row.data = validatorItem;
+            row.setData(data);
             model.add(row);
         }
 
         return model;
     }
 
-    /**
-     * returns the list of the ids of the aux groups added to the sample
-     */
-    private ArrayList<Integer> getGroupIds() {
-        int i;
-        Integer prevId;
-        AuxDataViewDO data;
-        ArrayList<Integer> ids;
-
-        ids = new ArrayList<Integer>();
-        if (manager == null)
-            return ids;
-
-        prevId = null;
-        for (i = 0; i < manager.auxData.count(); i++ ) {
-            data = manager.auxData.get(i);
-            if ( !data.getGroupId().equals(prevId)) {
-                ids.add(data.getGroupId());
-                prevId = data.getGroupId();
-            }
-        }
-
-        return ids;
-    }
-
-    // TODO change this code
-    /*
-     * private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields)
-     * { ValidationErrorsList errors; try { // auxValsTable.fireEvents(false);
-     * errors = AuxDataUtil.addAuxGroupsFromAuxFields(fields, manager);
-     * DataChangeEvent.fire(this); // auxValsTable.fireEvents(true); if (errors
-     * != null && errors.size() > 0) showErrors(errors); } catch (Exception e) {
-     * Window.alert(e.getMessage()); } }
-     */
-
-    public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> fieldList;
-        Item<Integer> row;
-        QueryData field;
-
-        fieldList = new ArrayList<QueryData>();
-
-        for (int i = 0; i < auxValsTable.getRowCount(); i++ ) {
-            row = auxValsTable.getRowAt(i);
-            // fieldDO = manager.getAuxFieldAt(i);
-
-            if (row.getCell(2) != null) {
-
-                field = new QueryData();
-                field.setKey(SampleMeta.getAuxDataAuxFieldId());
-                field.setType(QueryData.Type.INTEGER);
-                // TODO change this code
-                // field.setQuery(String.valueOf(fieldDO.getId()));
-                fieldList.add(field);
-
-                // aux data value
-                field = new QueryData();
-                field.setKey(SampleMeta.getAuxDataValue());
-                field.setType(QueryData.Type.STRING);
-                field.setQuery(String.valueOf(row.getCell(2)));
-                fieldList.add(field);
-            }
-        }
-
-        return fieldList;
+    private void addAuxGroups(ArrayList<Integer> ids) {
+        if (ids != null && ids.size() > 0) 
+            bus.fireEvent(new AuxGroupChangeEvent(AuxGroupChangeEvent.Action.ADD, ids));        
     }
 }
