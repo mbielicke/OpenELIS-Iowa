@@ -991,7 +991,7 @@ public class SampleManager1Bean {
 
             if (getOrganizations(sm) != null) {
                 for (SampleOrganizationViewDO data : getOrganizations(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setSampleId(getSample(sm).getId());
                         sampleOrganization.add(data);
                     } else {
@@ -1002,7 +1002,7 @@ public class SampleManager1Bean {
 
             if (getProjects(sm) != null) {
                 for (SampleProjectViewDO data : getProjects(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setSampleId(getSample(sm).getId());
                         sampleProject.add(data);
                     } else {
@@ -1013,7 +1013,7 @@ public class SampleManager1Bean {
 
             if (getSampleQAs(sm) != null) {
                 for (SampleQaEventViewDO data : getSampleQAs(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setSampleId(getSample(sm).getId());
                         sampleQA.add(data);
                     } else {
@@ -1028,7 +1028,7 @@ public class SampleManager1Bean {
                     so++ ;
                     if ( !DataBaseUtil.isSame(so, data.getSortOrder()))
                         data.setSortOrder(so);
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setReferenceTableId(Constants.table().SAMPLE);
                         data.setReferenceId(getSample(sm).getId());
                         auxdata.add(data);
@@ -1040,7 +1040,7 @@ public class SampleManager1Bean {
 
             if (getSampleExternalNote(sm) != null) {
                 ext = getSampleExternalNote(sm);
-                if (ext.getId() == null) {
+                if (ext.getId() < 0) {
                     ext.setReferenceTableId(Constants.table().SAMPLE);
                     ext.setReferenceId(getSample(sm).getId());
                     note.add(ext);
@@ -1051,7 +1051,7 @@ public class SampleManager1Bean {
 
             if (getSampleInternalNotes(sm) != null) {
                 for (NoteViewDO data : getSampleInternalNotes(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setReferenceTableId(Constants.table().SAMPLE);
                         data.setReferenceId(getSample(sm).getId());
                         note.add(data);
@@ -1171,7 +1171,7 @@ public class SampleManager1Bean {
             // add/update analysis notes
             if (getAnalysisInternalNotes(sm) != null) {
                 for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setReferenceTableId(Constants.table().ANALYSIS);
                         data.setReferenceId(amap.get(data.getReferenceId()));
                         note.add(data);
@@ -1183,7 +1183,7 @@ public class SampleManager1Bean {
 
             if (getAnalysisExternalNotes(sm) != null) {
                 for (NoteViewDO data : getAnalysisExternalNotes(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setReferenceTableId(Constants.table().ANALYSIS);
                         data.setReferenceId(amap.get(data.getReferenceId()));
                         note.add(data);
@@ -1196,7 +1196,7 @@ public class SampleManager1Bean {
             // add/update analysis qa events
             if (getAnalysisQAs(sm) != null) {
                 for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setAnalysisId(amap.get(data.getAnalysisId()));
                         analysisQA.add(data);
                     } else if (data.isChanged()) {
@@ -1208,7 +1208,7 @@ public class SampleManager1Bean {
             // add/update analysis users
             if (getUsers(sm) != null) {
                 for (AnalysisUserViewDO data : getUsers(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setAnalysisId(amap.get(data.getAnalysisId()));
                         user.add(data);
                     } else if (data.isChanged()) {
@@ -1220,7 +1220,7 @@ public class SampleManager1Bean {
             // add/update storage
             if (getStorages(sm) != null) {
                 for (StorageViewDO data : getStorages(sm)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         if (Constants.table().SAMPLE_ITEM.equals(data.getReferenceTableId()))
                             data.setReferenceId(imap.get(data.getReferenceId()));
                         else if (Constants.table().ANALYSIS.equals(data.getReferenceTableId()))
@@ -1440,8 +1440,7 @@ public class SampleManager1Bean {
     }
 
     /**
-     * TODO change comment Adds/removes aux data to or from the sample based on
-     * the list of group ids
+     * Adds aux groups with ids to the sample based on the list of group 
      */
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> auxiliary;
@@ -1458,8 +1457,7 @@ public class SampleManager1Bean {
     }
 
     /**
-     * TODO change comment Adds/removes aux data to or from the sample based on
-     * the list of group ids
+     * Removes aux data from the sample based on the list of group ids
      */
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         auxDataHelper.removeAuxGroups(getAuxilliary(sm), groupIds);

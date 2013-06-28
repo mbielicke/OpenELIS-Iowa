@@ -147,7 +147,7 @@ public class SampleManager1 implements Serializable {
 
     /**
      * Returns the next negative Id for this sample's newly created and as yet
-     * uncommitted sample items, analyses and results
+     * uncommitted data objects e.g. sample items, analyses and results etc.
      */
     public int getNextUID() {
         return --nextUID;
@@ -204,39 +204,39 @@ public class SampleManager1 implements Serializable {
 
             if (sampleQAs != null)
                 for (SampleQaEventDO data : sampleQAs)
-                    doMap.put(getSampleQAEventUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (analysisQAs != null)
                 for (AnalysisQaEventDO data : analysisQAs)
-                    doMap.put(getAnalysisQAEventUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (sampleIntNotes != null)
                 for (NoteDO data : sampleIntNotes)
-                    doMap.put(getNoteUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (analysisIntNotes != null)
                 for (NoteDO data : analysisIntNotes)
-                    doMap.put(getNoteUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (items != null)
                 for (SampleItemDO data : items)
-                    doMap.put(getSampleItemUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (storages != null)
                 for (StorageDO data : storages)
-                    doMap.put(getStorageUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (analyses != null)
                 for (AnalysisDO data : analyses)
-                    doMap.put(getAnalysisUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (users != null)
                 for (AnalysisUserDO data : users)
-                    doMap.put(getAnalysisUserUid(data.getId()), data);
+                    addToDOMap(data);
 
             if (results != null)
                 for (ResultDO data : results)
-                    doMap.put(getResultUid(data.getId()), data);
+                    addToDOMap(data);
 
         }
         return doMap.get(uid);
@@ -297,10 +297,10 @@ public class SampleManager1 implements Serializable {
             SampleOrganizationViewDO data;
 
             data = new SampleOrganizationViewDO();
+            data.setId(getNextUID());
             if (organizations == null)
                 organizations = new ArrayList<SampleOrganizationViewDO>();
             organizations.add(data);
-
             return data;
         }
 
@@ -326,16 +326,11 @@ public class SampleManager1 implements Serializable {
          * Removes an organization from the list
          */
         public void remove(int i) {
-            SampleOrganizationViewDO data;
-
-            data = organizations.remove(i);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(organizations.get(i));
         }
 
         public void remove(SampleOrganizationViewDO data) {
-            if (organizations.remove(data) && data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(data);
         }
 
         /**
@@ -385,6 +380,7 @@ public class SampleManager1 implements Serializable {
             SampleProjectViewDO data;
 
             data = new SampleProjectViewDO();
+            data.setId(getNextUID());
             data.setIsPermanent("Y");
             if (projects == null)
                 projects = new ArrayList<SampleProjectViewDO>();
@@ -408,16 +404,11 @@ public class SampleManager1 implements Serializable {
          * Removes a project from the list
          */
         public void remove(int i) {
-            SampleProjectViewDO data;
-
-            data = projects.remove(i);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(projects.get(i));
         }
 
         public void remove(SampleProjectViewDO data) {
-            if (projects.remove(data) && data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(data);
         }
 
         /**
@@ -478,15 +469,16 @@ public class SampleManager1 implements Serializable {
             SampleQaEventViewDO data;
 
             data = new SampleQaEventViewDO();
+            data.setId(getNextUID());
             if (event != null) {
                 data.setQaEventId(event.getId());
                 data.setTypeId(event.getTypeId());
                 data.setIsBillable(event.getIsBillable());
             }
+            addToDOMap(data);
             if (sampleQAs == null)
                 sampleQAs = new ArrayList<SampleQaEventViewDO>();
             sampleQAs.add(data);
-
             return data;
         }
 
@@ -498,12 +490,14 @@ public class SampleManager1 implements Serializable {
             AnalysisQaEventViewDO data;
 
             data = new AnalysisQaEventViewDO();
+            data.setId(getNextUID());
             data.setAnalysisId(analysis.getId());
             if (event != null) {
                 data.setQaEventId(event.getId());
                 data.setTypeId(event.getTypeId());
                 data.setIsBillable(event.getIsBillable());
             }
+            addToDOMap(data);
             if (analysisQAs == null)
                 analysisQAs = new ArrayList<AnalysisQaEventViewDO>();
             analysisQAs.add(data);
@@ -516,16 +510,11 @@ public class SampleManager1 implements Serializable {
          * Removes a sample's qa event
          */
         public void remove(int i) {
-            SampleQaEventViewDO data;
-
-            data = sampleQAs.remove(i);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(sampleQAs.get(i));
         }
 
         public void remove(SampleQaEventViewDO data) {
-            if (sampleQAs.remove(data) && data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(data);
         }
 
         /**
@@ -543,10 +532,8 @@ public class SampleManager1 implements Serializable {
         }
 
         public void remove(AnalysisDO analysis, AnalysisQaEventViewDO data) {
-            if (analysisQAs.remove(data) && data.getId() != null && data.getId() > 0) {
-                removeDataObject(data);
-                mapRemove(data);
-            }
+            mapRemove(data);
+            removeDataObject(data);
         }
 
         /**
@@ -715,6 +702,7 @@ public class SampleManager1 implements Serializable {
         public NoteViewDO getEditing() {
             if (sampleExtNote == null) {
                 sampleExtNote = new NoteViewDO();
+                sampleExtNote.setId(getNextUID());
                 sampleExtNote.setIsExternal("Y");
             }
 
@@ -726,8 +714,10 @@ public class SampleManager1 implements Serializable {
          * removed.
          */
         public void removeEditing() {
-            if (sampleExtNote != null && sampleExtNote.getId() != null && sampleExtNote.getId() > 0)
+            if (sampleExtNote != null) {
                 removeDataObject(sampleExtNote);
+                sampleExtNote = null;
+            }
         }
     }
 
@@ -757,7 +747,9 @@ public class SampleManager1 implements Serializable {
             if (sampleIntNotes.size() == 0 ||
                 (sampleIntNotes.get(0).getId() != null && sampleIntNotes.get(0).getId() > 0)) {
                 data = new NoteViewDO();
+                data.setId(getNextUID());
                 data.setIsExternal("N");
+                addToDOMap(data);
                 sampleIntNotes.add(0, data);
             }
 
@@ -773,7 +765,7 @@ public class SampleManager1 implements Serializable {
 
             if (sampleIntNotes != null && sampleIntNotes.size() > 0) {
                 data = sampleIntNotes.get(0);
-                if (data.getId() == null && data.getId() < 0)
+                if (data.getId() < 0)
                     sampleIntNotes.remove(0);
             }
         }
@@ -818,7 +810,7 @@ public class SampleManager1 implements Serializable {
             sample.setNextItemSequence(seq + 1);
 
             data = new SampleItemViewDO();
-            data.setId(getNextUID());            
+            data.setId(getNextUID());
             data.setItemSequence(seq);
             if (items == null)
                 items = new ArrayList<SampleItemViewDO>();
@@ -831,16 +823,11 @@ public class SampleManager1 implements Serializable {
          * Removes an item from the list
          */
         public void remove(int i) {
-            SampleItemViewDO data;
-
-            data = items.remove(i);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(items.get(i));
         }
 
         public void remove(SampleItemViewDO data) {
-            if (items.remove(data) && data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            removeDataObject(data);
         }
 
         /**
@@ -901,8 +888,7 @@ public class SampleManager1 implements Serializable {
         public void remove(StorageViewDO data) {
             for (StorageViewDO storage : storages) {
                 if (storage.getId().equals(data.getId())) {
-                    if (data.getId() != null && data.getId() > 0)
-                        removeDataObject(data);
+                    removeDataObject(data);
                     break;
                 }
             }
@@ -938,8 +924,10 @@ public class SampleManager1 implements Serializable {
             StorageViewDO data;
 
             data = new StorageViewDO();
+            data.setId(getNextUID());
             data.setReferenceTableId(tableId);
             data.setReferenceId(id);
+            addToDOMap(data);
             if (storages == null)
                 storages = new ArrayList<StorageViewDO>();
             storages.add(data);
@@ -957,9 +945,7 @@ public class SampleManager1 implements Serializable {
                 if (tableId == data.getReferenceTableId() && id == data.getReferenceId()) {
                     n++ ;
                     if (n == i) {
-                        storages.remove(j);
-                        if (data.getId() != null && data.getId() > 0)
-                            removeDataObject(data);
+                        removeDataObject(data);
                         break;
                     }
                 }
@@ -1068,8 +1054,10 @@ public class SampleManager1 implements Serializable {
             map();
             if (map.get(analysis.getId()) == null) {
                 data = new NoteViewDO();
+                data.setId(getNextUID());
                 data.setIsExternal("Y");
                 data.setReferenceId(analysis.getId());
+                addToDOMap(data);
                 analysisExtNotes.add(data);
                 map.put(analysis.getId(), data);
             }
@@ -1088,13 +1076,12 @@ public class SampleManager1 implements Serializable {
             data = map.get(analysis.getId());
             if (data != null) {
                 analysisExtNotes.remove(data);
-                if (data.getId() != null && data.getId() > 0)
-                    removeDataObject(data);
+                removeDataObject(data);
             }
         }
 
         /*
-         * find the index to external and internal editable notes
+         * find the index to external editable notes
          */
         private void map() {
             if (analysisExtNotes != null) {
@@ -1144,8 +1131,10 @@ public class SampleManager1 implements Serializable {
 
             if (l.size() == 0 || (l.get(0).getId() != null && l.get(0).getId() > 0)) {
                 data = new NoteViewDO();
+                data.setId(getNextUID());
                 data.setIsExternal("N");
                 data.setReferenceId(analysis.getId());
+                addToDOMap(data);
                 analysisIntNotes.add(data);
                 l.add(0, data);
             }
@@ -1163,11 +1152,9 @@ public class SampleManager1 implements Serializable {
 
             map();
             l = map.get(analysis.getId());
-            if (l != null && l.size() > 0) {
+            if (l != null && l.size() > 0 && l.get(0).getId() < 0) {
                 data = l.remove(0);
                 analysisIntNotes.remove(data);
-                if (data.getId() != null && data.getId() > 0)
-                    removeDataObject(data);
             }
         }
 
@@ -1228,7 +1215,9 @@ public class SampleManager1 implements Serializable {
             AnalysisUserViewDO data;
 
             data = new AnalysisUserViewDO();
+            data.setId(getNextUID());
             data.setAnalysisId(analysis.getId());
+            addToDOMap(data);
             if (users == null)
                 users = new ArrayList<AnalysisUserViewDO>();
             users.add(data);
@@ -1245,17 +1234,13 @@ public class SampleManager1 implements Serializable {
 
             mapBuild();
             data = map.get(analysis.getId()).get(i);
-            users.remove(data);
+            removeDataObject(data);
             mapRemove(data);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
         }
 
         public void remove(AnalysisDO analysis, AnalysisUserViewDO data) {
-            if (users.remove(data) && data.getId() != null && data.getId() > 0) {
-                removeDataObject(data);
-                mapRemove(data);
-            }
+            removeDataObject(data);
+            mapRemove(data);
         }
 
         /**
@@ -1349,11 +1334,9 @@ public class SampleManager1 implements Serializable {
 
             mapBuild();
             rl = map.get(analysis.getId()).get(r);
-            for (ResultViewDO data : rl) {
-                results.remove(data);
-                if (data.getId() != null && data.getId() > 0)
-                    removeDataObject(data);
-            }
+            for (ResultViewDO data : rl)
+                removeDataObject(data);
+
             rl.remove(r);
         }
 
@@ -1429,43 +1412,114 @@ public class SampleManager1 implements Serializable {
                 }
             }
         }
+    }
 
-        // /**
-        // * Adds a new row. The first column is created from row-analyte data
-        // while remaining columns
-        // * are duplicated from the source-row.
-        // */
-        // public ResultViewDO add(AnalysisDO analysis, int row,
-        // TestAnalyteViewDO rowAnalyte, int sourceRow) {
-        // ResultViewDO data, from;
-        // ArrayList<ResultViewDO> o, n;
-        //
-        // mapBuild();
-        // o = map.get(analysis.getId()).get(sourceRow);
-        // n = new ArrayList<ResultViewDO>(o.size());
-        // from = o.get(0);
-        // data = new ResultViewDO(0, analysis.getId(), rowAnalyte.getId(),
-        // null,
-        // "N", null, rowAnalyte.getIsReportable(), rowAnalyte.getAnalyteId(),
-        // null, null, rowAnalyte.getAnalyteName(), from.getRowGroup(),
-        // null, null);
-        // n.add(data);
-        // for (int i = 1; i < n.size(); i++)
-        // from = o.get(i);
-        // n.add(new ResultViewDO(0, analysis.getId(), rowAnalyte.getId(), null,
-        // "N", null, rowAnalyte.getIsReportable(), rowAnalyte.getAnalyteId(),
-        // null, null, rowAnalyte.getAnalyteName(), o.get(0).getRowGroup(),
-        // null, null));
-        //
-        // }
+    /*
+     * Methods for adding specific objects to doMap. The map isn't initialized
+     * here if it's null because we want to do it only once and only when the
+     * user wants to look up an object by calling getObject.
+     */
+    private void addToDOMap(SampleQaEventDO data) {
+        if (doMap != null)
+            doMap.put(getSampleQAEventUid(data.getId()), data);
+    }
 
+    private void addToDOMap(AnalysisQaEventDO data) {
+        if (doMap != null)
+            doMap.put(getAnalysisQAEventUid(data.getId()), data);
+    }
+
+    private void addToDOMap(NoteDO data) {
+        if (doMap != null)
+            doMap.put(getNoteUid(data.getId()), data);
+    }
+
+    private void addToDOMap(SampleItemDO data) {
+        if (doMap != null)
+            doMap.put(getSampleItemUid(data.getId()), data);
+    }
+
+    private void addToDOMap(StorageDO data) {
+        if (doMap != null)
+            doMap.put(getStorageUid(data.getId()), data);
+    }
+
+    private void addToDOMap(AnalysisDO data) {
+        if (doMap != null)
+            doMap.put(getAnalysisUid(data.getId()), data);
+    }
+
+    private void addToDOMap(AnalysisUserDO data) {
+        if (doMap != null)
+            doMap.put(getAnalysisUserUid(data.getId()), data);
+    }
+
+    private void addToDOMap(ResultDO data) {
+        if (doMap != null)
+            doMap.put(getResultUid(data.getId()), data);
+    }
+
+    /*
+     * methods for adding specific data objects to the list of removed objects
+     */    
+    private void removeDataObject(SampleOrganizationViewDO data) {
+        organizations.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(SampleProjectViewDO data) {
+        projects.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(SampleQaEventViewDO data) {
+        sampleQAs.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(AnalysisQaEventViewDO data) {
+        analysisQAs.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(SampleItemViewDO data) {
+        items.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(StorageViewDO data) {
+        storages.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(AnalysisUserViewDO data) {
+        users.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(ResultViewDO data) {
+        results.remove(data);
+        if (data.getId() > 0)
+            addToRemoved(data);
+    }
+
+    private void removeDataObject(NoteViewDO data) {
+        if (data.getId() > 0)
+            addToRemoved(data);
     }
 
     /**
-     * Adds the specified data object to the list of objects that should be
-     * removed from the database.
+     * adds the specified data object to the list of objects that should be
+     * removed from the database
      */
-    private void removeDataObject(DataObject data) {
+    private void addToRemoved(DataObject data) {
         if (removed == null)
             removed = new ArrayList<DataObject>();
         removed.add(data);

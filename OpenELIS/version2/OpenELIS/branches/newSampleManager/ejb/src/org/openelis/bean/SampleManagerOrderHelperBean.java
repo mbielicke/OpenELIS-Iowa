@@ -109,9 +109,6 @@ public class SampleManagerOrderHelperBean {
     private OrganizationParameterBean organizationParameter;
 
     @EJB
-    private AnalysisHelperBean        analysisHelper;
-
-    @EJB
     private UserCacheBean             userCache;
 
     @EJB
@@ -482,6 +479,7 @@ public class SampleManagerOrderHelperBean {
                 if ("N".equals(af.getIsActive()))
                     continue;
                 aux1 = new AuxDataViewDO();
+                aux1.setId(sm.getNextUID());
                 aux1.setAuxFieldId(af.getId());
                 aux1.setGroupId(entry.getKey());
                 aux1.setAnalyteId(af.getAnalyteId());
