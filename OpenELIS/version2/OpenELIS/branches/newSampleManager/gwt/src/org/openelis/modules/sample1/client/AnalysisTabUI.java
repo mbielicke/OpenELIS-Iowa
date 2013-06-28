@@ -700,18 +700,16 @@ public class AnalysisTabUI extends Screen {
         model.add(new Item<Integer>(null, ""));
 
         if (analysis != null && isState(ADD, UPDATE)) {
-            try {
-                /*
-                 * create the model from the sections associated with the
-                 * analysis' test
-                 */
-                tsm = getTestManager(analysis.getTestId()).getTestSections();
+            /*
+             * create the model from the sections associated with the analysis'
+             * test
+             */
+            tsm = getTestManager(analysis.getTestId()).getTestSections();
+            if (tsm != null) {
                 for (int i = 0; i < tsm.count(); i++ ) {
                     ts = tsm.getSectionAt(i);
                     model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
                 }
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
             }
         }
 
@@ -727,7 +725,7 @@ public class AnalysisTabUI extends Screen {
         ArrayList<Item<Integer>> model;
         DictionaryDO d;
         TestTypeOfSampleDO type;
-        TestTypeOfSampleManager tsm;
+        TestTypeOfSampleManager tts;
 
         if (isState(DISPLAY, QUERY))
             return allUnitsModel;
@@ -740,9 +738,9 @@ public class AnalysisTabUI extends Screen {
                  * create the model from the units associated with the sample
                  * item's sample type
                  */
-                tsm = getTestManager(analysis.getTestId()).getSampleTypes();
-                for (int i = 0; i < tsm.count(); i++ ) {
-                    type = tsm.getTypeAt(i);
+                tts = getTestManager(analysis.getTestId()).getSampleTypes();
+                for (int i = 0; i < tts.count(); i++ ) {
+                    type = tts.getTypeAt(i);
                     if (type.getUnitOfMeasureId() != null &&
                         DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(),
                                             type.getTypeOfSampleId())) {

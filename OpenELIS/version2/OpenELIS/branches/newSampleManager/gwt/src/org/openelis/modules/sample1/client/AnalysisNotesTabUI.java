@@ -313,6 +313,7 @@ public class AnalysisNotesTabUI extends Screen {
 
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
+                @Override
                 public void ok() {
                     /*
                      * isExternal is not used for this check because its value
@@ -333,6 +334,7 @@ public class AnalysisNotesTabUI extends Screen {
                     }
                 }
 
+                @Override
                 public void cancel() {
                     // ignore
                 }

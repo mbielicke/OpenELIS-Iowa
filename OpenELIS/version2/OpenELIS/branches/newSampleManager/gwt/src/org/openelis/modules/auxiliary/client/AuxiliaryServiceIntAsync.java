@@ -30,11 +30,12 @@ public interface AuxiliaryServiceIntAsync {
     void fetchForUpdate(Integer id, AsyncCallback<AuxFieldGroupManager> callback);
 
     void fetchGroupById(Integer id, AsyncCallback<AuxFieldGroupManager> callback);
+    
+    void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<AuxFieldGroupManager>> callback);
 
     void fetchGroupByIdWithFields(Integer id, AsyncCallback<AuxFieldGroupManager> callback);
 
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void update(AuxFieldGroupManager man, AsyncCallback<AuxFieldGroupManager> callback);
-
 }
