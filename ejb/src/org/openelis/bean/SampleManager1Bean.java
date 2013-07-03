@@ -1452,6 +1452,14 @@ public class SampleManager1Bean {
         }
 
         auxDataHelper.addAuxGroups(auxiliary, groupIds);
+        
+        /*
+         * set negative ids in the newly added aux data
+         */
+        for (AuxDataViewDO aux : auxiliary) {
+            if (aux.getId() == null)
+                aux.setId(sm.getNextUID());
+        }
 
         return sm;
     }

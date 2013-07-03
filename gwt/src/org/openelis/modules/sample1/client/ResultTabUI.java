@@ -193,7 +193,7 @@ public class ResultTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if ( !DataBaseUtil.isSame(this.manager, manager))
+        if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
 

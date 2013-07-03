@@ -47,7 +47,6 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.widget.Confirm;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager1;
@@ -137,8 +136,6 @@ public class AnalysisTabUI extends Screen {
     protected SampleItemViewDO         sampleItem;
 
     protected String                   displayedUid;
-
-    protected Confirm                  changeTestConfirm;
 
     protected ArrayList<Item<Integer>> allUnitsModel, allSectionsModel;
 
@@ -549,9 +546,6 @@ public class AnalysisTabUI extends Screen {
                          });
 
         addScreenHandler(selectWkshtButton, "selectWkshtButton", new ScreenHandler<Object>() {
-            public void onClick(ClickEvent event) {
-            }
-
             public void onStateChange(StateChangeEvent event) {
                 selectWkshtButton.setEnabled(false);
             }
@@ -575,11 +569,6 @@ public class AnalysisTabUI extends Screen {
         });
 
         addScreenHandler(removeActionButton, "removeActionButton", new ScreenHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                int r;
-                Integer action;
-            }
-
             public void onStateChange(StateChangeEvent event) {
                 removeActionButton.setEnabled( (isState(ADD, UPDATE) && canEdit));
             }
@@ -674,7 +663,7 @@ public class AnalysisTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if ( !DataBaseUtil.isSame(this.manager, manager))
+        if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
 
@@ -831,15 +820,16 @@ public class AnalysisTabUI extends Screen {
         }
     }
 
+    /**
+     * returns the TestManager, for the specified id, from the cache maintained
+     * by the parent screen
+     */
     private TestManager getTestManager(Integer testId) {
-        TestManager tm;
-
-        tm = null;
-        if (parentScreen instanceof CacheProvider)
-            tm = ((CacheProvider)parentScreen).get(testId, TestManager.class);
-        if (tm == null)
+        if (!(parentScreen instanceof CacheProvider)) {
             Window.alert("Parent screen must implement " + CacheProvider.class.toString());
-        return tm;
+            return null;
+        }
+        return ((CacheProvider)parentScreen).get(testId, TestManager.class);
     }
 
     private void evaluateEdit() {

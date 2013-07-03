@@ -28,7 +28,6 @@ package org.openelis.modules.sample1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldGroupDO;
-import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
