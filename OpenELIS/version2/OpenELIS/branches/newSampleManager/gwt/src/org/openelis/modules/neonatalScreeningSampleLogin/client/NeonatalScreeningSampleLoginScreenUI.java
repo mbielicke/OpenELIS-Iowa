@@ -251,7 +251,26 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         analysisNotesTab = new AnalysisNotesTabUI(this, bus);
         sampleNotesTab = new SampleNotesTabUI(this, bus);
         storageTab = new StorageTabUI(this, bus);
-        auxDataTab = new AuxDataTabUI(this, bus);
+        
+        auxDataTab = new AuxDataTabUI(this, bus) {
+            @Override
+            public boolean evaluateEdit() {
+                return manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                    .getStatusId());
+            }
+
+            @Override
+            public int count() {
+                if (manager != null)
+                    return manager.auxData.count();
+                return 0;
+            }
+
+            @Override
+            public AuxDataViewDO get(int i) {
+                return manager.auxData.get(i);
+            }
+        };
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -1639,6 +1658,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                           SampleManager1.Load.QA,
                                                           SampleManager1.Load.RESULT,
                                                           SampleManager1.Load.STORAGE);
+            buildCache(null);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.severe(e.getMessage());
@@ -1674,6 +1694,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 commitUpdate(false);
                 break;
         }
+        cache = null;
     }
 
     protected void commitQuery() {
@@ -1732,7 +1753,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 Window.alert("commitUpdate(): " + e.getMessage());
             window.clearStatus();
         }
-        cache = null;
     }
 
     @UiHandler("abort")
@@ -1783,7 +1803,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                       SampleManager1.Load.QA,
                                                       SampleManager1.Load.RESULT,
                                                       SampleManager1.Load.STORAGE);
-                buildCache(null);
                 evaluateEdit();
                 setData();
                 setState(DISPLAY);
@@ -1794,7 +1813,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 window.clearStatus();
             }
         }
-
         cache = null;
     }
 
@@ -1822,9 +1840,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     public <T> T get(Object key, Class<?> c) {
         String cacheKey;
 
+        if (cache == null)
+            return null;
+        
         cacheKey = null;
         if (c == TestManager.class)
             cacheKey = "tm:" + key;
+        else if (c == AuxFieldGroupManager.class)
+            cacheKey = "am:" + key;
 
         return (T)cache.get(cacheKey);
     }
@@ -1894,6 +1917,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         ValidationErrorsList errors;
 
         if (accNum == null || accNum < 0) {
+            manager.getSample().setAccessionNumber(accNum);
             window.setError(Messages.get().sample_accessionNumberNotValidException(accNum));
             return;
         }
@@ -2599,8 +2623,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         analysisNotesTab.setData(manager);
         sampleNotesTab.setData(manager);
         storageTab.setData(manager);
-        auxDataTab.setData(manager);
-        /*
+        /*auxDataTab.setData(manager);
+        
          * qaEventsTab.setData(null);
          */
     }
@@ -2636,12 +2660,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void buildCache(SampleTestReturnVO ret) throws Exception {
         int i, j;
+        Integer prevId;
         ArrayList<Integer> ids;
         SampleItemViewDO item;
         AnalysisViewDO ana;
         AuxDataViewDO aux;
         ArrayList<TestManager> tms;
-        ArrayList<AuxFieldGroupManager> afgms; 
+        ArrayList<AuxFieldGroupManager> afgms;
 
         if (cache == null)
             cache = new HashMap<String, Object>();
@@ -2660,33 +2685,38 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
 
         if (ret != null && ret.getTests() != null) {
-            for (SampleTestRequestVO t : ret.getTests())
-                ids.add(t.getTestId());
+            for (SampleTestRequestVO t : ret.getTests()) {
+                if (get(t.getTestId(), TestManager.class) == null)
+                    ids.add(t.getTestId());
+            }
         }
 
         if (ids.size() > 0) {
             /*
-             * cache TestManagers 
+             * cache TestManagers
              */
             tms = TestService.get().fetchByIds(ids);
             for (TestManager tm : tms)
                 cache.put("tm:" + tm.getTest().getId(), tm);
         }
-        
 
         /*
          * the list of aux field groups to be fetched
          */
         ids.clear();
+        prevId = null;
         for (i = 0; i < manager.auxData.count(); i++ ) {
             aux = manager.auxData.get(i);
-            if (get(aux.getGroupId(), AuxFieldGroupManager.class) == null)
-                ids.add(aux.getGroupId());
+            if (!aux.getGroupId().equals(prevId)) {
+                if (get(aux.getGroupId(), AuxFieldGroupManager.class) == null)
+                    ids.add(aux.getGroupId());
+                prevId = aux.getGroupId();
+            }
         }
-        
+
         if (ids.size() > 0) {
             /*
-             * cache AuxFieldGroupManagers 
+             * cache AuxFieldGroupManagers
              */
             afgms = AuxiliaryService.get().fetchByIds(ids);
             for (AuxFieldGroupManager afgm : afgms)
@@ -2923,8 +2953,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             showErrors(ret.getErrors());
         } else {
             /*
-             * update cache with the newly added tests and the requested prep
-             * tests
+             * update the cache with the newly added tests and the requested
+             * prep tests
              */
             buildCache(ret);
             if (ret.getTests() != null && ret.getTests().size() > 0)

@@ -646,8 +646,7 @@ public class SampleBean {
         // slow us down.
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
             e.add(new FormErrorException(Messages.get().sample_accessionNumberNotValidException(data.getAccessionNumber())));
-
-        if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
+        else if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
             e.add(new FormErrorException(Messages.get().sample_accessionNumberNotInUse(data.getAccessionNumber())));
 
         // domain

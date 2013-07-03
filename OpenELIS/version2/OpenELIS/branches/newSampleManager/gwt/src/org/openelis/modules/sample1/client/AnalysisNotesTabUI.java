@@ -169,9 +169,9 @@ public class AnalysisNotesTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if ( !DataBaseUtil.isSame(this.manager, manager)) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
             displayedManager = this.manager;
-            this.manager = manager;
+            this.manager = manager;        
         }
     }
 

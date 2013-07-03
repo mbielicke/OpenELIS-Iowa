@@ -41,8 +41,6 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
-import org.openelis.domain.AuxFieldValueViewDO;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
@@ -61,8 +59,6 @@ import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.AuxFieldManager;
-import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
@@ -113,6 +109,9 @@ public class SampleManagerOrderHelperBean {
 
     @EJB
     private SampleManager1Bean        sampleManager1;
+    
+    @EJB
+    private AuxDataHelperBean         auxDataHelper;
 
     private static final Logger       log = Logger.getLogger("openelis");
 
@@ -424,77 +423,31 @@ public class SampleManagerOrderHelperBean {
     }
 
     /**
-     * Add to sample the aux groups specified in the order
+     * Add to the sample, the aux groups specified in the order 
      */
     private void copyAuxData(SampleManager1 sm,
                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps,
                              ValidationErrorsList e) throws Exception {
-        int i;
-        Integer prevId;
-        AuxDataViewDO aux1, aux2;
-        AuxFieldViewDO af;
-        AuxFieldManager afm;
-        HashMap<Integer, AuxDataViewDO> grp;
-
-        /*
-         * set the values of the sample's aux data from the order
-         */
-        if (getAuxilliary(sm) != null) {
-            prevId = null;
-            for (AuxDataViewDO a : getAuxilliary(sm)) {
-                grp = grps.get(a.getGroupId());
-                if (grp != null) {
-                    aux1 = grp.get(a.getAnalyteId());
-                    if (aux1 != null) {
-                        a.setIsReportable(aux1.getIsReportable());
-                        a.setValue(aux1.getValue());
-                        a.setDictionary(aux1.getDictionary());
-                    }
-                }
-
-                /*
-                 * this makes sure that after this loop ends, the map only
-                 * contains groups not present in the sample
-                 */
-                if (prevId != null && !prevId.equals(a.getGroupId()))
-                    grps.remove(prevId);
-                prevId = a.getGroupId();
-            }
-            /*
-             * this makes sure that the last group in the sample gets removed
-             * from the map, which won't happen in the loop above
-             */
-            if (prevId != null)
-                grps.remove(prevId);
-        }
+        ArrayList<AuxDataViewDO> auxiliary;        
 
         /*
          * fields for the aux group present in the order but not in the sample
          * are fetched and aux data for them is added to the sample
          */
-        for (Entry<Integer, HashMap<Integer, AuxDataViewDO>> entry : grps.entrySet()) {
-            afm = AuxFieldManager.fetchByGroupIdWithValues(entry.getKey());
-            for (i = 0; i < afm.count(); i++ ) {
-                af = afm.getAuxFieldAt(i);
-                if ("N".equals(af.getIsActive()))
-                    continue;
-                aux1 = new AuxDataViewDO();
-                aux1.setId(sm.getNextUID());
-                aux1.setAuxFieldId(af.getId());
-                aux1.setGroupId(entry.getKey());
-                aux1.setAnalyteId(af.getAnalyteId());
-                aux1.setAnalyteName(af.getAnalyteName());
-                aux2 = entry.getValue().get(af.getAnalyteId());
-                // TODO validate the value and set the type
-                if (aux2 != null) {
-                    aux1.setIsReportable(aux2.getIsReportable());
-                    aux1.setTypeId(aux2.getTypeId());
-                    aux1.setValue(aux2.getValue());
-                } else {
-                    aux1.setIsReportable(af.getIsReportable());
-                    aux1.setValue(getDefault(afm.getValuesAt(i)));
-                }                
-                addAuxilliary(sm, aux1);
+        if (grps.size() > 0) {
+            auxiliary = getAuxilliary(sm);
+            if (auxiliary == null) {
+                auxiliary = new ArrayList<AuxDataViewDO>();
+                setAuxilliary(sm, auxiliary);
+            }
+            auxDataHelper.addAuxGroups(auxiliary, grps);  
+            
+            /*
+             * set negative ids in the newly added aux data
+             */
+            for (AuxDataViewDO aux : auxiliary) {
+                if (aux.getId() == null)
+                    aux.setId(sm.getNextUID());
             }
         }
     }
@@ -880,23 +833,5 @@ public class SampleManagerOrderHelperBean {
         } catch (NotFoundException ex) {
             // ignore
         }
-    }
-
-    /**
-     * Returns the default value, if any, defined for a particular aux field
-     */
-    private String getDefault(AuxFieldValueManager afvm) {
-        AuxFieldValueViewDO afv;
-
-        if (afvm.count() == 0)
-            return null;
-
-        for (int i = 0; i < afvm.count(); i++ ) {
-            afv = afvm.getAuxFieldValueAt(i);
-            if (Constants.dictionary().AUX_DEFAULT.equals(afv.getTypeId()))
-                return afv.getValue();
-        }
-
-        return null;
     }
 }

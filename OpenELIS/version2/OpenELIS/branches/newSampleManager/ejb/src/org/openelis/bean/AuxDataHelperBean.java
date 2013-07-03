@@ -26,6 +26,8 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.ejb.Stateless;
@@ -39,8 +41,8 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 
 /**
- * This class is used for adding or removing aux data associated with a sample
- * or order etc.
+ * This class is used for adding or removing aux data associated with a sample,
+ * order etc.
  */
 
 @Stateless
@@ -52,48 +54,34 @@ public class AuxDataHelperBean {
      * the group isn't already present in the list of aux data.
      */
     public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, ArrayList<Integer> groupIds) throws Exception {
-        int i;
-        Integer prevId;
         ArrayList<Integer> addIds;
-        AuxDataViewDO aux;
-        AuxFieldViewDO af;
-        AuxFieldManager afm;
 
-        addIds = new ArrayList<Integer>(groupIds);
-        prevId = null;
         /*
          * make sure that only the groups not already in the list of aux data
          * get added to it
          */
-        for (AuxDataViewDO a : auxiliary) {
-            if ( !a.getGroupId().equals(prevId)) {
-                if (groupIds.contains(a.getGroupId()))
-                    addIds.remove(a.getGroupId());
-                prevId = a.getGroupId();
-            }
-        }
+        addIds = getGroupsNotInAuxList(auxiliary, groupIds);
+
+        addAuxGroups(auxiliary, addIds, null);
+    }
+
+    /**
+     * Adds aux groups specified by the keys in the map to the list of aux data.
+     * If the aux data's analyte can be found in the map then the value is set
+     * from the map, otherwise it's set as the default of the corresponding aux
+     * field in the group.
+     */
+    public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary,
+                             HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grpMap) throws Exception {
+        ArrayList<Integer> addIds;
 
         /*
-         * fields for the aux group are fetched and aux data for them is added
+         * make sure that only the groups not already in the list of aux data
+         * get added to it
          */
-        for (Integer id : addIds) {
-            afm = AuxFieldManager.fetchByGroupIdWithValues(id);
-            for (i = 0; i < afm.count(); i++ ) {
-                af = afm.getAuxFieldAt(i);
-                if ("N".equals(af.getIsActive()))
-                    continue;
-                aux = new AuxDataViewDO();
-                aux.setAuxFieldId(af.getId());
-                aux.setGroupId(id);
-                aux.setAnalyteId(af.getAnalyteId());
-                aux.setAnalyteName(af.getAnalyteName());
-                // TODO validate the value and set the type
-                aux.setIsReportable(af.getIsReportable());
-                aux.setValue(getDefault(afm.getValuesAt(i)));
+        addIds = getGroupsNotInAuxList(auxiliary, grpMap.keySet());
 
-                auxiliary.add(aux);
-            }
-        }
+        addAuxGroups(auxiliary, addIds, grpMap);
     }
 
     /**
@@ -112,7 +100,7 @@ public class AuxDataHelperBean {
         remove = false;
         removed = new ArrayList<AuxDataViewDO>();
         iter = auxiliary.iterator();
-        
+
         while (iter.hasNext()) {
             aux = iter.next();
             if ( !aux.getGroupId().equals(prevId)) {
@@ -129,7 +117,83 @@ public class AuxDataHelperBean {
     }
 
     /**
-     * Returns the default value, if any, defined for a particular aux field
+     * Adds aux group specified by the id to the list of aux data. If the aux
+     * data's analyte can be found in the map then the value is set from the
+     * map, otherwise it's set as the default of the corresponding aux field in
+     * the group.
+     */
+    private void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, ArrayList<Integer> addIds,
+                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps) throws Exception {
+        HashMap<Integer, AuxDataViewDO> auxMap;
+        AuxFieldViewDO af;
+        AuxFieldManager afm;
+        AuxDataViewDO aux1, aux2;
+
+        for (Integer id : addIds) {
+            auxMap = null;
+            if (grps != null)
+                auxMap = grps.get(id);
+
+            /*
+             * fields for the aux group are fetched and aux data for them is
+             * added
+             */
+            afm = AuxFieldManager.fetchByGroupIdWithValues(id);
+            for (int i = 0; i < afm.count(); i++ ) {
+                af = afm.getAuxFieldAt(i);
+                if ("N".equals(af.getIsActive()))
+                    return;
+                aux2 = null;
+                /*
+                 * set the new aux data's value from the map if the map contains
+                 * its analyte otherwise set the value from the corresponding
+                 * aux field in the aux group
+                 */
+                if (auxMap != null)
+                    aux2 = auxMap.get(af.getAnalyteId());
+                aux1 = new AuxDataViewDO();
+                aux1.setAuxFieldId(af.getId());
+                aux1.setGroupId(id);
+                aux1.setAnalyteId(af.getAnalyteId());
+                aux1.setAnalyteName(af.getAnalyteName());
+                // TODO validate the value and set the type
+
+                if (aux2 != null) {
+                    aux1.setIsReportable(aux2.getIsReportable());
+                    aux1.setTypeId(aux2.getTypeId());
+                    aux1.setValue(aux2.getValue());
+                } else {
+                    aux1.setIsReportable(af.getIsReportable());
+                    aux1.setValue(getDefault(afm.getValuesAt(i)));
+                }
+                auxiliary.add(aux1);
+            }
+        }
+    }
+
+    /**
+     * returns the group ids present in the collection but not in the list of
+     * aux data
+     */
+    private ArrayList<Integer> getGroupsNotInAuxList(ArrayList<AuxDataViewDO> auxiliary,
+                                                     Collection<Integer> groupIds) {
+        Integer prevId;
+        ArrayList<Integer> addIds;
+
+        prevId = null;
+        addIds = new ArrayList<Integer>(groupIds);
+        for (AuxDataViewDO a : auxiliary) {
+            if ( !a.getGroupId().equals(prevId)) {
+                if (groupIds.contains(a.getGroupId()))
+                    addIds.remove(a.getGroupId());
+                prevId = a.getGroupId();
+            }
+        }
+        return addIds;
+    }
+
+    /**
+     * returns the default value, if any, defined for a particular aux field
      */
     private String getDefault(AuxFieldValueManager afvm) {
         AuxFieldValueViewDO afv;

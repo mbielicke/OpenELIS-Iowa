@@ -76,7 +76,7 @@
                 </td>
                 <td>
                   <w:TextBox ui:field="accessionNumber" width="75px" field="Integer"
-                    required="true" />
+                    />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.orderNum}:" />
@@ -85,7 +85,7 @@
                   <g:HorizontalPanel>
                     <w:TextBox ui:field="orderId" width="75px" field="Integer" />
                     <g:AbsolutePanel>
-                      <w:Button ui:field="orderLookupButton" text="{msg.popout}" /> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
+                      <w:Button ui:field="orderLookupButton" css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
                     </g:AbsolutePanel>
                   </g:HorizontalPanel>
                 </td>
@@ -489,7 +489,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="projectButton" /> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
+                          <w:Button ui:field="projectButton"  css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -519,7 +519,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="reportToButton" /> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
+                          <w:Button ui:field="reportToButton" css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -551,7 +551,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="birthHospitalButton" /> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
+                          <w:Button ui:field="birthHospitalButton" css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
