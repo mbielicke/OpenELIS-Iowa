@@ -1468,8 +1468,18 @@ public class SampleManager1Bean {
      * Removes aux data from the sample based on the list of group ids
      */
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
-        auxDataHelper.removeAuxGroups(getAuxilliary(sm), groupIds);
+        ArrayList<AuxDataViewDO> removed;
+        
+        removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), groupIds);
 
+        if (removed != null && removed.size() > 0) {
+            if (getRemoved(sm) == null) 
+                setRemoved(sm, new ArrayList<DataObject>());
+            for (AuxDataViewDO data : removed) {
+                if (data.getId() > 0)
+                    getRemoved(sm).add(data);
+            } 
+        }
         return sm;
     }
 
