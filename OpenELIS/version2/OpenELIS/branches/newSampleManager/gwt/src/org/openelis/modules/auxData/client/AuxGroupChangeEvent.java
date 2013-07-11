@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sample1.client;
+package org.openelis.modules.auxData.client;
 
 import java.util.ArrayList;
 

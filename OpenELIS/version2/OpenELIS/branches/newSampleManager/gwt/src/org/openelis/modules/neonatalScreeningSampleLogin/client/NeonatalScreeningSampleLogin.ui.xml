@@ -13,6 +13,7 @@
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
   xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
   xmlns:o="urn:import:org.openelis.modules.neonatalScreeningSampleLogin.client" xmlns:s="urn:import:org.openelis.modules.sample1.client"
+  xmlns:a="urn:import:org.openelis.modules.auxData.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
@@ -75,8 +76,7 @@
                   <ui:text from="{msg.accessionNum}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer"
-                    />
+                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.orderNum}:" />
@@ -85,7 +85,7 @@
                   <g:HorizontalPanel>
                     <w:TextBox ui:field="orderId" width="75px" field="Integer" />
                     <g:AbsolutePanel>
-                      <w:Button ui:field="orderLookupButton" css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
+                      <w:Button ui:field="orderLookupButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
                     </g:AbsolutePanel>
                   </g:HorizontalPanel>
                 </td>
@@ -100,7 +100,7 @@
                 </td>
                 <td>
                   <w:TimeBox ui:field="collectionTime" width="60px" mask="{msg.timeMask}"
-                    pattern="{msg.timePattern}" field="Date" begin="3" end="5"/>
+                    pattern="{msg.timePattern}" field="Date" begin="3" end="5" />
                 </td>
               </tr>
               <tr>
@@ -108,7 +108,7 @@
                   <ui:text from="{msg.received}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4"/> 
+                  <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.status}:" />
@@ -156,13 +156,15 @@
                       <ui:text from="{msg.gender}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="patientGenderId" width="60px" dropHeight = "100px"  field="String" />
+                      <w:Dropdown ui:field="patientGenderId" width="60px" dropHeight="100px"
+                        field="String" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.race}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="patientRaceId" width="65px"  dropWidth = "200px" field="String" />
+                      <w:Dropdown ui:field="patientRaceId" width="65px" dropWidth="200px"
+                        field="String" />
                     </td>
                   </tr>
                   <tr>
@@ -170,7 +172,8 @@
                       <ui:text from="{msg.sample_ethnicity}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="patientEthnicityId" width="80px" dropHeight = "100px" field="String" />
+                      <w:Dropdown ui:field="patientEthnicityId" width="80px" dropHeight="100px"
+                        field="String" />
                     </td>
                   </tr>
                   <tr>
@@ -182,7 +185,7 @@
                     </td>
                     <td colspan="3">
                       <w:TimeBox ui:field="patientBirthTime" field="Date" width="60px"
-                        mask="{msg.timeMask}" pattern="{msg.timePattern}"  begin="3" end="5"/>
+                        mask="{msg.timeMask}" pattern="{msg.timePattern}" begin="3" end="5" />
                     </td>
                   </tr>
                   <tr>
@@ -247,7 +250,7 @@
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinMiddleName" width="222px" case="LOWER"
-                        field="String" maxLength="30"/>
+                        field="String" maxLength="30" />
                     </td>
                   </tr>
                   <tr>
@@ -264,7 +267,8 @@
                       <ui:text from="{msg.sample_relation}:" />
                     </td>
                     <td colspan="5">
-                      <w:Dropdown ui:field="nextOfKinRelationId" width="80px" dropHeight = "100px" field="Integer" />
+                      <w:Dropdown ui:field="nextOfKinRelationId" width="80px" dropHeight="100px"
+                        field="Integer" />
                     </td>
                   </tr>
                   <tr>
@@ -272,13 +276,15 @@
                       <ui:text from="{msg.gender}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="nextOfKinGenderId" width="60px" dropHeight = "100px" field="Integer" />
+                      <w:Dropdown ui:field="nextOfKinGenderId" width="60px" dropHeight="100px"
+                        field="Integer" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.race}:" />
                     </td>
                     <td colspan="2">
-                      <w:Dropdown ui:field="nextOfKinRaceId" width="65px" dropWidth = "200px" field="Integer" />
+                      <w:Dropdown ui:field="nextOfKinRaceId" width="65px" dropWidth="200px"
+                        field="Integer" />
                     </td>
                   </tr>
                   <tr>
@@ -286,7 +292,8 @@
                       <ui:text from="{msg.sample_ethnicity}:" />
                     </td>
                     <td>
-                      <w:Dropdown ui:field="nextOfKinEthnicityId" width="65px" dropHeight = "75px" dropWidth = "100px" field="Integer" />
+                      <w:Dropdown ui:field="nextOfKinEthnicityId" width="65px"
+                        dropHeight="75px" dropWidth="100px" field="Integer" />
                     </td>
                     <td class="{res.style.Prompt}">
                       <ui:text from="{msg.birth}:" />
@@ -372,7 +379,8 @@
                       <ui:text from="{msg.sample_feeding}:" />
                     </td>
                     <td colspan="3">
-                      <w:Dropdown ui:field="feedingId" field="Integer" width="75px" dropHeight = "120px"/>
+                      <w:Dropdown ui:field="feedingId" field="Integer" width="75px"
+                        dropHeight="120px" />
                     </td>
                   </tr>
                   <tr>
@@ -438,10 +446,10 @@
         </g:layer>
         <g:layer top="440px" height="160px">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="0px" left = "0px" width = "50%">
+            <g:layer top="0px" bottom="0px" left="0px" width="50%">
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
             </g:layer>
-            <g:layer top="0px" bottom="0px" right = "0px" width = "50%">
+            <g:layer top="0px" bottom="0px" right="0px" width="50%">
               <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.collectorOrgInfo}" /></td> -->
               <g:HTMLPanel>
                 <table class="{res.style.Form}">
@@ -476,7 +484,9 @@
                     </td>
                     <td colspan="3">
                       <g:HorizontalPanel>
-                        <w:AutoComplete ui:field="projectName" width="265" case="LOWER">
+                        <w:AutoComplete ui:field="projectName" width="265" case="LOWER"
+                          dropWidth="440px"
+                        >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
                               <t:Column width="150" label="{msg.name}">
@@ -489,7 +499,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="projectButton"  css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
+                          <w:Button ui:field="projectButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -500,38 +510,8 @@
                     </td>
                     <td colspan="3">
                       <g:HorizontalPanel>
-                        <w:AutoComplete ui:field="reportToName" width="265" case="UPPER">
-                          <w:popup>
-                            <t:Table visibleRows="10" header="true">
-                              <t:Column width="200" label="{msg.name}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="130" label="{msg.street}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="120" label="{msg.city}">
-                                <t:LabelCell />
-                              </t:Column>
-                              <t:Column width="20" label="{msg.st}">
-                                <t:LabelCell />
-                              </t:Column>
-                            </t:Table>
-                          </w:popup>
-                        </w:AutoComplete>
-                        <g:AbsolutePanel>
-                          <w:Button ui:field="reportToButton" css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
-                        </g:AbsolutePanel>
-                      </g:HorizontalPanel>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_birthHospital}:" />
-                    </td>
-                    <td colspan="3">
-                      <g:HorizontalPanel>
-                        <w:AutoComplete ui:field="birthHospitalName" width="265"
-                          case="UPPER"
+                        <w:AutoComplete ui:field="reportToName" width="265" case="UPPER"
+                          dropWidth="490px"
                         >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
@@ -551,7 +531,39 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="birthHospitalButton" css = "{uiRes.lookupButton}"/> <!-- class = "{res.style.LookupButton}" leftIcon="{res.style.LookupButtonImage}" -->
+                          <w:Button ui:field="reportToButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
+                        </g:AbsolutePanel>
+                      </g:HorizontalPanel>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.sample_birthHospital}:" />
+                    </td>
+                    <td colspan="3">
+                      <g:HorizontalPanel>
+                        <w:AutoComplete ui:field="birthHospitalName" width="265"
+                          dropWidth="490px" case="UPPER"
+                        >
+                          <w:popup>
+                            <t:Table visibleRows="10" header="true">
+                              <t:Column width="200" label="{msg.name}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="130" label="{msg.street}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="120" label="{msg.city}">
+                                <t:LabelCell />
+                              </t:Column>
+                              <t:Column width="20" label="{msg.st}">
+                                <t:LabelCell />
+                              </t:Column>
+                            </t:Table>
+                          </w:popup>
+                        </w:AutoComplete>
+                        <g:AbsolutePanel>
+                          <w:Button ui:field="birthHospitalButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -649,7 +661,7 @@
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
-              <s:AuxDataTabUI ui:field="auxDataTab" />
+              <a:AuxDataTabUI ui:field="auxDataTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

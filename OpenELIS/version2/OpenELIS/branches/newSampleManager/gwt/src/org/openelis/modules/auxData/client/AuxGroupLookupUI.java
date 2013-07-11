@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sample1.client;
+package org.openelis.modules.auxData.client;
 
 import java.util.ArrayList;
 
@@ -69,7 +69,7 @@ public abstract class AuxGroupLookupUI extends Screen {
 
     protected ArrayList<Row>              groupsModel;
 
-    public ArrayList<Integer>             groupIds;
+    protected ArrayList<Integer>             groupIds;
 
     public AuxGroupLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));

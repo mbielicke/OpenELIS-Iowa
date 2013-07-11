@@ -319,6 +319,15 @@ public class SampleItemTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
+    
+    public boolean validate() {
+        /*
+         * validate only if there's data loaded in the tab
+         */
+        if (displayedUid == null)
+            return true;
+        return super.validate();
+    }
 
     private void evaluateEdit() {
         canEdit = false;

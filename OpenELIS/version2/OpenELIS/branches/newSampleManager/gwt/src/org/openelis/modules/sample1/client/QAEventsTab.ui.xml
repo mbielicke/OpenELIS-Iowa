@@ -31,7 +31,7 @@
                 </t:Column>
                 <t:Column width="90" label="{msg.type}">
                   <t:DropdownCell>
-                    <w:Dropdown /> <!-- width="90" ui:field = "sampleQaTypeId" -->
+                    <w:Dropdown ui:field = "sampleQAType" /> <!-- width="90" ui:field = "sampleQaTypeId" -->
                   </t:DropdownCell>
                 </t:Column>
                 <t:Column width="61" label="{msg.billable}">
@@ -61,7 +61,7 @@
                 </t:Column>
                 <t:Column width="90" label="{msg.type}">
                   <t:DropdownCell>
-                    <w:Dropdown /> <!-- width="90" ui:field = "analysisQaTypeId" -->
+                    <w:Dropdown ui:field = "analysisQAType"/> <!-- width="90" ui:field = "analysisQaTypeId" -->
                   </t:DropdownCell>
                 </t:Column>
                 <t:Column width="61" label="{msg.billable}">

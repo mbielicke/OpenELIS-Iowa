@@ -184,7 +184,6 @@ public class AnalysisTabUI extends Screen {
 
         methodName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Integer sampleType, key;
                 ArrayList<QueryData> fields;
                 ArrayList<Item<Integer>> model;
                 ArrayList<TestMethodVO> tests;
@@ -192,8 +191,7 @@ public class AnalysisTabUI extends Screen {
                 QueryData field;
                 Item<Integer> row;
 
-                sampleType = sampleItem.getTypeOfSampleId();
-                if (sampleType == null) {
+                if (sampleItem.getTypeOfSampleId() == null) {
                     window.setError(Messages.get().sampleItemTypeRequired());
                     return;
                 }
@@ -670,6 +668,15 @@ public class AnalysisTabUI extends Screen {
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+    
+    public boolean validate() {
+        /*
+         * validate only if there's data loaded in the tab
+         */
+        if (displayedUid == null)
+            return true;
+        return super.validate();
     }
 
     /**
