@@ -26,9 +26,9 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ejb.Stateless;
 
@@ -53,14 +53,14 @@ public class AuxDataHelperBean {
      * Adds aux groups specified by the list of ids to the list of aux data, if
      * the group isn't already present in the list of aux data.
      */
-    public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, ArrayList<Integer> groupIds) throws Exception {
-        ArrayList<Integer> addIds;
+    public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, Set<Integer> groupIds) throws Exception {
+        Set<Integer> addIds;
 
         /*
          * make sure that only the groups not already in the list of aux data
          * get added to it
          */
-        addIds = getGroupsNotInAuxList(auxiliary, groupIds);
+        addIds = getDifference(auxiliary, groupIds);
 
         addAuxGroups(auxiliary, addIds, null);
     }
@@ -73,13 +73,13 @@ public class AuxDataHelperBean {
      */
     public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary,
                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grpMap) throws Exception {
-        ArrayList<Integer> addIds;
+        Set<Integer> addIds;
 
         /*
          * make sure that only the groups not already in the list of aux data
          * get added to it
          */
-        addIds = getGroupsNotInAuxList(auxiliary, grpMap.keySet());
+        addIds = getDifference(auxiliary, grpMap.keySet());
 
         addAuxGroups(auxiliary, addIds, grpMap);
     }
@@ -89,27 +89,17 @@ public class AuxDataHelperBean {
      * the removed objects to the list returned.
      */
     public ArrayList<AuxDataViewDO> removeAuxGroups(ArrayList<AuxDataViewDO> auxiliary,
-                                                    ArrayList<Integer> groupIds) {
-        boolean remove;
-        Integer prevId;
-        AuxDataViewDO aux;
-        Iterator<AuxDataViewDO> iter;
+                                                    Set<Integer> groupIds) {
+        Integer prevId;        
         ArrayList<AuxDataViewDO> removed;
 
-        prevId = null;
-        remove = false;
         removed = new ArrayList<AuxDataViewDO>();
-        iter = auxiliary.iterator();
-
-        while (iter.hasNext()) {
-            aux = iter.next();
-            if ( !aux.getGroupId().equals(prevId)) {
-                remove = groupIds.contains(aux.getGroupId());
-                prevId = aux.getGroupId();
-            }
-            if (remove) {
-                removed.add(aux);
-                iter.remove();
+        for (int i = 0; i < auxiliary.size(); i++ ) {
+            prevId = auxiliary.get(i).getGroupId();
+            if (groupIds.contains(prevId)) {
+                do {
+                    removed.add(auxiliary.remove(i));
+                } while (i < auxiliary.size() && auxiliary.get(i).getGroupId().equals(prevId));
             }
         }
 
@@ -122,7 +112,7 @@ public class AuxDataHelperBean {
      * map, otherwise it's set as the default of the corresponding aux field in
      * the group.
      */
-    private void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, ArrayList<Integer> addIds,
+    private void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, Set<Integer> addIds,
                               HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps) throws Exception {
         HashMap<Integer, AuxDataViewDO> auxMap;
         AuxFieldViewDO af;
@@ -142,29 +132,29 @@ public class AuxDataHelperBean {
             for (int i = 0; i < afm.count(); i++ ) {
                 af = afm.getAuxFieldAt(i);
                 if ("N".equals(af.getIsActive()))
-                    return;
-                aux2 = null;
-                /*
-                 * set the new aux data's value from the map if the map contains
-                 * its analyte otherwise set the value from the corresponding
-                 * aux field in the aux group
-                 */
-                if (auxMap != null)
-                    aux2 = auxMap.get(af.getAnalyteId());
+                    continue;
                 aux1 = new AuxDataViewDO();
                 aux1.setAuxFieldId(af.getId());
                 aux1.setGroupId(id);
                 aux1.setAnalyteId(af.getAnalyteId());
                 aux1.setAnalyteName(af.getAnalyteName());
-                // TODO validate the value and set the type
-
-                if (aux2 != null) {
-                    aux1.setIsReportable(aux2.getIsReportable());
-                    aux1.setTypeId(aux2.getTypeId());
-                    aux1.setValue(aux2.getValue());
-                } else {
-                    aux1.setIsReportable(af.getIsReportable());
+                aux1.setIsReportable(af.getIsReportable());
+                if (auxMap == null) {
+                    /*
+                     * set the value as the default for the aux data's field
+                     */
                     aux1.setValue(getDefault(afm.getValuesAt(i)));
+                } else {
+                    /*
+                     * set the value from the map if the aux data's analyte can
+                     * be found in the map
+                     */
+                    aux2 = auxMap.get(af.getAnalyteId());
+                    if (aux2 != null) {
+                        aux1.setIsReportable(aux2.getIsReportable());
+                        aux1.setTypeId(aux2.getTypeId());
+                        aux1.setValue(aux2.getValue());
+                    }
                 }
                 auxiliary.add(aux1);
             }
@@ -172,16 +162,16 @@ public class AuxDataHelperBean {
     }
 
     /**
-     * returns the group ids present in the collection but not in the list of
+     * returns the group ids present in the set but not in the list of
      * aux data
      */
-    private ArrayList<Integer> getGroupsNotInAuxList(ArrayList<AuxDataViewDO> auxiliary,
-                                                     Collection<Integer> groupIds) {
+    private Set<Integer> getDifference(ArrayList<AuxDataViewDO> auxiliary,
+                                                     Set<Integer> groupIds) {
         Integer prevId;
-        ArrayList<Integer> addIds;
+        HashSet<Integer> addIds;
 
         prevId = null;
-        addIds = new ArrayList<Integer>(groupIds);
+        addIds = new HashSet<Integer>(groupIds);
         for (AuxDataViewDO a : auxiliary) {
             if ( !a.getGroupId().equals(prevId)) {
                 if (groupIds.contains(a.getGroupId()))

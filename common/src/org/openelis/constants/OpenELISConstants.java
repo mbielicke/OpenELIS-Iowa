@@ -10240,6 +10240,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_gestAge();
 
   /**
+   * Translated "Is Perm".
+   * 
+   * @return translated "Is Perm"
+   */
+  @DefaultMessage("Is Perm")
+  @Key("sample.isPerm")
+  String sample_isPerm();
+
+  /**
    * Translated "Last".
    * 
    * @return translated "Last"
@@ -10276,31 +10285,31 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_moreThanOneReportToException(String arg0);
 
   /**
-   * Translated "Accession # '{0}': Only one record with the type Bill To is allowed".
+   * Translated "Accession # ''{0}'': Only one record with the type Bill To is allowed".
    * 
-   * @return translated "Accession # '{0}': Only one record with the type Bill To is allowed"
+   * @return translated "Accession # ''{0}'': Only one record with the type Bill To is allowed"
    */
-  @DefaultMessage("Accession # '{0}': Only one record with the type Bill To is allowed")
+  @DefaultMessage("Accession # ''{0}'': Only one record with the type Bill To is allowed")
   @Key("sample.multipleBillToException")
-  String sample_multipleBillToException();
+  String sample_multipleBillToException(String arg0);
 
   /**
-   * Translated "Accession # '{0}': Only one record with the type Birth Hospital is allowed".
+   * Translated "Accession # ''{0}'': Only one record with the type Birth Hospital is allowed".
    * 
-   * @return translated "Accession # '{0}': Only one record with the type Birth Hospital is allowed"
+   * @return translated "Accession # ''{0}'': Only one record with the type Birth Hospital is allowed"
    */
-  @DefaultMessage("Accession # '{0}': Only one record with the type Birth Hospital is allowed")
+  @DefaultMessage("Accession # ''{0}'': Only one record with the type Birth Hospital is allowed")
   @Key("sample.multipleBirthHospException")
-  String sample_multipleBirthHospException();
+  String sample_multipleBirthHospException(String arg0);
 
   /**
-   * Translated "Accession # '{0}': Only one record with the type Report To is allowed ".
+   * Translated "Accession # ''{0}'': Only one record with the type Report To is allowed ".
    * 
-   * @return translated "Accession # '{0}': Only one record with the type Report To is allowed "
+   * @return translated "Accession # ''{0}'': Only one record with the type Report To is allowed "
    */
-  @DefaultMessage("Accession # '{0}': Only one record with the type Report To is allowed ")
+  @DefaultMessage("Accession # ''{0}'': Only one record with the type Report To is allowed ")
   @Key("sample.multipleReportToException")
-  String sample_multipleReportToException();
+  String sample_multipleReportToException(String arg0);
 
   /**
    * Translated "Next Of Kin".
