@@ -8,9 +8,10 @@ import org.openelis.ui.common.ReportStatus;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("dataViewReport")
-public interface DataViewServiceInt extends RemoteService {
+public interface DataViewServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception;
 

@@ -7,10 +7,12 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class SampleStatusReportService implements SampleStatusReportServiceInt,
                                       SampleStatusReportServiceIntAsync {
@@ -28,6 +30,7 @@ public class SampleStatusReportService implements SampleStatusReportServiceInt,
     
     private SampleStatusReportService() {
         service = (SampleStatusReportServiceIntAsync)GWT.create(SampleStatusReportServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

@@ -1,10 +1,12 @@
 package org.openelis.web.modules.main.client;
 
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class OpenELISWebService implements OpenELISWebServiceInt, OpenELISWebServiceIntAsync {
     
@@ -21,6 +23,7 @@ public class OpenELISWebService implements OpenELISWebServiceInt, OpenELISWebSer
     
     private OpenELISWebService() {
         service = (OpenELISWebServiceIntAsync)GWT.create(OpenELISWebServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

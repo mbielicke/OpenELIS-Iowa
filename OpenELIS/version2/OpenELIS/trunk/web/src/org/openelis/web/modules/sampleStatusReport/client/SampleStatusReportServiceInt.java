@@ -10,9 +10,10 @@ import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("sampleStatus")
-public interface SampleStatusReportServiceInt extends RemoteService {
+public interface SampleStatusReportServiceInt extends XsrfProtectedService {
 
     ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(Query query) throws Exception;
 
