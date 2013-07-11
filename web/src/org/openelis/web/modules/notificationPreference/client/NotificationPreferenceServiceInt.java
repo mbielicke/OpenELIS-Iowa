@@ -9,9 +9,10 @@ import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("notificationPreference")
-public interface NotificationPreferenceServiceInt extends RemoteService {
+public interface NotificationPreferenceServiceInt extends XsrfProtectedService {
 
     ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception;
 

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import org.openelis.domain.CategoryCacheVO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class CategoryCacheService implements CategoryCacheServiceInt, CategoryCacheServiceIntAsync {
     
@@ -23,6 +25,7 @@ public class CategoryCacheService implements CategoryCacheServiceInt, CategoryCa
     
     private CategoryCacheService() {
         service = (CategoryCacheServiceIntAsync)GWT.create(CategoryCacheServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override
