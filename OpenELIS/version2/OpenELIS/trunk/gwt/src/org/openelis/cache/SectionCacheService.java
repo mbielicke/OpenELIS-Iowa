@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class SectionCacheService implements SectionCacheServiceInt, SectionCacheServiceIntAsync {
     
@@ -23,6 +25,7 @@ public class SectionCacheService implements SectionCacheServiceInt, SectionCache
     
     private SectionCacheService() {
         service = (SectionCacheServiceIntAsync)GWT.create(SectionCacheServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

@@ -6,11 +6,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("standardNote")
-public interface StandardNoteServiceInt extends RemoteService {
+public interface StandardNoteServiceInt extends XsrfProtectedService {
 
     StandardNoteDO fetchById(Integer id) throws Exception;
 

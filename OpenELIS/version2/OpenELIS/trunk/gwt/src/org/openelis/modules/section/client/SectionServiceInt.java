@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.SectionManager;
 import org.openelis.manager.SectionParameterManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("section")
-public interface SectionServiceInt extends RemoteService {
+public interface SectionServiceInt extends XsrfProtectedService {
 
     SectionManager fetchById(Integer id) throws Exception;
 

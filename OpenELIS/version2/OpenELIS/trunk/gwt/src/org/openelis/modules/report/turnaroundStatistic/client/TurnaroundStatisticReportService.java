@@ -3,10 +3,12 @@ package org.openelis.modules.report.turnaroundStatistic.client;
 import org.openelis.domain.TurnAroundReportViewVO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class TurnaroundStatisticReportService implements TurnaroundStatisticReportServiceInt,
                                              TurnaroundStatisticReportServiceIntAsync {
@@ -24,6 +26,7 @@ public class TurnaroundStatisticReportService implements TurnaroundStatisticRepo
     
     private TurnaroundStatisticReportService() {
         service = (TurnaroundStatisticReportServiceIntAsync)GWT.create(TurnaroundStatisticReportServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import org.openelis.domain.HistoryVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class HistoryService implements HistoryServiceInt, HistoryServiceIntAsync {
     
@@ -24,6 +26,7 @@ public class HistoryService implements HistoryServiceInt, HistoryServiceIntAsync
     
     private HistoryService() {
         service = (HistoryServiceIntAsync)GWT.create(HistoryServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

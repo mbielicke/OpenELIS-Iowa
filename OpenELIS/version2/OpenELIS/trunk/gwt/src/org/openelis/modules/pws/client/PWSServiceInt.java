@@ -12,9 +12,10 @@ import org.openelis.manager.PWSMonitorManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("pws")
-public interface PWSServiceInt extends RemoteService {
+public interface PWSServiceInt extends XsrfProtectedService {
 
     PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
 

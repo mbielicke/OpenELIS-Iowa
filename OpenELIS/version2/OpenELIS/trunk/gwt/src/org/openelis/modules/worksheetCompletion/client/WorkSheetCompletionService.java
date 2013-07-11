@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.WorksheetManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class WorkSheetCompletionService implements WorksheetCompletionServiceInt,
                                                    WorksheetCompletionServiceIntAsync {
@@ -26,6 +28,7 @@ public class WorkSheetCompletionService implements WorksheetCompletionServiceInt
     
     private WorkSheetCompletionService() {
         service = (WorksheetCompletionServiceIntAsync)GWT.create(WorksheetCompletionServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

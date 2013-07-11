@@ -3,10 +3,12 @@ package org.openelis.modules.report.qcChart.client;
 import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class QcChartReportService implements QcChartReportServiceInt, QcChartReportServiceIntAsync {
     
@@ -23,6 +25,7 @@ public class QcChartReportService implements QcChartReportServiceInt, QcChartRep
     
     private QcChartReportService() {
         service = (QcChartReportServiceIntAsync)GWT.create(QcChartReportServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

@@ -4,11 +4,11 @@ import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("qcChartReport")
-public interface QcChartReportServiceInt extends RemoteService {
+public interface QcChartReportServiceInt extends XsrfProtectedService {
 
     QcChartReportViewVO fetchForQcChart(Query query) throws Exception;
 

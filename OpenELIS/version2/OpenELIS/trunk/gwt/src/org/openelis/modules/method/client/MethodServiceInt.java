@@ -6,11 +6,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("method")
-public interface MethodServiceInt extends RemoteService {
+public interface MethodServiceInt extends XsrfProtectedService {
 
     ArrayList<MethodDO> fetchByName(String search) throws Exception;
 

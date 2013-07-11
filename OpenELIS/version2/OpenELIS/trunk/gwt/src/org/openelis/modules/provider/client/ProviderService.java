@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class ProviderService implements ProviderServiceInt, ProviderServiceIntAsync {
     
@@ -26,6 +28,7 @@ public class ProviderService implements ProviderServiceInt, ProviderServiceIntAs
     
     private ProviderService() {
         service = (ProviderServiceIntAsync)GWT.create(ProviderServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

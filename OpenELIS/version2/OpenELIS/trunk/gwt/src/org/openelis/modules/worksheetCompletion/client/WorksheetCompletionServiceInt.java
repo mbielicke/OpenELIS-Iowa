@@ -3,14 +3,14 @@ package org.openelis.modules.worksheetCompletion.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.manager.WorksheetManager;
+import org.openelis.ui.common.ReportStatus;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("worksheetCompletion")
-public interface WorksheetCompletionServiceInt extends RemoteService {
+public interface WorksheetCompletionServiceInt extends XsrfProtectedService {
 
     WorksheetManager saveForEdit(WorksheetManager manager) throws Exception;
 

@@ -4,9 +4,11 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class ScriptletService implements ScriptletServiceInt, ScriptletServiceIntAsync {
     
@@ -23,6 +25,7 @@ public class ScriptletService implements ScriptletServiceInt, ScriptletServiceIn
     
     private ScriptletService() {
         service = (ScriptletServiceIntAsync)GWT.create(ScriptletServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

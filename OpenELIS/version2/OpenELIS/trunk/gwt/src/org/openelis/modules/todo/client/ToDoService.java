@@ -6,9 +6,11 @@ import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class ToDoService implements ToDoServiceInt, ToDoServiceIntAsync {
     
@@ -25,6 +27,7 @@ public class ToDoService implements ToDoServiceInt, ToDoServiceIntAsync {
     
     private ToDoService() {
         service = (ToDoServiceIntAsync)GWT.create(ToDoServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

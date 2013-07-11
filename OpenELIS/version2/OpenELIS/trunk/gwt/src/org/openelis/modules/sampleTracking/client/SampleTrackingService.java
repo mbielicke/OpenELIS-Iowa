@@ -3,11 +3,13 @@ package org.openelis.modules.sampleTracking.client;
 import java.util.ArrayList;
 
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class SampleTrackingService implements SampleTrackingServiceInt,
                                               SampleTrackingServiceIntAsync {
@@ -25,6 +27,7 @@ public class SampleTrackingService implements SampleTrackingServiceInt,
     
     private SampleTrackingService() {
         service = (SampleTrackingServiceIntAsync)GWT.create(SampleTrackingServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

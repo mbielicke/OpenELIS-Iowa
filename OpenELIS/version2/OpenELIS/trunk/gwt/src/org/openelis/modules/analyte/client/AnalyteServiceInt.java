@@ -7,11 +7,11 @@ import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("analyte")
-public interface AnalyteServiceInt extends RemoteService {
+public interface AnalyteServiceInt extends XsrfProtectedService {
 
     AnalyteViewDO fetchById(Integer id) throws Exception;
 

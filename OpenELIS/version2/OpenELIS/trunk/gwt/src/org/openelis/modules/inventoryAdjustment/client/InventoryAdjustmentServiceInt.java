@@ -9,9 +9,10 @@ import org.openelis.manager.InventoryXAdjustManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("inventoryAdjustment")
-public interface InventoryAdjustmentServiceInt extends RemoteService {
+public interface InventoryAdjustmentServiceInt extends XsrfProtectedService {
 
     InventoryAdjustmentManager fetchWithAdjustments(Integer id) throws Exception;
 

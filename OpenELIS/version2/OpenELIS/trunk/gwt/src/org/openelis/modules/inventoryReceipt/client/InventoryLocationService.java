@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class InventoryLocationService implements InventoryLocationServiceInt, InventoryLocationServiceIntAsync {
     
@@ -24,6 +26,7 @@ public class InventoryLocationService implements InventoryLocationServiceInt, In
     
     private InventoryLocationService() {
         service = (InventoryLocationServiceIntAsync)GWT.create(InventoryLocationServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

@@ -6,10 +6,12 @@ import org.apache.commons.fileupload.FileItem;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class DataViewReportService implements DataViewServiceInt, DataViewServiceIntAsync {
     
@@ -26,6 +28,7 @@ public class DataViewReportService implements DataViewServiceInt, DataViewServic
     
     private DataViewReportService() {
         service = (DataViewServiceIntAsync)GWT.create(DataViewServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
 

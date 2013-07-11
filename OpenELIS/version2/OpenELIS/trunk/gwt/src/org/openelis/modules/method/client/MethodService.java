@@ -6,9 +6,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.screen.Callback;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class MethodService implements MethodServiceInt, MethodServiceIntAsync {
     
@@ -25,6 +27,7 @@ public class MethodService implements MethodServiceInt, MethodServiceIntAsync {
     
     private MethodService() {
         service = (MethodServiceIntAsync)GWT.create(MethodServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
     
     @Override

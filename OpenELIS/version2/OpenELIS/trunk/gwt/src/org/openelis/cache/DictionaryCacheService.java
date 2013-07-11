@@ -2,9 +2,11 @@ package org.openelis.cache;
 
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class DictionaryCacheService implements DictionaryCacheServiceInt,
                                    DictionaryCacheServiceIntAsync {
@@ -22,6 +24,7 @@ public class DictionaryCacheService implements DictionaryCacheServiceInt,
     
     private DictionaryCacheService() {
         service = (DictionaryCacheServiceIntAsync)GWT.create(DictionaryCacheServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

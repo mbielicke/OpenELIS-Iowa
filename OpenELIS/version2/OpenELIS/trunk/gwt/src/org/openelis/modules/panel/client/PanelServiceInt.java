@@ -6,15 +6,15 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("panel")
-public interface PanelServiceInt extends RemoteService {
+public interface PanelServiceInt extends XsrfProtectedService {
 
     PanelManager fetchById(Integer id) throws Exception;
 

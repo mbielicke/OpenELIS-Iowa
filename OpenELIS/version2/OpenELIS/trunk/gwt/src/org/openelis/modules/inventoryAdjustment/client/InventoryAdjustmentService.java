@@ -4,12 +4,14 @@ import java.util.ArrayList;
 
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class InventoryAdjustmentService implements InventoryAdjustmentServiceInt, InventoryAdjustmentServiceIntAsync{
     
@@ -26,6 +28,7 @@ public class InventoryAdjustmentService implements InventoryAdjustmentServiceInt
     
     private InventoryAdjustmentService() {
         service = (InventoryAdjustmentServiceIntAsync)GWT.create(InventoryAdjustmentServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override
