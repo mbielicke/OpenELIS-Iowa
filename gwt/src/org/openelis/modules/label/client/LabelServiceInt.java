@@ -7,11 +7,11 @@ import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("label")
-public interface LabelServiceInt extends RemoteService {
+public interface LabelServiceInt extends XsrfProtectedService {
 
     LabelViewDO fetchById(Integer id) throws Exception;
 

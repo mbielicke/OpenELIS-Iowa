@@ -4,9 +4,11 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class AnalysisService implements AnalysisServiceInt, AnalysisServiceIntAsync {
     
@@ -23,6 +25,7 @@ public class AnalysisService implements AnalysisServiceInt, AnalysisServiceIntAs
     
     private AnalysisService() {
         service = (AnalysisServiceIntAsync)GWT.create(AnalysisServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

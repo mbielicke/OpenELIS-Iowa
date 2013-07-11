@@ -7,11 +7,11 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.manager.AuxDataManager;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("auxData")
-public interface AuxDataServiceInt extends RemoteService {
+public interface AuxDataServiceInt extends XsrfProtectedService {
 
     AuxDataManager fetchById(AuxDataDO auxData) throws Exception;
 

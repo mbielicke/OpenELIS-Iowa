@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class StandardNoteService implements StandardNoteServiceInt, StandardNoteServiceIntAsync {
     
@@ -25,6 +27,7 @@ public class StandardNoteService implements StandardNoteServiceInt, StandardNote
     
     private StandardNoteService() {
         service = (StandardNoteServiceIntAsync)GWT.create(StandardNoteServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

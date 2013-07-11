@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class DictionaryService implements DictionaryServiceInt, DictionaryServiceIntAsync {
 
@@ -27,6 +29,7 @@ public class DictionaryService implements DictionaryServiceInt, DictionaryServic
     
     private DictionaryService() {
         service = (DictionaryServiceIntAsync)GWT.create(DictionaryServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

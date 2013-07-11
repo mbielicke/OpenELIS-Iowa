@@ -6,9 +6,11 @@ import org.openelis.gwt.screen.Callback;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class KitTrackingReportService implements KitTrackingReportServiceInt,
                                      KitTrackingReportServiceIntAsync {
@@ -24,6 +26,7 @@ public class KitTrackingReportService implements KitTrackingReportServiceInt,
 
     private KitTrackingReportService() {
         service = (KitTrackingReportServiceIntAsync)GWT.create(KitTrackingReportServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

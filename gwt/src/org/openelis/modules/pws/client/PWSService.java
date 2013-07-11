@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PWSDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
@@ -13,6 +14,7 @@ import org.openelis.manager.PWSMonitorManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
     
@@ -29,6 +31,7 @@ public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
     
     private PWSService() {
         service = (PWSServiceIntAsync)GWT.create(PWSServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

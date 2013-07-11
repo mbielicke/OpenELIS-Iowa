@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageLocationViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("storageLocation")
-public interface StorageLocationServiceInt extends RemoteService {
+public interface StorageLocationServiceInt extends XsrfProtectedService {
 
     StorageLocationManager fetchById(Integer id) throws Exception;
 

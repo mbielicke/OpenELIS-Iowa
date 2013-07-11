@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("project")
-public interface ProjectServiceInt extends RemoteService {
+public interface ProjectServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> fetchList() throws Exception;
 

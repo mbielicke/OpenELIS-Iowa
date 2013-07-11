@@ -3,18 +3,18 @@ package org.openelis.modules.worksheet.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("worksheet")
-public interface WorkSheetServiceInt extends RemoteService {
+public interface WorkSheetServiceInt extends XsrfProtectedService {
 
     ArrayList<WorksheetViewDO> query(Query query) throws Exception;
 

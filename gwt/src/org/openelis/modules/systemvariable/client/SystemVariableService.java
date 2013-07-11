@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class SystemVariableService implements SystemVariableServiceInt,
                                   SystemVariableServiceIntAsync {
@@ -26,6 +28,7 @@ public class SystemVariableService implements SystemVariableServiceInt,
     
     private SystemVariableService() {
         service = (SystemVariableServiceIntAsync)GWT.create(SystemVariableServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

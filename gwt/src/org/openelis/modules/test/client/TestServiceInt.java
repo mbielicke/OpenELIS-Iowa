@@ -6,7 +6,6 @@ import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
@@ -14,12 +13,13 @@ import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("test")
-public interface TestServiceInt extends RemoteService {
+public interface TestServiceInt extends XsrfProtectedService {
 
     TestManager fetchById(Integer testId) throws Exception;
 

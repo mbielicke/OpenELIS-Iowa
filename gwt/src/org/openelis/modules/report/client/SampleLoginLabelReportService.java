@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class SampleLoginLabelReportService implements SampleLoginLabelReportServiceInt,
                                           SampleLoginLabelReportServiceIntAsync {
@@ -26,6 +28,7 @@ public class SampleLoginLabelReportService implements SampleLoginLabelReportServ
     
     private SampleLoginLabelReportService() {
         service = (SampleLoginLabelReportServiceIntAsync)GWT.create(SampleLoginLabelReportServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

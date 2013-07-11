@@ -8,6 +8,7 @@ import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
@@ -19,6 +20,7 @@ import org.openelis.manager.TestWorksheetManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class TestService implements TestServiceInt, TestServiceIntAsync {
     
@@ -35,6 +37,7 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     
     private TestService() {
         service = (TestServiceIntAsync)GWT.create(TestServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

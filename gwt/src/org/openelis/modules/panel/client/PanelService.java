@@ -7,12 +7,14 @@ import org.openelis.domain.IdVO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
     
@@ -29,6 +31,7 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
     
     private PanelService() {
         service = (PanelServiceIntAsync)GWT.create(PanelServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

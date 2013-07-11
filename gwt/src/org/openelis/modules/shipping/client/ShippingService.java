@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
@@ -12,6 +13,7 @@ import org.openelis.manager.ShippingTrackingManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class ShippingService implements ShippingServiceInt, ShippingServiceIntAsync {
     
@@ -28,6 +30,7 @@ public class ShippingService implements ShippingServiceInt, ShippingServiceIntAs
     
     private ShippingService() {
         service = (ShippingServiceIntAsync)GWT.create(ShippingServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

@@ -6,10 +6,12 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class LabelService implements LabelServiceInt, LabelServiceIntAsync{
     
@@ -26,6 +28,7 @@ public class LabelService implements LabelServiceInt, LabelServiceIntAsync{
     
     private LabelService() {
         service = (LabelServiceIntAsync)GWT.create(LabelServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

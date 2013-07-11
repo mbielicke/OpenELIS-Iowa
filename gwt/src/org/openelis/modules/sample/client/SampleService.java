@@ -6,6 +6,7 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -15,6 +16,7 @@ import org.openelis.manager.SampleQaEventManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class SampleService implements SampleServiceInt, SampleServiceIntAsync {
     
@@ -31,6 +33,7 @@ public class SampleService implements SampleServiceInt, SampleServiceIntAsync {
     
     private SampleService() {
         service = (SampleServiceIntAsync)GWT.create(SampleServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

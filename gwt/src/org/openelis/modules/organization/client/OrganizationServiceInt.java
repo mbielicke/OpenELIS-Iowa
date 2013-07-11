@@ -6,16 +6,16 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("organization")
-public interface OrganizationServiceInt extends RemoteService {
+public interface OrganizationServiceInt extends XsrfProtectedService {
 
     OrganizationManager fetchById(Integer id) throws Exception;
 

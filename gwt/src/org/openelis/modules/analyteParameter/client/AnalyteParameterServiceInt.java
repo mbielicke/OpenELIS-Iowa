@@ -9,9 +9,10 @@ import org.openelis.manager.AnalyteParameterManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("analyteParameter")
-public interface AnalyteParameterServiceInt extends RemoteService {
+public interface AnalyteParameterServiceInt extends XsrfProtectedService {
 
     AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Query query) throws Exception;
 

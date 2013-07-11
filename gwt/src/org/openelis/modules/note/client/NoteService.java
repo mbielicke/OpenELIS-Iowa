@@ -1,11 +1,13 @@
 package org.openelis.modules.note.client;
 
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.NoteManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class NoteService implements NoteServiceInt, NoteServiceIntAsync {
     
@@ -22,6 +24,7 @@ public class NoteService implements NoteServiceInt, NoteServiceIntAsync {
     
     private NoteService() {
         service = (NoteServiceIntAsync)GWT.create(NoteServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

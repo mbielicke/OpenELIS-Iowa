@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("inventoryItem")
-public interface InventoryItemServiceInt extends RemoteService {
+public interface InventoryItemServiceInt extends XsrfProtectedService {
 
     InventoryItemManager fetchById(Integer id) throws Exception;
 

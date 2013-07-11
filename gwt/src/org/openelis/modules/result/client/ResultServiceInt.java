@@ -4,14 +4,14 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.AnalysisResultManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("result")
-public interface ResultServiceInt extends RemoteService {
+public interface ResultServiceInt extends XsrfProtectedService {
 
     AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception;
 
