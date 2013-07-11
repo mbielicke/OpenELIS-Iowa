@@ -1451,7 +1451,7 @@ public class SampleManager1Bean {
             setAuxilliary(sm, auxiliary);
         }
 
-        auxDataHelper.addAuxGroups(auxiliary, groupIds);
+        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds));
         
         /*
          * set negative ids in the newly added aux data
@@ -1470,7 +1470,7 @@ public class SampleManager1Bean {
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> removed;
         
-        removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), groupIds);
+        removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), new HashSet<Integer>(groupIds));
 
         if (removed != null && removed.size() > 0) {
             if (getRemoved(sm) == null) 
