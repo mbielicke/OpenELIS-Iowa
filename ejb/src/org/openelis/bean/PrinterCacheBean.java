@@ -6,14 +6,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.AccessTimeout;
 import javax.ejb.Asynchronous;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 
-import org.jboss.security.annotation.SecurityDomain;
-import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.utils.Printer;
@@ -23,6 +24,8 @@ import org.openelis.utils.Printer;
  */
 @Singleton
 @SecurityDomain("openelis")
+@Lock(LockType.READ)
+
 public class PrinterCacheBean {
 
     protected ArrayList<Printer>       printerList;
@@ -78,7 +81,8 @@ public class PrinterCacheBean {
      * Method to refresh the printer list cache
      */
     @Asynchronous
-    @TransactionTimeout(30)
+    @AccessTimeout(300000)
+    @Lock(LockType.WRITE)
     public void refresh() {
         String name, type;
         Printer printer;
