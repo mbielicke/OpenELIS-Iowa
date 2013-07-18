@@ -28,6 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
@@ -44,6 +46,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Singleton
+@Lock(LockType.READ)
 
 public class SectionCacheBean {
 

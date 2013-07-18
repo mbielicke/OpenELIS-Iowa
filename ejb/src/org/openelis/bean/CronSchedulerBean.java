@@ -30,10 +30,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.Timer;
 
@@ -47,11 +45,8 @@ import org.openelis.utils.FixedPeriodCron;
 @SecurityDomain("openelis")
 public class CronSchedulerBean {
 
-    @Resource
-    private SessionContext       ctx;
-
     @EJB
-    private CronBean             cron;
+    private CronBean            cron;
 
     private static final Logger log = Logger.getLogger("openelis");
 
@@ -64,8 +59,8 @@ public class CronSchedulerBean {
     @Schedule(hour = "*", minute = "*", second = "0", persistent = false)
     @TransactionTimeout(600)
     public void timer(Timer timer) {
-        Calendar   now;
-        int        month, day, hour, minute, dayOfWeek;
+        Calendar now;
+        int month, day, hour, minute, dayOfWeek;
         List<Cron> cronTabs;
 
         try {
@@ -76,9 +71,9 @@ public class CronSchedulerBean {
             hour = now.get(Calendar.HOUR_OF_DAY);
             minute = now.get(Calendar.MINUTE);
             dayOfWeek = now.get(Calendar.DAY_OF_WEEK) - 1;
-            
+
             cronTabs = cron.fetchActive();
-            log.finest("Evaluating "+ cronTabs.size()+ " entries");
+            log.finest("Evaluating " + cronTabs.size() + " entries");
 
             for (Cron cronTab : cronTabs)
                 checkForRun(cronTab, month, day, hour, minute, dayOfWeek);
@@ -118,7 +113,7 @@ public class CronSchedulerBean {
         Object beanInst;
         Object[] params;
         Class[] classes;
-        
+
         beanInst = EJBFactory.lookup(cronTab.getBean());
 
         if (cronTab.getParameters() != null) {
@@ -132,11 +127,11 @@ public class CronSchedulerBean {
             params = new String[] {};
         }
 
-        log.info("Starting job: "+cronTab.getName());        
+        log.info("Starting job: " + cronTab.getName());
         try {
             beanInst.getClass().getMethod(cronTab.getMethod(), classes).invoke(beanInst, params);
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Job: "+ cronTab.getName(), e);
+            log.log(Level.SEVERE, "Job: " + cronTab.getName(), e);
         }
     }
 }
