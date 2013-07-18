@@ -33,6 +33,8 @@ import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 
@@ -46,6 +48,7 @@ import org.openelis.ui.common.InconsistencyException;
  */
 @Startup
 @Singleton
+@Lock(LockType.READ)
 @SecurityDomain("openelis")
 public class ApplicationBean {
 

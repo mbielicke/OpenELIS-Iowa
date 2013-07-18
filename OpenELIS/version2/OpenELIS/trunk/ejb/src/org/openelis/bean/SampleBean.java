@@ -414,16 +414,6 @@ public class SampleBean {
         return returnList;
     }
 
-    public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("Sample.FetchForBillingReport");
-        query.setParameter("startDate", stDate);
-        query.setParameter("endDate", endDate);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
     public ArrayList<SampleStatusWebReportVO> fetchForSampleStatusReport(ArrayList<Integer> sampleIds) throws Exception {
         Query query;
         SampleStatusWebReportVO vo;

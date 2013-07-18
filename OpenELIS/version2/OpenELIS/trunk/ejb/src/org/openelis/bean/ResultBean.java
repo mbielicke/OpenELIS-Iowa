@@ -583,20 +583,6 @@ public class ResultBean {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception {
-        List<ResultDO> list;
-        Query query;
-
-        query = manager.createNamedQuery("Result.FetchForBillingByAnalysisId");
-        query.setParameter("id", analysisId);
-
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
-    }
-
     public ResultDO add(ResultDO data) throws Exception {
         Result entity;
 
