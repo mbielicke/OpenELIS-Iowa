@@ -1,35 +1,39 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 
@@ -52,12 +56,19 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Singleton
-public class UserCacheBean  {
+@Lock(LockType.READ)
+
+public class UserCacheBean {
 
     @Resource
-    private SessionContext ctx;
-    
-    private Cache          cache, permCache;
+    private SessionContext      ctx;
+
+    @EJB
+    private LockBean            lock;
+
+    private Cache               cache, permCache;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -82,29 +93,30 @@ public class UserCacheBean  {
     }
 
     /**
-     * Returns the system user's login name associated with this context. Please note that
-     * we concat username, sessionId, and locale on initial login and you will need a special
-     * login class for JBOSS to parse the username.
+     * Returns the system user's login name associated with this context. Please
+     * note that we concat username, sessionId, and locale on initial login and
+     * you will need a special login class for JBOSS to parse the username.
      */
-    //TODO
+    // TODO
     /*
-     * This method has been altered to work for jboss 7 bug where the unauthenticatedIdentity is 
-     * always being set to anonymous instead of the configured value of 'system'.  We change the 
-     * user name to 'system' so that cron jobs that call managers or access beens that use 
-     * OpenELIS security checks will work properly.  More info can found at these two links
+     * This method has been altered to work for jboss 7 bug where the
+     * unauthenticatedIdentity is always being set to anonymous instead of the
+     * configured value of 'system'. We change the user name to 'system' so that
+     * cron jobs that call managers or access beens that use OpenELIS security
+     * checks will work properly. More info can found at these two links
      * 
-     *  https://community.jboss.org/thread/175405
-     *  
-     *  https://issues.jboss.org/browse/AS7-3154
+     * https://community.jboss.org/thread/175405
+     * 
+     * https://issues.jboss.org/browse/AS7-3154
      */
     public String getName() {
         String parts[];
-        
+
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
         if (parts.length > 0) {
-            if(parts[0].equals("anonymous"))
+            if (parts[0].equals("anonymous"))
                 return "system";
-            else 
+            else
                 return parts[0];
         }
 
@@ -112,13 +124,13 @@ public class UserCacheBean  {
     }
 
     /**
-     * Returns the system user's session id associated with this context. Please note that
-     * we concat username, sessionId, and locale on initial login and you will need a special
-     * login class for JBOSS to parse the username.
+     * Returns the system user's session id associated with this context. Please
+     * note that we concat username, sessionId, and locale on initial login and
+     * you will need a special login class for JBOSS to parse the username.
      */
     public String getSessionId() {
         String parts[];
-        
+
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
         // the user 'system' will not have session id
         if (parts.length > 1)
@@ -128,13 +140,13 @@ public class UserCacheBean  {
     }
 
     /**
-     * Returns the system user's locale associated with this context. Please note that
-     * we concat username, sessionId, and locale on initial login and you will need a special
-     * login class for JBOSS to parse the username.
+     * Returns the system user's locale associated with this context. Please
+     * note that we concat username, sessionId, and locale on initial login and
+     * you will need a special login class for JBOSS to parse the username.
      */
     public String getLocale() {
         String parts[];
-        
+
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
         // the user 'system' will not have locale
         if (parts.length > 2)
@@ -191,7 +203,7 @@ public class UserCacheBean  {
         e = cache.get(name);
         if (e != null)
             return (SystemUserVO)e.getValue();
-        
+
         data = null;
         try {
             list = getSystemUsers(name, 1);
@@ -201,6 +213,7 @@ public class UserCacheBean  {
                 cache.put(new Element(data.getLoginName(), data));
             }
         } catch (Exception e1) {
+            log.log(Level.SEVERE, "Can't find user '" + name + "'", e1);
             data = null;
         }
 
@@ -249,6 +262,7 @@ public class UserCacheBean  {
         Element e;
         SystemUserPermission data;
 
+        name = null;
         try {
             name = getName();
             e = permCache.get(name);
@@ -258,13 +272,12 @@ public class UserCacheBean  {
                 cache.remove(data.getLoginName());
                 cache.remove(data.getSystemUserId());
             }
-            // we can't use the injected Lock because of circular reference; do it the hard way
-            EJBFactory.getLock().removeLocks();
+            lock.removeLocks();
         } catch (Exception e1) {
-            e1.printStackTrace();
+            log.log(Level.SEVERE, "Can't logout '" + name + "'", e1);
         }
     }
-    
+
     /**
      * Returns the system user data for matching name.
      */
@@ -279,7 +292,7 @@ public class UserCacheBean  {
 
         return list;
     }
-    
+
     public ArrayList<SystemUserVO> getEmployees(String name, int max) {
         ArrayList<SystemUserVO> list;
 
@@ -291,7 +304,7 @@ public class UserCacheBean  {
 
         return list;
     }
-    
+
     /**
      * Returns the user permission for current user.
      */
@@ -315,7 +328,7 @@ public class UserCacheBean  {
                 cache.put(new Element(data.getSystemUserId(), data.getUser()));
             }
         } catch (Exception e1) {
-            e1.printStackTrace();
+            log.log(Level.SEVERE, "Can't get permissions for user '" + name + "'", e1);
             data = null;
         }
 

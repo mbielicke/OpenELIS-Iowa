@@ -29,6 +29,8 @@ import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.Lock;
+import javax.ejb.LockType;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 
@@ -44,6 +46,7 @@ import org.jboss.security.annotation.SecurityDomain;
 
 @SecurityDomain("openelis")
 @Singleton
+@Lock(LockType.READ)
 
 public class SessionCacheBean {
 
