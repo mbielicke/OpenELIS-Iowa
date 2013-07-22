@@ -33,28 +33,32 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select distinct o.id o_id, d1.entry status, o.ordered_date, org.id shiptoid, org.name shipToName, o.organization_attention, org2.id reporttoid, org2.name reportToName, o.requested_by, d2.entry costCenter
-from order o, order_organization oo, dictionary d1, dictionary d2, organization org, organization org2
-where oo.order_id = o.id
-and o.organization_id = org.id
-and o.cost_center_id = d2.id
-and oo.organization_id = org2.id
-and oo.type_id = (select id from dictionary where system_name = 'org_report_to')
-and o.status_id = d1.id
-and o.ordered_date between $P{FROM_DATE} and $P{TO_DATE}
+		<![CDATA[select distinct o.id o_id, d1.entry status, o.ordered_date, org.id ship_to_id, org.name ship_to_name,
+                  d3.entry ship_from_name, org2.id report_to_id, org2.name report_to_name, o.requested_by,
+                  d2.entry cost_center
+  from order o, dictionary d1, outer dictionary d2, outer dictionary d3, outer organization org,
+       outer(order_organization oo, organization org2)
+where o.status_id = d1.id and
+      o.cost_center_id = d2.id and
+      o.ship_from_id = d3.id and
+      o.organization_id = org.id and
+      oo.order_id = o.id and
+      oo.organization_id = org2.id and
+      oo.type_id = (select id from dictionary where system_name = 'org_report_to') and
+      o.ordered_date between $P{FROM_DATE} and $P{TO_DATE}
 $P!{SHIP_FROM} $P!{SHIP_TO} $P!{DESCRIPTION} $P!{STATUS} $P!{SECTION}
 $P!{SORT_BY}]]>
 	</queryString>
 	<field name="o_id" class="java.lang.Integer"/>
 	<field name="status" class="java.lang.String"/>
 	<field name="ordered_date" class="java.sql.Date"/>
-	<field name="shiptoname" class="java.lang.String"/>
-	<field name="organization_attention" class="java.lang.String"/>
-	<field name="reporttoname" class="java.lang.String"/>
+	<field name="ship_to_id" class="java.lang.Integer"/>
+	<field name="ship_to_name" class="java.lang.String"/>
+	<field name="ship_from_name" class="java.lang.String"/>
+	<field name="report_to_id" class="java.lang.Integer"/>
+	<field name="report_to_name" class="java.lang.String"/>
 	<field name="requested_by" class="java.lang.String"/>
-	<field name="costcenter" class="java.lang.String"/>
-	<field name="shiptoid" class="java.lang.String"/>
-	<field name="reporttoid" class="java.lang.Integer"/>
+	<field name="cost_center" class="java.lang.String"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
@@ -139,7 +143,7 @@ $P!{SORT_BY}]]>
 				<textElement>
 					<font fontName="Times New Roman" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[Location]]></text>
+				<text><![CDATA[Ship from]]></text>
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="286" y="0" width="75" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
@@ -211,18 +215,22 @@ $P!{SORT_BY}]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="286" y="0" width="75" height="12"/>
+				<reportElement stretchType="RelativeToTallestObject" x="286" y="0" width="75" height="12">
+					<printWhenExpression><![CDATA[Boolean.valueOf($F{report_to_id} != null)]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["(" + $F{reporttoid} + ") " + $F{reporttoname}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["(" + $F{report_to_id} + ") " + $F{report_to_name}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
-				<reportElement stretchType="RelativeToTallestObject" x="140" y="0" width="75" height="12"/>
+				<reportElement stretchType="RelativeToTallestObject" x="140" y="0" width="75" height="12">
+					<printWhenExpression><![CDATA[Boolean.valueOf($F{ship_to_id} != null)]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["(" + $F{shiptoid} + ") " + $F{shiptoname}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["(" + $F{ship_to_id} + ") " + $F{ship_to_name}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="90" y="0" width="50" height="12"/>
@@ -236,14 +244,14 @@ $P!{SORT_BY}]]>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_attention}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ship_from_name}]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToTallestObject" x="679" y="0" width="73" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman" size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{costcenter}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cost_center}]]></textFieldExpression>
 			</textField>
 			<subreport>
 				<reportElement key="testNames" stretchType="RelativeToTallestObject" x="361" y="0" width="100" height="12"/>
