@@ -417,9 +417,11 @@ public class KitTrackingUI extends Screen {
         stringModel.add(new Item<String>("o_id", "Order#"));
         stringModel.add(new Item<String>("status", "Order status"));
         stringModel.add(new Item<String>("o.ordered_date", "Order date"));
-        stringModel.add(new Item<String>("o.organization_attention", "Location"));
-        stringModel.add(new Item<String>("shiptoname", "Ship to"));
-        stringModel.add(new Item<String>("reporttoname", "Report to"));
+        stringModel.add(new Item<String>("ship_from_name", "Ship from"));
+        stringModel.add(new Item<String>("ship_to_name", "Ship to"));
+        stringModel.add(new Item<String>("report_to_name", "Report to"));
+        stringModel.add(new Item<String>("requested_by", "Requested by"));
+        stringModel.add(new Item<String>("cost_center", "Cost center"));
         sortBy.setModel(stringModel);
         
         // printer dropdown

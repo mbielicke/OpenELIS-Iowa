@@ -39,13 +39,13 @@ UIRF Software License are applicable instead of those above.
               <tr>                
                 <td class="{res.style.Prompt}"><ui:text from="{msg.startOrderDate}:" /></td>
                 <td>
-                	<c:Calendar ui:field="startDate" width="150px" required = "true"  />
+                	<c:Calendar ui:field="startDate" width="90px" required="true"  />
                	</td>
               </tr>
               <tr>                
                 <td class="{res.style.Prompt}"><ui:text from="{msg.endSentDate}:" /></td>
 				<td>
-                	<c:Calendar ui:field="endDate" width="150px" required = "true"  />
+                	<c:Calendar ui:field="endDate" width="90px" required = "true"  />
                	</td>
               </tr>  
               <tr>
