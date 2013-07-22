@@ -122,7 +122,7 @@ public class AnalysisManagerProxy {
         analysisDO.setSampleItemId(man.getSampleItemId());
         EJBFactory.getAnalysis().add(analysisDO);
 
-        arfDO = new AnalysisReportFlagsDO(analysisDO.getId(), "N", "N", null, 0, "N");
+        arfDO = new AnalysisReportFlagsDO(analysisDO.getId(), "N", "N", null, 0, null);
         EJBFactory.getAnalysisReportFlags().add(arfDO);
 
         item = man.getItemAt(i);
