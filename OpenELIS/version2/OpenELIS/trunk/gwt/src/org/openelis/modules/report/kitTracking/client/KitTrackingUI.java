@@ -200,8 +200,16 @@ public class KitTrackingUI extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                data.setOrganizationId(event.getValue().getId());
-                data.setOrganizationName(organization.getDisplay());
+                AutoCompleteValue row;
+                
+                row = organization.getValue();
+                if (row == null || row.getId() == null) {
+                    data.setOrganizationId(null);
+                    data.setOrganizationName(null);
+                } else {
+                    data.setOrganizationId(row.getId());
+                    data.setOrganizationName(row.getDisplay());
+                }
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -219,8 +227,16 @@ public class KitTrackingUI extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                data.setDescriptionId(event.getValue().getId());
-                data.setDescription(description.getDisplay());
+                AutoCompleteValue row;
+                
+                row = description.getValue();
+                if (row == null || row.getId() == null) {
+                    data.setDescriptionId(null);
+                    data.setDescription(null);
+                } else {
+                    data.setDescriptionId(row.getId());
+                    data.setDescription(row.getDisplay());
+                }
             }
 
             public void onStateChange(StateChangeEvent event) {
