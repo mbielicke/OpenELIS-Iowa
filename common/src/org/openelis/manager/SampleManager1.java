@@ -1027,6 +1027,21 @@ public class SampleManager1 implements Serializable {
             return 0;
         }
         
+        /**
+         * Return true if the sample has at least one released analysis
+         */
+        public boolean hasReleasedAnalysis() {
+            if (analyses == null)
+                return false;
+            
+            for (AnalysisViewDO a : analyses) {
+                if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
+                    return true;
+            }
+            
+            return false;
+        }
+
         /*
          * create a hash map from analyses list
          */
