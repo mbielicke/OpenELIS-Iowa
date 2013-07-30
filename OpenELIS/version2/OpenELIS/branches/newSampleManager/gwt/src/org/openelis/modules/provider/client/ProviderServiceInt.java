@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.ProviderDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("provider")
-public interface ProviderServiceInt extends RemoteService {
+public interface ProviderServiceInt extends XsrfProtectedService {
 
     ProviderManager fetchById(Integer id) throws Exception;
     

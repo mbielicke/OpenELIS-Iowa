@@ -10,9 +10,10 @@ import org.openelis.manager.ExchangeProfileManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("exchangeData")
-public interface ExchangeDataSelectionServiceInt extends RemoteService {
+public interface ExchangeDataSelectionServiceInt extends XsrfProtectedService {
 
     ExchangeCriteriaManager fetchById(Integer id) throws Exception;
 

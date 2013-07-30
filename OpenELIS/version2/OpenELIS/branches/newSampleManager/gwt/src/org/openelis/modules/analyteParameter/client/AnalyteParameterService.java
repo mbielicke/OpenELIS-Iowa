@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AnalyteParameterManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class AnalyteParameterService implements AnalyteParameterServiceInt, AnalyteParameterServiceIntAsync {
     
@@ -26,6 +28,7 @@ public class AnalyteParameterService implements AnalyteParameterServiceInt, Anal
     
     private AnalyteParameterService() {
         service = (AnalyteParameterServiceIntAsync)GWT.create(AnalyteParameterServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

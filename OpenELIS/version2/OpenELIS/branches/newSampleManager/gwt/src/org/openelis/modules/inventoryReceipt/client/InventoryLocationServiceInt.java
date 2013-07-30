@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("inventoryLocation")
-public interface InventoryLocationServiceInt extends RemoteService {
+public interface InventoryLocationServiceInt extends XsrfProtectedService {
 
     ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemId(Query query) throws Exception;
 

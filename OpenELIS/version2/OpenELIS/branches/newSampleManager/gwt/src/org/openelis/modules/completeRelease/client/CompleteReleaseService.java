@@ -3,11 +3,13 @@ package org.openelis.modules.completeRelease.client;
 import java.util.ArrayList;
 
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleDataBundle;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class CompleteReleaseService implements CompleteReleaseServiceInt, CompleteReleaseServiceIntAsync {
     
@@ -24,6 +26,7 @@ public class CompleteReleaseService implements CompleteReleaseServiceInt, Comple
     
     private CompleteReleaseService() {
         service = (CompleteReleaseServiceIntAsync)GWT.create(CompleteReleaseServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
     
     

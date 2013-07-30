@@ -6,10 +6,12 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class QaEventService implements QAEventServiceInt, QAEventServiceIntAsync {
     
@@ -26,6 +28,7 @@ public class QaEventService implements QAEventServiceInt, QAEventServiceIntAsync
     
     private QaEventService() {
         service = (QAEventServiceIntAsync)GWT.create(QAEventServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

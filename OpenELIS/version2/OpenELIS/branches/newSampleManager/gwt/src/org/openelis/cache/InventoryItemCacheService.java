@@ -2,9 +2,11 @@ package org.openelis.cache;
 
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class InventoryItemCacheService implements InventoryItemCacheServiceInt,
                                       InventoryItemCacheServiceIntAsync {
@@ -22,6 +24,7 @@ public class InventoryItemCacheService implements InventoryItemCacheServiceInt,
     
     private InventoryItemCacheService() {
         service = (InventoryItemCacheServiceIntAsync)GWT.create(InventoryItemCacheServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

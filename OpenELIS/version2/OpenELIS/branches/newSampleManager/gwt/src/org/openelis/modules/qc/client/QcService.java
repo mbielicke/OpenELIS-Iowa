@@ -7,6 +7,7 @@ import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
@@ -14,6 +15,7 @@ import org.openelis.manager.QcManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class QcService implements QcServiceInt, QcServiceIntAsync {
     
@@ -30,6 +32,7 @@ public class QcService implements QcServiceInt, QcServiceIntAsync {
     
     private QcService() {
         service = (QcServiceIntAsync)GWT.create(QcServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override
@@ -53,8 +56,12 @@ public class QcService implements QcServiceInt, QcServiceIntAsync {
     }
 
     @Override
-    public void fetchActiveByName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback) {
+    public void fetchActiveByName(String search, AsyncCallback<ArrayList<QcDO>> callback) {
         service.fetchActiveByName(search, callback);
+    }
+
+    public void fetchActiveLotByName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback) {
+        service.fetchActiveLotByName(search, callback);
     }
 
     @Override
@@ -140,11 +147,20 @@ public class QcService implements QcServiceInt, QcServiceIntAsync {
     }
 
     @Override
-    public ArrayList<QcLotViewDO> fetchActiveByName(String search) throws Exception {
+    public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
+        Callback<ArrayList<QcDO>> callback;
+        
+        callback = new Callback<ArrayList<QcDO>>();
+        service.fetchActiveByName(search, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<QcLotViewDO> fetchActiveLotByName(String search) throws Exception {
         Callback<ArrayList<QcLotViewDO>> callback;
         
         callback = new Callback<ArrayList<QcLotViewDO>>();
-        service.fetchActiveByName(search, callback);
+        service.fetchActiveLotByName(search, callback);
         return callback.getResult();
     }
 

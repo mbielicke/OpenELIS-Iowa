@@ -9,9 +9,10 @@ import org.openelis.manager.ExchangeLocalTermManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("exchangeVocabulary")
-public interface ExchangeVocabularyMapServiceInt extends RemoteService {
+public interface ExchangeVocabularyMapServiceInt extends XsrfProtectedService {
 
     ExchangeLocalTermManager fetchById(Integer id) throws Exception;
 

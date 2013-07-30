@@ -1487,15 +1487,18 @@ public class AuxiliaryScreen extends Screen {
     }
 
     private void setFieldValueErrors(int index) {
+        int i;
         GridFieldErrorException ex;
 
         if (state == State.ADD || state == State.UPDATE) {
-            for (int i = 0; i < valueErrorList.size(); i++ ) {
-                ex = valueErrorList.get(i);
-                if (ex.getRowIndex() == index)
-                    auxFieldValueTable.setCellException(ex.getColumnIndex(),
-                                                        ex.getFieldName(),
-                                                        ex);
+            if (valueErrorList != null) {
+                for (i = 0; i < valueErrorList.size(); i++ ) {
+                    ex = valueErrorList.get(i);
+                    if (ex.getRowIndex() == index)
+                        auxFieldValueTable.setCellException(ex.getColumnIndex(),
+                                                            ex.getFieldName(),
+                                                            ex);
+                }
             }
         }
     }

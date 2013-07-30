@@ -23,7 +23,9 @@ public interface QcServiceIntAsync {
 
     void fetchActiveByName(Query query, AsyncCallback<ArrayList<QcLotViewDO>> callback);
 
-    void fetchActiveByName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback);
+    void fetchActiveByName(String search, AsyncCallback<ArrayList<QcDO>> callback);
+
+    void fetchActiveLotByName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback);
 
     void fetchAnalyteByQcId(Integer id, AsyncCallback<QcAnalyteManager> callback);
 

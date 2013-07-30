@@ -84,9 +84,19 @@ UIRF Software License are applicable instead of those above.
     <load-on-startup>6</load-on-startup>
   </servlet>
   
+  <servlet>
+    <servlet-name>xsrf</servlet-name>
+    <servlet-class>com.google.gwt.user.server.rpc.XsrfTokenServiceServlet</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>FileServlet</servlet-name>
     <url-pattern>/openelis/upload</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>xsrf</servlet-name>
+    <url-pattern>/openelis/xsrf</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
@@ -122,4 +132,9 @@ UIRF Software License are applicable instead of those above.
   <welcome-file-list>
      <welcome-file>OpenELIS.html</welcome-file>
   </welcome-file-list>
+  
+  <context-param>
+    <param-name>gwt.xsrf.session_cookie_name</param-name>
+    <param-value>JSESSIONID</param-value>
+  </context-param>
 </web-app>

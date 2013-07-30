@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class ExchangeDataSelectionService implements ExchangeDataSelectionServiceInt,  ExchangeDataSelectionServiceIntAsync{
     
@@ -27,6 +29,7 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
     
     private ExchangeDataSelectionService() {
         service = (ExchangeDataSelectionServiceIntAsync)GWT.create(ExchangeDataSelectionServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

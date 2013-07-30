@@ -7,9 +7,11 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AuxDataManager;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class AuxDataService implements AuxDataServiceInt, AuxDataServiceIntAsync{
 
@@ -26,6 +28,7 @@ public class AuxDataService implements AuxDataServiceInt, AuxDataServiceIntAsync
     
     private AuxDataService() {
         service = (AuxDataServiceIntAsync)GWT.create(AuxDataServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

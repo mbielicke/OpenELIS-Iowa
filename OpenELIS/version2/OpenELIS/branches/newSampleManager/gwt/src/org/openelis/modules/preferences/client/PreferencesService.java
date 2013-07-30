@@ -2,9 +2,11 @@ package org.openelis.modules.preferences.client;
 
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.Preferences;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class PreferencesService implements PreferencesServiceInt, PreferencesServiceIntAsync {
     
@@ -21,6 +23,7 @@ public class PreferencesService implements PreferencesServiceInt, PreferencesSer
     
     private PreferencesService() {
         service = (PreferencesServiceIntAsync)GWT.create(PreferencesServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

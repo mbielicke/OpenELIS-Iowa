@@ -3,10 +3,12 @@ package org.openelis.modules.preferences.client;
 import java.util.ArrayList;
 
 import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class PrinterService implements PrinterServiceInt, PrinterServiceIntAsync {
     
@@ -23,6 +25,7 @@ public class PrinterService implements PrinterServiceInt, PrinterServiceIntAsync
     
     private PrinterService() {
         service = (PrinterServiceIntAsync)GWT.create(PrinterServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

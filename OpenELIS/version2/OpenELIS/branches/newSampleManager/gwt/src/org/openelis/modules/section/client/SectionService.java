@@ -4,13 +4,15 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SectionManager;
 import org.openelis.manager.SectionParameterManager;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class SectionService implements SectionServiceInt, SectionServiceIntAsync {
     
@@ -27,6 +29,7 @@ public class SectionService implements SectionServiceInt, SectionServiceIntAsync
     
     private SectionService() {
         service = (SectionServiceIntAsync)GWT.create(SectionServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

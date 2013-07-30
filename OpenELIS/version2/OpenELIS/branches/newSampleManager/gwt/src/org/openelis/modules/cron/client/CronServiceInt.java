@@ -6,11 +6,11 @@ import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("cron")
-public interface CronServiceInt extends RemoteService {
+public interface CronServiceInt extends XsrfProtectedService {
 
     CronDO fetchById(Integer id) throws Exception;
 

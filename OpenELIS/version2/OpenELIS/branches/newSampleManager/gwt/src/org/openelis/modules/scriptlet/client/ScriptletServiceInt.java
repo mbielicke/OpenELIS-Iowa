@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("scriptlet")
-public interface ScriptletServiceInt extends RemoteService {
+public interface ScriptletServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> fetchByName(String search) throws Exception;
 

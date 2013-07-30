@@ -145,6 +145,7 @@
                   <w:MenuItem enabled="false" ui:field="testCountByFacility" display="{msg.testCountByFacility}" />
                   <w:MenuItem enabled="false" ui:field="turnaround" display="{msg.turnaround}" />
                   <w:MenuItem enabled="false" ui:field="turnAroundStatisticReport" display="{msg.turnAroundStatisticReport}" />
+                  <w:MenuItem enabled="false" ui:field="kitTrackingReport" display="{msg.kitTrackingReport}" />
                   <w:MenuItem enabled="false" ui:field="sdwisUnloadReport" display="{msg.sdwisUnloadReport}" />
                   <w:MenuItem enabled="false" ui:field="dataView" display="{msg.dataView}" />
                   <w:MenuItem enabled="false" ui:field="qcChart" display="{msg.qcChart}" />

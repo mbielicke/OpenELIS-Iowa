@@ -32,10 +32,7 @@
 	text-align: right;
 	vertical-align: top;
 	test-justify: trim;
-}
-
-.Prompt:after {
-	content: ":";
+	white-space: nowrap;
 }
 
 .ScreenLabelLink {

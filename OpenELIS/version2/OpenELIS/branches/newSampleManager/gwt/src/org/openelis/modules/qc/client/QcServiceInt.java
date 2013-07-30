@@ -6,16 +6,16 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("qc")
-public interface QcServiceInt extends RemoteService {
+public interface QcServiceInt extends XsrfProtectedService {
 
     QcManager fetchById(Integer id) throws Exception;
 
@@ -23,7 +23,9 @@ public interface QcServiceInt extends RemoteService {
 
     ArrayList<QcLotViewDO> fetchActiveByName(Query query) throws Exception;
 
-    ArrayList<QcLotViewDO> fetchActiveByName(String search) throws Exception;
+    ArrayList<QcDO> fetchActiveByName(String search) throws Exception;
+    
+    ArrayList<QcLotViewDO> fetchActiveLotByName(String search) throws Exception;
     
     ArrayList<QcLotViewDO> fetchActiveByExactName(String search) throws Exception;
 

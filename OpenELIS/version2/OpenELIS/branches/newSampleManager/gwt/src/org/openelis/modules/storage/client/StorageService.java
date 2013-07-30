@@ -4,11 +4,13 @@ import java.util.ArrayList;
 
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.StorageManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class StorageService implements StorageServiceInt, StorageServiceIntAsync {
     
@@ -25,6 +27,7 @@ public class StorageService implements StorageServiceInt, StorageServiceIntAsync
     
     private StorageService() {
         service = (StorageServiceIntAsync)GWT.create(StorageServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

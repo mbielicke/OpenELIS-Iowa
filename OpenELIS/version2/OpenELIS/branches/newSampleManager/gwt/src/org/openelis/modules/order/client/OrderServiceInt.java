@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.ui.common.Prompt;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
@@ -15,12 +13,14 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
+import org.openelis.ui.common.Prompt;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("order")
-public interface OrderServiceInt extends RemoteService {
+public interface OrderServiceInt extends XsrfProtectedService {
 
     OrderManager fetchById(Integer id) throws Exception;
 

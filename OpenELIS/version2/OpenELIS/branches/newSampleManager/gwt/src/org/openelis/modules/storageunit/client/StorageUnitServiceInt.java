@@ -6,11 +6,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("storageUnit")
-public interface StorageUnitServiceInt extends RemoteService {
+public interface StorageUnitServiceInt extends XsrfProtectedService {
 
     StorageUnitDO fetchById(Integer id) throws Exception;
 

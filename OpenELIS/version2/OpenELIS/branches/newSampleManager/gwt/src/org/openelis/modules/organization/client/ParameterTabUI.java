@@ -87,7 +87,7 @@ public class ParameterTabUI extends Screen {
                 ArrayList<QueryData> qds = new ArrayList<QueryData>();
                 QueryData qd;
 
-                for (int i = 0; i < 12; i++ ) {
+                for (int i = 0; i < 2; i++ ) {
                     qd = (QueryData) ((Queryable)table.getColumnWidget(i)).getQuery();
                     if (qd != null) {
                         switch (i) {
