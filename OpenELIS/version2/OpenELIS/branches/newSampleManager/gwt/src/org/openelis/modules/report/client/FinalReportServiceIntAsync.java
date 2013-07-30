@@ -20,8 +20,6 @@ public interface FinalReportServiceIntAsync {
 
     void getPromptsForBatchReprint(AsyncCallback<ArrayList<Prompt>> callback);
 
-    void getPromptsForSingle(AsyncCallback<ArrayList<Prompt>> callback);
-
     void getSDWISProjectList(AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void getSampleEnvironmentalList(Query query, AsyncCallback<ArrayList<FinalReportWebVO>> callback);
