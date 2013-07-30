@@ -14,8 +14,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("finalReport")
 public interface FinalReportServiceInt extends RemoteService {
 
-    ArrayList<Prompt> getPromptsForSingle() throws Exception;
-
     ArrayList<Prompt> getPromptsForBatch() throws Exception;
 
     ArrayList<Prompt> getPromptsForBatchReprint() throws Exception;

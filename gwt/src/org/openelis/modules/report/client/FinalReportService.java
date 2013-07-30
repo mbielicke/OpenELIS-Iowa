@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.screen.Callback;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -50,11 +50,6 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     }
 
     @Override
-    public void getPromptsForSingle(AsyncCallback<ArrayList<Prompt>> callback) {
-        service.getPromptsForSingle(callback);
-    }
-
-    @Override
     public void getSDWISProjectList(AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.getSDWISProjectList(callback);
     }
@@ -71,7 +66,7 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
         service.getSamplePrivateWellList(query, callback);
     }
 
-    @Override
+   @Override
     public void getSampleSDWISList(Query query, AsyncCallback<ArrayList<FinalReportWebVO>> callback) {
         service.getSampleSDWISList(query, callback);
     }
@@ -99,15 +94,6 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     @Override
     public void runReportForWeb(Query query, AsyncCallback<ReportStatus> callback) {
         service.runReportForWeb(query, callback);
-    }
-
-    @Override
-    public ArrayList<Prompt> getPromptsForSingle() throws Exception {
-        Callback<ArrayList<Prompt>> callback;
-        
-        callback = new Callback<ArrayList<Prompt>>();
-        service.getPromptsForSingle(callback);
-        return callback.getResult();
     }
 
     @Override
