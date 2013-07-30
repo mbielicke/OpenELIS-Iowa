@@ -37,8 +37,6 @@ public interface SampleLocal {
     
 	public ArrayList<ClientNotificationVO> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception;
 	
-    public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception;
-    
     public ArrayList<SampleStatusWebReportVO> fetchForSampleStatusReport(ArrayList<Integer> sampleIdList) throws Exception;
     
     public ArrayList<Object[]> fetchForTurnaroundMaximumReport() throws Exception;

@@ -74,8 +74,6 @@ public interface ResultLocal {
 
 	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId, Integer rowGroup) throws Exception;
 	
-	public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception;
-	
 	public ResultDO add(ResultDO data) throws Exception;
 
 	public ResultDO update(ResultDO data) throws Exception;

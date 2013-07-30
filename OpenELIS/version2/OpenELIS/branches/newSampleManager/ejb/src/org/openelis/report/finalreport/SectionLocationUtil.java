@@ -35,7 +35,7 @@ public class SectionLocationUtil {
             if (name.endsWith("-ank")) 
                 name = "Ankeny";
             else if (name.endsWith("-ic")) 
-                name = "Iowa City";
+                name = "Coralville";
             else if (name.endsWith("-lk")) 
                 name = "Lakeside";
                         

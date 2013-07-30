@@ -83,7 +83,7 @@ public class AnalysisReportFlagsBean {
         entity.setNotifiedReleased(data.getNotifiedReleased());
         entity.setBilledDate(data.getBilledDate());
         entity.setBilledAnalytes(data.getBilledAnalytes());
-        entity.setBilledZero(data.getBilledZero());
+        entity.setBilledOverride(data.getBilledOverride());
 
         manager.persist(entity);
 
@@ -109,7 +109,7 @@ public class AnalysisReportFlagsBean {
         entity.setNotifiedReleased(data.getNotifiedReleased());
         entity.setBilledDate(data.getBilledDate());
         entity.setBilledAnalytes(data.getBilledAnalytes());
-        entity.setBilledZero(data.getBilledZero());
+        entity.setBilledOverride(data.getBilledOverride());
 
         lock.unlock(Constants.table().ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
 

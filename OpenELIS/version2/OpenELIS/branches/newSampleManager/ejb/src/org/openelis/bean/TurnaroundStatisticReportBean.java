@@ -36,6 +36,7 @@ import org.openelis.domain.TurnAroundReportViewVO.StatisticType;
 import org.openelis.domain.TurnAroundReportViewVO.Value;
 import org.openelis.domain.TurnAroundReportViewVO.Value.Stat;
 import org.openelis.meta.SampleMeta;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.report.turnaroundstatistic.TurnaroundDataSource;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.InconsistencyException;
@@ -73,7 +74,7 @@ public class TurnaroundStatisticReportBean {
         int i;
         Boolean sampleHasOverride;
         Integer plotTypeId, analysisId, sampleId;
-        String anaRelDateParam, plotInterval, excludePT;
+        String anaRelDateFrom, anaRelDateTo, anaRelDateParam, plotInterval, excludePT;
         DateFormat format;
         Date currentReleasedDate;
         TurnAroundReportViewVO data;
@@ -81,13 +82,27 @@ public class TurnaroundStatisticReportBean {
         ArrayList<Object[]> resultList;
         HashMap<String, QueryData> param;
         HashMap<Integer, Boolean> sampleOverrideMap;
+        QueryData field;
+
+        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         param = ReportUtil.getMapParameter(paramList);
         plotInterval = ReportUtil.getSingleParameter(param, "PLOT_INTERVAL");
         excludePT = ReportUtil.getSingleParameter(param, "EXCLUDE_PT");
-        anaRelDateParam = ReportUtil.getSingleParameter(param, SampleMeta.getAnalysisReleasedDate());
-        format = new SimpleDateFormat("yyyy-MM-dd");
-        currentReleasedDate = format.parse(anaRelDateParam.split("[..]")[0]);
+        
+        anaRelDateFrom = ReportUtil.getSingleParameter(param, SampleWebMeta.getAnalysisReleasedDateFrom());
+        anaRelDateTo = ReportUtil.getSingleParameter(param, SampleWebMeta.getAnalysisReleasedDateTo());
+        anaRelDateParam = format.format(format.parse(anaRelDateFrom)) + ".." + 
+                          format.format(format.parse(anaRelDateTo));
+        paramList.remove(param.get(SampleWebMeta.getAnalysisReleasedDateFrom()));
+        paramList.remove(param.get(SampleWebMeta.getAnalysisReleasedDateTo()));
+        field = new QueryData();
+        field.setKey(SampleMeta.getAnalysisReleasedDate());
+        field.setQuery(anaRelDateParam);
+        field.setType(QueryData.Type.DATE);
+        paramList.add(field);
+
+        currentReleasedDate = format.parse(anaRelDateFrom);
 
         try {
             plotTypeId = Integer.parseInt(plotInterval);
