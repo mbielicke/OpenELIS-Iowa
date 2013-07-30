@@ -5,9 +5,10 @@ import org.openelis.ui.common.Datetime;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("service")
-public interface OpenELISServiceInt extends RemoteService  {
+public interface OpenELISServiceInt extends XsrfProtectedService  {
 
     Constants getConstants() throws Exception;
 

@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class CronService implements CronServiceInt, CronServiceIntAsync {
     
@@ -25,6 +27,7 @@ public class CronService implements CronServiceInt, CronServiceIntAsync {
     
     private CronService() {
         service = (CronServiceIntAsync)GWT.create(CronServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

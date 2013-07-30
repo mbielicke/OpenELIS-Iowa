@@ -7,11 +7,11 @@ import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("qa")
-public interface QAEventServiceInt extends RemoteService {
+public interface QAEventServiceInt extends XsrfProtectedService {
 
     QaEventViewDO fetchById(Integer id) throws Exception;
 

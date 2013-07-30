@@ -6,6 +6,7 @@ import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
@@ -13,6 +14,7 @@ import org.openelis.manager.InventoryLocationManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class InventoryItemService implements InventoryItemServiceInt, InventoryItemServiceIntAsync {
     
@@ -29,6 +31,7 @@ public class InventoryItemService implements InventoryItemServiceInt, InventoryI
     
     private InventoryItemService() {
         service = (InventoryItemServiceIntAsync)GWT.create(InventoryItemServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

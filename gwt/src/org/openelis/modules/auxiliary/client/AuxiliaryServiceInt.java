@@ -11,9 +11,10 @@ import org.openelis.manager.AuxFieldValueManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("auxiliary")
-public interface AuxiliaryServiceInt extends RemoteService {
+public interface AuxiliaryServiceInt extends XsrfProtectedService {
 
     ArrayList<AuxFieldGroupDO> fetchActive() throws Exception;
 

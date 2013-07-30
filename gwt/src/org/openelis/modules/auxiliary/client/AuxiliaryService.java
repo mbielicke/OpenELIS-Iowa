@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
@@ -12,6 +13,7 @@ import org.openelis.manager.AuxFieldValueManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIntAsync {
     
@@ -28,6 +30,7 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
     
     private AuxiliaryService() {
         service = (AuxiliaryServiceIntAsync)GWT.create(AuxiliaryServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

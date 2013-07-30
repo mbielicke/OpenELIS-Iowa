@@ -108,6 +108,8 @@ public class InternalOrderScreen extends Screen {
         userPermission = UserCache.getPermission().getModule("internalorder");
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Internal Order Screen"));
+        
+        setWindow(window);
 
         tab = Tabs.ITEM;
         manager = OrderManager.getInstance();

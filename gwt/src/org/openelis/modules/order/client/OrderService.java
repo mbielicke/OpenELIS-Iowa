@@ -7,6 +7,7 @@ import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
@@ -19,6 +20,7 @@ import org.openelis.manager.OrderTestManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     
@@ -35,6 +37,7 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     
     private OrderService() {
         service = (OrderServiceIntAsync)GWT.create(OrderServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

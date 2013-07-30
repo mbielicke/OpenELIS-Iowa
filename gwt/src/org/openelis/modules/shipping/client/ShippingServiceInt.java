@@ -4,16 +4,16 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ShippingViewDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("shipping")
-public interface ShippingServiceInt extends RemoteService {
+public interface ShippingServiceInt extends XsrfProtectedService {
 
     ShippingManager fetchById(Integer id) throws Exception;
 

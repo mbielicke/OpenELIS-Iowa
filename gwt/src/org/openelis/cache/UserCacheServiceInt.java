@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("userCache")
-public interface UserCacheServiceInt extends RemoteService {
+public interface UserCacheServiceInt extends XsrfProtectedService {
 
     SystemUserVO getSystemUser(Integer id) throws Exception;
 

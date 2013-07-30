@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -13,6 +14,7 @@ import org.openelis.manager.WorksheetResultManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class WorksheetService implements WorksheetServiceInt, WorksheetServiceIntAsync {
     
@@ -29,6 +31,7 @@ public class WorksheetService implements WorksheetServiceInt, WorksheetServiceIn
     
     private WorksheetService() {
         service = (WorksheetServiceIntAsync)GWT.create(WorksheetServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

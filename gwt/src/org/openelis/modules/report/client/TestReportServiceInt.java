@@ -6,11 +6,11 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("testReport")
-public interface TestReportServiceInt extends RemoteService {
+public interface TestReportServiceInt extends XsrfProtectedService {
 
     ArrayList<Prompt> getPrompts() throws Exception;
 

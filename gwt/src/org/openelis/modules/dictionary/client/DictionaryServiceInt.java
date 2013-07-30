@@ -10,9 +10,10 @@ import org.openelis.manager.DictionaryManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("dictionary")
-public interface DictionaryServiceInt extends RemoteService {
+public interface DictionaryServiceInt extends XsrfProtectedService {
 
     CategoryManager fetchById(Integer id) throws Exception;
 

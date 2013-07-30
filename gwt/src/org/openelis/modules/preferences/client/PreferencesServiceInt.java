@@ -2,11 +2,11 @@ package org.openelis.modules.preferences.client;
 
 import org.openelis.manager.Preferences;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("preferences")
-public interface PreferencesServiceInt extends RemoteService {
+public interface PreferencesServiceInt extends XsrfProtectedService {
 
     /**
      * This method will return the System Preferences for the key passed

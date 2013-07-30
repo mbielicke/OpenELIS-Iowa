@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("sample")
-public interface SampleServiceInt extends RemoteService {
+public interface SampleServiceInt extends XsrfProtectedService {
 
     SampleManager fetchById(Integer sampleId) throws Exception;
 

@@ -1632,6 +1632,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         while ( !"sampleItem".equals(sampleItem.leafType))
             sampleItem = sampleItem.parent;
 
+        /*
+         * Ensure that the sample item node is expanded so that we can select
+         * the added analysis row. 
+         */
+        if (!sampleItem.open)
+            sampleItem.toggle();
+        
         bundle = (SampleDataBundle)sampleItem.data;
 
         try {

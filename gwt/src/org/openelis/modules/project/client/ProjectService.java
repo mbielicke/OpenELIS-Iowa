@@ -6,12 +6,14 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class ProjectService implements ProjectServiceInt, ProjectServiceIntAsync {
     
@@ -28,6 +30,7 @@ public class ProjectService implements ProjectServiceInt, ProjectServiceIntAsync
     
     private ProjectService() {
         service = (ProjectServiceIntAsync)GWT.create(ProjectServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override

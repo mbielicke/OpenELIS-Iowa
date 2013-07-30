@@ -10,9 +10,10 @@ import org.openelis.manager.InstrumentManager;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
 @RemoteServiceRelativePath("instrument")
-public interface InstrumentServiceInt extends RemoteService {
+public interface InstrumentServiceInt extends XsrfProtectedService {
 
     InstrumentManager fetchById(Integer id) throws Exception;
 

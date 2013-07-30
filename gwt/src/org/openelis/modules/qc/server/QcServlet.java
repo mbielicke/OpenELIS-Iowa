@@ -81,11 +81,24 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
         return qc.fetchActiveByName(query.getFields());
     }
 
-    public ArrayList<QcLotViewDO> fetchActiveByName(String search) throws Exception {
-        ArrayList<QcLotViewDO> list;
+    public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
+        ArrayList<QcDO> list;
 
         try {
             list = qc.fetchActiveByName(search + "%", 10);
+        } catch (NotFoundException e) {
+            list = new ArrayList<QcDO>(0);
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+        return list;
+    }
+    
+    public ArrayList<QcLotViewDO> fetchActiveLotByName(String search) throws Exception {
+        ArrayList<QcLotViewDO> list;
+
+        try {
+            list = qc.fetchActiveLotByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcLotViewDO>(0);
         } catch (RuntimeException e) {
@@ -98,7 +111,7 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
         ArrayList<QcLotViewDO> list;
 
         try {
-            list = qc.fetchActiveByName(search, 10);
+            list = qc.fetchActiveLotByName(search, 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcLotViewDO>(0);
         } catch (RuntimeException e) {
