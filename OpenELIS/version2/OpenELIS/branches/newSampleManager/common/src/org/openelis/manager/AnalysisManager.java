@@ -465,6 +465,8 @@ public class AnalysisManager implements Serializable {
         man = sampleItemBundle.getSampleManager();
         if (Constants.dictionary().SAMPLE_RELEASED.equals(man.getSample().getStatusId()))
             man.unrelease(false);
+        else
+            man.unreleased = true;
     }
 
     public void unInitiateAnalysisAt(int index, boolean clearStartedDate) throws Exception {

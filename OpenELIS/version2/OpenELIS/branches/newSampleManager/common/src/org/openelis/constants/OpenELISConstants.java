@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/dshirazi/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -1202,6 +1202,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Analyte cannot be removed as the row group has less than two analytes")
   @Key("atleastTwoRowsInRowGroup")
   String atleastTwoRowsInRowGroup();
+
+  /**
+   * Translated "Path to attachment directory is missing. Please contact the system administrator.".
+   * 
+   * @return translated "Path to attachment directory is missing. Please contact the system administrator."
+   */
+  @DefaultMessage("Path to attachment directory is missing. Please contact the system administrator.")
+  @Key("attachment.missingPath")
+  String attachment_missingPath();
 
   /**
    * Translated "Attention".
@@ -4172,6 +4181,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Final Report Single/Reprint")
   @Key("finalReportSingleReprint")
   String finalReportSingleReprint();
+
+  /**
+   * Translated "Saved Final Report for Accession # {0,number} revision {1,number}  ".
+   * 
+   * @return translated "Saved Final Report for Accession # {0,number} revision {1,number}  "
+   */
+  @DefaultMessage("Saved Final Report for Accession # {0,number} revision {1,number}  ")
+  @Key("finalreport.attachmentEsaveDescription")
+  String finalreport_attachmentEsaveDescription(Integer arg0,  Integer arg1);
 
   /**
    * Translated "Find".
