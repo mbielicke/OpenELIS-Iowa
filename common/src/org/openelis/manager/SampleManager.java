@@ -52,7 +52,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
     protected NoteManager                         sampleExternalNote;
     protected AuxDataManager                      auxData;
     protected SampleDataBundle                    bundle;
-    protected boolean                             statusWithError;
+    protected boolean                             statusWithError, unreleased;
 
     public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
                                                   HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
@@ -183,7 +183,8 @@ public class SampleManager implements Serializable, HasAuxDataInt {
 
         sample.setStatusId(Constants.dictionary().SAMPLE_COMPLETED);
         sample.setReleasedDate(null);
-        sample.setRevision(sample.getRevision() + 1);     
+        sample.setRevision(sample.getRevision() + 1);   
+        unreleased = true;
         this.unreleaseWithNotes = unreleaseWithNotes;
     }   
 
