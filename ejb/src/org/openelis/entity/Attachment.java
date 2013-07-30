@@ -52,10 +52,10 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "Attachement.FetchById",
                 query = "select new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
-                      + " from Attachment where a.id = :id"),               
+                      + " from Attachment a where a.id = :id"),               
     @NamedQuery( name = "Attachement.FetchByIds",
                 query = "select distinct new org.openelis.domain.AttachmentDO(a.id,a.createdDate,a.typeId,a.sectionId,a.description,a.storageReference)"
-                      + " from Attachment where a.id in (:ids)")})               
+                      + " from Attachment a where a.id in (:ids)")})               
 
 @Entity
 @Table(name = "attachment")
