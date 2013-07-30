@@ -28,16 +28,21 @@ package org.openelis.bean;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
@@ -47,6 +52,8 @@ import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.ResultDO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
@@ -64,8 +71,11 @@ import org.openelis.utils.ReportUtil;
 @SecurityDomain("openelis")
 public class BillingReportBean {
 
+    @PersistenceContext(unitName = "openelis")
+    private EntityManager           manager;
+
     @EJB
-    private SampleBean               sample;
+    private SampleBean              sample;
 
     @EJB
     private SystemVariableBean      systemVariable;
@@ -89,34 +99,35 @@ public class BillingReportBean {
     private SampleQAEventBean       sampleQaevent;
 
     @EJB
-    private AnalysisQAEventBean      analysisQaevent;
-    
+    private AnalysisQAEventBean     analysisQaevent;
+
     @EJB
-    private ResultBean               result;          
-    
+    private ResultBean              result;
+
     @EJB
-    private AuxDataBean              auxData;
-    
+    private AnalyteBean             analyte;
+
     @EJB
-    private AnalysisReportFlagsBean analysisReportFlags; 
-    
+    private AuxDataBean             auxData;
+
     @EJB
-    private DictionaryBean           dictionary;
-    
-    private static final String    RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
-                                      MISC_BILLING = "billing misc charges by no method",
-                                      RUSH_BILLING = "billing rush charges by no method",
-                                      EOL = "\r\n", ZERO_BILL = "0.00";
-    
-    private static final Logger     log = Logger.getLogger("openelis");
-    
+    private AnalysisReportFlagsBean analysisReportFlags;
+
+    @EJB
+    private DictionaryBean          dictionary;
+
+    private static final String     RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
+                                    EOL = "\r\n";
+
+    private static final Logger     log   = Logger.getLogger("openelis");
+
     /**
      * Execute the report and email its output to specified addresses
      */
 
     @Asynchronous
     @TransactionTimeout(600)
-    public void runReport() throws Exception {        
+    public void runReport() throws Exception {
         String poAnalyteName, billDir;
         ArrayList<Object[]> resultList;
         Date lastRunDate, currentRunDate, now;
@@ -124,47 +135,55 @@ public class BillingReportBean {
         Calendar cal;
         SimpleDateFormat df;
         FileWriter out;
-        File tempFile;        
+        File tempFile;
 
-        // System variable that points to the analyte in the aux group 
-        poAnalyteName = ReportUtil.getSystemVariableValue("billing_po");
-        
-        billDir = ReportUtil.getSystemVariableValue("billing_directory");
-        if (billDir == null) {
+        // System variable that points to the analyte in the aux group
+        try {
+            poAnalyteName = systemVariable.fetchByName("billing_po").getValue();
+        } catch (Exception anyE) {
+            poAnalyteName = null;
+            log.warning("System variable 'billing_po' is not available");
+        }
+
+        try {
+            billDir = systemVariable.fetchByName("billing_directory").getValue();
+        } catch (Exception anyE) {
             log.severe("System variable 'billing_directory' is not available");
             return;
-        }                
-        
+        }
+
         df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         lastRun = null;
         try {
-            lastRun = systemVariable.fetchForUpdateByName("last_billing_report_run");            
-            lastRunDate = df.parse(lastRun.getValue());   
+            lastRun = systemVariable.fetchForUpdateByName("last_billing_report_run");
+            lastRunDate = df.parse(lastRun.getValue());
         } catch (Exception e) {
-            log.log(Level.SEVERE, "System variable 'last_billing_report_run' is not available or valid", e);
+            log.log(Level.SEVERE,
+                    "System variable 'last_billing_report_run' is not available or valid",
+                    e);
             if (lastRun != null)
                 systemVariable.abortUpdate(lastRun.getId());
             return;
-        }        
-        
+        }
+
         cal = Calendar.getInstance();
         /*
-         * this is the time at which the current run is being executed and it will 
-         * be used as the last run time for the next run 
+         * this is the time at which the current run is being executed and it
+         * will be used as the last run time for the next run
          */
         now = cal.getTime();
-        
+
         cal.add(Calendar.MINUTE, -1);
-        currentRunDate = cal.getTime();                  
-        
+        currentRunDate = cal.getTime();
+
         if (lastRunDate.compareTo(currentRunDate) >= 0) {
             log.severe("Start Date should be earlier than End Date");
             systemVariable.abortUpdate(lastRun.getId());
             return;
         }
-            
-        resultList = sample.fetchForBillingReport(lastRunDate, currentRunDate);        
-        log.fine("Considering "+ resultList.size()+ " cases to run");        
+
+        resultList = fetchForBillingReport(lastRunDate, currentRunDate);
+        log.fine("Considering " + resultList.size() + " cases to run");
         if (resultList.size() == 0) {
             systemVariable.abortUpdate(lastRun.getId());
             return;
@@ -174,33 +193,35 @@ public class BillingReportBean {
         try {
             tempFile = File.createTempFile("billingReport", ".txt", new File(billDir));
             out = new FileWriter(tempFile);
-            outputBilling(out, currentRunDate, poAnalyteName, resultList);  
+            outputBilling(out, currentRunDate, poAnalyteName, resultList);
             out.close();
-            
+
             lastRun.setValue(df.format(now));
-            systemVariable.update(lastRun);        
+            systemVariable.update(lastRun);
         } catch (Exception e) {
-            if (out != null) 
+            if (out != null)
                 out.close();
             if (tempFile != null)
                 tempFile.delete();
-            
+
             log.log(Level.SEVERE, "Could not generate billing report", e);
-            
-            systemVariable.abortUpdate(lastRun.getId());     
+
+            systemVariable.abortUpdate(lastRun.getId());
             //
             // we need to roll back the entire transaction
             //
             throw new DatabaseException(e);
-        }  
+        }
     }
-    
+
     private void outputBilling(FileWriter out, Date currentDate, String poAnalyteName,
                               ArrayList<Object[]> resultList) throws Exception {
-        int i, billableAnalytes;
-        boolean sampleZeroCharge, anaZeroCharge, needCharge, needCredit;
-        Integer billedAnalytes, samId, prevSamId, accession, anaId, statusId, testId;
-        String billedZero, clientCode;
+        int i;
+        boolean needCharge, needCredit;
+        Double sampleCharge, anaCharge;
+        Integer billedAnalytes, samId, prevSamId, accession, anaId, statusId, testId,
+                BILLING_MISC_ID, BILLING_RUSH_ID, SECTION_ANALYTE_ID;
+        String billedOverride, clientCode;
         Object[] row;
         String domain, clientReference, billingType, lastName, projectName,
                domainInfo, testName, methodName, section, labCode, currentDateStr,
@@ -215,7 +236,8 @@ public class BillingReportBean {
         OrganizationDO org;
         AnalysisReportFlagsDO anaRepFlags;
         ArrayList<SampleQaEventViewDO> sampleQas;
-        ArrayList<AnalysisQaEventViewDO> anaQas; 
+        ArrayList<AnalysisQaEventViewDO> anaQas;
+        ArrayList<ResultDO> billableAnalytes;
         StringBuilder hdr, dtrcr, dtrch;
 
         hdr = new StringBuilder();
@@ -228,7 +250,26 @@ public class BillingReportBean {
         df = new SimpleDateFormat("yyyyMMddHHmm");
         currentDateStr = df.format(currentDate);
                                                
-        sampleZeroCharge = false;
+        try {
+            BILLING_MISC_ID = Integer.valueOf(systemVariable.fetchByName("billing_misc_test_id").getValue());
+        } catch (Exception anyE) {
+            BILLING_MISC_ID = null;
+            log.warning("System variable 'billing_misc_test_id' is not available");
+        }
+        try {
+            BILLING_RUSH_ID = Integer.valueOf(systemVariable.fetchByName("billing_rush_test_id").getValue());
+        } catch (Exception anyE) {
+            log.warning("System variable 'billing_rush_test_id' is not available");
+            BILLING_RUSH_ID = null;
+        }
+        try {
+            SECTION_ANALYTE_ID = analyte.fetchByExternalId("section", 1).get(0).getId();
+        } catch (Exception anyE) {
+            log.warning("Analyte with external id 'section' not found");
+            SECTION_ANALYTE_ID = null;
+        }
+        
+        sampleCharge = null;
         for (i = 0; i < resultList.size(); i++) {
             row = resultList.get(i);
             samId = (Integer)row[0];
@@ -243,15 +284,18 @@ public class BillingReportBean {
             section = DataBaseUtil.trim((String)row[9]);
             billed = (Timestamp)row[10];
             billedAnalytes = (Integer)row[11];
-            billedZero = (String)row[12];
+            billedOverride = (String)row[12];
             anaReportable = (String)row[13];  
             statusId = (Integer)row[14];
             
             if (!samId.equals(prevSamId))  {                  
                 lastName = null;
                 domainInfo = null;
-                sampleZeroCharge = false;
-                po = getBillingPO(samId, poAnalyteName);  
+                sampleCharge = null;
+                if (poAnalyteName != null)
+                    po = getBillingPO(samId, poAnalyteName);
+                else
+                    po = null;
                 
                 switch (domain.charAt(0)) {                    
                     case 'W':
@@ -282,7 +326,7 @@ public class BillingReportBean {
                     sampleQas = sampleQaevent.fetchBySampleId(samId);
                     for (SampleQaEventViewDO sqa : sampleQas) {
                         if ("N".equals(sqa.getIsBillable())) {
-                            sampleZeroCharge = true;
+                            sampleCharge = 0.0;
                             break;
                         }
                     }
@@ -329,13 +373,13 @@ public class BillingReportBean {
              * if the sample has even one qa event that's not billable
              * then the change for all analyses is zero
              */
-            anaZeroCharge = sampleZeroCharge;
-            if (!sampleZeroCharge) {                
+            anaCharge = sampleCharge;
+            if (anaCharge == null) {                
                 try {
                     anaQas = analysisQaevent.fetchByAnalysisId(anaId);
                     for (AnalysisQaEventViewDO aqa : anaQas) {                        
                         if ("N".equals(aqa.getIsBillable())) {
-                            anaZeroCharge = true;
+                            anaCharge = 0.0;
                             break;
                         }
                     }
@@ -348,14 +392,35 @@ public class BillingReportBean {
             }
 
             try {
-                billableAnalytes = result.fetchForBillingByAnalysisId(anaId).size();
-            } catch (NotFoundException e) {
-                billableAnalytes = 0;
+                billableAnalytes = fetchForBillingByAnalysisId(anaId);
+                /*
+                 * Override the section and calculate the total miscellaneous
+                 * charge 
+                 */
+                if (testId.equals(BILLING_MISC_ID) && billableAnalytes.size() > 0) {
+                    anaCharge = 0.0;
+                    for (ResultDO data : billableAnalytes) {
+                        if (data.getAnalyteId().equals(SECTION_ANALYTE_ID)) {
+                            section = data.getValue();
+                        } else {
+                            if (data.getValue() != null) {
+                                try {
+                                    anaCharge += Double.parseDouble(data.getValue());
+                                } catch (NumberFormatException numE) {
+                                    log.severe("Accession #"+accession+" has an"+
+                                               " invalid price for miscellaneous billing");
+                                    anaCharge = -9.99;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             } catch (Exception e) {
                 log.severe("Problem with fetching results for analysis with id "+ anaId);
                 throw e;
             }          
-
+            
             /*
              * section's name is in the format "virology-ic" 
              */
@@ -376,14 +441,14 @@ public class BillingReportBean {
             
             needCredit = false;
             if (billed != null) {
-                if (billableAnalytes != billedAnalytes)  
+                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))  
                     needCredit = true;
-                else if (!billedZero.equals(anaZeroCharge ? "Y" : "N")) 
+                else if ("N".equals(anaReportable) && !testId.equals(BILLING_MISC_ID) &&
+                                !testId.equals(BILLING_RUSH_ID))  
                     needCredit = true;
-                else if ("N".equals(anaReportable) && !MISC_BILLING.equals(procedure) &&
-                                !RUSH_BILLING.equals(procedure)) 
+                else if (billableAnalytes.size() != billedAnalytes)
                     needCredit = true;
-                else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
+                else if (DataBaseUtil.isDifferent(billedOverride, anaCharge))
                     needCredit = true;
             }
                         
@@ -391,10 +456,10 @@ public class BillingReportBean {
             //  we need to figure out if we charge for this analysis
             //
             needCharge = false;
-            if (billed == null || billableAnalytes != billedAnalytes ||
-                !billedZero.equals(anaZeroCharge ? "Y" : "N")) {                
+            if (billed == null || billableAnalytes.size() != billedAnalytes ||
+                DataBaseUtil.isDifferent(billedOverride, anaCharge)) {                
                 if (!Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId) && ("Y".equals(anaReportable) ||
-                    MISC_BILLING.equals(procedure) || RUSH_BILLING.equals(procedure))) 
+                    testId.equals(BILLING_MISC_ID) || testId.equals(BILLING_RUSH_ID))) 
                     needCharge = true;
             }            
                 
@@ -406,7 +471,7 @@ public class BillingReportBean {
                 .append(procedure).append("|")
                 .append("CR").append("|")
                 .append(billedAnalytes).append("|")
-                .append("Y".equals(billedZero) ? ZERO_BILL: "").append("|")
+                .append(billedOverride).append("|")
                 .append(labCode.toUpperCase()).append("|")
                 .append(section).append("|");  
             }
@@ -418,8 +483,8 @@ public class BillingReportBean {
                      .append(testId).append("|")
                      .append(procedure).append("|")
                      .append("CH").append("|")
-                     .append(billableAnalytes).append("|")
-                     .append(anaZeroCharge ? ZERO_BILL: "").append("|")
+                     .append(billableAnalytes.size()).append("|")
+                     .append(anaCharge).append("|")
                      .append(labCode.toUpperCase()).append("|")
                      .append(section).append("|");
             }
@@ -451,8 +516,8 @@ public class BillingReportBean {
             try {                
                 anaRepFlags = analysisReportFlags.fetchForUpdateByAnalysisId(anaId);
                 anaRepFlags.setBilledDate(needCharge ? currDateTime : null);
-                anaRepFlags.setBilledAnalytes(billableAnalytes);
-                anaRepFlags.setBilledZero(anaZeroCharge ? "Y" : "N");
+                anaRepFlags.setBilledAnalytes(billableAnalytes.size());
+                anaRepFlags.setBilledOverride(anaCharge);
                 analysisReportFlags.update(anaRepFlags);
             } catch (Exception e) {
                 /*
@@ -464,11 +529,11 @@ public class BillingReportBean {
             }                                                        
         }
     }
-    
+
     private String getProject(Integer id) throws Exception {
         String projectName;
         ArrayList<SampleProjectViewDO> sampleProjList;
-        
+
         try {
             sampleProjList = sampleProject.fetchPermanentBySampleId(id);
             projectName = sampleProjList.get(0).getProjectName();
@@ -477,19 +542,19 @@ public class BillingReportBean {
         }
         return projectName;
     }
-    
+
     private OrganizationDO getOrganization(Integer id, SamplePrivateWellViewDO well) throws Exception {
         int index;
         SampleOrganizationViewDO so;
         OrganizationDO org;
         ArrayList<SampleOrganizationViewDO> list;
         AddressDO addr, repAddr;
-        
+
         list = null;
-        index = -1;    
+        index = -1;
         try {
             list = sampleOrganization.fetchBySampleId(id);
-            for (int i = 0; i < list.size(); i++ ) {
+            for (int i = 0; i < list.size(); i++) {
                 so = list.get(i);
                 if (Constants.dictionary().ORG_BILL_TO.equals(so.getTypeId())) {
                     index = i;
@@ -545,65 +610,84 @@ public class BillingReportBean {
 
         return org;
     }
-    
+
     private String getBillingPO(Integer id, String analyteName) throws Exception {
         ArrayList<AuxDataViewDO> auxList;
         String value;
-        
+
         value = null;
         try {
             auxList = auxData.fetchByIdAnalyteName(id, Constants.table().SAMPLE, analyteName);
-            value = auxList.get(0).getValue();            
+            value = auxList.get(0).getValue();
         } catch (NotFoundException e) {
             // ignore
         }
-        
+
         return value;
     }
-    
+
     private String getDomainInfo(String clientReference, String po, SamplePrivateWellViewDO sample) {
         StringBuffer buf;
-        
+
         buf = new StringBuffer();
         append(buf, "PO-", po);
         append(buf, "REF-", clientReference);
         append(buf, "OWNER-", sample.getOwner());
         append(buf, "COL-", sample.getCollector());
-        append(buf, "LOC-", sample.getLocation());                        
-        
+        append(buf, "LOC-", sample.getLocation());
+
         return buf.toString();
     }
-    
+
     private String getDomainInfo(String clientReference, String po, SampleEnvironmentalDO sample) {
         StringBuffer buf;
-        
+
         buf = new StringBuffer();
         append(buf, "PO-", po);
         append(buf, "REF-", clientReference);
         append(buf, "COL-", sample.getCollector());
-        append(buf, "LOC-", sample.getLocation());                        
-        
+        append(buf, "LOC-", sample.getLocation());
+
         return buf.toString();
     }
-    
+
     private String getDomainInfo(String clientReference, String po, SampleSDWISViewDO sample) {
         StringBuffer buf;
-        
+
         buf = new StringBuffer();
         append(buf, "PO-", po);
         append(buf, "PWS-", sample.getPwsNumber0());
         append(buf, "REF-", clientReference);
         append(buf, "COL-", sample.getCollector());
-        append(buf, "LOC-", sample.getLocation());                        
-        
+        append(buf, "LOC-", sample.getLocation());
+
         return buf.toString();
     }
-    
+
+    private ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Sample.FetchForBillingReport");
+        query.setParameter("startDate", stDate);
+        query.setParameter("endDate", endDate);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) {
+        Query query;
+
+        query = manager.createNamedQuery("Result.FetchForBillingByAnalysisId");
+        query.setParameter("id", analysisId);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     private void append(StringBuffer buf, String prefix, String value) {
         if (!DataBaseUtil.isEmpty(value)) {
-            if (buf.length() > 0) 
+            if (buf.length() > 0)
                 buf.append(", ");
             buf.append(prefix).append(value);
         }
-    }    
+    }
 }

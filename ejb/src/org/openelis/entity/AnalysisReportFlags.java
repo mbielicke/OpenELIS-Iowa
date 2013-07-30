@@ -40,11 +40,11 @@ import org.openelis.ui.common.Datetime;
 @NamedQueries({
     @NamedQuery( name = "AnalysisReportFlags.FetchByAnalysisId",
                 query = "select new org.openelis.domain.AnalysisReportFlagsDO(rf.analysisId," +
-                        "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedZero)"
+                        "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedOverride)"
                       + " from AnalysisReportFlags rf where rf.analysisId = :id"),
    @NamedQuery( name = "AnalysisReportFlags.FetchBySampleAccessionNumbers",
                 query = "select new org.openelis.domain.AnalysisReportFlagsDO(rf.analysisId," +
-                       "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedZero)" +
+                       "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedOverride)" +
                        " from Sample s, SampleItem si, Analysis a, AnalysisReportFlags rf where s.id = si.sampleId and" +
                        " si.id = a.sampleItemId and a.id = rf.analysisId and s.accessionNumber in (:ids)")})
 
@@ -68,8 +68,8 @@ public class AnalysisReportFlags {
     @Column(name = "billed_analytes")
     private Integer billedAnalytes;
 
-    @Column(name = "billed_zero")
-    private String  billedZero;
+    @Column(name = "billed_override")
+    private Double  billedOverride;
 
     public Integer getAnalysisId() {
         return analysisId;
@@ -116,12 +116,12 @@ public class AnalysisReportFlags {
             this.billedAnalytes = billedAnalytes;
     }
 
-    public String getBilledZero() {
-        return billedZero;
+    public Double getBilledOverride() {
+        return billedOverride;
     }
 
-    public void setBilledZero(String billedZero) {
-        if (DataBaseUtil.isDifferent(billedZero, this.billedZero))
-            this.billedZero = billedZero;
+    public void setBilledOverride(Double billedOverride) {
+        if (DataBaseUtil.isDifferent(billedOverride, this.billedOverride))
+            this.billedOverride = billedOverride;
     }
 }
