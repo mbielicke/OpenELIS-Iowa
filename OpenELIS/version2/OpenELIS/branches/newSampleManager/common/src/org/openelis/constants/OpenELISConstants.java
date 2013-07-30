@@ -3319,6 +3319,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String endRelDt();
 
   /**
+   * Translated "Ending Sent Date".
+   * 
+   * @return translated "Ending Sent Date"
+   */
+  @DefaultMessage("Ending Sent Date")
+  @Key("endSentDate")
+  String endSentDate();
+
+  /**
    * Translated "You are at the end of your query results".
    * 
    * @return translated "You are at the end of your query results"
@@ -5729,6 +5738,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Kit Component Name")
   @Key("kitComponentName")
   String kitComponentName();
+
+  /**
+   * Translated "Kit Tracking Report".
+   * 
+   * @return translated "Kit Tracking Report"
+   */
+  @DefaultMessage("Kit Tracking Report")
+  @Key("kitTrackingReport")
+  String kitTrackingReport();
 
   /**
    * Translated "LCL".
@@ -11608,6 +11626,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String socketURIMustHaveHostAndPortException();
 
   /**
+   * Translated "Sort By".
+   * 
+   * @return translated "Sort By"
+   */
+  @DefaultMessage("Sort By")
+  @Key("sortBy")
+  String sortBy();
+
+  /**
    * Translated "Sort Order".
    * 
    * @return translated "Sort Order"
@@ -11714,6 +11741,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Start Day")
   @Key("startDay")
   String startDay();
+
+  /**
+   * Translated "Starting Ordered Date".
+   * 
+   * @return translated "Starting Ordered Date"
+   */
+  @DefaultMessage("Starting Ordered Date")
+  @Key("startOrderDate")
+  String startOrderDate();
 
   /**
    * Translated "Started".
