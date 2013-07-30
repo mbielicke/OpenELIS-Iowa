@@ -51,10 +51,6 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     @EJB
     FinalReportWebBean finalReportWeb;
 
-    public ArrayList<Prompt> getPromptsForSingle() throws Exception {
-        return finalReport.getPromptsForSingle();
-    }
-
     public ArrayList<Prompt> getPromptsForBatch() throws Exception {
         return finalReport.getPromptsForBatch();
     }
