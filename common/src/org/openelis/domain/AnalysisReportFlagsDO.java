@@ -39,20 +39,21 @@ public class AnalysisReportFlagsDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         analysisId, billedAnalytes;
-    protected String          notifiedReceived, notifiedReleased, billedZero;
+    protected String          notifiedReceived, notifiedReleased;
     protected Datetime        billedDate;
+    protected Double          billedOverride;
 
     public AnalysisReportFlagsDO() {
     }
 
     public AnalysisReportFlagsDO(Integer analysisId, String notifiedReceived, String notifiedReleased,
-                                 Date billedDate, Integer billedAnalytes, String billedZero) {
+                                 Date billedDate, Integer billedAnalytes, Double billedOverride) {
         setAnalysisId(analysisId);
         setNotifiedReceived(notifiedReceived);
         setNotifiedReleased(notifiedReleased);
         setBilledDate(DataBaseUtil.toYD(billedDate));
         setBilledAnalytes(billedAnalytes);
-        setBilledZero(billedZero);
+        setBilledOverride(billedOverride);
         _changed = false;
     }
 
@@ -101,12 +102,12 @@ public class AnalysisReportFlagsDO extends DataObject {
         _changed = true;
     }
 
-    public String getBilledZero() {
-        return billedZero;
+    public Double getBilledOverride() {
+        return billedOverride;
     }
 
-    public void setBilledZero(String billedZero) {
-        this.billedZero = DataBaseUtil.trim(billedZero);
+    public void setBilledOverride(Double billedOverride) {
+        this.billedOverride = billedOverride;
         _changed = true;
     }
 }
