@@ -70,13 +70,25 @@ public class SectionCacheBean {
         if (e != null)
             return (SectionViewDO) e.getValue();
 
-        //
-        // since section is a small list, we are going to load everything
-        // rather than one lookup at a time.
-        //
         getList();
         
         e = cache.get(id);
+        if (e != null)
+            return (SectionViewDO) e.getValue();
+
+        return null;
+    }  
+
+    public SectionViewDO getByName(String name) throws Exception {
+        Element e;
+        
+        e = cache.get(name);
+        if (e != null)
+            return (SectionViewDO) e.getValue();
+
+        getList();
+
+        e = cache.get(name);
         if (e != null)
             return (SectionViewDO) e.getValue();
 
@@ -100,8 +112,10 @@ public class SectionCacheBean {
          */   
         if (cache.getSize() == 0 || e == null) {
             list = EJBFactory.getSection().fetchList();
-            for (SectionViewDO data : list)
+            for (SectionViewDO data : list) {
                 cache.put(new Element(data.getId(), data));
+                cache.put(new Element(data.getName(), data));
+            }
             e = new Element("orderedList", list);
             cache.put(e);        
         }  

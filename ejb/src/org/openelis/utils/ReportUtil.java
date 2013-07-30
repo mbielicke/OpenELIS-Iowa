@@ -375,6 +375,22 @@ public class ReportUtil {
     }
     
     /**
+     * Returns the sub-directory path of an attachment given the attachment id 
+     */
+    public static String getAttachmentSubdirectory(Integer id) {
+        char path[];
+        
+        path = String.format("%010d", id).toCharArray();
+        if (path != null && path.length == 10) {
+            return path[6] + File.pathSeparator +
+                   path[7] + File.pathSeparator +
+                   path[8] + File.pathSeparator +
+                   path[9];
+        }
+        return ".";
+    }
+    
+    /**
      * Returns the initials for the specified system user id
      */
     public static String getInitialsForUserId(Integer userId) {        
