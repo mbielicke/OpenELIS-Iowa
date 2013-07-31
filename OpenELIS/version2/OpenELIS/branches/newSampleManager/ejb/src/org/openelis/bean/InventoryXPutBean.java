@@ -92,6 +92,16 @@ public class InventoryXPutBean  {
 
         return DataBaseUtil.toArrayList(list);
     }
+    
+    public ArrayList<InventoryXPutViewDO> fetchByOrderIds(ArrayList<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("InventoryXPut.FetchByOrderIds");
+        query.setParameter("ids", ids);
+
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public InventoryXPutDO add(InventoryXPutDO data) throws Exception {
         return data;

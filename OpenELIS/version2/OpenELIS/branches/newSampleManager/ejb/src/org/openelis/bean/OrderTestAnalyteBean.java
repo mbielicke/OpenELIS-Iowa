@@ -66,6 +66,15 @@ public class OrderTestAnalyteBean {
         return DataBaseUtil.toArrayList(list);
     }
     
+    public ArrayList<OrderTestAnalyteViewDO> fetchByOrderTestIds(ArrayList<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("OrderTestAnalyte.FetchByOrderTestIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public ArrayList<OrderTestAnalyteViewDO> fetchRowAnalytesByOrderTestId(Integer id) throws Exception {
         Query query;
         List list;

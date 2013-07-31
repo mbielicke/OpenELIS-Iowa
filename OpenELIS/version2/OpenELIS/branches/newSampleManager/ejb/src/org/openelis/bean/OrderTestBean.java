@@ -46,7 +46,6 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class OrderTestBean {
 
     @PersistenceContext(unitName = "openelis")
@@ -56,17 +55,27 @@ public class OrderTestBean {
     public ArrayList<OrderTestViewDO> fetchByOrderId(Integer id) throws Exception {
         Query query;
         List list;
-        
+
         query = manager.createNamedQuery("OrderTest.FetchByOrderId");
         query.setParameter("id", id);
 
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        
-        list = DataBaseUtil.toArrayList(list);        
-        
-        return (ArrayList) list;
+
+        list = DataBaseUtil.toArrayList(list);
+
+        return (ArrayList)list;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<OrderTestViewDO> fetchByOrderIds(ArrayList<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("OrderTest.FetchByOrderIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public OrderTestDO add(OrderTestDO data) throws Exception {
@@ -75,7 +84,7 @@ public class OrderTestBean {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = new OrderTest();
         entity.setOrderId(data.getOrderId());
-        entity.setItemSequence(data.getItemSequence());        
+        entity.setItemSequence(data.getItemSequence());
         entity.setSortOrder(data.getSortOrder());
         entity.setTestId(data.getTestId());
 
@@ -111,7 +120,7 @@ public class OrderTestBean {
         if (entity != null)
             manager.remove(entity);
     }
-    
+
     public void validate(OrderTestDO data, int index) throws Exception {
         ValidationErrorsList list;
         String indexStr;
@@ -119,13 +128,16 @@ public class OrderTestBean {
         list = new ValidationErrorsList();
         indexStr = String.valueOf(index);
         if (data.getTestId() == null)
-            list.add(new FieldErrorException(Messages.get().testNameRequiredException(null), indexStr));        
-        
+            list.add(new FieldErrorException(Messages.get().testNameRequiredException(null),
+                                             indexStr));
+
         if (data.getItemSequence() == null)
-            list.add(new FieldErrorException(Messages.get().itemNumRequiredException(null), indexStr));
+            list.add(new FieldErrorException(Messages.get().itemNumRequiredException(null),
+                                             indexStr));
         else if (data.getItemSequence() < 0)
-            list.add(new FieldErrorException(Messages.get().itemNumCantBeNegativeException(null), indexStr));
-               
+            list.add(new FieldErrorException(Messages.get().itemNumCantBeNegativeException(null),
+                                             indexStr));
+
         if (list.size() > 0)
             throw list;
     }

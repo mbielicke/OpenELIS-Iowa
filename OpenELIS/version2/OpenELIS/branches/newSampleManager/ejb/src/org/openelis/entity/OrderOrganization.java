@@ -37,6 +37,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -48,14 +49,22 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery( name = "OrderOrganization.FetchByOrderId",
-             query = "select new org.openelis.domain.OrderOrganizationViewDO(oo.id, " +
-                     "oo.orderId, oo.organizationId, oo.organizationAttention, " +
-                     "oo.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
-                     "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
-                     "o.address.faxPhone, o.address.country)"
-                   + " from OrderOrganization oo LEFT JOIN oo.organization o where oo.orderId = :id")
-                   
+@NamedQueries({
+
+               @NamedQuery(name = "OrderOrganization.FetchByOrderId",
+                           query = "select new org.openelis.domain.OrderOrganizationViewDO(oo.id, "
+                                   + "oo.orderId, oo.organizationId, oo.organizationAttention, "
+                                   + "oo.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, "
+                                   + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
+                                   + "o.address.faxPhone, o.address.country)"
+                                   + " from OrderOrganization oo LEFT JOIN oo.organization o where oo.orderId = :id"),
+               @NamedQuery(name = "OrderOrganization.FetchByOrderIds",
+                           query = "select new org.openelis.domain.OrderOrganizationViewDO(oo.id, "
+                                   + "oo.orderId, oo.organizationId, oo.organizationAttention, "
+                                   + "oo.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, "
+                                   + "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, "
+                                   + "o.address.faxPhone, o.address.country)"
+                                   + " from OrderOrganization oo LEFT JOIN oo.organization o where oo.orderId in ( :ids )")})
 @Entity
 @Table(name = "order_organization")
 @EntityListeners({AuditUtil.class})
@@ -167,8 +176,13 @@ public class OrderOrganization implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("order_id", orderId, original.orderId)
-                 .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
-                 .setField("organization_attention", organizationAttention, original.organizationAttention)
+                 .setField("organization_id",
+                           organizationId,
+                           original.organizationId,
+                           Constants.table().ORGANIZATION)
+                 .setField("organization_attention",
+                           organizationAttention,
+                           original.organizationAttention)
                  .setField("type_id", typeId, original.typeId, Constants.table().DICTIONARY);
 
         return audit;

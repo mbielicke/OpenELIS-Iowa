@@ -10,6 +10,7 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -20,10 +21,15 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
+@NamedQueries({
 @NamedQuery( name = "OrderContainer.FetchByOrderId",
             query = "select distinct new org.openelis.domain.OrderContainerDO(o.id,o.orderId,o.containerId," +
                      "o.itemSequence,o.typeOfSampleId)"
-                   + " from OrderContainer o where o.orderId = :id order by o.itemSequence")
+                   + " from OrderContainer o where o.orderId = :id order by o.itemSequence"),
+                   @NamedQuery( name = "OrderContainer.FetchByOrderIds",
+                   query = "select distinct new org.openelis.domain.OrderContainerDO(o.id,o.orderId,o.containerId," +
+                            "o.itemSequence,o.typeOfSampleId)"
+                          + " from OrderContainer o where o.orderId in ( :ids ) order by o.itemSequence")})
                    
 @Entity
 @Table(name = "order_container")

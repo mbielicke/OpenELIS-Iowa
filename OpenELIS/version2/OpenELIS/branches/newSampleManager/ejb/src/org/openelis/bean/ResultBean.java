@@ -111,7 +111,7 @@ public class ResultBean {
 
         // get test_analytes by test id
         Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
-        query.setParameter("testId", testId);
+        query.setParameter("id", testId);
         testAnalytes = query.getResultList();
 
         // get analytes for test
@@ -240,7 +240,7 @@ public class ResultBean {
 
         // get test_analytes by test id
         Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
-        query.setParameter("testId", testId);
+        query.setParameter("id", testId);
         testAnalytes = query.getResultList();
 
         // get analytes for test

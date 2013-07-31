@@ -55,27 +55,31 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "Order.FetchById",
-                query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
-                		"o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                		"o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
-                	  + " from Order o where o.id = :id"),
-    @NamedQuery( name = "Order.FetchByDescription",
-                query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
-                      + " from Order o where o.description like :description"),
-    @NamedQuery( name = "Order.FetchByShippingItemId",
-                query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
-                        "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                        "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
-                      + " from Order o left join o.orderItem i "
-                      +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.id = :id)"),
-    @NamedQuery( name = "Order.FetchByShippingId",
-                query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
-                         "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                         "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
-                       + " from Order o left join o.orderItem i "
-                       + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.shippingId = :shippingId)")})
-
+               @NamedQuery(name = "Order.FetchById",
+                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
+                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                                   + " from Order o where o.id = :id"),
+               @NamedQuery(name = "Order.FetchByIds",
+                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
+                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                                   + " from Order o where o.id in ( :ids )"),
+               @NamedQuery(name = "Order.FetchByDescription",
+                           query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
+                                   + " from Order o where o.description like :description"),
+               @NamedQuery(name = "Order.FetchByShippingItemId",
+                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
+                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                                   + " from Order o left join o.orderItem i "
+                                   + " where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.id = :id)"),
+               @NamedQuery(name = "Order.FetchByShippingId",
+                           query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate,"
+                                   + "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention,"
+                                   + "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
+                                   + " from Order o left join o.orderItem i "
+                                   + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = :referenceTableId and s.shippingId = :shippingId)")})
 @Entity
 @Table(name = "order")
 @EntityListeners({AuditUtil.class})
@@ -356,12 +360,25 @@ public class Order implements Auditable, Cloneable {
                  .setField("ordered_date", orderedDate, original.orderedDate)
                  .setField("needed_in_days", neededInDays, original.neededInDays)
                  .setField("requested_by", requestedBy, original.requestedBy)
-                 .setField("cost_center_id", costCenterId, original.costCenterId,Constants.table().DICTIONARY)
-                 .setField("organization_id", organizationId, original.organizationId, Constants.table().ORGANIZATION)
-                 .setField("organization_attention", organizationAttention, original.organizationAttention)
+                 .setField("cost_center_id",
+                           costCenterId,
+                           original.costCenterId,
+                           Constants.table().DICTIONARY)
+                 .setField("organization_id",
+                           organizationId,
+                           original.organizationId,
+                           Constants.table().ORGANIZATION)
+                 .setField("organization_attention",
+                           organizationAttention,
+                           original.organizationAttention)
                  .setField("type", type, original.type)
-                 .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)
-                 .setField("ship_from_id", shipFromId, original.shipFromId, Constants.table().DICTIONARY)
+                 .setField("external_order_number",
+                           externalOrderNumber,
+                           original.externalOrderNumber)
+                 .setField("ship_from_id",
+                           shipFromId,
+                           original.shipFromId,
+                           Constants.table().DICTIONARY)
                  .setField("number_of_forms", numberOfForms, original.numberOfForms);
 
         return audit;

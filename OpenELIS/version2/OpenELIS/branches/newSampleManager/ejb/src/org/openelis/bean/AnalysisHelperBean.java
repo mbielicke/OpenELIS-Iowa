@@ -91,8 +91,8 @@ public class AnalysisHelperBean {
                     t = tm.getTest();
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
-                                                       .inactiveTestOnOrderException(t.getName(),
-                                                                                     t.getMethodName())));
+                                                       .test_inactiveTestException(t.getName(),
+                                                                              t.getMethodName())));
                     continue;
                 }
             }
@@ -177,9 +177,8 @@ public class AnalysisHelperBean {
 
         tam = tm.getTestAnalytes();
         /*
-         * By default add analytes that are not supplemental. Add
-         * supplemental analytes that are in id list. The id list
-         * overrides reportable flag.
+         * By default add analytes that are not supplemental. Add supplemental
+         * analytes that are in id list. The id list overrides reportable flag.
          */
         for (ArrayList<TestAnalyteViewDO> list : tam.getAnalytes()) {
             for (TestAnalyteViewDO data : list) {
@@ -194,7 +193,7 @@ public class AnalysisHelperBean {
                             reportable = "N";
                         }
                     }
-                    
+
                     if ( !addRow)
                         break;
                 }
