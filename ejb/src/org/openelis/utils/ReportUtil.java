@@ -50,6 +50,7 @@ import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.util.JRLoader;
 
+import org.openelis.constants.Messages;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -129,32 +130,36 @@ public class ReportUtil {
     }
 
     /**
-     * Returns the Datetime object with specified start and end range. The string date needs
-     * to be in [yyyy-mm-dd hh:mm:ss.SSS] format.
+     * Returns a Datetime object for given string. The pattern for the date, date time,
+     * and time is specified in the messages. 
      */
-    public static Datetime getDatetime(byte startCode, byte endCode, String strDate) {
-    	Date date;
-        SimpleDateFormat format;
-        String formats[][] = 
-		        {{"yyyy","yyyy-MM","yyyy-MM-dd","yyyy-MM-dd HH","yyyy-MM-dd HH:mm","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd HH:mm:ss.SSS"},
-		         {"",    "MM",     "MM-dd",     "MM-dd HH",     "MM-dd HH:mm",     "MM-dd HH:mm:ss",     "MM-dd HH:mm:ss.SSS"},
-		         {"",    "",       "dd",        "dd HH",        "dd HH:mm",        "dd HH:mm:ss",        "dd HH:mm:ss.SSS"},
-		         {"",    "",       "",          "HH",           "HH:mm",           "HH:mm:ss",           "HH:mm:ss.SSS"},
-		         {"",    "",       "",          "",             "mm",              "mm:ss",              "mm:ss.SSS"},
-		         {"",    "",       "",          "",             "",                "ss",                 "ss.SSS"},
-		         {"",    "",       "",          "",             "",                "",                   "SSS"}};
+    public static Datetime getDate(String strDate) {
+        return getDatetime(Datetime.YEAR, Datetime.DAY, strDate, Messages.get().datePattern());
+    }
+    
+    public static Datetime getDatetime(String strDate) {
+        return getDatetime(Datetime.YEAR, Datetime.MINUTE, strDate, Messages.get().dateTimePattern());
+    }
+    
+    public static Datetime getTime(String strDate) {        
+        return getDatetime(Datetime.HOUR, Datetime.MINUTE, strDate, Messages.get().timePattern());
+    }
+    
+    public static Datetime getDatetime(byte startCode, byte endCode, String strDate, String pattern) {
+        Date d;
+        SimpleDateFormat format;        
         
-        if (strDate == null || strDate.trim().length() == 0)
+        if (DataBaseUtil.isEmpty(strDate))
             return null;
 
-        format = new SimpleDateFormat(formats[startCode][endCode]);
+        format = new SimpleDateFormat(pattern);
         try {
-			date = format.parse(strDate);
-		} catch (ParseException e) {
-			return null;
-		}
-    	
-    	return Datetime.getInstance(startCode, endCode, date);
+            d = format.parse(strDate);
+        } catch (ParseException e) {
+            return null;
+        }
+        
+        return Datetime.getInstance(startCode, endCode, d);
     }
     
     public static String toString(Datetime datetime, String pattern) {
@@ -367,6 +372,22 @@ public class ReportUtil {
 
         in.close();
         out.close(); 
+    }
+    
+    /**
+     * Returns the sub-directory path of an attachment given the attachment id 
+     */
+    public static String getAttachmentSubdirectory(Integer id) {
+        char path[];
+        
+        path = String.format("%010d", id).toCharArray();
+        if (path != null && path.length == 10) {
+            return path[6] + File.separator +
+                   path[7] + File.separator +
+                   path[8] + File.separator +
+                   path[9];
+        }
+        return ".";
     }
     
     /**

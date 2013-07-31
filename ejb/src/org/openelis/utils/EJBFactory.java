@@ -49,6 +49,7 @@ import org.openelis.bean.ExchangeCriteriaBean;
 import org.openelis.bean.ExchangeExternalTermBean;
 import org.openelis.bean.ExchangeLocalTermBean;
 import org.openelis.bean.ExchangeProfileBean;
+import org.openelis.bean.FinalReportBean;
 import org.openelis.bean.HistoryBean;
 import org.openelis.bean.InstrumentBean;
 import org.openelis.bean.InstrumentLogBean;
@@ -519,6 +520,10 @@ public class EJBFactory {
 
     public static PrinterCacheBean getPrinterCache() {
         return lookup("PrinterCacheBean");
+    }
+
+    public static FinalReportBean getFinalReport() {
+        return lookup("FinalReportBean");
     }
 
     /*

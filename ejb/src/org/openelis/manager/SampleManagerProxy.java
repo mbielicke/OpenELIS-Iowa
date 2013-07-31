@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import org.openelis.bean.DictionaryBean;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -331,6 +330,14 @@ public class SampleManagerProxy {
         SampleDO data;
 
         data = man.getSample();
+        /*
+         * check to see if the sample or any analysis has been unreleased. 
+         * call final report e-save if they have. 
+         */
+        if (man.unreleased) {
+            EJBFactory.getFinalReport().runReportForESave(data.getAccessionNumber());
+            man.unreleased = false;
+        }
 
         /*
          * a sample's status could get set to released because of the status of
@@ -343,7 +350,7 @@ public class SampleManagerProxy {
 
         EJBFactory.getSample().update(man.getSample());
         sampleId = man.getSample().getId();
-
+        
         if (man.deletedDomainManager != null)
             man.getDeletedDomainManager().delete();
 

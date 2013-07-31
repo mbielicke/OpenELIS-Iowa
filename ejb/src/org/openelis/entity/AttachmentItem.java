@@ -35,6 +35,8 @@ import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -43,6 +45,16 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
+
+@NamedQueries({
+    @NamedQuery( name = "AttachmentItem.FetchById",
+                query = "select new org.openelis.domain.AttachmentItemDO(a.id,a.referenceId,a.referenceTableId," +
+                        "a.attachmentId)"
+                      + " from AttachmentItem a where a.referenceId = :id and a.referenceTableId = :tableId"),
+   @NamedQuery( name = "AttachmentItem.FetchByIds",
+               query = "select new org.openelis.domain.AttachmentItemDO(a.id,a.referenceId,a.referenceTableId," +
+                       "a.attachmentId)"
+                     + " from AttachmentItem a where a.referenceId in (:id) and a.referenceTableId = :tableId")})                  
 
 @Entity
 @Table(name = "attachment_item")
