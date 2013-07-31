@@ -67,6 +67,15 @@ public class InventoryXUseBean {
 
         return DataBaseUtil.toArrayList(list);
     }    
+    
+    public ArrayList<InventoryXUseViewDO> fetchByOrderIds(ArrayList<Integer> ids) {
+        Query query;
+        
+        query = manager.createNamedQuery("InventoryXUse.FetchByOrderIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public InventoryXUseViewDO add(InventoryXUseViewDO data) throws Exception {
         InventoryXUse entity;

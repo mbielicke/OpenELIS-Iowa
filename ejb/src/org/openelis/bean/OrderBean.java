@@ -39,7 +39,6 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderViewDO;
@@ -47,7 +46,7 @@ import org.openelis.entity.Order;
 import org.openelis.meta.OrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -83,6 +82,15 @@ public class OrderBean {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    public ArrayList<OrderViewDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("Order.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     public ArrayList<OrderViewDO> fetchByShippingId(Integer shippingId) throws Exception {
@@ -261,20 +269,20 @@ public class OrderBean {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getStatusId()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrderMeta.getStatusId()));
+            list.add(new FormErrorException(Messages.get().order_statusRequiredException(DataBaseUtil.asString(data.getId()))));
 
         if (DataBaseUtil.isEmpty(data.getNeededInDays()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrderMeta.getNeededInDays()));
+            list.add(new FormErrorException(Messages.get().order_neededInDaysRequiredException(DataBaseUtil.asString(data.getId()))));
         
-        if ("S".equals(data.getType())) { 
-            if (data.getNumberOfForms() == null)
-               list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrderMeta.getNumberOfForms()));
+        if (Constants.order().SEND_OUT.equals(data.getType())) { 
+            if (DataBaseUtil.isEmpty(data.getNumberOfForms()))
+                list.add(new FormErrorException(Messages.get().order_numFormsRequiredException(DataBaseUtil.asString(data.getId()))));
             
-            if (data.getShipFromId() == null)
-                list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrderMeta.getShipFromId()));
+            if (DataBaseUtil.isEmpty(data.getShipFromId()))
+                list.add(new FormErrorException(Messages.get().order_shipFromRequiredException(DataBaseUtil.asString(data.getId()))));
             
-            if (data.getCostCenterId() == null)
-                list.add(new FieldErrorException(Messages.get().fieldRequiredException(), OrderMeta.getCostCenterId()));
+            if (DataBaseUtil.isEmpty(data.getCostCenterId()))
+                list.add(new FormErrorException(Messages.get().order_costCenterRequiredException(DataBaseUtil.asString(data.getId()))));
         }
         if (list.size() > 0)
             throw list;

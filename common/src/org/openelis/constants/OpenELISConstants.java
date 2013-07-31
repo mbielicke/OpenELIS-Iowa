@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -473,6 +473,78 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Address")
   @Key("address")
   String address();
+
+  /**
+   * Translated "Address".
+   * 
+   * @return translated "Address"
+   */
+  @DefaultMessage("Address")
+  @Key("address.address")
+  String address_address();
+
+  /**
+   * Translated "Apt/Suite #".
+   * 
+   * @return translated "Apt/Suite #"
+   */
+  @DefaultMessage("Apt/Suite #")
+  @Key("address.aptSuite")
+  String address_aptSuite();
+
+  /**
+   * Translated "City".
+   * 
+   * @return translated "City"
+   */
+  @DefaultMessage("City")
+  @Key("address.city")
+  String address_city();
+
+  /**
+   * Translated "Country".
+   * 
+   * @return translated "Country"
+   */
+  @DefaultMessage("Country")
+  @Key("address.country")
+  String address_country();
+
+  /**
+   * Translated "St".
+   * 
+   * @return translated "St"
+   */
+  @DefaultMessage("St")
+  @Key("address.st")
+  String address_st();
+
+  /**
+   * Translated "State".
+   * 
+   * @return translated "State"
+   */
+  @DefaultMessage("State")
+  @Key("address.state")
+  String address_state();
+
+  /**
+   * Translated "Street".
+   * 
+   * @return translated "Street"
+   */
+  @DefaultMessage("Street")
+  @Key("address.street")
+  String address_street();
+
+  /**
+   * Translated "Zip Code".
+   * 
+   * @return translated "Zip Code"
+   */
+  @DefaultMessage("Zip Code")
+  @Key("address.zipcode")
+  String address_zipcode();
 
   /**
    * Translated "Adj Date".
@@ -3328,15 +3400,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String endRelDt();
 
   /**
-   * Translated "Ending Sent Date".
-   * 
-   * @return translated "Ending Sent Date"
-   */
-  @DefaultMessage("Ending Sent Date")
-  @Key("endSentDate")
-  String endSentDate();
-
-  /**
    * Translated "You are at the end of your query results".
    * 
    * @return translated "You are at the end of your query results"
@@ -4379,6 +4442,618 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Enter sample with all supporting information.")
   @Key("fullLoginDescription")
   String fullLoginDescription();
+
+  /**
+   * Translated "Abort".
+   * 
+   * @return translated "Abort"
+   */
+  @DefaultMessage("Abort")
+  @Key("gen.abort")
+  String gen_abort();
+
+  /**
+   * Translated "Active".
+   * 
+   * @return translated "Active"
+   */
+  @DefaultMessage("Active")
+  @Key("gen.active")
+  String gen_active();
+
+  /**
+   * Translated "Add".
+   * 
+   * @return translated "Add"
+   */
+  @DefaultMessage("Add")
+  @Key("gen.add")
+  String gen_add();
+
+  /**
+   * Translated "Add aborted".
+   * 
+   * @return translated "Add aborted"
+   */
+  @DefaultMessage("Add aborted")
+  @Key("gen.addAborted")
+  String gen_addAborted();
+
+  /**
+   * Translated "Add Note".
+   * 
+   * @return translated "Add Note"
+   */
+  @DefaultMessage("Add Note")
+  @Key("gen.addNote")
+  String gen_addNote();
+
+  /**
+   * Translated "Add Row".
+   * 
+   * @return translated "Add Row"
+   */
+  @DefaultMessage("Add Row")
+  @Key("gen.addRow")
+  String gen_addRow();
+
+  /**
+   * Translated "Add Test".
+   * 
+   * @return translated "Add Test"
+   */
+  @DefaultMessage("Add Test")
+  @Key("gen.addTest")
+  String gen_addTest();
+
+  /**
+   * Translated "Adding...".
+   * 
+   * @return translated "Adding..."
+   */
+  @DefaultMessage("Adding...")
+  @Key("gen.adding")
+  String gen_adding();
+
+  /**
+   * Translated "Aux Data".
+   * 
+   * @return translated "Aux Data"
+   */
+  @DefaultMessage("Aux Data")
+  @Key("gen.auxData")
+  String gen_auxData();
+
+  /**
+   * Translated "Begin Date".
+   * 
+   * @return translated "Begin Date"
+   */
+  @DefaultMessage("Begin Date")
+  @Key("gen.beginDate")
+  String gen_beginDate();
+
+  /**
+   * Translated "Canceling changes ...".
+   * 
+   * @return translated "Canceling changes ..."
+   */
+  @DefaultMessage("Canceling changes ...")
+  @Key("gen.cancelChanges")
+  String gen_cancelChanges();
+
+  /**
+   * Translated "Check All".
+   * 
+   * @return translated "Check All"
+   */
+  @DefaultMessage("Check All")
+  @Key("gen.checkAll")
+  String gen_checkAll();
+
+  /**
+   * Translated "Commit".
+   * 
+   * @return translated "Commit"
+   */
+  @DefaultMessage("Commit")
+  @Key("gen.commit")
+  String gen_commit();
+
+  /**
+   * Translated "Container".
+   * 
+   * @return translated "Container"
+   */
+  @DefaultMessage("Container")
+  @Key("gen.container")
+  String gen_container();
+
+  /**
+   * Translated "Please correct the errors indicated, then press Commit".
+   * 
+   * @return translated "Please correct the errors indicated, then press Commit"
+   */
+  @DefaultMessage("Please correct the errors indicated, then press Commit")
+  @Key("gen.correctErrors")
+  String gen_correctErrors();
+
+  /**
+   * Translated "Description".
+   * 
+   * @return translated "Description"
+   */
+  @DefaultMessage("Description")
+  @Key("gen.description")
+  String gen_description();
+
+  /**
+   * Translated "Dispensed Units".
+   * 
+   * @return translated "Dispensed Units"
+   */
+  @DefaultMessage("Dispensed Units")
+  @Key("gen.dispensedUnits")
+  String gen_dispensedUnits();
+
+  /**
+   * Translated "Duplicate".
+   * 
+   * @return translated "Duplicate"
+   */
+  @DefaultMessage("Duplicate")
+  @Key("gen.duplicateRecord")
+  String gen_duplicateRecord();
+
+  /**
+   * Translated "Edit Note".
+   * 
+   * @return translated "Edit Note"
+   */
+  @DefaultMessage("Edit Note")
+  @Key("gen.editNote")
+  String gen_editNote();
+
+  /**
+   * Translated "End Date".
+   * 
+   * @return translated "End Date"
+   */
+  @DefaultMessage("End Date")
+  @Key("gen.endDate")
+  String gen_endDate();
+
+  /**
+   * Translated "Enter fields to query by then press Commit".
+   * 
+   * @return translated "Enter fields to query by then press Commit"
+   */
+  @DefaultMessage("Enter fields to query by then press Commit")
+  @Key("gen.enterFieldsToQuery")
+  String gen_enterFieldsToQuery();
+
+  /**
+   * Translated "Enter information in the fields, then press Commit".
+   * 
+   * @return translated "Enter information in the fields, then press Commit"
+   */
+  @DefaultMessage("Enter information in the fields, then press Commit")
+  @Key("gen.enterInformationPressCommit")
+  String gen_enterInformationPressCommit();
+
+  /**
+   * Translated "Exp Date".
+   * 
+   * @return translated "Exp Date"
+   */
+  @DefaultMessage("Exp Date")
+  @Key("gen.expDate")
+  String gen_expDate();
+
+  /**
+   * Translated "Error: Could not retrieve the record.".
+   * 
+   * @return translated "Error: Could not retrieve the record."
+   */
+  @DefaultMessage("Error: Could not retrieve the record.")
+  @Key("gen.fetchFailed")
+  String gen_fetchFailed();
+
+  /**
+   * Translated "Fetching ...".
+   * 
+   * @return translated "Fetching ..."
+   */
+  @DefaultMessage("Fetching ...")
+  @Key("gen.fetching")
+  String gen_fetching();
+
+  /**
+   * Translated "Frequency".
+   * 
+   * @return translated "Frequency"
+   */
+  @DefaultMessage("Frequency")
+  @Key("gen.frequency")
+  String gen_frequency();
+
+  /**
+   * Translated "Generating Report...".
+   * 
+   * @return translated "Generating Report..."
+   */
+  @DefaultMessage("Generating Report...")
+  @Key("gen.generatingReport")
+  String gen_generatingReport();
+
+  /**
+   * Translated "Internal".
+   * 
+   * @return translated "Internal"
+   */
+  @DefaultMessage("Internal")
+  @Key("gen.internal")
+  String gen_internal();
+
+  /**
+   * Translated "Inventory Item".
+   * 
+   * @return translated "Inventory Item"
+   */
+  @DefaultMessage("Inventory Item")
+  @Key("gen.inventoryItem")
+  String gen_inventoryItem();
+
+  /**
+   * Translated "Done".
+   * 
+   * @return translated "Done"
+   */
+  @DefaultMessage("Done")
+  @Key("gen.loadCompleteMessage")
+  String gen_loadCompleteMessage();
+
+  /**
+   * Translated "Location".
+   * 
+   * @return translated "Location"
+   */
+  @DefaultMessage("Location")
+  @Key("gen.location")
+  String gen_location();
+
+  /**
+   * Translated "Locking record for Update...".
+   * 
+   * @return translated "Locking record for Update..."
+   */
+  @DefaultMessage("Locking record for Update...")
+  @Key("gen.lockForUpdate")
+  String gen_lockForUpdate();
+
+  /**
+   * Translated "Lot #".
+   * 
+   * @return translated "Lot #"
+   */
+  @DefaultMessage("Lot #")
+  @Key("gen.lotNum")
+  String gen_lotNum();
+
+  /**
+   * Translated "Method".
+   * 
+   * @return translated "Method"
+   */
+  @DefaultMessage("Method")
+  @Key("gen.method")
+  String gen_method();
+
+  /**
+   * Translated "Move Down".
+   * 
+   * @return translated "Move Down"
+   */
+  @DefaultMessage("Move Down")
+  @Key("gen.moveDown")
+  String gen_moveDown();
+
+  /**
+   * Translated "Move Up".
+   * 
+   * @return translated "Move Up"
+   */
+  @DefaultMessage("Move Up")
+  @Key("gen.moveUp")
+  String gen_moveUp();
+
+  /**
+   * Translated "You must Commit or Abort changes first".
+   * 
+   * @return translated "You must Commit or Abort changes first"
+   */
+  @DefaultMessage("You must Commit or Abort changes first")
+  @Key("gen.mustCommitOrAbort")
+  String gen_mustCommitOrAbort();
+
+  /**
+   * Translated "Name".
+   * 
+   * @return translated "Name"
+   */
+  @DefaultMessage("Name")
+  @Key("gen.name")
+  String gen_name();
+
+  /**
+   * Translated "Next".
+   * 
+   * @return translated "Next"
+   */
+  @DefaultMessage("Next")
+  @Key("gen.next")
+  String gen_next();
+
+  /**
+   * Translated "No more records in this direction".
+   * 
+   * @return translated "No more records in this direction"
+   */
+  @DefaultMessage("No more records in this direction")
+  @Key("gen.noMoreRecordInDir")
+  String gen_noMoreRecordInDir();
+
+  /**
+   * Translated "No records found".
+   * 
+   * @return translated "No records found"
+   */
+  @DefaultMessage("No records found")
+  @Key("gen.noRecordsFound")
+  String gen_noRecordsFound();
+
+  /**
+   * Translated "Note Editor".
+   * 
+   * @return translated "Note Editor"
+   */
+  @DefaultMessage("Note Editor")
+  @Key("gen.noteEditor")
+  String gen_noteEditor();
+
+  /**
+   * Translated "Options".
+   * 
+   * @return translated "Options"
+   */
+  @DefaultMessage("Options")
+  @Key("gen.options")
+  String gen_options();
+
+  /**
+   * Translated "Order Request Form".
+   * 
+   * @return translated "Order Request Form"
+   */
+  @DefaultMessage("Order Request Form")
+  @Key("gen.orderRequestForm")
+  String gen_orderRequestForm();
+
+  /**
+   * Translated "Samples from {0} are to be held or refused   ".
+   * 
+   * @return translated "Samples from {0} are to be held or refused   "
+   */
+  @DefaultMessage("Samples from {0} are to be held or refused   ")
+  @Key("gen.orgMarkedAsHoldRefuseSample")
+  String gen_orgMarkedAsHoldRefuseSample(String arg0);
+
+  /**
+   * Translated "Organization".
+   * 
+   * @return translated "Organization"
+   */
+  @DefaultMessage("Organization")
+  @Key("gen.organization")
+  String gen_organization();
+
+  /**
+   * Translated "Previous".
+   * 
+   * @return translated "Previous"
+   */
+  @DefaultMessage("Previous")
+  @Key("gen.previous")
+  String gen_previous();
+
+  /**
+   * Translated "Printer".
+   * 
+   * @return translated "Printer"
+   */
+  @DefaultMessage("Printer")
+  @Key("gen.printer")
+  String gen_printer();
+
+  /**
+   * Translated "Quantity".
+   * 
+   * @return translated "Quantity"
+   */
+  @DefaultMessage("Quantity")
+  @Key("gen.quantity")
+  String gen_quantity();
+
+  /**
+   * Translated "Query".
+   * 
+   * @return translated "Query"
+   */
+  @DefaultMessage("Query")
+  @Key("gen.query")
+  String gen_query();
+
+  /**
+   * Translated "Query aborted".
+   * 
+   * @return translated "Query aborted"
+   */
+  @DefaultMessage("Query aborted")
+  @Key("gen.queryAborted")
+  String gen_queryAborted();
+
+  /**
+   * Translated "Query failed".
+   * 
+   * @return translated "Query failed"
+   */
+  @DefaultMessage("Query failed")
+  @Key("gen.queryFailed")
+  String gen_queryFailed();
+
+  /**
+   * Translated "Querying....".
+   * 
+   * @return translated "Querying...."
+   */
+  @DefaultMessage("Querying....")
+  @Key("gen.querying")
+  String gen_querying();
+
+  /**
+   * Translated "Remove Row".
+   * 
+   * @return translated "Remove Row"
+   */
+  @DefaultMessage("Remove Row")
+  @Key("gen.removeRow")
+  String gen_removeRow();
+
+  /**
+   * Translated "Sample".
+   * 
+   * @return translated "Sample"
+   */
+  @DefaultMessage("Sample")
+  @Key("gen.sample")
+  String gen_sample();
+
+  /**
+   * Translated "Sample Type".
+   * 
+   * @return translated "Sample Type"
+   */
+  @DefaultMessage("Sample Type")
+  @Key("gen.sampleType")
+  String gen_sampleType();
+
+  /**
+   * Translated "You do not have permission to access {0}".
+   * 
+   * @return translated "You do not have permission to access {0}"
+   */
+  @DefaultMessage("You do not have permission to access {0}")
+  @Key("gen.screenPermException")
+  String gen_screenPermException(String arg0);
+
+  /**
+   * Translated "Section".
+   * 
+   * @return translated "Section"
+   */
+  @DefaultMessage("Section")
+  @Key("gen.section")
+  String gen_section();
+
+  /**
+   * Translated "Shipping".
+   * 
+   * @return translated "Shipping"
+   */
+  @DefaultMessage("Shipping")
+  @Key("gen.shipping")
+  String gen_shipping();
+
+  /**
+   * Translated "Status".
+   * 
+   * @return translated "Status"
+   */
+  @DefaultMessage("Status")
+  @Key("gen.status")
+  String gen_status();
+
+  /**
+   * Translated "Store".
+   * 
+   * @return translated "Store"
+   */
+  @DefaultMessage("Store")
+  @Key("gen.store")
+  String gen_store();
+
+  /**
+   * Translated "Test".
+   * 
+   * @return translated "Test"
+   */
+  @DefaultMessage("Test")
+  @Key("gen.test")
+  String gen_test();
+
+  /**
+   * Translated "Type".
+   * 
+   * @return translated "Type"
+   */
+  @DefaultMessage("Type")
+  @Key("gen.type")
+  String gen_type();
+
+  /**
+   * Translated "Uncheck All".
+   * 
+   * @return translated "Uncheck All"
+   */
+  @DefaultMessage("Uncheck All")
+  @Key("gen.uncheckAll")
+  String gen_uncheckAll();
+
+  /**
+   * Translated "Unit".
+   * 
+   * @return translated "Unit"
+   */
+  @DefaultMessage("Unit")
+  @Key("gen.unit")
+  String gen_unit();
+
+  /**
+   * Translated "Update".
+   * 
+   * @return translated "Update"
+   */
+  @DefaultMessage("Update")
+  @Key("gen.update")
+  String gen_update();
+
+  /**
+   * Translated "Update aborted".
+   * 
+   * @return translated "Update aborted"
+   */
+  @DefaultMessage("Update aborted")
+  @Key("gen.updateAborted")
+  String gen_updateAborted();
+
+  /**
+   * Translated "Updating...".
+   * 
+   * @return translated "Updating..."
+   */
+  @DefaultMessage("Updating...")
+  @Key("gen.updating")
+  String gen_updating();
 
   /**
    * Translated "Generating report....".
@@ -5749,13 +6424,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String kitComponentName();
 
   /**
+   * Translated "Ending Sent Date".
+   * 
+   * @return translated "Ending Sent Date"
+   */
+  @DefaultMessage("Ending Sent Date")
+  @Key("kitTracking.endSentDate")
+  String kitTracking_endSentDate();
+
+  /**
    * Translated "Kit Tracking Report".
    * 
    * @return translated "Kit Tracking Report"
    */
   @DefaultMessage("Kit Tracking Report")
-  @Key("kitTrackingReport")
-  String kitTrackingReport();
+  @Key("kitTracking.kitTrackingReport")
+  String kitTracking_kitTrackingReport();
+
+  /**
+   * Translated "Sort By".
+   * 
+   * @return translated "Sort By"
+   */
+  @DefaultMessage("Sort By")
+  @Key("kitTracking.sortBy")
+  String kitTracking_sortBy();
+
+  /**
+   * Translated "Starting Ordered Date".
+   * 
+   * @return translated "Starting Ordered Date"
+   */
+  @DefaultMessage("Starting Ordered Date")
+  @Key("kitTracking.startOrderDate")
+  String kitTracking_startOrderDate();
 
   /**
    * Translated "LCL".
@@ -7511,6 +8213,537 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Order")
   @Key("order")
   String order();
+
+  /**
+   * Translated "All of your changes will be lost if you abort. Are you sure?".
+   * 
+   * @return translated "All of your changes will be lost if you abort. Are you sure?"
+   */
+  @DefaultMessage("All of your changes will be lost if you abort. Are you sure?")
+  @Key("order.abortWarning")
+  String order_abortWarning();
+
+  /**
+   * Translated "Attention".
+   * 
+   * @return translated "Attention"
+   */
+  @DefaultMessage("Attention")
+  @Key("order.attention")
+  String order_attention();
+
+  /**
+   * Translated "by".
+   * 
+   * @return translated "by"
+   */
+  @DefaultMessage("by")
+  @Key("order.by")
+  String order_by();
+
+  /**
+   * Translated "Cancelled orders cannot be updated".
+   * 
+   * @return translated "Cancelled orders cannot be updated"
+   */
+  @DefaultMessage("Cancelled orders cannot be updated")
+  @Key("order.cancelledOrderCantBeUpdated")
+  String order_cancelledOrderCantBeUpdated();
+
+  /**
+   * Translated "Order # \"{0}\": Container Item Sequence is required".
+   * 
+   * @return translated "Order # \"{0}\": Container Item Sequence is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Container Item Sequence is required")
+  @Key("order.containerItemSequenceRequiredException")
+  String order_containerItemSequenceRequiredException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Container is required".
+   * 
+   * @return translated "Order # \"{0}\": Container is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Container is required")
+  @Key("order.containerRequiredException")
+  String order_containerRequiredException(String arg0);
+
+  /**
+   * Translated "Cost Center".
+   * 
+   * @return translated "Cost Center"
+   */
+  @DefaultMessage("Cost Center")
+  @Key("order.costCenter")
+  String order_costCenter();
+
+  /**
+   * Translated "Order # \"{0}\": Cost Center is required".
+   * 
+   * @return translated "Order # \"{0}\": Cost Center is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Cost Center is required")
+  @Key("order.costCenterRequiredException")
+  String order_costCenterRequiredException(String arg0);
+
+  /**
+   * Translated "Customer".
+   * 
+   * @return translated "Customer"
+   */
+  @DefaultMessage("Customer")
+  @Key("order.customer")
+  String order_customer();
+
+  /**
+   * Translated "Valid Begin and End dates, Frequency and Unit must be specified to show dates".
+   * 
+   * @return translated "Valid Begin and End dates, Frequency and Unit must be specified to show dates"
+   */
+  @DefaultMessage("Valid Begin and End dates, Frequency and Unit must be specified to show dates")
+  @Key("order.datesFreqUnitNotSpec")
+  String order_datesFreqUnitNotSpec();
+
+  /**
+   * Translated "Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once".
+   * 
+   * @return translated "Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once"
+   */
+  @DefaultMessage("Order # \"{0}\": A vendor order must not have the inventory item \"{1}\" more than once")
+  @Key("order.duplicateInvItemVendorOrderException")
+  String order_duplicateInvItemVendorOrderException(String arg0,  String arg1);
+
+  /**
+   * Translated "Order # \"{0}\": End date must not be before begin date".
+   * 
+   * @return translated "Order # \"{0}\": End date must not be before begin date"
+   */
+  @DefaultMessage("Order # \"{0}\": End date must not be before begin date")
+  @Key("order.endDateAfterBeginDateException")
+  String order_endDateAfterBeginDateException(String arg0);
+
+  /**
+   * Translated "Filled".
+   * 
+   * @return translated "Filled"
+   */
+  @DefaultMessage("Filled")
+  @Key("order.filled")
+  String order_filled();
+
+  /**
+   * Translated "Order # \"{0}\": Frequency must be greater than zero".
+   * 
+   * @return translated "Order # \"{0}\": Frequency must be greater than zero"
+   */
+  @DefaultMessage("Order # \"{0}\": Frequency must be greater than zero")
+  @Key("order.freqInvalidException")
+  String order_freqInvalidException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ".
+   * 
+   * @return translated "Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  "
+   */
+  @DefaultMessage("Order # \"{0}\": The sample type for the container with Item # {1} is invalid for ''{2}''  ")
+  @Key("order.invalidSampleTypeForTestWarning")
+  String order_invalidSampleTypeForTestWarning(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Order # \"{0}\": Inventory Item is required".
+   * 
+   * @return translated "Order # \"{0}\": Inventory Item is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Inventory Item is required")
+  @Key("order.inventoryItemRequiredException")
+  String order_inventoryItemRequiredException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Inventory Quantity is required".
+   * 
+   * @return translated "Order # \"{0}\": Inventory Quantity is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Inventory Quantity is required")
+  @Key("order.inventoryQuantityRequiredException")
+  String order_inventoryQuantityRequiredException(String arg0);
+
+  /**
+   * Translated "Item #".
+   * 
+   * @return translated "Item #"
+   */
+  @DefaultMessage("Item #")
+  @Key("order.itemNum")
+  String order_itemNum();
+
+  /**
+   * Translated "Items".
+   * 
+   * @return translated "Items"
+   */
+  @DefaultMessage("Items")
+  @Key("order.items")
+  String order_items();
+
+  /**
+   * Translated "Order # \"{0}\": Duplicating more than one container is not allowed".
+   * 
+   * @return translated "Order # \"{0}\": Duplicating more than one container is not allowed"
+   */
+  @DefaultMessage("Order # \"{0}\": Duplicating more than one container is not allowed")
+  @Key("order.multiRowDuplicateNotAllowed")
+  String order_multiRowDuplicateNotAllowed(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Moving up/down more than one container is not allowed".
+   * 
+   * @return translated "Order # \"{0}\": Moving up/down more than one container is not allowed"
+   */
+  @DefaultMessage("Order # \"{0}\": Moving up/down more than one container is not allowed")
+  @Key("order.multiRowMoveNotAllowed")
+  String order_multiRowMoveNotAllowed(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed".
+   * 
+   * @return translated "Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed"
+   */
+  @DefaultMessage("Order # \"{0}\": Check All/Uncheck All for more than one test is not allowed")
+  @Key("order.multiTestCheckNotAllowed")
+  String order_multiTestCheckNotAllowed(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Only one record with the type Bill To is allowed".
+   * 
+   * @return translated "Order # \"{0}\": Only one record with the type Bill To is allowed"
+   */
+  @DefaultMessage("Order # \"{0}\": Only one record with the type Bill To is allowed")
+  @Key("order.multipleBillToException")
+  String order_multipleBillToException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Only one record with the type Report To is allowed ".
+   * 
+   * @return translated "Order # \"{0}\": Only one record with the type Report To is allowed "
+   */
+  @DefaultMessage("Order # \"{0}\": Only one record with the type Report To is allowed ")
+  @Key("order.multipleReportToException")
+  String order_multipleReportToException(String arg0);
+
+  /**
+   * Translated "Needed In Days".
+   * 
+   * @return translated "Needed In Days"
+   */
+  @DefaultMessage("Needed In Days")
+  @Key("order.neededDays")
+  String order_neededDays();
+
+  /**
+   * Translated "Order # \"{0}\": Needed In Days is required".
+   * 
+   * @return translated "Order # \"{0}\": Needed In Days is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Needed In Days is required")
+  @Key("order.neededInDaysRequiredException")
+  String order_neededInDaysRequiredException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' ".
+   * 
+   * @return translated "Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' "
+   */
+  @DefaultMessage("Order # \"{0}\": No container is present for Item # {1} which is assigned to ''{2}'' ")
+  @Key("order.noContainerWithItemNumWarning")
+  String order_noContainerWithItemNumWarning(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Order # \"{0}\": No sample type specified for the container with Item # {1}  ".
+   * 
+   * @return translated "Order # \"{0}\": No sample type specified for the container with Item # {1}  "
+   */
+  @DefaultMessage("Order # \"{0}\": No sample type specified for the container with Item # {1}  ")
+  @Key("order.noSampleTypeForContainerWarning")
+  String order_noSampleTypeForContainerWarning(String arg0,  String arg1);
+
+  /**
+   * Translated "Order # \"{0}\": Not all dates generated with this frequency are valid".
+   * 
+   * @return translated "Order # \"{0}\": Not all dates generated with this frequency are valid"
+   */
+  @DefaultMessage("Order # \"{0}\": Not all dates generated with this frequency are valid")
+  @Key("order.notAllDatesValid")
+  String order_notAllDatesValid(String arg0);
+
+  /**
+   * Translated "# Forms".
+   * 
+   * @return translated "# Forms"
+   */
+  @DefaultMessage("# Forms")
+  @Key("order.numForms")
+  String order_numForms();
+
+  /**
+   * Translated "Order # \"{0}\": # Forms is required".
+   * 
+   * @return translated "Order # \"{0}\": # Forms is required"
+   */
+  @DefaultMessage("Order # \"{0}\": # Forms is required")
+  @Key("order.numFormsRequiredException")
+  String order_numFormsRequiredException(String arg0);
+
+  /**
+   * Translated "History - Container".
+   * 
+   * @return translated "History - Container"
+   */
+  @DefaultMessage("History - Container")
+  @Key("order.orderContainerHistory")
+  String order_orderContainerHistory();
+
+  /**
+   * Translated "Order Date".
+   * 
+   * @return translated "Order Date"
+   */
+  @DefaultMessage("Order Date")
+  @Key("order.orderDate")
+  String order_orderDate();
+
+  /**
+   * Translated "History - Order".
+   * 
+   * @return translated "History - Order"
+   */
+  @DefaultMessage("History - Order")
+  @Key("order.orderHistory")
+  String order_orderHistory();
+
+  /**
+   * Translated "History - Item".
+   * 
+   * @return translated "History - Item"
+   */
+  @DefaultMessage("History - Item")
+  @Key("order.orderItemHistory")
+  String order_orderItemHistory();
+
+  /**
+   * Translated "Order #".
+   * 
+   * @return translated "Order #"
+   */
+  @DefaultMessage("Order #")
+  @Key("order.orderNum")
+  String order_orderNum();
+
+  /**
+   * Translated "History - Organization".
+   * 
+   * @return translated "History - Organization"
+   */
+  @DefaultMessage("History - Organization")
+  @Key("order.orderOrganizationHistory")
+  String order_orderOrganizationHistory();
+
+  /**
+   * Translated "Order Will Recur On".
+   * 
+   * @return translated "Order Will Recur On"
+   */
+  @DefaultMessage("Order Will Recur On")
+  @Key("order.orderRecurOn")
+  String order_orderRecurOn();
+
+  /**
+   * Translated "History - Test".
+   * 
+   * @return translated "History - Test"
+   */
+  @DefaultMessage("History - Test")
+  @Key("order.orderTestHistory")
+  String order_orderTestHistory();
+
+  /**
+   * Translated "Order # \"{0}\": Organization is required".
+   * 
+   * @return translated "Order # \"{0}\": Organization is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Organization is required")
+  @Key("order.organizationRequiredException")
+  String order_organizationRequiredException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Organization Type is required".
+   * 
+   * @return translated "Order # \"{0}\": Organization Type is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Organization Type is required")
+  @Key("order.organizationTypeRequiredException")
+  String order_organizationTypeRequiredException(String arg0);
+
+  /**
+   * Translated "Parent Order #".
+   * 
+   * @return translated "Parent Order #"
+   */
+  @DefaultMessage("Parent Order #")
+  @Key("order.parentOrderNum")
+  String order_parentOrderNum();
+
+  /**
+   * Translated "Order # \"{0}\": This value must not exceed {1}".
+   * 
+   * @return translated "Order # \"{0}\": This value must not exceed {1}"
+   */
+  @DefaultMessage("Order # \"{0}\": This value must not exceed {1}")
+  @Key("order.qtyNotMoreThanMaxException")
+  String order_qtyNotMoreThanMaxException(String arg0,  String arg1);
+
+  /**
+   * Translated "Recur".
+   * 
+   * @return translated "Recur"
+   */
+  @DefaultMessage("Recur")
+  @Key("order.recur")
+  String order_recur();
+
+  /**
+   * Translated "Order # \"{0}\": Recurrence Active Begin is required".
+   * 
+   * @return translated "Order # \"{0}\": Recurrence Active Begin is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Recurrence Active Begin is required")
+  @Key("order.recurrenceActiveBeginRequiredException")
+  String order_recurrenceActiveBeginRequiredException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Recurrence Active End is required".
+   * 
+   * @return translated "Order # \"{0}\": Recurrence Active End is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Recurrence Active End is required")
+  @Key("order.recurrenceActiveEndRequiredException")
+  String order_recurrenceActiveEndRequiredException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Recurrence Frequency is required".
+   * 
+   * @return translated "Order # \"{0}\": Recurrence Frequency is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Recurrence Frequency is required")
+  @Key("order.recurrenceFrequencyRequiredException")
+  String order_recurrenceFrequencyRequiredException(String arg0);
+
+  /**
+   * Translated "Order # \"{0}\": Recurrence Unit is required".
+   * 
+   * @return translated "Order # \"{0}\": Recurrence Unit is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Recurrence Unit is required")
+  @Key("order.recurrenceUnitRequiredException")
+  String order_recurrenceUnitRequiredException(String arg0);
+
+  /**
+   * Translated "Remove Test".
+   * 
+   * @return translated "Remove Test"
+   */
+  @DefaultMessage("Remove Test")
+  @Key("order.removeTest")
+  String order_removeTest();
+
+  /**
+   * Translated "Requested By".
+   * 
+   * @return translated "Requested By"
+   */
+  @DefaultMessage("Requested By")
+  @Key("order.requestedBy")
+  String order_requestedBy();
+
+  /**
+   * Translated "Send-out Order".
+   * 
+   * @return translated "Send-out Order"
+   */
+  @DefaultMessage("Send-out Order")
+  @Key("order.sendoutOrder")
+  String order_sendoutOrder();
+
+  /**
+   * Translated "Order items and supplies to be sent to external users.".
+   * 
+   * @return translated "Order items and supplies to be sent to external users."
+   */
+  @DefaultMessage("Order items and supplies to be sent to external users.")
+  @Key("order.sendoutOrderDescription")
+  String order_sendoutOrderDescription();
+
+  /**
+   * Translated "Ship From".
+   * 
+   * @return translated "Ship From"
+   */
+  @DefaultMessage("Ship From")
+  @Key("order.shipFrom")
+  String order_shipFrom();
+
+  /**
+   * Translated "Order # \"{0}\": Ship From is required".
+   * 
+   * @return translated "Order # \"{0}\": Ship From is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Ship From is required")
+  @Key("order.shipFromRequiredException")
+  String order_shipFromRequiredException(String arg0);
+
+  /**
+   * Translated "Ship To".
+   * 
+   * @return translated "Ship To"
+   */
+  @DefaultMessage("Ship To")
+  @Key("order.shipTo")
+  String order_shipTo();
+
+  /**
+   * Translated "Shipping Information".
+   * 
+   * @return translated "Shipping Information"
+   */
+  @DefaultMessage("Shipping Information")
+  @Key("order.shippingInfo")
+  String order_shippingInfo();
+
+  /**
+   * Translated "Show Upcoming Dates".
+   * 
+   * @return translated "Show Upcoming Dates"
+   */
+  @DefaultMessage("Show Upcoming Dates")
+  @Key("order.showDates")
+  String order_showDates();
+
+  /**
+   * Translated "Order # \"{0}\": Status is required".
+   * 
+   * @return translated "Order # \"{0}\": Status is required"
+   */
+  @DefaultMessage("Order # \"{0}\": Status is required")
+  @Key("order.statusRequiredException")
+  String order_statusRequiredException(String arg0);
+
+  /**
+   * Translated "Test by Method, Description".
+   * 
+   * @return translated "Test by Method, Description"
+   */
+  @DefaultMessage("Test by Method, Description")
+  @Key("order.testByMethodDescription")
+  String order_testByMethodDescription();
 
   /**
    * Translated "{0} couldn''t be found ".
@@ -9745,6 +10978,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String report();
 
   /**
+   * Translated "Reset".
+   * 
+   * @return translated "Reset"
+   */
+  @DefaultMessage("Reset")
+  @Key("report.reset")
+  String report_reset();
+
+  /**
+   * Translated "Run Report".
+   * 
+   * @return translated "Run Report"
+   */
+  @DefaultMessage("Run Report")
+  @Key("report.runReport")
+  String report_runReport();
+
+  /**
    * Translated "Report Description".
    * 
    * @return translated "Report Description"
@@ -11554,11 +12805,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String showAnalysis();
 
   /**
-   * Translated "Show Dates ".
+   * Translated "Show Dates".
    * 
-   * @return translated "Show Dates "
+   * @return translated "Show Dates"
    */
-  @DefaultMessage("Show Dates ")
+  @DefaultMessage("Show Dates")
   @Key("showDates")
   String showDates();
 
@@ -11633,15 +12884,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("A destination URI beginning with ''socket://'' must be of the format ''socket://hostname:port''")
   @Key("socketURIMustHaveHostAndPortException")
   String socketURIMustHaveHostAndPortException();
-
-  /**
-   * Translated "Sort By".
-   * 
-   * @return translated "Sort By"
-   */
-  @DefaultMessage("Sort By")
-  @Key("sortBy")
-  String sortBy();
 
   /**
    * Translated "Sort Order".
@@ -11750,15 +12992,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Start Day")
   @Key("startDay")
   String startDay();
-
-  /**
-   * Translated "Starting Ordered Date".
-   * 
-   * @return translated "Starting Ordered Date"
-   */
-  @DefaultMessage("Starting Ordered Date")
-  @Key("startOrderDate")
-  String startOrderDate();
 
   /**
    * Translated "Started".
@@ -12218,6 +13451,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Test")
   @Key("test")
   String test();
+
+  /**
+   * Translated "No matching active test found for ''{0}, {1}''".
+   * 
+   * @return translated "No matching active test found for ''{0}, {1}''"
+   */
+  @DefaultMessage("No matching active test found for ''{0}, {1}''")
+  @Key("test.inactiveTestException")
+  String test_inactiveTestException(String arg0,  String arg1);
 
   /**
    * Translated "Invalid value for selected type".
