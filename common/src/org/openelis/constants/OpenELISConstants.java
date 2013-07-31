@@ -1213,6 +1213,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String attachment_missingPath();
 
   /**
+   * Translated "Can not save attachment file ''{0}''. Please contact the system administrator.".
+   * 
+   * @return translated "Can not save attachment file ''{0}''. Please contact the system administrator."
+   */
+  @DefaultMessage("Can not save attachment file ''{0}''. Please contact the system administrator.")
+  @Key("attachment.moveFileException")
+  String attachment_moveFileException(String arg0);
+
+  /**
    * Translated "Attention".
    * 
    * @return translated "Attention"
@@ -4192,11 +4201,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String finalReportSingleReprint();
 
   /**
-   * Translated "Saved Final Report for Accession # {0,number} revision {1,number}  ".
+   * Translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''  ".
    * 
-   * @return translated "Saved Final Report for Accession # {0,number} revision {1,number}  "
+   * @return translated "Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''  "
    */
-  @DefaultMessage("Saved Final Report for Accession # {0,number} revision {1,number}  ")
+  @DefaultMessage("Saved Final Report for Accession # ''{0,number}'' revision ''{1,number}''  ")
   @Key("finalreport.attachmentEsaveDescription")
   String finalreport_attachmentEsaveDescription(Integer arg0,  Integer arg1);
 
