@@ -28,6 +28,7 @@
     <inherits name="org.openelis.modules.neonatalScreeningSampleLogin.NeonatalScreeningSampleLogin"/>
     <inherits name="org.openelis.modules.note.Note"/>
     <inherits name="org.openelis.modules.order.Order"/>
+    <inherits name="org.openelis.modules.order1.Order1"/>
     <inherits name="org.openelis.modules.orderFill.OrderFill"/>
     <inherits name="org.openelis.modules.organization.Organization"/>
     <inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin"/>

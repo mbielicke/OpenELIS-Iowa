@@ -458,7 +458,7 @@ public class KitTrackingUI extends Screen {
 
         clearErrors();
         if ( !validate()) {
-            window.setError(Messages.get().correctErrors());
+            window.setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -539,14 +539,14 @@ public class KitTrackingUI extends Screen {
         }
         query.setFields(fields);
 
-        window.setBusy(Messages.get().fetching());
+        window.setBusy(Messages.get().gen_fetching());
         KitTrackingReportService.get().runReport(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
                 String url;
                 if (ReportStatus.Status.SAVED.equals(status.getStatus())) {
                     url = "/openelis/openelis/report?file=" + status.getMessage();
                     Window.open(URL.encode(url), "KitTrackingReport", null);
-                    window.setDone(Messages.get().loadCompleteMessage());
+                    window.setDone(Messages.get().gen_loadCompleteMessage());
                 } else {
                     window.setDone(status.getMessage());
                 }
