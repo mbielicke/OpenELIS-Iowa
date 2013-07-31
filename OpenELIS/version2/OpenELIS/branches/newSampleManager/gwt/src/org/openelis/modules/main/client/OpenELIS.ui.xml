@@ -100,8 +100,8 @@
                   display="{msg.internalOrder}" />
                 <w:MenuItem description="{msg.vendorOrderDescription}" enabled="false" icon="{res.style.orderIcon}" ui:field="vendorOrder"
                   display="{msg.vendorOrder}" />
-                <w:MenuItem description="{msg.sendoutOrderDescription}" enabled="false" icon="{res.style.orderIcon}" ui:field="sendoutOrder"
-                  display="{msg.sendoutOrder}" />
+                <w:MenuItem description="{msg.order_sendoutOrderDescription}" enabled="false" icon="{res.style.orderIcon}" ui:field="sendoutOrder"
+                  display="{msg.order_sendoutOrder}" />
                 <g:HTML>
                   <hr />
                 </g:HTML>
@@ -145,7 +145,7 @@
                   <w:MenuItem enabled="false" ui:field="testCountByFacility" display="{msg.testCountByFacility}" />
                   <w:MenuItem enabled="false" ui:field="turnaround" display="{msg.turnaround}" />
                   <w:MenuItem enabled="false" ui:field="turnAroundStatisticReport" display="{msg.turnAroundStatisticReport}" />
-                  <w:MenuItem enabled="false" ui:field="kitTrackingReport" display="{msg.kitTrackingReport}" />
+                  <w:MenuItem enabled="false" ui:field="kitTrackingReport" display="{msg.kitTracking_kitTrackingReport}" />
                   <w:MenuItem enabled="false" ui:field="sdwisUnloadReport" display="{msg.sdwisUnloadReport}" />
                   <w:MenuItem enabled="false" ui:field="dataView" display="{msg.dataView}" />
                   <w:MenuItem enabled="false" ui:field="qcChart" display="{msg.qcChart}" />
