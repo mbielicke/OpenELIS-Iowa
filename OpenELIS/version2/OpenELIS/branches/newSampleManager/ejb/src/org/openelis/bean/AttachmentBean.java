@@ -170,8 +170,10 @@ public class AttachmentBean {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(Attachment.class, id);
-        if (entity != null)
+        if (entity != null) {
+
             manager.remove(entity);
+        }
     }
 
     /**
@@ -196,14 +198,14 @@ public class AttachmentBean {
         /*
          * insert the attachment and move the file to the right location
          */
-        data = add(new AttachmentDO(0, null, null, sectionId, discription, filename));
+        data = add(new AttachmentDO(0, null, null, sectionId, discription, src.getFileName().toString()));
         dst = Paths.get(base, ReportUtil.getAttachmentSubdirectory(data.getId()), data.getId()
                                                                                       .toString());
         try {
             Files.move(src, dst);
         } catch (Exception anyE) {
             log.severe("Can't move file '" + src.toString() + "' to '" + dst.toString());
-            throw anyE;
+            throw new Exception(Messages.get().attachment_moveFileException(dst.toString()));
         }
 
         return data;

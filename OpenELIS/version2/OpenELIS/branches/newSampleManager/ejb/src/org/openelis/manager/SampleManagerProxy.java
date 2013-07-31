@@ -334,8 +334,10 @@ public class SampleManagerProxy {
          * check to see if the sample or any analysis has been unreleased. 
          * call final report e-save if they have. 
          */
-        if (man.unreleased)
-            EJBFactory.getFinalReport().runReportForESave(data.getId());
+        if (man.unreleased) {
+            EJBFactory.getFinalReport().runReportForESave(data.getAccessionNumber());
+            man.unreleased = false;
+        }
 
         /*
          * a sample's status could get set to released because of the status of
