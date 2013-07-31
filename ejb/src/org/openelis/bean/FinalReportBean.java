@@ -344,6 +344,7 @@ public class FinalReportBean {
         AttachmentDO att;
         FinalReportVO result;
         OrganizationPrint print;
+        ArrayList<FinalReportVO> reportList;
         ArrayList<OrganizationPrint> printList;
 
         /*
@@ -376,20 +377,23 @@ public class FinalReportBean {
          * find the sample
          */
         try {
-            result = sample.fetchForFinalReportSingle(accession).get(0);
-            print = new OrganizationPrint(result.getOrganizationId(),
-                                          result.getOrganizationName(),
-                                          result.getOrganizationAttention(),
-                                          result.getSampleId(),
-                                          result.getAccessionNumber(),
-                                          result.getRevision(),
-                                          result.getDomain());
-            printList = new ArrayList<OrganizationPrint>();
-            printList.add(print);
-        } catch (NotFoundException e) {
-            log.warning("Final report (esave) for accession number " + accession +
-                        " has incorrect status,\nmissing information, or has no analysis ready to be printed");
-            return;
+            reportList = sample.fetchForFinalReportSingle(accession);
+            if (reportList.size() > 0) {
+                result = reportList.get(0);
+                print = new OrganizationPrint(result.getOrganizationId(),
+                                              result.getOrganizationName(),
+                                              result.getOrganizationAttention(),
+                                              result.getSampleId(),
+                                              result.getAccessionNumber(),
+                                              result.getRevision(),
+                                              result.getDomain());
+                printList = new ArrayList<OrganizationPrint>();
+                printList.add(print);
+            } else {
+                log.warning("Final report (esave) for accession number " + accession +
+                            " has incorrect status,\nmissing information, or has no analysis ready to be printed");
+                return;
+            }
         } catch (Exception e) {
             log.log(Level.SEVERE, "Trying to find a sample", e);
             throw e;
