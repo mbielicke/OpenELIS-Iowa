@@ -382,9 +382,9 @@ public class ReportUtil {
         
         path = String.format("%010d", id).toCharArray();
         if (path != null && path.length == 10) {
-            return path[6] + File.pathSeparator +
-                   path[7] + File.pathSeparator +
-                   path[8] + File.pathSeparator +
+            return path[6] + File.separator +
+                   path[7] + File.separator +
+                   path[8] + File.separator +
                    path[9];
         }
         return ".";

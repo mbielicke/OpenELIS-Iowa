@@ -350,7 +350,7 @@ public class FinalReportBean {
          * skip if they don't want to save previous versions of final report
          */
         try {
-            esave = Boolean.getBoolean(systemVariable.fetchByName("final_report_esave").getValue());
+            esave = Boolean.parseBoolean(systemVariable.fetchByName("final_report_esave").getValue());
             if ( !esave)
                 return;
         } catch (Exception e) {
