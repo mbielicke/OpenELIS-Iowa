@@ -1479,7 +1479,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         IdNameVO data;
 
         row = description.getValue();
-        if (row == null || row.getId() == null) {
+        if (row == null || row.getId() == null || row.getData() == null) {
             manager.getOrder().setDescription(null);
         } else {
             data = (IdNameVO)row.getData();
