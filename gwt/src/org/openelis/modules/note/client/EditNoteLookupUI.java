@@ -88,17 +88,27 @@ public abstract class EditNoteLookupUI extends Screen {
 
     protected String                      noteSubject, noteText;
 
-    protected boolean                    hasSubject;
+    protected boolean                     hasSubject, reloadTree;
 
     public EditNoteLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
+        reloadTree = true;
     }
 
     private void initialize() {
         addScreenHandler(noteTree, "noteTree", new ScreenHandler<ArrayList<Node>>() {
             public void onDataChange(DataChangeEvent event) {
-                noteTree.setRoot(getCategories(false));                
+                /*
+                 * the tree is only loaded when DataChangeEvent is fired for the
+                 * first time after bringing this class up; it's fired every
+                 * time a field like noteSubject is set by the code invoking
+                 * this class
+                 */
+                if (reloadTree) {
+                    noteTree.setRoot(getRoot());
+                    reloadTree = false;
+                }
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -132,9 +142,9 @@ public abstract class EditNoteLookupUI extends Screen {
                      * hasn't been specified and if the subject is showing
                      */
                     if (subject.isEnabled() && subject.isVisible() &&
-                        DataBaseUtil.isEmpty(subject.getText())) {
+                        DataBaseUtil.isEmpty(subject.getValue())) {
                         parent = item.getParent();
-                        subject.setText((String)parent.getCell(0));
+                        subject.setValue((String)parent.getCell(0));
                     }
                 } else {
                     preview.setValue("", true);
@@ -237,7 +247,7 @@ public abstract class EditNoteLookupUI extends Screen {
     public void setHasSubject(boolean hasSubject) {
         this.hasSubject = hasSubject;
         refresh();
-    }    
+    }
 
     public boolean getHasSubject() {
         return hasSubject;
@@ -255,7 +265,7 @@ public abstract class EditNoteLookupUI extends Screen {
 
         return true;
     }
-    
+
     /**
      * overridden to respond to the user clicking "ok"
      */
@@ -273,7 +283,7 @@ public abstract class EditNoteLookupUI extends Screen {
         QueryFieldUtil parser;
 
         if (DataBaseUtil.isEmpty(find.getValue())) {
-            noteTree.setRoot(getCategories(true));
+            noteTree.setRoot(getRoot());
             return;
         }
 
@@ -374,12 +384,14 @@ public abstract class EditNoteLookupUI extends Screen {
         }
         noteText = trimText;
         window.close();
+        reloadTree = true;
         ok();
     }
 
     @UiHandler("cancelButton")
     protected void cancel(ClickEvent event) {
         window.close();
+        reloadTree = true;
         cancel();
     }
 
@@ -393,7 +405,7 @@ public abstract class EditNoteLookupUI extends Screen {
         else
             text.setFocus(true);
     }
-    
+
     private void getNotesForCategory(final Node node, Integer categoryId) {
         ArrayList<StandardNoteDO> notes;
 
@@ -447,19 +459,10 @@ public abstract class EditNoteLookupUI extends Screen {
         return root;
     }
 
-    private Node getCategories(boolean forceReload) {
+    private Node getRoot() {
         Node root, node;
         ArrayList<DictionaryDO> list;
 
-        /*
-         * the tree is only loaded when DataChangeEvent is fired for the
-         * first time after bringing this class up; it's fired every
-         * time a field like noteSubject is set by the code invoking
-         * this class
-         */
-        if (!forceReload && noteTree.getRoot() != null)
-            return noteTree.getRoot();
-            
         list = CategoryCache.getBySystemName("standard_note_type");
         root = new Node();
         for (DictionaryDO d : list) {

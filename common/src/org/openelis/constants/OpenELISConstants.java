@@ -4552,6 +4552,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_checkAll();
 
   /**
+   * Translated "Standard Comment Library".
+   * 
+   * @return translated "Standard Comment Library"
+   */
+  @DefaultMessage("Standard Comment Library")
+  @Key("gen.commentLibrary")
+  String gen_commentLibrary();
+
+  /**
    * Translated "Commit".
    * 
    * @return translated "Commit"
