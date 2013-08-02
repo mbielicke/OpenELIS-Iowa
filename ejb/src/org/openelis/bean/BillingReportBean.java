@@ -218,10 +218,10 @@ public class BillingReportBean {
                               ArrayList<Object[]> resultList) throws Exception {
         int i;
         boolean needCharge, needCredit;
-        Double sampleCharge, anaCharge;
+        Double sampleCharge, anaCharge, billedOverride;
         Integer billedAnalytes, samId, prevSamId, accession, anaId, statusId, testId,
                 BILLING_MISC_ID, BILLING_RUSH_ID, SECTION_ANALYTE_ID;
-        String billedOverride, clientCode;
+        String clientCode;
         Object[] row;
         String domain, clientReference, billingType, lastName, projectName,
                domainInfo, testName, methodName, section, labCode, currentDateStr,
@@ -284,7 +284,7 @@ public class BillingReportBean {
             section = DataBaseUtil.trim((String)row[9]);
             billed = (Timestamp)row[10];
             billedAnalytes = (Integer)row[11];
-            billedOverride = (String)row[12];
+            billedOverride = (Double)row[12];
             anaReportable = (String)row[13];  
             statusId = (Integer)row[14];
             
