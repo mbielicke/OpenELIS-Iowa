@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -4588,6 +4588,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_correctErrors();
 
   /**
+   * Translated "Cost".
+   * 
+   * @return translated "Cost"
+   */
+  @DefaultMessage("Cost")
+  @Key("gen.cost")
+  String gen_cost();
+
+  /**
+   * Translated "Date Rec".
+   * 
+   * @return translated "Date Rec"
+   */
+  @DefaultMessage("Date Rec")
+  @Key("gen.dateRec")
+  String gen_dateRec();
+
+  /**
    * Translated "Description".
    * 
    * @return translated "Description"
@@ -4658,6 +4676,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Exp Date")
   @Key("gen.expDate")
   String gen_expDate();
+
+  /**
+   * Translated "Ext Reference".
+   * 
+   * @return translated "Ext Reference"
+   */
+  @DefaultMessage("Ext Reference")
+  @Key("gen.extReference")
+  String gen_extReference();
 
   /**
    * Translated "Error: Could not retrieve the record.".
@@ -8260,6 +8287,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_cancelledOrderCantBeUpdated();
 
   /**
+   * Translated "Catalog #".
+   * 
+   * @return translated "Catalog #"
+   */
+  @DefaultMessage("Catalog #")
+  @Key("order.catalogNum")
+  String order_catalogNum();
+
+  /**
    * Translated "Order # \"{0}\": Container Item Sequence is required".
    * 
    * @return translated "Order # \"{0}\": Container Item Sequence is required"
@@ -8330,6 +8366,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Order # \"{0}\": End date must not be before begin date")
   @Key("order.endDateAfterBeginDateException")
   String order_endDateAfterBeginDateException(String arg0);
+
+  /**
+   * Translated "Ext Order #".
+   * 
+   * @return translated "Ext Order #"
+   */
+  @DefaultMessage("Ext Order #")
+  @Key("order.extOrderNum")
+  String order_extOrderNum();
 
   /**
    * Translated "Filled".
@@ -8566,6 +8611,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_orderRecurOn();
 
   /**
+   * Translated "Shipping Notes".
+   * 
+   * @return translated "Shipping Notes"
+   */
+  @DefaultMessage("Shipping Notes")
+  @Key("order.orderShippingNotes")
+  String order_orderShippingNotes();
+
+  /**
    * Translated "History - Test".
    * 
    * @return translated "History - Test"
@@ -8753,6 +8807,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Test by Method, Description")
   @Key("order.testByMethodDescription")
   String order_testByMethodDescription();
+
+  /**
+   * Translated "Unit Cost".
+   * 
+   * @return translated "Unit Cost"
+   */
+  @DefaultMessage("Unit Cost")
+  @Key("order.unitCost")
+  String order_unitCost();
+
+  /**
+   * Translated "Vendor".
+   * 
+   * @return translated "Vendor"
+   */
+  @DefaultMessage("Vendor")
+  @Key("order.vendor")
+  String order_vendor();
 
   /**
    * Translated "{0} couldn''t be found ".

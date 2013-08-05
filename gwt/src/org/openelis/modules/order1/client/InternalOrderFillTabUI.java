@@ -48,12 +48,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SendoutOrderFillTabUI extends Screen {
-    @UiTemplate("SendoutOrderFillTab.ui.xml")
-    interface SendoutOrderFillTabUiBinder extends UiBinder<Widget, SendoutOrderFillTabUI> {
+public class InternalOrderFillTabUI extends Screen {
+    @UiTemplate("InternalOrderFillTab.ui.xml")
+    interface InternalOrderFillTabUiBinder extends UiBinder<Widget, InternalOrderFillTabUI> {
     };
 
-    private static SendoutOrderFillTabUiBinder uiBinder = GWT.create(SendoutOrderFillTabUiBinder.class);
+    private static InternalOrderFillTabUiBinder uiBinder = GWT.create(InternalOrderFillTabUiBinder.class);
 
     @UiField
     protected Table                            table;
@@ -64,7 +64,7 @@ public class SendoutOrderFillTabUI extends Screen {
 
     protected OrderManager1                    manager, displayedManager;
 
-    public SendoutOrderFillTabUI(Screen parentScreen, EventBus bus) {
+    public InternalOrderFillTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
         setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));

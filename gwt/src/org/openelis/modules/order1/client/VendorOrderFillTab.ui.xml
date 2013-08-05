@@ -27,31 +27,49 @@
 			<t:Table ui:field="table" visibleRows="11" horizontalScroll="ALWAYS"
 				verticalScroll="ALWAYS" width="697px" header="true"
 				styleName="{uiRes.table.ScreenTableWithSides}">
-				<t:Column width="205" label="{msg.inventoryItem}">
+				<t:Column width="150" label="{msg.gen_inventoryItem}">
 					<t:TextBoxCell>
 						<w:TextBox
 							field="String"/>
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="235" label="{msg.location}">
+				<t:Column width="180" label="{msg.gen_location}">
 					<t:TextBoxCell>
 						<w:TextBox
 							field="String"/>
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="65" label="{msg.quantity}">
+				<t:Column width="65" label="{msg.gen_quantity}">
 					<t:TextBoxCell>
 						<w:TextBox required="true"
 							field="Integer" textAlignment="RIGHT" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="85" label="{msg.lotNum}">
+				<t:Column width="85" label="{msg.gen_lotNum}">
 					<t:TextBoxCell>
 						<w:TextBox
 							field="String"/>
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="92" label="{msg.expDate}">
+				<t:Column width="92" label="{msg.gen_expDate}">
+					<t:TextBoxCell>
+						<w:TextBox
+							field="String"/>
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="80" label="{msg.gen_dateRec}">
+					<t:TextBoxCell>
+						<w:TextBox
+							field="String"/>
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="55" label="{msg.gen_cost}">
+					<t:TextBoxCell>
+						<w:TextBox
+							field="String"/>
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="130" label="{msg.gen_extReference}">
 					<t:TextBoxCell>
 						<w:TextBox
 							field="String"/>

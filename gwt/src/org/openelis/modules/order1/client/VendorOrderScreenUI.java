@@ -39,43 +39,27 @@ import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
-import org.openelis.domain.OrderOrganizationViewDO;
-import org.openelis.domain.OrderTestReturnVO;
-import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ShippingViewDO;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.OrderManager1;
-import org.openelis.manager.ShippingManager;
-import org.openelis.manager.TestManager;
 import org.openelis.meta.OrderMeta;
-import org.openelis.modules.auxData.client.AuxDataTabUI;
-import org.openelis.modules.auxData.client.AuxGroupChangeEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
-import org.openelis.modules.report.client.RequestFormReportService;
 import org.openelis.modules.sample1.client.SampleOrganizationUtility1;
-import org.openelis.modules.shipping.client.ShippingScreen;
-import org.openelis.modules.shipping.client.ShippingService;
-import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.Warning;
 import org.openelis.ui.common.data.Query;
@@ -109,7 +93,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -117,141 +100,82 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SendoutOrderScreenUI extends Screen implements CacheProvider {
+public class VendorOrderScreenUI extends Screen implements CacheProvider {
 
-    @UiTemplate("SendoutOrder.ui.xml")
-    interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
+    @UiTemplate("VendorOrder.ui.xml")
+    interface VendorOrderUiBinder extends UiBinder<Widget, VendorOrderScreenUI> {
     };
 
-    public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
+    public static final VendorOrderUiBinder uiBinder = GWT.create(VendorOrderUiBinder.class);
 
-    protected OrderManager1                  manager;
+    protected OrderManager1                 manager;
 
-    protected ModulePermission               userPermission;
+    protected ModulePermission              userPermission;
 
-    protected ScreenNavigator<IdNameVO>      nav;
-
-    @UiField
-    protected ButtonGroup                    atozButtons;
+    protected ScreenNavigator<IdNameVO>     nav;
 
     @UiField
-    protected Table                          atozTable;
+    protected ButtonGroup                   atozButtons;
 
     @UiField
-    protected Button                         query, previous, next, add, update, commit, abort,
+    protected Table                         atozTable;
+
+    @UiField
+    protected Button                        query, previous, next, add, update, commit, abort,
                     atozNext, atozPrev;
 
     @UiField
-    protected Menu                           optionsMenu;
+    protected Menu                          optionsMenu;
 
     @UiField
-    protected MenuItem                       duplicate, shippingInfo, orderRequestForm,
-                    orderHistory, orderOrganizationHistory, orderItemHistory, orderTestHistory,
-                    orderContainerHistory;
+    protected MenuItem                      duplicate, orderHistory, orderItemHistory;
 
     @UiField
-    protected TextBox<Integer>               id, neededDays, numberOfForms;
+    protected TextBox<Integer>              id, neededDays;
 
     @UiField
-    protected TextBox<String>                organizationAttention, multipleUnit, requestedBy,
-                    streetAddress, city, zipCode;
+    protected TextBox<String>               vendorAttention, multipleUnit, requestedBy,
+                    streetAddress, city, zipCode, externalId;
 
     @UiField
-    protected Calendar                       orderedDate;
+    protected Calendar                      orderedDate;
 
     @UiField
-    protected Dropdown<Integer>              status, shipFrom, costCenter;
+    protected Dropdown<Integer>             status, costCenter;
 
     @UiField
-    protected Dropdown<String>               orgState;
+    protected Dropdown<String>              orgState;
 
     @UiField
-    protected AutoComplete                   shipTo, description;
+    protected AutoComplete                  vendor;
 
     @UiField
-    protected TabLayoutPanel                 tabPanel;
+    protected TabLayoutPanel                tabPanel;
 
     @UiField(provided = true)
-    protected OrganizationTabUI              organizationTab;
+    protected VendorOrderItemTabUI          itemTab;
 
     @UiField(provided = true)
-    protected AuxDataTabUI                   auxDataTab;
+    protected ShippingNotesTabUI            shippingNotesTab;
 
     @UiField(provided = true)
-    protected TestTabUI                      testTab;
+    protected VendorOrderFillTabUI          fillTab;
 
-    @UiField(provided = true)
-    protected ContainerTabUI                 containerTab;
+    protected HashMap<String, Object>       cache;
 
-    @UiField(provided = true)
-    protected SendoutOrderItemTabUI          itemTab;
-
-    @UiField(provided = true)
-    protected ShippingNotesTabUI             shippingNotesTab;
-
-    @UiField(provided = true)
-    protected CustomerNotesTabUI             customerNotesTab;
-
-    @UiField(provided = true)
-    protected InternalNotesTabUI             internalNotesTab;
-
-    @UiField(provided = true)
-    protected SampleNotesTabUI               sampleNotesTab;
-
-    @UiField(provided = true)
-    protected RecurrenceTabUI                recurrenceTab;
-
-    @UiField(provided = true)
-    protected SendoutOrderFillTabUI          fillTab;
-
-    private ShippingManager                  shippingManager;
-
-    private ShippingScreen                   shippingScreen;
-
-    protected String                         descQuery;
-
-    protected HashMap<String, Object>        cache;
-
-    public SendoutOrderScreenUI(WindowInt window) throws Exception {
+    public VendorOrderScreenUI(WindowInt window) throws Exception {
         setWindow(window);
 
-        userPermission = UserCache.getPermission().getModule("sendoutorder");
+        userPermission = UserCache.getPermission().getModule("vendororder");
         if (userPermission == null)
             throw new PermissionException(Messages.get()
-                                                  .gen_screenPermException("Send-out Order Screen"));
+                                                  .gen_screenPermException("Vendor Order Screen"));
 
-        organizationTab = new OrganizationTabUI(this, bus);
-        testTab = new TestTabUI(this, bus);
-        containerTab = new ContainerTabUI(this, bus);
-        itemTab = new SendoutOrderItemTabUI(this, bus);
+        itemTab = new VendorOrderItemTabUI(this, bus);
         shippingNotesTab = new ShippingNotesTabUI(this, bus);
-        customerNotesTab = new CustomerNotesTabUI(this, bus);
-        internalNotesTab = new InternalNotesTabUI(this, bus);
-        sampleNotesTab = new SampleNotesTabUI(this, bus);
-        recurrenceTab = new RecurrenceTabUI(this, bus);
-        fillTab = new SendoutOrderFillTabUI(this, bus);
-
-        auxDataTab = new AuxDataTabUI(this, bus) {
-            @Override
-            public boolean evaluateEdit() {
-                return manager != null;
-            }
-
-            @Override
-            public int count() {
-                if (manager != null)
-                    return manager.auxData.count();
-                return 0;
-            }
-
-            @Override
-            public AuxDataViewDO get(int i) {
-                return manager.auxData.get(i);
-            }
-        };
+        fillTab = new VendorOrderFillTabUI(this, bus);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -262,7 +186,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         setState(DEFAULT);
         fireDataChange();
 
-        logger.fine("Sendout Order Screen Opened");
+        logger.fine("Vendor Order Screen Opened");
     }
 
     /**
@@ -356,7 +280,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         /*
          * option menu items
          */
-        // TODO add code for menu items
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 duplicate.setEnabled(isState(State.DISPLAY));
@@ -365,28 +288,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         duplicate.addCommand(new Command() {
             public void execute() {
                 duplicate();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                shippingInfo.setEnabled(isState(State.DISPLAY));
-            }
-        });
-        shippingInfo.addCommand(new Command() {
-            public void execute() {
-                shippingInfo();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                orderRequestForm.setEnabled(isState(State.DISPLAY));
-            }
-        });
-        orderRequestForm.addCommand(new Command() {
-            public void execute() {
-                orderRequestForm();
             }
         });
 
@@ -404,18 +305,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                orderOrganizationHistory.setEnabled(isState(DISPLAY));
-            }
-        });
-        orderOrganizationHistory.addCommand(new Command() {
-            @Override
-            public void execute() {
-                orderOrganizationHistory();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
                 orderItemHistory.setEnabled(isState(DISPLAY));
             }
         });
@@ -423,30 +312,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             @Override
             public void execute() {
                 orderItemHistory();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                orderTestHistory.setEnabled(isState(DISPLAY));
-            }
-        });
-        orderTestHistory.addCommand(new Command() {
-            @Override
-            public void execute() {
-                orderTestHistory();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                orderContainerHistory.setEnabled(isState(DISPLAY));
-            }
-        });
-        orderContainerHistory.addCommand(new Command() {
-            @Override
-            public void execute() {
-                orderContainerHistory();
             }
         });
 
@@ -483,70 +348,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? numberOfForms : id;
-            }
-        });
-
-        addScreenHandler(numberOfForms, OrderMeta.getNumberOfForms(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                numberOfForms.setValue(getNumberOfForms());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setNumberOfForms(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                numberOfForms.setEnabled(isState(QUERY, ADD, UPDATE));
-                numberOfForms.setQueryMode(isState(QUERY));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? shipFrom : neededDays;
-            }
-        });
-
-        addScreenHandler(shipFrom, OrderMeta.getShipFromId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                shipFrom.setValue(getShipFromId());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setShipFromId(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                shipFrom.setEnabled(isState(QUERY, ADD, UPDATE));
-                shipFrom.setQueryMode(isState(QUERY));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? shipTo : numberOfForms;
-            }
-        });
-
-        addScreenHandler(shipTo, OrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                setOrganizationNameSelection();
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                getOrganizationNameFromSelection();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                shipTo.setEnabled(isState(QUERY, ADD, UPDATE));
-                shipTo.setQueryMode(isState(QUERY));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? status : shipFrom;
-            }
-        });
-
-        shipTo.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                getOrganizationMatches(event.getMatch());
+                return forward ? status : id;
             }
         });
 
@@ -560,87 +362,39 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                Integer statusId;
-
-                statusId = getStatusId();
-
-                if (isState(QUERY)) {
-                    status.setEnabled(true);
-                    status.setQueryMode(true);
-                } else if (isState(ADD, UPDATE)) {
-                    /*
-                     * If adding or updating an order, the user should only
-                     * change the status if it is not processed, recurring, or
-                     * cancelled.
-                     */
-                    status.setEnabled( !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(statusId) &&
-                                      !Constants.dictionary().ORDER_STATUS_RECURRING.equals(statusId) &&
-                                      !Constants.dictionary().ORDER_STATUS_CANCELLED.equals(statusId));
-                    status.setQueryMode(false);
-                } else {
-                    status.setEnabled(false);
-                    status.setQueryMode(false);
-                }
-
-                if ( !status.isEnabled())
-                    return;
-
-                for (Item<Integer> item : status.getModel()) {
-                    if (status.isQueryMode()) {
-                        /*
-                         * no options are to be disabled in Query state
-                         */
-                        item.setEnabled(true);
-                        continue;
-                    }
-                    if (Constants.dictionary().ORDER_STATUS_PENDING.equals(item.getKey()) ||
-                        Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(item.getKey()))
-                        item.setEnabled(true);
-                    else if (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(item.getKey()))
-                        /*
-                         * the option for "Processed" is only enabled for an
-                         * existing order and only if it is pending
-                         */
-                        item.setEnabled(manager.getOrder().getId() != null &&
-                                        Constants.dictionary().ORDER_STATUS_PENDING.equals(statusId));
-                    else if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(item.getKey()))
-                        /*
-                         * the option for "Cancelled" is only enabled for an
-                         * existing order and only if it is pending or on hold
-                         */
-                        item.setEnabled(manager.getOrder().getId() != null &&
-                                        (Constants.dictionary().ORDER_STATUS_PENDING.equals(statusId) || Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(statusId)));
-                    else
-                        item.setEnabled(false);
-                }
-
+                status.setEnabled(isState(QUERY));
+                status.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? organizationAttention : shipTo;
+                return forward ? vendor : neededDays;
             }
         });
 
-        addScreenHandler(organizationAttention,
-                         OrderMeta.getOrganizationAttention(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 organizationAttention.setValue(getOrganizationAttention());
-                             }
+        addScreenHandler(vendor, OrderMeta.getOrganizationName(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                setOrganizationNameSelection();
+            }
 
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 setOrganizationAttention(event.getValue());
-                             }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                getOrganizationNameFromSelection();
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 organizationAttention.setEnabled(isState(QUERY, ADD, UPDATE));
-                                 organizationAttention.setQueryMode(isState(QUERY));
-                             }
+            public void onStateChange(StateChangeEvent event) {
+                vendor.setEnabled(isState(QUERY, ADD, UPDATE));
+                vendor.setQueryMode(isState(QUERY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? orderedDate : status;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? orderedDate : status;
+            }
+        });
+
+        vendor.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                getOrganizationMatches(event.getMatch());
+            }
+        });
 
         addScreenHandler(orderedDate, OrderMeta.getOrderedDate(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -657,20 +411,24 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? multipleUnit : organizationAttention;
+                return forward ? vendorAttention : vendor;
             }
         });
 
-        addScreenHandler(multipleUnit,
-                         OrderMeta.getOrderOrganizationOrganizationAddressMultipleUnit(),
+        addScreenHandler(vendorAttention,
+                         OrderMeta.getOrganizationAttention(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 multipleUnit.setValue(getMultipleUnit());
+                                 vendorAttention.setValue(getOrganizationAttention());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setOrganizationAttention(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 multipleUnit.setEnabled(isState(QUERY));
-                                 multipleUnit.setQueryMode(isState(QUERY));
+                                 vendorAttention.setEnabled(isState(QUERY, ADD, UPDATE));
+                                 vendorAttention.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -693,20 +451,20 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? streetAddress : multipleUnit;
+                return forward ? multipleUnit : vendorAttention;
             }
         });
 
-        addScreenHandler(streetAddress,
-                         OrderMeta.getOrganizationAddressStreetAddress(),
+        addScreenHandler(multipleUnit,
+                         OrderMeta.getOrderOrganizationOrganizationAddressMultipleUnit(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 streetAddress.setValue(getStreetAddress());
+                                 multipleUnit.setValue(getMultipleUnit());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 streetAddress.setEnabled(isState(QUERY));
-                                 streetAddress.setQueryMode(isState(QUERY));
+                                 multipleUnit.setEnabled(isState(QUERY));
+                                 multipleUnit.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -729,9 +487,47 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? city : streetAddress;
+                return forward ? streetAddress : multipleUnit;
             }
         });
+
+        addScreenHandler(streetAddress,
+                         OrderMeta.getOrganizationAddressStreetAddress(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 streetAddress.setValue(getStreetAddress());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 streetAddress.setEnabled(isState(QUERY));
+                                 streetAddress.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? externalId : costCenter;
+                             }
+                         });
+
+        addScreenHandler(externalId,
+                         OrderMeta.getOrganizationAttention(),
+                         new ScreenHandler<String>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 externalId.setValue(getExternalId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<String> event) {
+                                 setExternalId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 externalId.setEnabled(isState(QUERY, ADD, UPDATE));
+                                 externalId.setQueryMode(isState(QUERY));
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? city : streetAddress;
+                             }
+                         });
 
         addScreenHandler(city, OrderMeta.getOrganizationAddressCity(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -744,32 +540,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? description : costCenter;
-            }
-        });
-
-        addScreenHandler(description, OrderMeta.getDescription(), new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                setDescriptionSelection();
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                getDescriptionFromSelection();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                description.setEnabled(isState(QUERY, ADD, UPDATE));
-                description.setQueryMode(isState(QUERY));
-            }
-
-            public Widget onTab(boolean forward) {
-                return forward ? orgState : city;
-            }
-        });
-
-        description.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                getDescriptionMatches(event.getMatch());
+                return forward ? orgState : externalId;
             }
         });
 
@@ -786,7 +557,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? zipCode : description;
+                                 return forward ? zipCode : city;
                              }
                          });
 
@@ -812,39 +583,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
          */
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
-        addScreenHandler(organizationTab, "organizationTab", new ScreenHandler<Object>() {
-            public Object getQuery() {
-                return organizationTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
-            public Object getQuery() {
-                return auxDataTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(testTab, "testTab", new ScreenHandler<Object>() {
-            public Object getQuery() {
-                return testTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(containerTab, "containerTab", new ScreenHandler<Object>() {
-            public Object getQuery() {
-                return containerTab.getQueryFields();
-            }
-        });
-
         addScreenHandler(itemTab, "itemTab", new ScreenHandler<Object>() {
             public Object getQuery() {
                 return itemTab.getQueryFields();
-            }
-        });
-
-        addScreenHandler(recurrenceTab, "recurrenceTab", new ScreenHandler<Object>() {
-            public Object getQuery() {
-                return recurrenceTab.getQueryFields();
             }
         });
 
@@ -857,15 +598,15 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
                 window.setBusy(Messages.get().gen_querying());
                 /*
-                 * this screen should only query for send-out orders
+                 * this screen should only query for vendor orders
                  */
                 field = new QueryData();
                 field.setKey(OrderMeta.getType());
-                field.setQuery(Constants.order().SEND_OUT);
+                field.setQuery(Constants.order().VENDOR);
                 field.setType(QueryData.Type.STRING);
                 query.setFields(field);
 
-                query.setRowsPerPage(23);
+                query.setRowsPerPage(22);
                 try {
                     OrderService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                         public void onSuccess(ArrayList<IdNameVO> result) {
@@ -880,14 +621,14 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                             } else if (error instanceof LastPageException) {
                                 window.setError(Messages.get().gen_noMoreRecordInDir());
                             } else {
-                                Window.alert("Error: Send-out Order call query failed; " +
+                                Window.alert("Error: Vendor Order call query failed; " +
                                              error.getMessage());
                                 window.setError(Messages.get().gen_queryFailed());
                             }
                         }
                     });
                 } catch (Exception e) {
-                    Window.alert("Error: Send-out Order call query failed; " + e.getMessage());
+                    Window.alert("Error: Vendor Order call query failed; " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -942,32 +683,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
-            public void onAddTest(AddTestEvent event) {
-                switch (event.getAddType()) {
-                    case TEST:
-                        addTest(event.getId(), true, event.getIndex());
-                        break;
-                    case PANEL:
-                        addTest(event.getId(), false, event.getIndex());
-                        break;
-                }
-            }
-        });
-
-        bus.addHandler(RemoveTestEvent.getType(), new RemoveTestEvent.Handler() {
-            public void onRemoveTest(RemoveTestEvent event) {
-                removeTests(event.getIds());
-            }
-        });
-
-        bus.addHandler(AuxGroupChangeEvent.getType(), new AuxGroupChangeEvent.Handler() {
-            @Override
-            public void onAuxGroupChange(AuxGroupChangeEvent event) {
-                addRemoveAuxGroups(event);
-            }
-        });
-
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
@@ -999,17 +714,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         }
 
         costCenter.setModel(model);
-
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        list = CategoryCache.getBySystemName("laboratory_location");
-        for (DictionaryDO d : list) {
-            row = new Item<Integer>(d.getId(), d.getEntry());
-            row.setEnabled("Y".equals(d.getIsActive()));
-            model.add(row);
-        }
-
-        shipFrom.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
         smodel.add(new Item<String>(null, ""));
@@ -1049,7 +753,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiHandler("add")
     protected void add(ClickEvent event) {
         try {
-            manager = OrderService1.get().getInstance(Constants.order().SEND_OUT);
+            manager = OrderService1.get().getInstance(Constants.order().VENDOR);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.severe(e.getMessage());
@@ -1068,18 +772,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         window.setBusy(Messages.get().gen_lockForUpdate());
         try {
             manager = OrderService1.get().fetchForUpdate(manager.getOrder().getId(),
-                                                         OrderManager1.Load.SAMPLE_DATA,
-                                                         OrderManager1.Load.ORGANIZATION,
-                                                         OrderManager1.Load.ITEMS,
-                                                         OrderManager1.Load.RECURRENCE);
+                                                         OrderManager1.Load.ITEMS);
             if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder()
                                                                             .getStatusId())) {
                 Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
                 manager = OrderService1.get().unlock(manager.getOrder().getId(),
-                                                     OrderManager1.Load.SAMPLE_DATA,
-                                                     OrderManager1.Load.ORGANIZATION,
-                                                     OrderManager1.Load.ITEMS,
-                                                     OrderManager1.Load.RECURRENCE);
+                                                     OrderManager1.Load.ITEMS);
                 setData();
                 setState(DISPLAY);
                 fireDataChange();
@@ -1165,10 +863,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
             try {
                 manager = OrderService1.get().unlock(manager.getOrder().getId(),
-                                                     OrderManager1.Load.SAMPLE_DATA,
-                                                     OrderManager1.Load.ORGANIZATION,
-                                                     OrderManager1.Load.ITEMS,
-                                                     OrderManager1.Load.RECURRENCE);
+                                                     OrderManager1.Load.ITEMS);
                 setData();
                 setState(DISPLAY);
                 fireDataChange();
@@ -1192,85 +887,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         }
     }
 
-    protected void shippingInfo() {
-        try {
-            window.setBusy(Messages.get().gen_fetching());
-
-            ShippingService.get().fetchByOrderId(manager.getOrder().getId(),
-                                                 new SyncCallback<ShippingViewDO>() {
-                                                     public void onSuccess(ShippingViewDO result) {
-                                                         try {
-                                                             if (result != null)
-                                                                 shippingManager = ShippingManager.fetchById(result.getId());
-                                                             else
-                                                                 shippingManager = null;
-                                                         } catch (Throwable e) {
-                                                             shippingManager = null;
-                                                             Window.alert(e.getMessage());
-                                                             window.clearStatus();
-                                                         }
-                                                     }
-
-                                                     public void onFailure(Throwable error) {
-                                                         shippingManager = null;
-                                                         error.printStackTrace();
-                                                         Window.alert("Error: Fetch failed; " +
-                                                                      error.getMessage());
-                                                         window.clearStatus();
-                                                     }
-                                                 });
-
-            if (shippingManager != null)
-                showShippingScreen(shippingManager);
-            else
-                window.setDone(Messages.get().gen_noRecordsFound());
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-            window.clearStatus();
-            return;
-        }
-    }
-
-    protected void orderRequestForm() {
-        Query query;
-        QueryData field;
-
-        query = new Query();
-        field = new QueryData();
-        field.setKey("ORDERID");
-        field.setQuery(manager.getOrder().getId().toString());
-        field.setType(QueryData.Type.INTEGER);
-        query.setFields(field);
-
-        field = new QueryData();
-        field.setKey("PRINTER");
-        field.setQuery("-view-");
-        field.setType(QueryData.Type.INTEGER);
-        query.setFields(field);
-
-        window.setBusy(Messages.get().gen_generatingReport());
-        RequestFormReportService.get().runReport(query, new AsyncCallback<ReportStatus>() {
-            public void onSuccess(ReportStatus status) {
-                String url;
-                if (ReportStatus.Status.SAVED.equals(status.getStatus())) {
-                    url = "/openelis/openelis/report?file=" + status.getMessage();
-                    Window.open(URL.encode(url), "OrderRequestFormReport", null);
-                    window.setDone(Messages.get().gen_loadCompleteMessage());
-                } else {
-                    window.setDone(status.getMessage());
-                }
-            }
-
-            public void onFailure(Throwable caught) {
-                window.setError("Failed");
-                caught.printStackTrace();
-                Window.alert(caught.getMessage());
-            }
-        });
-        // window.clearStatus();
-    }
-
     protected void orderHistory() {
         IdNameVO hist;
 
@@ -1278,23 +894,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         HistoryScreen.showHistory(Messages.get().order_orderHistory(),
                                   Constants.table().ORDER,
                                   hist);
-    }
-
-    protected void orderOrganizationHistory() {
-        int i, count;
-        IdNameVO refVoList[];
-        OrderOrganizationViewDO data;
-
-        count = manager.organization.count();
-        refVoList = new IdNameVO[count];
-        for (i = 0; i < count; i++ ) {
-            data = manager.organization.get(i);
-            refVoList[i] = new IdNameVO(data.getId(), data.getOrganizationName());
-        }
-
-        HistoryScreen.showHistory(Messages.get().order_orderOrganizationHistory(),
-                                  Constants.table().ORDER_ORGANIZATION,
-                                  refVoList);
     }
 
     protected void orderItemHistory() {
@@ -1311,45 +910,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         HistoryScreen.showHistory(Messages.get().order_orderItemHistory(),
                                   Constants.table().ORDER_ITEM,
                                   refVoList);
-    }
-
-    protected void orderTestHistory() {
-        int i, count;
-        IdNameVO refVoList[];
-        OrderTestViewDO data;
-
-        count = manager.test.count();
-        refVoList = new IdNameVO[count];
-        for (i = 0; i < count; i++ ) {
-            data = manager.test.get(i);
-            refVoList[i] = new IdNameVO(data.getId(), data.getTestName());
-        }
-        HistoryScreen.showHistory(Messages.get().order_orderTestHistory(),
-                                  Constants.table().ORDER_TEST,
-                                  refVoList);
-    }
-
-    protected void orderContainerHistory() {
-        int i, count;
-        IdNameVO refVoList[];
-        OrderContainerDO data;
-        DictionaryDO dict;
-
-        try {
-            count = manager.container.count();
-            refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++ ) {
-                data = manager.container.get(i);
-                dict = DictionaryCache.getById(data.getContainerId());
-                refVoList[i] = new IdNameVO(data.getId(), dict.getEntry());
-            }
-            HistoryScreen.showHistory(Messages.get().order_orderContainerHistory(),
-                                      Constants.table().ORDER_CONTAINER,
-                                      refVoList);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
     }
 
     protected void commitQuery() {
@@ -1392,37 +952,15 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @Override
     public <T> T get(Object key, Class<?> c) {
         String cacheKey;
-        Object obj;
 
         if (cache == null)
             return null;
 
         cacheKey = null;
-        if (c == TestManager.class)
-            cacheKey = "tm:" + key;
-        else if (c == AuxFieldGroupManager.class)
+        if (c == AuxFieldGroupManager.class)
             cacheKey = "am:" + key;
 
-        obj = cache.get(cacheKey);
-        if (obj != null)
-            return (T)obj;
-
-        /*
-         * if the requested object is not in the cache then obtain it and put it
-         * in the cache
-         */
-        try {
-            if (c == TestManager.class)
-                obj = TestService.get().fetchById((Integer)key);
-            else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);            
-            
-            cache.put(cacheKey, obj);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.severe(e.getMessage());
-        }
-        return (T)obj;
+        return (T)cache.get(cacheKey);
     }
 
     private void setOrganizationNameSelection() {
@@ -1430,16 +968,16 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         org = getShipTo();
         if (org != null)
-            shipTo.setValue(org.getId(), org.getName());
+            vendor.setValue(org.getId(), org.getName());
         else
-            shipTo.setValue(null, "");
+            vendor.setValue(null, "");
     }
 
     private void getOrganizationNameFromSelection() {
         AutoCompleteValue row;
         OrganizationDO org;
 
-        row = shipTo.getValue();
+        row = vendor.getValue();
         if (row == null || row.getId() == null) {
             /*
              * this method is called only when the ship-to changes and if there
@@ -1448,7 +986,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
              */
             manager.getOrder().setOrganizationId(null);
             manager.getOrder().setOrganization(null);
-            shipTo.setValue(null, "");
+            vendor.setValue(null, "");
             multipleUnit.setValue(null);
             streetAddress.setValue(null);
             city.setValue(null);
@@ -1458,7 +996,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             org = (OrganizationDO)row.getData();
             manager.getOrder().setOrganizationId(org.getId());
             manager.getOrder().setOrganization(org);
-            shipTo.setValue(org.getId(), org.getName());
+            vendor.setValue(org.getId(), org.getName());
             multipleUnit.setValue(org.getAddress().getMultipleUnit());
             streetAddress.setValue(org.getAddress().getStreetAddress());
             city.setValue(org.getAddress().getCity());
@@ -1501,93 +1039,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
                 model.add(row);
             }
-            shipTo.showAutoMatches(model);
+            vendor.showAutoMatches(model);
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
         window.clearStatus();
-    }
-
-    private void setDescriptionSelection() {
-        if (manager == null)
-            description.setValue(null, "");
-        else
-            description.setValue(0, getDescription());
-    }
-
-    private void getDescriptionFromSelection() {
-        AutoCompleteValue row;
-        IdNameVO data;
-
-        row = description.getValue();
-        if (row == null || row.getId() == null || row.getData() == null) {
-            manager.getOrder().setDescription(null);
-        } else {
-            data = (IdNameVO)row.getData();
-            manager.getOrder().setDescription(data.getName());
-        }
-
-    }
-
-    private void getDescriptionMatches(String match) {
-        Item<Integer> row;
-        ArrayList<Item<Integer>> model;
-        IdNameVO data;
-        ArrayList<IdNameVO> dataList;
-        ArrayList<String> matchList;
-        String name;
-
-        window.setBusy();
-        try {
-            model = new ArrayList<Item<Integer>>();
-            row = new Item<Integer>(0, match);
-            model.add(row);
-            if (descQuery == null || ( ! (match.indexOf(descQuery) == 0))) {
-                dataList = OrderService1.get().fetchByDescription(match + "%", 10);
-                matchList = new ArrayList<String>();
-                for (int i = 0; i < dataList.size(); i++ ) {
-                    data = dataList.get(i);
-                    name = data.getName();
-                    if ( !matchList.contains(name)) {
-                        row = new Item<Integer>(i + 1, name);
-                        row.setData(data);
-                        model.add(row);
-                        matchList.add(name);
-                    }
-                }
-
-                if (dataList.size() == 0)
-                    descQuery = match;
-            }
-            description.showAutoMatches(model);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
-    private void addRemoveAuxGroups(AuxGroupChangeEvent event) {
-        if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
-            try {
-                switch (event.getAction()) {
-                    case ADD:
-                        manager = OrderService1.get().addAuxGroups(manager, event.getGroupIds());
-                        buildCache();
-                        break;
-                    case REMOVE:
-                        manager = OrderService1.get().removeAuxGroups(manager, event.getGroupIds());
-                        break;
-                }
-                setData();
-                setState(state);
-                fireDataChange();
-                window.clearStatus();
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-        }
     }
 
     /*
@@ -1609,16 +1066,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         manager.getOrder().setNeededInDays(neededDays);
     }
 
-    private Integer getNumberOfForms() {
-        if (manager == null)
-            return null;
-        return manager.getOrder().getNumberOfForms();
-    }
-
-    private void setNumberOfForms(Integer numberOfForms) {
-        manager.getOrder().setNumberOfForms(numberOfForms);
-    }
-
     private String getMultipleUnit() {
         OrganizationDO org;
 
@@ -1636,6 +1083,16 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     private void setOrganizationAttention(String organizationAttention) {
         manager.getOrder().setOrganizationAttention(organizationAttention);
+    }
+
+    private String getExternalId() {
+        if (manager == null)
+            return null;
+        return manager.getOrder().getExternalOrderNumber();
+    }
+
+    private void setExternalId(String externalId) {
+        manager.getOrder().setExternalOrderNumber(externalId);
     }
 
     private String getRequestedBy() {
@@ -1695,16 +1152,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         manager.getOrder().setStatusId(statusId);
     }
 
-    private Integer getShipFromId() {
-        if (manager == null)
-            return null;
-        return manager.getOrder().getShipFromId();
-    }
-
-    private void setShipFromId(Integer shipFromId) {
-        manager.getOrder().setShipFromId(shipFromId);
-    }
-
     private Integer getCostCenterId() {
         if (manager == null)
             return null;
@@ -1724,25 +1171,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         return org.getAddress().getState();
     }
 
-    private String getDescription() {
-        if (manager == null)
-            return null;
-        return manager.getOrder().getDescription();
-    }
-
     /**
      * Sets the latest manager in the tabs
      */
     private void setData() {
-        organizationTab.setData(manager);
-        testTab.setData(manager);
-        containerTab.setData(manager);
         itemTab.setData(manager);
         shippingNotesTab.setData(manager);
-        customerNotesTab.setData(manager);
-        internalNotesTab.setData(manager);
-        sampleNotesTab.setData(manager);
-        recurrenceTab.setData(manager);
         fillTab.setData(manager);
     }
 
@@ -1755,11 +1189,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             window.setBusy(Messages.get().gen_fetching());
             try {
 
-                manager = OrderService1.get().fetchById(id,
-                                                        OrderManager1.Load.SAMPLE_DATA,
-                                                        OrderManager1.Load.ORGANIZATION,
-                                                        OrderManager1.Load.ITEMS,
-                                                        OrderManager1.Load.RECURRENCE);
+                manager = OrderService1.get().fetchById(id, OrderManager1.Load.ITEMS);
                 setData();
                 setState(DISPLAY);
             } catch (NotFoundException e) {
@@ -1848,46 +1278,5 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         if (Window.confirm(warningText))
             commit(true);
-    }
-
-    private void addTest(Integer id, boolean isTest, Integer index) {
-        OrderTestReturnVO ret;
-        try {
-            ret = OrderService1.get().addTest(manager, id, isTest, index);
-            manager = ret.getManager();
-            setData();
-            setState(state);
-            fireDataChange();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else
-                window.clearStatus();
-        } catch (Exception ex) {
-            Window.alert(ex.getMessage());
-        }
-    }
-
-    private void removeTests(ArrayList<Integer> ids) {
-        try {
-            manager = OrderService1.get().removeTests(manager, ids);
-            setData();
-            setState(state);
-            fireDataChange();
-        } catch (Exception ex) {
-            Window.alert(ex.getMessage());
-        }
-    }
-
-    private void showShippingScreen(ShippingManager manager) throws Exception {
-        ScreenWindow modal;
-
-        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(Messages.get().gen_shipping());
-        if (shippingScreen == null)
-            shippingScreen = new ShippingScreen(modal);
-
-        modal.setContent(shippingScreen);
-        shippingScreen.loadShippingData(manager, org.openelis.gwt.screen.Screen.State.DISPLAY);
-        window.clearStatus();
     }
 }
