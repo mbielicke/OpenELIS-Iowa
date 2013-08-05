@@ -27,11 +27,13 @@ package org.openelis.manager;
 
 import java.io.Serializable;
 
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserPermission;
+import org.openelis.utilcommon.ResultFormatter;
 
 public class TestManager implements Serializable {
 
@@ -45,6 +47,8 @@ public class TestManager implements Serializable {
     protected TestPrepManager                   prepTests;
     protected TestReflexManager                 reflexTests;
     protected TestWorksheetManager              worksheet;
+
+    protected transient ResultFormatter         formatter;
 
     protected transient static TestManagerProxy proxy;
 
@@ -247,7 +251,7 @@ public class TestManager implements Serializable {
     public boolean canAssign() {
         return canAssignThisSection(null);
     }
-    
+
     public boolean canAssignThisSection(TestSectionViewDO tsVDO) {
         TestSectionViewDO data;
         SystemUserPermission perm;
@@ -266,11 +270,39 @@ public class TestManager implements Serializable {
         return false;
     }
 
+    /**
+     * Returns the formatter used to format and validate this test's results
+     */
+    public ResultFormatter getFormatter() throws Exception {
+        TestResultManager trm;
+        TestResultViewDO tr;
+
+        if (formatter != null)
+            return formatter;
+
+        trm = getTestResults();
+        formatter = new ResultFormatter();
+        for (int i = 0; i < trm.groupCount(); i++ ) {
+            for (int j = 0; j < trm.getResultGroupSize(i + 1); j++ ) {
+                tr = trm.getResultAt(i + 1, j);
+
+                formatter.add(tr.getId(),
+                              tr.getResultGroup(),
+                              tr.getUnitOfMeasureId(),
+                              tr.getTypeId(),
+                              tr.getSignificantDigits(),
+                              tr.getRoundingMethodId(),
+                              tr.getValue(),
+                              tr.getDictionary());
+            }
+        }
+        return formatter;
+    }
+
     private static TestManagerProxy proxy() {
         if (proxy == null)
             proxy = new TestManagerProxy();
 
         return proxy;
     }
-
 }

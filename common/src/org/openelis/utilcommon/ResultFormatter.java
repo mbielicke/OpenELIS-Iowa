@@ -32,8 +32,9 @@ import java.util.Date;
 import java.util.HashMap;
 
 import org.openelis.constants.Messages;
-import org.openelis.domain.IdNameVO;
+import org.openelis.domain.Constants;
 import org.openelis.exception.ParseException;
+import org.openelis.ui.common.InconsistencyException;
 
 import com.google.gwt.i18n.shared.DateTimeFormat;
 import com.google.gwt.i18n.shared.DefaultDateTimeFormatInfo;
@@ -43,21 +44,6 @@ public class ResultFormatter implements Serializable {
 
     protected ArrayList<Item>                 items;
     protected transient HashMap<String, Unit> map;
-
-    /**
-     * Type of rule for checking/formating
-     */
-    public enum Type {
-        NUMERIC, DICTIONARY, DEFAULT, ALPHA_MIXED, ALPHA_UPPER, ALPHA_LOWER, TITER, DATE,
-        DATE_TIME, TIME
-    };
-
-    /**
-     * Type of rounding
-     */
-    public enum Rounding {
-        SIG_FIG, SIG_FIG_NOE, INT, INT_SIG_FIG, INT_SIG_FIG_NOE
-    };
 
     /**
      * Add a new formating/validation rule for given group and unit.
@@ -82,33 +68,30 @@ public class ResultFormatter implements Serializable {
      *        for type dictionary, this is the text
      * @throws Exception
      */
-    public void add(Integer id, Integer group, Integer unitId, Type type, Integer sigDigits,
-                    Rounding rounding, String value, String entry) throws Exception {
+    public void add(Integer id, Integer group, Integer unitId, Integer type, Integer sigDigits,
+                    Integer rounding, String value, String entry) throws Exception {
         Item item;
 
-        switch (type) {
-            case NUMERIC:
-                item = new NumericItem(value);
-                ((NumericItem)item).rounding = rounding;
-                ((NumericItem)item).sigDigits = sigDigits == null ? 0 : sigDigits.byteValue();
-                break;
-            case DICTIONARY:
-                item = new DictionaryItem(value, entry);
-                break;
-            case TITER:
-                item = new TiterItem(value);
-                break;
-            case DATE:
-            case TIME:
-            case DATE_TIME:
-                item = new DateTimeItem();
-                break;
-            case DEFAULT:
-                item = new DefaultItem(value);
-                break;
-            default:
-                item = new Item();
-                break;
+        if (Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(type)) {
+            item = new NumericItem(value);
+            ((NumericItem)item).rounding = (rounding == null) ? 0 : rounding;
+            ((NumericItem)item).sigDigits = (sigDigits == null) ? 0 : sigDigits.byteValue();
+        } else if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(type)) {
+            item = new DictionaryItem(value, entry);
+        } else if (Constants.dictionary().TEST_RES_TYPE_TITER.equals(type)) {
+            item = new TiterItem(value);
+        } else if (Constants.dictionary().TEST_RES_TYPE_DATE.equals(type) ||
+                   Constants.dictionary().TEST_RES_TYPE_TIME.equals(type) ||
+                   Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(type)) {
+            item = new DateTimeItem();
+        } else if (Constants.dictionary().TEST_RES_TYPE_DEFAULT.equals(type)) {
+            item = new DefaultItem(value);
+        } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(type) ||
+                   Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(type) ||
+                   Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(type)) {
+            item = new Item();
+        } else {
+            throw new InconsistencyException("Specified type is not valid");
         }
 
         item.type = type;
@@ -130,9 +113,9 @@ public class ResultFormatter implements Serializable {
      * rule list. Otherwise the general rules (null unit) are used to
      * format/validate the value.
      */
-    public IdNameVO format(Integer group, Integer unitId, String value) {
+    public FormattedValue format(Integer group, Integer unitId, String value) {
         Unit u;
-        IdNameVO pair;
+        FormattedValue ri;
 
         if (value == null || value.length() == 0 || value.trim().length() == 0)
             return null;
@@ -142,36 +125,35 @@ public class ResultFormatter implements Serializable {
          */
         u = getMap(group, unitId);
         if (u != null && u.items != null) {
-            pair = new IdNameVO();
+            ri = new FormattedValue();
             for (Item item : u.items) {
-                pair.setId(item.id);
+                ri.id = item.id;
+                ri.type = item.type;
                 try {
-                    switch (item.type) {
-                        case NUMERIC:
-                            pair.setName( ((NumericItem)item).format(value));
-                            return pair;
-                        case DICTIONARY:
-                            pair.setName( ((DictionaryItem)item).format(value));
-                            if (pair.getName() != null)
-                                return pair;
-                            break;
-                        case ALPHA_MIXED:
-                            pair.setName(value);
-                            return pair;
-                        case ALPHA_UPPER:
-                            pair.setName(value.toUpperCase());
-                            return pair;
-                        case ALPHA_LOWER:
-                            pair.setName(value.toLowerCase());
-                            return pair;
-                        case TITER:
-                            pair.setName( ((NumericItem)item).format(value));
-                            return pair;
-                        case DATE:
-                        case TIME:
-                        case DATE_TIME:
-                            pair.setName( ((DateTimeItem)item).format(value));
-                            return pair;
+                    if (Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(item.type)) {
+                        ri.display = ((NumericItem)item).format(value);
+                        return ri;
+                    } else if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(item.type)) {
+                        ri.display = ((DictionaryItem)item).format(value);
+                        if (ri.display != null)
+                            return ri;
+                    } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(item.type)) {
+                        ri.display = value;
+                        return ri;
+                    } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(item.type)) {
+                        ri.display = value.toUpperCase();
+                        return ri;
+                    } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(item.type)) {
+                        ri.display = value.toLowerCase();
+                        return ri;
+                    } else if (Constants.dictionary().TEST_RES_TYPE_TITER.equals(item.type)) {
+                        ri.display = ((TiterItem)item).format(value);
+                        return ri;
+                    } else if (Constants.dictionary().TEST_RES_TYPE_DATE.equals(item.type) ||
+                               Constants.dictionary().TEST_RES_TYPE_TIME.equals(item.type) ||
+                               Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(item.type)) {
+                        ri.display = ((DateTimeItem)item).format(value);
+                        return ri;
                     }
                 } catch (Exception e) {
                     // ignore
@@ -199,17 +181,19 @@ public class ResultFormatter implements Serializable {
     /**
      * 
      */
-    public ArrayList<IdNameVO> getDictionaryValues(Integer group, Integer unitId) {
+    public ArrayList<FormattedValue> getDictionaryValues(Integer group, Integer unitId) {
         Unit u;
-        ArrayList<IdNameVO> l;
+        ArrayList<FormattedValue> l;
 
         l = null;
         u = getMap(group, unitId);
         if (u != null) {
-            l = new ArrayList<IdNameVO>();
+            l = new ArrayList<FormattedValue>();
             for (Item item : u.items) {
-                if (item.type == Type.DICTIONARY)
-                    l.add(new IdNameVO( ((DictionaryItem)item).dictId, ((DictionaryItem)item).text));
+                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(item.type))
+                    l.add(new FormattedValue( ((DictionaryItem)item).dictId,
+                                             item.type,
+                                             ((DictionaryItem)item).text));
             }
         }
         return l;
@@ -254,11 +238,11 @@ public class ResultFormatter implements Serializable {
                     u.items = new ArrayList<Item>();
                     map.put(uid, u);
                 }
-                if (item.type == Type.DEFAULT) {
+                if (Constants.dictionary().TEST_RES_TYPE_DEFAULT.equals(item.type)) {
                     u.def = (DefaultItem)item;
                 } else {
                     u.items.add(item);
-                    if (item.type != Type.DICTIONARY)
+                    if ( !Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(item.type))
                         u.onlyDictionary = false;
                 }
             }
@@ -293,7 +277,7 @@ public class ResultFormatter implements Serializable {
 
         return u;
     }
-    
+
     /*
      * Returns a simple unique identifier for group, unit, and default
      */
@@ -302,24 +286,49 @@ public class ResultFormatter implements Serializable {
     }
 
     /*
+     * Formatted result objects
+     */
+    public static class FormattedValue {
+        int    id, type;
+        String display;
+
+        public FormattedValue() {
+
+        }
+
+        public FormattedValue(int id, int type, String display) {
+            this.id = id;
+            this.type = type;
+            this.display = display;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public String getDisplay() {
+            return display;
+        }
+    }
+
+    /*
      * Base item for all the rules
      */
-    static class Item implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        int                       id, group, unitId;
-        Type                      type;
+    static class Item {
+        int id, group, unitId, type;
     }
 
     /*
      * Numeric Item.
      */
     static class NumericItem extends Item {
-        private static final long serialVersionUID = 1L;
-
-        Rounding                  rounding;
-        byte                      sigDigits;
-        double                    min, max;
+        int  rounding;
+        byte sigDigits;
+        double min, max;
 
         /**
          * Range is in format min,max such as 1.03,1.09. The min range is
@@ -368,27 +377,20 @@ public class ResultFormatter implements Serializable {
                 if (d < min || d >= max) {
                     err = true;
                 } else {
-                    switch (rounding) {
-                        case SIG_FIG:
-                            fmt = SignificantFigures.format(value, sigDigits);
-                            break;
-                        case SIG_FIG_NOE:
-                            fmt = SignificantFiguresNoE.format(value, sigDigits);
-                            break;
-                        case INT:
-                            fmt = String.valueOf(Math.round(d));
-                            break;
-                        case INT_SIG_FIG:
-                            fmt = SignificantFigures.format(value, sigDigits);
-                            fmt = String.valueOf(Math.round(Double.valueOf(fmt)));
-                            break;
-                        case INT_SIG_FIG_NOE:
-                            fmt = SignificantFiguresNoE.format(value, sigDigits);
-                            fmt = String.valueOf(Math.round(Double.valueOf(fmt)));
-                            break;
-                        default:
-                            fmt = value.trim();
-                            break;
+                    if (Constants.dictionary().ROUND_SIG_FIG.equals(rounding)) {
+                        fmt = SignificantFigures.format(value, sigDigits);
+                    } else if (Constants.dictionary().ROUND_SIG_FIG_NOE.equals(rounding)) {
+                        fmt = SignificantFiguresNoE.format(value, sigDigits);
+                    } else if (Constants.dictionary().ROUND_INT.equals(rounding)) {
+                        fmt = String.valueOf(Math.round(d));
+                    } else if (Constants.dictionary().ROUND_INT_SIG_FIG.equals(rounding)) {
+                        fmt = SignificantFigures.format(value, sigDigits);
+                        fmt = String.valueOf(Math.round(Double.valueOf(fmt)));
+                    } else if (Constants.dictionary().ROUND_INT_SIG_FIG_NOE.equals(rounding)) {
+                        fmt = SignificantFiguresNoE.format(value, sigDigits);
+                        fmt = String.valueOf(Math.round(Double.valueOf(fmt)));
+                    } else {
+                        fmt = value.trim();
                     }
                     if (sign != null)
                         fmt = sign + fmt;
@@ -408,9 +410,7 @@ public class ResultFormatter implements Serializable {
      * Titer Item
      */
     static class TiterItem extends Item {
-        private static final long serialVersionUID = 1L;
-
-        int                       min, max;
+        int min, max;
 
         /**
          * Range is in format min:max for the denominator, e.g, 32:256 means any
@@ -483,17 +483,15 @@ public class ResultFormatter implements Serializable {
      * Dictionary Item
      */
     static class DictionaryItem extends Item {
-        private static final long serialVersionUID = 1L;
-
-        int                       dictId;
-        String                    text;
+        int    dictId;
+        String text;
 
         /**
          * Dictionary has dictionary.id and dictionary.text; Text is used for
          * matching while the id is stored in value
          */
         public DictionaryItem(String id, String text) {
-            this.id = Integer.valueOf(id);
+            this.dictId = Integer.valueOf(id);
             this.text = text;
         }
 
@@ -502,7 +500,7 @@ public class ResultFormatter implements Serializable {
          */
         public String format(String value) {
             if (text.equals(value))
-                return String.valueOf(id);
+                return String.valueOf(dictId);
             return null;
         }
     }
@@ -511,8 +509,6 @@ public class ResultFormatter implements Serializable {
      * Date/Time/DateTime Item
      */
     static class DateTimeItem extends Item {
-        private static final long serialVersionUID = 1L;
-
         /**
          * Parses and format date and time
          */
@@ -522,17 +518,13 @@ public class ResultFormatter implements Serializable {
             DateTimeFormat dtf;
 
             format = null;
-            switch (type) {
-                case DATE:
-                    format = Messages.get().datePattern();
-                    break;
-                case TIME:
-                    format = Messages.get().timePattern();
-                    break;
-                case DATE_TIME:
-                    format = Messages.get().dateTimePattern();
-                    break;
-            }
+            if (Constants.dictionary().TEST_RES_TYPE_DATE.equals(type))
+                format = Messages.get().datePattern();
+            else if (Constants.dictionary().TEST_RES_TYPE_TIME.equals(type))
+                format = Messages.get().timePattern();
+            else if (Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(type))
+                format = Messages.get().dateTimePattern();
+
             /*
              * should work both in server and client GWT
              */
@@ -551,9 +543,7 @@ public class ResultFormatter implements Serializable {
      * Dictionary Item
      */
     static class DefaultItem extends Item {
-        private static final long serialVersionUID = 1L;
-
-        String                    value;
+        String value;
 
         public DefaultItem(String value) {
             this.value = value;
@@ -569,5 +559,9 @@ public class ResultFormatter implements Serializable {
         DefaultItem               def;
         ArrayList<Item>           items;
         boolean                   onlyDictionary;
+
+        public Unit() {
+            onlyDictionary = true;
+        }
     }
 }

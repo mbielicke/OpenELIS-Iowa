@@ -3,15 +3,20 @@ package org.openelis.manager;
 import java.io.Serializable;
 
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.utilcommon.ResultFormatter;
 
 public class AuxFieldGroupManager implements Serializable {
 
-    private static final long                             serialVersionUID = 1L;
+    private static final long                            serialVersionUID = 1L;
 
-    protected AuxFieldGroupDO                             group;
-    protected AuxFieldManager                       fields;
+    protected AuxFieldGroupDO                            group;
+    protected AuxFieldManager                            fields;
+
+    protected transient ResultFormatter                  formatter;
 
     protected transient static AuxFieldGroupManagerProxy proxy;
 
@@ -34,7 +39,7 @@ public class AuxFieldGroupManager implements Serializable {
     public static AuxFieldGroupManager fetchById(Integer id) throws Exception {
         return proxy().fetchById(id);
     }
-    
+
     public static AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception {
         return proxy().fetchByIdWithFields(id);
     }
@@ -46,7 +51,7 @@ public class AuxFieldGroupManager implements Serializable {
     public void setGroup(AuxFieldGroupDO group) {
         this.group = group;
     }
-    
+
     //
     // other managers
     //
@@ -66,7 +71,7 @@ public class AuxFieldGroupManager implements Serializable {
         }
         return fields;
     }
-    
+
     // service methods
     public AuxFieldGroupManager add() throws Exception {
         return proxy().add(this);
@@ -75,7 +80,7 @@ public class AuxFieldGroupManager implements Serializable {
     public AuxFieldGroupManager update() throws Exception {
         return proxy().update(this);
     }
-    
+
     public AuxFieldGroupManager fetchForUpdate() throws Exception {
         return proxy().fetchForUpdate(group.getId());
     }
@@ -96,9 +101,37 @@ public class AuxFieldGroupManager implements Serializable {
 
     public void validate(ValidationErrorsList list) throws Exception {
         proxy().validate(this, list);
-        
+
         if (list.size() > 0)
             throw list;
+    }
+
+    /**
+     * Returns the formatter used to format and validate this aux field group's 
+     * values
+     */
+    public ResultFormatter getFormatter() throws Exception {
+        AuxFieldManager afm;
+        AuxFieldValueManager afvm;
+        AuxFieldViewDO af;
+        AuxFieldValueViewDO afv;
+
+        if (formatter != null)
+            return formatter;
+        
+        afm = getFields();
+        formatter = new ResultFormatter();
+        for (int i = 0; i < afm.count(); i++ ) {
+            af = afm.getAuxFieldAt(i);
+            afvm = afm.getValuesAt(i);
+            for (int j = 0; j < afvm.count(); j++ ) {
+                afv = afvm.getValues().get(j);
+
+                formatter.add(afv.getId(), af.getId(), null, afv.getTypeId(),
+                              null, null, afv.getValue(), afv.getDictionary());
+            }
+        }
+        return formatter;
     }
 
     private static AuxFieldGroupManagerProxy proxy() {

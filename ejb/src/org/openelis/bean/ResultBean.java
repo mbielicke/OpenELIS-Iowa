@@ -39,7 +39,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AnalysisDO;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
@@ -49,18 +49,19 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.entity.Result;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
-import org.openelis.manager.TestManager;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.RoundingMethod;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
-public class ResultBean { 
+public class ResultBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
@@ -88,8 +89,7 @@ public class ResultBean {
         }
     }
 
-    public void fetchByTestIdNoResults(Integer testId,
-                                       Integer unitId,
+    public void fetchByTestIdNoResults(Integer testId, Integer unitId,
                                        ArrayList<ArrayList<ResultViewDO>> results,
                                        HashMap<Integer, TestResultDO> testResultList,
                                        HashMap<Integer, AnalyteDO> analyteList,
@@ -178,8 +178,7 @@ public class ResultBean {
             // show a header so the user wont be able to add any analytes
             //
             if ( !suppRow &&
-                !DataBaseUtil.isSame(Constants.dictionary().TEST_ANALYTE_SUPLMTL,
-                                     data.getTypeId())) {
+                !DataBaseUtil.isSame(Constants.dictionary().TEST_ANALYTE_SUPLMTL, data.getTypeId())) {
                 // create a new resultDO
                 ResultViewDO resultDO = new ResultViewDO();
                 resultDO.setTestAnalyteId(data.getId());
@@ -393,8 +392,7 @@ public class ResultBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public void fetchByAnalysisId(Integer analysisId,
-                                  ArrayList<ArrayList<ResultViewDO>> results,
+    public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results,
                                   HashMap<Integer, TestResultDO> testResultList,
                                   HashMap<Integer, AnalyteDO> analyteList,
                                   HashMap<Integer, TestAnalyteListItem> testAnalyteList,
@@ -637,45 +635,32 @@ public class ResultBean {
             manager.remove(entity);
     }
 
-    public void validate(ResultDO data, TestManager tm, Integer accession,
-                         AnalysisDO analysis, boolean ignoreWarning) throws Exception {
+    public void validate(ResultViewDO data, ResultFormatter rf, Integer accession,
+                         AnalysisViewDO analysis, boolean ignoreWarning) throws Exception {
         String test, method;
         ValidationErrorsList e;
+        FormattedValue fv;
 
         e = new ValidationErrorsList();
-        
+
         if ( !DataBaseUtil.isEmpty(data.getValue())) {
-            if (tm != null) {
-                test = tm.getTest().getName();
-                method = tm.getTest().getMethodName();
-                e.add(new FormErrorException(Messages.get().sample_oneOrMoreResultValuesInvalid( 
-                                             DataBaseUtil.asString(accession), test, method)));
+            if (rf != null) {
+                test = analysis.getTestName();
+                method = analysis.getMethodName();
+
+                fv = rf.format(data.getResultGroup(),
+                               analysis.getUnitOfMeasureId(),
+                               data.getValue());
+                if (fv == null)
+                    e.add(new FormErrorException(Messages.get()
+                                                         .sample_oneOrMoreResultValuesInvalid(DataBaseUtil.asString(accession),
+                                                                                              test,
+                                                                                              method)));
             }
         }
 
         if (e.size() > 0)
             throw e;
-
-        //      if (!DataBaseUtil.isEmpty(result.getValue())) {
-        //      testResultId = man.validateResultValue(result.getResultGroup(),
-        //                                             data.getUnitOfMeasureId(),
-        //                                             result.getValue());
-        //      testResult = man.getTestResultList().get(testResultId);
-        //
-        //      result.setTypeId(testResult.getTypeId());
-        //      result.setTestResultId(testResult.getId());
-        //      /*
-        //           * If the tab for results on the screen was never opened
-        //           * after an analysis was either added or its test was changed
-        //           * then the code on the screen wouldn't have had the chance
-        //           * to put the dictionary entry's id as the value for the
-        //           * results of the type dictionary. This code makes sure
-        //           * that the correct value gets set. For the results of the
-        //           * other types, the value doesn't need to be changed.   
-        //           */
-        //          if (testResult.getTypeId().equals(dictTypeId))
-        //              result.setValue(testResult.getValue());                     
-        //      }
     }
 
     private void createTestResultHash(List<TestResultDO> testResultList,
