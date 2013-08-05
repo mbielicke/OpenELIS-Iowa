@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -11500,6 +11500,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_completedDateInvalidError(String arg0,  String arg1,  String arg2,  String arg3);
 
   /**
+   * Translated "Accession # ''{0,number}'' : Specified domain is invalid".
+   * 
+   * @return translated "Accession # ''{0,number}'' : Specified domain is invalid"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : Specified domain is invalid")
+  @Key("sample.domainNotValid")
+  String sample_domainNotValid(Integer arg0);
+
+  /**
    * Translated "Accession # ''{0}'': Entered date is required".
    * 
    * @return translated "Accession # ''{0}'': Entered date is required"
@@ -11698,6 +11707,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_relation();
 
   /**
+   * Translated "An item must be selected to add an analysis".
+   * 
+   * @return translated "An item must be selected to add an analysis"
+   */
+  @DefaultMessage("An item must be selected to add an analysis")
+  @Key("sample.sampleItemSelectedToAddAnalysis")
+  String sample_sampleItemSelectedToAddAnalysis();
+
+  /**
    * Translated "Accession # ''{0,number}'' : Item {1,number} - Type missing".
    * 
    * @return translated "Accession # ''{0,number}'' : Item {1,number} - Type missing"
@@ -11705,6 +11723,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'' : Item {1,number} - Type missing")
   @Key("sample.sampleItemTypeMissing")
   String sample_sampleItemTypeMissing(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Sample type is required before adding test".
+   * 
+   * @return translated "Sample type is required before adding test"
+   */
+  @DefaultMessage("Sample type is required before adding test")
+  @Key("sample.sampleItemTypeRequired")
+  String sample_sampleItemTypeRequired();
 
   /**
    * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Started date can''t be after completed".

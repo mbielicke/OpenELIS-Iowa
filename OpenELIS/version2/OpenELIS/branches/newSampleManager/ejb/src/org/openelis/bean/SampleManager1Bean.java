@@ -159,7 +159,7 @@ public class SampleManager1Bean {
     @EJB
     private AuxDataHelperBean            auxDataHelper;
 
-    private static final Logger          log = Logger.getLogger("openelis");
+    private static final Logger        log = Logger.getLogger("openelis");
 
     /**
      * Returns a new instance of sample manager with pre-initailized sample and
@@ -220,7 +220,7 @@ public class SampleManager1Bean {
 
             s.setDomain(domain);
         } else {
-            throw new InconsistencyException("Specified domain is invalid");
+            throw new InconsistencyException(Messages.get().sample_domainNotValid(s.getAccessionNumber()));
         }
 
         return sm;
@@ -1631,7 +1631,7 @@ public class SampleManager1Bean {
                     if (data.isChanged() || ana.isChanged())
                         try {
                             result.validate(data,
-                                            tms.get(ana.getTestId()),
+                                            tms.get(ana.getTestId()).getFormatter(),
                                             accession,
                                             amap.get(data.getAnalysisId()),
                                             ignoreWarning);

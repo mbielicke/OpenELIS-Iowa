@@ -29,7 +29,6 @@ import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -109,7 +108,7 @@ public class SampleManagerOrderHelperBean {
 
     @EJB
     private SampleManager1Bean        sampleManager1;
-    
+
     @EJB
     private AuxDataHelperBean         auxDataHelper;
 
@@ -423,12 +422,12 @@ public class SampleManagerOrderHelperBean {
     }
 
     /**
-     * Add to the sample, the aux groups specified in the order 
+     * Add to the sample, the aux groups specified in the order
      */
     private void copyAuxData(SampleManager1 sm,
                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps,
                              ValidationErrorsList e) throws Exception {
-        ArrayList<AuxDataViewDO> auxiliary;        
+        ArrayList<AuxDataViewDO> auxiliary;
 
         /*
          * fields for the aux group present in the order but not in the sample
@@ -440,8 +439,8 @@ public class SampleManagerOrderHelperBean {
                 auxiliary = new ArrayList<AuxDataViewDO>();
                 setAuxilliary(sm, auxiliary);
             }
-            auxDataHelper.addAuxGroups(auxiliary, grps);  
-            
+            auxDataHelper.addAuxGroups(auxiliary, grps);
+
             /*
              * set negative ids in the newly added aux data
              */
@@ -482,9 +481,11 @@ public class SampleManagerOrderHelperBean {
             } else {
                 item = new SampleItemViewDO();
                 item.setId(sm.getNextUID());
+
                 item.setSampleId(getSample(sm).getId());
                 addItem(sm, item);
             }
+
             if ( !DataBaseUtil.isSame(item.getItemSequence(), i))
                 item.setItemSequence(i);
 
@@ -540,7 +541,15 @@ public class SampleManagerOrderHelperBean {
         if (items != null) {
             for (i = ocm.count(); i < items.size(); i++ )
                 items.get(i).setItemSequence(i);
-            getSample(sm).setNextItemSequence(i);
+        }
+
+        if (getItems(sm) != null) {
+            /*
+             * reset next item sequence if the sample now has more items than it
+             * ever did in the past
+             */
+            if (getSample(sm).getNextItemSequence() < getItems(sm).size())
+                getSample(sm).setNextItemSequence(getItems(sm).size());
         }
     }
 
