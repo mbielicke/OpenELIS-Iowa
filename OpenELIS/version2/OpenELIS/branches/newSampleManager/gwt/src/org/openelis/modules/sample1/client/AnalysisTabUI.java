@@ -120,14 +120,14 @@ public class AnalysisTabUI extends Screen {
     protected Calendar                 startedDate, completedDate, releasedDate, printedDate;
 
     @UiField
-    protected Table                    worksheetTable, analysisUserTable;
+    protected Table                    worksheetTable, userTable;
 
     @UiField
     protected Button                   selectWkshtButton, addActionButton, removeActionButton;
 
     protected Screen                   parentScreen;
 
-    protected boolean                  canEdit, isVisible;
+    protected boolean                 canEdit, isVisible;
 
     protected SampleManager1           manager;
 
@@ -162,6 +162,10 @@ public class AnalysisTabUI extends Screen {
                 testName.setEnabled(isState(QUERY));
                 testName.setQueryMode(isState(QUERY));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? methodName : userTable;
+            }
         });
 
         addScreenHandler(methodName,
@@ -179,6 +183,10 @@ public class AnalysisTabUI extends Screen {
                                  methodName.setEnabled(isState(QUERY) ||
                                                        (isState(ADD, UPDATE) && canEdit));
                                  methodName.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? statusId : testName;
                              }
                          });
 
@@ -264,30 +272,9 @@ public class AnalysisTabUI extends Screen {
                         r.setEnabled(true);
                 }
             }
-        });
-
-        // TODO change this code
-        /*
-         * statusId.addBeforeSelectionHandler(new
-         * BeforeSelectionHandler<TableRow>() { public void
-         * onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-         * Item<Integer> r;
-         * 
-         * r = event.getItem().row; if (!r.enabled) event.cancel(); } });
-         */
-
-        addScreenHandler(revision, SampleMeta.getAnalysisRevision(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                revision.setValue(getRevision());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setRevision(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                revision.setEnabled(isState(QUERY));
-                revision.setQueryMode(isState(QUERY));
+            
+            public Widget onTab(boolean forward) {
+                return forward ? sectionId : methodName;
             }
         });
 
@@ -307,6 +294,10 @@ public class AnalysisTabUI extends Screen {
                                                           (isState(ADD, UPDATE) && canEdit));
                                  isPreliminary.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? isReportable : sectionId;  
+                             }
                          });
 
         addScreenHandler(isReportable,
@@ -325,12 +316,27 @@ public class AnalysisTabUI extends Screen {
                                                          (isState(ADD, UPDATE) && canEdit));
                                  isReportable.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? unitOfMeasureId : isPreliminary;  
+                             }
                          });
 
         addScreenHandler(sectionId,
                          SampleMeta.getAnalysisSectionId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
+                                 /*
+                                  * The model for this dropdown changes based on
+                                  * the state and the analysis being shown in
+                                  * the tab. When this handler is called, both
+                                  * of those things are known and it is also
+                                  * known for sure that the value in the
+                                  * dropdown has to be set, so there's no
+                                  * unnecessary loading or reloading of the
+                                  * model.
+                                  */
+                                 sectionId.setModel(getSectionsModel());
                                  sectionId.setValue(getSectionId());
                              }
 
@@ -339,10 +345,13 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sectionId.setModel(getSectionsModel());
                                  sectionId.setEnabled(isState(QUERY) ||
                                                       (isState(ADD, UPDATE) && canEdit));
                                  sectionId.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? isPreliminary : statusId;  
                              }
                          });
 
@@ -350,6 +359,17 @@ public class AnalysisTabUI extends Screen {
                          SampleMeta.getAnalysisUnitOfMeasureId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
+                                 /*
+                                  * The model for this dropdown changes based on
+                                  * the state and the analysis being shown in
+                                  * the tab. When this handler is called, both
+                                  * of those things are known and it is also
+                                  * known for sure that the value in the
+                                  * dropdown has to be set, so there's no
+                                  * unnecessary loading or reloading of the
+                                  * model.
+                                  */
+                                 unitOfMeasureId.setModel(getUnitsModel());
                                  unitOfMeasureId.setValue(getUnitOfMeasureId());
                              }
 
@@ -358,10 +378,13 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 unitOfMeasureId.setModel(getUnitsModel());
                                  unitOfMeasureId.setEnabled(isState(QUERY) ||
                                                             (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasureId.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? startedDate : isReportable;  
                              }
                          });
 
@@ -381,6 +404,10 @@ public class AnalysisTabUI extends Screen {
                                                         (isState(ADD, UPDATE) && canEdit));
                                  startedDate.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? completedDate : unitOfMeasureId;  
+                             }
                          });
 
         addScreenHandler(completedDate,
@@ -398,6 +425,10 @@ public class AnalysisTabUI extends Screen {
                                  completedDate.setEnabled(isState(QUERY) ||
                                                           (isState(ADD, UPDATE) && canEdit));
                                  completedDate.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? releasedDate : startedDate;  
                              }
                          });
 
@@ -417,6 +448,10 @@ public class AnalysisTabUI extends Screen {
                                                          (isState(ADD, UPDATE) && canEdit));
                                  releasedDate.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? printedDate : completedDate;  
+                             }
                          });
 
         addScreenHandler(printedDate,
@@ -433,6 +468,10 @@ public class AnalysisTabUI extends Screen {
                              public void onStateChange(StateChangeEvent event) {
                                  printedDate.setEnabled(isState(QUERY));
                                  printedDate.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? revision : releasedDate;  
                              }
                          });
 
@@ -455,9 +494,7 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 samplePrep.setEnabled(isState(QUERY) ||
-                                                       (isState(ADD, UPDATE) && canEdit));
-                                 samplePrep.setQueryMode(isState(QUERY));
+                                 samplePrep.setEnabled(isState(ADD, UPDATE) && canEdit);
                              }
                          });
 
@@ -476,6 +513,25 @@ public class AnalysisTabUI extends Screen {
             }
         });
 
+        addScreenHandler(revision, SampleMeta.getAnalysisRevision(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                revision.setValue(getRevision());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setRevision(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                revision.setEnabled(isState(QUERY));
+                revision.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? worksheetTable : printedDate;
+            }
+        });
+
         addScreenHandler(panel, SampleMeta.getAnalysisPanelId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 panel.setValue(getPanelId(), getPanelName());
@@ -488,8 +544,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                panel.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
-                panel.setQueryMode(isState(QUERY));
+                panel.setEnabled(isState(ADD, UPDATE) && canEdit);
             }
         });
 
@@ -523,23 +578,28 @@ public class AnalysisTabUI extends Screen {
                 worksheetTable.setModel(getWorksheetTableModel());
             }
 
-            public void onValueChange(ValueChangeEvent<Item<Integer>> event) {
-            }
-
             public void onStateChange(StateChangeEvent event) {
                 worksheetTable.setEnabled(true);
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? userTable : revision;
+            }
         });
 
-        addScreenHandler(analysisUserTable,
-                         "analysisUserTable",
+        addScreenHandler(userTable,
+                         "userTable",
                          new ScreenHandler<ArrayList<Row>>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 analysisUserTable.setModel(getAnalysisUserTableModel());
+                                 userTable.setModel(getAnalysisUserTableModel());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 analysisUserTable.setEnabled(true);
+                                 userTable.setEnabled(true);
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? testName : worksheetTable;
                              }
                          });
 
@@ -553,12 +613,12 @@ public class AnalysisTabUI extends Screen {
             public void onClick(ClickEvent event) {
                 int n;
 
-                analysisUserTable.addRow();
-                n = analysisUserTable.getRowCount() - 1;
-                analysisUserTable.selectRowAt(n);
+                userTable.addRow();
+                n = userTable.getRowCount() - 1;
+                userTable.selectRowAt(n);
                 // TODO change this code
                 // analysisUserTable.scrollToSelection();
-                analysisUserTable.startEditing(n, 0);
+                userTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -612,9 +672,8 @@ public class AnalysisTabUI extends Screen {
 
         allSectionsModel = new ArrayList<Item<Integer>>();
         allSectionsModel.add(new Item<Integer>(null, ""));
-        for (SectionDO s : SectionCache.getList()) {
+        for (SectionDO s : SectionCache.getList())
             allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
-        }
 
         /*
          * handlers for the events fired by the screen containing this tab
@@ -669,7 +728,7 @@ public class AnalysisTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     public boolean validate() {
         /*
          * validate only if there's data loaded in the tab
@@ -832,7 +891,7 @@ public class AnalysisTabUI extends Screen {
      * by the parent screen
      */
     private TestManager getTestManager(Integer testId) {
-        if (!(parentScreen instanceof CacheProvider)) {
+        if ( ! (parentScreen instanceof CacheProvider)) {
             Window.alert("Parent screen must implement " + CacheProvider.class.toString());
             return null;
         }

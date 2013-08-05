@@ -25,7 +25,7 @@
               <ui:text from="{msg.test}:" />
             </td>
             <td>
-              <w:TextBox ui:field="testName" field="String" width="151px" case="LOWER" />
+              <w:TextBox ui:field="testName" field="String" width="144px" case="LOWER" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.method}:" />
@@ -147,11 +147,11 @@
     </g:layer>
     <g:layer top="140px" bottom="5px">
       <g:LayoutPanel>
-        <g:layer width="50%" left="0px">
+        <g:layer width="64%" left="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="20px">
-              <t:Table ui:field="worksheetTable" visibleRows="3" verticalScroll="ALWAYS"
-                horizontalScroll="ALWAYS" header="true" title=""
+              <t:Table ui:field="worksheetTable" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
               >
                 <t:Column width="70" label="{msg.worksheet}">
                   <t:LabelCell>
@@ -160,7 +160,7 @@
                 </t:Column>
                 <t:Column width="115" label="{msg.created}">
                   <t:CalendarCell>
-                    <c:Calendar width="115" begin="0" end="2" /> <!-- pattern="{msg.dateTimePattern}" -->
+                    <c:Calendar width="115" begin="0" end="2" />
                   </t:CalendarCell>
                 </t:Column>
                 <t:Column width="115" label="{msg.status}">
@@ -180,13 +180,12 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer width="50%" right="0px">
+        <g:layer width="35%" right="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="20px">
-              <!--<g:AbsolutePanel/> style="{res.style.Divider}" -->
-              <t:Table ui:field="analysisUserTable" visibleRows="3" verticalScroll="ALWAYS"
-                horizontalScroll="ALWAYS" header="true" title=""
-              > <!--class = {res.style.ScreenTableWithSides} -->
+              <t:Table ui:field="userTable" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true"  styleName="{uiRes.table.ScreenTableWithSides}"
+              > 
                 <t:Column width="115" label="{msg.user}">
                   <t:AutoCompleteCell>
                     <w:AutoComplete case="LOWER" required="true">
@@ -208,9 +207,9 @@
               </t:Table>
             </g:layer>
             <g:layer bottom="0px" height="20px">
-              <g:HorizontalPanel> <!-- style="{res.style.TableFooterPanel}" -->
-                <w:Button ui:field="addActionButton" text="{msg.addRow}" /> <!-- leftIcon="{res.style.AddRowButtonImage}" -->
-                <w:Button ui:field="removeActionButton" text="{msg.removeRow}" /> <!-- leftIcon="{res.style.RemoveRowButtonImage}" -->
+              <g:HorizontalPanel> 
+                <w:Button ui:field="addActionButton" text="{msg.addRow}" leftIcon="{res.style.addRowIcon}"/>
+                <w:Button ui:field="removeActionButton" text="{msg.removeRow}" leftIcon="{res.style.removeRowIcon}"/>
               </g:HorizontalPanel>
             </g:layer>
           </g:LayoutPanel>

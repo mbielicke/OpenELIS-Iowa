@@ -21,14 +21,13 @@
   xmlns:t='urn:import:org.openelis.ui.widget.table'
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
-  <!-- this tab uses xsl:when and xsl:otherwise to determine the layout of the widgets -->
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel>
-    <g:layer top="0px" bottom="45px">
-      <t:Table ui:field="table" verticalScroll="ALWAYS" visibleRows="8"
-        horizontalScroll="ALWAYS" header="true"
+    <g:layer top="0px" bottom="65px">
+      <t:Table ui:field="table" verticalScroll="ALWAYS"
+        horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
       > 
         <t:Column width="85" label="{msg.reportable}">
           <t:CheckBoxCell>
@@ -43,7 +42,7 @@
         </t:Column>
       </t:Table>
     </g:layer>
-    <g:layer bottom="30px" height="25px">
+    <g:layer bottom="40px" height="25px">
       <g:HorizontalPanel>
         <w:Button ui:field="removeAuxButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />       
         <w:Button ui:field="addAuxButton" text="{msg.auxGroups}" />
@@ -54,19 +53,19 @@
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.description}" />
+              <ui:text from="{msg.description}:" />
             </td>
             <td>
               <w:TextBox ui:field="auxDesc" width="275px" field="String" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.method}" />
+              <ui:text from="{msg.method}:" />
             </td>
             <td>
               <w:TextBox ui:field="auxMethod" width="125px" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.unit}" />
+              <ui:text from="{msg.unit}:" />
             </td>
             <td>
               <w:TextBox ui:field="auxUnits" width="125px" />

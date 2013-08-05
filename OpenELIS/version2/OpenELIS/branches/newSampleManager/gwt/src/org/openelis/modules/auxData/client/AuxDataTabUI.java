@@ -102,7 +102,7 @@ public abstract class AuxDataTabUI extends Screen {
     }
 
     private void initialize() {
-        addScreenHandler(table, "auxValsTable", new ScreenHandler<ArrayList<Row>>() {
+        addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 table.setModel(getTableModel());
                 // queryFieldEntered = false;
@@ -256,7 +256,7 @@ public abstract class AuxDataTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                auxDesc.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
+                auxDesc.setEnabled(false);
             }
         });
 
@@ -492,11 +492,16 @@ public abstract class AuxDataTabUI extends Screen {
         method = null;
         unit = null;
         if (data != null) {
+            if ( ! (parentScreen instanceof CacheProvider)) {
+                Window.alert("Parent screen must implement " + CacheProvider.class.toString());
+                return;
+            }
+
             /*
              * find the aux group and aux field corresponding to this aux data
              * and set the values in the non-editable widgets
              */
-            afgm = getAuxFieldGroupManager(data.getGroupId());
+            afgm =  ((CacheProvider)parentScreen).get(data.getGroupId(), AuxFieldGroupManager.class);
             if (afgm != null) {
                 try {
                     afm = afgm.getFields();
@@ -518,18 +523,5 @@ public abstract class AuxDataTabUI extends Screen {
         setAuxDescription(desc);
         setAuxMethod(method);
         setAuxUnits(unit);
-    }
-
-    /**
-     * returns the AuxFieldGroupManager, for the specified id, from the cache
-     * maintained by the parent screen
-     */
-    private AuxFieldGroupManager getAuxFieldGroupManager(Integer groupId) {
-        if ( ! (parentScreen instanceof CacheProvider)) {
-            Window.alert("Parent screen must implement " + CacheProvider.class.toString());
-            return null;
-        }
-
-        return ((CacheProvider)parentScreen).get(groupId, AuxFieldGroupManager.class);
     }
 }

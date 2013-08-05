@@ -17,22 +17,14 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  
   <g:LayoutPanel>
     <g:layer top="0px" bottom="25px">
-      <t:Table ui:field="resultsTable" verticalScroll="ALWAYS" visibleRows="10"
-        horizontalScroll="ALWAYS" header="true" title=""
-      > <!-- width="{string($widthParam)}" maxRows="{string($maxRowsParam)}" -->
-        <t:Column width="65" label="A"> <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
+      <t:Table ui:field="table" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+        <t:Column width="65" label="A">
           <t:CheckBoxCell />
         </t:Column>
-        <t:Column width="200" label="B">  <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
+        <t:Column width="200" label="B">
           <t:LabelCell />
-        </t:Column>
-        <t:Column width="200" label="C">  <!--class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn" -->
-          <t:TextBoxCell>
-            <w:TextBox maxLength="80" />
-          </t:TextBoxCell>
         </t:Column>
       </t:Table>
     </g:layer>
@@ -40,13 +32,11 @@
       <g:HorizontalPanel>
         <w:Button ui:field="addResultButton" leftIcon="{res.style.addRowIcon}" text="{msg.addRow}" />
         <w:Button ui:field="removeResultButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
-        <w:Button ui:field="suggestionsButton" text="{msg.suggestions}" /> <!-- leftIcon="{res.style.PickerButtonImage}" -->
-        <w:Button ui:field="popoutTable" text="{msg.popout}" /> <!-- leftIcon="{res.style.popoutButtonImage}" -->
         <w:Button ui:field="checkAllButton" text="{msg.checkAll}" /> <!-- leftIcon="{res.style.Checked}" -->
         <w:Button ui:field="uncheckAllButton" text="{msg.uncheckAll}" /> <!-- leftIcon="{res.style.Unchecked}" -->
         <g:HTMLPanel>
-            <ui:text from="{msg.resultsOverridden}" /> <!-- ui:field="overrideLabel" -->
-        </g:HTMLPanel>        
+          <ui:text from="{msg.resultsOverridden}" /> <!-- ui:field="overrideLabel" -->
+        </g:HTMLPanel>
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

@@ -29,7 +29,7 @@ public interface AuxiliaryServiceIntAsync {
 
     void fetchForUpdate(Integer id, AsyncCallback<AuxFieldGroupManager> callback);
 
-    void fetchGroupById(Integer id, AsyncCallback<AuxFieldGroupManager> callback);
+    void fetchById(Integer id, AsyncCallback<AuxFieldGroupManager> callback);
     
     void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<AuxFieldGroupManager>> callback);
 

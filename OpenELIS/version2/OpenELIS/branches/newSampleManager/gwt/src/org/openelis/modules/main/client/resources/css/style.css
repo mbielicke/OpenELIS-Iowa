@@ -304,3 +304,23 @@
 	gwt-image: 'selectAllDisabledIcon';
 	width: 20px;
 }
+
+@sprite .popoutIcon {
+    gwt-image:'popoutIcon';
+    width:20px;
+}
+
+@sprite .button-Disabled .popoutIcon {
+    gwt-image: 'popoutDisabledIcon';
+    width: 20px;
+}
+
+@sprite .fieldLookupIcon {
+    gwt-image:'fieldLookupIcon';
+    width:20px;
+}
+
+@sprite .button-Disabled .fieldLookupIcon {
+    gwt-image: 'fieldLookupDisabledIcon';
+    width: 20px;
+}

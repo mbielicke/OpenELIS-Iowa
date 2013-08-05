@@ -76,8 +76,8 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
     }
 
     @Override
-    public void fetchGroupById(Integer id, AsyncCallback<AuxFieldGroupManager> callback) {
-        service.fetchGroupById(id, callback);
+    public void fetchById(Integer id, AsyncCallback<AuxFieldGroupManager> callback) {
+        service.fetchById(id, callback);
     }
     
     
@@ -112,11 +112,11 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
     }
 
     @Override
-    public AuxFieldGroupManager fetchGroupById(Integer id) throws Exception {
+    public AuxFieldGroupManager fetchById(Integer id) throws Exception {
         Callback<AuxFieldGroupManager> callback;
         
         callback = new Callback<AuxFieldGroupManager>();
-        service.fetchGroupById(id, callback);
+        service.fetchById(id, callback);
         return callback.getResult();
     }
 
