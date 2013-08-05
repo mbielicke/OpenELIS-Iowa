@@ -29,7 +29,7 @@
         </t:Column>
       </t:Table>
     </g:layer>
-    <g:layer bottom="0px" height="25px">
+    <g:layer bottom="0px" height="25px" right="40%" left="40%">
       <g:HorizontalPanel>
         <w:Button ui:field="okButton" text="{msg.ok}" />
         <w:Button ui:field="cancelButton" text="{msg.cancel}" />
