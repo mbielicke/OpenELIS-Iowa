@@ -17,9 +17,8 @@
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel>
-    <g:layer top = "0px" bottom="40px">
-      <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.itemsAndAnalyses}" /></td> -->
-      <r:Tree ui:field="itemsTestsTree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+    <g:layer top="0px" bottom="20px">
+      <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
         <r:Column width="280" label="{msg.itemAnalyses}" />
         <r:Column width="130" label="{msg.typeStatus}" />
         <r:Leaf key="sampleItem">
@@ -36,27 +35,54 @@
           </r:LeafColumn>
           <r:LeafColumn>
             <t:DropdownCell>
-              <w:Dropdown ui:field="analysisStatus" width="110px" field="Integer" /> <!-- popWidth="110" -->
+              <w:Dropdown ui:field="analysisStatus" width="110px" field="Integer" />
             </t:DropdownCell>
           </r:LeafColumn>
         </r:Leaf>
       </r:Tree>
     </g:layer>
-    <g:layer bottom="0px" height="40px">
-      <g:HorizontalPanel> <!-- style="{res.style.TreeButtonFooter}" -->
-        <g:AbsolutePanel>
-          <w:Button ui:field="addItemButton" leftIcon="{res.style.addRowIcon}" text="{msg.addItem}" />
-        </g:AbsolutePanel>
-        <g:AbsolutePanel>
-          <w:Button ui:field="addAnalysisButton" leftIcon="{res.style.addRowIcon}" text="{msg.addAnalysis}" />
-        </g:AbsolutePanel>
-        <g:AbsolutePanel>
-          <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
-        </g:AbsolutePanel>
-        <g:AbsolutePanel>
-          <w:Button ui:field="popoutTreeButton" text="{msg.popout}" /> <!-- leftIcon="{res.style.popoutButtonImage}" -->
-        </g:AbsolutePanel>
-      </g:HorizontalPanel>
+    <g:layer bottom="5px" height="40px">
+      <g:LayoutPanel>
+        <g:layer bottom="0px" top="0px" width="20%" left="0px">
+          <g:HorizontalPanel>
+            <w:Button ui:field="addItemButton" leftIcon="{res.style.addRowIcon}" text="{msg.addItem}" />
+          </g:HorizontalPanel>
+        </g:layer>
+        <g:layer bottom="0px" top="0px" width="47%" left="85px">
+          <g:HTMLPanel>
+            <table>
+              <tr>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_addTest}:" />
+                </td>
+                <td>
+                  <w:AutoComplete ui:field="testName" width="150px" case="LOWER">
+                    <w:popup>
+                      <t:Table visibleRows="10" header="true" width="500px">
+                        <t:Column width="170" label="{msg.test}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="150" label="{msg.method}">
+                          <t:LabelCell />
+                        </t:Column>
+                        <t:Column width="290" label="{msg.description}">
+                          <t:LabelCell />
+                        </t:Column>
+                      </t:Table>
+                    </w:popup>
+                  </w:AutoComplete>
+                </td>
+              </tr>
+            </table>
+          </g:HTMLPanel>
+        </g:layer>
+        <g:layer bottom="0px" top="0px" width="33%" right="0px">
+          <g:HorizontalPanel>
+            <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
+            <w:Button ui:field="popoutTreeButton" leftIcon="{res.style.popoutIcon}" />
+          </g:HorizontalPanel>
+        </g:layer>
+      </g:LayoutPanel>
     </g:layer>
   </g:LayoutPanel>
 </ui:UiBinder>

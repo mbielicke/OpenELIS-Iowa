@@ -116,7 +116,11 @@ public class SampleItemTabUI extends Screen {
                                                            (isState(ADD, UPDATE) && canEdit));
                                  typeOfSampleId.setQueryMode(isState(QUERY));
                              }
-                         });
+        
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sourceOfSampleId : unitOfMeasureId;
+                             }
+        });
 
         addScreenHandler(sourceOfSampleId,
                          SampleMeta.getItemSourceOfSampleId(),
@@ -134,6 +138,10 @@ public class SampleItemTabUI extends Screen {
                                                              (isState(ADD, UPDATE) && canEdit));
                                  sourceOfSampleId.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? sourceOther : typeOfSampleId;
+                             }
                          });
 
         addScreenHandler(sourceOther, SampleMeta.getItemSourceOther(), new ScreenHandler<String>() {
@@ -149,6 +157,10 @@ public class SampleItemTabUI extends Screen {
                 sourceOther.setEnabled(isState(QUERY) ||
                                        (isState(ADD, UPDATE) && canEdit));
                 sourceOther.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? containerId : sourceOfSampleId;
             }
         });
 
@@ -168,6 +180,10 @@ public class SampleItemTabUI extends Screen {
                                                         (isState(ADD, UPDATE) && canEdit));
                                  containerId.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? containerReference : sourceOther;
+                             }
                          });
 
         addScreenHandler(containerReference,
@@ -186,6 +202,10 @@ public class SampleItemTabUI extends Screen {
                                                                (isState(ADD, UPDATE) && canEdit));
                                  containerReference.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? quantity : containerId;
+                             }
                          });
 
         addScreenHandler(quantity, SampleMeta.getItemQuantity(), new ScreenHandler<Double>() {
@@ -201,6 +221,10 @@ public class SampleItemTabUI extends Screen {
                 quantity.setEnabled(isState(QUERY) ||
                                     (isState(ADD, UPDATE) && canEdit));
                 quantity.setQueryMode(isState(QUERY));
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? unitOfMeasureId : containerReference;
             }
         });
 
@@ -219,6 +243,10 @@ public class SampleItemTabUI extends Screen {
                                  unitOfMeasureId.setEnabled(isState(QUERY) ||
                                                             (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasureId.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? typeOfSampleId : quantity;
                              }
                          });
 

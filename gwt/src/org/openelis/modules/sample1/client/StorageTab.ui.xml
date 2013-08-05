@@ -20,7 +20,7 @@
   <g:LayoutPanel>
     <g:layer top="0px" bottom="25px">
       <t:Table ui:field="storageTable" verticalScroll="ALWAYS" visibleRows="8"
-        horizontalScroll="ALWAYS" header="true"
+        horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
       >
         <t:Column width="155" label="{msg.user}">
           <t:LabelCell>

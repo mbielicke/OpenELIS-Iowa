@@ -85,7 +85,7 @@
                   <g:HorizontalPanel>
                     <w:TextBox ui:field="orderId" width="75px" field="Integer" />
                     <g:AbsolutePanel>
-                      <w:Button ui:field="orderLookupButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
+                      <w:Button ui:field="orderLookupButton" leftIcon = "{res.style.fieldLookupIcon}"/>
                     </g:AbsolutePanel>
                   </g:HorizontalPanel>
                 </td>
@@ -114,7 +114,7 @@
                   <ui:text from="{msg.status}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="statusId" width="110px" field="Integer" required="true" /> <!-- popWidth="110" -->
+                  <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" /> <!-- popWidth="110" -->
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.clntRef}:" />
@@ -129,7 +129,7 @@
         </g:layer>
         <g:layer top="60px" height="350px">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="0px" left="0px" width="33%">
+            <g:layer top="0px" bottom="0px" left="0px" width="37%">
               <g:HTMLPanel width="100%">
                 <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.patient}" /></td> -->
                 <table class="{res.style.Form}">
@@ -231,7 +231,7 @@
                 </table>
               </g:HTMLPanel>
             </g:layer>
-            <g:layer top="0px" bottom="0px" left="300px" width="33%">
+            <g:layer top="0px" bottom="0px" left="300px" width="39%">
               <g:HTMLPanel width="100%">
                 <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.sample_nextOfKin}" /></td> -->
                 <table class="{res.style.Form}">
@@ -346,7 +346,7 @@
                 </table>
               </g:HTMLPanel>
             </g:layer>
-            <g:layer top="0px" bottom="0px" right="0px" width="33%">
+            <g:layer top="0px" bottom="0px" left="630px" width="24%">
               <g:HTMLPanel width="100%">
                 <!-- <td class="{res.style.FormTitle}"><ui:text from="{msg.other}" /></td> -->
                 <table class="{res.style.Form}">
@@ -444,7 +444,7 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer top="440px" height="160px">
+        <g:layer top="320px" height="180px" left = "10px" width="100%">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" width="50%">
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
@@ -499,7 +499,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="projectButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
+                          <w:Button ui:field="projectButton" leftIcon = "{res.style.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -531,7 +531,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="reportToButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
+                          <w:Button ui:field="reportToButton" leftIcon = "{res.style.fieldLookupIcon}"/>
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -563,7 +563,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="birthHospitalButton" text="{msg.popout}" /> <!-- css = "{uiRes.lookupButton}" -->
+                          <w:Button ui:field="birthHospitalButton" leftIcon = "{res.style.fieldLookupIcon}"/>
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -583,8 +583,8 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer top="600px" bottom="0px">
-      <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX">
+    <g:layer top="505px" bottom="0px">
+      <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX" width="715px">
         <w:tab>
           <w:customHeader>
             <w:TabWidget text="{msg.sampleItem}" />

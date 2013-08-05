@@ -111,4 +111,8 @@ public interface Style extends CssResource {
     public String findIcon();
     
     public String selectAllIcon();
+    
+    public String popoutIcon();
+    
+    public String fieldLookupIcon();
 }

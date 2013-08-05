@@ -23,8 +23,8 @@
         <g:layer width="50%" left="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="20px">
-              <t:Table ui:field="sampleQATable" visibleRows="6" verticalScroll="ALWAYS"
-                horizontalScroll="ALWAYS" header="true"
+              <t:Table ui:field="sampleQATable" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
               >
                 <t:Column width="172" label="{msg.sampleQAEvent}">
                   <t:LabelCell />
@@ -53,8 +53,8 @@
         <g:layer width="50%" right="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="20px">
-              <t:Table ui:field="analysisQATable" visibleRows="6" verticalScroll="ALWAYS"
-                horizontalScroll="ALWAYS" header="true"
+              <t:Table ui:field="analysisQATable" verticalScroll="ALWAYS"
+                horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
               >
                 <t:Column width="172" label="{msg.analysisQAEvent}">
                   <t:LabelCell />

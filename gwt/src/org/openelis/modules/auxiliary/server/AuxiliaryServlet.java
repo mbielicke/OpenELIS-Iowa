@@ -43,7 +43,7 @@ import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.modules.auxiliary.client.AuxiliaryServiceInt;
 
 @WebServlet("/openelis/auxiliary")
-public class AuxiliaryService extends RemoteServlet implements AuxiliaryServiceInt {
+public class AuxiliaryServlet extends RemoteServlet implements AuxiliaryServiceInt {
 
     private static final long serialVersionUID = 1L;
     
@@ -58,7 +58,7 @@ public class AuxiliaryService extends RemoteServlet implements AuxiliaryServiceI
     }
 
     // manager methods
-    public AuxFieldGroupManager fetchGroupById(Integer id) throws Exception {
+    public AuxFieldGroupManager fetchById(Integer id) throws Exception {
         return auxFieldGroupManager.fetchById(id);
     }
 

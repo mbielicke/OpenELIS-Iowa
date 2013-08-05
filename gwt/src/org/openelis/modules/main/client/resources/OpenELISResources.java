@@ -167,4 +167,16 @@ public interface OpenELISResources extends ClientBundle {
     
     @Source("images/selectallbuttonimagedisabled.png")
     ImageResource selectAllDisabledIcon();
+    
+    @Source("images/tablepopout.png")
+    ImageResource popoutIcon();
+    
+    @Source("images/tablepopoutdisabled.png")
+    ImageResource popoutDisabledIcon();
+    
+    @Source("images/fieldlookup.png")
+    ImageResource fieldLookupIcon();
+    
+    @Source("images/fieldlookupdisabled.png")
+    ImageResource fieldLookupDisabledIcon();
 }

@@ -34,7 +34,7 @@ public class AuxFieldGroupManagerProxy {
     }
     
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
-        return AuxiliaryService.get().fetchGroupById(id);
+        return AuxiliaryService.get().fetchById(id);
     }
     
     public AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception{

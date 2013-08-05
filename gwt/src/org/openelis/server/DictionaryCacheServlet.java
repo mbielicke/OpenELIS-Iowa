@@ -25,6 +25,8 @@
  */
 package org.openelis.server;
 
+import java.util.ArrayList;
+
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
@@ -49,4 +51,8 @@ public class DictionaryCacheServlet extends RemoteServlet implements DictionaryC
         return dictionaryCache.getById(id);
     }
 
+    @Override
+    public ArrayList<DictionaryDO> getByIds(ArrayList<Integer> ids) throws Exception {
+        return dictionaryCache.getByIds(ids);
+    }
 }
