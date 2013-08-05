@@ -27,31 +27,31 @@
 			<t:Table ui:field="table" visibleRows="11" horizontalScroll="ALWAYS"
 				verticalScroll="ALWAYS" width="697px" header="true"
 				styleName="{uiRes.table.ScreenTableWithSides}">
-				<t:Column width="65" label="{msg.quantity}">
+				<t:Column width="60" label="{msg.gen_quantity}">
 					<t:TextBoxCell>
 						<w:TextBox required="true"
 							field="Integer" textAlignment="RIGHT" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="220" label="{msg.inventoryItem}">
+				<t:Column width="178" label="{msg.gen_inventoryItem}">
 					<t:AutoCompleteCell>
 						<w:AutoComplete ui:field="inventoryItem" required="true"
-							width="275" dropWidth="600px">
+							width="210" dropWidth="600px">
 							<w:popup>
 								<t:Table visibleRows="11" header="true">
-									<t:Column width="155" label="{msg.name}">
+									<t:Column width="155" label="{msg.gen_name}">
 										<t:LabelCell />
 									</t:Column>
-									<t:Column width="200" label="{msg.description}">
+									<t:Column width="200" label="{msg.gen_description}">
 										<t:LabelCell />
 									</t:Column>
-									<t:Column width="110" label="{msg.store}">
+									<t:Column width="110" label="{msg.gen_store}">
 										<t:LabelCell />
 										<t:DropdownCell>
 											<w:Dropdown width="110" field="Integer" ui:field="autocompleteStore" />
 										</t:DropdownCell>
 									</t:Column>
-									<t:Column width="110" label="{msg.dispensedUnits}">
+									<t:Column width="110" label="{msg.gen_dispensedUnits}">
 										<t:LabelCell />
 										<t:DropdownCell>
 											<w:Dropdown width="110" field="Integer" ui:field="dispensedUnits" />
@@ -62,19 +62,19 @@
 						</w:AutoComplete>
 					</t:AutoCompleteCell>
 				</t:Column>
-				<t:Column width="235" label="{msg.store}">
+				<t:Column width="163" label="{msg.gen_store}">
 					<t:DropdownCell>
 						<w:Dropdown width="238" required="true" field="Integer"
 							ui:field="store" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="65" label="{msg.unitCost}">
+				<t:Column width="70" label="{msg.order_unitCost}">
 					<t:TextBoxCell>
 						<w:TextBox required="true"
 							field="Double" />
 					</t:TextBoxCell>
 				</t:Column>
-				<t:Column width="65" label="{msg.catalogNum}">
+				<t:Column width="87" label="{msg.order_catalogNum}">
 					<t:TextBoxCell>
 						<w:TextBox required="true"
 							field="String" textAlignment="RIGHT" />
@@ -85,9 +85,9 @@
 		<g:layer bottom="0px" height="25px">
 			<g:HorizontalPanel>
 				<w:Button ui:field="addButton" leftIcon="{res.style.addRowIcon}"
-					text="{msg.addRow}" />
+					text="{msg.gen_addRow}" />
 				<w:Button ui:field="removeButton" leftIcon="{res.style.removeRowIcon}"
-					text="{msg.removeRow}" />
+					text="{msg.gen_removeRow}" />
 			</g:HorizontalPanel>
 		</g:layer>
 	</g:LayoutPanel>

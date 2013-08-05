@@ -27,7 +27,8 @@ package org.openelis.modules.order1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.InventoryXUseViewDO;
+import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.manager.OrderManager1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.event.DataChangeEvent;
@@ -48,23 +49,23 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SendoutOrderFillTabUI extends Screen {
-    @UiTemplate("SendoutOrderFillTab.ui.xml")
-    interface SendoutOrderFillTabUiBinder extends UiBinder<Widget, SendoutOrderFillTabUI> {
+public class VendorOrderFillTabUI extends Screen {
+    @UiTemplate("VendorOrderFillTab.ui.xml")
+    interface VendorOrderFillTabUiBinder extends UiBinder<Widget, VendorOrderFillTabUI> {
     };
 
-    private static SendoutOrderFillTabUiBinder uiBinder = GWT.create(SendoutOrderFillTabUiBinder.class);
+    private static VendorOrderFillTabUiBinder uiBinder = GWT.create(VendorOrderFillTabUiBinder.class);
 
     @UiField
-    protected Table                            table;
+    protected Table                           table;
 
-    protected Screen                           parentScreen;
+    protected Screen                          parentScreen;
 
-    protected boolean                          isVisible;
+    protected boolean                         isVisible;
 
-    protected OrderManager1                    manager, displayedManager;
+    protected OrderManager1                   manager, displayedManager;
 
-    public SendoutOrderFillTabUI(Screen parentScreen, EventBus bus) {
+    public VendorOrderFillTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
         setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
@@ -134,29 +135,46 @@ public class SendoutOrderFillTabUI extends Screen {
     private void displayFills() {
         int count1, count2;
         boolean dataChanged;
-        InventoryXUseViewDO fill1, fill2;
+        InventoryLocationViewDO loc1, loc2;
+        InventoryXPutViewDO receipt1, receipt2;
 
         if ( !isVisible)
             return;
 
-        count1 = displayedManager == null ? 0 : displayedManager.fill.count();
-        count2 = manager == null ? 0 : manager.fill.count();
+        count1 = displayedManager == null ? 0 : displayedManager.receipt.count();
+        count2 = manager == null ? 0 : manager.receipt.count();
 
         /*
-         * find out if there's any difference between the fills of the two
+         * find out if there's any difference between the receipts of the two
          * managers
          */
         if (count1 == count2) {
             dataChanged = false;
             for (int i = 0; i < count1; i++ ) {
-                fill1 = displayedManager.fill.get(i);
-                fill2 = manager.fill.get(i);
-                if (DataBaseUtil.isDifferent(fill1.getInventoryItemId(), fill2.getInventoryItemId()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryItemName(), fill2.getInventoryItemName()) ||
-                    DataBaseUtil.isDifferent(fill1.getStorageLocationName(), fill2.getStorageLocationName()) ||
-                    DataBaseUtil.isDifferent(fill1.getQuantity(), fill2.getQuantity()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryLocationLotNumber(), fill2.getInventoryLocationLotNumber()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryLocationExpirationDate(), fill2.getInventoryLocationExpirationDate())) {
+                receipt1 = displayedManager.receipt.get(i);
+                receipt2 = manager.receipt.get(i);
+                loc1 = receipt1.getInventoryLocation();
+                loc2 = receipt2.getInventoryLocation();
+                if (DataBaseUtil.isDifferent(receipt1.getId(), receipt1.getId()) ||
+                    DataBaseUtil.isDifferent(loc1.getInventoryItemName(),
+                                             loc2.getInventoryItemName()) ||
+                    DataBaseUtil.isDifferent(loc1.getStorageLocationName(),
+                                             loc2.getStorageLocationName()) ||
+                    DataBaseUtil.isDifferent(loc1.getStorageLocationUnitDescription(),
+                                             loc2.getStorageLocationUnitDescription()) ||
+                    DataBaseUtil.isDifferent(loc1.getStorageLocationLocation(),
+                                             loc2.getStorageLocationLocation()) ||
+                    DataBaseUtil.isDifferent(receipt1.getQuantity(), receipt2.getQuantity()) ||
+                    DataBaseUtil.isDifferent(loc1.getLotNumber(), loc2.getLotNumber()) ||
+                    DataBaseUtil.isDifferent(loc1.getExpirationDate(), loc2.getExpirationDate()) ||
+                    DataBaseUtil.isDifferent(loc1.getStorageLocationLocation(),
+                                             loc2.getStorageLocationLocation()) ||
+                    DataBaseUtil.isDifferent(receipt1.getInventoryReceiptReceivedDate(),
+                                             receipt2.getInventoryReceiptReceivedDate()) ||
+                    DataBaseUtil.isDifferent(receipt1.getInventoryReceiptUnitCost(),
+                                             receipt2.getInventoryReceiptUnitCost()) ||
+                    DataBaseUtil.isDifferent(receipt1.getExternalReference(),
+                                             receipt2.getExternalReference())) {
                     dataChanged = true;
                     break;
                 }
@@ -175,7 +193,8 @@ public class SendoutOrderFillTabUI extends Screen {
     private ArrayList<Row> getTableModel() {
         String location;
         Row row;
-        InventoryXUseViewDO fillData;
+        InventoryXPutViewDO data;
+        InventoryLocationViewDO loc;
         ArrayList<String> names;
         ArrayList<Row> model;
 
@@ -185,21 +204,25 @@ public class SendoutOrderFillTabUI extends Screen {
 
         names = new ArrayList<String>();
 
-        for (int i = 0; i < manager.fill.count(); i++ ) {
-            fillData = manager.fill.get(i);
-            row = new Row(5);
-            row.setCell(0, fillData.getInventoryItemName());
+        for (int i = 0; i < manager.receipt.count(); i++ ) {
+            data = manager.receipt.get(i);
+            loc = data.getInventoryLocation();
+            row = new Row(8);
+            row.setCell(0, loc.getInventoryItemName());
             names.clear();
-            names.add(fillData.getStorageLocationName());
+            names.add(loc.getStorageLocationName());
             names.add(",");
-            names.add(fillData.getStorageLocationUnitDescription());
-            names.add(fillData.getStorageLocationLocation());
+            names.add(loc.getStorageLocationUnitDescription());
+            names.add(loc.getStorageLocationLocation());
             location = DataBaseUtil.concatWithSeparator(names, " ");
             row.setCell(1, location);
-            row.setCell(2, fillData.getQuantity());
-            row.setCell(3, fillData.getInventoryLocationLotNumber());
-            row.setCell(4, fillData.getInventoryLocationExpirationDate());
-            row.setData(fillData);
+            row.setCell(2, data.getQuantity());
+            row.setCell(3, loc.getLotNumber());
+            row.setCell(4, loc.getExpirationDate());
+            row.setCell(5, data.getInventoryReceiptReceivedDate());
+            row.setCell(6, data.getInventoryReceiptUnitCost());
+            row.setCell(7, data.getExternalReference());
+            row.setData(data);
             model.add(row);
         }
 

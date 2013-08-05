@@ -53,9 +53,9 @@ import org.openelis.modules.logging.client.LoggingScreen;
 import org.openelis.modules.method.client.MethodScreen;
 import org.openelis.modules.neonatalScreeningSampleLogin.client.NeonatalScreeningSampleLoginScreenUI;
 import org.openelis.modules.order.client.InternalOrderScreen;
-import org.openelis.modules.order.client.SendoutOrderScreen;
-import org.openelis.modules.order.client.VendorOrderScreen;
+import org.openelis.modules.order1.client.InternalOrderScreenUI;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
+import org.openelis.modules.order1.client.VendorOrderScreenUI;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreenUI;
 import org.openelis.modules.panel.client.PanelScreen;
@@ -776,9 +776,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.internalOrder());
-                            window.setContent(new InternalOrderScreen(window));
+                            window.setSize("880px", "570px");
+                            window.setContent(new InternalOrderScreenUI(window));
                             browser.addWindow(window, "internalOrder");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
@@ -799,9 +800,10 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.vendorOrder());
-                            window.setContent(new VendorOrderScreen(window));
+                            window.setSize("880px", "610px");
+                            window.setContent(new VendorOrderScreenUI(window));
                             browser.addWindow(window, "vendorOrder");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);

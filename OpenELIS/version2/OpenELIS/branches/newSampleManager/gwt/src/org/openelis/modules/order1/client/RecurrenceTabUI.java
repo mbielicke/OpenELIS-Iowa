@@ -130,6 +130,10 @@ public class RecurrenceTabUI extends Screen {
                 active.setEnabled(isState(QUERY) || ( !isProcessed && isState(ADD, UPDATE)));
                 active.setQueryMode(isState(QUERY));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? beginDate : parentOrderNum;
+            }
         });
 
         addScreenHandler(beginDate,
@@ -149,6 +153,10 @@ public class RecurrenceTabUI extends Screen {
                                                       ( !isProcessed && hasRecurrence && isState(ADD,
                                                                                                  UPDATE)));
                                  beginDate.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? endDate : active;
                              }
                          });
 
@@ -170,6 +178,10 @@ public class RecurrenceTabUI extends Screen {
                                                                                                UPDATE)));
                                  endDate.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? frequency : beginDate;
+                             }
                          });
 
         addScreenHandler(frequency,
@@ -189,6 +201,10 @@ public class RecurrenceTabUI extends Screen {
                                                                                                  UPDATE)));
                                  frequency.setQueryMode(isState(QUERY));
                              }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? unit : endDate;
+                             }
                          });
 
         addScreenHandler(unit, OrderMeta.getRecurrenceUnitId(), new ScreenHandler<Integer>() {
@@ -205,6 +221,10 @@ public class RecurrenceTabUI extends Screen {
                                 ( !isProcessed && hasRecurrence && isState(ADD, UPDATE)));
                 unit.setQueryMode(isState(QUERY));
             }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? parentOrderNum : frequency;
+            }
         });
 
         addScreenHandler(parentOrderNum,
@@ -217,6 +237,10 @@ public class RecurrenceTabUI extends Screen {
                              public void onStateChange(StateChangeEvent event) {
                                  parentOrderNum.setEnabled(isState(QUERY));
                                  parentOrderNum.setQueryMode(isState(QUERY));
+                             }
+                             
+                             public Widget onTab(boolean forward) {
+                                 return forward ? active : unit;
                              }
                          });
 
