@@ -24,55 +24,63 @@
 
 	<g:LayoutPanel>
 		<g:layer top="0px" bottom="35px">
-			<g:DeckLayoutPanel ui:field="deckLayoutPanel">
-				<r:Tree ui:field="tree" header="true"
-					styleName="{uiRes.table.ScreenTableWithSides}"
-					allowMultipleSelection="true" horizontalScroll="AS_NEEDED"
-					verticalScroll="AS_NEEDED">
-					<r:Column width="55" label="{msg.order_itemNum}" />
-					<r:Column width="636" label="{msg.order_testByMethodDescription}" />
-					<r:Leaf key="test">
-						<r:LeafColumn>
-							<t:TextBoxCell>
-								<w:TextBox field="Integer" required="true" />
-							</t:TextBoxCell>
-						</r:LeafColumn>
-						<r:LeafColumn>
-							<t:LabelCell>
-								<w:Label />
-							</t:LabelCell>
-						</r:LeafColumn>
-					</r:Leaf>
-					<r:Leaf key="analyte">
-						<r:LeafColumn>
-							<t:CheckBoxCell>
-								<w:CheckBox />
-							</t:CheckBoxCell>
-						</r:LeafColumn>
-						<r:LeafColumn>
-							<t:LabelCell />
-						</r:LeafColumn>
-					</r:Leaf>
-				</r:Tree>
-				<t:Table ui:field="queryTable" header="true"
-					styleName="{uiRes.table.ScreenTableWithSides}">
-					<t:Column width="55" label="{msg.order_itemNum}">
+			<r:Tree ui:field="tree" header="true"
+				styleName="{uiRes.table.ScreenTableWithSides}"
+				allowMultipleSelection="true" >
+				<r:Column width="55" label="{msg.order_itemNum}" />
+				<r:Column width="150" label="{msg.gen_test}" />
+				<r:Column width="150" label="{msg.gen_method}" />
+				<r:Column width="336" label="{msg.gen_description}" />
+				<r:Leaf key="test">
+					<r:LeafColumn>
 						<t:TextBoxCell>
-							<w:TextBox field="Integer" textAlignment="LEFT" />
+							<w:TextBox field="Integer" required="true" />
 						</t:TextBoxCell>
-					</t:Column>
-					<t:Column width="310" label="{msg.gen_test}">
+					</r:LeafColumn>
+					<r:LeafColumn>
+						<t:LabelCell>
+							<w:Label />
+						</t:LabelCell>
+					</r:LeafColumn>
+					<r:LeafColumn>
+						<t:LabelCell>
+							<w:Label />
+						</t:LabelCell>
+					</r:LeafColumn>
+					<r:LeafColumn>
+						<t:LabelCell>
+							<w:Label />
+						</t:LabelCell>
+					</r:LeafColumn>
+				</r:Leaf>
+				<r:Leaf key="analyte">
+					<r:LeafColumn>
+						<t:CheckBoxCell>
+							<w:CheckBox />
+						</t:CheckBoxCell>
+					</r:LeafColumn>
+					<r:LeafColumn>
+						<t:LabelCell />
+					</r:LeafColumn>
+				</r:Leaf>
+				<r:Leaf key="query">
+					<r:LeafColumn>
 						<t:TextBoxCell>
-							<w:TextBox field="String" textAlignment="LEFT" />
+							<w:TextBox field="Integer" />
 						</t:TextBoxCell>
-					</t:Column>
-					<t:Column width="310" label="{msg.gen_method}">
+					</r:LeafColumn>
+					<r:LeafColumn>
 						<t:TextBoxCell>
-							<w:TextBox field="String" textAlignment="LEFT" />
+							<w:TextBox field="String" />
 						</t:TextBoxCell>
-					</t:Column>
-				</t:Table>
-			</g:DeckLayoutPanel>
+					</r:LeafColumn>
+					<r:LeafColumn>
+						<t:TextBoxCell>
+							<w:TextBox field="String" />
+						</t:TextBoxCell>
+					</r:LeafColumn>
+				</r:Leaf>
+			</r:Tree>
 		</g:layer>
 		<g:layer bottom="0px" height="35px">
 			<g:LayoutPanel>

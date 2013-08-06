@@ -356,7 +356,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         /*
          * option menu items
          */
-        // TODO add code for menu items
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 duplicate.setEnabled(isState(State.DISPLAY));
@@ -1415,8 +1414,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             if (c == TestManager.class)
                 obj = TestService.get().fetchById((Integer)key);
             else if (c == AuxFieldGroupManager.class)
-                obj = AuxiliaryService.get().fetchById((Integer)key);            
-            
+                obj = AuxiliaryService.get().fetchById((Integer)key);
+
             cache.put(cacheKey, obj);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1731,6 +1730,16 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     /**
+     * returns the ship-to organization from the manager if there is one
+     */
+    private OrganizationDO getShipTo() {
+        if (manager == null)
+            return null;
+
+        return manager.getOrder().getOrganization();
+    }
+
+    /**
      * Sets the latest manager in the tabs
      */
     private void setData() {
@@ -1777,16 +1786,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         window.clearStatus();
 
         return true;
-    }
-
-    /**
-     * returns the ship-to organization from the manager if there is one
-     */
-    private OrganizationDO getShipTo() {
-        if (manager == null)
-            return null;
-
-        return manager.getOrder().getOrganization();
     }
 
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {

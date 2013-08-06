@@ -56,17 +56,12 @@ import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.QueryFieldUtil;
-import org.openelis.ui.widget.Queryable;
-import org.openelis.ui.widget.table.Row;
-import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.CellEditedEvent;
 import org.openelis.ui.widget.table.event.CellEditedHandler;
 import org.openelis.ui.widget.tree.Node;
 import org.openelis.ui.widget.tree.Tree;
-import org.openelis.ui.widget.tree.event.NodeDeletedEvent;
-import org.openelis.ui.widget.tree.event.NodeDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -80,7 +75,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.DeckLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class TestTabUI extends Screen {
@@ -92,13 +86,7 @@ public class TestTabUI extends Screen {
     private static TestTabUiBinder uiBinder = GWT.create(TestTabUiBinder.class);
 
     @UiField
-    protected DeckLayoutPanel      deckLayoutPanel;
-
-    @UiField
     protected Tree                 tree;
-
-    @UiField
-    protected Table                queryTable;
 
     @UiField
     protected AutoComplete         testName;
@@ -127,13 +115,41 @@ public class TestTabUI extends Screen {
     private void initialize() {
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                tree.setRoot(getRoot());
+                if ( !isState(QUERY))
+                    tree.setRoot(getRoot());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                tree.setEnabled(isState(DISPLAY, ADD, UPDATE));
-                if ( !isState(QUERY))
-                    deckLayoutPanel.showWidget(0);
+                tree.setEnabled(isState(QUERY, DISPLAY, ADD, UPDATE));
+                tree.setQueryMode(isState(QUERY));
+                if (isState(QUERY))
+                    tree.selectNodeAt(0);
+            }
+
+            public Object getQuery() {
+                ArrayList<QueryData> qds;
+                QueryData qd;
+
+                qds = new ArrayList<QueryData>();
+                for (int i = 0; i < 3; i++ ) {
+                    qd = (QueryData)tree.getValueAt(0, i);
+                    if (qd != null) {
+                        switch (i) {
+                            case 0:
+                                qd.setKey(OrderMeta.getTestItemSequence());
+                                break;
+                            case 1:
+                                qd.setKey(OrderMeta.getTestName());
+                                break;
+                            case 2:
+                                qd.setKey(OrderMeta.getTestMethodName());
+                                break;
+                        }
+                        qds.add(qd);
+                    }
+                }
+
+                return qds;
             }
         });
 
@@ -165,32 +181,6 @@ public class TestTabUI extends Screen {
             }
         });
 
-        tree.addNodeDeletedHandler(new NodeDeletedHandler() {
-            public void onNodeDeleted(NodeDeletedEvent event) {
-                Node node;
-
-                node = event.getNode();
-                /*
-                 * analytes don't need to be deleted here because they get
-                 * deleted in the back-end when the test gets deleted
-                 */
-                if (TEST_LEAF.equals(node.getType())) {
-                    try {
-                        /*
-                         * childIndex and not event.getIndex() is passed to the
-                         * method because the former corresponds to the ordering
-                         * of the tests in the manager whereas the latter to the
-                         * index of the deleted item in the tree which differs
-                         * based on what items are showing
-                         */
-                        // manager.test.removeAt(node.getIndex(node.getFirstChild()));
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                    }
-                }
-            }
-        });
-
         addScreenHandler(testName, "testName", new ScreenHandler<AutoCompleteValue>() {
             public void onDataChange(DataChangeEvent event) {
                 testName.setValue(null);
@@ -199,6 +189,7 @@ public class TestTabUI extends Screen {
             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
                 int index;
                 Node selRow;
+                ScheduledCommand cmd;
                 AddTestEvent.AddType type;
                 AutoCompleteValue val;
                 TestMethodVO test;
@@ -226,6 +217,18 @@ public class TestTabUI extends Screen {
                         index = tree.getRoot().getIndex(selRow.getParent());
                     index++ ;
                 }
+                /*
+                 * to set the focus back on the add test widget, a command must
+                 * be scheduled
+                 */
+                cmd = new ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                        testName.setFocus(true);
+                    }
+                };
+                Scheduler.get().scheduleDeferred(cmd);
+
                 bus.fireEvent(new AddTestEvent(type, test.getTestId(), index));
             }
 
@@ -241,57 +244,6 @@ public class TestTabUI extends Screen {
         testName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 showTestMatches(event.getMatch());
-            }
-        });
-
-        addScreenHandler(queryTable, "queryTable", new ScreenHandler<ArrayList<Row>>() {
-            public void onStateChange(StateChangeEvent event) {
-                boolean isQuery;
-                ScheduledCommand cmd;
-
-                isQuery = isState(QUERY);
-                if (isQuery) {
-                    deckLayoutPanel.showWidget(1);
-                    /*
-                     * The table won't show its headers until it is resized, and
-                     * there needs to be some delay between showing the table
-                     * and resizing the table.
-                     */
-                    cmd = new ScheduledCommand() {
-                        @Override
-                        public void execute() {
-                            queryTable.onResize();
-                        }
-                    };
-                    Scheduler.get().scheduleDeferred(cmd);
-                }
-                queryTable.setEnabled(isQuery);
-                queryTable.setQueryMode(isQuery);
-            }
-
-            public Object getQuery() {
-                ArrayList<QueryData> qds = new ArrayList<QueryData>();
-                QueryData qd;
-
-                for (int i = 0; i < 3; i++ ) {
-                    qd = (QueryData) ((Queryable)queryTable.getColumnWidget(i)).getQuery();
-                    if (qd != null) {
-                        switch (i) {
-                            case 0:
-                                qd.setKey(OrderMeta.getTestItemSequence());
-                                break;
-                            case 1:
-                                qd.setKey(OrderMeta.getTestName());
-                                break;
-                            case 2:
-                                qd.setKey(OrderMeta.getTestMethodName());
-                                break;
-                        }
-                        qds.add(qd);
-                    }
-                }
-
-                return qds;
             }
         });
 
@@ -419,35 +371,26 @@ public class TestTabUI extends Screen {
 
     private Node getRoot() {
         int i, j;
-        String testLabel;
         Node root, tnode, anode;
         OrderTestAnalyteViewDO ota;
         OrderTestViewDO ot;
-        ArrayList<String> names;
 
         root = new Node();
         if (manager == null)
             return root;
 
-        names = new ArrayList<String>();
-
         for (i = 0; i < manager.test.count(); i++ ) {
             ot = manager.test.get(i);
 
-            tnode = new Node(2);
+            tnode = new Node(4);
             tnode.setType(TEST_LEAF);
             tnode.setCell(0, ot.getItemSequence());
             /*
              * create label for the test
              */
-            names.clear();
-            names.add(ot.getTestName());
-            names.add(Messages.get().order_by());
-            names.add(ot.getMethodName());
-            names.add(",");
-            names.add(ot.getDescription());
-            testLabel = DataBaseUtil.concatWithSeparator(names, " ");
-            tnode.setCell(1, testLabel);
+            tnode.setCell(1, ot.getTestName());
+            tnode.setCell(2, ot.getMethodName());
+            tnode.setCell(3, ot.getDescription());
             tnode.setData(ot);
             root.add(tnode);
 
