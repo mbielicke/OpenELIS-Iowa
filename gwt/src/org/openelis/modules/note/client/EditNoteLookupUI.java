@@ -491,7 +491,7 @@ public abstract class EditNoteLookupUI extends Screen {
         node = new Node(1);
         node.setType("note");
         node.setKey(n.getId());
-        node.setCell(0, n.getDescription());
+        node.setCell(0, DataBaseUtil.concatWithSeparator(n.getName(), " : ", n.getDescription()));
         node.setData(n.getText());
 
         return node;
