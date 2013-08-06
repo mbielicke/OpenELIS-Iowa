@@ -101,9 +101,9 @@ public class KitTrackingReportBean {
         tDate = ReportUtil.getSingleParameter(param, "TO_DATE");
         section = ReportUtil.getListParameter(param, "SECTION_ID");
         shipFrom = ReportUtil.getListParameter(param, OrderMeta.getShipFromId());
-        shipTo = ReportUtil.getListParameter(param, OrderMeta.getOrganizationId());
-        description = ReportUtil.getListParameter(param, OrderMeta.getDescription());
-        orderStatus = ReportUtil.getListParameter(param, OrderMeta.getStatusId());
+        shipTo = ReportUtil.getSingleParameter(param, OrderMeta.getOrganizationId());
+        description = ReportUtil.getSingleParameter(param, OrderMeta.getDescription());
+        orderStatus = ReportUtil.getSingleParameter(param, OrderMeta.getStatusId());
         sortBy = ReportUtil.getSingleParameter(param, "SORT_BY");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
@@ -122,17 +122,17 @@ public class KitTrackingReportBean {
             shipFrom = "";
         
         if ( !DataBaseUtil.isEmpty(shipTo))
-            shipTo = " and org.id " + shipTo;
+            shipTo = " and org.id = " + shipTo;
         else
             shipTo = "";
         
         if ( !DataBaseUtil.isEmpty(description))
-            description = " and o.description " + description;
+            description = " and o.description = '" + description + "'";
         else
             description = "";
         
         if ( !DataBaseUtil.isEmpty(orderStatus))
-            orderStatus = " and o.status_id " + orderStatus;
+            orderStatus = " and o.status_id = " + orderStatus;
         else
             orderStatus = "";
         
