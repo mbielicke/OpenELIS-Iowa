@@ -24,7 +24,7 @@
 
 	<g:LayoutPanel>
 		<g:layer top="0px" bottom="30px">
-			<g:HTMLPanel>
+			<g:HTMLPanel styleName="{res.style.WhiteContentPanel}">
 				<w:NotesPanel ui:field="notePanel" /> 
 			</g:HTMLPanel>
 		</g:layer>
