@@ -319,11 +319,6 @@ public class OrganizationTabUI extends Screen {
         model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("organization_type");
         for (DictionaryDO data : list) {
-//            /*
-//             * Ship to is on the main screen, so we don't show it in the table
-//             */
-//            if (Constants.dictionary().ORG_SHIP_TO.equals(data.getId()))
-//                continue;
             item = new Item<Integer>(data.getId(), data.getEntry());
             item.setEnabled( ("Y".equals(data.getIsActive())));
             model.add(item);
@@ -434,11 +429,6 @@ public class OrganizationTabUI extends Screen {
 
         for (i = 0; i < manager.organization.count(); i++ ) {
             data = manager.organization.get(i);
-//            /*
-//             * Ship to is on the main screen, so we don't show it in the table
-//             */
-//            if (Constants.dictionary().ORG_SHIP_TO.equals(data.getTypeId()))
-//                continue;
             row = new Row(9);
             row.setCell(0, data.getTypeId());
             row.setCell(1, data.getOrganizationAttention());

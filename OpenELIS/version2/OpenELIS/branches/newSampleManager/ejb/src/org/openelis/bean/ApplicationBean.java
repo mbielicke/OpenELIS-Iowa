@@ -168,7 +168,6 @@ public class ApplicationBean {
         Constants.dictionary().ORG_BILL_TO = dictId(map, "org_bill_to");
         Constants.dictionary().ORG_SECOND_REPORT_TO = dictId(map, "org_second_report_to");
         Constants.dictionary().ORG_BIRTH_HOSPITAL = dictId(map, "org_birth_hospital");
-        Constants.dictionary().ORG_SHIP_TO = dictId(map, "org_ship_to");
         Constants.dictionary().POS_DUPLICATE = dictId(map, "pos_duplicate");
         Constants.dictionary().POS_FIXED = dictId(map, "pos_fixed");
         Constants.dictionary().POS_FIXED_ALWAYS = dictId(map, "pos_fixed_always");

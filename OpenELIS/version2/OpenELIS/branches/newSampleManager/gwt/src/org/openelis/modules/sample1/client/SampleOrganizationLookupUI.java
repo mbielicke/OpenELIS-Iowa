@@ -284,8 +284,6 @@ public abstract class SampleOrganizationLookupUI extends Screen {
 
         list = CategoryCache.getBySystemName("organization_type");
         for (DictionaryDO d : list) {
-            if (Constants.dictionary().ORG_SHIP_TO.equals(d.getId()))
-                continue;
             item = new Item<Integer>(d.getId(), d.getEntry());
             item.setEnabled("Y".equals(d.getIsActive()));
             model.add(item);
