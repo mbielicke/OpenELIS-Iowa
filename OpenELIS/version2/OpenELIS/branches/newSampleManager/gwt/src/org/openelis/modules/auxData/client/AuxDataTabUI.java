@@ -308,6 +308,16 @@ public abstract class AuxDataTabUI extends Screen {
      * overridden to return the aux data at the specified index in the manager
      */
     public abstract AuxDataViewDO get(int i);
+    
+    /**
+     * overridden to return the key for aux field ID from the meta used by the main screen
+     */
+    public abstract String getAuxFieldMetaKey();
+    
+    /**
+     * overridden to return the key for aux field value from the meta used by the main screen
+     */
+    public abstract String getValueMetaKey();
 
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fieldList;
@@ -323,7 +333,7 @@ public abstract class AuxDataTabUI extends Screen {
             if (row.getCell(2) != null) {
 
                 field = new QueryData();
-                field.setKey(SampleMeta.getAuxDataAuxFieldId());
+                field.setKey(getAuxFieldMetaKey());
                 field.setType(QueryData.Type.INTEGER);
                 // TODO change this code
                 // field.setQuery(String.valueOf(fieldDO.getId()));
@@ -331,7 +341,7 @@ public abstract class AuxDataTabUI extends Screen {
 
                 // aux data value
                 field = new QueryData();
-                field.setKey(SampleMeta.getAuxDataValue());
+                field.setKey(getValueMetaKey());
                 field.setType(QueryData.Type.STRING);
                 field.setQuery(String.valueOf(row.getCell(2)));
                 fieldList.add(field);
@@ -474,8 +484,15 @@ public abstract class AuxDataTabUI extends Screen {
     }
 
     private void addAuxGroups(ArrayList<Integer> ids) {
-        if (ids != null && ids.size() > 0)
+        /*
+         * In query state, aux data are not to be added to the manager. They are
+         * only shown in the table so that the user can query by them.
+         */
+        if (isState(QUERY)) {
+            //TODO show the aux data 
+        } else if (ids != null && ids.size() > 0) {
             bus.fireEvent(new AuxGroupChangeEvent(AuxGroupChangeEvent.Action.ADD, ids));
+        }
     }
 
     /**
@@ -501,7 +518,7 @@ public abstract class AuxDataTabUI extends Screen {
              * find the aux group and aux field corresponding to this aux data
              * and set the values in the non-editable widgets
              */
-            afgm =  ((CacheProvider)parentScreen).get(data.getGroupId(), AuxFieldGroupManager.class);
+            afgm = ((CacheProvider)parentScreen).get(data.getGroupId(), AuxFieldGroupManager.class);
             if (afgm != null) {
                 try {
                     afm = afgm.getFields();

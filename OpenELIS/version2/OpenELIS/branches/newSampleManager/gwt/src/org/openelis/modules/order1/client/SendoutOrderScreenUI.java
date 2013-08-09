@@ -251,6 +251,16 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             public AuxDataViewDO get(int i) {
                 return manager.auxData.get(i);
             }
+
+            @Override
+            public String getAuxFieldMetaKey() {
+                return OrderMeta.getAuxDataAuxFieldId();
+            }
+
+            @Override
+            public String getValueMetaKey() {
+                return OrderMeta.getAuxDataValue();
+            }
         };
 
         initWidget(uiBinder.createAndBindUi(this));
