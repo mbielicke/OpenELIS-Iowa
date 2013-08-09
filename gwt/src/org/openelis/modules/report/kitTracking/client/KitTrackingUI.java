@@ -441,12 +441,12 @@ public class KitTrackingUI extends Screen {
         sortBy.setModel(stringModel);
         
         // printer dropdown
-        stringModel = new ArrayList<Item<String>>();
-        printers = KitTrackingReportService.get().getPrinterListByType("pdf");
-        stringModel.add(new Item<String>("-view-", "View in PDF"));
-        for (OptionListItem data : printers)
-            stringModel.add(new Item<String>(data.getKey(), data.getLabel()));
-        printer.setModel(stringModel);
+//        stringModel = new ArrayList<Item<String>>();
+//        printers = KitTrackingReportService.get().getPrinterListByType("pdf");
+//        stringModel.add(new Item<String>("-view-", "View in PDF"));
+//        for (OptionListItem data : printers)
+//            stringModel.add(new Item<String>(data.getKey(), data.getLabel()));
+//        printer.setModel(stringModel);
     }
 
     @UiHandler("runReportButton")

@@ -31,36 +31,33 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.KitTrackingReportBean;
-import org.openelis.bean.PrinterCacheBean;
 import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.modules.report.kitTracking.client.KitTrackingReportServiceInt;
-import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 
 @WebServlet("/openelis/kitTrackingReport")
 public class KitTrackingReportServlet extends RemoteServlet implements KitTrackingReportServiceInt {
-    
-    private static final long serialVersionUID = 1L;
-    
+
+    private static final long     serialVersionUID = 1L;
+
     @EJB
     private KitTrackingReportBean kitTrackingReport;
-    
-    @EJB
-    private PrinterCacheBean printers;
 
-	@Override
-	public ReportStatus runReport(Query query) throws Exception {
-	    ReportStatus st;
-        
+    @Override
+    public ArrayList<Prompt> getPrompts() throws Exception {
+        return kitTrackingReport.getPrompts();
+    }
+
+    @Override
+    public ReportStatus runReport(Query query) throws Exception {
+        ReportStatus st;
+
         st = kitTrackingReport.runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
         return st;
-	}
-	
-	public ArrayList<OptionListItem> getPrinterListByType(String type) {
-	    return printers.getListByType(type);
-	}
+    }
 }

@@ -81,8 +81,14 @@ public class ReportUtil {
         QueryData q;
 
         q = parameter.get(key);
-        if (q != null)
+        if (q != null) {
+            /*
+             * single quotes are replaced with two single quotes to escape the
+             * character in SQL
+             */
+            q.setQuery(q.getQuery().replaceAll("'", "''"));
             return q.getQuery();
+        }
 
         return null;
     }
@@ -98,6 +104,11 @@ public class ReportUtil {
 
         q = parameter.get(key);
         if (q != null) {
+            /*
+             * single quotes are replaced with two single quotes to escape the
+             * character in SQL
+             */
+            q.setQuery(q.getQuery().replaceAll("'", "''"));
             if (q.getQuery().contains(","))
                 return "in (" + q.getQuery() + ")";
             else if ( !DataBaseUtil.isEmpty(q.getQuery()))
@@ -105,7 +116,7 @@ public class ReportUtil {
         }
         return null;
     }
-    
+
     /**
      * Return the query part of QueryData as an array of integers
      */
@@ -130,25 +141,26 @@ public class ReportUtil {
     }
 
     /**
-     * Returns a Datetime object for given string. The pattern for the date, date time,
-     * and time is specified in the messages. 
+     * Returns a Datetime object for given string. The pattern for the date,
+     * date time, and time is specified in the messages.
      */
     public static Datetime getDate(String strDate) {
         return getDatetime(Datetime.YEAR, Datetime.DAY, strDate, Messages.get().datePattern());
     }
-    
+
     public static Datetime getDatetime(String strDate) {
-        return getDatetime(Datetime.YEAR, Datetime.MINUTE, strDate, Messages.get().dateTimePattern());
+        return getDatetime(Datetime.YEAR, Datetime.MINUTE, strDate, Messages.get()
+                                                                            .dateTimePattern());
     }
-    
-    public static Datetime getTime(String strDate) {        
+
+    public static Datetime getTime(String strDate) {
         return getDatetime(Datetime.HOUR, Datetime.MINUTE, strDate, Messages.get().timePattern());
     }
-    
+
     public static Datetime getDatetime(byte startCode, byte endCode, String strDate, String pattern) {
         Date d;
-        SimpleDateFormat format;        
-        
+        SimpleDateFormat format;
+
         if (DataBaseUtil.isEmpty(strDate))
             return null;
 
@@ -158,27 +170,27 @@ public class ReportUtil {
         } catch (ParseException e) {
             return null;
         }
-        
+
         return Datetime.getInstance(startCode, endCode, d);
     }
-    
+
     public static String toString(Datetime datetime, String pattern) {
         if (datetime == null)
             return "";
 
         return toString(datetime.getDate(), pattern);
     }
-    
+
     public static String toString(Date date, String pattern) {
         SimpleDateFormat format;
-        
+
         if (date == null)
             return "";
-            
+
         format = new SimpleDateFormat(pattern);
         return format.format(date);
     }
-    
+
     /**
      * Returns the URL for the specified jasper report. Use this method to find
      * the jasper report within the J2EE ear structure.
@@ -219,8 +231,9 @@ public class ReportUtil {
     }
 
     /**
-     * Sends the file to specified printer, delete the file and returns the printer's status.
-     * NOTE: This method is very "lpr" and "cups" dependent and will not work on non unix platforms.
+     * Sends the file to specified printer, delete the file and returns the
+     * printer's status. NOTE: This method is very "lpr" and "cups" dependent
+     * and will not work on non unix platforms.
      */
     public static String print(File file, String destination, int copies, String... options) throws Exception {
         try {
@@ -231,14 +244,16 @@ public class ReportUtil {
             file.delete();
         }
     }
-    
+
     /**
      * Sends the file to specified printer and returns the printer's status.
-     * NOTE: This method is very "lpr" and "cups" dependent and will not work on non unix platforms.
+     * NOTE: This method is very "lpr" and "cups" dependent and will not work on
+     * non unix platforms.
      */
-    public static String printWithoutDelete(File file, String destination, int copies, String... options) throws Exception {
+    public static String printWithoutDelete(File file, String destination, int copies,
+                                            String... options) throws Exception {
         String status;
-        ArrayList<String> args; 
+        ArrayList<String> args;
 
         /*
          * UNIX style CUPS printing on LINUX.
@@ -247,14 +262,14 @@ public class ReportUtil {
             args = new ArrayList<String>();
             args.add("lpr");
             args.add("-U");
-            args.add(EJBFactory.getUserCache().getName()); 
-            args.add("-P");                                 
+            args.add(EJBFactory.getUserCache().getName());
+            args.add("-P");
             args.add(destination);
             if (copies > 1) {
                 args.add("-#");
                 args.add(String.valueOf(copies));
-            }                                                       
-               
+            }
+
             for (int i = 0; i < options.length; i++ ) {
                 args.add("-o");
                 args.add(String.valueOf(options[i]));
@@ -263,52 +278,53 @@ public class ReportUtil {
             exec(args);
             status = "print queued to " + destination;
         } catch (Exception e) {
-            throw new Exception("Could not print to queue "+destination+"; "+e.getMessage());
+            throw new Exception("Could not print to queue " + destination + "; " + e.getMessage());
         }
 
         return status;
     }
-    
+
     /**
      * Sends the file through cups for faxing and returns the queued status.
-     * NOTE: This method is very "sendfax" and "cups" dependent and will not work on non unix platforms.
+     * NOTE: This method is very "sendfax" and "cups" dependent and will not
+     * work on non unix platforms.
      */
     public static String fax(File file, String faxNumber, String fromName, String toName,
                              String toCompany, String faxNote, String faxOwner, String faxEmail) throws Exception {
         String status;
-        ArrayList<String> args; 
-        
+        ArrayList<String> args;
+
         try {
             args = new ArrayList<String>();
             args.add("sendfax");
             args.add("-R");
-            
-            if (!DataBaseUtil.isEmpty(faxOwner)) {
+
+            if ( !DataBaseUtil.isEmpty(faxOwner)) {
                 args.add("-o");
                 args.add(faxOwner);
             }
 
-            if (!DataBaseUtil.isEmpty(faxEmail)) {
+            if ( !DataBaseUtil.isEmpty(faxEmail)) {
                 args.add("-f");
                 args.add(faxEmail);
             }
 
-            if (!DataBaseUtil.isEmpty(fromName)) {
+            if ( !DataBaseUtil.isEmpty(fromName)) {
                 args.add("-X");
                 args.add(fromName);
             }
-            if (!DataBaseUtil.isEmpty(toCompany)) {
+            if ( !DataBaseUtil.isEmpty(toCompany)) {
                 args.add("-x");
                 args.add(toCompany);
             }
-            if (!DataBaseUtil.isEmpty(faxNote)) {
+            if ( !DataBaseUtil.isEmpty(faxNote)) {
                 args.add("-c");
                 args.add(faxNote);
             }
             faxNumber = faxNumber.replaceAll("[^0-9]", "");
-            args.add("-d");            
-            args.add(!DataBaseUtil.isEmpty(toName) ? toName + "@" + faxNumber : faxNumber);
-            
+            args.add("-d");
+            args.add( !DataBaseUtil.isEmpty(toName) ? toName + "@" + faxNumber : faxNumber);
+
             args.add(file.toString());
             exec(args);
             status = "fax queued for " + faxNumber;
@@ -317,14 +333,14 @@ public class ReportUtil {
         }
 
         return status;
-    }   
+    }
 
     /**
-     * Moves the specified file to upload save directory and changes its permission
-     * to read/writable by all. Use this method to allow a JBOSS server and Tomcat server
-     * to access a shared directory (and the file) even when they are on two different
-     * physical servers. NOTE: This method uses "chmod" and will not work
-     * on non unix systems.
+     * Moves the specified file to upload save directory and changes its
+     * permission to read/writable by all. Use this method to allow a JBOSS
+     * server and Tomcat server to access a shared directory (and the file) even
+     * when they are on two different physical servers. NOTE: This method uses
+     * "chmod" and will not work on non unix systems.
      */
     public static File saveForUpload(File file) throws Exception {
         File movedFile;
@@ -341,10 +357,10 @@ public class ReportUtil {
         copy(file, movedFile);
         exec("chmod", "666", movedFile.getAbsolutePath());
         file.delete();
-        
+
         return movedFile;
     }
-    
+
     /**
      * Convenience method to get the value of a system variable
      */
@@ -354,7 +370,7 @@ public class ReportUtil {
         data = EJBFactory.getSystemVariable().fetchByName(variableName);
         return data.getValue();
     }
-        
+
     /**
      * Copies from the src file to dst
      */
@@ -367,61 +383,61 @@ public class ReportUtil {
         byte b[];
 
         b = new byte[1024];
-        while ((l = in.read(b)) > 0) 
+        while ( (l = in.read(b)) > 0)
             out.write(b, 0, l);
 
         in.close();
-        out.close(); 
+        out.close();
     }
-    
+
     /**
-     * Returns the sub-directory path of an attachment given the attachment id 
+     * Returns the sub-directory path of an attachment given the attachment id
      */
     public static String getAttachmentSubdirectory(Integer id) {
         char path[];
-        
+
         path = String.format("%010d", id).toCharArray();
         if (path != null && path.length == 10) {
-            return path[6] + File.separator +
-                   path[7] + File.separator +
-                   path[8] + File.separator +
+            return path[6] + File.separator + path[7] + File.separator + path[8] + File.separator +
                    path[9];
         }
         return ".";
     }
-    
+
     /**
      * Returns the initials for the specified system user id
      */
-    public static String getInitialsForUserId(Integer userId) {        
+    public static String getInitialsForUserId(Integer userId) {
         SystemUserVO userVO;
-   
+
         try {
             userVO = EJBFactory.getUserCache().getSystemUser(userId);
             return userVO.getInitials();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }                
+        }
     }
-    
+
     /**
      * Executes a system command and waits for its exit status. The method
-     * throws the subprocess's error string as an exception if the exit code is not 0.
+     * throws the subprocess's error string as an exception if the exit code is
+     * not 0.
      */
     protected static void exec(ArrayList<String> args) throws Exception {
         String cmd[];
 
         cmd = new String[args.size()];
-        for (int i = 0; i < args.size(); i++) 
+        for (int i = 0; i < args.size(); i++ )
             cmd[i] = args.get(i);
-                
-        exec(cmd);        
+
+        exec(cmd);
     }
-    
+
     /**
      * Executes a system command and waits for its exit status. The method
-     * throws the subprocess's error string as an exception if the exit code is not 0.
+     * throws the subprocess's error string as an exception if the exit code is
+     * not 0.
      */
     protected static void exec(String... command) throws Exception {
         Process p;
@@ -435,7 +451,7 @@ public class ReportUtil {
             throw new Exception(err.toString());
         }
     }
-    
+
     /**
      * Parses the clause in userPermission and returns the values in a format
      * which can be understood by the Query Builder.
@@ -446,29 +462,30 @@ public class ReportUtil {
         String key, value;
 
         map = new HashMap<String, String>();
-        if(DataBaseUtil.isEmpty(clause))
+        if (DataBaseUtil.isEmpty(clause))
             return map;
         str = clause.split(";");
         for (int i = 0; i < str.length; i++ ) {
             str1 = str[i].split(":");
-            if(str1.length != 2)
+            if (str1.length != 2)
                 continue;
             key = str1[0];
             value = str1[1];
-            if(DataBaseUtil.isEmpty(key)|| DataBaseUtil.isEmpty(value))
+            if (DataBaseUtil.isEmpty(key) || DataBaseUtil.isEmpty(value))
                 continue;
             if (value.contains(","))
-                value = " in (" + value +")";
+                value = " in (" + value + ")";
             else
-                value = " = " +value;
+                value = " = " + value;
             map.put(key, value);
         }
         return map;
     }
-    
+
     /**
-     * Parses the clause in userPermission and returns the values as a HashMap where 
-     * the key is the name of a field from the clause and the value is an ArrayList of Integers
+     * Parses the clause in userPermission and returns the values as a HashMap
+     * where the key is the name of a field from the clause and the value is an
+     * ArrayList of Integers
      */
     public static HashMap<String, ArrayList<Integer>> parseClauseAsArrayList(String clause) {
         HashMap<String, ArrayList<Integer>> map;
@@ -477,41 +494,41 @@ public class ReportUtil {
         String key, value;
 
         map = new HashMap<String, ArrayList<Integer>>();
-        if(DataBaseUtil.isEmpty(clause))
+        if (DataBaseUtil.isEmpty(clause))
             return map;
         str = clause.split(";");
         for (int i = 0; i < str.length; i++ ) {
             list = new ArrayList<Integer>();
             str1 = str[i].split(":");
-            if(str1.length != 2)
+            if (str1.length != 2)
                 continue;
             key = str1[0];
             value = str1[1];
-            if(DataBaseUtil.isEmpty(key)|| DataBaseUtil.isEmpty(value))
+            if (DataBaseUtil.isEmpty(key) || DataBaseUtil.isEmpty(value))
                 continue;
             str2 = value.split(",");
-            for(int j = 0; j < str2.length; j++) {
+            for (int j = 0; j < str2.length; j++ ) {
                 try {
                     list.add(Integer.parseInt(str2[j]));
                 } catch (Exception ex) {
-                   continue;
+                    continue;
                 }
-            } 
-            map.put(key, list);         
+            }
+            map.put(key, list);
         }
         return map;
     }
-    
-    public static void sendEmail(String from, String to, String subject, String body) throws Exception { 
+
+    public static void sendEmail(String from, String to, String subject, String body) throws Exception {
         Properties props;
         Session session;
-        Message msg;        
-        
-        props = new Properties();        
-        
+        Message msg;
+
+        props = new Properties();
+
         props.put("mail.smtp.host", getSystemVariableValue("mail_smtp_host"));
         props.put("mail.smtp.port", getSystemVariableValue("mail_smtp_port"));
-        
+
         session = Session.getDefaultInstance(props, null);
         msg = new MimeMessage(session);
         msg.setContent(body, "text/html; charset=ISO-8859-1");
@@ -522,18 +539,18 @@ public class ReportUtil {
 
         Transport.send(msg);
     }
-    
-    /** 
-     * This method returns a segment of a command like the one for printing or 
+
+    /**
+     * This method returns a segment of a command like the one for printing or
      * faxing a file, in the format: option "arg" . The first part of the string
-     * is the option to be used in the command e.g. -P, for specifying the printer,
-     * and the second part is the value for that option e.g. "printer 1". If arg
-     * is null or empty then it returns an empty string.     
+     * is the option to be used in the command e.g. -P, for specifying the
+     * printer, and the second part is the value for that option e.g.
+     * "printer 1". If arg is null or empty then it returns an empty string.
      */
     private static String getOption(String option, String arg) {
         if (DataBaseUtil.isEmpty(arg))
             return "";
         arg = arg.trim().replaceAll("\"", "'");
-        return " "+option+" \""+arg+"\"";
+        return " " + option + " \"" + arg + "\"";
     }
 }
