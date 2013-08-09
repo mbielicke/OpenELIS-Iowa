@@ -72,7 +72,7 @@
 						<hr />
 					</g:HTMLPanel>
 				</g:layer>
-				<g:layer height="35px" bottom="140px">
+				<g:layer height="35px" top="120px">
 					<g:HTMLPanel width="100%">
 
 						<table class="{res.style.Form}">
