@@ -145,7 +145,7 @@ public class OrganizationTabUI extends Screen {
                                 qd.setKey(OrderMeta.getOrderOrganizationTypeId());
                                 break;
                             case 1:
-                                qd.setKey(OrderMeta.getOrganizationAttention());
+                                qd.setKey(OrderMeta.getOrderOrganizationOrganizationAttention());
                                 break;
                             case 2:
                                 qd.setKey(OrderMeta.getOrderOrganizationOrganizationName());

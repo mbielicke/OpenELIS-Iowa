@@ -277,6 +277,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             public AuxDataViewDO get(int i) {
                 return manager.auxData.get(i);
             }
+
+            @Override
+            public String getAuxFieldMetaKey() {
+                return SampleMeta.getAuxDataAuxFieldId();
+            }
+
+            @Override
+            public String getValueMetaKey() {
+                return SampleMeta.getAuxDataValue();
+            }
         };
 
         initWidget(uiBinder.createAndBindUi(this));
