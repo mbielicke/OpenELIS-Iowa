@@ -70,6 +70,7 @@ import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
+import org.openelis.modules.report.client.KitTrackingReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.RequestformReportScreen;
@@ -1847,14 +1848,12 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.kitTracking_kitTrackingReport());
-                            window.setSize("400px", "330px");
-                            window.setContent(new KitTrackingUI(window));
+                            window.setContent(new KitTrackingReportScreen(window));
                             browser.addWindow(window, "kitTrackingReport");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
-                            e.printStackTrace();
                             Window.alert(e.getMessage());
                         }
                     }
