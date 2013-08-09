@@ -42,9 +42,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ParameterTabUI extends Screen {
+public class ParameterTabUI extends ResizeComposite {
     
     @UiTemplate("ParameterTab.ui.xml")
     interface ParameterTabUiBinder extends UiBinder<Widget, ParameterTabUI> {
@@ -64,8 +65,10 @@ public class ParameterTabUI extends Screen {
     protected Dropdown<Integer>         type;
 
     private boolean                     loaded;
+    
+    private Screen                      parentScreen;
 
-    public ParameterTabUI() {
+    public ParameterTabUI(Screen parentScreen) {
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
@@ -75,15 +78,15 @@ public class ParameterTabUI extends Screen {
 
     private void initialize() {
 
-        addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
+        parentScreen.addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                if ( !isState(State.QUERY))
+                if ( !parentScreen.isState(State.QUERY))
                     table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
-                table.setQueryMode(isState(QUERY));
+                table.setQueryMode(parentScreen.isState(QUERY));
             }
 
             public Object getQuery() {
@@ -111,7 +114,7 @@ public class ParameterTabUI extends Screen {
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE, QUERY))
+                if ( !parentScreen.isState(ADD, UPDATE, QUERY))
                     event.cancel();
             }
         });
@@ -122,7 +125,7 @@ public class ParameterTabUI extends Screen {
                 Object val;
                 OrganizationParameterDO data;
 
-                if (state == State.QUERY)
+                if (parentScreen.isState(State.QUERY))
                     return;
 
                 r = event.getRow();
@@ -167,15 +170,15 @@ public class ParameterTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
+        parentScreen.addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                remove.setEnabled(isState(ADD, UPDATE));
+                remove.setEnabled(parentScreen.isState(ADD, UPDATE));
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
+        parentScreen.addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, UPDATE));
+                add.setEnabled(parentScreen.isState(ADD, UPDATE));
             }
         });
         
@@ -247,12 +250,5 @@ public class ParameterTabUI extends Screen {
     public void setManager(OrganizationManager manager) {
         this.manager = manager;
         loaded = false;
-    }
-
-    public void draw() {
-        if ( !loaded)
-            fireDataChange();
-
-        loaded = true;
     }
 }
