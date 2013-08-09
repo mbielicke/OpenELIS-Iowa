@@ -69,6 +69,7 @@ public class ParameterTabUI extends ResizeComposite {
     private Screen                      parentScreen;
 
     public ParameterTabUI(Screen parentScreen) {
+        this.parentScreen = parentScreen;
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
