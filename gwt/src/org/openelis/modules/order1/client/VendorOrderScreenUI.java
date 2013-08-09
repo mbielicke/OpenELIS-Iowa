@@ -102,7 +102,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-public class VendorOrderScreenUI extends Screen implements CacheProvider {
+public class VendorOrderScreenUI extends Screen {
 
     @UiTemplate("VendorOrder.ui.xml")
     interface VendorOrderUiBinder extends UiBinder<Widget, VendorOrderScreenUI> {
@@ -688,6 +688,8 @@ public class VendorOrderScreenUI extends Screen implements CacheProvider {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
                     window.setError(Messages.get().gen_mustCommitOrAbort());
+                } else {
+                    tabPanel.close();
                 }
             }
         });
@@ -785,7 +787,6 @@ public class VendorOrderScreenUI extends Screen implements CacheProvider {
                 return;
 
             }
-            buildCache();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
@@ -943,24 +944,6 @@ public class VendorOrderScreenUI extends Screen implements CacheProvider {
                 Window.alert("commitUpdate(): " + e.getMessage());
             window.clearStatus();
         }
-    }
-
-    /**
-     * Returns from the cache, the object that has the specified key and is of
-     * the specified class
-     */
-    @Override
-    public <T> T get(Object key, Class<?> c) {
-        String cacheKey;
-
-        if (cache == null)
-            return null;
-
-        cacheKey = null;
-        if (c == AuxFieldGroupManager.class)
-            cacheKey = "am:" + key;
-
-        return (T)cache.get(cacheKey);
     }
 
     private void setOrganizationNameSelection() {
@@ -1222,44 +1205,6 @@ public class VendorOrderScreenUI extends Screen implements CacheProvider {
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(orgId))
             Window.alert(Messages.get().gen_orgMarkedAsHoldRefuseSample(name));
-    }
-
-    /**
-     * creates or updates the cache of objects like TestManager that are used
-     * frequently by the different parts of the screen
-     */
-    private void buildCache() throws Exception {
-        int i;
-        Integer prevId;
-        ArrayList<Integer> ids;
-        AuxDataViewDO aux;
-        ArrayList<AuxFieldGroupManager> afgms;
-
-        if (cache == null)
-            cache = new HashMap<String, Object>();
-
-        /*
-         * the list of aux field groups to be fetched
-         */
-        ids = new ArrayList<Integer>();
-        prevId = null;
-        for (i = 0; i < manager.auxData.count(); i++ ) {
-            aux = manager.auxData.get(i);
-            if ( !aux.getGroupId().equals(prevId)) {
-                if (get(aux.getGroupId(), AuxFieldGroupManager.class) == null)
-                    ids.add(aux.getGroupId());
-                prevId = aux.getGroupId();
-            }
-        }
-
-        if (ids.size() > 0) {
-            /*
-             * cache AuxFieldGroupManagers
-             */
-            afgms = AuxiliaryService.get().fetchByIds(ids);
-            for (AuxFieldGroupManager afgm : afgms)
-                cache.put("am:" + afgm.getGroup().getId(), afgm);
-        }
     }
 
     /**

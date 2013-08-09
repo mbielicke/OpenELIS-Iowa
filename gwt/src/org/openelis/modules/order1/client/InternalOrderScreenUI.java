@@ -304,9 +304,9 @@ public class InternalOrderScreenUI extends Screen {
                 id.setQueryMode(isState(QUERY));
             }
 
-             public Widget onTab(boolean forward) {
-             return forward ? neededDays : costCenter;
-             }
+            public Widget onTab(boolean forward) {
+                return forward ? neededDays : costCenter;
+            }
         });
 
         addScreenHandler(neededDays, OrderMeta.getNeededInDays(), new ScreenHandler<Integer>() {
@@ -342,11 +342,11 @@ public class InternalOrderScreenUI extends Screen {
                 status.setQueryMode(isState(QUERY));
             }
 
-             public Widget onTab(boolean forward) {
-             return forward ? requestedBy : neededDays;
-             }
+            public Widget onTab(boolean forward) {
+                return forward ? requestedBy : neededDays;
+            }
         });
-        
+
         addScreenHandler(requestedBy, OrderMeta.getRequestedBy(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 requestedBy.setValue(getRequestedBy());
@@ -361,9 +361,9 @@ public class InternalOrderScreenUI extends Screen {
                 requestedBy.setQueryMode(isState(QUERY));
             }
 
-             public Widget onTab(boolean forward) {
-             return forward ? orderedDate : status;
-             }
+            public Widget onTab(boolean forward) {
+                return forward ? orderedDate : status;
+            }
         });
 
         addScreenHandler(orderedDate, OrderMeta.getOrderedDate(), new ScreenHandler<Datetime>() {
@@ -380,9 +380,9 @@ public class InternalOrderScreenUI extends Screen {
                 orderedDate.setQueryMode(isState(QUERY));
             }
 
-             public Widget onTab(boolean forward) {
-             return forward ? costCenter : requestedBy;
-             }
+            public Widget onTab(boolean forward) {
+                return forward ? costCenter : requestedBy;
+            }
         });
 
         addScreenHandler(costCenter, OrderMeta.getCostCenterId(), new ScreenHandler<Integer>() {
@@ -399,9 +399,9 @@ public class InternalOrderScreenUI extends Screen {
                 costCenter.setQueryMode(isState(QUERY));
             }
 
-             public Widget onTab(boolean forward) {
-             return forward ? id : orderedDate;
-             }
+            public Widget onTab(boolean forward) {
+                return forward ? id : orderedDate;
+            }
         });
 
         /*
@@ -514,6 +514,8 @@ public class InternalOrderScreenUI extends Screen {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
                     window.setError(Messages.get().gen_mustCommitOrAbort());
+                } else {
+                    tabPanel.close();
                 }
             }
         });

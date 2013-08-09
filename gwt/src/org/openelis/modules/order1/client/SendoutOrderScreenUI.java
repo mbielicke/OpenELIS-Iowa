@@ -982,6 +982,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
                     window.setError(Messages.get().gen_mustCommitOrAbort());
+                } else {
+                    tabPanel.close();
                 }
             }
         });
