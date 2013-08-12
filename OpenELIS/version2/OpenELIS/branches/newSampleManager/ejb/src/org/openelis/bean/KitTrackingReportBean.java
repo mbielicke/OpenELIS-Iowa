@@ -127,8 +127,8 @@ public class KitTrackingReportBean {
                                                              .setCase(Case.UPPER));
 
             p.add(new Prompt(OrderMeta.getDescription(), Prompt.Type.STRING).setPrompt("Description:")
-                                                                              .setWidth(150)
-                                                                              .setCase(Case.LOWER));
+                                                                            .setWidth(150)
+                                                                            .setCase(Case.LOWER));
 
             p.add(new Prompt(OrderMeta.getStatusId(), Prompt.Type.ARRAY).setPrompt("Status:")
                                                                         .setWidth(150)
@@ -206,47 +206,48 @@ public class KitTrackingReportBean {
         if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
             throw new InconsistencyException("You must specify From Date and To Date for this report");
 
-        if ( !DataBaseUtil.isEmpty(section))
-            section = " and o.id in (select ot.order_id from order_test ot, test t, test_section ts where ot.test_id = t.id and" +
-                      " ts.test_id = t.id and ot.order_id = o.id and ts.section_id " +
-                      section +
-                      ")";
+        if (!DataBaseUtil.isEmpty(section))
+            section = " and o.id in (select ot.order_id from order_test ot, test t," +
+                      " test_section ts where ot.test_id = t.id and ts.test_id = t.id" +
+                      " and ot.order_id = o.id and ts.section_id " + section + ")";
         else
             section = "";
 
-        if ( !DataBaseUtil.isEmpty(shipFrom))
+        if (!DataBaseUtil.isEmpty(shipFrom))
             shipFrom = " and o.ship_from_id " + shipFrom;
         else
             shipFrom = "";
 
-        if ( !DataBaseUtil.isEmpty(shipTo)) {
+        if (!DataBaseUtil.isEmpty(shipTo)) {
             shipTo = shipTo.replaceAll("\\*", "%");
             shipTo = " and ship_to.name like '" + shipTo + "'";
         } else {
             shipTo = "";
         }
 
-        if ( !DataBaseUtil.isEmpty(reportTo)) {
+        if (!DataBaseUtil.isEmpty(reportTo)) {
             reportTo = reportTo.replaceAll("\\*", "%");
-            reportTo = " and o.id in (select oo2.order_id from order_organization oo2, organization o2 where oo2.order_id = o.id and oo2.organization_id = o2.id and o2.name like '" +
-                       reportTo + "' and oo2.type_id = " + Constants.dictionary().ORG_REPORT_TO + ")";
+            reportTo = " and o.id in (select oo2.order_id from order_organization oo2," +
+                       " organization o2 where oo2.order_id = o.id and oo2.organization_id = o2.id" +
+                       " and o2.name like '" + reportTo + "' and oo2.type_id = " +
+                       Constants.dictionary().ORG_REPORT_TO + ")";
         } else {
             reportTo = "";
         }
 
-        if ( !DataBaseUtil.isEmpty(description)) {
+        if (!DataBaseUtil.isEmpty(description)) {
             description = description.replaceAll("\\*", "%");
             description = " and o.description like '" + description + "'";
         } else {
             description = "";
         }
 
-        if ( !DataBaseUtil.isEmpty(orderStatus))
+        if (!DataBaseUtil.isEmpty(orderStatus))
             orderStatus = " and o.status_id = " + orderStatus;
         else
             orderStatus = "";
 
-        if ( !DataBaseUtil.isEmpty(sortBy))
+        if (!DataBaseUtil.isEmpty(sortBy))
             sortBy = " order by " + sortBy;
         else
             sortBy = "";
