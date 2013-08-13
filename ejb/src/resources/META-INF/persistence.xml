@@ -31,8 +31,5 @@ UIRF Software License are applicable instead of those above.
              version="1.0"> 
    <persistence-unit name="openelis">
       <jta-data-source>java:/OpenELISDS</jta-data-source>
-      <properties>
-         <property name="hibernate.dialect" value="org.hibernate.dialect.InformixDialect"/>
-      </properties>
    </persistence-unit>
 </persistence>

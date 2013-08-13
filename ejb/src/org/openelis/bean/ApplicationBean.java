@@ -81,7 +81,7 @@ public class ApplicationBean {
                           "order_status_pending", "order_status_processed", "order_status_recurring",
                           "order_status_on_hold", "order_status_cancelled", "org_finalrep_fax_number", 
                           "org_no_finalreport", "org_report_to", "org_bill_to", 
-                          "org_second_report_to", "org_birth_hospital", "org_ship_to", "pos_duplicate", 
+                          "org_second_report_to", "org_birth_hospital", "pos_duplicate", 
                           "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
                           "pos_last_of_run", "pos_last_of_subset_and_run", "pt_sample",
                           "qaevent_internal", "qaevent_override", "qaevent_warning",
