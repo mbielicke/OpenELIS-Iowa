@@ -114,7 +114,6 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
@@ -153,23 +152,16 @@ public class OpenELIS extends Screen {
                     scriptlet, systemVariable, pws, cron, logs;
 
     public OpenELIS() throws Exception {
-        VerticalPanel vp;
-
-        Constants.setConstants(OpenELISService.get().getConstants());
+        Exception loadError;
+        
+        try {
+            loadError = null;
+            Constants.setConstants(OpenELISService.get().getConstants());
+        } catch (Exception anyE) {
+            loadError = anyE;
+        }
 
         initWidget(uiBinder.createAndBindUi(this));
-
-        // resize browser will move the collapse handle to the middle
-        /*
-         * favoritesCollapse =
-         * (CollapsePanel)def.getWidget("favoritesCollapse");
-         * Window.addResizeHandler(new ResizeHandler() { public void
-         * onResize(ResizeEvent event) {
-         * favoritesCollapse.setHeight(Window.getClientHeight() + "px"); } });
-         * // open/close favorites will adjust browser width
-         * favoritesCollapse.addResizeHandler(new ResizeHandler() { public void
-         * onResize(ResizeEvent event) { browser.resize(); } });
-         */
 
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {
@@ -177,27 +169,10 @@ public class OpenELIS extends Screen {
             }
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
-        /*
-         * DeferredCommand.addCommand(new Command() { public void execute() {
-         * favoritesCollapse.setHeight(Window.getClientHeight() + "px");
-         * browser.resize(); } });
-         * 
-         * DeferredCommand.addCommand(new Command() { public void execute() {
-         * initialize();
-         * 
-         * favoritesCollapse.setHeight(Window.getClientHeight() + "px");
-         * browser.resize(); } });
-         */
-
         initialize();
-
-        // load the favorite's panel
-        /*
-         * vp = (VerticalPanel)def.getWidget("favoritesPanel"); try { vp.add(new
-         * FavoritesScreen(def)); } catch (Throwable t) {
-         * Window.alert("Can't initalize the favorite panel; " +
-         * t.getMessage()); }
-         */
+        
+        if (loadError != null)
+            Window.alert("FATAL ERROR: "+loadError.getMessage()+"; Please contact IT support");
     }
 
     protected void initialize() {
