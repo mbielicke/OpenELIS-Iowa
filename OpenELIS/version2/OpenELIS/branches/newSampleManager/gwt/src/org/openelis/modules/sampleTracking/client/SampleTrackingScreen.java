@@ -957,7 +957,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         });
 
         analysisTab = new AnalysisTab(def, window);
-
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 TreeDataItem selectedRow;

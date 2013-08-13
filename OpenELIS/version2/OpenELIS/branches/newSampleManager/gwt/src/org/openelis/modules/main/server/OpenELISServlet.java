@@ -39,23 +39,19 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 @WebServlet("/openelis/service")
 public class OpenELISServlet extends RemoteServiceServlet implements OpenELISServiceInt {
-    
+
     private static final long serialVersionUID = 1L;
 
     @EJB
-    UserCacheBean   userCache;
-    
-    @EJB
-    ApplicationBean application;
+    UserCacheBean             userCache;
 
-    public Constants getConstants() {
+    @EJB
+    ApplicationBean           application;
+
+    public Constants getConstants() throws Exception {
         keepAlive();
-        
-        try {
-            return application.getConstants();
-        } catch (Exception e) {
-            return null;
-        }
+
+        return application.getConstants();
     }
 
     public void keepAlive() {
@@ -67,7 +63,7 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
     public Datetime getLastAccess() {
         return (Datetime)getThreadLocalRequest().getSession().getAttribute("last_access");
     }
-    
+
     public void logout() {
         HttpSession session;
 
