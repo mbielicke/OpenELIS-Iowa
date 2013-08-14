@@ -41,6 +41,7 @@ import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.SystemVariableDO;
@@ -160,16 +161,24 @@ public class ClientNotificationReleasedReportBean {
             l = entry.getValue();
             for (ClientNotificationVO data : l) {
                 if (data.getCollectionDate() != null)
-                    collectedDt = JasperUtil.concatWithSeparator(data.getCollectionDate(),
-                                                                 " ",
-                                                                 data.getCollectionTime());
+                    collectedDt = DataBaseUtil.concatWithSeparator(ReportUtil.toString(data.getCollectionDate(),
+                                                                                       Messages.get()
+                                                                                               .datePattern()),
+                                                                   " ",
+                                                                   ReportUtil.toString(data.getCollectionTime(),
+                                                                                       Messages.get()
+                                                                                               .timePattern()));
                 ref = getReferenceFields(data.getReferenceField1(),
                                          data.getReferenceField2(),
                                          data.getReferenceField3(),
                                          data.getProjectName());
                 sampleId = data.getAccessionNumber();
-                printBody(contents, sampleId, DataBaseUtil.toString(data.getReceivedDate()),
-                                                              collectedDt, ref);
+                printBody(contents,
+                          sampleId,
+                          ReportUtil.toString(data.getReceivedDate(), Messages.get()
+                                                                              .dateTimePattern()),
+                          collectedDt,
+                          ref);
 
                 sampleIds.add(sampleId);
             }
