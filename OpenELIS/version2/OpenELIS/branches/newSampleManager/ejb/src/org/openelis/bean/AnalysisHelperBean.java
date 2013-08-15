@@ -50,8 +50,10 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.utilcommon.ResultFormatter;
 
 /**
  * This class is used to provide various functionalities related to analyses in
@@ -92,7 +94,7 @@ public class AnalysisHelperBean {
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
                                                        .test_inactiveTestException(t.getName(),
-                                                                              t.getMethodName())));
+                                                                                   t.getMethodName())));
                     continue;
                 }
             }
@@ -134,8 +136,10 @@ public class AnalysisHelperBean {
         /*
          * if there is a default section then set it
          */
-        if (ts != null)
+        if (ts != null) {
             ana.setSectionId(ts.getSectionId());
+            ana.setSectionName(ts.getSection());
+        }
         ana.setIsReportable(t.getIsReportable());
         ana.setIsPreliminary("N");
 
@@ -163,19 +167,21 @@ public class AnalysisHelperBean {
     /**
      * Adds results for this analysis from the analytes in the TestManager
      */
-    public void addResults(SampleManager1 sm, TestManager tm, Integer analysisId,
+    public void addResults(SampleManager1 sm, TestManager tm, AnalysisViewDO analysis,
                            ArrayList<Integer> analyteIds) throws Exception {
         String reportable;
         boolean addRow;
         ResultViewDO r;
         TestAnalyteManager tam;
         HashSet<Integer> ids;
+        ResultFormatter rf;
 
         ids = null;
         if (analyteIds != null)
             ids = new HashSet<Integer>(analyteIds);
 
         tam = tm.getTestAnalytes();
+        rf = tm.getFormatter();
         /*
          * By default add analytes that are not supplemental. Add supplemental
          * analytes that are in id list. The id list overrides reportable flag.
@@ -198,20 +204,98 @@ public class AnalysisHelperBean {
                         break;
                 }
 
-                r = new ResultViewDO();
-                r.setId(sm.getNextUID());
-                r.setAnalysisId(analysisId);
-                r.setTestAnalyteId(data.getId());
-                r.setTestAnalyteTypeId(data.getTypeId());
-                r.setIsColumn(data.getIsColumn());
-                r.setIsReportable(reportable);
-                r.setAnalyteId(data.getAnalyteId());
-                r.setAnalyte(data.getAnalyteName());
-                r.setResultGroup(data.getResultGroup());
-                r.setRowGroup(data.getRowGroup());
-                addResult(sm, r);
+                addResult(sm, createResult(sm, analysis, data, reportable, rf));
             }
         }
+    }
+
+    /**
+     * TODO rewrite comment: Adds rows of result for the specified analysis,
+     * such that the row analytes are specified by list of test analytes and
+     * each new row is added at the position corresponding to the analyte in the
+     * list of indexes. Assumes that the two lists are of the same length and
+     * the list of indexes is sorted in ascending order.
+     */
+    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+                                         ArrayList<TestAnalyteViewDO> insertAnalytes,
+                                         ArrayList<Integer> insertAt) throws Exception {
+        int i, j, rpos, pos;
+        Integer lastrg, nextrg;
+        TestAnalyteViewDO insertAna;
+        ResultViewDO r;
+        TestManager tm;
+        TestAnalyteManager tam;
+        ResultFormatter rf;
+
+        i = 0;
+        j = 0;
+        rpos = -1;
+        lastrg = null;
+        nextrg = null;
+
+        tm = testManager.fetchWithAnalytesAndResults(analysis.getTestId());
+        tam = tm.getTestAnalytes();
+        rf = tm.getFormatter();
+
+        while (i < insertAnalytes.size()) {
+            /*
+             * the next position to insert
+             */
+            pos = insertAt.get(i);
+            insertAna = insertAnalytes.get(i);
+
+            while (j < getResults(sm).size() && pos != rpos) {
+                /*
+                 * skip the results of other analyses
+                 */
+                r = getResults(sm).get(j);
+                if ( !r.getAnalysisId().equals(analysis.getId())) {
+                    j++ ;
+                    continue;
+                }
+
+                /*
+                 * this is the start of the next row
+                 */
+                if ("N".equals(r.getIsColumn())) {
+                    rpos++ ;
+                    lastrg = nextrg;
+                }
+
+                nextrg = r.getRowGroup();
+                j++ ;
+            }
+
+            /*
+             * the row group of analyte must be same as the previous or the next
+             * row
+             */
+            if ( !insertAna.getRowGroup().equals(lastrg) && !insertAna.getRowGroup().equals(nextrg))
+                throw new InconsistencyException("Can't add analyte at this position");
+
+            if (j != getResults(sm).size())
+                j-- ;
+
+            /*
+             * find the row and column analytes in the test
+             */
+            for (ArrayList<TestAnalyteViewDO> tas : tam.getAnalytes()) {
+                if (tas.get(0).getId().equals(insertAna.getId())) {
+                    /*
+                     * create results from this row and add them to the analysis
+                     */
+                    for (TestAnalyteViewDO ta : tas) {
+                        r = createResult(sm, analysis, ta, ta.getIsReportable(), rf);
+                        getResults(sm).add(j++ , r);
+                    }
+                    break;
+                }
+            }
+
+            i++ ;
+        }
+
+        return sm;
     }
 
     /**
@@ -257,5 +341,25 @@ public class AnalysisHelperBean {
                 prepIds.add(tpm.getPrepAt(i).getPrepTestId());
         }
         return prepIds;
+    }
+
+    private ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO analysis,
+                                      TestAnalyteViewDO ta, String reportable, ResultFormatter rf) {
+        ResultViewDO r;
+
+        r = new ResultViewDO();
+        r.setId(sm.getNextUID());
+        r.setAnalysisId(analysis.getId());
+        r.setTestAnalyteId(ta.getId());
+        r.setTestAnalyteTypeId(ta.getTypeId());
+        r.setIsColumn(ta.getIsColumn());
+        r.setIsReportable(reportable);
+        r.setAnalyteId(ta.getAnalyteId());
+        r.setAnalyte(ta.getAnalyteName());
+        r.setResultGroup(ta.getResultGroup());
+        r.setRowGroup(ta.getRowGroup());
+        r.setValue(rf.getDefault(ta.getResultGroup(), analysis.getUnitOfMeasureId()));
+
+        return r;
     }
 }

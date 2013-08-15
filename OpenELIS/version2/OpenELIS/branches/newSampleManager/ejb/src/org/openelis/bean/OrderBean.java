@@ -44,6 +44,7 @@ import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.entity.Order;
 import org.openelis.meta.OrderMeta;
+import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FormErrorException;
@@ -145,6 +146,9 @@ public class OrderBean {
                           OrderMeta.getId() + ", " +
                           OrderMeta.getRequestedBy() + ") ");
         builder.constructWhere(fields);
+        if (builder.getWhereClause().indexOf("auxData.") > -1)
+            builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
+                             Constants.table().ORDER);
         builder.setOrderBy(OrderMeta.getId() + " DESC");
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
