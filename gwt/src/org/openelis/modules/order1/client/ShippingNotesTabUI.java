@@ -64,18 +64,18 @@ public class ShippingNotesTabUI extends Screen {
     private static ShippingNotesTabUIBinder uiBinder = GWT.create(ShippingNotesTabUIBinder.class);
 
     @UiField
-    protected NotesPanel                  notePanel;
+    protected NotesPanel                    notePanel;
 
     @UiField
-    protected Button                      editNoteButton;
+    protected Button                        editNoteButton;
 
-    protected EditNoteLookupUI            editNoteLookup;
+    protected EditNoteLookupUI              editNoteLookup;
 
-    protected Screen                      parentScreen;
+    protected Screen                        parentScreen;
 
-    protected OrderManager1               manager, displayedManager;
+    protected OrderManager1                 manager, displayedManager;
 
-    protected boolean                     isVisible;
+    protected boolean                       isVisible;
 
     public ShippingNotesTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -128,7 +128,7 @@ public class ShippingNotesTabUI extends Screen {
     }
 
     public void setData(OrderManager1 manager) {
-        if ( DataBaseUtil.isDifferent(this.manager, manager)) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
             displayedManager = this.manager;
             this.manager = manager;
         }
@@ -145,8 +145,8 @@ public class ShippingNotesTabUI extends Screen {
     }
 
     private void displayNotes() {
+        int count1, count2;
         Integer id1, id2;
-        boolean dataChanged;
 
         if ( !isVisible)
             return;
@@ -154,17 +154,21 @@ public class ShippingNotesTabUI extends Screen {
         /*
          * compare external notes
          */
+        count1 = 0;
+        count2 = 0;
         id1 = null;
         id2 = null;
-        if (displayedManager != null && displayedManager.shippingNote.get() != null)
+        if (displayedManager != null && displayedManager.shippingNote.get() != null) {
+            count1 = 1;
             id1 = displayedManager.shippingNote.get().getId();
+        }
 
-        if (manager != null && manager.shippingNote.get() != null)
+        if (manager != null && manager.shippingNote.get() != null) {
+            count2 = 1;
             id2 = manager.shippingNote.get().getId();
+        }
 
-        dataChanged = DataBaseUtil.isDifferent(id1, id2);
-
-        if (dataChanged) {
+        if ((count1 != count2) || DataBaseUtil.isDifferent(id1, id2)) {
             displayedManager = manager;
             setState(state);
             fireDataChange();
