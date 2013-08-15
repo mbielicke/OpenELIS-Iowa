@@ -128,7 +128,7 @@ public class SampleNotesTabUI extends Screen {
     }
 
     public void setData(OrderManager1 manager) {
-        if ( DataBaseUtil.isDifferent(this.manager, manager)) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
             displayedManager = this.manager;
             this.manager = manager;
         }
@@ -145,8 +145,8 @@ public class SampleNotesTabUI extends Screen {
     }
 
     private void displayNotes() {
+        int count1, count2;
         Integer id1, id2;
-        boolean dataChanged;
 
         if ( !isVisible)
             return;
@@ -154,17 +154,21 @@ public class SampleNotesTabUI extends Screen {
         /*
          * compare external notes
          */
+        count1 = 0;
+        count2 = 0;
         id1 = null;
         id2 = null;
-        if (displayedManager != null && displayedManager.sampleNote.get() != null)
+        if (displayedManager != null && displayedManager.sampleNote.get() != null){
+            count1 = 1;
             id1 = displayedManager.sampleNote.get().getId();
+        }
 
-        if (manager != null && manager.sampleNote.get() != null)
+        if (manager != null && manager.sampleNote.get() != null) {
+            count2 = 1;
             id2 = manager.sampleNote.get().getId();
+        }
 
-        dataChanged = DataBaseUtil.isDifferent(id1, id2);
-
-        if (dataChanged) {
+        if ( (count1 != count2) || DataBaseUtil.isDifferent(id1, id2)) {
             displayedManager = manager;
             setState(state);
             fireDataChange();

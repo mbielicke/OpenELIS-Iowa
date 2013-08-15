@@ -37,20 +37,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
-import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.OrderManager1;
 import org.openelis.meta.OrderMeta;
-import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
@@ -172,6 +168,19 @@ public class VendorOrderScreenUI extends Screen {
         if (userPermission == null)
             throw new PermissionException(Messages.get()
                                                   .gen_screenPermException("Vendor Order Screen"));
+
+        try {
+            CategoryCache.getBySystemNames("order_status",
+                                           "cost_centers",
+                                           "state",
+                                           "inventory_store",
+                                           "inventory_unit",
+                                           "standard_note_type");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            window.close();
+        }
 
         itemTab = new VendorOrderItemTabUI(this, bus);
         shippingNotesTab = new ShippingNotesTabUI(this, bus);
@@ -689,6 +698,10 @@ public class VendorOrderScreenUI extends Screen {
                     event.cancel();
                     window.setError(Messages.get().gen_mustCommitOrAbort());
                 } else {
+                    /*
+                     * make sure that all detached tabs are closed when the main
+                     * screen is closed
+                     */
                     tabPanel.close();
                 }
             }

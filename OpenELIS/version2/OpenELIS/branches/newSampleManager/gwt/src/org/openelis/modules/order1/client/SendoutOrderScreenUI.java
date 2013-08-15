@@ -223,6 +223,25 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             throw new PermissionException(Messages.get()
                                                   .gen_screenPermException("Send-out Order Screen"));
 
+        try {
+            CategoryCache.getBySystemNames("order_status",
+                                           "cost_centers",
+                                           "laboratory_location",
+                                           "state",
+                                           "organization_type",
+                                           "country",
+                                           "sample_container",
+                                           "type_of_sample",
+                                           "inventory_store",
+                                           "inventory_unit",
+                                           "standard_note_type",
+                                           "order_recurrence_unit");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            window.close();
+        }
+
         organizationTab = new OrganizationTabUI(this, bus);
         testTab = new TestTabUI(this, bus);
         containerTab = new ContainerTabUI(this, bus);
@@ -983,6 +1002,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                     event.cancel();
                     window.setError(Messages.get().gen_mustCommitOrAbort());
                 } else {
+                    /*
+                     * make sure that all detached tabs are closed when the main
+                     * screen is closed
+                     */
                     tabPanel.close();
                 }
             }
@@ -1827,8 +1850,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         for (i = 0; i < manager.auxData.count(); i++ ) {
             aux = manager.auxData.get(i);
             if ( !aux.getGroupId().equals(prevId)) {
-                if (get(aux.getGroupId(), AuxFieldGroupManager.class) == null)
-                    ids.add(aux.getGroupId());
+                ids.add(aux.getGroupId());
                 prevId = aux.getGroupId();
             }
         }
