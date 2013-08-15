@@ -253,7 +253,7 @@ public abstract class SampleProjectLookupUI extends Screen {
     public abstract void ok();
 
     @UiHandler("addProjectButton")
-    protected void addOrganization(ClickEvent event) {
+    protected void addProject(ClickEvent event) {
         int r;
 
         table.addRow();
@@ -264,7 +264,7 @@ public abstract class SampleProjectLookupUI extends Screen {
     }
 
     @UiHandler("removeProjectButton")
-    protected void removeOrganization(ClickEvent event) {
+    protected void removeProject(ClickEvent event) {
         int r;
 
         r = table.getSelectedRow();

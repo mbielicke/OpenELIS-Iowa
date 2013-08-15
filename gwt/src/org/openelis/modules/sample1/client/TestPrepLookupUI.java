@@ -103,7 +103,7 @@ public abstract class TestPrepLookupUI extends Screen {
 
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                tree.setRoot(getTests());
+                tree.setRoot(getRoot());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -240,7 +240,7 @@ public abstract class TestPrepLookupUI extends Screen {
     /**
      * overridden to load the tree
      */
-    public abstract Node getTests();
+    public abstract Node getRoot();
 
     @UiHandler("okButton")
     protected void ok(ClickEvent event) {

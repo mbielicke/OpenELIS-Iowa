@@ -27,8 +27,10 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 import org.openelis.ui.common.data.QueryData;
@@ -74,14 +76,18 @@ public interface SampleServiceInt1Async {
                            AsyncCallback<SampleTestReturnVO> callback) throws Exception;
 
     public void addTest(SampleManager1 sm, SampleTestRequestVO test,
-                 AsyncCallback<SampleTestReturnVO> callback) throws Exception;
-    
-    public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
                         AsyncCallback<SampleTestReturnVO> callback) throws Exception;
 
+    public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
+                         AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+
+    public void addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+                               ArrayList<TestAnalyteViewDO> analytes, ArrayList<Integer> indexes,
+                               AsyncCallback<SampleManager1> callback) throws Exception;
+
     public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
-                      AsyncCallback<SampleManager1> callback) throws Exception;
+                             AsyncCallback<SampleManager1> callback) throws Exception;
 
     public void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
-                         AsyncCallback<SampleManager1> callback) throws Exception;
+                                AsyncCallback<SampleManager1> callback) throws Exception;
 }

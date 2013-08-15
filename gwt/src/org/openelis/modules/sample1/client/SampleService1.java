@@ -28,8 +28,10 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
@@ -219,7 +221,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     public void setOrderId(SampleManager1 sm, Integer orderId,
                            AsyncCallback<SampleTestReturnVO> callback) throws Exception {
         service.setOrderId(sm, orderId, callback);
-        
+
     }
 
     @Override
@@ -230,12 +232,12 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         service.setOrderId(sm, orderId, callback);
         return callback.getResult();
     }
-    
+
     @Override
     public void addTest(SampleManager1 sm, SampleTestRequestVO test,
-                           AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+                        AsyncCallback<SampleTestReturnVO> callback) throws Exception {
         service.addTest(sm, test, callback);
-        
+
     }
 
     @Override
@@ -246,12 +248,11 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         service.addTest(sm, test, callback);
         return callback.getResult();
     }
-    
+
     @Override
     public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
-                           AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+                         AsyncCallback<SampleTestReturnVO> callback) throws Exception {
         service.addTests(sm, tests, callback);
-        
     }
 
     @Override
@@ -261,6 +262,24 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         callback = new Callback<SampleTestReturnVO>();
         service.addTests(sm, tests, callback);
         return callback.getResult();
+    }
+
+    @Override
+    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+                                         ArrayList<TestAnalyteViewDO> analytes,
+                                         ArrayList<Integer> indexes) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.addRowAnalytes(sm, analysis, analytes, indexes, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+                               ArrayList<TestAnalyteViewDO> analytes, ArrayList<Integer> indexes,
+                               AsyncCallback<SampleManager1> callback) throws Exception {
+        service.addRowAnalytes(sm, analysis, analytes, indexes, callback);
     }
 
     @Override
@@ -282,7 +301,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     public void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
                                 AsyncCallback<SampleManager1> callback) throws Exception {
         service.removeAuxGroups(sm, groupIds, callback);
-        
+
     }
 
     @Override

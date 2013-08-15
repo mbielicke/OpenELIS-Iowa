@@ -59,7 +59,7 @@
               <ui:text from="{msg.status}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="statusId" width="150px" field="Integer" /> <!-- popWidth="150px" -->
+              <w:Dropdown ui:field="status" width="150px" field="Integer" /> <!-- popWidth="150px" -->
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.preliminary}:" />
@@ -85,13 +85,13 @@
               <ui:text from="{msg.section}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="sectionId" width="151px" case="LOWER" field="Integer" /> <!-- popWidth="150px" -->
+              <w:Dropdown ui:field="section" width="151px" case="LOWER" field="Integer" /> <!-- popWidth="150px" -->
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.unit}:" />
             </td>
             <td colspan="3">
-              <w:Dropdown ui:field="unitOfMeasureId" width="150px" field="Integer" /> <!-- popWidth="150px" -->
+              <w:Dropdown ui:field="unitOfMeasure" width="150px" field="Integer" /> <!-- popWidth="150px" -->
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.released}:" />
