@@ -32,7 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.PrinterCacheBean;
 import org.openelis.ui.common.OptionListItem;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.preferences.client.PrinterServiceInt;
 
 @WebServlet("/openelis/printer")
@@ -44,6 +44,6 @@ public class PrinterServlet extends RemoteServlet implements PrinterServiceInt {
     PrinterCacheBean printerCache;
 
     public ArrayList<OptionListItem> getPrinters(String type) {
-		return printerCache.getListByType(type);
-	}	 
+        return printerCache.getListByType(type);
+    }	 
 }

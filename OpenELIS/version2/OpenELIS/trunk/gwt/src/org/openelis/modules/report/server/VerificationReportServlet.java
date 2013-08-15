@@ -34,7 +34,7 @@ import org.openelis.bean.VerificationReportBean;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.client.VerificationReportServiceInt;
 
 @WebServlet("/openelis/verificationReport")
@@ -46,13 +46,22 @@ public class VerificationReportServlet extends RemoteServlet implements Verifica
     VerificationReportBean verificationReport;
 
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return verificationReport.getPrompts();      
+        try {        
+            return verificationReport.getPrompts();      
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
         ReportStatus st;
         
-        st = verificationReport.runReport(query.getFields());
+        try {        
+            st = verificationReport.runReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

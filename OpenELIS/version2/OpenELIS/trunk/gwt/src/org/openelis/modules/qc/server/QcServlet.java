@@ -40,7 +40,7 @@ import org.openelis.domain.QcLotViewDO;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
@@ -61,7 +61,11 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
     QcLotBean     qcLot;
 
     public QcManager fetchById(Integer id) throws Exception {
-        return qcManager.fetchById(id);
+        try {        
+            return qcManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<QcDO> fetchByName(String search) throws Exception {
@@ -71,14 +75,18 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
             list = qc.fetchByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
         return list;
     }
     
     public ArrayList<QcLotViewDO> fetchActiveByName(Query query) throws Exception {
-        return qc.fetchActiveByName(query.getFields());
+        try {        
+            return qc.fetchActiveByName(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
@@ -88,8 +96,8 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
             list = qc.fetchActiveByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
         return list;
     }
@@ -101,8 +109,8 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
             list = qc.fetchActiveLotByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcLotViewDO>(0);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
         return list;
     }
@@ -114,62 +122,110 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
             list = qc.fetchActiveLotByName(search, 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcLotViewDO>(0);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
         return list;
     }
     
 
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
-        return qcManager.fetchWithAnalytes(id);
+        try {        
+            return qcManager.fetchWithAnalytes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public QcManager fetchWithLots(Integer id) throws Exception {
-        return qcManager.fetchWithLots(id);
+        try {        
+            return qcManager.fetchWithLots(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public QcLotViewDO fetchLotById(Integer id) throws Exception {
-        return qcLot.fetchById(id);
+        try {        
+            return qcLot.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return qc.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return qc.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QcManager add(QcManager man) throws Exception {
-        return qcManager.add(man);
+        try {        
+            return qcManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QcManager update(QcManager man) throws Exception {
-        return qcManager.update(man);
+        try {        
+            return qcManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QcManager fetchForUpdate(Integer id) throws Exception {
-        return qcManager.fetchForUpdate(id);
+        try {        
+            return qcManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QcManager abortUpdate(Integer id) throws Exception {
-        return qcManager.abortUpdate(id);
+        try {        
+            return qcManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public QcManager duplicate(Integer id) throws Exception {
-        return qcManager.duplicate(id);
+        try {        
+            return qcManager.duplicate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
     // support for QcAnalyteManager and QcLotManager
     //
     public QcAnalyteManager fetchAnalyteByQcId(Integer id) throws Exception {
-        return qcManager.fetchAnalyteByQcId(id);
+        try {        
+            return qcManager.fetchAnalyteByQcId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public QcLotManager fetchLotByQcId(Integer id) throws Exception {
-        return qcManager.fetchLotByQcId(id);
+        try {        
+            return qcManager.fetchLotByQcId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public QcLotDO validateForDelete(QcLotViewDO data) throws Exception {
-        qcLot.validateForDelete(data);
+        try {        
+            qcLot.validateForDelete(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
         return data;
     } 
 }

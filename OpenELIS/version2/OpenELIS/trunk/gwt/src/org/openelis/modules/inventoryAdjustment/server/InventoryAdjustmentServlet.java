@@ -34,7 +34,7 @@ import org.openelis.bean.InventoryAdjustmentBean;
 import org.openelis.bean.InventoryAdjustmentManagerBean;
 import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentServiceInt;
@@ -51,31 +51,59 @@ public class InventoryAdjustmentServlet extends RemoteServlet implements Invento
     InventoryAdjustmentBean        inventoryAdjustment;
     
     public InventoryAdjustmentManager fetchWithAdjustments (Integer id) throws Exception {
-        return inventoryAdjustmentManager.fetchWithAdjustments(id);
+        try {        
+            return inventoryAdjustmentManager.fetchWithAdjustments(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<InventoryAdjustmentDO> query(Query query) throws Exception {
-        return inventoryAdjustment.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return inventoryAdjustment.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {
-        return inventoryAdjustmentManager.add(man);
+        try {        
+            return inventoryAdjustmentManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryAdjustmentManager update(InventoryAdjustmentManager man) throws Exception {
-        return inventoryAdjustmentManager.update(man);
+        try {        
+            return inventoryAdjustmentManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception {
-        return inventoryAdjustmentManager.fetchForUpdate(id);
+        try {        
+            return inventoryAdjustmentManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception {
-        return inventoryAdjustmentManager.abortUpdate(id);
+        try {        
+            return inventoryAdjustmentManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryXAdjustManager fetchAdjustmentByInventoryAdjustmentId(Integer id) throws Exception {
-        return inventoryAdjustmentManager.fetchAdjustmentByInventoryAdjustmentId(id);
+        try {        
+            return inventoryAdjustmentManager.fetchAdjustmentByInventoryAdjustmentId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
         
 }

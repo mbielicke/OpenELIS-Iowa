@@ -35,7 +35,7 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.analyte.client.AnalyteServiceInt;
 
 @WebServlet("/openelis/analyte")
@@ -47,23 +47,43 @@ public class AnalyteServlet extends RemoteServlet implements AnalyteServiceInt {
     AnalyteBean analyte;
     
     public AnalyteViewDO fetchById(Integer id) throws Exception {
-        return analyte.fetchById(id);
+        try {        
+            return analyte.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return analyte.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return analyte.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public AnalyteDO add(AnalyteViewDO data) throws Exception {
-        return analyte.add(data);
+        try {        
+            return analyte.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public AnalyteDO update(AnalyteViewDO data) throws Exception {
-        return analyte.update(data);
+        try {        
+            return analyte.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
-        return analyte.fetchForUpdate(id);
+        try {        
+            return analyte.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(AnalyteDO data) throws Exception {
@@ -71,10 +91,18 @@ public class AnalyteServlet extends RemoteServlet implements AnalyteServiceInt {
     }
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception {
-        return analyte.abortUpdate(id);
+        try {        
+            return analyte.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<AnalyteDO> fetchByName(String search) throws Exception {
-        return analyte.fetchByName(search + "%", 100);
+        try {        
+            return analyte.fetchByName(search + "%", 100);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

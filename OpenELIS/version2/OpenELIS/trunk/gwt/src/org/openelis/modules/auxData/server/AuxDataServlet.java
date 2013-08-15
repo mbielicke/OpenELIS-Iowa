@@ -35,7 +35,7 @@ import org.openelis.bean.AuxDataManagerBean;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.IdVO;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.modules.auxData.client.AuxDataServiceInt;
 
@@ -51,14 +51,26 @@ public class AuxDataServlet extends RemoteServlet implements AuxDataServiceInt {
     AuxDataBean        auxData;
     
     public AuxDataManager fetchById(AuxDataDO auxData) throws Exception {
-        return auxDataManager.fetchById(auxData.getReferenceId(), auxData.getReferenceTableId());
+        try {        
+            return auxDataManager.fetchById(auxData.getReferenceId(), auxData.getReferenceTableId());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }   
     
     public ArrayList<AuxDataViewDO> fetchByRefId(AuxDataDO data) throws Exception {
-        return auxData.fetchById(data.getReferenceId(), data.getReferenceTableId());
+        try {        
+            return auxData.fetchById(data.getReferenceId(), data.getReferenceTableId());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public IdVO getAuxGroupIdFromSystemVariable(String sysVariableKey) throws Exception {
-        return auxData.fetchGroupIdBySystemVariable(sysVariableKey);
+        try {        
+            return auxData.fetchGroupIdBySystemVariable(sysVariableKey);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

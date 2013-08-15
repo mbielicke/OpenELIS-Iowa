@@ -31,7 +31,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.NoteManagerBean;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.NoteManager;
 import org.openelis.meta.NoteMeta;
 import org.openelis.modules.note.client.NoteServiceInt;
@@ -60,7 +60,10 @@ public class NoteServlet extends RemoteServlet implements NoteServiceInt {
             }
         }
 
-        return noteManager.fetchByRefTableRefIdIsExt(refTableId, refId, isExternal);
+        try {
+            return noteManager.fetchByRefTableRefIdIsExt(refTableId, refId, isExternal);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-   
 }

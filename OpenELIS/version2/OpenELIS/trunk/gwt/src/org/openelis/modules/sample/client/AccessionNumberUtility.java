@@ -31,6 +31,7 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.manager.SampleManager;
 
+@Deprecated
 public class AccessionNumberUtility {
         
     public AccessionNumberUtility(){

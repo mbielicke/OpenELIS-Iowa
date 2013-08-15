@@ -9,7 +9,7 @@ import org.openelis.bean.SampleInhouseReportBean;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.client.SampleInHouseReportServiceInt;
 
 @WebServlet("/openelis/sampleInHouse")
@@ -21,13 +21,22 @@ public class SampleInhouseReportServlet extends RemoteServlet implements SampleI
     SampleInhouseReportBean sampleInhouseReport;
 
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return sampleInhouseReport.getPrompts();      
+        try {        
+            return sampleInhouseReport.getPrompts();      
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
         ReportStatus st;
         
-        st = sampleInhouseReport.runReport(query.getFields());
+        try {        
+            st = sampleInhouseReport.runReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

@@ -32,36 +32,26 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.modules.order.client.OrderService;
+import org.openelis.modules.report.kitTracking.client.KitTrackingReportService;
 import org.openelis.ui.widget.WindowInt;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class OrderRecurrenceReportScreen extends ReportScreen<Query> {
-    
-    public OrderRecurrenceReportScreen(WindowInt window) throws Exception {
+public class KitTrackingReportScreen extends ReportScreen<Query> {
+
+    public KitTrackingReportScreen(WindowInt window) throws Exception {
         setWindow(window);
-        drawScreen(new ScreenDef());      
-        setName(Messages.get().orderRecurrence());
+        drawScreen(new ScreenDef());        
+        setName(Messages.get().kitTracking_kitTrackingReport());
     }
-    
+
     @Override
     protected ArrayList<Prompt> getPrompts() throws Exception {
-        return OrderService.get().getPrompts();
+        return KitTrackingReportService.get().getPrompts();
     }
 
     @Override
-    public void runReport(Query rpc, AsyncCallback<ReportStatus> callback) {
-        try  {
-            OrderService.get().recurOrders();
-        }catch(Exception e) {
-            window.setError("Failed");
-            Window.alert(e.getMessage());
-        }
-        window.setDone(Messages.get().recurredOrders());
-
-        
+    public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
+        KitTrackingReportService.get().runReport((Query)query, callback);
     }
 }
-

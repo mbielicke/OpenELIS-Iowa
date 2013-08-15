@@ -3,7 +3,7 @@ package org.openelis.modules.report.kitTracking.client;
 import java.util.ArrayList;
 
 import org.openelis.gwt.screen.Callback;
-import org.openelis.ui.common.OptionListItem;
+import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.services.TokenService;
@@ -30,6 +30,20 @@ public class KitTrackingReportService implements KitTrackingReportServiceInt,
     }
 
     @Override
+    public ArrayList<Prompt> getPrompts() throws Exception {
+        Callback<ArrayList<Prompt>> callback;
+
+        callback = new Callback<ArrayList<Prompt>>();
+        service.getPrompts(callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void getPrompts(AsyncCallback<ArrayList<Prompt>> callback) throws Exception {
+        service.getPrompts(callback);
+    }
+
+    @Override
     public void runReport(Query query, AsyncCallback<ReportStatus> callback) {
         service.runReport(query, callback);
     }
@@ -41,22 +55,6 @@ public class KitTrackingReportService implements KitTrackingReportServiceInt,
         callback = new Callback<ReportStatus>();
         service.runReport(query, callback);
         return callback.getResult();
-    }
-
-    public void getPrinterListByType(String type, AsyncCallback<ArrayList<OptionListItem>> callback) {
-        service.getPrinterListByType(type, callback);
-    }
-
-    public ArrayList<OptionListItem> getPrinterListByType(String type) {
-        Callback<ArrayList<OptionListItem>> callback;
-
-        callback = new Callback<ArrayList<OptionListItem>>();
-        service.getPrinterListByType(type, callback);
-        try {
-            return callback.getResult();
-        } catch (Exception e) {
-            return new ArrayList<OptionListItem>();
-        }
     }
 
 }

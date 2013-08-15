@@ -78,6 +78,4 @@ public interface OrderServiceInt extends XsrfProtectedService {
 
     ArrayList<Prompt> getPrompts() throws Exception;
 
-    void recurOrders() throws Exception;
-
 }

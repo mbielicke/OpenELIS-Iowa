@@ -35,7 +35,7 @@ import org.openelis.bean.StorageLocationManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.modules.storageLocation.client.StorageLocationServiceInt;
@@ -52,31 +52,59 @@ public class StorageLocationServlet extends RemoteServlet implements StorageLoca
     StorageLocationBean        storageLocation;
 
     public StorageLocationManager fetchById(Integer id) throws Exception {
-        return storageLocationManager.fetchById(id);
+        try {        
+            return storageLocationManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageLocationManager fetchWithChildren(Integer id) throws Exception {
-        return storageLocationManager.fetchWithChildren(id);
+        try {        
+            return storageLocationManager.fetchWithChildren(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return storageLocation.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return storageLocation.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageLocationManager add(StorageLocationManager man) throws Exception {
-        return storageLocationManager.add(man);
+        try {        
+            return storageLocationManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageLocationManager update(StorageLocationManager man) throws Exception {
-        return storageLocationManager.update(man);
+        try {        
+            return storageLocationManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageLocationManager fetchForUpdate(Integer id) throws Exception {
-        return storageLocationManager.fetchForUpdate(id);
+        try {        
+            return storageLocationManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageLocationManager abortUpdate(Integer id) throws Exception {
-        return storageLocationManager.abortUpdate(id);
+        try {        
+            return storageLocationManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
@@ -84,12 +112,20 @@ public class StorageLocationServlet extends RemoteServlet implements StorageLoca
     //
     public StorageLocationChildManager fetchChildByParentStorageLocationId(Integer id)
                                                                                       throws Exception {
-        return storageLocationManager.fetchChildByParentStorageLocationId(id);
+        try {        
+            return storageLocationManager.fetchChildByParentStorageLocationId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageLocationViewDO validateForDelete(StorageLocationViewDO data) throws Exception {
         storageLocation.validateForDelete(data);
-        return data;
+        try {        
+            return data;
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }

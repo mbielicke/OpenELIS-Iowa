@@ -38,7 +38,7 @@ import org.openelis.domain.ProjectViewDO;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 import org.openelis.modules.project.client.ProjectServiceInt;
@@ -55,11 +55,19 @@ public class ProjectServlet extends RemoteServlet implements ProjectServiceInt {
     ProjectBean        project;
     
     public ArrayList<IdNameVO> fetchList() throws Exception {
-        return project.fetchList();
+        try {        
+            return project.fetchList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ProjectManager fetchById(Integer id) throws Exception {
-        return projectManager.fetchById(id);
+        try {        
+            return projectManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<ProjectDO> fetchActiveByName(String search) throws Exception {
@@ -69,55 +77,91 @@ public class ProjectServlet extends RemoteServlet implements ProjectServiceInt {
             list = project.fetchActiveByName(search + "%", 50);
         } catch (NotFoundException e) {
             list = new ArrayList<ProjectDO>(0);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
         return list;
     }
     
     public ProjectViewDO fetchDOById(Integer id) throws Exception {
-        return project.fetchById(id);
+        try {        
+            return project.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return project.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return project.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProjectManager fetchWithParameters(Integer id) throws Exception {
-        return projectManager.fetchWithParameters(id);
+        try {        
+            return projectManager.fetchWithParameters(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProjectDO fetchSingleByName(String name) throws Exception {
         ArrayList<ProjectDO> list;
         
-        list = project.fetchActiveByName(name, 1);
+        try {        
+            list = project.fetchActiveByName(name, 1);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
         
-        if(list.size() > 0)
+        if (list.size() > 0)
             return list.get(0);
         
         return null;
     }
 
     public ProjectManager add(ProjectManager man) throws Exception {
-        return projectManager.add(man);
+        try {        
+            return projectManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProjectManager update(ProjectManager man) throws Exception {
-        return projectManager.update(man);
+        try {        
+            return projectManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProjectManager fetchForUpdate(Integer id) throws Exception {
-        return projectManager.fetchForUpdate(id);
+        try {        
+            return projectManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProjectManager abortUpdate(Integer id) throws Exception {
-        return projectManager.abortUpdate(id);
+        try {        
+            return projectManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
     // support for ProjectParameterManager
     //
     public ProjectParameterManager fetchParameterByProjectId(Integer id) throws Exception {
-        return projectManager.fetchParameterByProjectId(id);
+        try {        
+            return projectManager.fetchParameterByProjectId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

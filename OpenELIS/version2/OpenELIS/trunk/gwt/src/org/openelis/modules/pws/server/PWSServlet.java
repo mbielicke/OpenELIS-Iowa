@@ -36,7 +36,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PWSDO;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
@@ -57,32 +57,32 @@ public class PWSServlet extends RemoteServlet implements PWSServiceInt {
     public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return PWSManager.fetchByTinwsysIsNumber(tinwsysIsNumber);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
     }
     
     public PWSManager fetchWithFacilities(Integer tinwsysIsNumber) throws Exception {
         try {
             return PWSManager.fetchWithFacilities(tinwsysIsNumber);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
     }
     
     public PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
         try {
             return PWSManager.fetchWithAddresses(tinwsysIsNumber);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
     }
     
     public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
         try {
             return PWSManager.fetchWithMonitors(tinwsysIsNumber);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
     }
     
@@ -100,28 +100,32 @@ public class PWSServlet extends RemoteServlet implements PWSServiceInt {
     public PWSFacilityManager fetchFacilityByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return PWSManager.fetchFacilityByTinwsysIsNumber(tinwsysIsNumber);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
     }
     
     public PWSAddressManager fetchAddressByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return PWSManager.fetchAddressByTinwsysIsNumber(tinwsysIsNumber);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
     }
     
     public PWSMonitorManager fetchMonitorByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return PWSManager.fetchMonitorByTinwsysIsNumber(tinwsysIsNumber);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
     }
     
     public PWSDO fetchPwsByNumber0(String pwsNumber0) throws Exception {
-        return PWS.fetchByNumber0(pwsNumber0);
+        try {        
+            return PWS.fetchByNumber0(pwsNumber0);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }    
 }
