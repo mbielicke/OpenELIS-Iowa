@@ -53,11 +53,6 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     }
 
     @Override
-    public void getPromptsForSingle(AsyncCallback<ArrayList<Prompt>> callback) {
-        service.getPromptsForSingle(callback);
-    }
-
-    @Override
     public void getSDWISProjectList(AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.getSDWISProjectList(callback);
     }
@@ -102,15 +97,6 @@ public class FinalReportService implements FinalReportServiceInt, FinalReportSer
     @Override
     public void runReportForWeb(Query query, AsyncCallback<ReportStatus> callback) {
         service.runReportForWeb(query, callback);
-    }
-
-    @Override
-    public ArrayList<Prompt> getPromptsForSingle() throws Exception {
-        Callback<ArrayList<Prompt>> callback;
-        
-        callback = new Callback<ArrayList<Prompt>>();
-        service.getPromptsForSingle(callback);
-        return callback.getResult();
     }
 
     @Override

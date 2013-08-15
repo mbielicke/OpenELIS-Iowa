@@ -29,7 +29,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.AnalysisUserManagerBean;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.AnalysisUserManager;
 import org.openelis.modules.analysisUser.client.AnalysisUserServiceInt;
 
@@ -40,7 +40,11 @@ public class AnalysisUserServlet extends RemoteServlet implements AnalysisUserSe
     AnalysisUserManagerBean analysisUserManager;
     
     public AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return analysisUserManager.fetchByAnalysisId(analysisId);
+        try {        
+            return analysisUserManager.fetchByAnalysisId(analysisId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }

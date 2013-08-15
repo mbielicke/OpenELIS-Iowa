@@ -46,30 +46,58 @@ public class MethodServlet extends RemoteServlet implements MethodServiceInt {
     MethodBean method;
 
     public ArrayList<MethodDO> fetchByName(String search) throws Exception {
-        return method.fetchActiveByName(search + "%", 10);
+        try {
+            return method.fetchActiveByName(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public MethodDO fetchById(Integer id) throws Exception {
-        return method.fetchById(id);
+        try {
+            return method.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return method.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {
+            return method.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public MethodDO add(MethodDO data) throws Exception {
-        return method.add(data);
+        try {
+            return method.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public MethodDO update(MethodDO data) throws Exception {
-        return method.update(data);
+        try {
+            return method.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public MethodDO fetchForUpdate(Integer id) throws Exception {
-        return method.fetchForUpdate(id);
+        try {
+            return method.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public MethodDO abortUpdate(Integer id) throws Exception {
-        return method.abortUpdate(id);
+        try {
+            return method.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

@@ -72,8 +72,6 @@ public interface OrderServiceIntAsync {
 
     void queryOrderFill(Query query, AsyncCallback<ArrayList<OrderViewDO>> callback);
 
-    void recurOrders(AsyncCallback<Void> callback);
-
     void update(OrderManager man, AsyncCallback<OrderManager> callback);
 
     void fetchMergedTestAnalyteByOrderTestId(Integer id,

@@ -34,7 +34,7 @@ import org.openelis.bean.SampleLoginLabelReportBean;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.client.SampleLoginLabelReportServiceInt;
 
 @WebServlet("/openelis/sampleLoginLabelReport")
@@ -46,19 +46,35 @@ public class SampleLoginLabelReportServlet extends RemoteServlet implements Samp
     SampleLoginLabelReportBean sampleLoginLabelReport;
 
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return sampleLoginLabelReport.getPrompts();      
+        try {        
+            return sampleLoginLabelReport.getPrompts();      
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
-        return sampleLoginLabelReport.runReport(query.getFields());
+        try {        
+            return sampleLoginLabelReport.runReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<Prompt> getAdditionalPrompts() throws Exception{
-        return sampleLoginLabelReport.getAdditionalPrompts();      
+        try {        
+            return sampleLoginLabelReport.getAdditionalPrompts();      
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runAdditionalReport(Query query) throws Exception { 
-        return sampleLoginLabelReport.runAdditionalReport(query.getFields());
+        try {        
+            return sampleLoginLabelReport.runAdditionalReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
    
 }

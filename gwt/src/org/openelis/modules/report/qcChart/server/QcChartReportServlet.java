@@ -32,7 +32,7 @@ import org.openelis.bean.QcChartReportBean;
 import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.qcChart.client.QcChartReportServiceInt;
 
 @WebServlet("/openelis/qcChartReport")
@@ -44,17 +44,30 @@ public class QcChartReportServlet extends RemoteServlet implements QcChartReport
     QcChartReportBean qcChartReport;
 
     public QcChartReportViewVO fetchForQcChart(Query query) throws Exception {
-        return qcChartReport.fetchForQcChart(query.getFields());  
+        try {        
+            return qcChartReport.fetchForQcChart(query.getFields());  
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public QcChartReportViewVO recompute(QcChartReportViewVO data) throws Exception {
-        return qcChartReport.recompute(data);  
+        try {        
+            return qcChartReport.recompute(data);  
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runReport(QcChartReportViewVO data) throws Exception { 
         ReportStatus st;
         
-        st = qcChartReport.runReport(data);
+        try {        
+            st = qcChartReport.runReport(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

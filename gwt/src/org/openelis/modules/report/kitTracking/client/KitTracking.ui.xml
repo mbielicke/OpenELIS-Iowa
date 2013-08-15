@@ -37,45 +37,45 @@ UIRF Software License are applicable instead of those above.
             <table class="{res.style.Form}">
           
               <tr>                
-                <td class="{res.style.Prompt}"><ui:text from="{msg.startOrderDate}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.kitTracking_startOrderDate}:" /></td>
                 <td>
                 	<c:Calendar ui:field="startDate" width="90px" required="true"  />
                	</td>
               </tr>
               <tr>                
-                <td class="{res.style.Prompt}"><ui:text from="{msg.endSentDate}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.kitTracking_endSentDate}:" /></td>
 				<td>
                 	<c:Calendar ui:field="endDate" width="90px" required = "true"  />
                	</td>
               </tr>  
               <tr>
-                <td class="{res.style.Prompt}"><ui:text from="{msg.shipFrom}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.order_shipFrom}:" /></td>
                 <td>
                 	<w:MultiDropdown ui:field="shipFrom" field="Integer" width="200px"/>
                 </td>
               </tr>   
               <tr>
-                <td class="{res.style.Prompt}"><ui:text from="{msg.section}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.gen_section}:" /></td>
                 <td>
                 	<w:MultiDropdown ui:field="section" field="Integer" width="200px"/>
                 </td>
               </tr> 
               <tr>
-                <td class="{res.style.Prompt}"><ui:text from="{msg.organization}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.gen_organization}:" /></td>
                 <td>
                 	<w:AutoComplete ui:field="organization" width="200px" case="UPPER" dropWidth="450px">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
-                        <t:Column width="180" label="{msg.name}">
+                        <t:Column width="180" label="{msg.gen_name}">
                           <t:LabelCell />
                         </t:Column>
-                        <t:Column width="110" label="{msg.street}">
+                        <t:Column width="110" label="{msg.address_street}">
                           <t:LabelCell />
                         </t:Column>
-                        <t:Column width="100" label="{msg.city}">
+                        <t:Column width="100" label="{msg.address_city}">
                           <t:LabelCell />
                         </t:Column>
-                        <t:Column width="20" label="{msg.st}">
+                        <t:Column width="20" label="{msg.address_st}">
                           <t:LabelCell />
                         </t:Column>
                       </t:Table>
@@ -84,12 +84,12 @@ UIRF Software License are applicable instead of those above.
                 </td>
               </tr> 
               <tr>
-                <td class="{res.style.Prompt}"><ui:text from="{msg.description}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.gen_description}:" /></td>
                 <td>
 				  <w:AutoComplete ui:field="description" width="200px" case="LOWER" dropWidth="180px">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
-                        <t:Column width="180" label="{msg.description}">
+                        <t:Column width="180" label="{msg.gen_description}">
                           <t:LabelCell />
                         </t:Column>
                       </t:Table>
@@ -98,19 +98,19 @@ UIRF Software License are applicable instead of those above.
                 </td>
               </tr> 
               <tr>
-                <td class="{res.style.Prompt}"><ui:text from="{msg.status}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.gen_status}:" /></td>
                 <td>
                 	<w:Dropdown ui:field="status" width="200px"/>
                 </td>
               </tr> 
               <tr>
-                <td class="{res.style.Prompt}"><ui:text from="{msg.sortBy}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.kitTracking_sortBy}:" /></td>
                 <td>
                 	<w:Dropdown ui:field="sortBy" width="200px"/>
                 </td>
               </tr>     
               <tr>
-                <td class="{res.style.Prompt}"><ui:text from="{msg.printer}:" /></td>
+                <td class="{res.style.Prompt}"><ui:text from="{msg.gen_printer}:" /></td>
                 <td>
                 	<w:Dropdown ui:field="printer" width="200px" required="true" />
                 </td>
@@ -121,8 +121,8 @@ UIRF Software License are applicable instead of those above.
 		<g:layer bottom="10px" height="20px">
               <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                 <g:HorizontalPanel>
-                  <w:Button ui:field="runReportButton" text="{msg.runReport}"/>
-                  <w:Button ui:field="resetButton" text="{msg.reset}"/>
+                  <w:Button ui:field="runReportButton" text="{msg.report_runReport}"/>
+                  <w:Button ui:field="resetButton" text="{msg.report_reset}"/>
                 </g:HorizontalPanel>
               </g:HorizontalPanel>
             </g:layer>

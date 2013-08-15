@@ -69,7 +69,7 @@ import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
-import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
+import org.openelis.modules.report.client.KitTrackingReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.RequestformReportScreen;
 import org.openelis.modules.report.client.SDWISUnloadReportScreen;
@@ -83,7 +83,6 @@ import org.openelis.modules.report.client.VerificationReportScreen;
 import org.openelis.modules.report.client.VolumeReportScreen;
 import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
-import org.openelis.modules.report.kitTracking.client.KitTrackingUI;
 import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
@@ -130,47 +129,36 @@ public class OpenELIS extends Screen {
     OpenELISConstants msg = GWT.create(OpenELISConstants.class);
     
     @UiField
-    protected MenuItem                   preference, logout, sampleLoginLabelReport,
+    protected MenuItem              preference, logout, sampleLoginLabelReport,
                     sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
                     clinicalSampleLogin, newbornScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetCreation, worksheetCompletion, addOrCancel, reviewAndRelease,
-                    toDo, labelFor, storage, QC, analyteParameter, internalOrder,
-                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
+                    worksheetCreation, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
+                    labelFor, storage, QC, analyteParameter, internalOrder, vendorOrder,
+                    sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
                     billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
                     sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
-                    turnAroundStatisticReport, kitTrackingReport, sdwisUnloadReport, dataView, qcChart, finalReport,
-                    orderRecurrence, finalReportBatch, finalReportBatchReprint, test, method,
+                    turnAroundStatisticReport, kitTrackingReport, sdwisUnloadReport, dataView,
+                    qcChart, finalReport, finalReportBatch, finalReportBatchReprint, test, method,
                     panel, QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
                     exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
                     trailerForTest, storageUnit, storageLocation, instrument, scriptlet,
-                    systemVariable, pws, cron,logs;
+                    systemVariable, pws, cron, logs;
 
     public OpenELIS() throws Exception {
-        VerticalPanel vp;
+        Exception loadError;
 
-        Constants.setConstants(OpenELISService.get().getConstants());
+        try {
+            loadError = null;
+            Constants.setConstants(OpenELISService.get().getConstants());
+        } catch (Exception anyE) {
+            loadError = anyE;
+        }
         
         initWidget(uiBinder.createAndBindUi(this));
-
-        // resize browser will move the collapse handle to the middle
-        /*
-        favoritesCollapse = (CollapsePanel)def.getWidget("favoritesCollapse");
-        Window.addResizeHandler(new ResizeHandler() {
-            public void onResize(ResizeEvent event) {
-                favoritesCollapse.setHeight(Window.getClientHeight() + "px");
-            }
-        });
-        // open/close favorites will adjust browser width
-        favoritesCollapse.addResizeHandler(new ResizeHandler() {
-            public void onResize(ResizeEvent event) {
-                browser.resize();
-            }
-        });
-        */
         
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {
@@ -178,27 +166,10 @@ public class OpenELIS extends Screen {
             }
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
-        /*
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {        initialize();
-
-                favoritesCollapse.setHeight(Window.getClientHeight() + "px");
-                browser.resize();
-            }
-        });
-        */
-
         initialize();
 
-        // load the favorite's panel
-        /*
-        vp = (VerticalPanel)def.getWidget("favoritesPanel");
-        try {
-            vp.add(new FavoritesScreen(def));
-        } catch (Throwable t) {
-            Window.alert("Can't initalize the favorite panel; " + t.getMessage());
-        }
-        */
+        if (loadError != null)
+            Window.alert("FATAL ERROR: "+loadError.getMessage()+"; Please contact IT support");
     }
 
     protected void initialize() {
@@ -1722,29 +1693,6 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(orderRecurrence, "system", new Command() {
-            public void execute() {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.orderRecurrence());
-                            window.setContent(new OrderRecurrenceReportScreen(window));
-                            browser.addWindow(window, "orderRecurrence");
-                        } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-        
         addCommand(qcChart, "sampletracking", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1819,20 +1767,18 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
-                            window.setName(msg.kitTrackingReport());
-                            window.setSize("400px", "330px");
-                            window.setContent(new KitTrackingUI(window));
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            window.setName(msg.kitTracking_kitTrackingReport());
+                            window.setContent(new KitTrackingReportScreen(window));
                             browser.addWindow(window, "kitTrackingReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
-                            e.printStackTrace();
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });

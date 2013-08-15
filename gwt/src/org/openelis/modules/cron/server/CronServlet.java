@@ -9,7 +9,7 @@ import org.openelis.bean.CronBean;
 import org.openelis.domain.CronDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.cron.client.CronServiceInt;
 
 @WebServlet("/openelis/cron")
@@ -21,30 +21,58 @@ public class CronServlet extends RemoteServlet implements CronServiceInt {
     CronBean cron;
 
     public CronDO fetchById(Integer id) throws Exception {
-        return cron.fetchById(id);
+        try {        
+            return cron.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return cron.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return cron.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CronDO add(CronDO data) throws Exception {
-        return cron.add(data);
+        try {        
+            return cron.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CronDO update(CronDO data) throws Exception {
-        return cron.update(data);
+        try {        
+            return cron.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CronDO fetchForUpdate(Integer id) throws Exception {
-        return cron.fetchForUpdate(id);
+        try {        
+            return cron.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(CronDO data) throws Exception {
-        cron.delete(data);
+        try {        
+            cron.delete(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CronDO abortUpdate(Integer id) throws Exception {
-        return cron.abortUpdate(id);
+        try {        
+            return cron.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

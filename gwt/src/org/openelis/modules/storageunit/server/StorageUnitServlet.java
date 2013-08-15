@@ -34,7 +34,7 @@ import org.openelis.bean.StorageUnitBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.storageunit.client.StorageUnitServiceInt;
 
 @WebServlet("/openelis/storageUnit")
@@ -46,35 +46,66 @@ public class StorageUnitServlet extends RemoteServlet implements StorageUnitServ
     StorageUnitBean storageUnit;
 
     public StorageUnitDO fetchById(Integer id) throws Exception {
-        return storageUnit.fetchById(id);
+        try {        
+            return storageUnit.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> fetchByDescription(String search) throws Exception {
-        return storageUnit.fetchByDescription(search + "%", 10);
+        try {        
+            return storageUnit.fetchByDescription(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return storageUnit.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return storageUnit.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageUnitDO add(StorageUnitDO data) throws Exception {
-        return storageUnit.add(data);
+        try {        
+            return storageUnit.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageUnitDO update(StorageUnitDO data) throws Exception {
-        return storageUnit.update(data);
+        try {        
+            return storageUnit.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageUnitDO fetchForUpdate(Integer id) throws Exception {
-        return storageUnit.fetchForUpdate(id);
+        try {        
+            return storageUnit.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(StorageUnitDO data) throws Exception {
-        storageUnit.delete(data);
+        try {        
+            storageUnit.delete(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageUnitDO abortUpdate(Integer id) throws Exception {
-        return storageUnit.abortUpdate(id);
+        try {        
+            return storageUnit.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-
 }

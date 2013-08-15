@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.EventLogBean;
 import org.openelis.domain.EventLogDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.eventLog.client.EventLogServiceInt;
 
 @WebServlet("/openelis/eventLog")
@@ -45,8 +45,12 @@ public class EventLogServlet extends RemoteServlet implements EventLogServiceInt
     EventLogBean eventLog;
 
     public ArrayList<EventLogDO> query(Query query) throws Exception {            
-        return eventLog.query(query.getFields(),
-                              query.getPage() * query.getRowsPerPage(),
-                              query.getRowsPerPage());
+        try {        
+            return eventLog.query(query.getFields(),
+                                  query.getPage() * query.getRowsPerPage(),
+                                  query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

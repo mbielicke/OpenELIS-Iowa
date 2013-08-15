@@ -34,7 +34,7 @@ import org.openelis.bean.HistoryBean;
 import org.openelis.domain.HistoryVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.history.client.HistoryServiceInt;
 
 @WebServlet("/openelis/history")
@@ -55,6 +55,10 @@ public class HistoryServlet extends RemoteServlet implements HistoryServiceInt {
         field = query.getFields().get(1);
         referenceTableId = Integer.parseInt(field.getQuery());
 
-        return history.fetchByReferenceIdAndTable(referenceId, referenceTableId);
+        try {        
+            return history.fetchByReferenceIdAndTable(referenceId, referenceTableId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

@@ -34,7 +34,7 @@ import org.openelis.bean.BuildKitsReportBean;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.client.BuildKitsReportServiceInt;
 
 @WebServlet("/openelis/buildKitsReport")
@@ -46,13 +46,22 @@ public class BuildKitsReportServlet extends RemoteServlet implements BuildKitsRe
     BuildKitsReportBean buildKitsReport;
 
     public ArrayList<Prompt> getPrompts() throws Exception {
-        return buildKitsReport.getPrompts();
+        try {        
+            return buildKitsReport.getPrompts();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }      
     
     public ReportStatus runReport(Query query) throws Exception {
         ReportStatus st;
         
-        st = buildKitsReport.runReport(query.getFields());
+        try {        
+            st = buildKitsReport.runReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

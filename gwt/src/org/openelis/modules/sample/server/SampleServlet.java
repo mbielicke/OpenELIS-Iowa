@@ -40,7 +40,7 @@ import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -69,76 +69,139 @@ public class SampleServlet extends RemoteServlet implements SampleServiceInt {
     SystemVariableBean        systemVariable;
 
     public SampleManager fetchById(Integer sampleId) throws Exception {
-        return sampleManager.fetchById(sampleId);
+        try {        
+            return sampleManager.fetchById(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        return sampleManager.fetchByAccessionNumber(accessionNumber);
+        try {        
+            return sampleManager.fetchByAccessionNumber(accessionNumber);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-        return sampleManager.fetchWithItemsAnalysis(sampleId);
+        try {        
+            return sampleManager.fetchWithItemsAnalysis(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {
-        return sampleManager.fetchWithAllDataById(sampleId);
+        try {        
+            return sampleManager.fetchWithAllDataById(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {
-        return sampleManager.fetchWithAllDataByAccessionNumber(accessionNumber);
+        try {        
+            return sampleManager.fetchWithAllDataByAccessionNumber(accessionNumber);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     // sample methods
     public ArrayList<IdAccessionVO> query(Query query) throws Exception {          
-        return sample.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return sample.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
         
     }
 
     public SampleManager add(SampleManager man) throws Exception {
-        return sampleManager.add(man);
+        try {        
+            return sampleManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SampleManager update(SampleManager man) throws Exception {
-        return sampleManager.update(man);
+        try {        
+            return sampleManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        return sampleManager.fetchForUpdate(sampleId);
+        try {        
+            return sampleManager.fetchForUpdate(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        return sampleManager.abortUpdate(sampleId);
+        try {        
+            return sampleManager.abortUpdate(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     // sample org methods
     public SampleOrganizationManager fetchSampleOrganizationsBySampleId(Integer sampleId)
                                                                                          throws Exception {
-        return sampleManager.fetchSampleOrgsBySampleId(sampleId);
+        try {        
+            return sampleManager.fetchSampleOrgsBySampleId(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     // sample project methods
     public SampleProjectManager fetchSampleprojectsBySampleId(Integer sampleId) throws Exception {
-        return sampleManager.fetchSampleProjectsBySampleId(sampleId);
+        try {        
+            return sampleManager.fetchSampleProjectsBySampleId(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     // sample item methods
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
-        return sampleManager.fetchSampleItemsBySampleId(sampleId);
+        try {        
+            return sampleManager.fetchSampleItemsBySampleId(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     // sample qa method
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
-        return sampleQaEventManager.fetchBySampleId(sampleId);
+        try {        
+            return sampleQaEventManager.fetchBySampleId(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        return sampleManager.validateAccessionNumber(sampleDO);
+        try {        
+            return sampleManager.validateAccessionNumber(sampleDO);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
+    @Deprecated
     public Integer getNewAccessionNumber() throws Exception {
         SystemVariableDO sysVarDO;
         int tries, i;
         Integer value;
+
+        // TODO: Need to completely rewrite this!!!
 
         sysVarDO = null;
         tries = 5;
@@ -161,6 +224,10 @@ public class SampleServlet extends RemoteServlet implements SampleServiceInt {
     }
     
     public PWSDO fetchPwsByPwsId(String number0) throws Exception {
-        return pws.fetchByNumber0(number0);
+        try {        
+            return pws.fetchByNumber0(number0);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

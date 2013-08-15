@@ -53,15 +53,27 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     DataViewBean       dataView;
     
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
-        return dataView.fetchEnvironmentalProjectListForWeb();
+        try {        
+            return dataView.fetchEnvironmentalProjectListForWeb();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
-        return dataView.fetchAnalyteAndAuxField(data);
+        try {        
+            return dataView.fetchAnalyteAndAuxField(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
-        return dataView.fetchAnalyteAndAuxFieldForWebEnvironmental(data);
+        try {        
+            return dataView.fetchAnalyteAndAuxFieldForWebEnvironmental(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public DataViewVO openQuery() throws Exception {
@@ -75,8 +87,8 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
             try {
                 dec = new XMLDecoder(temp.getInputStream());
                 return (DataViewVO)dec.readObject();
-            } catch (Exception e) {
-                throw e;
+            } catch (Exception anyE) {
+                throw serializeForGWT(anyE);
             } finally {
                 if (dec != null)
                     dec.close();
@@ -91,7 +103,12 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     public ReportStatus saveQuery(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = dataView.saveQuery(data);
+        try {        
+            st = dataView.saveQuery(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -101,7 +118,12 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     public ReportStatus runReport(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = dataView.runReport(data);
+        try {        
+            st = dataView.runReport(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -111,7 +133,12 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = dataView.runReportForWebEnvironmental(data);
+        try {        
+            st = dataView.runReportForWebEnvironmental(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

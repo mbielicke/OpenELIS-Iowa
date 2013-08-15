@@ -36,7 +36,7 @@ import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.modules.dictionary.client.DictionaryServiceInt;
@@ -56,51 +56,100 @@ public class DictionaryServlet extends RemoteServlet implements DictionaryServic
     CategoryBean        category;
 
     public CategoryManager fetchById(Integer id) throws Exception {
-        return categoryManager.fetchById(id);
+        try {        
+            return categoryManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> fetchByEntry(Query query) throws Exception {
-        return dictionary.fetchByEntry(query.getFields());
+        try {        
+            return dictionary.fetchByEntry(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> fetchByCategoryName(String name) throws Exception {
-        return category.fetchByName(name);
+        try {        
+            return category.fetchByName(name);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<DictionaryViewDO> fetchByEntry(String entry) throws Exception {
-        return dictionary.fetchByEntry(entry + "%", 10);
+        try {        
+            return dictionary.fetchByEntry(entry + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CategoryManager fetchWithEntries(Integer id) throws Exception {
-        return categoryManager.fetchWithEntries(id);
+        try {        
+            return categoryManager.fetchWithEntries(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return category.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return category.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CategoryManager add(CategoryManager man) throws Exception {
-        return categoryManager.add(man);
+        try {        
+            return categoryManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CategoryManager update(CategoryManager man) throws Exception {
-        return categoryManager.update(man);
+        try {        
+            return categoryManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CategoryManager fetchForUpdate(Integer id) throws Exception {
-        return categoryManager.fetchForUpdate(id);
+        try {        
+            return categoryManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public CategoryManager abortUpdate(Integer id) throws Exception {
-        return categoryManager.abortUpdate(id);
+        try {        
+            return categoryManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public DictionaryManager fetchEntryByCategoryId(Integer id) throws Exception {
-        return categoryManager.fetchEntryByCategoryId(id);
+        try {        
+            return categoryManager.fetchEntryByCategoryId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public DictionaryViewDO validateForDelete(DictionaryViewDO data) throws Exception {
-    	dictionary.validateForDelete(data);
+        // TODO: Need to remove returned object.
+        try {        
+            dictionary.validateForDelete(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
         return data;
     }
 }

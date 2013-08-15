@@ -36,7 +36,7 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.dataExchange.client.DataExchangeReportServiceInt;
 
 @WebServlet("/openelis/dataExchangeReport")
@@ -48,7 +48,11 @@ public class DataExchangeReportServlet extends RemoteServlet implements DataExch
     DataExchangeReportBean dataExchangeReport;
 
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return dataExchangeReport.getPrompts();      
+        try {        
+            return dataExchangeReport.getPrompts();      
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }    
     
     public ReportStatus exportToLocation(Query query) throws Exception {
@@ -88,7 +92,11 @@ public class DataExchangeReportServlet extends RemoteServlet implements DataExch
         if (idQuery != null)
             criteriaId = Integer.valueOf(idQuery);                                           
         
-        return dataExchangeReport.exportToLocation(accList, uriQuery, criteriaId);
+        try {        
+            return dataExchangeReport.exportToLocation(accList, uriQuery, criteriaId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
    
 }

@@ -29,7 +29,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.BuildKitManagerBean;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.BuildKitManager;
 import org.openelis.modules.buildKits.client.BuildKitsServiceInt;
 
@@ -43,7 +43,11 @@ public class BuildKitsServlet extends RemoteServlet implements BuildKitsServiceI
     
 
     public BuildKitManager add(BuildKitManager man) throws Exception {
-        return buildKitManager.add(man);
+        try {        
+            return buildKitManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
 }

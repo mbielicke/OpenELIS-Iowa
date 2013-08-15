@@ -32,7 +32,7 @@ import org.openelis.bean.AnalysisBean;
 import org.openelis.bean.AnalysisManagerBean;
 import org.openelis.bean.AnalysisQAEventManagerBean;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.modules.analysis.client.AnalysisServiceInt;
@@ -53,16 +53,28 @@ public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt
     
 
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
-        return analysisManager.fetchBySampleItemId(sampleItemId);
+        try {        
+            return analysisManager.fetchBySampleItemId(sampleItemId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public AnalysisViewDO fetchById(Integer analysisId) throws Exception {
-        return analysis.fetchById(analysisId);
+        try {        
+            return analysis.fetchById(analysisId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     // qa method
     public AnalysisQaEventManager fetchQaByAnalysisId(Integer analysisId) throws Exception {
-        return analysisQAEventManager.fetchByAnalysisId(analysisId);
+        try {        
+            return analysisQAEventManager.fetchByAnalysisId(analysisId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 

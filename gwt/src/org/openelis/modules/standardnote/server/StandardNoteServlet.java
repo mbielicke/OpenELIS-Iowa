@@ -35,7 +35,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.meta.StandardNoteMeta;
 import org.openelis.modules.standardnote.client.StandardNoteServiceInt;
 
@@ -48,7 +48,11 @@ public class StandardNoteServlet extends RemoteServlet implements StandardNoteSe
     StandardNoteBean standardNote;
 
     public StandardNoteDO fetchById(Integer id) throws Exception {
-        return standardNote.fetchById(id);
+        try {        
+            return standardNote.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<StandardNoteDO> fetchByNameOrDescription(Query query) throws Exception {
@@ -64,38 +68,74 @@ public class StandardNoteServlet extends RemoteServlet implements StandardNoteSe
                     description = field.getQuery();
             }
         }
-        return standardNote.fetchByNameOrDescription(name, description, 1000);
+        try {        
+            return standardNote.fetchByNameOrDescription(name, description, 1000);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public StandardNoteDO fetchBySystemVariableName(String name) throws Exception {        
-        return standardNote.fetchBySystemVariableName(name);
+        try {        
+            return standardNote.fetchBySystemVariableName(name);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<StandardNoteDO> fetchByType(Integer typeId) throws Exception {
-        return standardNote.fetchByType(typeId, 1000);
+        try {        
+            return standardNote.fetchByType(typeId, 1000);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return standardNote.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return standardNote.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StandardNoteDO add(StandardNoteDO data) throws Exception {
-        return standardNote.add(data);
+        try {        
+            return standardNote.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StandardNoteDO update(StandardNoteDO data) throws Exception {
-        return standardNote.update(data);
+        try {        
+            return standardNote.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StandardNoteDO fetchForUpdate(Integer id) throws Exception {
-        return standardNote.fetchForUpdate(id);
+        try {        
+            return standardNote.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(StandardNoteDO data) throws Exception {
-        standardNote.delete(data);
+        try {        
+            standardNote.delete(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StandardNoteDO abortUpdate(Integer id) throws Exception {
-        return standardNote.abortUpdate(id);
+        try {        
+            return standardNote.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }
