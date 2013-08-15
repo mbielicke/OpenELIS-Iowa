@@ -106,9 +106,7 @@ public class AnalysisTabUI extends Screen {
     protected AutoComplete             methodName, samplePrep, panel;
 
     @UiField
-    protected Dropdown<Integer>        sectionId, unitOfMeasureId, statusId;
-
-    protected Dropdown<Integer>        userActionId;
+    protected Dropdown<Integer>        section, unitOfMeasure, status;
 
     @UiField
     protected CheckBox                 isReportable, isPreliminary;
@@ -127,7 +125,7 @@ public class AnalysisTabUI extends Screen {
 
     protected Screen                   parentScreen;
 
-    protected boolean                 canEdit, isVisible;
+    protected boolean                  canEdit, isVisible;
 
     protected SampleManager1           manager;
 
@@ -162,7 +160,7 @@ public class AnalysisTabUI extends Screen {
                 testName.setEnabled(isState(QUERY));
                 testName.setQueryMode(isState(QUERY));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? methodName : userTable;
             }
@@ -184,9 +182,9 @@ public class AnalysisTabUI extends Screen {
                                                        (isState(ADD, UPDATE) && canEdit));
                                  methodName.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? statusId : testName;
+                                 return forward ? status : testName;
                              }
                          });
 
@@ -241,9 +239,9 @@ public class AnalysisTabUI extends Screen {
             }
         });
 
-        addScreenHandler(statusId, SampleMeta.getAnalysisStatusId(), new ScreenHandler<Integer>() {
+        addScreenHandler(status, SampleMeta.getAnalysisStatusId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                statusId.setValue(getStatusId());
+                status.setValue(getStatusId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -255,10 +253,10 @@ public class AnalysisTabUI extends Screen {
                 ArrayList<Item<Integer>> model;
                 Item<Integer> r;
 
-                statusId.setEnabled(isState(ADD, UPDATE) && canEdit);
-                statusId.setQueryMode(isState(QUERY));
+                status.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                status.setQueryMode(isState(QUERY));
 
-                model = statusId.getModel();
+                model = status.getModel();
                 // TODO if necessary, change this code
                 for (i = 0; i < model.size(); i++ ) {
                     r = model.get(i);
@@ -272,9 +270,9 @@ public class AnalysisTabUI extends Screen {
                         r.setEnabled(true);
                 }
             }
-            
+
             public Widget onTab(boolean forward) {
-                return forward ? sectionId : methodName;
+                return forward ? section : methodName;
             }
         });
 
@@ -294,9 +292,9 @@ public class AnalysisTabUI extends Screen {
                                                           (isState(ADD, UPDATE) && canEdit));
                                  isPreliminary.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? isReportable : sectionId;  
+                                 return forward ? isReportable : section;
                              }
                          });
 
@@ -316,61 +314,68 @@ public class AnalysisTabUI extends Screen {
                                                          (isState(ADD, UPDATE) && canEdit));
                                  isReportable.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? unitOfMeasureId : isPreliminary;  
+                                 return forward ? unitOfMeasure : isPreliminary;
                              }
                          });
 
-        addScreenHandler(sectionId,
+        addScreenHandler(section,
                          SampleMeta.getAnalysisSectionId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  /*
-                                  * The model for this dropdown changes based on
-                                  * the state and the analysis being shown in
-                                  * the tab. When this handler is called, both
-                                  * of those things are known and it is also
-                                  * known for sure that the value in the
-                                  * dropdown has to be set, so there's no
-                                  * unnecessary loading or reloading of the
-                                  * model.
+                                  * For all states other than Display and Query,
+                                  * the model depends on the analysis showing in
+                                  * the tab, which is known for certain only
+                                  * before this event is fired. So for those
+                                  * states, the model is generated and set here.
                                   */
-                                 sectionId.setModel(getSectionsModel());
-                                 sectionId.setValue(getSectionId());
+                                 if ( !isState(DISPLAY, QUERY))
+                                     section.setModel(getSectionsModel());
+                                 section.setValue(getSectionId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setSectionId(event.getValue());
+                                 setSection(event.getValue(), section.getDisplay());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sectionId.setEnabled(isState(QUERY) ||
+                                 /*
+                                  * The model shown in this dropdown in Query as
+                                  * well as Display state is the list of all
+                                  * sections in the system. Also, In Query
+                                  * state, the model needs to be set in this
+                                  * dropdown before it can be switched to query
+                                  * mode. So for those states, the model is set
+                                  * here.
+                                  */
+                                 if (isState(DISPLAY, QUERY))
+                                     section.setModel(allSectionsModel);
+                                 section.setEnabled(isState(QUERY) ||
                                                       (isState(ADD, UPDATE) && canEdit));
-                                 sectionId.setQueryMode(isState(QUERY));
+                                 section.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? isPreliminary : statusId;  
+                                 return forward ? isPreliminary : status;
                              }
                          });
 
-        addScreenHandler(unitOfMeasureId,
+        addScreenHandler(unitOfMeasure,
                          SampleMeta.getAnalysisUnitOfMeasureId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  /*
-                                  * The model for this dropdown changes based on
-                                  * the state and the analysis being shown in
-                                  * the tab. When this handler is called, both
-                                  * of those things are known and it is also
-                                  * known for sure that the value in the
-                                  * dropdown has to be set, so there's no
-                                  * unnecessary loading or reloading of the
-                                  * model.
+                                  * For all states other than Display and Query,
+                                  * the model depends on the analysis showing in
+                                  * the tab, which is known for certain only
+                                  * before this event is fired. So for those
+                                  * states, the model is generated and set here.
                                   */
-                                 unitOfMeasureId.setModel(getUnitsModel());
-                                 unitOfMeasureId.setValue(getUnitOfMeasureId());
+                                 if ( !isState(DISPLAY, QUERY))
+                                     unitOfMeasure.setModel(getUnitsModel());
+                                 unitOfMeasure.setValue(getUnitOfMeasureId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -378,13 +383,24 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 unitOfMeasureId.setEnabled(isState(QUERY) ||
+                                 /*
+                                  * The model shown in this dropdown in Query as
+                                  * well as Display state is the list of all
+                                  * units in the system. Also, In Query
+                                  * state, the model needs to be set in this
+                                  * dropdown before it can be switched to query
+                                  * mode. So for those states, the model is set
+                                  * here.
+                                  */
+                                 if (isState(DISPLAY, QUERY))
+                                     unitOfMeasure.setModel(allUnitsModel);
+                                 unitOfMeasure.setEnabled(isState(QUERY) ||
                                                             (isState(ADD, UPDATE) && canEdit));
-                                 unitOfMeasureId.setQueryMode(isState(QUERY));
+                                 unitOfMeasure.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? startedDate : isReportable;  
+                                 return forward ? startedDate : isReportable;
                              }
                          });
 
@@ -404,9 +420,9 @@ public class AnalysisTabUI extends Screen {
                                                         (isState(ADD, UPDATE) && canEdit));
                                  startedDate.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? completedDate : unitOfMeasureId;  
+                                 return forward ? completedDate : unitOfMeasure;
                              }
                          });
 
@@ -426,9 +442,9 @@ public class AnalysisTabUI extends Screen {
                                                           (isState(ADD, UPDATE) && canEdit));
                                  completedDate.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? releasedDate : startedDate;  
+                                 return forward ? releasedDate : startedDate;
                              }
                          });
 
@@ -448,9 +464,9 @@ public class AnalysisTabUI extends Screen {
                                                          (isState(ADD, UPDATE) && canEdit));
                                  releasedDate.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? printedDate : completedDate;  
+                                 return forward ? printedDate : completedDate;
                              }
                          });
 
@@ -469,9 +485,9 @@ public class AnalysisTabUI extends Screen {
                                  printedDate.setEnabled(isState(QUERY));
                                  printedDate.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
-                                 return forward ? revision : releasedDate;  
+                                 return forward ? revision : releasedDate;
                              }
                          });
 
@@ -495,6 +511,7 @@ public class AnalysisTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  samplePrep.setEnabled(isState(ADD, UPDATE) && canEdit);
+                                 samplePrep.setQueryMode(false);
                              }
                          });
 
@@ -526,7 +543,7 @@ public class AnalysisTabUI extends Screen {
                 revision.setEnabled(isState(QUERY));
                 revision.setQueryMode(isState(QUERY));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? worksheetTable : printedDate;
             }
@@ -544,7 +561,8 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                panel.setEnabled(isState(ADD, UPDATE) && canEdit);
+                panel.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                panel.setQueryMode(isState(QUERY));
             }
         });
 
@@ -581,27 +599,25 @@ public class AnalysisTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 worksheetTable.setEnabled(true);
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? userTable : revision;
             }
         });
 
-        addScreenHandler(userTable,
-                         "userTable",
-                         new ScreenHandler<ArrayList<Row>>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 userTable.setModel(getAnalysisUserTableModel());
-                             }
+        addScreenHandler(userTable, "userTable", new ScreenHandler<ArrayList<Row>>() {
+            public void onDataChange(DataChangeEvent event) {
+                userTable.setModel(getAnalysisUserTableModel());
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 userTable.setEnabled(true);
-                             }
-                             
-                             public Widget onTab(boolean forward) {
-                                 return forward ? testName : worksheetTable;
-                             }
-                         });
+            public void onStateChange(StateChangeEvent event) {
+                userTable.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? testName : worksheetTable;
+            }
+        });
 
         addScreenHandler(selectWkshtButton, "selectWkshtButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
@@ -651,7 +667,7 @@ public class AnalysisTabUI extends Screen {
         for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new Item<Integer>(d.getId(), d.getEntry()));
 
-        statusId.setModel(model);
+        status.setModel(model);
 
         // analysis user action
         model = new ArrayList<Item<Integer>>();
@@ -709,8 +725,8 @@ public class AnalysisTabUI extends Screen {
             public void onAnalysisChange(AnalysisChangeEvent event) {
                 switch (event.getAction()) {
                     case SAMPLE_TYPE_CHANGED:
-                        unitOfMeasureId.setModel(getUnitsModel());
-                        unitOfMeasureId.setValue(getUnitOfMeasureId());
+                        unitOfMeasure.setModel(getUnitsModel());
+                        unitOfMeasure.setValue(getUnitOfMeasureId());
                         break;
                     case TEST_CHANGED:
                         break;
@@ -739,17 +755,13 @@ public class AnalysisTabUI extends Screen {
     }
 
     /**
-     * returns the model for sections dropdown. In query and display, all
-     * sections are returned. In add, update, sections specific to the analysis'
-     * test are returned.
+     * Returns the model for sections dropdown. In add, update, sections
+     * specific to the analysis' test are returned.
      */
     private ArrayList<Item<Integer>> getSectionsModel() {
         ArrayList<Item<Integer>> model;
         TestSectionManager tsm;
         TestSectionViewDO ts;
-
-        if (isState(DISPLAY, QUERY))
-            return allSectionsModel;
 
         model = new ArrayList<Item<Integer>>();
         model.add(new Item<Integer>(null, ""));
@@ -772,18 +784,14 @@ public class AnalysisTabUI extends Screen {
     }
 
     /**
-     * returns the model for units dropdown. In query and display, all units are
-     * returned. In add, update, units specific to the sample item's sample type
-     * are returned.
+     * Returns the model for units dropdown. In add, update, units specific to
+     * the sample item's sample type are returned.
      */
     private ArrayList<Item<Integer>> getUnitsModel() {
         ArrayList<Item<Integer>> model;
         DictionaryDO d;
         TestTypeOfSampleDO type;
         TestTypeOfSampleManager tts;
-
-        if (isState(DISPLAY, QUERY))
-            return allUnitsModel;
 
         model = new ArrayList<Item<Integer>>();
         model.add(new Item<Integer>(null, ""));
@@ -1004,8 +1012,9 @@ public class AnalysisTabUI extends Screen {
         return null;
     }
 
-    private void setSectionId(Integer sectionId) {
+    private void setSection(Integer sectionId, String sectionName) {
         analysis.setSectionId(sectionId);
+        analysis.setSectionName(sectionName);
     }
 
     private Integer getPanelId() {

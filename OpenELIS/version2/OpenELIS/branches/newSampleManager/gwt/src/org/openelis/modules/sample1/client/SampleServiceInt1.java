@@ -27,8 +27,10 @@ package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 import org.openelis.ui.common.data.QueryData;
@@ -72,6 +74,10 @@ public interface SampleServiceInt1 extends RemoteService {
     public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception;
     
     public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception;
+    
+    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+                                         ArrayList<TestAnalyteViewDO> analytes,
+                                         ArrayList<Integer> indexes) throws Exception;
     
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
     

@@ -26,8 +26,7 @@
               <ui:text from="{msg.sampleType}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="typeOfSampleId" width="150px" field="Integer"
-                required="true" /> <!-- popWidth="150" -->
+              <w:Dropdown ui:field="typeOfSampleId" width="150px" field="Integer" />
             </td>
           </tr>
           <tr>
@@ -35,8 +34,7 @@
               <ui:text from="{msg.source}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="sourceOfSampleId" width="150px" field="Integer"
-                required="true" /> <!-- popWidth="150" -->
+              <w:Dropdown ui:field="sourceOfSampleId" width="150px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.sourceOther}:" />
@@ -50,7 +48,7 @@
               <ui:text from="{msg.container}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="containerId" width="225px" /> <!-- popWidth="225px" -->
+              <w:Dropdown ui:field="containerId" width="225px" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.containerReference}:" />
@@ -64,7 +62,7 @@
               <ui:text from="{msg.qty}:" />
             </td>
             <td>
-              <w:TextBox ui:field="quantity" width="150px" maxLength="20" field="Double"/>
+              <w:TextBox ui:field="quantity" width="150px" maxLength="20" field="Double" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.unit}:" />
