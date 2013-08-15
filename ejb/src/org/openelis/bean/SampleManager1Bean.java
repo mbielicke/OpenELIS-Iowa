@@ -66,6 +66,7 @@ import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -159,7 +160,7 @@ public class SampleManager1Bean {
     @EJB
     private AuxDataHelperBean            auxDataHelper;
 
-    private static final Logger        log = Logger.getLogger("openelis");
+    private static final Logger          log = Logger.getLogger("openelis");
 
     /**
      * Returns a new instance of sample manager with pre-initailized sample and
@@ -220,7 +221,8 @@ public class SampleManager1Bean {
 
             s.setDomain(domain);
         } else {
-            throw new InconsistencyException(Messages.get().sample_domainNotValid(s.getAccessionNumber()));
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_domainNotValid(s.getAccessionNumber()));
         }
 
         return sm;
@@ -1438,9 +1440,23 @@ public class SampleManager1Bean {
 
         return ret;
     }
-
+    
     /**
-     * Adds aux groups with ids to the sample based on the list of group 
+     * TODO rewrite comment: Adds rows of result for the specified analysis,
+     * such that the row analytes are specified by list of test analytes and
+     * each new row is added at the position corresponding to the analyte in the
+     * list of indexes. Assumes that the two lists are of the same length and
+     * the list of indexes is sorted in ascending order.
+     */
+    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+                                     ArrayList<TestAnalyteViewDO> analytes,
+                                     ArrayList<Integer> indexes) throws Exception {
+        
+        return analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
+    }
+    
+    /**
+     * Adds aux groups with ids to the sample based on the list of group
      */
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> auxiliary;
@@ -1452,7 +1468,7 @@ public class SampleManager1Bean {
         }
 
         auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds));
-        
+
         /*
          * set negative ids in the newly added aux data
          */
@@ -1469,16 +1485,16 @@ public class SampleManager1Bean {
      */
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> removed;
-        
+
         removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), new HashSet<Integer>(groupIds));
 
         if (removed != null && removed.size() > 0) {
-            if (getRemoved(sm) == null) 
+            if (getRemoved(sm) == null)
                 setRemoved(sm, new ArrayList<DataObject>());
             for (AuxDataViewDO data : removed) {
                 if (data.getId() > 0)
                     getRemoved(sm).add(data);
-            } 
+            }
         }
         return sm;
     }
@@ -1723,7 +1739,7 @@ public class SampleManager1Bean {
         if (prepIds != null)
             for (Integer id : prepIds)
                 ret.addTest(test.getSampleItemId(), id, ana.getId(), null, null, false, null);
-        analysisHelper.addResults(ret.getManager(), tm, ana.getId(), test.getReportableAnalytes());
+        analysisHelper.addResults(ret.getManager(), tm, ana, test.getReportableAnalytes());
 
         analyses.put(ana.getTestId(), ana);
 

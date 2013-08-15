@@ -99,12 +99,9 @@ public class SampleBean {
                                     SampleMeta.getAddressMultipleUnit());
         reportToAddressFieldMap.put(SampleMeta.getAddressStreetAddress(),
                                     SampleMeta.getAddressStreetAddress());
-        reportToAddressFieldMap.put(SampleMeta.getAddressCity(),
-                                    SampleMeta.getAddressCity());
-        reportToAddressFieldMap.put(SampleMeta.getAddressState(),
-                                    SampleMeta.getAddressState());
-        reportToAddressFieldMap.put(SampleMeta.getAddressZipCode(),
-                                    SampleMeta.getAddressZipCode());
+        reportToAddressFieldMap.put(SampleMeta.getAddressCity(), SampleMeta.getAddressCity());
+        reportToAddressFieldMap.put(SampleMeta.getAddressState(), SampleMeta.getAddressState());
+        reportToAddressFieldMap.put(SampleMeta.getAddressZipCode(), SampleMeta.getAddressZipCode());
         reportToAddressFieldMap.put(SampleMeta.getAddressWorkPhone(),
                                     SampleMeta.getAddressWorkPhone());
         reportToAddressFieldMap.put(SampleMeta.getAddressFaxPhone(),
@@ -120,13 +117,15 @@ public class SampleBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
-                          SampleMeta.getId() + "," + SampleMeta.getAccessionNumber() +
-                          ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
+                          "," + SampleMeta.getAccessionNumber() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(SampleMeta.getAccessionNumber());
 
         whereForFrom = builder.getWhereClause();
+        if (whereForFrom.indexOf("auxData.") > -1)
+            builder.addWhere(SampleMeta.getAuxDataReferenceTableId() + " = " +
+                             Constants.table().SAMPLE);
 
         // for the well screen we have to link to the org table and the address
         // table
@@ -159,10 +158,10 @@ public class SampleBean {
 
         if (list.isEmpty())
             throw new NotFoundException();
-        
+
         if (max > 0)
             list = (ArrayList<IdAccessionVO>)DataBaseUtil.subList(list, first, max);
-        
+
         if (list == null)
             throw new LastPageException();
 
@@ -177,15 +176,13 @@ public class SampleBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
-                          SampleMeta.getId() + "," + SampleMeta.getAccessionNumber() +
-                          ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
+                          "," + SampleMeta.getAccessionNumber() + ") ");
         builder.constructWhere(fields);
 
         builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
                          Constants.dictionary().ANALYSIS_RELEASED);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                         Constants.dictionary().SAMPLE_ERROR);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
 
         orgPresent = false;
         for (QueryData f : fields) {
@@ -476,13 +473,11 @@ public class SampleBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
-                          SampleMeta.getId() + "," + SampleMeta.getAccessionNumber() +
-                          ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
+                          "," + SampleMeta.getAccessionNumber() + ") ");
 
         builder.constructWhere(fields);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" +
-                         Constants.dictionary().SAMPLE_ERROR);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
 
         orgPresent = false;
         for (QueryData f : fields) {
@@ -635,34 +630,36 @@ public class SampleBean {
         // that by the time we insert it will still be unique, and will
         // slow us down.
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
-            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotValidException(data.getAccessionNumber())));
+            e.add(new FormErrorException(Messages.get()
+                                                 .sample_accessionNumberNotValidException(data.getAccessionNumber())));
         else if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
-            e.add(new FormErrorException(Messages.get().sample_accessionNumberNotInUse(data.getAccessionNumber())));
+            e.add(new FormErrorException(Messages.get()
+                                                 .sample_accessionNumberNotInUse(data.getAccessionNumber())));
 
         // domain
         d = data.getDomain();
         if (d == null ||
-            ( !Constants.domain().ANIMAL.equals(d) &&
-             !Constants.domain().ENVIRONMENTAL.equals(d) &&
-             !Constants.domain().HUMAN.equals(d) &&
-             !Constants.domain().NEONATAL.equals(d) &&
-             !Constants.domain().PRIVATEWELL.equals(d) &&
-             !Constants.domain().PT.equals(d) && !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
-            e.add(new FormErrorException(Messages.get().sample_noDomainException(DataBaseUtil.asString(data.getAccessionNumber()))));
+            ( !Constants.domain().ANIMAL.equals(d) && !Constants.domain().ENVIRONMENTAL.equals(d) &&
+             !Constants.domain().HUMAN.equals(d) && !Constants.domain().NEONATAL.equals(d) &&
+             !Constants.domain().PRIVATEWELL.equals(d) && !Constants.domain().PT.equals(d) &&
+             !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
+            e.add(new FormErrorException(Messages.get()
+                                                 .sample_noDomainException(DataBaseUtil.asString(data.getAccessionNumber()))));
         // dates
         ent = data.getEnteredDate();
         rec = data.getReceivedDate();
         minEnt = null;
         if (ent == null)
-            e.add(new FormErrorException(Messages.get().sample_enteredDateRequiredException(
-                                         DataBaseUtil.asString(data.getAccessionNumber()))));
+            e.add(new FormErrorException(Messages.get()
+                                                 .sample_enteredDateRequiredException(DataBaseUtil.asString(data.getAccessionNumber()))));
         else
             minEnt = ent.add( -180);
         if (rec == null)
-            e.add(new FormErrorException(Messages.get().sample_receivedDateRequiredException(
-                                         DataBaseUtil.asString(data.getAccessionNumber()))));
+            e.add(new FormErrorException(Messages.get()
+                                                 .sample_receivedDateRequiredException(DataBaseUtil.asString(data.getAccessionNumber()))));
         else if (rec.before(minEnt) && !ignoreWarning)
-            e.add(new FormErrorWarning(Messages.get().sample_receivedTooOldWarning(DataBaseUtil.asString(data.getAccessionNumber()))));
+            e.add(new FormErrorWarning(Messages.get()
+                                               .sample_receivedTooOldWarning(DataBaseUtil.asString(data.getAccessionNumber()))));
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
             cal = Calendar.getInstance();
@@ -673,11 +670,11 @@ public class SampleBean {
         }
         if (col != null) {
             if (col.after(rec))
-                e.add(new FormErrorException(Messages.get().sample_collectedDateInvalidError(
-                                             DataBaseUtil.asString(data.getAccessionNumber()))));
+                e.add(new FormErrorException(Messages.get()
+                                                     .sample_collectedDateInvalidError(DataBaseUtil.asString(data.getAccessionNumber()))));
             if (col.before(minEnt) && !ignoreWarning)
-                e.add(new FormErrorException(Messages.get().sample_collectedTooOldWarning(
-                                             DataBaseUtil.asString(data.getAccessionNumber()))));
+                e.add(new FormErrorException(Messages.get()
+                                                     .sample_collectedTooOldWarning(DataBaseUtil.asString(data.getAccessionNumber()))));
         }
 
         if (e.size() > 0)
@@ -723,11 +720,9 @@ public class SampleBean {
             qField.parse(field.getQuery());
 
             if (i % 2 == 0) {
-                whereClause += " and ( " +
-                               QueryBuilderV2.getQueryNoOperand(qField, field.getKey());
+                whereClause += " and ( " + QueryBuilderV2.getQueryNoOperand(qField, field.getKey());
             } else {
-                whereClause += " or " +
-                               QueryBuilderV2.getQueryNoOperand(qField, field.getKey()) +
+                whereClause += " or " + QueryBuilderV2.getQueryNoOperand(qField, field.getKey()) +
                                " ) ";
             }
         }

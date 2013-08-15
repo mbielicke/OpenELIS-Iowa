@@ -1385,16 +1385,18 @@ public class SampleManager1 implements Serializable {
          */
         public void remove(AnalysisDO analysis, int r) {
             ArrayList<ResultViewDO> rl;
+            ArrayList<ArrayList<ResultViewDO>> rls;
 
             localmapBuild();
-            rl = localmap.get(analysis.getId()).get(r);
+            rls = localmap.get(analysis.getId());
+            rl = rls.get(r);
             for (ResultViewDO data : rl) {
                 results.remove(data);
                 dataObjectRemove(data.getId(), data);
                 uidMapRemove(getResultUid(data.getId()));
             }
 
-            rl.remove(r);
+            rls.remove(r);
         }
 
         /**
@@ -1443,18 +1445,18 @@ public class SampleManager1 implements Serializable {
             ArrayList<ArrayList<ResultViewDO>> l;
 
             if (localmap == null && results != null) {
+                id = null;
                 l = null;
                 rl = null;
-                id = null;
                 localmap = new HashMap<Integer, ArrayList<ArrayList<ResultViewDO>>>();
-                for (ResultViewDO data : results) {
-                    /*
-                     * new analysis
-                     */
+                for (ResultViewDO data : results) {                  
                     if (id == null || !id.equals(data.getAnalysisId())) {
                         id = data.getAnalysisId();
-                        l = new ArrayList<ArrayList<ResultViewDO>>();
-                        localmap.put(id, l);
+                        l = localmap.get(id);
+                        if (l == null) {
+                            l = new ArrayList<ArrayList<ResultViewDO>>();
+                            localmap.put(id, l);  
+                        }
                     }
                     /*
                      * new row

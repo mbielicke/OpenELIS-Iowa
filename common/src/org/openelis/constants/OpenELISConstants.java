@@ -646,15 +646,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String allTests();
 
   /**
-   * Translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
-   * 
-   * @return translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-   */
-  @DefaultMessage("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-  @Key("alphabet")
-  String alphabet();
-
-  /**
    * Translated "The \"Analyte\" and \"Type\" fields are required for each analyte".
    * 
    * @return translated "The \"Analyte\" and \"Type\" fields are required for each analyte"
@@ -707,6 +698,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("An analysis can not be its own prep analysis")
   @Key("analysis.circularReference")
   String analysis_circularReference();
+
+  /**
+   * Translated "Result value is invalid".
+   * 
+   * @return translated "Result value is invalid"
+   */
+  @DefaultMessage("Result value is invalid")
+  @Key("analysis.illegalResultValueException")
+  String analysis_illegalResultValueException();
 
   /**
    * Translated "No Add permission for - {0} : {1}, {2}".
@@ -4516,6 +4516,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_adding();
 
   /**
+   * Translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
+   * 
+   * @return translated "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   */
+  @DefaultMessage("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+  @Key("gen.alphabet")
+  String gen_alphabet();
+
+  /**
+   * Translated "Analyte".
+   * 
+   * @return translated "Analyte"
+   */
+  @DefaultMessage("Analyte")
+  @Key("gen.analyte")
+  String gen_analyte();
+
+  /**
    * Translated "Aux Data".
    * 
    * @return translated "Aux Data"
@@ -4532,6 +4550,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Begin Date")
   @Key("gen.beginDate")
   String gen_beginDate();
+
+  /**
+   * Translated "Cancel".
+   * 
+   * @return translated "Cancel"
+   */
+  @DefaultMessage("Cancel")
+  @Key("gen.cancel")
+  String gen_cancel();
 
   /**
    * Translated "Canceling changes ...".
@@ -4856,6 +4883,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Note Editor")
   @Key("gen.noteEditor")
   String gen_noteEditor();
+
+  /**
+   * Translated "OK".
+   * 
+   * @return translated "OK"
+   */
+  @DefaultMessage("OK")
+  @Key("gen.ok")
+  String gen_ok();
 
   /**
    * Translated "Options".
