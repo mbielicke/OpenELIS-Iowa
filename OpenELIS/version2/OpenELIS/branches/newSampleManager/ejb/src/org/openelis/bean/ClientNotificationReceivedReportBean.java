@@ -16,13 +16,13 @@ import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.EntityLockedException;
 import org.openelis.ui.common.InconsistencyException;
-import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -137,17 +137,26 @@ public class ClientNotificationReceivedReportBean {
             l = entry.getValue();
             for (ClientNotificationVO data : l) {
                 if (data.getCollectionDate() != null)
-                    collectedDt = JasperUtil.concatWithSeparator(data.getCollectionDate(),
-                                                                 " ",
-                                                                 data.getCollectionTime());
+                    collectedDt = DataBaseUtil.concatWithSeparator(ReportUtil.toString(data.getCollectionDate(),
+                                                                                       Messages.get()
+                                                                                               .datePattern()),
+                                                                   " ",
+                                                                   ReportUtil.toString(data.getCollectionTime(),
+                                                                                       Messages.get()
+                                                                                               .timePattern()));
                 ref = getReferenceFields(data.getReferenceField1(),
                                          data.getReferenceField2(),
                                          data.getReferenceField3(),
                                          data.getProjectName());
                 sampleId = data.getAccessionNumber();
                 qaOverride = (sampleQA.containsKey(sampleId)) ? "YES" : null;
-                printBody(contents, sampleId, DataBaseUtil.toString(data.getReceivedDate()),
-                                                          collectedDt, ref, qaOverride);
+                printBody(contents,
+                          sampleId,
+                          ReportUtil.toString(data.getReceivedDate(), Messages.get()
+                                                                              .dateTimePattern()),
+                          collectedDt,
+                          ref,
+                          qaOverride);
 
                 sampleIds.add(sampleId);
             }
