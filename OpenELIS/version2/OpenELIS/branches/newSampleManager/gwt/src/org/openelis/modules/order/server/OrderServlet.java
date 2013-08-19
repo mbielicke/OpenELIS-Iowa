@@ -38,7 +38,7 @@ import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
@@ -65,71 +65,139 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
     
 
     public OrderManager fetchById(Integer id) throws Exception {
-        return orderManager.fetchById(id);
+        try {
+            return orderManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> fetchByDescription(String search) throws Exception {
-        return order.fetchByDescription(search + "%", 10);
+        try {
+            return order.fetchByDescription(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
-        return order.fetchByShippingItemId(id);
+        try {
+            return order.fetchByShippingItemId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderManager fetchWithOrganizations(Integer id) throws Exception {
-        return orderManager.fetchWithOrganizations(id);
+        try {
+            return orderManager.fetchWithOrganizations(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
-        return orderManager.fetchWithItems(id);
+        try {
+            return orderManager.fetchWithItems(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderManager fetchWithFills(Integer id) throws Exception {
-        return orderManager.fetchWithFills(id);
+        try {
+            return orderManager.fetchWithFills(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderManager fetchWithNotes(Integer id) throws Exception {
-        return orderManager.fetchWithNotes(id);
+        try {
+            return orderManager.fetchWithNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderManager fetchWithTests(Integer id) throws Exception {
-        return orderManager.fetchWithTests(id);
+        try {
+            return orderManager.fetchWithTests(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderManager fetchWithContainers(Integer id) throws Exception {
-        return orderManager.fetchWithContainers(id);
+        try {
+            return orderManager.fetchWithContainers(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
-        return orderManager.fetchWithRecurring(id);
+        try {
+            return orderManager.fetchWithRecurring(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }  
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return order.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {
+            return order.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception {
-        return order.queryOrderFill(query.getFields());
+        try {
+            return order.queryOrderFill(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderManager add(OrderManager man) throws Exception {
-        return orderManager.add(man);
+        try {
+            return orderManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderManager update(OrderManager man) throws Exception {
-        return orderManager.update(man);
+        try {
+            return orderManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderManager fetchForUpdate(Integer id) throws Exception {
-        return orderManager.fetchForUpdate(id);
+        try {
+            return orderManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderManager abortUpdate(Integer id) throws Exception {
-        return orderManager.abortUpdate(id);
+        try {
+            return orderManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderManager duplicate(Integer id) throws Exception {
-        return orderManager.duplicate(id);
+        try {
+            return orderManager.duplicate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
@@ -137,50 +205,90 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
     //
     
     public OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception {
-        return orderManager.fetchOrganizationByOrderId(id);
+        try {
+            return orderManager.fetchOrganizationByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
-        return orderManager.fetchItemByOrderId(id);
+        try {
+            return orderManager.fetchItemByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
-        return orderManager.fetchFillByOrderId(id);
+        try {
+            return orderManager.fetchFillByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception {
-        return orderManager.fetchReceiptByOrderId(id);
+        try {
+            return orderManager.fetchReceiptByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {
-        return orderManager.fetchTestByOrderId(id);
+        try {
+            return orderManager.fetchTestByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderTestAnalyteManager fetchTestAnalyteByOrderTestId(Integer id) throws Exception {
-        return orderManager.fetchTestAnalyteByOrderTestId(id);
+        try {
+            return orderManager.fetchTestAnalyteByOrderTestId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderTestAnalyteManager fetchMergedTestAnalyteByOrderTestId(Integer id) throws Exception {
-        return orderManager.fetchMergedTestAnalyteByOrderTestId(id);
+        try {
+            return orderManager.fetchMergedTestAnalyteByOrderTestId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception {
-        return orderManager.fetchTestAnalyteByTestId(id);
+        try {
+            return orderManager.fetchTestAnalyteByTestId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
-        return orderManager.fetchContainerByOrderId(id);
+        try {
+            return orderManager.fetchContainerByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
-        return orderManager.fetchRecurrenceByOrderId(id);
+        try {
+            return orderManager.fetchRecurrenceByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<Prompt> getPrompts() throws Exception {
-        return orderRecurrenceReport.getPrompts();
-    }
-    
-    public void recurOrders() throws Exception {
-        orderRecurrenceReport.recurOrders();
+        try {
+            return orderRecurrenceReport.getPrompts();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

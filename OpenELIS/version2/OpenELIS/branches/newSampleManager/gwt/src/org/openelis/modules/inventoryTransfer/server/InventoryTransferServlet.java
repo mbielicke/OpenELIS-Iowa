@@ -29,7 +29,7 @@ import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.InventoryTransferManagerBean;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferServiceInt;
 
@@ -42,6 +42,10 @@ public class InventoryTransferServlet extends RemoteServlet implements Inventory
     InventoryTransferManagerBean inventoryTransferManager;
 
     public InventoryTransferManager add(InventoryTransferManager man) throws Exception {
-        return inventoryTransferManager.add(man);
+        try {        
+            return inventoryTransferManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }   

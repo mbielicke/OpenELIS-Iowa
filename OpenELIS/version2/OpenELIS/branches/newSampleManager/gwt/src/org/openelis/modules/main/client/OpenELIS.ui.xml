@@ -150,7 +150,6 @@
                   <w:MenuItem enabled="false" ui:field="dataView" display="{msg.dataView}" />
                   <w:MenuItem enabled="false" ui:field="qcChart" display="{msg.qcChart}" />
                   <w:MenuItem enabled="false" ui:field="finalReport" display="{msg.finalReport}" />
-                  <w:MenuItem enabled="false" ui:field="orderRecurrence" display="{msg.orderRecurrence}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatch" display="{msg.finalReportBatch}" />
                   <w:MenuItem enabled="false" ui:field="finalReportBatchReprint" display="{msg.finalReportBatchReprint}" />
                 </w:Menu>

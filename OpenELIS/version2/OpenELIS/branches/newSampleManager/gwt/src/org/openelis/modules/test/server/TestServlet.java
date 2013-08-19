@@ -40,7 +40,7 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
@@ -64,16 +64,28 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
     @EJB
     TestTypeOfSampleBean testType;
 
-    public TestManager fetchById(Integer ids) throws Exception {
-        return testManager.fetchById(ids);
+    public TestManager fetchById(Integer testId) throws Exception {
+        try {
+            return testManager.fetchById(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
+
     public ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
-        return testManager.fetchByIds(ids);
+        try {
+        	return testManager.fetchByIds(ids);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<TestMethodVO> fetchByName(String name) throws Exception {
-        return test.fetchByName(name + "%", 1000);
+        try {        
+            return test.fetchByName(name + "%", 1000);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public TestViewDO fetchActiveByNameMethodName(Query query) throws Exception {
@@ -93,27 +105,51 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
         else
             methodName = null;
         
-        return test.fetchActiveByNameMethodName(testName, methodName);
+        try {        
+            return test.fetchActiveByNameMethodName(testName, methodName);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<TestMethodVO> fetchByPanelId(Integer id) throws Exception {
-        return test.fetchByPanelId(id);
+        try {        
+            return test.fetchByPanelId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<PanelVO> fetchNameMethodSectionByName(String name) throws Exception {
-        return test.fetchNameMethodSectionByName(name + "%", 1000000);
+        try {        
+            return test.fetchNameMethodSectionByName(name + "%", 1000000);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception {
-        return test.fetchTestMethodSampleTypeList();
+        try {        
+            return test.fetchTestMethodSampleTypeList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<TestMethodVO> fetchList() throws Exception {
-        return test.fetchList();
+        try {        
+            return test.fetchList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
-        return testManager.fetchSampleTypeByTestId(testId);
+        try {        
+            return testManager.fetchSampleTypeByTestId(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Query query) throws Exception {
@@ -138,67 +174,131 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
             unitOfMeasure = field.getQuery();
         else
             unitOfMeasure = null; 
-        
-        return testType.fetchUnitsForWorksheetAutocomplete(testId, typeOfSampleId, unitOfMeasure);
+
+        try {
+            return testType.fetchUnitsForWorksheetAutocomplete(testId, typeOfSampleId, unitOfMeasure);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception {
-        return testManager.fetchTestAnalytesByTestId(testId);
+        try {        
+            return testManager.fetchTestAnalytesByTestId(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestResultManager fetchTestResultByTestId(Integer testId) throws Exception {
-        return testManager.fetchTestResultsByTestId(testId);
+        try {        
+            return testManager.fetchTestResultsByTestId(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception {
-        return testManager.fetchPrepTestsByTestId(testId);
+        try {        
+            return testManager.fetchPrepTestsByTestId(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestReflexManager fetchReflexiveTestByTestId(Integer testId) throws Exception {
-        return testManager.fetchReflexiveTestsByTestId(testId);
+        try {        
+            return testManager.fetchReflexiveTestsByTestId(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception {
-        return testManager.fetchWorksheetByTestId(testId);
+        try {        
+            return testManager.fetchWorksheetByTestId(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
-        return testManager.fetchWithSampleTypes(testId);
+        try {        
+            return testManager.fetchWithSampleTypes(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
-        return testManager.fetchWithAnalytesAndResults(testId);
+        try {        
+            return testManager.fetchWithAnalytesAndResults(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
-        return testManager.fetchWithPrepTestsSampleTypes(testId);
+        try {        
+            return testManager.fetchWithPrepTestsSampleTypes(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
-        return testManager.fetchWithPrepTestsAndReflexTests(testId);
+        try {        
+            return testManager.fetchWithPrepTestsAndReflexTests(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager fetchWithWorksheet(Integer testId) throws Exception {
-        return testManager.fetchWithWorksheet(testId);
+        try {        
+            return testManager.fetchWithWorksheet(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<TestMethodVO> query(Query query) throws Exception {
-        return test.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return test.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager add(TestManager man) throws Exception {
-        return testManager.add(man);
+        try {        
+            return testManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager update(TestManager man) throws Exception {
-        return testManager.update(man);
+        try {        
+            return testManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
-        return testManager.fetchForUpdate(testId);
+        try {        
+            return testManager.fetchForUpdate(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestManager abortUpdate(Integer testId) throws Exception {
-        return testManager.abortUpdate(testId);
+        try {        
+            return testManager.abortUpdate(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

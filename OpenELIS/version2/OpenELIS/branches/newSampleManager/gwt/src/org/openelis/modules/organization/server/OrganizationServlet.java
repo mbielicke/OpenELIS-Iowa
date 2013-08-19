@@ -40,7 +40,7 @@ import org.openelis.domain.OrganizationViewDO;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
@@ -65,7 +65,11 @@ public class OrganizationServlet extends RemoteServlet implements OrganizationSe
     private OrganizationParameterBean organizationParameter;
     
     public OrganizationManager fetchById(Integer id) throws Exception {
-        return organizationManager.fetchById(id);
+        try {
+            return organizationManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
@@ -91,59 +95,111 @@ public class OrganizationServlet extends RemoteServlet implements OrganizationSe
     }
     
     public ArrayList<OrganizationParameterDO> fetchParametersByDictionarySystemName(String systemName) throws Exception {
-        return organizationParameter.fetchByDictionarySystemName(systemName);
+        try {        
+            return organizationParameter.fetchByDictionarySystemName(systemName);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<OrganizationParameterDO> fetchParametersByOrganizationId(Integer id) throws Exception {
-        return organizationParameter.fetchByOrganizationId(id);
+        try {        
+            return organizationParameter.fetchByOrganizationId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
-        return organizationManager.fetchWithContacts(id);
+        try {        
+            return organizationManager.fetchWithContacts(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationManager fetchWithNotes(Integer id) throws Exception {
-        return organizationManager.fetchWithNotes(id);
+        try {        
+            return organizationManager.fetchWithNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationManager fetchWithParameters(Integer id) throws Exception {
-        return organizationManager.fetchWithParameters(id);
+        try {        
+            return organizationManager.fetchWithParameters(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return organization.query(query.getFields(),
-                                                  query.getPage() * query.getRowsPerPage(),
-                                                  query.getRowsPerPage());
+        try {        
+            return organization.query(query.getFields(),
+                                      query.getPage() * query.getRowsPerPage(),
+                                      query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationManager add(OrganizationManager man) throws Exception {
-        return organizationManager.add(man);
+        try {        
+            return organizationManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationManager update(OrganizationManager man) throws Exception {
-        return organizationManager.update(man);
+        try {        
+            return organizationManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception {
-        return organizationManager.updateForNotify(parameters);
+        try {        
+            return organizationManager.updateForNotify(parameters);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        return organizationManager.fetchForUpdate(id);
+        try {        
+            return organizationManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
-        return organizationManager.abortUpdate(id);
+        try {        
+            return organizationManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
     // support for OrganizationContactManager and OrganizationParameterManager
     //
     public OrganizationContactManager fetchContactByOrganizationId(Integer id) throws Exception {
-        return organizationManager.fetchContactByOrganizationId(id);
+        try {        
+            return organizationManager.fetchContactByOrganizationId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception {
-        return organizationManager.fetchParameterByOrganizationId(id);
+        try {        
+            return organizationManager.fetchParameterByOrganizationId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

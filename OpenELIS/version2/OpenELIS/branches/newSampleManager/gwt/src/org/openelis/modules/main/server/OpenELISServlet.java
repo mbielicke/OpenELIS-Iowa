@@ -34,12 +34,11 @@ import org.openelis.bean.UserCacheBean;
 import org.openelis.domain.Constants;
 import org.openelis.modules.main.client.OpenELISServiceInt;
 import org.openelis.ui.common.Datetime;
-
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import org.openelis.ui.server.RemoteServlet;
 
 @WebServlet("/openelis/service")
-public class OpenELISServlet extends RemoteServiceServlet implements OpenELISServiceInt {
-
+public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt {
+    
     private static final long serialVersionUID = 1L;
 
     @EJB
@@ -50,8 +49,12 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
 
     public Constants getConstants() throws Exception {
         keepAlive();
-
-        return application.getConstants();
+        
+        try {
+            return application.getConstants();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void keepAlive() {
@@ -74,7 +77,7 @@ public class OpenELISServlet extends RemoteServiceServlet implements OpenELISSer
                 session.invalidate();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // ignore
         }
     }
 }

@@ -36,7 +36,7 @@ import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.AnalyteParameterManager;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterServiceInt;
 
@@ -67,7 +67,11 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
             refTableId = Integer.parseInt(field.getQuery());
         else
             refTableId = null;
-        return analyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
+        try {
+            return analyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<AnalyteParameterViewDO> fetchByAnalyteIdReferenceIdReferenceTableId(Query query) throws Exception {
@@ -95,26 +99,50 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
             refTableId = null;
         
         
-        return analyteParameter.fetchByAnalyteIdReferenceIdReferenceTableId(anaId, refId, refTableId);
+        try {
+            return analyteParameter.fetchByAnalyteIdReferenceIdReferenceTableId(anaId, refId, refTableId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception {
-        return analyteParameter.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {
+            return analyteParameter.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception {
-        return analyteParameterManager.add(man);
+        try {
+            return analyteParameterManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public AnalyteParameterManager update(AnalyteParameterManager man) throws Exception {
-        return analyteParameterManager.update(man);
+        try {
+            return analyteParameterManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public AnalyteParameterManager fetchForUpdate(AnalyteParameterManager man) throws Exception {
-        return analyteParameterManager.fetchForUpdate(man);
+        try {
+            return analyteParameterManager.fetchForUpdate(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public AnalyteParameterManager abortUpdate(AnalyteParameterManager man) throws Exception {
-        return analyteParameterManager.abortUpdate(man);
+        try {
+            return analyteParameterManager.abortUpdate(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

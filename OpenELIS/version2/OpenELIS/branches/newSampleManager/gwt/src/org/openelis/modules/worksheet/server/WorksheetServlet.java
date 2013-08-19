@@ -34,7 +34,7 @@ import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetManagerBean;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -54,62 +54,122 @@ public class WorksheetServlet extends RemoteServlet implements WorksheetServiceI
     WorksheetBean        worksheet;
 
     public ArrayList<WorksheetViewDO> query(Query query) throws Exception {
-        return worksheet.fetchByQueryForLookup(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return worksheet.fetchByQueryForLookup(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager fetchById(Integer id) throws Exception {
-        return worksheetManager.fetchById(id);
+        try {        
+            return worksheetManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<WorksheetViewDO> fetchByAnalysisId(Integer id) throws Exception {
-        return worksheet.fetchByAnalysisId(id);
+        try {        
+            return worksheet.fetchByAnalysisId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager fetchWithItems(Integer id) throws Exception {
-        return worksheetManager.fetchWithItems(id);
+        try {        
+            return worksheetManager.fetchWithItems(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager fetchWithNotes(Integer id) throws Exception {
-        return worksheetManager.fetchWithNotes(id);
+        try {        
+            return worksheetManager.fetchWithNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception {
-        return worksheetManager.fetchWithItemsAndNotes(id);
+        try {        
+            return worksheetManager.fetchWithItemsAndNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager fetchWithAllData(Integer id) throws Exception {
-        return worksheetManager.fetchWithAllData(id);
+        try {        
+            return worksheetManager.fetchWithAllData(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager add(WorksheetManager manager) throws Exception {
-        return worksheetManager.add(manager);
+        try {        
+            return worksheetManager.add(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        return worksheetManager.update(manager);
+        try {        
+            return worksheetManager.update(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public WorksheetManager fetchForUpdate(Integer id) throws Exception {
-        return worksheetManager.fetchForUpdate(id);
+        try {        
+            return worksheetManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public WorksheetManager abortUpdate(Integer id) throws Exception {
-        return worksheetManager.abortUpdate(id);
+        try {        
+            return worksheetManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public WorksheetItemManager fetchWorksheetItemByWorksheetId(Integer id) throws Exception {
-        return worksheetManager.fetchWorksheetItemByWorksheetId(id);
+        try {        
+            return worksheetManager.fetchWorksheetItemByWorksheetId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception {
-        return worksheetManager.fetchWorksheetAnalysisByWorksheetItemId(id);
+        try {        
+            return worksheetManager.fetchWorksheetAnalysisByWorksheetItemId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetResultManager fetchWorksheeetResultByWorksheetAnalysisId(Integer id) throws Exception {
-        return worksheetManager.fetchWorksheetResultByWorksheetAnalysisId(id);
+        try {        
+            return worksheetManager.fetchWorksheetResultByWorksheetAnalysisId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetQcResultManager fetchWorksheeetQcResultByWorksheetAnalysisId(Integer id) throws Exception {
-        return worksheetManager.fetchWorksheetQcResultByWorksheetAnalysisId(id);
+        try {        
+            return worksheetManager.fetchWorksheetQcResultByWorksheetAnalysisId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

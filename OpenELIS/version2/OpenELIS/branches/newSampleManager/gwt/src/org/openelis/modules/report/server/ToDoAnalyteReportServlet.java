@@ -34,7 +34,7 @@ import org.openelis.bean.ToDoAnalyteReportBean;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.client.ToDoAnalyteReportServiceInt;
 
 @WebServlet("/openelis/todoAnalyteReport")
@@ -46,13 +46,22 @@ public class ToDoAnalyteReportServlet extends RemoteServlet implements ToDoAnaly
     ToDoAnalyteReportBean toDoAnalyteReport;
 
     public ArrayList<Prompt> getPrompts() throws Exception {
-        return toDoAnalyteReport.getPrompts();      
+        try {        
+            return toDoAnalyteReport.getPrompts();      
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
         ReportStatus st;
         
-        st = toDoAnalyteReport.runReport(query.getFields());
+        try {        
+            st = toDoAnalyteReport.runReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

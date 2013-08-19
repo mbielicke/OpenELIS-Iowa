@@ -36,7 +36,7 @@ import org.openelis.bean.SampleBean;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
 import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionServiceInt;
@@ -59,37 +59,69 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
     SampleBean                  sample;
 
     public ExchangeCriteriaManager fetchById(Integer id) throws Exception {
-        return exchangeCriteriaManager.fetchById(id);
+        try {        
+            return exchangeCriteriaManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeCriteriaManager fetchByName(String name) throws Exception {
-        return exchangeCriteriaManager.fetchByName(name);
+        try {        
+            return exchangeCriteriaManager.fetchByName(name);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ExchangeCriteriaManager fetchWithProfiles(Integer id) throws Exception {
-        return exchangeCriteriaManager.fetchWithProfiles(id);
+        try {        
+            return exchangeCriteriaManager.fetchWithProfiles(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeCriteriaManager fetchWithProfilesByName(String name) throws Exception {
-        return exchangeCriteriaManager.fetchWithProfilesByName(name);
+        try {        
+            return exchangeCriteriaManager.fetchWithProfilesByName(name);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return exchangeCriteria.query(query.getFields(),
-                                      query.getPage() * query.getRowsPerPage(),
-                                      query.getRowsPerPage());
+        try {        
+            return exchangeCriteria.query(query.getFields(),
+                                          query.getPage() * query.getRowsPerPage(),
+                                          query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdAccessionVO> dataExchangeQuery(Query query) throws Exception {          
-        return sample.dataExchangeQuery(query.getFields());
+        try {        
+            return sample.dataExchangeQuery(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ExchangeCriteriaManager add(ExchangeCriteriaManager man) throws Exception {
-        return exchangeCriteriaManager.add(man);
+        try {        
+            return exchangeCriteriaManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ExchangeCriteriaManager update(ExchangeCriteriaManager man) throws Exception {
-        return exchangeCriteriaManager.update(man);
+        try {        
+            return exchangeCriteriaManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public void delete(ExchangeCriteriaManager man) throws Exception {
@@ -97,21 +129,37 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
     }
 
     public ExchangeCriteriaManager fetchForUpdate(Integer id) throws Exception {
-        return exchangeCriteriaManager.fetchForUpdate(id);
+        try {        
+            return exchangeCriteriaManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ExchangeCriteriaManager abortUpdate(Integer id) throws Exception {
-        return exchangeCriteriaManager.abortUpdate(id);
+        try {        
+            return exchangeCriteriaManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeCriteriaManager duplicate(Integer id) throws Exception {
-        return exchangeCriteriaManager.duplicate(id);
+        try {        
+            return exchangeCriteriaManager.duplicate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
     // support for ExchangeProfileManager
     //
     public ExchangeProfileManager fetchProfileByExchangeCriteriaId(Integer id) throws Exception {
-        return exchangeCriteriaManager.fetchProfileByExchangeCriteriaId(id);
+        try {        
+            return exchangeCriteriaManager.fetchProfileByExchangeCriteriaId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

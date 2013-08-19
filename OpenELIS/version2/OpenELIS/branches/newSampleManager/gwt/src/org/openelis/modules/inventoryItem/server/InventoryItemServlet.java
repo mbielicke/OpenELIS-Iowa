@@ -37,7 +37,7 @@ import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
@@ -55,11 +55,19 @@ public class InventoryItemServlet extends RemoteServlet implements InventoryItem
     InventoryItemBean        inventoryItem;
 
     public InventoryItemManager fetchById(Integer id) throws Exception {
-        return inventoryItemManager.fetchById(id);
+        try {        
+            return inventoryItemManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByName(String search) throws Exception {
-        return inventoryItem.fetchActiveByName(search+"%", 100);
+        try {        
+            return inventoryItem.fetchActiveByName(search+"%", 100);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(Query query) throws Exception {
@@ -79,10 +87,14 @@ public class InventoryItemServlet extends RemoteServlet implements InventoryItem
             }
         }
 
-        if (storeId == null)
-            return inventoryItem.fetchActiveByName(name+"%", 10);
-        else
-            return inventoryItem.fetchActiveByNameAndStore(name+"%", storeId, 10);
+        try {        
+            if (storeId == null)
+                return inventoryItem.fetchActiveByName(name+"%", 10);
+            else
+                return inventoryItem.fetchActiveByNameAndStore(name+"%", storeId, 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<InventoryItemDO> fetchActiveByNameStoreAndParentInventoryItem(Query query) throws Exception {
@@ -105,57 +117,109 @@ public class InventoryItemServlet extends RemoteServlet implements InventoryItem
             }
         }
         
-        return inventoryItem.fetchActiveByNameStoreAndParentInventoryItem(name+"%", parentInventoryItemId, 10);
+        try {        
+            return inventoryItem.fetchActiveByNameStoreAndParentInventoryItem(name+"%", parentInventoryItemId, 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryItemViewDO fetchInventoryItemById(Integer id) throws Exception {
-        return inventoryItem.fetchById(id);
+        try {        
+            return inventoryItem.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager fetchWithComponents(Integer id) throws Exception {
-        return inventoryItemManager.fetchWithComponents(id);
+        try {        
+            return inventoryItemManager.fetchWithComponents(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager fetchWithLocations(Integer id) throws Exception {
-        return inventoryItemManager.fetchWithLocations(id);
+        try {        
+            return inventoryItemManager.fetchWithLocations(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager fetchWithManufacturing(Integer id) throws Exception {
-        return inventoryItemManager.fetchWithManufacturing(id);
+        try {        
+            return inventoryItemManager.fetchWithManufacturing(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager fetchWithNotes(Integer id) throws Exception {       
-        return inventoryItemManager.fetchWithNotes(id);
+        try {        
+            return inventoryItemManager.fetchWithNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameStoreVO> query(Query query) throws Exception {        
-        return inventoryItem.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return inventoryItem.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager add(InventoryItemManager man) throws Exception {        
-        return inventoryItemManager.add(man);
+        try {        
+            return inventoryItemManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager update(InventoryItemManager man) throws Exception {       
-        return inventoryItemManager.update(man);
+        try {        
+            return inventoryItemManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager fetchForUpdate(Integer id) throws Exception {        
-        return inventoryItemManager.fetchForUpdate(id);
+        try {        
+            return inventoryItemManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InventoryItemManager abortUpdate(Integer id) throws Exception {       
-        return inventoryItemManager.abortUpdate(id);
+        try {        
+            return inventoryItemManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
     // support for InventoryComponentManager and InventoryLocationManager
     //
     public InventoryComponentManager fetchComponentByInventoryItemId(Integer id) throws Exception {        
-        return inventoryItemManager.fetchComponentByInventoryItemId(id);
+        try {        
+            return inventoryItemManager.fetchComponentByInventoryItemId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryLocationManager fetchLocationByInventoryItemId(Integer id) throws Exception {        
-        return inventoryItemManager.fetchLocationByInventoryItemId(id);
+        try {        
+            return inventoryItemManager.fetchLocationByInventoryItemId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

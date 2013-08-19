@@ -35,7 +35,7 @@ import org.openelis.bean.SectionManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SectionDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.SectionManager;
 import org.openelis.manager.SectionParameterManager;
 import org.openelis.modules.section.client.SectionServiceInt;
@@ -53,41 +53,77 @@ public class SectionServlet extends RemoteServlet implements SectionServiceInt {
     
 
     public SectionManager fetchById(Integer id) throws Exception {
-        return sectionManager.fetchById(id);
+        try {        
+            return sectionManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<SectionDO> fetchByName(String search) throws Exception {
-        return section.fetchByName(search + "%", 10);
+        try {        
+            return section.fetchByName(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public SectionManager fetchWithParameters(Integer id) throws Exception {
-        return sectionManager.fetchWithParameters(id);
+        try {        
+            return sectionManager.fetchWithParameters(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return section.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return section.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SectionManager add(SectionManager man) throws Exception {
-        return sectionManager.add(man);
+        try {        
+            return sectionManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SectionManager update(SectionManager man) throws Exception {
-        return sectionManager.update(man);
+        try {        
+            return sectionManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SectionManager fetchForUpdate(Integer id) throws Exception {
-        return sectionManager.fetchForUpdate(id);
+        try {        
+            return sectionManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SectionManager abortUpdate(Integer id) throws Exception {
-        return sectionManager.abortUpdate(id);
+        try {        
+            return sectionManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     //
     // support for SectionParameterManager
     //   
     public SectionParameterManager fetchParameterBySectionId(Integer id) throws Exception {
-        return sectionManager.fetchParameterBySectionId(id);
+        try {        
+            return sectionManager.fetchParameterBySectionId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

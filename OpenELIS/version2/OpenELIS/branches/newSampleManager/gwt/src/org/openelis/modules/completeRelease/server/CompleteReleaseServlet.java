@@ -7,7 +7,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.CompleteReleaseBean;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.modules.completeRelease.client.CompleteReleaseServiceInt;
 
@@ -20,6 +20,10 @@ public class CompleteReleaseServlet extends RemoteServlet implements CompleteRel
     CompleteReleaseBean completeRelease;
 
     public ArrayList<SampleDataBundle> query(Query query) throws Exception {
-		 return completeRelease.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
-	}     
+        try {		 
+            return completeRelease.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }     
 }

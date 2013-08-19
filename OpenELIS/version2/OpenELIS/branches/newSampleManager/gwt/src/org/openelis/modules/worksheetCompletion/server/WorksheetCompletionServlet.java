@@ -33,8 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.WorksheetCompletionBean;
 import org.openelis.bean.WorksheetManagerBean;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.ReportStatus;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionServiceInt;
 
@@ -50,18 +49,26 @@ public class WorksheetCompletionServlet extends RemoteServlet implements Workshe
     WorksheetManagerBean    worksheetManager;
 
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
-        return worksheetCompletion.saveForEdit(manager);
+        try {        
+            return worksheetCompletion.saveForEdit(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
-        return worksheetCompletion.loadFromEdit(manager);
+        try {        
+            return worksheetCompletion.loadFromEdit(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception {
-        return worksheetCompletion.getHeaderLabelsForScreen(manager);
-    }
-    
-    public ReportStatus getUpdateStatus() {
-        return worksheetManager.getUpdateStatus();
+        try {        
+            return worksheetCompletion.getHeaderLabelsForScreen(manager);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

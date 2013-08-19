@@ -3,12 +3,13 @@ package org.openelis.modules.worksheetCompletion.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.WorksheetManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class WorksheetCompletionService implements WorksheetCompletionServiceInt,
                                                    WorksheetCompletionServiceIntAsync {
@@ -26,17 +27,13 @@ public class WorksheetCompletionService implements WorksheetCompletionServiceInt
     
     private WorksheetCompletionService() {
         service = (WorksheetCompletionServiceIntAsync)GWT.create(WorksheetCompletionServiceInt.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override
     public void getHeaderLabelsForScreen(WorksheetManager manager,
                                          AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.getHeaderLabelsForScreen(manager, callback);
-    }
-
-    @Override
-    public void getUpdateStatus(AsyncCallback<ReportStatus> callback) {
-        service.getUpdateStatus(callback);
     }
 
     @Override
@@ -75,18 +72,4 @@ public class WorksheetCompletionService implements WorksheetCompletionServiceInt
         service.getHeaderLabelsForScreen(manager, callback);
         return callback.getResult();
     }
-
-    @Override
-    public ReportStatus getUpdateStatus() {
-        Callback<ReportStatus> callback;
-        
-        callback = new Callback<ReportStatus>();
-        service.getUpdateStatus(callback);
-        try {
-            return callback.getResult();
-        }catch(Exception e) {
-            return null;
-        }
-    }
-
 }

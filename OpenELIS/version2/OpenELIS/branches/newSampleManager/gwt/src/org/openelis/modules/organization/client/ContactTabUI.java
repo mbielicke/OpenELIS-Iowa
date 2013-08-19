@@ -39,9 +39,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ContactTabUI extends Screen {
+public class ContactTabUI extends ResizeComposite {
     
     @UiTemplate("ContactTab.ui.xml")
     interface ContactTabUiBinder extends UiBinder<Widget, ContactTabUI> {
@@ -64,8 +65,12 @@ public class ContactTabUI extends Screen {
     protected Dropdown<String>        state, country;
 
     private boolean                   loaded;
+    
+    private Screen                    parentScreen;
 
-    public ContactTabUI() {
+    public ContactTabUI(Screen parentScreen) {
+        
+        this.parentScreen = parentScreen;
        
         initWidget(uiBinder.createAndBindUi(this));
         
@@ -76,15 +81,15 @@ public class ContactTabUI extends Screen {
 
     private void initialize() {
 
-        addScreenHandler(table, "contactTable", new ScreenHandler<ArrayList<Row>>() {
+        parentScreen.addScreenHandler(table, "contactTable", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
-                if ( !isState(QUERY))
+                if ( !parentScreen.isState(QUERY))
                     table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent event) {
                 table.setEnabled(true);
-                table.setQueryMode(isState(QUERY));
+                table.setQueryMode(parentScreen.isState(QUERY));
             }
 
             public Object getQuery() {
@@ -146,7 +151,7 @@ public class ContactTabUI extends Screen {
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !isState(ADD, UPDATE, QUERY))
+                if ( !parentScreen.isState(ADD, UPDATE, QUERY))
                     event.cancel();
             }
         });
@@ -232,15 +237,15 @@ public class ContactTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
+        parentScreen.addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                remove.setEnabled(isState(ADD, UPDATE));
+                remove.setEnabled(parentScreen.isState(ADD, UPDATE));
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
+        parentScreen.addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD, UPDATE));
+                add.setEnabled(parentScreen.isState(ADD, UPDATE));
             }
         });
     }
@@ -343,13 +348,6 @@ public class ContactTabUI extends Screen {
     public void setManager(OrganizationManager manager) {
         this.manager = manager;
         loaded = false;
-    }
-
-    public void draw() {
-        if ( !loaded)
-            fireDataChange();
-
-        loaded = true;
     }
 
 }

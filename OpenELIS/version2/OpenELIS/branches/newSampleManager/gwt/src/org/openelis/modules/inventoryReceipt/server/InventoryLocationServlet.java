@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.InventoryLocationBean;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.inventoryReceipt.client.InventoryLocationServiceInt;
 
 @WebServlet("/openelis/inventoryLocation")
@@ -50,7 +50,11 @@ public class InventoryLocationServlet extends RemoteServlet implements Inventory
         
         search = query.getFields().get(0).getQuery();
         id = new Integer(query.getFields().get(1).getQuery());
-        return inventoryLocation.fetchByLocationNameInventoryItemId(search + "%", id,50);
+        try {        
+            return inventoryLocation.fetchByLocationNameInventoryItemId(search + "%", id,50);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }   
     
     public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemIdStoreId(Query query) throws Exception {
@@ -60,11 +64,19 @@ public class InventoryLocationServlet extends RemoteServlet implements Inventory
         search = query.getFields().get(0).getQuery();
         itemId = new Integer(query.getFields().get(1).getQuery());
         storeId = new Integer(query.getFields().get(2).getQuery());
-        return inventoryLocation.fetchByLocationNameInventoryItemIdStoreId(search + "%", itemId, storeId, 50);
+        try {        
+            return inventoryLocation.fetchByLocationNameInventoryItemIdStoreId(search + "%", itemId, storeId, 50);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemName(String search) throws Exception {
-        return inventoryLocation.fetchByInventoryItemName(search + "%", 50);
+        try {        
+            return inventoryLocation.fetchByInventoryItemName(search + "%", 50);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemNameStoreId(Query query) throws Exception {
@@ -73,11 +85,19 @@ public class InventoryLocationServlet extends RemoteServlet implements Inventory
         
         search = query.getFields().get(0).getQuery();
         storeId = new Integer(query.getFields().get(1).getQuery());
-        return inventoryLocation.fetchByInventoryItemNameStoreId(search + "%", storeId, 50);
+        try {        
+            return inventoryLocation.fetchByInventoryItemNameStoreId(search + "%", storeId, 50);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryLocationViewDO fetchById(Integer id) throws Exception {
-        return inventoryLocation.fetchById(id);
+        try {        
+            return inventoryLocation.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
 }

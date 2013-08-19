@@ -35,7 +35,7 @@ import org.openelis.bean.SystemVariableBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.systemvariable.client.SystemVariableServiceInt;
 
 @WebServlet("/openelis/systemVariable")
@@ -47,27 +47,51 @@ public class SystemVariableServlet extends RemoteServlet implements SystemVariab
     SystemVariableBean systemVariable;
 
     public SystemVariableDO fetchById(Integer id) throws Exception {
-        return systemVariable.fetchById(id);
+        try {        
+            return systemVariable.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<SystemVariableDO> fetchByName(String name) throws Exception {
-        return systemVariable.fetchByName(name + "%", 10);
+        try {        
+            return systemVariable.fetchByName(name + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return systemVariable.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return systemVariable.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SystemVariableDO add(SystemVariableDO data) throws Exception {
-        return systemVariable.add(data);
+        try {        
+            return systemVariable.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SystemVariableDO update(SystemVariableDO data) throws Exception {
-        return systemVariable.update(data);
+        try {        
+            return systemVariable.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
-        return systemVariable.fetchForUpdate(id);
+        try {        
+            return systemVariable.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(SystemVariableDO data) throws Exception {
@@ -75,6 +99,10 @@ public class SystemVariableServlet extends RemoteServlet implements SystemVariab
     }
 
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
-        return systemVariable.abortUpdate(id);
+        try {        
+            return systemVariable.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

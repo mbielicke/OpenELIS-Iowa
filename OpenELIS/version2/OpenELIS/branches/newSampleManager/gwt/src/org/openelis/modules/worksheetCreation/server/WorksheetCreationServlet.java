@@ -34,7 +34,7 @@ import org.openelis.bean.WorksheetCreationBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationServiceInt;
 
 @WebServlet("/openelis/worksheetCreation")
@@ -46,10 +46,18 @@ public class WorksheetCreationServlet extends RemoteServlet implements Worksheet
     WorksheetCreationBean worksheetCreation;
 
     public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
-        return worksheetCreation.query(query.getFields(), 0, query.getRowsPerPage());
+        try {        
+            return worksheetCreation.query(query.getFields(), 0, query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
-        return worksheetCreation.getColumnNames(formatId);
+        try {        
+            return worksheetCreation.getColumnNames(formatId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }
