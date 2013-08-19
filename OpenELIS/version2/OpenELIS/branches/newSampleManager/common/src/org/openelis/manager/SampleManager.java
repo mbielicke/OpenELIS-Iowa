@@ -183,7 +183,7 @@ public class SampleManager implements Serializable, HasAuxDataInt {
 
         sample.setStatusId(Constants.dictionary().SAMPLE_COMPLETED);
         sample.setReleasedDate(null);
-        sample.setRevision(sample.getRevision() + 1);   
+        sample.setRevision(sample.getRevision() + 1);
         unreleased = true;
         this.unreleaseWithNotes = unreleaseWithNotes;
     }   
