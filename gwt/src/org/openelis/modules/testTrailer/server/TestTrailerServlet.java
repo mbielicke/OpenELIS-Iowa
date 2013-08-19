@@ -34,7 +34,7 @@ import org.openelis.bean.TestTrailerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.testTrailer.client.TestTrailerServiceInt;
 
 @WebServlet("/openelis/testTrailer")
@@ -46,34 +46,66 @@ public class TestTrailerServlet extends RemoteServlet implements TestTrailerServ
     TestTrailerBean testTrailer;
 
     public TestTrailerDO fetchById(Integer id) throws Exception {
-        return testTrailer.fetchById(id);
+        try {        
+            return testTrailer.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> fetchByName(String search) throws Exception {
-        return testTrailer.fetchByName(search + "%", 10);
+        try {        
+            return testTrailer.fetchByName(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return testTrailer.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return testTrailer.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestTrailerDO add(TestTrailerDO data) throws Exception {
-        return testTrailer.add(data);
+        try {        
+            return testTrailer.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestTrailerDO update(TestTrailerDO data) throws Exception {
-        return testTrailer.update(data);
+        try {        
+            return testTrailer.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestTrailerDO fetchForUpdate(Integer id) throws Exception {
-        return testTrailer.fetchForUpdate(id);
+        try {        
+            return testTrailer.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(TestTrailerDO data) throws Exception {
-        testTrailer.delete(data);
+        try {        
+            testTrailer.delete(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public TestTrailerDO abortUpdate(Integer id) throws Exception {
-        return testTrailer.abortUpdate(id);
+        try {        
+            return testTrailer.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

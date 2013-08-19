@@ -35,7 +35,7 @@ import org.openelis.bean.ShippingManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
@@ -54,46 +54,90 @@ public class ShippingServlet extends RemoteServlet implements ShippingServiceInt
     
 
     public ShippingManager fetchById(Integer id) throws Exception {
-        return shippingManager.fetchById(id);
+        try {        
+            return shippingManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }    
     
     public ShippingViewDO fetchByOrderId(Integer id) throws Exception {
-        return shipping.fetchByOrderId(id);
+        try {        
+            return shipping.fetchByOrderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingManager fetchWithItemsAndTrackings (Integer id) throws Exception {
-        return shippingManager.fetchWithItemsAndTracking(id);
+        try {        
+            return shippingManager.fetchWithItemsAndTracking(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingManager fetchWithNotes(Integer id) throws Exception {
-        return shippingManager.fetchWithNotes(id);
+        try {        
+            return shippingManager.fetchWithNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return shipping.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return shipping.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingManager add(ShippingManager man) throws Exception {
-        return shippingManager.add(man);
+        try {        
+            return shippingManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingManager update(ShippingManager man) throws Exception {
-        return shippingManager.update(man);
+        try {        
+            return shippingManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingManager fetchForUpdate(Integer id) throws Exception {
-        return shippingManager.fetchForUpdate(id);
+        try {        
+            return shippingManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingManager abortUpdate(Integer id) throws Exception {
-        return shippingManager.abortUpdate(id);
+        try {        
+            return shippingManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingItemManager fetchItemByShippingId(Integer id) throws Exception {
-        return shippingManager.fetchItemByShippingId(id);
+        try {        
+            return shippingManager.fetchItemByShippingId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ShippingTrackingManager fetchTrackingByShippingId(Integer id) throws Exception {
-        return shippingManager.fetchTrackingByShippingId(id);
+        try {        
+            return shippingManager.fetchTrackingByShippingId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }    
 }

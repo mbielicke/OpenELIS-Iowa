@@ -34,7 +34,7 @@ import org.openelis.bean.StorageLocationBean;
 import org.openelis.bean.StorageManagerBean;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.storage.client.StorageServiceInt;
 
@@ -51,24 +51,44 @@ public class StorageServlet extends RemoteServlet implements StorageServiceInt {
     
 
     public StorageManager fetchById(Query query) throws Exception {
-        return storageManager.fetchById(new Integer(query.getFields().get(0).getQuery()),
-                                         new Integer(query.getFields().get(1).getQuery()));
+        try {        
+            return storageManager.fetchById(new Integer(query.getFields().get(0).getQuery()),
+                                            new Integer(query.getFields().get(1).getQuery()));
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {
-        return storageManager.fetchCurrentByLocationId(id);
+        try {        
+            return storageManager.fetchCurrentByLocationId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageManager fetchHistoryByLocationId(Query query) throws Exception {        
-        return storageManager.fetchHistoryByLocationId(new Integer(query.getFields().get(0).getQuery()), 
-                                                        query.getPage(),query.getRowsPerPage());
+        try {        
+            return storageManager.fetchHistoryByLocationId(new Integer(query.getFields().get(0).getQuery()), 
+                                                                       query.getPage(),query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<StorageLocationViewDO> fetchAvailableByName(String search) throws Exception {
-        return storageLocation.fetchAvailableByName(search + "%", 50);
+        try {        
+            return storageLocation.fetchAvailableByName(search + "%", 50);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public StorageManager update(StorageManager man) throws Exception {
-        return storageManager.update(man);
+        try {        
+            return storageManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

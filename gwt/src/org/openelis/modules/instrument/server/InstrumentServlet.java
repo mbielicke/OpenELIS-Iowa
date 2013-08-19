@@ -35,7 +35,7 @@ import org.openelis.bean.InstrumentManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
 import org.openelis.modules.instrument.client.InstrumentServiceInt;
@@ -52,42 +52,82 @@ public class InstrumentServlet extends RemoteServlet implements InstrumentServic
     InstrumentBean        instrument;
 
     public InstrumentManager fetchById(Integer id) throws Exception {
-        return instrumentManager.fetchById(id);
+        try {        
+            return instrumentManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<InstrumentViewDO> fetchByName(String name) throws Exception {
-        return instrument.fetchByName(name + "%", 10);
+        try {        
+            return instrument.fetchByName(name + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<InstrumentViewDO> fetchActiveByName(String name) throws Exception {
-        return instrument.fetchActiveByName(name + "%", 10);
+        try {        
+            return instrument.fetchActiveByName(name + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InstrumentManager fetchWithLogs(Integer id) throws Exception {
-        return instrumentManager.fetchWithLogs(id);
+        try {        
+            return instrumentManager.fetchWithLogs(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return instrument.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return instrument.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InstrumentManager add(InstrumentManager man) throws Exception {
-        return instrumentManager.add(man);
+        try {        
+            return instrumentManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InstrumentManager update(InstrumentManager man) throws Exception {
-        return instrumentManager.update(man);
+        try {        
+            return instrumentManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InstrumentManager fetchForUpdate(Integer id) throws Exception {
-        return instrumentManager.fetchForUpdate(id);
+        try {        
+            return instrumentManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InstrumentManager abortUpdate(Integer id) throws Exception {
-        return instrumentManager.abortUpdate(id);
+        try {        
+            return instrumentManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public InstrumentLogManager fetchLogByInstrumentId(Integer id) throws Exception {
-        return instrumentManager.fetchLogByInstrumentId(id);
+        try {        
+            return instrumentManager.fetchLogByInstrumentId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

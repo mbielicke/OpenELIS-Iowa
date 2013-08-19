@@ -34,7 +34,7 @@ import org.openelis.bean.InventoryReceiptBean;
 import org.openelis.bean.InventoryReceiptManagerBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.modules.inventoryReceipt.client.InventoryReceiptServiceInt;
 
@@ -50,27 +50,51 @@ public class InventoryReceiptServlet extends RemoteServlet implements InventoryR
     InventoryReceiptBean        inventoryReceipt;
 
     public ArrayList<IdNameVO> fetchByUpc(String search) throws Exception {
-        return inventoryReceipt.fetchByUpc(search + "%", 10);
+        try {        
+            return inventoryReceipt.fetchByUpc(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<InventoryReceiptManager> query(Query query) throws Exception {
-        return inventoryReceipt.query(query.getFields());
+        try {        
+            return inventoryReceipt.query(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryReceiptManager add(InventoryReceiptManager man) throws Exception {
-        return inventoryReceiptManager.add(man);
+        try {        
+            return inventoryReceiptManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryReceiptManager update(InventoryReceiptManager man) throws Exception {
-        return inventoryReceiptManager.update(man);
+        try {        
+            return inventoryReceiptManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryReceiptManager fetchForUpdate(InventoryReceiptManager man) throws Exception {
-        return inventoryReceiptManager.fetchForUpdate(man);
+        try {        
+            return inventoryReceiptManager.fetchForUpdate(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public InventoryReceiptManager abortUpdate(InventoryReceiptManager man) throws Exception {
-        return inventoryReceiptManager.abortUpdate(man);
+        try {        
+            return inventoryReceiptManager.abortUpdate(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
 }

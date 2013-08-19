@@ -61,7 +61,6 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
-//import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -642,10 +641,6 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     protected void commit() {
-//        long t0, t1;
-//        AsyncCallback<ReportStatus> cb;
-        
-//        commitDone = false;
         setFocus(null);
 
         if (!validate()) {
@@ -662,7 +657,6 @@ public class WorksheetCompletionScreen extends Screen {
                 DataChangeEvent.fire(wcs);
                 window.setDone(Messages.get().updatingComplete());
                 successfulLoad = false;
-//                commitDone = true;
             }
 
             public void onFailure(Throwable error) {
@@ -672,31 +666,8 @@ public class WorksheetCompletionScreen extends Screen {
                     Window.alert("save(): " + error.getMessage());
                     window.clearStatus();
                 }
-//                commitDone = true;
             }
         });
-        
-//        cb = new AsyncCallback<ReportStatus>() {
-//            public void onSuccess(ReportStatus status) {
-//                if (ReportStatus.Status.RUNNING.equals(status.getStatus())) {
-//                    window.setBusy(consts.get("updating")+" - "+status.getPercentComplete()+"%");
-//                    window.setProgress(status.getPercentComplete());
-//                }
-//            }
-//            
-//            public void onFailure(Throwable error) {
-//                window.setBusy(consts.get("updating")+" - ERROR");
-//            }
-//        };
-        
-//        do {
-//            service.call("getUpdateStatus", cb);
-//            t0 = System.currentTimeMillis();
-//            do {
-//                t1 = System.currentTimeMillis();
-//            } while (t1 - t0 > 1000);
-//        } while (!commitDone);
-//        window.setProgress(-1);
     }
 
     protected void abort() {

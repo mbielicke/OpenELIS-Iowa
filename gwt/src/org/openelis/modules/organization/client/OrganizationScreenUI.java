@@ -51,6 +51,7 @@ import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.note.client.NotesTabUI;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
@@ -87,6 +88,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -113,9 +116,9 @@ public class OrganizationScreenUI extends Screen {
 
     protected ScreenNavigator<IdNameVO> nav;
 
-    @UiField
+    @UiField(provided=true)
     protected ContactTabUI              contactTab;
-    @UiField
+    @UiField(provided=true)
     protected ParameterTabUI            parameterTab;
 
     protected NotesTabUI                notesTab;
@@ -161,6 +164,9 @@ public class OrganizationScreenUI extends Screen {
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Oranization Screen"));
 
+        contactTab = new ContactTabUI(this);
+        parameterTab = new ParameterTabUI(this);
+        
         initWidget(uiBinder.createAndBindUi(this));
 
         tab = Tabs.CONTACT;
@@ -591,44 +597,8 @@ public class OrganizationScreenUI extends Screen {
             }
         });
 
-        contactTab.setWindow(window);
-
-        addScreenHandler(contactTab, "constactTab", new ScreenHandler<Object>() {
-
-            public void onDataChange(DataChangeEvent event) {
-                contactTab.setManager(manager);
-                if (tab == Tabs.CONTACT)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                contactTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return contactTab.getQueryFields();
-            }
-
-        });
-
-        parameterTab.setWindow(window);
-
-        addScreenHandler(parameterTab, "parameterTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                parameterTab.setManager(manager);
-                if (tab == Tabs.PARAMETER)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                parameterTab.setState(event.getState());
-            }
-
-            public Object getQuery() {
-                return parameterTab.getQueryFields();
-            }
-        });
-
+        tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
+        
         notesTab = new NotesTabUI(window, notesPanel, standardNote);
         addDataChangeHandler(new DataChangeEvent.Handler() {
             public void onDataChange(DataChangeEvent event) {
@@ -725,6 +695,14 @@ public class OrganizationScreenUI extends Screen {
                 }
             }
         });
+        
+        window.addCloseHandler(new CloseHandler<WindowInt>() {
+            
+            @Override
+            public void onClose(CloseEvent<WindowInt> event) {
+                tabPanel.close();
+            }
+        });
     }
 
     private void initializeDropdowns() {
@@ -767,10 +745,7 @@ public class OrganizationScreenUI extends Screen {
         setState(QUERY);
         fireDataChange();
 
-        // clear all the tabs
-        contactTab.draw();
         notesTab.draw();
-        parameterTab.draw();
 
         id.setFocus(true);
         window.setDone(Messages.get().enterFieldsToQuery());
@@ -1028,12 +1003,6 @@ public class OrganizationScreenUI extends Screen {
 
     private void drawTabs() {
         switch (tab) {
-            case CONTACT:
-                contactTab.draw();
-                break;
-            case PARAMETER:
-                parameterTab.draw();
-                break;
             case NOTE:
                 notesTab.draw();
                 break;

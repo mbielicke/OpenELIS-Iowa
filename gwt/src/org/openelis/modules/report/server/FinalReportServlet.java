@@ -37,7 +37,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.client.FinalReportServiceInt;
 
 @WebServlet("/openelis/finalReport")
@@ -52,17 +52,30 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     FinalReportWebBean finalReportWeb;
 
     public ArrayList<Prompt> getPromptsForBatch() throws Exception {
-        return finalReport.getPromptsForBatch();
+        try {        
+            return finalReport.getPromptsForBatch();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<Prompt> getPromptsForBatchReprint() throws Exception {
-        return finalReport.getPromptsForBatchReprint();
+        try {        
+            return finalReport.getPromptsForBatchReprint();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ReportStatus runReportForSingle(Query query) throws Exception {
         ReportStatus st;
 
-        st = finalReport.runReportForSingle(query.getFields());
+        try {        
+            st = finalReport.runReportForSingle(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -72,7 +85,12 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     public ReportStatus runReportForPreview(Query query) throws Exception {
         ReportStatus st;
 
-        st = finalReport.runReportForPreview(query.getFields());
+        try {        
+            st = finalReport.runReportForPreview(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -82,7 +100,12 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     public ReportStatus runReportForBatch(Query query) throws Exception {
         ReportStatus st;
 
-        st = finalReport.runReportForBatch(query.getFields());
+        try {        
+            st = finalReport.runReportForBatch(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -92,7 +115,12 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     public ReportStatus runReportForBatchReprint(Query query) throws Exception {
         ReportStatus st;
 
-        st = finalReport.runReportForBatchReprint(query.getFields());
+        try {        
+            st = finalReport.runReportForBatchReprint(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -102,7 +130,12 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     public ReportStatus runReportForWeb(Query query) throws Exception {
         ReportStatus st;       
 
-        st = finalReport.runReportForWeb(query.getFields());
+        try {        
+            st = finalReport.runReportForWeb(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -110,26 +143,50 @@ public class FinalReportServlet extends RemoteServlet implements FinalReportServ
     }
 
     public ArrayList<FinalReportWebVO> getSampleEnvironmentalList(Query query) throws Exception {        
-        return finalReportWeb.getSampleEnvironmentalList(query.getFields());
+        try {        
+            return finalReportWeb.getSampleEnvironmentalList(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     } 
     
     public ArrayList<FinalReportWebVO> getSamplePrivateWellList(Query query) throws Exception{        
-        return finalReportWeb.getSamplePrivateWellList(query.getFields());
+        try {        
+            return finalReportWeb.getSamplePrivateWellList(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }  
     
     public ArrayList<FinalReportWebVO> getSampleSDWISList(Query query) throws Exception {        
-        return finalReportWeb.getSampleSDWISList(query.getFields());
+        try {        
+            return finalReportWeb.getSampleSDWISList(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }     
     
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {        
-        return finalReportWeb.getEnvironmentalProjectList();
+        try {        
+            return finalReportWeb.getEnvironmentalProjectList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
-        return finalReportWeb.getPrivateWellProjectList();
+        try {        
+            return finalReportWeb.getPrivateWellProjectList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> getSDWISProjectList() throws Exception {        
-        return finalReportWeb.getSDWISProjectList();
+        try {        
+            return finalReportWeb.getSDWISProjectList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

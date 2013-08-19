@@ -35,7 +35,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.qaevent.client.QAEventServiceInt;
 
 @WebServlet("/openelis/qa")
@@ -47,34 +47,66 @@ public class QaEventServlet extends RemoteServlet implements QAEventServiceInt {
     QaEventBean qaEvent;
 
     public QaEventViewDO fetchById(Integer id) throws Exception {
-        return qaEvent.fetchById(id);
+        try {        
+            return qaEvent.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception {
-        return qaEvent.fetchByTestId(id);
+        try {        
+            return qaEvent.fetchByTestId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<QaEventDO> fetchByCommon() throws Exception {
-        return qaEvent.fetchByCommon();
+        try {        
+            return qaEvent.fetchByCommon();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return qaEvent.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return qaEvent.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QaEventViewDO add(QaEventViewDO data) throws Exception {
-        return (QaEventViewDO)qaEvent.add(data);
+        try {        
+            return (QaEventViewDO)qaEvent.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QaEventViewDO update(QaEventViewDO data) throws Exception {
-        return (QaEventViewDO)qaEvent.update(data);
+        try {        
+            return (QaEventViewDO)qaEvent.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {
-        return qaEvent.fetchForUpdate(id);
+        try {        
+            return qaEvent.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public QaEventViewDO abortUpdate(Integer id) throws Exception {
-        return qaEvent.abortUpdate(id);
+        try {        
+            return qaEvent.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

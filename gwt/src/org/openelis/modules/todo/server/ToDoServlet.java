@@ -34,7 +34,7 @@ import org.openelis.bean.ToDoBean;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.todo.client.ToDoServiceInt;
 
 @WebServlet("/openelis/todo")
@@ -46,30 +46,58 @@ public class ToDoServlet extends RemoteServlet implements ToDoServiceInt {
     ToDoBean toDo;
 
     public ArrayList<AnalysisViewVO> getLoggedIn() throws Exception {
-        return toDo.getLoggedIn();
+        try {        
+            return toDo.getLoggedIn();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<AnalysisViewVO> getInitiated() throws Exception {
-        return toDo.getInitiated();
+        try {        
+            return toDo.getInitiated();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<AnalysisViewVO> getCompleted() throws Exception {
-        return toDo.getCompleted();
+        try {        
+            return toDo.getCompleted();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<AnalysisViewVO> getReleased() throws Exception {
-        return toDo.getReleased();
+        try {        
+            return toDo.getReleased();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<ToDoSampleViewVO> getToBeVerified() throws Exception {
-        return toDo.getToBeVerified();
+        try {        
+            return toDo.getToBeVerified();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<AnalysisViewVO> getOther() throws Exception {
-        return toDo.getOther();
+        try {        
+            return toDo.getOther();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<ToDoWorksheetVO> getWorksheet() throws Exception {
-        return toDo.getWorksheet();
+        try {        
+            return toDo.getWorksheet();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }   
 }

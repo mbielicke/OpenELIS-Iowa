@@ -34,7 +34,7 @@ import org.openelis.bean.ExchangeLocalTermBean;
 import org.openelis.bean.ExchangeLocalTermManagerBean;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapServiceInt;
@@ -55,36 +55,68 @@ public class ExchangeVocabularyMapServlet extends RemoteServlet implements Excha
     ExchangeLocalTermBean        exchangeLocalTerm;
     
     public ExchangeLocalTermManager fetchById(Integer id) throws Exception {
-        return exchangeLocalTermManager.fetchById(id);
+        try {        
+            return exchangeLocalTermManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeLocalTermManager fetchWithExternalTerms(Integer id) throws Exception {
-        return exchangeLocalTermManager.fetchWithExternalTerms(id);
+        try {        
+            return exchangeLocalTermManager.fetchWithExternalTerms(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<ExchangeLocalTermViewDO> query(Query query) throws Exception {
-        return exchangeLocalTerm.query(query.getFields(),
-                                                 query.getPage() * query.getRowsPerPage(),
-                                                 query.getRowsPerPage());
+        try {        
+            return exchangeLocalTerm.query(query.getFields(),
+                                           query.getPage() * query.getRowsPerPage(),
+                                           query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeLocalTermManager add(ExchangeLocalTermManager man) throws Exception {
-        return exchangeLocalTermManager.add(man);
+        try {        
+            return exchangeLocalTermManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeLocalTermManager update(ExchangeLocalTermManager man) throws Exception {
-        return exchangeLocalTermManager.update(man);
+        try {        
+            return exchangeLocalTermManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeLocalTermManager fetchForUpdate(Integer id) throws Exception {
-        return exchangeLocalTermManager.fetchForUpdate(id);
+        try {        
+            return exchangeLocalTermManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeLocalTermManager abortUpdate(Integer id) throws Exception {
-        return exchangeLocalTermManager.abortUpdate(id);
+        try {        
+            return exchangeLocalTermManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ExchangeExternalTermManager fetchExternalTermByExchangeLocalTermId(Integer id) throws Exception {
-        return exchangeLocalTermManager.fetchExternalTermByExchangeLocalTermId(id);
+        try {        
+            return exchangeLocalTermManager.fetchExternalTermByExchangeLocalTermId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

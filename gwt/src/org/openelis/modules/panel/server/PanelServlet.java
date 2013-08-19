@@ -36,11 +36,11 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.modules.panel.client.PanelServiceInt;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.server.RemoteServlet;
 
 @WebServlet("/openelis/panel")
 public class PanelServlet extends RemoteServlet implements PanelServiceInt {
@@ -54,37 +54,70 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
     PanelBean        panel;
 
     public PanelManager fetchById(Integer id) throws Exception {
-        return panelManager.fetchById(id);
+        try {        
+            return panelManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }   
 
     public PanelManager fetchWithItems(Integer id) throws Exception {
-        return panelManager.fetchWithItems(id);
+        try {        
+            return panelManager.fetchWithItems(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<PanelDO> fetchByName(String name) throws Exception {
-        return panel.fetchByName(name, 100);
+        try {        
+            return panel.fetchByName(name, 100);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception {
-        return panel.fetchByNameWithTests(name, 100);
+        try {        
+            return panel.fetchByNameWithTests(name, 100);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(Query query) throws Exception {
-        if (query.getFields().size() == 2)
-            return panel.fetchByNameSampleTypeWithTests(query.getFields().get(0).getQuery(), new Integer(query.getFields().get(1).getQuery()), query.getRowsPerPage());
+        try {
+            // TODO: Rewrite this method to user parameters instead of Query
+            if (query.getFields().size() == 2)
+                return panel.fetchByNameSampleTypeWithTests(query.getFields().get(0).getQuery(), new Integer(query.getFields().get(1).getQuery()), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
         return null;
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return panel.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return panel.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public PanelManager add(PanelManager man) throws Exception {
-        return panelManager.add(man);
+        try {        
+            return panelManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public PanelManager update(PanelManager man) throws Exception {
-        return panelManager.update(man);
+        try {        
+            return panelManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(PanelManager man) throws Exception {
@@ -92,22 +125,42 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
     }
 
     public PanelManager fetchForUpdate(Integer id) throws Exception {
-        return panelManager.fetchForUpdate(id);
+        try {        
+            return panelManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public PanelManager abortUpdate(Integer id) throws Exception {
-        return panelManager.abortUpdate(id);
+        try {        
+            return panelManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public PanelItemManager fetchItemByPanelId(Integer id) throws Exception {
-        return panelManager.fetchItemByPanelId(id);
+        try {        
+            return panelManager.fetchItemByPanelId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdVO> fetchTestIdsByPanelId(Integer panelId) throws Exception {
-        return panel.fetchTestIdsFromPanel(panelId);
+        try {        
+            return panel.fetchTestIdsFromPanel(panelId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdVO> fetchAuxIdsByPanelId(Integer panelId) throws Exception {
-        return panel.fetchAuxIdsFromPanel(panelId);
+        try {        
+            return panel.fetchAuxIdsFromPanel(panelId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

@@ -35,7 +35,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.label.client.LabelServiceInt;
 
 @WebServlet("/openelis/label")
@@ -47,34 +47,66 @@ public class LabelServlet extends RemoteServlet implements LabelServiceInt {
     LabelBean label;
 
     public LabelViewDO fetchById(Integer id) throws Exception {
-        return label.fetchById(id);
+        try {
+            return label.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<LabelDO> fetchByName(String search) throws Exception {
-        return label.fetchByName(search + "%", 10);
+        try {
+            return label.fetchByName(search + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return label.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {
+            return label.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public LabelViewDO add(LabelViewDO data) throws Exception {
-        return label.add(data);
+        try {
+            return label.add(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public LabelViewDO update(LabelViewDO data) throws Exception {
-        return label.update(data);
+        try {
+            return label.update(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public LabelViewDO fetchForUpdate(Integer id) throws Exception {
-        return label.fetchForUpdate(id);
+        try {
+            return label.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public void delete(LabelViewDO data) throws Exception {
-        label.delete(data);
+        try {
+            label.delete(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public LabelViewDO abortUpdate(Integer id) throws Exception {
-        return label.abortUpdate(id);
+        try {
+            return label.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

@@ -34,7 +34,7 @@ import org.openelis.bean.HoldRefuseOrganizationReportBean;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportServiceInt;
 
 @WebServlet("/openelis/holdRefuse")
@@ -46,13 +46,22 @@ public class HoldRefuseOrganizationReportServlet extends RemoteServlet implement
     HoldRefuseOrganizationReportBean holdRefuse;
 
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return holdRefuse.getPrompts();      
+        try {        
+            return holdRefuse.getPrompts();      
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
         ReportStatus st;
         
-        st = holdRefuse.runReport(query.getFields());
+        try {        
+            st = holdRefuse.runReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

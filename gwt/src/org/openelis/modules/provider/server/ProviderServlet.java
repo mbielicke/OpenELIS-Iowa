@@ -35,7 +35,7 @@ import org.openelis.bean.ProviderManagerBean;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.modules.provider.client.ProviderServiceInt;
@@ -52,45 +52,85 @@ public class ProviderServlet extends RemoteServlet implements ProviderServiceInt
     ProviderBean        provider;
 
     public ProviderManager fetchById(Integer id) throws Exception {
-        return providerManager.fetchById(id);
+        try {        
+            return providerManager.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<ProviderDO> fetchByLastName(String lastName) throws Exception {
-        return provider.fetchByLastName(lastName + "%", 10);
+        try {
+            return provider.fetchByLastName(lastName + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProviderManager fetchWithLocations(Integer id) throws Exception {
-        return providerManager.fetchWithLocations(id);
+        try {        
+            return providerManager.fetchWithLocations(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProviderManager fetchWithNotes(Integer id) throws Exception {
-        return providerManager.fetchWithNotes(id);
+        try {        
+            return providerManager.fetchWithNotes(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdFirstLastNameVO> query(Query query) throws Exception {
-        return provider.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {        
+            return provider.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProviderManager add(ProviderManager man) throws Exception {
-        return providerManager.add(man);
+        try {        
+            return providerManager.add(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProviderManager update(ProviderManager man) throws Exception {
-        return providerManager.update(man);
+        try {        
+            return providerManager.update(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProviderManager fetchForUpdate(Integer id) throws Exception {
-        return providerManager.fetchForUpdate(id);
+        try {        
+            return providerManager.fetchForUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ProviderManager abortUpdate(Integer id) throws Exception {
-        return providerManager.abortUpdate(id);
+        try {        
+            return providerManager.abortUpdate(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     //
     // support for ProviderContactManager and ProviderParameterManager
     //
     public ProviderLocationManager fetchLocationByProviderId(Integer id) throws Exception {
-        return providerManager.fetchLocationByProviderId(id);
+        try {        
+            return providerManager.fetchLocationByProviderId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

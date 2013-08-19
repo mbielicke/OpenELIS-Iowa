@@ -173,11 +173,6 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public void recurOrders(AsyncCallback<Void> callback) {
-        service.recurOrders(callback);
-    }
-
-    @Override
     public void update(OrderManager man, AsyncCallback<OrderManager> callback) {
         service.update(man, callback);
     }
@@ -447,15 +442,6 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
         service.getPrompts(callback);
         return callback.getResult();
 
-    }
-
-    @Override
-    public void recurOrders() throws Exception {
-        Callback<Void> callback;
-        
-        callback = new Callback<Void>();
-        service.recurOrders(callback);
-        callback.getResult();
     }
 
     @Override

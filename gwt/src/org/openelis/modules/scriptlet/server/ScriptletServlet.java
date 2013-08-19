@@ -32,7 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.ScriptletBean;
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.scriptlet.client.ScriptletServiceInt;
 
 @WebServlet("/openelis/scriptlet")
@@ -44,7 +44,11 @@ public class ScriptletServlet extends RemoteServlet implements ScriptletServiceI
     ScriptletBean scriptlet;
 
     public ArrayList<IdNameVO> fetchByName(String search)throws Exception {
-        return scriptlet.fetchByName(search+"%", 10);       
+        try {        
+            return scriptlet.fetchByName(search+"%", 10);       
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }

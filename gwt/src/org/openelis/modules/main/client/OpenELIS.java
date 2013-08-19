@@ -70,7 +70,6 @@ import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
 import org.openelis.modules.report.client.KitTrackingReportScreen;
-import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.RequestformReportScreen;
 import org.openelis.modules.report.client.SDWISUnloadReportScreen;
@@ -145,11 +144,11 @@ public class OpenELIS extends Screen {
                     billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
                     sampleDataExport, QASummaryReport, testCountByFacility, turnaround,
                     turnAroundStatisticReport, kitTrackingReport, sdwisUnloadReport, dataView,
-                    qcChart, finalReport, orderRecurrence, finalReportBatch,
-                    finalReportBatchReprint, test, method, panel, QAEvent, labSection, analyte,
-                    dictionary, auxiliaryPrompt, exchangeVocabularyMap, exchangeDataSelection,
-                    label, standardNote, trailerForTest, storageUnit, storageLocation, instrument,
-                    scriptlet, systemVariable, pws, cron, logs;
+                    qcChart, finalReport, finalReportBatch, finalReportBatchReprint, test, method,
+                    panel, QAEvent, labSection, analyte, dictionary, auxiliaryPrompt,
+                    exchangeVocabularyMap, exchangeDataSelection, label, standardNote,
+                    trailerForTest, storageUnit, storageLocation, instrument, scriptlet,
+                    systemVariable, pws, cron, logs;
 
     public OpenELIS() throws Exception {
         Exception loadError;
@@ -1724,29 +1723,6 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addCommand(orderRecurrence, "system", new Command() {
-            public void execute() {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.orderRecurrence());
-                            window.setContent(new OrderRecurrenceReportScreen(window));
-                            browser.addWindow(window, "orderRecurrence");
-                        } catch (Throwable e) {
-                            remote().log(Level.SEVERE, e.getMessage(), e);
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE, caught.getMessage(), caught);
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
         addCommand(qcChart, "sampletracking", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1887,17 +1863,7 @@ public class OpenELIS extends Screen {
 
     /**
      * register a click handler
-     * 
-     * private void addCommand(String screenName, String modulePermission,
-     * ClickHandler handler) { MenuItem item; ModulePermission perm;
-     * 
-     * item = ((MenuItem)def.getWidget(screenName)); if (item != null &&
-     * modulePermission != null) { perm =
-     * UserCache.getPermission().getModule(modulePermission); if (perm != null
-     * && perm.hasSelectPermission()) { item.enable(true);
-     * item.addCommand(handler); } } }
      */
-
     private void addCommand(MenuItem item, String modulePermission, Command handler) {
         ModulePermission perm;
 
