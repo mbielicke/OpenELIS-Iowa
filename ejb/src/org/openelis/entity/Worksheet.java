@@ -38,7 +38,7 @@ import org.openelis.utils.Auditable;
                       + " from Worksheet w left join w.instrument i where w.id in (:ids)"),
     @NamedQuery( name = "Worksheet.FetchByAnalysisId",
                 query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name,w.description) "
-                      + " from Worksheet w left join w.worksheetItem wi left join wi.worksheetAnalysis wa left join w.instrument i where wa.analysisId = :id")})
+                      + " from Worksheet w join w.worksheetItem wi join wi.worksheetAnalysis wa left join w.instrument i where wa.analysisId = :id")})
 
 @Entity
 @Table(name = "worksheet")

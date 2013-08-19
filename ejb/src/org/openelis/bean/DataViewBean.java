@@ -348,7 +348,7 @@ public class DataViewBean {
         QueryBuilderV2 builder;
         QueryData reportTo;
         ArrayList<QueryData> fields;
-        List<Object[]> list;
+        List<Object[]> list, tempList;
         ArrayList<Integer> analysisIds, sampleIds;
         ArrayList<ResultViewDO> resList;
         ArrayList<AuxDataViewDO> auxList;
@@ -390,18 +390,31 @@ public class DataViewBean {
                              Constants.dictionary().ORG_REPORT_TO);
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
-            list.addAll(fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields));
+            tempList = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields);
+            if (tempList.size() > 5000)
+                throw new InconsistencyException("Query too big. Your search returned " +
+                                                 tempList.size() +
+                                                 " results, but the limit is 5000.");
+            list.addAll(tempList);
 
             builder.clearWhereClause();
 
             reportTo.setKey(SampleWebMeta.getWellOrganizationName());
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
-            list.addAll(fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields));
+            tempList = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields);
+            if (tempList.size() > 5000)
+                throw new InconsistencyException("Query too big. Your search returned " +
+                                                 tempList.size() +
+                                                 " results, but the limit is 5000.");
+            list.addAll(tempList);
         } else {
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
             list = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields);
+            if (list.size() > 5000)
+                throw new InconsistencyException("Query too big. Your search returned " +
+                                                 list.size() + " results, but the limit is 5000.");
         }
 
         if (list.isEmpty())
@@ -652,7 +665,9 @@ public class DataViewBean {
                  */
                 if (analyteResultMap != null && analyteResultMap.size() > 0) {
                     if (analyteResultMap.size() > 1000)
-                        throw new InconsistencyException("Query too big. Looking up test results for more than 1000 analytes is not allowed.");
+                        throw new InconsistencyException("Query too big. Your search returned " +
+                                                         analyteResultMap.size() +
+                                                         " results, but the limit is 1000.");
 
                     resultList = getResults(addEnvCells,
                                             addSDWISCells,
@@ -705,7 +720,9 @@ public class DataViewBean {
                 builder.clearWhereClause();
                 if (auxFieldValueMap != null && auxFieldValueMap.size() > 0) {
                     if (auxFieldValueMap.size() > 1000)
-                        throw new InconsistencyException("Query too big. Looking up auxiliary data for more than 1000 analytes is not allowed.");
+                        throw new InconsistencyException("Query too big. Your search returned " +
+                                                         auxFieldValueMap.size() +
+                                                         " results, but the limit is 1000.");
 
                     auxDataList = getAuxData(addEnvCells,
                                              addSDWISCells,
