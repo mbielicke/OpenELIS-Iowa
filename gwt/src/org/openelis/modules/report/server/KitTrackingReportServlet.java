@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.report.kitTracking.server;
+package org.openelis.modules.report.server;
 
 import java.util.ArrayList;
 
@@ -32,7 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.KitTrackingReportBean;
 import org.openelis.ui.server.RemoteServlet;
-import org.openelis.modules.report.kitTracking.client.KitTrackingReportServiceInt;
+import org.openelis.modules.report.client.KitTrackingReportServiceInt;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
