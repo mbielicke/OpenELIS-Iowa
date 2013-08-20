@@ -32,7 +32,6 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.constants.Messages;
 import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.modules.report.kitTracking.client.KitTrackingReportService;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
