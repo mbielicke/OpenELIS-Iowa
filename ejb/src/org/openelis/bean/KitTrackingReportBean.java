@@ -44,6 +44,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
@@ -75,9 +76,6 @@ public class KitTrackingReportBean {
     private SessionCacheBean  session;
 
     @EJB
-    private PrinterCacheBean  printers;
-
-    @EJB
     private UserCacheBean     userCache;
 
     @EJB
@@ -90,7 +88,7 @@ public class KitTrackingReportBean {
      * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> prn, orderBy;
+        ArrayList<OptionListItem> orderBy;
         ArrayList<Prompt> p;
 
         try {
@@ -149,14 +147,6 @@ public class KitTrackingReportBean {
                                                           .setWidth(150)
                                                           .setOptionList(orderBy)
                                                           .setMutiSelect(false));
-
-            prn = printers.getListByType("pdf");
-            prn.add(0, new OptionListItem("-view-", "View in PDF"));
-            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(150)
-                                                          .setOptionList(prn)
-                                                          .setMutiSelect(false)
-                                                          .setRequired(true));
             return p;
         } catch (Exception e) {
             e.printStackTrace();
@@ -262,7 +252,7 @@ public class KitTrackingReportBean {
             url = ReportUtil.getResourceURL("org/openelis/report/kitTracking/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
-            tempFile = File.createTempFile("kitTracking", ".pdf", new File("/tmp"));
+            tempFile = File.createTempFile("kitTracking", ".xls", new File("/tmp"));
 
             jparam = new HashMap<String, Object>();
             jparam.put("FROM_DATE", frDate);
@@ -282,7 +272,7 @@ public class KitTrackingReportBean {
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
 
-            jexport = new JRPdfExporter();
+            jexport = new JRXlsExporter();
             jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
@@ -292,15 +282,10 @@ public class KitTrackingReportBean {
 
             status.setPercentComplete(100);
 
-            if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
-                status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
-            } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                      .setStatus(ReportStatus.Status.SAVED);
-            }
+            tempFile = ReportUtil.saveForUpload(tempFile);
+            status.setMessage(tempFile.getName())
+                  .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                  .setStatus(ReportStatus.Status.SAVED);
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
