@@ -56,6 +56,7 @@ import org.openelis.modules.order.client.InternalOrderScreen;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.order.client.VendorOrderScreen;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
+import org.openelis.modules.organization.client.OrganizationScreen;
 import org.openelis.modules.organization.client.OrganizationScreenUI;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.preferences.client.PreferencesScreen;
@@ -493,16 +494,15 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.organization());
-                            window.setSize("877px", "631px");
-                            window.setContent(new OrganizationScreenUI(window));
+//                            window.setSize("877px", "631px");
+                            window.setContent(new OrganizationScreen(window));
+//                            window.setContent(new OrganizationScreenUI(window));
                             browser.addWindow(window, "organization");
                         } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
                             remote().log(Level.SEVERE,e.getMessage(),e);
-                            
+                            Window.alert(e.getMessage());
                         }
                     }
 
@@ -1000,7 +1000,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
                             window.setName(msg.method());
-                            window.setSize("862px", "432px");
+                            window.setSize("843px", "384px");
                             window.setContent(new MethodScreen(window));
                             browser.addWindow(window, "method");
                         } catch (Throwable e) {
