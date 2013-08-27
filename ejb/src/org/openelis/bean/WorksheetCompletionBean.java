@@ -101,7 +101,6 @@ import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.EntityLockedException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -164,7 +163,6 @@ public class WorksheetCompletionBean {
         AnalysisViewDO aVDO;
         DictionaryDO formatDO;
         QcLotViewDO qcLotVDO;
-        ReportStatus status;
         SampleDataBundle bundle;
         SampleDomainInt sDomain;
         SampleItemManager siManager;
@@ -177,9 +175,6 @@ public class WorksheetCompletionBean {
         WorksheetItemDO wiDO;
         WorksheetQcResultManager wqrManager;
         WorksheetResultManager wrManager;
-
-        status = new ReportStatus();
-        session.setAttribute("WorksheetSaveExcelStatus", status);
 
         outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
                                                  manager.getWorksheet().getSystemUserId());
@@ -222,9 +217,6 @@ public class WorksheetCompletionBean {
         resultSheet.removeRow(tRow);
 
         overrideSheet = wb.getSheet("Overrides");
-
-        status.setPercentComplete(5);
-        session.setAttribute("WorksheetSaveExcelStatus", status);
 
         r = 1;
         o = 1;
@@ -581,9 +573,6 @@ public class WorksheetCompletionBean {
                     o++;
                 }
             }
-
-            status.setPercentComplete((i / manager.getItems().count()) * 90 + 5);
-            session.setAttribute("WorksheetSaveExcelStatus", status);
         }
 
         //
@@ -632,9 +621,6 @@ public class WorksheetCompletionBean {
             throw new Exception("Error writing Excel file: " + anyE.getMessage());
         }
 
-        status.setPercentComplete(100);
-        session.setAttribute("WorksheetSaveExcelStatus", status);
-
         return manager;
     }
 
@@ -661,7 +647,6 @@ public class WorksheetCompletionBean {
         AnalysisViewDO aVDO;
         AnalyteDO aDO;
         DictionaryDO statusDO;
-        ReportStatus status;
         ResultViewDO rVDO;
         SampleDataBundle bundle, newBundle;
         SampleItemManager siManager;
@@ -679,9 +664,6 @@ public class WorksheetCompletionBean {
         WorksheetResultManager wrManager;
         WorksheetResultViewDO wrVDO;
 
-        status = new ReportStatus();
-        session.setAttribute("WorksheetLoadExcelStatus", status);
-
         blankIndicator = "!BLANK!";
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
@@ -693,9 +675,6 @@ public class WorksheetCompletionBean {
         wb = new HSSFWorkbook(in);
         statusList = getStatuses();
         statusMap = getStatusMap();
-
-        status.setPercentComplete(5);
-        session.setAttribute("WorksheetLoadExcelStatus", status);
 
         r = 0;
         rowIndex = 1;
@@ -1017,9 +996,6 @@ public class WorksheetCompletionBean {
             // last analysis or there were no analyses for this item
             if (r == 0)
                 rowIndex++;
-
-            status.setPercentComplete((i / wiManager.count()) * 90 + 5);
-            session.setAttribute("WorksheetLoadExcelStatus", status);
         }
 
         if (errorList.getErrorList().size() > 0) {
@@ -1035,9 +1011,6 @@ public class WorksheetCompletionBean {
         }
 
         file.delete();
-
-        status.setPercentComplete(100);
-        session.setAttribute("WorksheetLoadExcelStatus", status);
 
         return manager;
     }

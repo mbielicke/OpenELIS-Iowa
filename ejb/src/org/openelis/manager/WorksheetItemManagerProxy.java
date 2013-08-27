@@ -29,7 +29,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.bean.SessionCacheBean;
 import org.openelis.bean.WorksheetItemBean;
 import org.openelis.constants.Messages;
 import org.openelis.domain.WorksheetItemDO;
@@ -37,7 +36,6 @@ import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.WorksheetItemManager.WorksheetItemListItem;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
 
@@ -94,14 +92,10 @@ public class WorksheetItemManagerProxy {
 
     public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
         int                i, j;
-        ReportStatus       status;
-        SessionCacheBean  session;
         WorksheetItemDO    item;
         WorksheetItemBean local;
         
         local = EJBFactory.getWorksheetItem();
-        session = EJBFactory.getSessionCache();
-        status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
         for (j = 0; j < manager.deleteCount(); j++)
             local.delete(manager.getDeletedAt(j).worksheetItem);
         
@@ -117,9 +111,6 @@ public class WorksheetItemManagerProxy {
             manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
             manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
             manager.getWorksheetAnalysisAt(i).update();
-            
-            status.setPercentComplete((i / manager.count()) * 50 + 5);
-            session.setAttribute("WorksheetUpdateStatus", status);
         }
 
         return manager;
