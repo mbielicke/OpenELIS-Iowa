@@ -339,7 +339,7 @@ public class MethodScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(9);
+                query.setRowsPerPage(16);
                 MethodService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
