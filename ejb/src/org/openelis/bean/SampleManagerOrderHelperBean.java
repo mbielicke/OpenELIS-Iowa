@@ -604,12 +604,8 @@ public class SampleManagerOrderHelperBean {
                 for (j = 0; j < otm.getAnalytesAt(i).count(); j++ )
                     analyteIds.add(otm.getAnalytesAt(i).getAnalyteAt(j).getAnalyteId());
             }
-            tests.add(new SampleTestRequestVO(item.getId(),
-                                              otm.getTestAt(i).getTestId(),
-                                              null,
-                                              null,
-                                              null,
-                                              false,
+            tests.add(new SampleTestRequestVO(item.getId(), otm.getTestAt(i).getTestId(),
+                                              null, null, null, null, false,
                                               analyteIds));
         }
 

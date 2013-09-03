@@ -30,15 +30,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.Constants;
+import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
-import org.openelis.manager.AuxFieldValueManager;
+import org.openelis.utilcommon.ResultFormatter;
 
 /**
  * This class is used for adding or removing aux data associated with a sample,
@@ -48,6 +48,9 @@ import org.openelis.manager.AuxFieldValueManager;
 @Stateless
 @SecurityDomain("openelis")
 public class AuxDataHelperBean {
+    
+    @EJB
+    private AuxFieldGroupManagerBean auxFieldGroupManager;
 
     /**
      * Adds aux groups specified by the list of ids to the list of aux data, if
@@ -117,7 +120,9 @@ public class AuxDataHelperBean {
         HashMap<Integer, AuxDataViewDO> auxMap;
         AuxFieldViewDO af;
         AuxFieldManager afm;
+        AuxFieldGroupManager afgm;
         AuxDataViewDO aux1, aux2;
+        ResultFormatter rf;
 
         for (Integer id : addIds) {
             auxMap = null;
@@ -128,7 +133,9 @@ public class AuxDataHelperBean {
              * fields for the aux group are fetched and aux data for them is
              * added
              */
-            afm = AuxFieldManager.fetchByGroupIdWithValues(id);
+            afgm = auxFieldGroupManager.fetchByIdWithFields(id);
+            afm = afgm.getFields();
+            rf = afgm.getFormatter();
             for (int i = 0; i < afm.count(); i++ ) {
                 af = afm.getAuxFieldAt(i);
                 if ("N".equals(af.getIsActive()))
@@ -143,7 +150,7 @@ public class AuxDataHelperBean {
                     /*
                      * set the value as the default for the aux data's field
                      */
-                    aux1.setValue(getDefault(afm.getValuesAt(i)));
+                    aux1.setValue(rf.getDefault(af.getId(), null));
                 } else {
                     /*
                      * set the value from the map if the aux data's analyte can
@@ -162,7 +169,7 @@ public class AuxDataHelperBean {
     }
 
     /**
-     * returns the group ids present in the set but not in the list of
+     * returns the group ids present in the set of ids but not in the list of
      * aux data
      */
     private Set<Integer> getDifference(ArrayList<AuxDataViewDO> auxiliary,
@@ -180,23 +187,5 @@ public class AuxDataHelperBean {
             }
         }
         return addIds;
-    }
-
-    /**
-     * returns the default value, if any, defined for a particular aux field
-     */
-    private String getDefault(AuxFieldValueManager afvm) {
-        AuxFieldValueViewDO afv;
-
-        if (afvm.count() == 0)
-            return null;
-
-        for (int i = 0; i < afvm.count(); i++ ) {
-            afv = afvm.getAuxFieldValueAt(i);
-            if (Constants.dictionary().AUX_DEFAULT.equals(afv.getTypeId()))
-                return afv.getValue();
-        }
-
-        return null;
     }
 }

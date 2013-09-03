@@ -37,7 +37,7 @@ import org.openelis.ui.common.ValidationErrorsList;
  */
 public class SampleTestReturnVO implements Serializable {
 
-    private static final long              serialVersionUID = 1L;
+    private static final long                serialVersionUID = 1L;
 
     protected SampleManager1                 manager;
 
@@ -62,12 +62,12 @@ public class SampleTestReturnVO implements Serializable {
     }
 
     public void addTest(Integer sampleItemId, Integer testId, Integer analysisId,
-                        Integer resultId, Integer panelId, boolean allowDuplicate,
-                        ArrayList<Integer> reportableAnalytes) {
+                        Integer sectionId, Integer resultId, Integer panelId,
+                        boolean allowDuplicate, ArrayList<Integer> reportableAnalytes) {
         if (tests == null)
             tests = new ArrayList<SampleTestRequestVO>(1);
 
-        tests.add(new SampleTestRequestVO(sampleItemId, testId, analysisId,
+        tests.add(new SampleTestRequestVO(sampleItemId, testId, analysisId, sectionId,
                                           resultId, panelId, allowDuplicate,
                                           reportableAnalytes));
     }

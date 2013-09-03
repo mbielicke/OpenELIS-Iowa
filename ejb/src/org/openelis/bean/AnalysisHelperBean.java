@@ -38,8 +38,11 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DataObject;
+import org.openelis.domain.MethodDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -48,6 +51,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
+import org.openelis.manager.TestSectionManager;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
@@ -66,6 +70,9 @@ public class AnalysisHelperBean {
 
     @EJB
     private TestManagerBean testManager;
+
+    @EJB
+    private MethodBean      method;
 
     /**
      * Returns TestManagers for given test ids. For those tests that are not
@@ -105,25 +112,46 @@ public class AnalysisHelperBean {
     }
 
     /**
-     * For each test in the VO that passes validation, adds an analysis and
-     * results to the manager. Adds validation errors, to the returned VO
+     * Adds an analysis to the sample item with the given id and sets its test
+     * and unit from the test manager. Sets the section id to the passed value
+     * if it's not null otherwise sets it to the default section from the test.
+     * Adds an error to the list if the section doesn't have permission to add
+     * the test.
      */
-    public AnalysisViewDO addAnalysis(SampleManager1 sm, Integer itemId, TestManager tm,
-                                      ValidationErrorsList e) throws Exception {
+    public AnalysisViewDO addAnalysis(SampleManager1 sm, Integer sampleItemId, TestManager tm,
+                                      Integer sectionId, ValidationErrorsList e) throws Exception {
         AnalysisViewDO ana;
         TestViewDO t;
         TestSectionViewDO ts;
+        TestSectionManager tsm;
         ArrayList<TestTypeOfSampleDO> types;
 
         t = tm.getTest();
+        tsm = tm.getTestSections();
+        ts = null;
+
+        /*
+         * if section id is specified, then use it for checking permissions
+         * otherwise use the default section
+         */
+        if (sectionId != null) {
+            for (int i = 0; i < tsm.count(); i++ ) {
+                ts = tsm.getSectionAt(i);
+                if (ts.getSectionId().equals(sectionId))
+                    break;
+            }
+        } else {
+            ts = tsm.getDefaultSection();
+        }
+
         /*
          * find out if this user has permission to add this test
          */
-        ts = tm.getTestSections().getDefaultSection();
         if (ts == null || !tm.canAssignThisSection(ts)) {
             e.add(new FormErrorWarning(Messages.get()
-                                               .insufficientPrivilegesAddTest(t.getName(),
-                                                                              t.getMethodName())));
+                                               .analysis_insufficientPrivilegesAddTestWarning(getSample(sm).getAccessionNumber(),
+                                                                                              t.getName(),
+                                                                                              t.getMethodName())));
         }
 
         ana = new AnalysisViewDO();
@@ -134,17 +162,18 @@ public class AnalysisHelperBean {
         ana.setMethodId(t.getMethodId());
         ana.setMethodName(t.getMethodName());
         /*
-         * if there is a default section then set it
+         * if a section was found above then set it
          */
         if (ts != null) {
             ana.setSectionId(ts.getSectionId());
             ana.setSectionName(ts.getSection());
         }
+
         ana.setIsReportable(t.getIsReportable());
         ana.setIsPreliminary("N");
 
         for (SampleItemViewDO item : getItems(sm)) {
-            if (item.getId().equals(itemId)) {
+            if (item.getId().equals(sampleItemId)) {
                 ana.setSampleItemId(item.getId());
                 /*
                  * the first unit within the sample type is the default unit
@@ -167,14 +196,16 @@ public class AnalysisHelperBean {
     /**
      * Adds results for this analysis from the analytes in the TestManager
      */
-    public void addResults(SampleManager1 sm, TestManager tm, AnalysisViewDO analysis,
-                           ArrayList<Integer> analyteIds) throws Exception {
-        String reportable;
+    public void addResults(SampleManager1 sm, TestManager tm, AnalysisViewDO ana,
+                           ArrayList<Integer> analyteIds,
+                           HashMap<Integer, HashMap<Integer, String>> oldResults) throws Exception {
         boolean addRow;
-        ResultViewDO r;
+        String reportable, oldVal;
         TestAnalyteManager tam;
         HashSet<Integer> ids;
+        ResultViewDO r;
         ResultFormatter rf;
+        HashMap<Integer, String> oldRow;
 
         ids = null;
         if (analyteIds != null)
@@ -186,6 +217,7 @@ public class AnalysisHelperBean {
          * By default add analytes that are not supplemental. Add supplemental
          * analytes that are in id list. The id list overrides reportable flag.
          */
+        oldRow = null;
         for (ArrayList<TestAnalyteViewDO> list : tam.getAnalytes()) {
             for (TestAnalyteViewDO data : list) {
                 reportable = data.getIsReportable();
@@ -202,21 +234,38 @@ public class AnalysisHelperBean {
 
                     if ( !addRow)
                         break;
+
+                    /*
+                     * find out if a row beginning with this analyte was present
+                     * in the old results
+                     */
+                    if (oldResults != null)
+                        oldRow = oldResults.get(data.getAnalyteId());
                 }
 
-                addResult(sm, createResult(sm, analysis, data, reportable, rf));
+                r = createResult(sm, ana, data, reportable, rf);
+
+                if (oldRow != null && r.getValue() == null) {
+                    oldVal = oldRow.get(r.getAnalyteId());
+                    /*
+                     * if the old results had a value for this analyte then set
+                     * it in this result
+                     */
+                    if (oldVal != null)
+                        r.setValue(oldVal);
+                }
+
+                addResult(sm, r);
             }
         }
     }
 
     /**
-     * TODO rewrite comment: Adds rows of result for the specified analysis,
-     * such that the row analytes are specified by list of test analytes and
-     * each new row is added at the position corresponding to the analyte in the
-     * list of indexes. Assumes that the two lists are of the same length and
-     * the list of indexes is sorted in ascending order.
+     * Adds result rows with the specified row analytes at the positions
+     * specified by the corresponding indexes. Assumes that the two lists are of
+     * the same length and the indexes are in ascending order.
      */
-    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO ana,
                                          ArrayList<TestAnalyteViewDO> insertAnalytes,
                                          ArrayList<Integer> insertAt) throws Exception {
         int i, j, rpos, pos;
@@ -233,7 +282,7 @@ public class AnalysisHelperBean {
         lastrg = null;
         nextrg = null;
 
-        tm = testManager.fetchWithAnalytesAndResults(analysis.getTestId());
+        tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
         tam = tm.getTestAnalytes();
         rf = tm.getFormatter();
 
@@ -249,7 +298,7 @@ public class AnalysisHelperBean {
                  * skip the results of other analyses
                  */
                 r = getResults(sm).get(j);
-                if ( !r.getAnalysisId().equals(analysis.getId())) {
+                if ( !r.getAnalysisId().equals(ana.getId())) {
                     j++ ;
                     continue;
                 }
@@ -271,7 +320,10 @@ public class AnalysisHelperBean {
              * row
              */
             if ( !insertAna.getRowGroup().equals(lastrg) && !insertAna.getRowGroup().equals(nextrg))
-                throw new InconsistencyException("Can't add analyte at this position");
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_invalidPositionForAnalyteException(getSample(sm).getAccessionNumber(),
+                                                                                                      ana.getTestName(),
+                                                                                                      ana.getMethodName()));
 
             if (j != getResults(sm).size())
                 j-- ;
@@ -285,7 +337,7 @@ public class AnalysisHelperBean {
                      * create results from this row and add them to the analysis
                      */
                     for (TestAnalyteViewDO ta : tas) {
-                        r = createResult(sm, analysis, ta, ta.getIsReportable(), rf);
+                        r = createResult(sm, ana, ta, ta.getIsReportable(), rf);
                         getResults(sm).add(j++ , r);
                     }
                     break;
@@ -301,9 +353,9 @@ public class AnalysisHelperBean {
     /**
      * This method finds and links a prep analysis to the passed analysis. If an
      * existing analysis is not found, the method returns list of prep tests
-     * could be added to satisfy the prep requirement.
+     * that could be added to satisfy the prep requirement.
      */
-    public ArrayList<Integer> setPrepForAnalysis(AnalysisViewDO analysis,
+    public ArrayList<Integer> setPrepForAnalysis(AnalysisViewDO ana,
                                                  HashMap<Integer, AnalysisViewDO> analyses,
                                                  TestManager tm) throws Exception {
         int i;
@@ -320,15 +372,15 @@ public class AnalysisHelperBean {
         for (i = 0; i < tpm.count(); i++ ) {
             prep = analyses.get(tpm.getPrepAt(i).getPrepTestId());
             if (prep != null) {
-                analysis.setPreAnalysisId(prep.getId());
-                analysis.setPreAnalysisTest(prep.getTestName());
-                analysis.setPreAnalysisMethod(prep.getMethodName());
+                ana.setPreAnalysisId(prep.getId());
+                ana.setPreAnalysisTest(prep.getTestName());
+                ana.setPreAnalysisMethod(prep.getMethodName());
                 if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) ||
                     Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
-                    analysis.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
-                    analysis.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                    ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+                    ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                 } else {
-                    analysis.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
+                    ana.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
                 }
                 return null;
             }
@@ -343,13 +395,225 @@ public class AnalysisHelperBean {
         return prepIds;
     }
 
-    private ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO analysis,
-                                      TestAnalyteViewDO ta, String reportable, ResultFormatter rf) {
+    /**
+     * This method changes the specified analysis's method to the specified
+     * method. The old results are removed and their values are merged with the
+     * results added from the new method. Returns a list of prep tests that could
+     * be added to satisfy the prep requirement for the new test.
+     */
+    public SampleTestReturnVO changeMethod(SampleManager1 sm, Integer analysisId,
+                                                   Integer methodId) throws Exception {
+        int i;
+        Integer rowAnaId;
+        TestViewDO t;
+        MethodDO m;
+        AnalysisViewDO ana;
+        ResultViewDO r;
+        SampleItemViewDO item;
+        TestManager tm;
+        TestSectionViewDO ts;
+        TestSectionManager tsm;
+        SampleTestReturnVO ret;
+        ValidationErrorsList e;
+        ArrayList<Integer> prepIds;
+        ArrayList<TestTypeOfSampleDO> types;
+        ArrayList<DataObject> removed;
+        ArrayList<ResultViewDO> results;
+        HashMap<Integer, AnalysisViewDO> anaByTest;
+        HashMap<Integer, String> row;
+        HashMap<Integer, HashMap<Integer, String>> rows;
+
+        m = method.fetchById(methodId);
+        ana = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(analysisId));
+
+        try {
+            tm = testManager.fetchActiveByNameMethodName(ana.getTestName(), m.getName());
+            t = tm.getTest();
+        } catch (NotFoundException ex) {
+            throw new InconsistencyException(Messages.get()
+                                                     .test_inactiveTestException(ana.getTestName(),
+                                                                                 m.getName()));
+        }
+
+        ana.setTestId(t.getId());
+        ana.setTestName(t.getName());
+        ana.setMethodId(t.getMethodId());
+        ana.setMethodName(t.getMethodName());
+
+        e = new ValidationErrorsList();
+        ret = new SampleTestReturnVO();
+        ret.setManager(sm);
+        ret.setErrors(e);
+
+        tsm = tm.getTestSections();
+        ts = tsm.getDefaultSection();
+
+        if (ts == null || !tm.canAssignThisSection(ts)) {
+            e.add(new FormErrorWarning(Messages.get()
+                                               .analysis_insufficientPrivilegesAddTestWarning(getSample(sm).getAccessionNumber(),
+                                                                                              t.getName(),
+                                                                                              t.getMethodName())));
+        }
+
+        if (ts != null) {
+            ana.setSectionId(ts.getSectionId());
+            ana.setSectionName(ts.getSection());
+        } else {
+            ana.setSectionId(null);
+            ana.setSectionName(null);
+        }
+
+        item = (SampleItemViewDO)sm.getObject(sm.getSampleItemUid(ana.getSampleItemId()));
+        /*
+         * the first unit within the sample type is the default unit
+         */
+        types = tm.getSampleTypes().getTypesBySampleType(item.getTypeOfSampleId());
+        if (types.size() > 0)
+            ana.setUnitOfMeasureId(types.get(0).getUnitOfMeasureId());
+        else
+            ana.setUnitOfMeasureId(null);
+
+        anaByTest = new HashMap<Integer, AnalysisViewDO>();
+        for (AnalysisViewDO a : getAnalyses(sm)) {
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()))
+                continue;
+
+            /*
+             * create a mapping between test ids and analyses to determine
+             * whether any prep tests for the new test are present in the sample
+             */
+            if (anaByTest.get(a.getTestId()) == null)
+                anaByTest.put(a.getTestId(), a);
+
+            /*
+             * reset the prep test and method names of the analyses that have
+             * this analysis as their prep analysis
+             */
+            if (ana.getId().equals(a.getPreAnalysisId())) {
+                a.setPreAnalysisTest(t.getName());
+                a.setPreAnalysisMethod(t.getMethodName());
+            }
+        }
+
+        /*
+         * find and set the prep needed for the new test from the sample or
+         * create a list of prep tests
+         */
+        prepIds = setPrepForAnalysis(ana, anaByTest, tm);
+        if (prepIds != null)
+            for (Integer id : prepIds)
+                ret.addTest(ana.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
+
+        results = getResults(sm);
+        rows = null;
+        if (results != null) {
+            row = null;
+            removed = getRemoved(sm);
+            rowAnaId = null;
+            i = 0;
+            while (i < results.size()) {
+                r = results.get(i);
+                if ( !ana.getId().equals(r.getAnalysisId())) {
+                    i++ ;
+                    continue;
+                }
+
+                if ("N".equals(r.getIsColumn()))
+                    rowAnaId = r.getAnalyteId();
+
+                /*
+                 * to merge old results with the new test's results create a two
+                 * level hash; create the hash only if at least one result has a
+                 * value
+                 */
+                if (r.getValue() != null) {
+                    if (rows == null)
+                        rows = new HashMap<Integer, HashMap<Integer, String>>();
+                    /*
+                     * the top level groups analytes and values by their row
+                     * analyte
+                     */
+                    row = rows.get(rowAnaId);
+                    if (row == null) {
+                        row = new HashMap<Integer, String>();
+                        rows.put(rowAnaId, row);
+                    }
+
+                    /*
+                     * the next level is used to keep to track of the values of
+                     * individual analytes
+                     */
+                    if (row.get(r.getAnalyteId()) == null)
+                        row.put(r.getAnalyteId(), r.getValue());
+                }
+
+                /*
+                 * remove the old result
+                 */
+                if (r.getId() > 0) {
+                    if (removed == null) {
+                        removed = new ArrayList<DataObject>();
+                        setRemoved(sm, removed);
+                    }
+                    removed.add(r);
+                }
+
+                results.remove(i);
+            }
+        }
+
+        /*
+         * add the results from the new test and merge them with the old ones
+         */
+        addResults(sm, tm, ana, null, rows);
+
+        return ret;
+    }
+
+    /**
+     * Loads the defaults, defined in this analysis' test, in the results of the
+     * analysis. Doesn't change the existing values if a default is not defined.
+     * Sets the type to null in all results of the analysis to force validation.
+     */
+    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
+        ResultViewDO r;
+        AnalysisViewDO ana;
+        TestManager tm;
+        ResultFormatter rf;
+        SampleTestReturnVO ret;
+        ArrayList<ResultViewDO> results;
+
+        ret = new SampleTestReturnVO();
+        ret.setManager(sm);
+        ana = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(analysisId));
+        ana.setUnitOfMeasureId(unitId);
+
+        results = getResults(sm);
+        if (results == null || results.size() == 0)
+            return sm;
+
+        tm = testManager.fetchWithAnalytesAndResults(ana.getTestId());
+        rf = tm.getFormatter();
+        for (int i = 0; i < results.size(); i++ ) {
+            r = results.get(i);
+            if ( !r.getAnalysisId().equals(ana.getId())) {
+                i++ ;
+                continue;
+            }
+
+            setDefault(r, unitId, rf);
+        }
+
+        return sm;
+    }
+
+    private ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO ana, TestAnalyteViewDO ta,
+                                      String reportable, ResultFormatter rf) {
         ResultViewDO r;
 
         r = new ResultViewDO();
         r.setId(sm.getNextUID());
-        r.setAnalysisId(analysis.getId());
+        r.setAnalysisId(ana.getId());
         r.setTestAnalyteId(ta.getId());
         r.setTestAnalyteTypeId(ta.getTypeId());
         r.setIsColumn(ta.getIsColumn());
@@ -358,8 +622,22 @@ public class AnalysisHelperBean {
         r.setAnalyte(ta.getAnalyteName());
         r.setResultGroup(ta.getResultGroup());
         r.setRowGroup(ta.getRowGroup());
-        r.setValue(rf.getDefault(ta.getResultGroup(), analysis.getUnitOfMeasureId()));
+        setDefault(r, ana.getUnitOfMeasureId(), rf);
 
         return r;
+    }
+
+    /**
+     * If a default is defined for the result's result group and this unit then
+     * sets it as the value; otherwise value is not changed. Sets the type to
+     * null in both cases to force validation.
+     */
+    private void setDefault(ResultViewDO r, Integer unitId, ResultFormatter rf) {
+        String def;
+
+        def = rf.getDefault(r.getResultGroup(), unitId);
+        if (def != null)
+            r.setValue(def);
+        r.setTypeId(null);
     }
 }

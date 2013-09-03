@@ -631,7 +631,7 @@ public class SampleBean {
         // slow us down.
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_accessionNumberNotValidException(data.getAccessionNumber())));
+                                                 .sample_accessionNumberNotValidException(DataBaseUtil.asString(data.getAccessionNumber()))));
         else if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
             e.add(new FormErrorException(Messages.get()
                                                  .sample_accessionNumberNotInUse(data.getAccessionNumber())));
@@ -651,15 +651,15 @@ public class SampleBean {
         minEnt = null;
         if (ent == null)
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_enteredDateRequiredException(DataBaseUtil.asString(data.getAccessionNumber()))));
+                                                 .sample_enteredDateRequiredException(data.getAccessionNumber())));
         else
             minEnt = ent.add( -180);
         if (rec == null)
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_receivedDateRequiredException(DataBaseUtil.asString(data.getAccessionNumber()))));
+                                                 .sample_receivedDateRequiredException(data.getAccessionNumber())));
         else if (rec.before(minEnt) && !ignoreWarning)
             e.add(new FormErrorWarning(Messages.get()
-                                               .sample_receivedTooOldWarning(DataBaseUtil.asString(data.getAccessionNumber()))));
+                                               .sample_receivedTooOldWarning(data.getAccessionNumber())));
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
             cal = Calendar.getInstance();
@@ -671,10 +671,10 @@ public class SampleBean {
         if (col != null) {
             if (col.after(rec))
                 e.add(new FormErrorException(Messages.get()
-                                                     .sample_collectedDateInvalidError(DataBaseUtil.asString(data.getAccessionNumber()))));
+                                                     .sample_collectedDateInvalidError(data.getAccessionNumber())));
             if (col.before(minEnt) && !ignoreWarning)
                 e.add(new FormErrorException(Messages.get()
-                                                     .sample_collectedTooOldWarning(DataBaseUtil.asString(data.getAccessionNumber()))));
+                                                     .sample_collectedTooOldWarning(data.getAccessionNumber())));
         }
 
         if (e.size() > 0)

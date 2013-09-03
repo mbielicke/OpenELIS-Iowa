@@ -67,6 +67,7 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
@@ -159,6 +160,12 @@ public class SampleManager1Bean {
 
     @EJB
     private AuxDataHelperBean            auxDataHelper;
+
+    @EJB
+    private AuxFieldGroupManagerBean     auxFieldGroupManager;
+
+    @EJB
+    private AuxDataBean                  auxData;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -844,28 +851,49 @@ public class SampleManager1Bean {
         int dep, ldep;
         boolean nodep;
         Integer tmpid, id, so;
-        HashSet<Integer> ids;
+        HashSet<Integer> ids, ids1;
         ArrayList<Integer> locks;
         HashMap<Integer, TestManager> tms;
+        HashMap<Integer, AuxFieldGroupManager> ams;
         NoteViewDO ext;
         PatientDO pat;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
 
         /*
-         * validation needs test manager. Build a list of analysis test ids from
-         * to fetch test managers. Also build a test map for permission check.
+         * validation needs test and aux group manager. Build lists of analysis
+         * test ids and aux group ids to fetch test and aux group managers.
          */
         ids = new HashSet<Integer>();
+        ids1 = new HashSet<Integer>();
         for (SampleManager1 sm : sms) {
             for (AnalysisViewDO an : getAnalyses(sm))
                 ids.add(an.getTestId());
+            if (getAuxilliary(sm) != null) {
+                for (AuxDataViewDO aux : getAuxilliary(sm))
+                    ids1.add(aux.getGroupId());
+            }
         }
+
+        /*
+         * build test map and aux map for easy access to a manager during
+         * validation
+         */
         tms = new HashMap<Integer, TestManager>();
         for (TestManager tm : testManager.fetchByIds(new ArrayList<Integer>(ids)))
             tms.put(tm.getTest().getId(), tm);
 
-        validate(sms, tms, ignoreWarnings);
+        ams = null;
+        if (ids1.size() > 0) {
+            ams = new HashMap<Integer, AuxFieldGroupManager>();
+            for (AuxFieldGroupManager am : auxFieldGroupManager.fetchByIds(new ArrayList<Integer>(ids1)))
+                ams.put(am.getGroup().getId(), am);
+        }
+
+        validate(sms, tms, ams, ignoreWarnings);
+
+        ids1 = null;
         tms = null;
+        ams = null;
 
         /*
          * check all the locks
@@ -1334,9 +1362,9 @@ public class SampleManager1Bean {
         AnalysisViewDO ana, ref, prep;
         TestManager tm;
         HashMap<Integer, TestManager> tms;
-        ArrayList<Integer> testIds;
+        ArrayList<IdVO> pts, pgs;
+        ArrayList<Integer> testIds, groupIds;
         ArrayList<SampleTestRequestVO> panelTests;
-        ArrayList<IdVO> pts;
 
         /*
          * the list of tests in the sample
@@ -1357,6 +1385,7 @@ public class SampleManager1Bean {
          * the list of all the tests that are to be added
          */
         testIds = new ArrayList<Integer>();
+        groupIds = null;
         e = new ValidationErrorsList();
         panelTests = null;
         for (SampleTestRequestVO test : tests) {
@@ -1379,10 +1408,19 @@ public class SampleManager1Bean {
                                                            pt.getId(),
                                                            null,
                                                            null,
+                                                           null,
                                                            test.getPanelId(),
                                                            false,
                                                            null));
                 }
+
+                /*
+                 * fetch the ids of the aux groups specified in the panel
+                 */
+                pgs = panel.fetchAuxIdsFromPanel(test.getPanelId());
+                groupIds = new ArrayList<Integer>();
+                for (IdVO pg : pgs)
+                    groupIds.add(pg.getId());
             }
         }
 
@@ -1438,25 +1476,30 @@ public class SampleManager1Bean {
             }
         }
 
+        /*
+         * if a panel was added above and it had any aux groups linked to it
+         * then add them to the sample
+         */
+        if (groupIds != null && groupIds.size() > 0)
+            addAuxGroups(sm, groupIds);
+
         return ret;
     }
-    
+
     /**
-     * TODO rewrite comment: Adds rows of result for the specified analysis,
-     * such that the row analytes are specified by list of test analytes and
-     * each new row is added at the position corresponding to the analyte in the
-     * list of indexes. Assumes that the two lists are of the same length and
-     * the list of indexes is sorted in ascending order.
+     * Adds result rows to the analysis, with the specified row analytes, at the
+     * positions specified by the corresponding indexes. Assumes that the two
+     * lists are of the same length and the indexes are sorted in ascending
+     * order.
      */
     public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
-                                     ArrayList<TestAnalyteViewDO> analytes,
-                                     ArrayList<Integer> indexes) throws Exception {
-        
+                                         ArrayList<TestAnalyteViewDO> analytes,
+                                         ArrayList<Integer> indexes) throws Exception {
         return analysisHelper.addRowAnalytes(sm, analysis, analytes, indexes);
     }
-    
+
     /**
-     * Adds aux groups with ids to the sample based on the list of group
+     * Adds aux groups with the passed ids to the sample
      */
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> auxiliary;
@@ -1498,6 +1541,27 @@ public class SampleManager1Bean {
         }
         return sm;
     }
+    
+    /**
+     * Sets the specified unit id in the analysis. Loads the defaults in the
+     * results of the analysis. Doesn't change the existing values if a default
+     * is not defined. Sets the type to null in all results of the analysis to
+     * force validation.
+     */
+    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
+        return analysisHelper.changeAnalysisUnit(sm, analysisId, unitId);
+    }
+
+    /**
+     * TODO comment Sets the specified test id in the analysis. Loads the
+     * defaults, defined in this analysis' test, in the results of the analysis.
+     * Doesn't change the existing values if a default is not defined. Sets the
+     * type to null in all results of the analysis to force validation.
+     */
+    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
+                                               Integer methodId) throws Exception {
+        return analysisHelper.changeMethod(sm, analysisId, methodId);
+    }
 
     /**
      * Validates the accession number. Throws exception if accession is not
@@ -1512,7 +1576,7 @@ public class SampleManager1Bean {
          */
         if (accession == null || accession <= 0)
             throw new FormErrorException(Messages.get()
-                                                 .sample_accessionNumberNotValidException(accession));
+                                                 .sample_accessionNumberNotValidException(DataBaseUtil.asString(accession)));
 
         try {
             sys = systemVariable.fetchByName("last_accession_number");
@@ -1530,7 +1594,7 @@ public class SampleManager1Bean {
      * of exceptions/warnings listing all the problems for each sample.
      */
     protected void validate(ArrayList<SampleManager1> sms, HashMap<Integer, TestManager> tms,
-                            boolean ignoreWarning) throws Exception {
+                            HashMap<Integer, AuxFieldGroupManager> ams, boolean ignoreWarning) throws Exception {
         int cnt;
         AnalysisViewDO ana;
         SystemVariableDO sys;
@@ -1591,7 +1655,7 @@ public class SampleManager1Bean {
             }
             if (cnt != 1 && !ignoreWarning)
                 e.add(new FormErrorException(Messages.get()
-                                                     .sample_moreThanOneReportToException(DataBaseUtil.asString(accession))));
+                                                     .sample_moreThanOneReportToException(accession)));
 
             /*
              * at least one sample item and items must have sample type
@@ -1599,7 +1663,7 @@ public class SampleManager1Bean {
             imap.clear();
             if (getItems(sm) == null || getItems(sm).size() < 1) {
                 e.add(new FormErrorException(Messages.get()
-                                                     .sample_minOneSampleItemException(DataBaseUtil.asString(accession))));
+                                                     .sample_minOneSampleItemException(accession)));
             } else {
                 for (SampleItemViewDO data : getItems(sm)) {
                     imap.put(data.getId(), data);
@@ -1657,6 +1721,24 @@ public class SampleManager1Bean {
                 }
             }
 
+            /*
+             * aux data must be valid for the aux field
+             */
+
+            if (getAuxilliary(sm) != null) {
+                for (AuxDataViewDO data : getAuxilliary(sm)) {
+                    if (data.isChanged())
+                        try {
+                            auxData.validate(data,
+                                             ams.get(data.getGroupId()).getFormatter(),
+                                             accession,
+                                             ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
+
         }
 
         if (e.size() > 0)
@@ -1699,7 +1781,7 @@ public class SampleManager1Bean {
     }
 
     /**
-     * copies all the parts of fromsm to tosm e.g sample except the data for the
+     * copies all parts of fromsm to tosm e.g sample except the data for the
      * domain
      */
     protected void duplicateManager(SampleManager1 tosm, SampleManager1 fromsm) {
@@ -1734,12 +1816,13 @@ public class SampleManager1Bean {
         ana = analysisHelper.addAnalysis(ret.getManager(),
                                          test.getSampleItemId(),
                                          tm,
+                                         test.getSectionId(),
                                          ret.getErrors());
         prepIds = analysisHelper.setPrepForAnalysis(ana, analyses, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
-                ret.addTest(test.getSampleItemId(), id, ana.getId(), null, null, false, null);
-        analysisHelper.addResults(ret.getManager(), tm, ana, test.getReportableAnalytes());
+                ret.addTest(test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
+        analysisHelper.addResults(ret.getManager(), tm, ana, test.getReportableAnalytes(), null);
 
         analyses.put(ana.getTestId(), ana);
 

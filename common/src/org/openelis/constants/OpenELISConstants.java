@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -700,13 +700,31 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_circularReference();
 
   /**
-   * Translated "Result value is invalid".
+   * Translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date ".
    * 
-   * @return translated "Result value is invalid"
+   * @return translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date "
    */
-  @DefaultMessage("Result value is invalid")
-  @Key("analysis.illegalResultValueException")
-  String analysis_illegalResultValueException();
+  @DefaultMessage("Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date ")
+  @Key("analysis.completedDateInvalidException")
+  String analysis_completedDateInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1} : {2}".
+   * 
+   * @return translated "Accession # ''{0,number}'': Insufficient privileges to add {1} : {2}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to add {1} : {2}")
+  @Key("analysis.insufficientPrivilegesAddTestWarning")
+  String analysis_insufficientPrivilegesAddTestWarning(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'' : Cannot add analyte '{0}' to {1} : {2} at this position".
+   * 
+   * @return translated "Accession # ''{0,number}'' : Cannot add analyte '{0}' to {1} : {2} at this position"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : Cannot add analyte '{0}' to {1} : {2} at this position")
+  @Key("analysis.invalidPositionForAnalyteException")
+  String analysis_invalidPositionForAnalyteException(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "No Add permission for - {0} : {1}, {2}".
@@ -743,6 +761,60 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("No Release permission for - {0} : {1}, {2}")
   @Key("analysis.noReleasePermission")
   String analysis_noReleasePermission(String arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Sample type invalid for this test".
+   * 
+   * @return translated "Sample type invalid for this test"
+   */
+  @DefaultMessage("Sample type invalid for this test")
+  @Key("analysis.sampleTypeInvalid")
+  String analysis_sampleTypeInvalid();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2} : {3} - Section Missing".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2} : {3} - Section Missing"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2} : {3} - Section Missing")
+  @Key("analysis.sectionIdMissingException")
+  String analysis_sectionIdMissingException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed")
+  @Key("analysis.startedDateInvalidException")
+  String analysis_startedDateInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0}'': Item {1} - One or more tests are missing".
+   * 
+   * @return translated "Accession # ''{0}'': Item {1} - One or more tests are missing"
+   */
+  @DefaultMessage("Accession # ''{0}'': Item {1} - One or more tests are missing")
+  @Key("analysis.testIdMissingException")
+  String analysis_testIdMissingException(String arg0,  String arg1);
+
+  /**
+   * Translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure invalid for sample type".
+   * 
+   * @return translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure invalid for sample type"
+   */
+  @DefaultMessage("Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure invalid for sample type")
+  @Key("analysis.unitInvalidWarning")
+  String analysis_unitInvalidWarning(String arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure is required".
+   * 
+   * @return translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure is required"
+   */
+  @DefaultMessage("Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure is required")
+  @Key("analysis.unitRequiredException")
+  String analysis_unitRequiredException(String arg0,  String arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Analysis has already been completed".
@@ -1339,15 +1411,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String autoReorder();
 
   /**
-   * Translated "Invalid value for selected type".
-   * 
-   * @return translated "Invalid value for selected type"
-   */
-  @DefaultMessage("Invalid value for selected type")
-  @Key("aux.invalidValueException")
-  String aux_invalidValueException();
-
-  /**
    * Translated "You must first select a table row before clicking add".
    * 
    * @return translated "You must first select a table row before clicking add"
@@ -1355,6 +1418,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("aux.noSelectedRow")
   String aux_noSelectedRow();
+
+  /**
+   * Translated "Please select an analyte before entering the value".
+   * 
+   * @return translated "Please select an analyte before entering the value"
+   */
+  @DefaultMessage("Please select an analyte before entering the value")
+  @Key("aux.selectAnalyteBeforeValue")
+  String aux_selectAnalyteBeforeValue();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Aux data ''{1}'' with value ''{2}'' invalid".
+   * 
+   * @return translated "Accession # ''{0,number}'': Aux data ''{1}'' with value ''{2}'' invalid"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Aux data ''{1}'' with value ''{2}'' invalid")
+  @Key("aux.valueInvalidException")
+  String aux_valueInvalidException(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "An auxiliary group cannot be added to a panel more than once ".
@@ -4759,6 +4840,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_internal();
 
   /**
+   * Translated "Value is invalid".
+   * 
+   * @return translated "Value is invalid"
+   */
+  @DefaultMessage("Value is invalid")
+  @Key("gen.invalidValueException")
+  String gen_invalidValueException();
+
+  /**
    * Translated "Inventory Item".
    * 
    * @return translated "Inventory Item"
@@ -5002,6 +5092,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_removeRow();
 
   /**
+   * Translated "Reportable".
+   * 
+   * @return translated "Reportable"
+   */
+  @DefaultMessage("Reportable")
+  @Key("gen.reportable")
+  String gen_reportable();
+
+  /**
    * Translated "Sample".
    * 
    * @return translated "Sample"
@@ -5036,6 +5135,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Section")
   @Key("gen.section")
   String gen_section();
+
+  /**
+   * Translated "Select".
+   * 
+   * @return translated "Select"
+   */
+  @DefaultMessage("Select")
+  @Key("gen.select")
+  String gen_select();
 
   /**
    * Translated "Shipping".
@@ -5126,6 +5234,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Updating...")
   @Key("gen.updating")
   String gen_updating();
+
+  /**
+   * Translated "Value".
+   * 
+   * @return translated "Value"
+   */
+  @DefaultMessage("Value")
+  @Key("gen.value")
+  String gen_value();
 
   /**
    * Translated "Generating report....".
@@ -6116,6 +6233,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("The sample type for the container with Item # {0} is invalid for ''{1}''  ")
   @Key("invalidSampleTypeForTestWarning")
   String invalidSampleTypeForTestWarning(String arg0,  String arg1);
+
+  /**
+   * Translated "Invalid value for selected type".
+   * 
+   * @return translated "Invalid value for selected type"
+   */
+  @DefaultMessage("Invalid value for selected type")
+  @Key("invalidValueException")
+  String invalidValueException();
 
   /**
    * Translated "Store value needs to be entered before you can add an inventory item".
@@ -11239,6 +11365,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result();
 
   /**
+   * Translated "A row group must have at least one result row".
+   * 
+   * @return translated "A row group must have at least one result row"
+   */
+  @DefaultMessage("A row group must have at least one result row")
+  @Key("result.atleastOneResultInRowGroup")
+  String result_atleastOneResultInRowGroup();
+
+  /**
+   * Translated "Result(s) Overridden".
+   * 
+   * @return translated "Result(s) Overridden"
+   */
+  @DefaultMessage("Result(s) Overridden")
+  @Key("result.overridden")
+  String result_overridden();
+
+  /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - {3} with value ''{4}'' invalid")
+  @Key("result.valueInvalidException")
+  String result_valueInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
+
+  /**
    * Translated "Results of type \"Default\" must not be selected for reflex tests".
    * 
    * @return translated "Results of type \"Default\" must not be selected for reflex tests"
@@ -11464,49 +11617,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberNotInUse(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0,number}'': Number is invalid".
+   * Translated "Accession # ''{0}'': Number is invalid".
    * 
-   * @return translated "Accession # ''{0,number}'': Number is invalid"
+   * @return translated "Accession # ''{0}'': Number is invalid"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Number is invalid")
+  @DefaultMessage("Accession # ''{0}'': Number is invalid")
   @Key("sample.accessionNumberNotValidException")
-  String sample_accessionNumberNotValidException(Integer arg0);
-
-  /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing".
-   * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing"
-   */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing")
-  @Key("sample.analysisSectionIdMissing")
-  String sample_analysisSectionIdMissing(Integer arg0,  Integer arg1,  String arg2,  String arg3);
-
-  /**
-   * Translated "Accession # ''{0}'': Item {1} - One or more tests are missing".
-   * 
-   * @return translated "Accession # ''{0}'': Item {1} - One or more tests are missing"
-   */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - One or more tests are missing")
-  @Key("sample.analysisTestIdMissing")
-  String sample_analysisTestIdMissing(String arg0,  String arg1);
-
-  /**
-   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type".
-   * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type"
-   */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type")
-  @Key("sample.analysisUnitInvalid")
-  String sample_analysisUnitInvalid(String arg0,  String arg1,  String arg2,  String arg3);
-
-  /**
-   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required".
-   * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required"
-   */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required")
-  @Key("sample.analysisUnitRequired")
-  String sample_analysisUnitRequired(String arg0,  String arg1,  String arg2,  String arg3);
+  String sample_accessionNumberNotValidException(String arg0);
 
   /**
    * Translated "Birth (D,T)".
@@ -11581,31 +11698,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_collectValid();
 
   /**
-   * Translated "Accession # ''{0}'': Collected date can''t be after received".
+   * Translated "Accession # ''{0,number}'': Collected date can''t be after received".
    * 
-   * @return translated "Accession # ''{0}'': Collected date can''t be after received"
+   * @return translated "Accession # ''{0,number}'': Collected date can''t be after received"
    */
-  @DefaultMessage("Accession # ''{0}'': Collected date can''t be after received")
+  @DefaultMessage("Accession # ''{0,number}'': Collected date can''t be after received")
   @Key("sample.collectedDateInvalidError")
-  String sample_collectedDateInvalidError(String arg0);
+  String sample_collectedDateInvalidError(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0}'': Collected date shouldn''t be more than 180 days before entered date".
+   * Translated "Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date".
    * 
-   * @return translated "Accession # ''{0}'': Collected date shouldn''t be more than 180 days before entered date"
+   * @return translated "Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date"
    */
-  @DefaultMessage("Accession # ''{0}'': Collected date shouldn''t be more than 180 days before entered date")
+  @DefaultMessage("Accession # ''{0,number}'': Collected date shouldn''t be more than 180 days before entered date")
   @Key("sample.collectedTooOldWarning")
-  String sample_collectedTooOldWarning(String arg0);
-
-  /**
-   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Completed date can''t be after released date ".
-   * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Completed date can''t be after released date "
-   */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Completed date can''t be after released date ")
-  @Key("sample.completedDateInvalidError")
-  String sample_completedDateInvalidError(String arg0,  String arg1,  String arg2,  String arg3);
+  String sample_collectedTooOldWarning(Integer arg0);
 
   /**
    * Translated "Accession # ''{0,number}'' : Specified domain is invalid".
@@ -11617,13 +11725,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_domainNotValid(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0}'': Entered date is required".
+   * Translated "Accession # ''{0,number}'': Entered date is required".
    * 
-   * @return translated "Accession # ''{0}'': Entered date is required"
+   * @return translated "Accession # ''{0,number}'': Entered date is required"
    */
-  @DefaultMessage("Accession # ''{0}'': Entered date is required")
+  @DefaultMessage("Accession # ''{0,number}'': Entered date is required")
   @Key("sample.enteredDateRequiredException")
-  String sample_enteredDateRequiredException(String arg0);
+  String sample_enteredDateRequiredException(Integer arg0);
 
   /**
    * Translated "Ethnicity".
@@ -11671,6 +11779,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_isPerm();
 
   /**
+   * Translated "Items/Analyses".
+   * 
+   * @return translated "Items/Analyses"
+   */
+  @DefaultMessage("Items/Analyses")
+  @Key("sample.itemAnalyses")
+  String sample_itemAnalyses();
+
+  /**
    * Translated "Last".
    * 
    * @return translated "Last"
@@ -11689,22 +11806,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_maiden();
 
   /**
-   * Translated "Accession # ''{0}'': The sample must have at least one sample item".
+   * Translated "Accession # ''{0,number}'': The sample must have at least one sample item".
    * 
-   * @return translated "Accession # ''{0}'': The sample must have at least one sample item"
+   * @return translated "Accession # ''{0,number}'': The sample must have at least one sample item"
    */
-  @DefaultMessage("Accession # ''{0}'': The sample must have at least one sample item")
+  @DefaultMessage("Accession # ''{0,number}'': The sample must have at least one sample item")
   @Key("sample.minOneSampleItemException")
-  String sample_minOneSampleItemException(String arg0);
+  String sample_minOneSampleItemException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0}'': The sample must have only one report to".
+   * Translated "Accession # ''{0,number}'': The sample must have only one report to".
    * 
-   * @return translated "Accession # ''{0}'': The sample must have only one report to"
+   * @return translated "Accession # ''{0,number}'': The sample must have only one report to"
    */
-  @DefaultMessage("Accession # ''{0}'': The sample must have only one report to")
+  @DefaultMessage("Accession # ''{0,number}'': The sample must have only one report to")
   @Key("sample.moreThanOneReportToException")
-  String sample_moreThanOneReportToException(String arg0);
+  String sample_moreThanOneReportToException(Integer arg0);
 
   /**
    * Translated "Accession # ''{0}'': Only one record with the type Bill To is allowed".
@@ -11761,15 +11878,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_noDomainException(String arg0);
 
   /**
-   * Translated "Accession # ''{0}'': {1}, {2} - One or more result values invalid".
-   * 
-   * @return translated "Accession # ''{0}'': {1}, {2} - One or more result values invalid"
-   */
-  @DefaultMessage("Accession # ''{0}'': {1}, {2} - One or more result values invalid")
-  @Key("sample.oneOrMoreResultValuesInvalid")
-  String sample_oneOrMoreResultValuesInvalid(String arg0,  String arg1,  String arg2);
-
-  /**
    * Translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order".
    * 
    * @return translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order"
@@ -11788,22 +11896,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_providerLF();
 
   /**
-   * Translated "Accession # ''{0}'': Received date is required".
+   * Translated "Accession # ''{0,number}'': Received date is required".
    * 
-   * @return translated "Accession # ''{0}'': Received date is required"
+   * @return translated "Accession # ''{0,number}'': Received date is required"
    */
-  @DefaultMessage("Accession # ''{0}'': Received date is required")
+  @DefaultMessage("Accession # ''{0,number}'': Received date is required")
   @Key("sample.receivedDateRequiredException")
-  String sample_receivedDateRequiredException(String arg0);
+  String sample_receivedDateRequiredException(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0}'': Received date shouldn''t be more than 180 days before entered date ".
+   * Translated "Accession # ''{0,number}'': Received date shouldn''t be more than 180 days before entered date ".
    * 
-   * @return translated "Accession # ''{0}'': Received date shouldn''t be more than 180 days before entered date "
+   * @return translated "Accession # ''{0,number}'': Received date shouldn''t be more than 180 days before entered date "
    */
-  @DefaultMessage("Accession # ''{0}'': Received date shouldn''t be more than 180 days before entered date ")
+  @DefaultMessage("Accession # ''{0,number}'': Received date shouldn''t be more than 180 days before entered date ")
   @Key("sample.receivedTooOldWarning")
-  String sample_receivedTooOldWarning(String arg0);
+  String sample_receivedTooOldWarning(Integer arg0);
 
   /**
    * Translated "Relation".
@@ -11842,15 +11950,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_sampleItemTypeRequired();
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Started date can''t be after completed".
-   * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Started date can''t be after completed"
-   */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Started date can''t be after completed")
-  @Key("sample.startedDateInvalidError")
-  String sample_startedDateInvalidError(String arg0,  String arg1,  String arg2,  String arg3);
-
-  /**
    * Translated "Test Lookup".
    * 
    * @return translated "Test Lookup"
@@ -11885,6 +11984,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Transfused")
   @Key("sample.transfused")
   String sample_transfused();
+
+  /**
+   * Translated "Type/Status".
+   * 
+   * @return translated "Type/Status"
+   */
+  @DefaultMessage("Type/Status")
+  @Key("sample.typeStatus")
+  String sample_typeStatus();
 
   /**
    * Translated "Accession # ''{0}'': You must add an internal note when sample/analysis is unreleased".
@@ -13696,6 +13804,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String testAnalyteSelection();
 
   /**
+   * Translated "Include".
+   * 
+   * @return translated "Include"
+   */
+  @DefaultMessage("Include")
+  @Key("testAnalyteSelection.include")
+  String testAnalyteSelection_include();
+
+  /**
+   * Translated "Test Analyte Selection".
+   * 
+   * @return translated "Test Analyte Selection"
+   */
+  @DefaultMessage("Test Analyte Selection")
+  @Key("testAnalyteSelection.testAnalyteSelection")
+  String testAnalyteSelection_testAnalyteSelection();
+
+  /**
    * Translated "Test Count by Facility".
    * 
    * @return translated "Test Count by Facility"
@@ -13991,6 +14117,123 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Test Section must have a value ")
   @Key("testSectionNoValueException")
   String testSectionNoValueException();
+
+  /**
+   * Translated "Analysis/Prep Test & Method".
+   * 
+   * @return translated "Analysis/Prep Test & Method"
+   */
+  @DefaultMessage("Analysis/Prep Test & Method")
+  @Key("testSelection.analysisPrepTestMethod")
+  String testSelection_analysisPrepTestMethod();
+
+  /**
+   * Translated "Analysis/Reflex Test & Method".
+   * 
+   * @return translated "Analysis/Reflex Test & Method"
+   */
+  @DefaultMessage("Analysis/Reflex Test & Method")
+  @Key("testSelection.analysisReflexTestMethod")
+  String testSelection_analysisReflexTestMethod();
+
+  /**
+   * Translated "One or more Auto Reflex Test(s) must have a Section assigned".
+   * 
+   * @return translated "One or more Auto Reflex Test(s) must have a Section assigned"
+   */
+  @DefaultMessage("One or more Auto Reflex Test(s) must have a Section assigned")
+  @Key("testSelection.autoReflexTestNeedsSection")
+  String testSelection_autoReflexTestNeedsSection();
+
+  /**
+   * Translated "Copy To All".
+   * 
+   * @return translated "Copy To All"
+   */
+  @DefaultMessage("Copy To All")
+  @Key("testSelection.copyToAll")
+  String testSelection_copyToAll();
+
+  /**
+   * Translated "Copy To Empty".
+   * 
+   * @return translated "Copy To Empty"
+   */
+  @DefaultMessage("Copy To Empty")
+  @Key("testSelection.copyToEmpty")
+  String testSelection_copyToEmpty();
+
+  /**
+   * Translated "NEW".
+   * 
+   * @return translated "NEW"
+   */
+  @DefaultMessage("NEW")
+  @Key("testSelection.newAccession")
+  String testSelection_newAccession();
+
+  /**
+   * Translated "Failed to remove test after the Prep Test Popup was cancelled".
+   * 
+   * @return translated "Failed to remove test after the Prep Test Popup was cancelled"
+   */
+  @DefaultMessage("Failed to remove test after the Prep Test Popup was cancelled")
+  @Key("testSelection.prepTestCancelledCleanupException")
+  String testSelection_prepTestCancelledCleanupException();
+
+  /**
+   * Translated "Prep Test {0} must have a Section assigned".
+   * 
+   * @return translated "Prep Test {0} must have a Section assigned"
+   */
+  @DefaultMessage("Prep Test {0} must have a Section assigned")
+  @Key("testSelection.prepTestNeedsSection")
+  String testSelection_prepTestNeedsSection(String arg0);
+
+  /**
+   * Translated "You must choose the appropriate prep test(s) before your analysis(es) may be added".
+   * 
+   * @return translated "You must choose the appropriate prep test(s) before your analysis(es) may be added"
+   */
+  @DefaultMessage("You must choose the appropriate prep test(s) before your analysis(es) may be added")
+  @Key("testSelection.prepTestRequiredException")
+  String testSelection_prepTestRequiredException();
+
+  /**
+   * Translated "Prep Test must be chosen for {0}".
+   * 
+   * @return translated "Prep Test must be chosen for {0}"
+   */
+  @DefaultMessage("Prep Test must be chosen for {0}")
+  @Key("testSelection.prepTestRequiredForTestException")
+  String testSelection_prepTestRequiredForTestException(String arg0);
+
+  /**
+   * Translated "Prep Test Selection".
+   * 
+   * @return translated "Prep Test Selection"
+   */
+  @DefaultMessage("Prep Test Selection")
+  @Key("testSelection.prepTestSelection")
+  String testSelection_prepTestSelection();
+
+  /**
+   * Translated "Reflex Test {0} must have a Section assigned".
+   * 
+   * @return translated "Reflex Test {0} must have a Section assigned"
+   */
+  @DefaultMessage("Reflex Test {0} must have a Section assigned")
+  @Key("testSelection.reflexTestNeedsSection")
+  String testSelection_reflexTestNeedsSection(String arg0);
+
+  /**
+   * Translated "Reflex Test Selection".
+   * 
+   * @return translated "Reflex Test Selection"
+   */
+  @DefaultMessage("Reflex Test Selection")
+  @Key("testSelection.reflexTestSelection")
+  String testSelection_reflexTestSelection();
 
   /**
    * Translated "This test has an overlapping begin date or end date with another test which has the same name and method as this one".
