@@ -72,23 +72,19 @@ public class ResultFormatter implements Serializable {
                     Integer rounding, String value, String entry) throws Exception {
         Item item;
 
-        if (Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(type)) {
+        if (isTypeNumeric(type)) {
             item = new NumericItem(value);
             ((NumericItem)item).rounding = (rounding == null) ? 0 : rounding;
             ((NumericItem)item).sigDigits = (sigDigits == null) ? 0 : sigDigits.byteValue();
-        } else if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(type)) {
+        } else if (isTypeDictionary(type)) {
             item = new DictionaryItem(value, entry);
-        } else if (Constants.dictionary().TEST_RES_TYPE_TITER.equals(type)) {
+        } else if (isTypeTiter(type)) {
             item = new TiterItem(value);
-        } else if (Constants.dictionary().TEST_RES_TYPE_DATE.equals(type) ||
-                   Constants.dictionary().TEST_RES_TYPE_TIME.equals(type) ||
-                   Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(type)) {
+        } else if (isTypeDate(type) || isTypeTime(type) || isTypeDateTime(type)) {
             item = new DateTimeItem();
-        } else if (Constants.dictionary().TEST_RES_TYPE_DEFAULT.equals(type)) {
+        } else if (isTypeDefault(type)) {
             item = new DefaultItem(value);
-        } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(type) ||
-                   Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(type) ||
-                   Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(type)) {
+        } else if (isTypeAlphaMixed(type) || isTypeAlphaUpper(type) || isTypeAlphaLower(type)) {
             item = new Item();
         } else {
             throw new InconsistencyException("Specified type is not valid");
@@ -113,7 +109,7 @@ public class ResultFormatter implements Serializable {
      * rule list. Otherwise the general rules (null unit) are used to
      * format/validate the value.
      */
-    public FormattedValue format(Integer group, Integer unitId, String value) {
+    public FormattedValue format(Integer group, Integer unitId, String value, String entry) {
         Unit u;
         FormattedValue ri;
 
@@ -130,28 +126,27 @@ public class ResultFormatter implements Serializable {
                 ri.id = item.id;
                 ri.type = item.type;
                 try {
-                    if (Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(item.type)) {
+                    if (isTypeNumeric(item.type)) {
                         ri.display = ((NumericItem)item).format(value);
                         return ri;
-                    } else if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(item.type)) {
-                        ri.display = ((DictionaryItem)item).format(value);
+                    } else if (isTypeDictionary(item.type)) {
+                        ri.display = ((DictionaryItem)item).format(value, entry);
                         if (ri.display != null)
                             return ri;
-                    } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(item.type)) {
+                    } else if (isTypeAlphaMixed(item.type)) {
                         ri.display = value;
                         return ri;
-                    } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(item.type)) {
+                    } else if (isTypeAlphaUpper(item.type)) {
                         ri.display = value.toUpperCase();
                         return ri;
-                    } else if (Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(item.type)) {
+                    } else if (isTypeAlphaLower(item.type)) {
                         ri.display = value.toLowerCase();
                         return ri;
-                    } else if (Constants.dictionary().TEST_RES_TYPE_TITER.equals(item.type)) {
+                    } else if (isTypeTiter(item.type)) {
                         ri.display = ((TiterItem)item).format(value);
                         return ri;
-                    } else if (Constants.dictionary().TEST_RES_TYPE_DATE.equals(item.type) ||
-                               Constants.dictionary().TEST_RES_TYPE_TIME.equals(item.type) ||
-                               Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(item.type)) {
+                    } else if (isTypeDate(item.type) || isTypeTime(item.type) ||
+                               isTypeDateTime(item.type)) {
                         ri.display = ((DateTimeItem)item).format(value);
                         return ri;
                     }
@@ -179,7 +174,8 @@ public class ResultFormatter implements Serializable {
     }
 
     /**
-     * 
+     * Returns the list of dictionary ranges specified in the given result group
+     * for the given unit
      */
     public ArrayList<FormattedValue> getDictionaryValues(Integer group, Integer unitId) {
         Unit u;
@@ -190,7 +186,7 @@ public class ResultFormatter implements Serializable {
         if (u != null) {
             l = new ArrayList<FormattedValue>();
             for (Item item : u.items) {
-                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(item.type))
+                if (isTypeDictionary(item.type))
                     l.add(new FormattedValue( ((DictionaryItem)item).dictId,
                                              item.type,
                                              ((DictionaryItem)item).text));
@@ -238,11 +234,11 @@ public class ResultFormatter implements Serializable {
                     u.items = new ArrayList<Item>();
                     map.put(uid, u);
                 }
-                if (Constants.dictionary().TEST_RES_TYPE_DEFAULT.equals(item.type)) {
+                if (isTypeDefault(item.type)) {
                     u.def = (DefaultItem)item;
                 } else {
                     u.items.add(item);
-                    if ( !Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(item.type))
+                    if ( !isTypeDictionary(item.type))
                         u.onlyDictionary = false;
                 }
             }
@@ -283,6 +279,59 @@ public class ResultFormatter implements Serializable {
      */
     private String getUid(int group, int unitId) {
         return group + "-" + unitId;
+    }
+
+    /*
+     * methods that return true if the specified type is one of the several
+     * equivalent types from different categories
+     */
+    private static boolean isTypeNumeric(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_NUMERIC.equals(type) ||
+               Constants.dictionary().AUX_NUMERIC.equals(type);
+    }
+
+    private static boolean isTypeDictionary(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(type) ||
+               Constants.dictionary().AUX_DICTIONARY.equals(type);
+    }
+
+    private static boolean isTypeTiter(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_TITER.equals(type);
+    }
+
+    private static boolean isTypeDate(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_DATE.equals(type) ||
+               Constants.dictionary().AUX_DATE.equals(type);
+    }
+
+    private static boolean isTypeTime(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_TIME.equals(type) ||
+               Constants.dictionary().AUX_TIME.equals(type);
+    }
+
+    private static boolean isTypeDateTime(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(type) ||
+               Constants.dictionary().AUX_DATE_TIME.equals(type);
+    }
+
+    private static boolean isTypeDefault(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_DEFAULT.equals(type) ||
+               Constants.dictionary().AUX_DEFAULT.equals(type);
+    }
+
+    private static boolean isTypeAlphaMixed(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED.equals(type) ||
+               Constants.dictionary().AUX_ALPHA_MIXED.equals(type);
+    }
+
+    private static boolean isTypeAlphaUpper(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_ALPHA_UPPER.equals(type) ||
+               Constants.dictionary().AUX_ALPHA_UPPER.equals(type);
+    }
+
+    private static boolean isTypeAlphaLower(Integer type) {
+        return Constants.dictionary().TEST_RES_TYPE_ALPHA_LOWER.equals(type) ||
+               Constants.dictionary().AUX_ALPHA_LOWER.equals(type);
     }
 
     /*
@@ -496,11 +545,16 @@ public class ResultFormatter implements Serializable {
         }
 
         /**
-         * Returns the id if this value matches the dictionary text
+         * Returns the id if the value matches the id or the entry matches the
+         * dictionary text
          */
-        public String format(String value) {
-            if (text.equals(value))
-                return String.valueOf(dictId);
+        public String format(String value, String entry) {
+            String d;
+
+            d = String.valueOf(dictId);
+            if ( (value != null && value.equals(d)) || text.equals(entry))
+                return d;
+
             return null;
         }
     }
@@ -518,11 +572,11 @@ public class ResultFormatter implements Serializable {
             DateTimeFormat dtf;
 
             format = null;
-            if (Constants.dictionary().TEST_RES_TYPE_DATE.equals(type))
+            if (isTypeDate(type))
                 format = Messages.get().datePattern();
-            else if (Constants.dictionary().TEST_RES_TYPE_TIME.equals(type))
+            else if (isTypeTime(type))
                 format = Messages.get().timePattern();
-            else if (Constants.dictionary().TEST_RES_TYPE_DATE_TIME.equals(type))
+            else if (isTypeDateTime(type))
                 format = Messages.get().dateTimePattern();
 
             /*

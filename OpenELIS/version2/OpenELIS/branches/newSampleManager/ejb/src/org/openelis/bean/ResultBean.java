@@ -637,30 +637,44 @@ public class ResultBean {
 
     public void validate(ResultViewDO data, ResultFormatter rf, Integer accession,
                          AnalysisViewDO analysis, boolean ignoreWarning) throws Exception {
-        String test, method;
+        String test, method, value;
         ValidationErrorsList e;
         FormattedValue fv;
 
-        e = new ValidationErrorsList();
-
         if ( !DataBaseUtil.isEmpty(data.getValue())) {
-            if (rf != null) {
-                test = analysis.getTestName();
-                method = analysis.getMethodName();
-
+            e = new ValidationErrorsList();
+            test = analysis.getTestName();
+            method = analysis.getMethodName();
+            if (data.getTypeId() == null) {
+                e.add(new FormErrorException(Messages.get()
+                                                     .result_valueInvalidException(accession,
+                                                                                   test,
+                                                                                   method,
+                                                                                   data.getAnalyte(),
+                                                                                   data.getValue())));
+            } else {                
                 fv = rf.format(data.getResultGroup(),
-                               analysis.getUnitOfMeasureId(),
-                               data.getValue());
-                if (fv == null)
+                                   analysis.getUnitOfMeasureId(),
+                                   data.getValue(),
+                                   data.getDictionary());
+                
+                if (fv == null) {
+                    if (data.getDictionary() != null)
+                        value = data.getDictionary();
+                    else 
+                        value = data.getValue();
+                    
                     e.add(new FormErrorException(Messages.get()
-                                                         .sample_oneOrMoreResultValuesInvalid(DataBaseUtil.asString(accession),
-                                                                                              test,
-                                                                                              method)));
+                                                         .result_valueInvalidException(accession,
+                                                                                       test,
+                                                                                       method,
+                                                                                       data.getAnalyte(),
+                                                                                       value)));
+                }
             }
+            if (e.size() > 0)
+                throw e;
         }
-
-        if (e.size() > 0)
-            throw e;
     }
 
     private void createTestResultHash(List<TestResultDO> testResultList,

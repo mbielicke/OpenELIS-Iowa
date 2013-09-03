@@ -99,6 +99,17 @@ public class TestBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    public ArrayList<TestMethodVO> fetchByNameSampleType(String name, Integer typeId, int max) throws Exception{
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchByNameSampleItemType");
+        query.setParameter("name", name);
+        query.setParameter("typeId", typeId);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public TestViewDO fetchActiveByNameMethodName(String testName, String methodName) throws Exception {
         TestViewDO data;
         Query query;

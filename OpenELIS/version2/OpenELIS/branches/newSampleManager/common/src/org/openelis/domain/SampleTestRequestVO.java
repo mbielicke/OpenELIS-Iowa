@@ -55,6 +55,11 @@ public class SampleTestRequestVO implements Serializable {
     protected Integer            analysisId;
 
     /*
+     * if this id is not null then it will be the section id of the added test
+     */
+    protected Integer            sectionId;
+
+    /*
      * this id identifies the result that triggered the request for a reflex
      * test
      */
@@ -83,11 +88,12 @@ public class SampleTestRequestVO implements Serializable {
     }
 
     public SampleTestRequestVO(Integer sampleItemId, Integer testId, Integer analysisId,
-                               Integer resultId, Integer panelId, boolean allowDuplicate,
-                               ArrayList<Integer> reportableAnalytes) {
+                               Integer sectionId, Integer resultId, Integer panelId,
+                               boolean allowDuplicate, ArrayList<Integer> reportableAnalytes) {
         this.sampleItemId = sampleItemId;
         this.testId = testId;
         this.analysisId = analysisId;
+        this.sectionId = sectionId;
         this.resultId = resultId;
         this.panelId = panelId;
         this.allowDuplicate = allowDuplicate;
@@ -115,6 +121,18 @@ public class SampleTestRequestVO implements Serializable {
      */
     public Integer getAnalysisId() {
         return analysisId;
+    }
+
+    /**
+     * returns the sectionId. if this id is not null then it will be the section
+     * id of the added test
+     */
+    public Integer getSectionId() {
+        return sectionId;
+    }
+    
+    public void setSectionId(Integer sectionId) {
+        this.sectionId = sectionId;
     }
 
     /**

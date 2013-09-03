@@ -865,7 +865,6 @@ public class SampleManager1 implements Serializable {
                 return items.size();
             return 0;
         }
-
     }
 
     /**
@@ -1026,20 +1025,37 @@ public class SampleManager1 implements Serializable {
             }
             return 0;
         }
-        
+
         /**
-         * Return true if the sample has at least one released analysis
+         * Returns true if the sample has at least one released analysis
          */
         public boolean hasReleasedAnalysis() {
             if (analyses == null)
                 return false;
-            
+
             for (AnalysisViewDO a : analyses) {
                 if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
                     return true;
             }
-            
+
             return false;
+        }
+
+        /**
+         * Links the analysis with the specified id to the sample item with the
+         * specified id, if the analysis isn't already linked to the item and is
+         * not released or cancelled
+         */
+        public void moveAnalysis(Integer analysisId, Integer sampleItemId) {
+            AnalysisViewDO data;
+
+            data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
+            if (sampleItemId != null && !sampleItemId.equals(data.getSampleItemId()) &&
+                !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
+                !Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
+                data.setSampleItemId(sampleItemId);
+                localmap = null;
+            }
         }
 
         /*
@@ -1110,7 +1126,7 @@ public class SampleManager1 implements Serializable {
 
             return localmap.get(analysis.getId());
         }
- 
+
         /**
          * Removes the editing note. For external, the entire external note is
          * removed
@@ -1449,13 +1465,13 @@ public class SampleManager1 implements Serializable {
                 l = null;
                 rl = null;
                 localmap = new HashMap<Integer, ArrayList<ArrayList<ResultViewDO>>>();
-                for (ResultViewDO data : results) {                  
+                for (ResultViewDO data : results) {
                     if (id == null || !id.equals(data.getAnalysisId())) {
                         id = data.getAnalysisId();
                         l = localmap.get(id);
                         if (l == null) {
                             l = new ArrayList<ArrayList<ResultViewDO>>();
-                            localmap.put(id, l);  
+                            localmap.put(id, l);
                         }
                     }
                     /*
@@ -1478,15 +1494,15 @@ public class SampleManager1 implements Serializable {
         if (uidMap != null)
             uidMap.put(uid, data);
     }
-    
+
     /**
      * removes the object from uid map
      */
     private void uidMapRemove(String uid) {
         if (uidMap != null)
-            uidMap.remove(uid);        
+            uidMap.remove(uid);
     }
-    
+
     /**
      * adds the data object to the list of objects that should be removed from
      * the database
