@@ -32,6 +32,9 @@ public interface TestServiceIntAsync {
 
     void fetchByName(String name, AsyncCallback<ArrayList<TestMethodVO>> callback);
 
+    void fetchByNameSampleType(String name, Integer typeId,
+                               AsyncCallback<ArrayList<TestMethodVO>> callback);
+
     void fetchByPanelId(Integer id, AsyncCallback<ArrayList<TestMethodVO>> callback);
 
     void fetchForUpdate(Integer testId, AsyncCallback<TestManager> callback);

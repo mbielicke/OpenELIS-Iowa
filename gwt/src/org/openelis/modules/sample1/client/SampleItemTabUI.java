@@ -64,25 +64,26 @@ public class SampleItemTabUI extends Screen {
     private static SampleItemTabUIBinder uiBinder = GWT.create(SampleItemTabUIBinder.class);
 
     @UiField
-    protected TextBox<String> sourceOther, containerReference;
+    protected TextBox<String>            sourceOther, containerReference;
 
     @UiField
-    protected TextBox<Double> quantity;
+    protected TextBox<Double>            quantity;
 
     @UiField
-    protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
+    protected Dropdown<Integer>          typeOfSampleId, sourceOfSampleId, containerId,
+                    unitOfMeasureId;
 
-    protected SampleItemTabUI   screen;
+    protected Screen                     parentScreen;
 
-    protected SampleManager1    manager;
+    protected SampleItemTabUI            screen;
 
-    protected SampleItemViewDO  sampleItem;
+    protected SampleManager1             manager;
 
-    protected String            displayedUid;
+    protected SampleItemViewDO           sampleItem;
 
-    protected Screen            parentScreen;
+    protected String                     displayedUid;
 
-    protected boolean          canEdit, isVisible;
+    protected boolean                    canEdit, isVisible, redraw;
 
     public SampleItemTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -116,11 +117,11 @@ public class SampleItemTabUI extends Screen {
                                                            (isState(ADD, UPDATE) && canEdit));
                                  typeOfSampleId.setQueryMode(isState(QUERY));
                              }
-        
+
                              public Widget onTab(boolean forward) {
                                  return forward ? sourceOfSampleId : unitOfMeasureId;
                              }
-        });
+                         });
 
         addScreenHandler(sourceOfSampleId,
                          SampleMeta.getItemSourceOfSampleId(),
@@ -138,7 +139,7 @@ public class SampleItemTabUI extends Screen {
                                                              (isState(ADD, UPDATE) && canEdit));
                                  sourceOfSampleId.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? sourceOther : typeOfSampleId;
                              }
@@ -154,11 +155,10 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                sourceOther.setEnabled(isState(QUERY) ||
-                                       (isState(ADD, UPDATE) && canEdit));
+                sourceOther.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
                 sourceOther.setQueryMode(isState(QUERY));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? containerId : sourceOfSampleId;
             }
@@ -180,7 +180,7 @@ public class SampleItemTabUI extends Screen {
                                                         (isState(ADD, UPDATE) && canEdit));
                                  containerId.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? containerReference : sourceOther;
                              }
@@ -202,7 +202,7 @@ public class SampleItemTabUI extends Screen {
                                                                (isState(ADD, UPDATE) && canEdit));
                                  containerReference.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? quantity : containerId;
                              }
@@ -218,11 +218,10 @@ public class SampleItemTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                quantity.setEnabled(isState(QUERY) ||
-                                    (isState(ADD, UPDATE) && canEdit));
+                quantity.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
                 quantity.setQueryMode(isState(QUERY));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? unitOfMeasureId : containerReference;
             }
@@ -244,7 +243,7 @@ public class SampleItemTabUI extends Screen {
                                                             (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasureId.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? typeOfSampleId : quantity;
                              }
@@ -333,6 +332,21 @@ public class SampleItemTabUI extends Screen {
                         break;
                 }
 
+                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                    displayedUid = uid;
+                    redraw = true;
+                } else if (isState(QUERY)) {
+                    /*
+                     * No sample item is selected in the tree because it is
+                     * empty in query state, so the current uid is null. If
+                     * there was no sample item selected in the tree, before
+                     * going in query state, the previous (displayed) uid was
+                     * null too. This makes sure that the tab is redrawn for
+                     * query state even if both uids are null.
+                     */
+                    redraw = true;
+                }
+
                 displaySampleItem(uid);
             }
         });
@@ -340,14 +354,9 @@ public class SampleItemTabUI extends Screen {
 
     public void setData(SampleManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager))
-            this.manager = manager;        
+            this.manager = manager;
     }
-    
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-    
+
     public boolean validate() {
         /*
          * validate only if there's data loaded in the tab
@@ -361,13 +370,10 @@ public class SampleItemTabUI extends Screen {
         canEdit = false;
         if (manager != null && sampleItem != null)
             canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                .getStatusId());        
+                                                                            .getStatusId());
     }
-    
+
     private void displaySampleItem(String uid) {
-        /*
-         * don't redraw unless the data has changed
-         */
         if (uid != null)
             sampleItem = (SampleItemViewDO)manager.getObject(uid);
         else
@@ -376,8 +382,11 @@ public class SampleItemTabUI extends Screen {
         if ( !isVisible)
             return;
 
-        if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-            displayedUid = uid;
+        if (redraw) {
+            /*
+             * don't redraw unless the data has changed
+             */
+            redraw = false;
             evaluateEdit();
             setState(state);
             fireDataChange();
@@ -432,7 +441,7 @@ public class SampleItemTabUI extends Screen {
         sampleItem.setContainerId(containerId);
         sampleItem.setContainer(display);
         bus.fireEvent(new SampleItemChangeEvent(displayedUid,
-                      SampleItemChangeEvent.Action.CONTAINER_CHANGED));
+                                                SampleItemChangeEvent.Action.CONTAINER_CHANGED));
     }
 
     private String getContainerReference() {

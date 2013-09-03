@@ -69,6 +69,12 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     public void fetchByName(String name, AsyncCallback<ArrayList<TestMethodVO>> callback) {
         service.fetchByName(name, callback);
     }
+    
+    @Override
+    public void fetchByNameSampleType(String name, Integer typeId,
+                                      AsyncCallback<ArrayList<TestMethodVO>> callback) {
+        service.fetchByNameSampleType(name, typeId, callback);
+    }
 
     @Override
     public void fetchByPanelId(Integer id, AsyncCallback<ArrayList<TestMethodVO>> callback) {
@@ -191,6 +197,15 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
         
         callback = new Callback<ArrayList<TestMethodVO>>();
         service.fetchByName(name, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public ArrayList<TestMethodVO> fetchByNameSampleType(String name, Integer typeId) throws Exception {
+        Callback<ArrayList<TestMethodVO>> callback;
+        
+        callback = new Callback<ArrayList<TestMethodVO>>();
+        service.fetchByNameSampleType(name, typeId, callback);
         return callback.getResult();
     }
 

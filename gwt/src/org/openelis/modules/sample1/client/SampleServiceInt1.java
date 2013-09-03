@@ -35,6 +35,7 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 import org.openelis.ui.common.data.QueryData;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -78,8 +79,12 @@ public interface SampleServiceInt1 extends RemoteService {
     public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                          ArrayList<TestAnalyteViewDO> analytes,
                                          ArrayList<Integer> indexes) throws Exception;
-    
+            
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
     
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
+    
+    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer methodId) throws Exception;
+    
+    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception;
 }

@@ -98,6 +98,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         return sampleManager1.addRowAnalytes(sm, analysis, analytes, indexes);
     }
     
+    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer methodId) throws Exception {
+        return sampleManager1.changeAnalysisMethod(sm, analysisId, methodId);
+    }
+    
+    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
+        return sampleManager1.changeAnalysisUnit(sm, analysisId, unitId);
+    }
+    
     public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         return sampleManager1.addAuxGroups(sm, groupIds);
     }

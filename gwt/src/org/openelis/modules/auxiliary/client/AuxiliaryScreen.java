@@ -1405,7 +1405,7 @@ public class AuxiliaryScreen extends Screen {
                     data.setDictionary(dict.getName());
                 } else {
                     data.setDictionary(null);
-                    throw new Exception(Messages.get().aux_invalidValueException());
+                    throw new Exception(Messages.get().invalidValueException());
                 }
             } else if (Constants.dictionary().AUX_NUMERIC.equals(data.getTypeId())) {
                 rangeNumeric.setRange((String)value);

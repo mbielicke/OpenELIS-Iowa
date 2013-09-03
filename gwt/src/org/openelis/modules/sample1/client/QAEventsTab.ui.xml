@@ -73,14 +73,13 @@
             </g:layer>
             <g:layer bottom="0px" height="20px">
               <g:HTMLPanel>
-                <g:HorizontalPanel> <!-- style="{res.type.TableButtonFooter}" -->
+                <g:HorizontalPanel>
                   <w:Button ui:field="removeAnalysisQAButton" leftIcon="{res.style.removeRowIcon}"
                     text="{msg.removeRow}" />
-                  <w:Button ui:field="analysisQALookupButton" text="{msg.qaEvents}" />  <!-- leftIcon="{res.style.PickerButtonImage}" -->
+                  <w:Button ui:field="analysisQALookupButton" text="{msg.qaEvents}" />
                 </g:HorizontalPanel>
-                <g:HTMLPanel> <!-- class="{res.style.TabSubForm}" -->
-                  <ui:text from="{msg.resultsOverridden}"/> <!--  width="330px" ui:field="analysisBillableLabel" 
-                    class="{res.style.WarningLabel}" wordwrap = "true" -->
+                <g:HTMLPanel> 
+                  <ui:text from="{msg.resultsOverridden}"/>
                 </g:HTMLPanel>
               </g:HTMLPanel>
             </g:layer>

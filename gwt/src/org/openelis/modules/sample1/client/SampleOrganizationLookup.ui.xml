@@ -20,32 +20,32 @@
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="60px">
       <t:Table ui:field="table" header="true">
-        <t:Column width="125" label="{msg.type}" required="true">
+        <t:Column width="125" label="{msg.gen_type}" required="true">
           <t:DropdownCell>
             <w:Dropdown field="Integer"  ui:field="type" />
           </t:DropdownCell>
         </t:Column>
-        <t:Column width="180" label="{msg.attention}">
+        <t:Column width="180" label="{msg.order_attention}">
           <t:TextBoxCell>
             <w:TextBox field="String" case="UPPER" />
           </t:TextBoxCell>
         </t:Column>
-        <t:Column width="220" label="{msg.name}">
+        <t:Column width="220" label="{msg.gen_name}">
           <t:AutoCompleteCell>
             <w:AutoComplete ui:field="organization" case="UPPER" required="true"
               width="130" dropWidth = "490px">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
-                  <t:Column width="200" label="{msg.name}">
+                  <t:Column width="200" label="{msg.gen_name}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="130" label="{msg.street}">
+                  <t:Column width="130" label="{msg.address_street}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="120" label="{msg.city}">
+                  <t:Column width="120" label="{msg.address_city}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="20" label="{msg.st}">
+                  <t:Column width="20" label="{msg.address_st}">
                     <t:LabelCell />
                   </t:Column>
                 </t:Table>
@@ -53,24 +53,24 @@
             </w:AutoComplete>
           </t:AutoCompleteCell>
         </t:Column>
-        <t:Column width="130" label="{msg.aptSuite}">
+        <t:Column width="130" label="{msg.address_aptSuite}">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="130" label="{msg.address}">
+        <t:Column width="130" label="{msg.address_address}">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="110" label="{msg.city}">
+        <t:Column width="110" label="{msg.address_city}">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="55" label="{msg.state}">
+        <t:Column width="55" label="{msg.address_state}">
           <t:DropdownCell>
             <w:Dropdown field="String" ui:field="orgState" />
           </t:DropdownCell>
         </t:Column>
-        <t:Column width="70" label="{msg.zipcode}">
+        <t:Column width="70" label="{msg.address_zipcode}">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="126" label="{msg.country}">
+        <t:Column width="126" label="{msg.address_country}">
           <t:DropdownCell>
             <w:Dropdown field="String" ui:field="country" />
           </t:DropdownCell>
@@ -79,13 +79,13 @@
     </g:layer>
     <g:layer bottom="30px" height="25px">
       <g:HorizontalPanel>
-        <w:Button ui:field="addOrganizationButton" text="{msg.addRow}" />
-        <w:Button ui:field="removeOrganizationButton" text="{msg.removeRow}" />
+        <w:Button ui:field="addOrganizationButton" text="{msg.gen_addRow}" />
+        <w:Button ui:field="removeOrganizationButton" text="{msg.gen_removeRow}" />
       </g:HorizontalPanel>
     </g:layer>
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel width="100%" height="100%" horizontalAlignment="CENTER">
-        <w:Button ui:field="okButton" text="{msg.ok}" />
+        <w:Button ui:field="okButton" text="{msg.gen_ok}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

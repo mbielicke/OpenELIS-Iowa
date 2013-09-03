@@ -34,17 +34,30 @@
             <w:Check />
           </t:CheckBoxCell>
         </t:Column>
-        <t:Column width="130" label="{msg.name}">
-          <t:LabelCell />
+        <t:Column width="130" label="{msg.gen_name}">
+          <t:DropdownCell>
+            <w:Dropdown field="Integer" ui:field="analyte" width = "130px" dropWidth = "280px">
+              <w:popup>
+                <t:Table visibleRows="10" header="true">
+                  <t:Column width="130" label="{msg.gen_analyte}">
+                    <t:LabelCell />
+                  </t:Column>
+                  <t:Column width="130" label="{msg.group}">
+                    <t:LabelCell />
+                  </t:Column>
+                </t:Table>
+              </w:popup>
+            </w:Dropdown>
+          </t:DropdownCell>
         </t:Column>
         <t:Column width="130" label="{msg.value}">
-          <t:LabelCell />
+          <s:ResultCell />
         </t:Column>
       </t:Table>
     </g:layer>
     <g:layer bottom="40px" height="25px">
       <g:HorizontalPanel>
-        <w:Button ui:field="removeAuxButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />       
+        <w:Button ui:field="removeAuxButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />       
         <w:Button ui:field="addAuxButton" leftIcon = "{res.style.fieldLookupIcon}" text="{msg.auxGroups}" />
       </g:HorizontalPanel>
     </g:layer>
@@ -53,19 +66,19 @@
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.description}:" />
+              <ui:text from="{msg.gen_description}:" />
             </td>
             <td>
               <w:TextBox ui:field="auxDesc" width="275px" field="String" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.method}:" />
+              <ui:text from="{msg.gen_method}:" />
             </td>
             <td>
               <w:TextBox ui:field="auxMethod" width="125px" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.unit}:" />
+              <ui:text from="{msg.gen_unit}:" />
             </td>
             <td>
               <w:TextBox ui:field="auxUnits" width="125px" />

@@ -25,13 +25,9 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,8 +55,10 @@ import org.openelis.manager.OrderManager1;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.OrderMeta;
+import org.openelis.modules.auxData.client.AddAuxGroupEvent;
+import org.openelis.modules.auxData.client.AuxDataChangeEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
-import org.openelis.modules.auxData.client.AuxGroupChangeEvent;
+import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.OpenELIS;
@@ -989,10 +987,37 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
         });
 
-        bus.addHandler(AuxGroupChangeEvent.getType(), new AuxGroupChangeEvent.Handler() {
+        bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
-            public void onAuxGroupChange(AuxGroupChangeEvent event) {
-                addRemoveAuxGroups(event);
+            public void onAddAuxGroup(AddAuxGroupEvent event) {
+                if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+                    try {
+                        manager = OrderService1.get().addAuxGroups(manager, event.getGroupIds());
+                        setData();
+                        setState(state);
+                        bus.fireEvent(new AuxDataChangeEvent());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
+            }
+        });
+
+        bus.addHandler(RemoveAuxGroupEvent.getType(), new RemoveAuxGroupEvent.Handler() {
+            @Override
+            public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
+                if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+                    try {
+                        manager =  OrderService1.get().removeAuxGroups(manager, event.getGroupIds());
+                        setData();
+                        setState(state);
+                        bus.fireEvent(new AuxDataChangeEvent());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+                }
             }
         });
 
@@ -1063,6 +1088,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiHandler("query")
     protected void query(ClickEvent event) {
         manager = null;
+        /*
+         * the tab for aux data uses the cache in query state
+         */
+        cache = new HashMap<String, Object>();
         setData();
         setState(QUERY);
         fireDataChange();
@@ -1600,28 +1629,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             Window.alert(e.getMessage());
         }
         window.clearStatus();
-    }
-
-    private void addRemoveAuxGroups(AuxGroupChangeEvent event) {
-        if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
-            try {
-                switch (event.getAction()) {
-                    case ADD:
-                        manager = OrderService1.get().addAuxGroups(manager, event.getGroupIds());
-                        buildCache();
-                        break;
-                    case REMOVE:
-                        manager = OrderService1.get().removeAuxGroups(manager, event.getGroupIds());
-                        break;
-                }
-                setData();
-                setState(state);
-                fireDataChange();
-                window.clearStatus();
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-        }
     }
 
     /*

@@ -31,9 +31,11 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.AuxFieldBean;
 import org.openelis.bean.AuxFieldGroupBean;
 import org.openelis.bean.AuxFieldGroupManagerBean;
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.gwt.server.RemoteServlet;
@@ -51,10 +53,17 @@ public class AuxiliaryServlet extends RemoteServlet implements AuxiliaryServiceI
     AuxFieldGroupBean auxFieldGroup;
     
     @EJB
+    AuxFieldBean auxField;
+    
+    @EJB
     AuxFieldGroupManagerBean auxFieldGroupManager;
     
     public ArrayList<AuxFieldGroupDO> fetchActive() throws Exception {
         return auxFieldGroup.fetchActive();
+    }
+    
+    public ArrayList<AuxFieldViewDO> fetchAll()  throws Exception {
+        return auxField.fetchAll();
     }
 
     // manager methods

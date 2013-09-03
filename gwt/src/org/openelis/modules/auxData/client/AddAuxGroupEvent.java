@@ -23,51 +23,49 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sample1.client;
+package org.openelis.modules.auxData.client;
 
 import java.util.ArrayList;
-
-import org.openelis.domain.SampleTestRequestVO;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * This class is used to notify the handler that tests or a panel were chosen
- * by a user to be added to a sample
+ * This class is used to notify the handler to add aux groups with the given ids
+ * to the sample
  */
-public class AddTestEvent extends GwtEvent<AddTestEvent.Handler> {
+public class AddAuxGroupEvent extends GwtEvent<AddAuxGroupEvent.Handler> {
 
-    private static Type<AddTestEvent.Handler> TYPE;
-    private ArrayList<SampleTestRequestVO>    tests;
+    private static Type<AddAuxGroupEvent.Handler> TYPE;
+    private ArrayList<Integer>                    groupIds;
 
-    public AddTestEvent(ArrayList<SampleTestRequestVO> tests) {
-        this.tests = tests;
+    public AddAuxGroupEvent(ArrayList<Integer> groupIds) {
+        this.groupIds = groupIds;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AddTestEvent.Handler> getAssociatedType() {
+    public Type<AddAuxGroupEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<AddTestEvent.Handler> getType() {
+    public static Type<AddAuxGroupEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AddTestEvent.Handler>();
+            TYPE = new Type<AddAuxGroupEvent.Handler>();
         }
         return TYPE;
     }
 
-    public ArrayList<SampleTestRequestVO> getTests() {
-        return tests;
+    public ArrayList<Integer> getGroupIds() {
+        return groupIds;
     }
 
     public static interface Handler extends EventHandler {
-        public void onAddTest(AddTestEvent event);
+        public void onAddAuxGroup(AddAuxGroupEvent event);
     }
 
     @Override
     protected void dispatch(Handler handler) {
-        handler.onAddTest(this);
+        handler.onAddAuxGroup(this);
     }
 }

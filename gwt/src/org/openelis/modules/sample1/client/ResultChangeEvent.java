@@ -23,61 +23,53 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.auxData.client;
-
-import java.util.ArrayList;
+package org.openelis.modules.sample1.client;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * This class is used to notify the handler the list of aux groups in a sample
- * has changed
+ * This class is used to notify the handler that the results of a sample were
+ * changed due to some action by the user e.g. changing the unit of an analysis
+ * or row analytes being added etc.
  */
-public class AuxGroupChangeEvent extends GwtEvent<AuxGroupChangeEvent.Handler> {
+public class ResultChangeEvent extends GwtEvent<ResultChangeEvent.Handler> {
 
-    public enum Action {
-        ADD, REMOVE
-    }
+    private static Type<ResultChangeEvent.Handler> TYPE;
+
+    private Action action;
     
-    private static Type<AuxGroupChangeEvent.Handler> TYPE;
-    private Action                                      action;
-    private ArrayList<Integer>                       groupIds;
-
-    public AuxGroupChangeEvent(Action action, ArrayList<Integer> groupIds) {
-        assert action != null;
-        
-        this.action = action; 
-        this.groupIds = groupIds;
+    public enum Action {
+        ROW_ANALYTE_ADDED, UNIT_CHANGED, METHOD_CHANGED
+    } 
+    
+    public ResultChangeEvent(Action action) {
+        this.action = action;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AuxGroupChangeEvent.Handler> getAssociatedType() {
+    public Type<ResultChangeEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<AuxGroupChangeEvent.Handler> getType() {
+    public static Type<ResultChangeEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AuxGroupChangeEvent.Handler>();
+            TYPE = new Type<ResultChangeEvent.Handler>();
         }
         return TYPE;
     }
-
+    
     public Action getAction() {
         return action;
     }
-    
-    public ArrayList<Integer> getGroupIds() {
-        return groupIds;
-    }
 
     public static interface Handler extends EventHandler {
-        public void onAuxGroupChange(AuxGroupChangeEvent event);
+        public void onResultChange(ResultChangeEvent event);
     }
 
     @Override
     protected void dispatch(Handler handler) {
-        handler.onAuxGroupChange(this);
+        handler.onResultChange(this);
     }
 }

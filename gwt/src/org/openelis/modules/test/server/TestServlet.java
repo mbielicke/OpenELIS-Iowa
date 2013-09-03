@@ -86,6 +86,14 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
+    }    
+    
+    public ArrayList<TestMethodVO> fetchByNameSampleType(String name, Integer typeId) throws Exception {
+        try { 
+            return test.fetchByNameSampleType(name, typeId, 1000);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public TestViewDO fetchActiveByNameMethodName(Query query) throws Exception {

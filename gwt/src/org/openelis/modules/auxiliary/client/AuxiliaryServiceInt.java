@@ -3,13 +3,13 @@ package org.openelis.modules.auxiliary.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
@@ -17,6 +17,8 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 public interface AuxiliaryServiceInt extends XsrfProtectedService {
 
     ArrayList<AuxFieldGroupDO> fetchActive() throws Exception;
+    
+    ArrayList<AuxFieldViewDO> fetchAll() throws Exception;
 
     // manager methods
     AuxFieldGroupManager fetchById(Integer id) throws Exception;
