@@ -26,231 +26,102 @@
 package org.openelis.modules.sample1.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 
-import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.TestReflexViewDO;
-import org.openelis.domain.TestSectionViewDO;
-import org.openelis.gwt.common.FormErrorException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.HasActionHandlers;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestReflexManager;
-import org.openelis.modules.test.client.TestReflexLookupScreen;
 
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Window;
+/**
+ * This class is used to obtain the reflex tests triggered by specific results
+ */
+public abstract class TestReflexUtility1 {
 
-public class TestReflexUtility1 extends Screen implements
-                                             HasActionHandlers<TestReflexUtility1.Action> {
-    public enum Action {
-        DONE
-    };
+    /**
+     * overridden to return the TestManager for the test with this id
+     */
+    public abstract TestManager getTestManager(Integer testId) throws Exception;
 
-    protected Screen                    screen;
+    public ArrayList<SampleTestRequestVO> getReflexTests(SampleManager1 sm,
+                                                         ArrayList<ResultViewDO> results) throws Exception {
 
-    private ArrayList<SampleDataBundle> bundles;
-    private ValidationErrorsList        errorsList;
-    
-    public Screen getScreen() {
-        return screen;
-    }
+        int i, j;
+        boolean allowDup;
+        Integer anaId;
+        TestManager tm;
+        TestReflexManager trm;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+        SampleTestRequestVO test;
+        HashSet<Integer> testIds;
+        ArrayList<SampleTestRequestVO> tests;
+        ArrayList<TestReflexViewDO> trs;
 
-    public void setScreen(Screen screen) {
-        this.screen = screen;
-    }
+        tests = null;
+        if (results == null || results.size() == 0)
+            return tests;
 
-    public void resultEntered(SampleDataBundle analysisDataBundle, ResultViewDO resultDO) throws Exception {
-        ArrayList<ResultViewDO>                           reflexResults;
-        ArrayList<SampleDataBundle>                       dataBundles;
-        HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap;
-        
-        dataBundles = new ArrayList<SampleDataBundle>();
-        dataBundles.add(analysisDataBundle);
-        
-        reflexResults = new ArrayList<ResultViewDO>();
-        reflexResults.add(resultDO);
-        
-        reflexMap = new HashMap<SampleDataBundle,ArrayList<ResultViewDO>>();
-        reflexMap.put(analysisDataBundle, reflexResults);
-        
-        resultsEntered(dataBundles, reflexMap);
-    }
-    
-    public void resultsEntered(ArrayList<SampleDataBundle> dataBundles,
-                               HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap) throws Exception {
-        assert screen != null : "screen is null";
-        bundles = new ArrayList<SampleDataBundle>();
-        errorsList = new ValidationErrorsList();
-        
-        processReflexTests(dataBundles, reflexMap);
-    }
-
-    private void processReflexTests(ArrayList<SampleDataBundle> dataBundles,
-                                    HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap) throws Exception {
-        int                                               i, j;
-        ArrayList<Object>                                 reflexBundle;
-        ArrayList<ArrayList<Object>>                      reflexBundles;
-        ArrayList<ResultViewDO>                           reflexResults;
-        ArrayList<TestReflexViewDO>                       reflexList;
-        HashMap<ResultViewDO,ArrayList<TestReflexViewDO>> anaReflexMap;
-        ResultViewDO                                      rVDO;
-        SampleDataBundle                                  dataBundle;
-        TestManager                                       testMan;
-        TestReflexManager                                 reflexMan;
-
-        reflexBundles = new ArrayList<ArrayList<Object>>();
-        for (i = 0; i < dataBundles.size(); i++) {
-            dataBundle = dataBundles.get(i);
-            reflexResults = reflexMap.get(dataBundle);
-            
-            testMan = dataBundle.getSampleManager().getSampleItems().getAnalysisAt(dataBundle.getSampleItemIndex())
-                                .getTestAt(dataBundle.getAnalysisIndex());
-            reflexMan = testMan.getReflexTests();
-            anaReflexMap = new HashMap<ResultViewDO,ArrayList<TestReflexViewDO>>();
-            for (j = 0; j < reflexResults.size(); j++) {
-                rVDO = reflexResults.get(j);
-                reflexList = reflexMan.getReflexListByTestAnalyteIdTestResultId(rVDO.getTestAnalyteId(),
-                                                                                rVDO.getTestResultId());
-                if (reflexList.size() > 0)
-                    anaReflexMap.put(rVDO, reflexList);
-            }
-            
-            if (!anaReflexMap.isEmpty()) {
-                reflexBundle = new ArrayList<Object>();
-                reflexBundle.add(dataBundle);
-                reflexBundle.add(anaReflexMap);
-                reflexBundles.add(reflexBundle);
-            }
+        testIds = new HashSet<Integer>();
+        /*
+         * keep track of the tests present in the sample
+         */
+        for (i = 0; i < sm.item.count(); i++ ) {
+            item = sm.item.get(i);
+            for (j = 0; j < sm.analysis.count(item); j++ )
+                testIds.add(sm.analysis.get(item, j).getTestId());
         }
 
-        if (reflexBundles.size() > 0)
-            drawTestReflexScreen(reflexBundles);
-        else
-            fireFinished();
-    }
+        ana = null;
+        anaId = null;
+        trm = null;
+        for (ResultViewDO r : results) {
+            if ( !r.getAnalysisId().equals(anaId)) {
+                anaId = r.getAnalysisId();
+                ana = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(anaId));
+                tm = getTestManager(ana.getTestId());
+                trm = tm.getReflexTests();
+            }
+            /*
+             * get the reflex tests triggered by this result
+             */
+            trs = trm.getReflexListByTestAnalyteIdTestResultId(r.getTestAnalyteId(),
+                                                               r.getTestResultId());
+            if (trs == null || trs.size() == 0)
+                continue;
 
-    private void drawTestReflexScreen(ArrayList<ArrayList<Object>> reflexBundles) {
-        ScreenWindow           modal;
-        TestReflexLookupScreen reflexPickerScreen;
-
-        try {
-            reflexPickerScreen = new TestReflexLookupScreen();
-            reflexPickerScreen.addActionHandler(new ActionHandler<TestReflexLookupScreen.Action>() {
-                @SuppressWarnings("unchecked")
-                public void onAction(ActionEvent<TestReflexLookupScreen.Action> event) {
-                    int                          i;
-                    ArrayList<Object>            reflexedBundle;
-                    ArrayList<ArrayList<Object>> reflexedBundles;
-
-                    if (event.getAction() == TestReflexLookupScreen.Action.SELECTED_REFLEX_ROW) {
-                        reflexedBundles = (ArrayList<ArrayList<Object>>)event.getData();
-                        for (i = 0; i < reflexedBundles.size(); i++) {
-                            reflexedBundle = reflexedBundles.get(i);
-                            addReflexTest(reflexedBundle);
-                        }
-                        
-                        fireFinished();
-                    }
+            /*
+             * if a reflex test allows duplication or is not present in the
+             * sample then add its information to the returned list
+             */
+            for (TestReflexViewDO tr : trs) {
+                if (Constants.dictionary().REFLEX_PROMPT.equals(tr.getFlagsId()) ||
+                    Constants.dictionary().REFLEX_AUTO.equals(tr.getFlagsId())) {
+                    allowDup = true;
+                } else if ( !testIds.contains(tr.getAddTestId())) {
+                    allowDup = false;
+                } else {
+                    continue;
                 }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
-            return;
-        }
 
-        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setContent(reflexPickerScreen);
-        modal.setName(Messages.get().reflexTestPicker());
-        reflexPickerScreen.setBundles(reflexBundles);
-    }
-    
-    private void addReflexTest(ArrayList<Object> reflexBundle) {
-        int               addedIndex;
-        Integer           sectionId;
-        AnalysisManager   anMan;
-        AnalysisViewDO    anVDO;
-        ResultViewDO      rVDO;
-        SampleDataBundle  anaBundle;
-        SampleItemManager itemMan;
-        TestManager       testMan;
-        TestReflexViewDO  reflexVDO;
-        TestSectionViewDO tsVDO;
-        
-        anaBundle = (SampleDataBundle) reflexBundle.get(0);
-        rVDO = (ResultViewDO) reflexBundle.get(1);
-        reflexVDO = (TestReflexViewDO) reflexBundle.get(2);
-        sectionId = (Integer) reflexBundle.get(3);
-        try {
-            itemMan = anaBundle.getSampleManager().getSampleItems();
-
-            if (Constants.dictionary().REFLEX_PROMPT.equals(reflexVDO.getFlagsId()) || 
-                 Constants.dictionary().REFLEX_AUTO.equals(reflexVDO.getFlagsId()) ||
-                !duplicatePresent(itemMan, reflexVDO.getAddTestId())) {
-                testMan = TestManager.fetchWithPrepTestsSampleTypes(reflexVDO.getAddTestId());
-                tsVDO = new TestSectionViewDO();
-                tsVDO.setSectionId(sectionId);
-                if (!testMan.canAssignThisSection(tsVDO)) {
-                    tsVDO = testMan.getTestSections().getDefaultSection();
-                    if (tsVDO == null || !testMan.canAssignThisSection(tsVDO)) {
-                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
-                                                              testMan.getTest().getName(),
-                                                              testMan.getTest().getMethodName()));
-                        return;
-                    }
-                }
-                anMan = itemMan.getAnalysisAt(anaBundle.getSampleItemIndex());
-                anVDO = anMan.getAnalysisAt(anaBundle.getAnalysisIndex());
-                addedIndex = anMan.addReflexAnalysis(anVDO.getId(), rVDO.getId());
-                anMan.setTestAt(testMan, addedIndex, false);
-                anVDO.setSectionId(tsVDO.getSectionId());
-                bundles.add(anMan.getBundleAt(addedIndex));
+                if (tests == null)
+                    tests = new ArrayList<SampleTestRequestVO>();
+                test = new SampleTestRequestVO(ana.getSampleItemId(),
+                                               tr.getAddTestId(),
+                                               ana.getId(),
+                                               null,
+                                               r.getId(),                                               
+                                               null,
+                                               allowDup,
+                                               null);
+                tests.add(test);
             }
-        } catch(Exception e) {
-            Window.alert("addReflexTest: "+e.getMessage());
         }
-    }
-    
-    private boolean duplicatePresent(SampleItemManager itemMan, Integer testId) {
-        int             i, j;
-        AnalysisManager anMan;
-        AnalysisViewDO  anDO;
-        
-        try {
-            for (i = 0; i < itemMan.count(); i++) {
-                anMan = itemMan.getAnalysisAt(i);
-                for (j = 0; j < anMan.count(); j++) {
-                    anDO = anMan.getAnalysisAt(j);
-                    if (testId.equals(anDO.getTestId()))
-                        return true;
-                }
-            }
-        } catch (Exception e) {
-            Window.alert("duplicatePresent: " + e.getMessage());
-        }
-        
-        return false;
-    }
-
-    private void fireFinished() {
-        ActionEvent.fire(this, Action.DONE, bundles);
-
-        if (errorsList.size() > 0)
-            screen.showErrors(errorsList);
-    }
-
-    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
+        return tests;
     }
 }

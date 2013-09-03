@@ -68,9 +68,9 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
 
     public ResultCell() {
         TextBox<String> tb;
-        
+
         dropdownCell = new DropdownCell(new Dropdown<Integer>());
-        
+
         tb = new TextBox<String>();
         tb.setMaxLength(80);
         textboxCell = new TextBoxCell(tb);
@@ -107,7 +107,6 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
     @Override
     public void renderQuery(HTMLTable table, int row, int col, QueryData qd) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -198,7 +197,6 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
      * the model in the dropdown. Sets the editor to be a textbox otherwise.
      */
     public void setModel(ArrayList<Item<Integer>> model) {
-        TextBox<String> tb;
         Dropdown<Integer> dd;
 
         if (model != null) {
@@ -224,6 +222,10 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
 
         public void setDisplay(String display) {
             this.display = display;
+        }
+        
+        public String getDictId() {
+            return dictId;
         }
 
         /**

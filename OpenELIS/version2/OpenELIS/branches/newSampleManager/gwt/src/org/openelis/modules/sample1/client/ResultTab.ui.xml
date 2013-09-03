@@ -20,22 +20,22 @@
   <g:LayoutPanel>
     <g:layer top="0px" bottom="25px">
       <t:Table ui:field="table" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <t:Column width="65" label="A">
-          <t:CheckBoxCell />
+        <t:Column label="A" >
+          <t:CheckBoxCell/>
         </t:Column>
-        <t:Column width="200" label="B">
+        <t:Column label="B">
           <t:LabelCell />
         </t:Column>
       </t:Table>
     </g:layer>
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel>
-        <w:Button ui:field="addResultButton" leftIcon="{res.style.addRowIcon}" text="{msg.addRow}" />
-        <w:Button ui:field="removeResultButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
-        <w:Button ui:field="checkAllButton" text="{msg.checkAll}" /> <!-- leftIcon="{res.style.Checked}" -->
-        <w:Button ui:field="uncheckAllButton" text="{msg.uncheckAll}" /> <!-- leftIcon="{res.style.Unchecked}" -->
+        <w:Button ui:field="addResultButton" leftIcon="{res.style.addRowIcon}" text="{msg.gen_addRow}" />
+        <w:Button ui:field="removeResultButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />
+        <w:Button ui:field="checkAllButton" text="{msg.gen_checkAll}" />
+        <w:Button ui:field="uncheckAllButton" text="{msg.gen_uncheckAll}" />
         <g:HTMLPanel>
-          <ui:text from="{msg.resultsOverridden}" /> <!-- ui:field="overrideLabel" -->
+          <w:Label ui:field = "overrideLabel"/>
         </g:HTMLPanel>
       </g:HorizontalPanel>
     </g:layer>

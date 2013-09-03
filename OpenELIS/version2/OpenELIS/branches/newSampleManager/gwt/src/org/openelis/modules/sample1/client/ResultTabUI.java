@@ -41,12 +41,12 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.TestReflexViewDO;
+import org.openelis.exception.ParseException;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
-import org.openelis.manager.TestReflexManager;
 import org.openelis.modules.sample1.client.ResultCell.Value;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.SectionPermission;
@@ -58,6 +58,7 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.Label;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.table.Column;
 import org.openelis.ui.widget.table.Row;
@@ -70,6 +71,7 @@ import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
 import org.openelis.utilcommon.ResultFormatter;
 import org.openelis.utilcommon.ResultFormatter.FormattedValue;
+import org.openelis.utilcommon.ResultHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -92,22 +94,34 @@ public class ResultTabUI extends Screen {
     private static ResultTabUIBinder                    uiBinder = GWT.create(ResultTabUIBinder.class);
 
     @UiField
-    protected Button                                    addResultButton, removeResultButton,
-                    checkAllButton, uncheckAllButton;
-    @UiField
     protected Table                                     table;
 
-    protected SampleManager1                            manager;
+    @UiField
+    protected Button                                    addResultButton, removeResultButton,
+                    checkAllButton, uncheckAllButton;
 
-    protected AnalysisViewDO                            analysis;
+    @UiField
+    protected Label<String>                             overrideLabel;
 
     protected Screen                                    parentScreen;
 
-    protected TestAnalyteLookupUI                       testAnalyteLookup;
+    protected ResultTabUI                               screen;
+    
+    protected SampleManager1                            manager;
+    
+    protected AnalysisViewDO                            analysis;
 
     protected String                                    displayedUid;
+    
+    protected boolean                                  canEdit, isVisible, redraw;
+    
+    protected int                                       averageCharWidth = 8, defaultNumChars = 10;
 
-    protected boolean                                   canEdit, isVisible;
+    protected TestReflexUtility1                        testReflexUtility;
+
+    protected TestSelectionLookupUI                     testSelectionLookup;
+    
+    protected TestAnalyteLookupUI                       testAnalyteLookup;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
@@ -122,6 +136,8 @@ public class ResultTabUI extends Screen {
     }
 
     private void initialize() {
+        screen = this;
+
         addScreenHandler(table, "table", new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 table.setModel(getTableModel());
@@ -161,10 +177,15 @@ public class ResultTabUI extends Screen {
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 int index, c;
+                Integer rg, testId, unitId;
                 Row row;
                 ResultViewDO data;
-                ResultCell rc;
                 ArrayList<Item<Integer>> model;
+                String key;
+                TestManager tm;
+                ResultCell rc;
+                ResultFormatter rf;
+                ArrayList<FormattedValue> values;
 
                 row = table.getRowAt(event.getRow());
                 index = row.getData();
@@ -187,18 +208,45 @@ public class ResultTabUI extends Screen {
                      * for this unit, then a dropdown is shown in this cell as
                      * the editor and its model is created from those values
                      */
-                    try {
-                        model = getDictionaryModel(analysis.getTestId(),
-                                                   data.getResultGroup(),
-                                                   analysis.getUnitOfMeasureId());
-                        rc = (ResultCell)table.getColumnAt(event.getCol()).getCellEditor();
-                        rc.setModel(model);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        logger.log(Level.SEVERE, e.getMessage(), e);
-                    }
-                }
 
+                    if (dictionaryModel == null)
+                        dictionaryModel = new HashMap<String, ArrayList<Item<Integer>>>();
+
+                    testId = analysis.getTestId();
+                    rg = data.getResultGroup();
+                    unitId = analysis.getUnitOfMeasureId();
+
+                    key = testId + ":" + rg + ":" + (unitId == null ? 0 : unitId);
+                    model = dictionaryModel.get(key);
+                    if (model == null) {
+                        try {
+                            tm = getTestManager(testId);
+                            rf = tm.getFormatter();
+                            /*
+                             * if all the ranges for this unit in this result
+                             * group are dictionary values, then create a
+                             * dropdown model from them
+                             */
+                            if (rf.hasAllDictionary(rg, unitId)) {
+                                values = rf.getDictionaryValues(rg, unitId);
+                                if (values != null) {
+                                    model = new ArrayList<Item<Integer>>();
+                                    model.add(new Item<Integer>(null, ""));
+                                    for (FormattedValue v : values)
+                                        model.add(new Item<Integer>(v.getId(), v.getDisplay()));
+                                }
+                            }
+                            dictionaryModel.put(key, model);
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
+                            event.cancel();
+                            return;
+                        }
+                    }
+                    rc = (ResultCell)table.getColumnAt(event.getCol()).getCellEditor();
+                    rc.setModel(model);
+                }
             }
         });
 
@@ -208,10 +256,11 @@ public class ResultTabUI extends Screen {
                 int r, c, index, rowGroup;
                 String reportable;
                 Row row;
-                ResultViewDO data;
                 Object val;
                 Value value;
-                FormattedValue fv;
+                TestManager tm;
+                ResultViewDO data;
+                ResultFormatter rf;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -252,27 +301,22 @@ public class ResultTabUI extends Screen {
                          * validate the value entered by the user
                          */
                         try {
-                            fv = getFormatter(analysis.getTestId()).format(data.getResultGroup(),
-                                                                           analysis.getUnitOfMeasureId(),
-                                                                           value.getDisplay());
-                            if (fv != null) {
-                                data.setValue(fv.getDisplay());
-                                data.setTestResultId(fv.getId());
-                                data.setTypeId(fv.getType());
-                                checkReflex(data);
-                            } else {
-                                /*
-                                 * the value is not valid
-                                 */
-                                table.addException(r,
-                                                   c,
-                                                   new Exception(Messages.get()
-                                                                         .analysis_illegalResultValueException()));
-                                return;
-                            }
+                            tm = getTestManager(analysis.getTestId());
+                            rf = tm.getFormatter();
+                            ResultHelper.formatValue(data,
+                                                     value.getDisplay(),
+                                                     analysis.getUnitOfMeasureId(),
+                                                     rf);
+                        } catch (ParseException e) {
+                            /*
+                             * the value is not valid
+                             */
+                            table.addException(r, c, e);
+                            data.setTypeId(null);
+                            data.setTestResultId(null);
+                            return;
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
-                            e.printStackTrace();
                             logger.log(Level.SEVERE, e.getMessage(), e);
                             return;
                         }
@@ -291,6 +335,12 @@ public class ResultTabUI extends Screen {
                         value.setDisplay(data.getValue());
 
                     table.setValueAt(r, c, value);
+
+                    /*
+                     * check whether this result triggers reflex tests
+                     */
+                    if (data.getValue() != null)
+                        checkReflex(data);
                 }
             }
         });
@@ -323,6 +373,12 @@ public class ResultTabUI extends Screen {
         addScreenHandler(uncheckAllButton, "uncheckAllButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
                 uncheckAllButton.setEnabled(false);
+            }
+        });
+
+        addScreenHandler(overrideLabel, "overrideLabel", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                showResultOverride();
             }
         });
 
@@ -365,13 +421,20 @@ public class ResultTabUI extends Screen {
                         break;
                 }
 
+                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                    displayedUid = uid;
+                    redraw = true;                
+                }
+                
                 displayResults(uid);
             }
         });
 
-        bus.addHandler(RowAnalytesAddedEvent.getType(), new RowAnalytesAddedEvent.Handler() {
-            public void onRowAnalytesAdded(RowAnalytesAddedEvent event) {
-                fireDataChange();
+        bus.addHandler(ResultChangeEvent.getType(), new ResultChangeEvent.Handler() {
+            @Override
+            public void onResultChange(ResultChangeEvent event) {
+                redraw = true;
+                displayResults(manager.getAnalysisUid(analysis.getId()));
             }
         });
     }
@@ -379,11 +442,6 @@ public class ResultTabUI extends Screen {
     public void setData(SampleManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     @UiHandler("addResultButton")
@@ -408,7 +466,7 @@ public class ResultTabUI extends Screen {
 
         modal = new ModalWindow();
         modal.setSize("600px", "300px");
-        modal.setName(Messages.get().testAnalyteSelection());
+        modal.setName(Messages.get().testAnalyteSelection_testAnalyteSelection());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(testAnalyteLookup);
 
@@ -417,7 +475,12 @@ public class ResultTabUI extends Screen {
         row = table.getRowAt(table.getSelectedRow());
         data = manager.result.get(analysis, (Integer)row.getData(), 0);
 
-        testAnalyteLookup.setData(getTestManager(analysis.getTestId()), data.getRowGroup());
+        try {
+            testAnalyteLookup.setData(getTestManager(analysis.getTestId()), data.getRowGroup());
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     @UiHandler("removeResultButton")
@@ -443,7 +506,8 @@ public class ResultTabUI extends Screen {
             }
 
             if (prevHeader && nextHeader) {
-                parentScreen.getWindow().setError(Messages.get().atLeastOneResultUnderHeading());
+                parentScreen.getWindow().setError(Messages.get()
+                                                          .result_atleastOneResultInRowGroup());
             } else {
                 /*
                  * remove the row if the row group has more than one row
@@ -465,18 +529,15 @@ public class ResultTabUI extends Screen {
 
     @UiHandler("checkAllButton")
     protected void checkAll(ClickEvent event) {
-        setReportableForAll("Y");
+        check("Y");
     }
 
     @UiHandler("uncheckAllButton")
     protected void uncheckAll(ClickEvent event) {
-        setReportableForAll("N");
+        check("N");
     }
 
     private void displayResults(String uid) {
-        /*
-         * don't redraw unless the data has changed
-         */
         if (uid != null)
             analysis = (AnalysisViewDO)manager.getObject(uid);
         else
@@ -488,18 +549,21 @@ public class ResultTabUI extends Screen {
         if (analysis != null) {
             table.setVisible(true);
             /*
-             * resets the table's view, so that if its model is changed, it
-             * shows its headers and columns correctly, otherwise, problems like
+             * Reset the table's view, so that if its model is changed, it shows
+             * its headers and columns correctly. Otherwise, problems like
              * widths of the columns not being correct or the headers not
-             * showing, may happen
+             * showing may happen.
              */
             table.onResize();
         } else {
             table.setVisible(false);
         }
 
-        if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-            displayedUid = uid;
+        if (redraw) {
+            /*
+             * don't redraw unless the data has changed
+             */
+            redraw = false;
             evaluateEdit();
             setState(state);
             fireDataChange();
@@ -548,133 +612,130 @@ public class ResultTabUI extends Screen {
         return null;
     }
 
-    private ArrayList<Item<Integer>> getDictionaryModel(Integer testId, Integer resultGroup,
-                                                        Integer unitId) throws Exception {
-        String key;
-        ResultFormatter rf;
-        ArrayList<Item<Integer>> model;
-        ArrayList<FormattedValue> values;
-
-        if (dictionaryModel == null)
-            dictionaryModel = new HashMap<String, ArrayList<Item<Integer>>>();
-
-        key = testId + ":" + resultGroup + ":" + (unitId == null ? 0 : unitId);
-        model = dictionaryModel.get(key);
-        if (model == null) {
-            rf = getFormatter(testId);
-            /*
-             * if all the ranges for this unit in this result group are
-             * dictionary values, then create a dropdown model from them
-             */
-            if (rf != null && rf.hasAllDictionary(resultGroup, unitId)) {
-                values = rf.getDictionaryValues(resultGroup, unitId);
-                if (values != null) {
-                    model = new ArrayList<Item<Integer>>();
-                    model.add(new Item<Integer>(null, ""));
-                    for (FormattedValue v : values)
-                        model.add(new Item<Integer>(v.getId(), v.getDisplay()));
-                }
-            }
-        }
-        /*
-         * this ensures that even if a model was not found above, it's not
-         * looked up again
-         */
-        dictionaryModel.put(key, model);
-
-        return model;
-    }
-
     private ArrayList<Row> getTableModel() {
-        int i, j, avgWidth, maxChars[];
+        int i, j, maxChars[];
+        boolean validateResults;
         String entry;
         Integer dictId;
         ResultViewDO data;
-        Row row;
-        ResultCell.Value value;
         Column col;
+        Row row;
+        TestManager tm;
+        ResultFormatter rf;
+        ResultCell.Value value;
         ArrayList<Row> model;
         ArrayList<Integer> dictIds;
         HashSet<Integer> cols;
         HashMap<Integer, HashSet<Integer>> dictMap;
 
         model = new ArrayList<Row>();
-        if (analysis == null)
+        table.clearExceptions();
+        
+        if (analysis == null || manager.result.count(analysis) == 0)
             return model;
 
         resetColumns();
+
         /*
          * the maximum number of characters for each column
          */
         maxChars = new int[table.getColumnCount()];
-        maxChars[0] = 10;
-        resetMaxChars(maxChars, 1, Messages.get().analyte());
-        resetMaxChars(maxChars, 2, Messages.get().value());
+        maxChars[0] = defaultNumChars;
+        resetMaxChars(maxChars, 1, Messages.get().gen_analyte());
+        resetMaxChars(maxChars, 2, Messages.get().gen_value());
         for (i = 3; i < maxChars.length; i++ )
-            maxChars[i] = 10;
+            maxChars[i] = defaultNumChars;
 
         dictIds = new ArrayList<Integer>();
         dictMap = new HashMap<Integer, HashSet<Integer>>();
-        for (i = 0; i < manager.result.count(analysis); i++ ) {
-            /*
-             * create header row
-             */
-            if (manager.result.isHeader(analysis, i)) {
-                row = new HeaderRow(table.getColumnCount());
-                row.setCell(0, Messages.get().reportable());
-                row.setCell(1, Messages.get().analyte());
-                row.setCell(2, Messages.get().value());
-                for (j = 1; j < manager.result.count(analysis, i); j++ ) {
+
+        validateResults = canEdit && isState(ADD, UPDATE);
+        rf = null;
+        
+        try {
+            if (validateResults) {
+                tm = getTestManager(analysis.getTestId());
+                rf = tm.getFormatter();
+            }
+
+            for (i = 0; i < manager.result.count(analysis); i++ ) {
+                /*
+                 * create header row
+                 */
+                if (manager.result.isHeader(analysis, i)) {
+                    row = new HeaderRow(table.getColumnCount());
+                    row.setCell(0, Messages.get().gen_reportable());
+                    row.setCell(1, Messages.get().gen_analyte());
+                    row.setCell(2, Messages.get().gen_value());
+                    for (j = 1; j < manager.result.count(analysis, i); j++ ) {
+                        data = manager.result.get(analysis, i, j);
+                        row.setCell(j + 2, data.getAnalyte());
+                        resetMaxChars(maxChars, j + 2, data.getAnalyte());
+                    }
+                    row.setData(i);
+                    model.add(row);
+                }
+
+                /*
+                 * create data row and fill the columns
+                 */
+                row = new Row(table.getColumnCount());
+                for (j = 0; j < manager.result.count(analysis, i); j++ ) {
                     data = manager.result.get(analysis, i, j);
-                    row.setCell(j + 2, data.getAnalyte());
-                    resetMaxChars(maxChars, j + 2, data.getAnalyte());
+                    if (j == 0) {
+                        row.setCell(0, data.getIsReportable());
+                        row.setCell(1, data.getAnalyte());
+                        resetMaxChars(maxChars, 1, data.getAnalyte());
+                    }
+
+                    if (validateResults && data.getValue() != null &&
+                                    data.getTypeId() == null) {
+                        /*
+                         * Since the type is not set, the value was either not
+                         * validated and formatted before or the validation
+                         * didn't succeed. Thus to format the value and set the
+                         * type or to show an error, validate it here.
+                         */
+                        try {
+                            ResultHelper.formatValue(data,
+                                                     data.getValue(),
+                                                     analysis.getUnitOfMeasureId(),
+                                                     rf);
+
+                        } catch (Exception e) {                            
+                            table.addException(row, j + 2, e);
+                        }
+                    }
+
+                    /*
+                     * create the value to be set in the cell for this result
+                     */
+                    if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
+                        if (data.getValue() != null) {
+                            dictId = Integer.valueOf(data.getValue());
+                            dictIds.add(dictId);
+
+                            /*
+                             * keep track of which dictionary values are
+                             * displayed in which column
+                             */
+                            if (dictMap.get(dictId) == null)
+                                dictMap.put(dictId, new HashSet<Integer>());
+                            cols = dictMap.get(dictId);
+                            cols.add(j + 2);
+                        }
+                        value = new ResultCell.Value(null, data.getValue());
+                    } else {
+                        value = new ResultCell.Value(data.getValue(), null);
+                        resetMaxChars(maxChars, j + 2, data.getValue());
+                    }
+
+                    row.setCell(j + 2, value);
                 }
                 row.setData(i);
                 model.add(row);
             }
 
-            /*
-             * create data row and fill the columns
-             */
-            row = new Row(table.getColumnCount());
-            for (j = 0; j < manager.result.count(analysis, i); j++ ) {
-                data = manager.result.get(analysis, i, j);
-                if (j == 0) {
-                    row.setCell(0, data.getIsReportable());
-                    row.setCell(1, data.getAnalyte());
-                    resetMaxChars(maxChars, 1, data.getAnalyte());
-                }
-
-                /*
-                 * create the value to be set in the cell for this result
-                 */
-                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(data.getTypeId())) {
-                    if (data.getValue() != null) {
-                        dictId = Integer.valueOf(data.getValue());
-                        dictIds.add(dictId);
-
-                        /*
-                         * keep track of which dictionary values are displayed
-                         * in which column
-                         */
-                        if (dictMap.get(dictId) == null)
-                            dictMap.put(dictId, new HashSet<Integer>());
-                        cols = dictMap.get(dictId);
-                        cols.add(j + 2);
-                    }
-                    value = new ResultCell.Value(null, data.getValue());
-                } else {
-                    value = new ResultCell.Value(data.getValue(), null);
-                    resetMaxChars(maxChars, j + 2, data.getValue());
-                }
-
-                row.setCell(j + 2, value);
-            }
-            row.setData(i);
-            model.add(row);
-        }
-
-        try {
             /*
              * For type dictionary, the displayed text is looked up from the
              * cache. The following is done to fetch and put the dictionary
@@ -697,18 +758,12 @@ public class ResultTabUI extends Screen {
             }
 
             /*
-             * set the width of a column in pixels based on the longest text
-             * shown in it
+             * set the width of a column in pixels based on the number of
+             * letters showing in it
              */
-            /*
-             * the width of the letter "X" is treated as the average for a
-             * character, the length in pixels of a string will be a product of
-             * this and the number of characters
-             */
-            avgWidth = 8;
             for (i = 0; i < maxChars.length; i++ ) {
                 col = table.getColumnAt(i);
-                col.setWidth(maxChars[i] * avgWidth);
+                col.setWidth(maxChars[i] * averageCharWidth);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -717,6 +772,10 @@ public class ResultTabUI extends Screen {
         return model;
     }
 
+    /**
+     * adjusts the number of columns in the table based on the results for the
+     * analysis and initializes the columns with the correct cell renderer
+     */
     private void resetColumns() {
         int currNumCols, reqNumCols;
         Column col;
@@ -728,16 +787,14 @@ public class ResultTabUI extends Screen {
             return;
 
         /*
-         * add columns to the table if it has less columns than needed to show
-         * all column analytes, otherwise remove columns
+         * adds columns to the table if it has less columns than needed to show
+         * all column analytes, otherwise removes columns
          */
         if (reqNumCols > currNumCols) {
             for (int i = currNumCols; i < reqNumCols; i++ ) {
                 col = table.addColumn(null, Messages.get().gen_alphabet().substring(i, i + 1));
-                if (i > 1) {
+                if (i > 1)
                     col.setCellRenderer(new ResultCell());
-                    // col.setWidth(100);
-                }
             }
         } else {
             for (int i = currNumCols; i > reqNumCols; i-- )
@@ -745,22 +802,63 @@ public class ResultTabUI extends Screen {
         }
     }
 
-    private TestManager getTestManager(Integer testId) {
-        if ( ! (parentScreen instanceof CacheProvider)) {
-            Window.alert("Parent screen must implement " + CacheProvider.class.toString());
-            return null;
-        }
+    private TestManager getTestManager(Integer testId) throws Exception {
+        if ( ! (parentScreen instanceof CacheProvider))
+            throw new Exception("Parent screen must implement " + CacheProvider.class.toString());
+
         return ((CacheProvider)parentScreen).get(testId, TestManager.class);
     }
 
-    private ResultFormatter getFormatter(Integer testId) throws Exception {
-        TestManager tm;
+    private void checkReflex(ResultViewDO data) {
+        ModalWindow modal;
+        ArrayList<ResultViewDO> results;
+        ArrayList<SampleTestRequestVO> tests;
 
-        tm = getTestManager(testId);
-        if (tm != null)
-            return tm.getFormatter();
+        if (testReflexUtility == null) {
+            testReflexUtility = new TestReflexUtility1() {
+                @Override
+                public TestManager getTestManager(Integer testId) throws Exception {
+                    return screen.getTestManager(testId);
+                }
+            };
+        }
 
-        return null;
+        try {
+            results = new ArrayList<ResultViewDO>(1);
+            results.add(data);
+            tests = testReflexUtility.getReflexTests(manager, results);
+            if (tests != null) {
+                if (testSelectionLookup == null) {
+                    testSelectionLookup = new TestSelectionLookupUI() {
+                        @Override
+                        public TestManager getTestManager(Integer testId) throws Exception {
+                            return screen.getTestManager(testId);
+                        }
+
+                        @Override
+                        public void ok() {
+                            ArrayList<SampleTestRequestVO> tests;
+
+                            tests = testSelectionLookup.getSelectedTests();
+                            if (tests != null && tests.size() > 0)
+                                screen.getEventBus().fireEvent(new AddTestEvent(tests));
+                        }
+                    };
+                }
+
+                modal = new ModalWindow();
+                modal.setSize("520px", "350px");
+                modal.setName(Messages.get().testSelection_reflexTestSelection());
+                modal.setCSS(UIResources.INSTANCE.popupWindow());
+                modal.setContent(testSelectionLookup);
+
+                testSelectionLookup.setData(manager, tests);
+                testSelectionLookup.setWindow(modal);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     private void addRowAnalytes(ArrayList<TestAnalyteViewDO> analytes) {
@@ -790,7 +888,7 @@ public class ResultTabUI extends Screen {
         bus.fireEvent(new AddRowAnalytesEvent(analysis, analytes, indexes));
     }
 
-    private void setReportableForAll(String val) {
+    private void check(String val) {
         ResultViewDO data;
         Row row;
 
@@ -804,35 +902,27 @@ public class ResultTabUI extends Screen {
     }
 
     /**
-     * keeps track of the longest string in the table column at "col" 
+     * keeps track of the longest string in the table column at the passed index
      */
     private void resetMaxChars(int maxNumChars[], int col, String text) {
         if ( !DataBaseUtil.isEmpty(text))
             maxNumChars[col] = Math.max(text.length(), maxNumChars[col]);
     }
-    
 
-    private void checkReflex(ResultViewDO data) {        
-        TestManager tm;
-        TestReflexManager trm;
-        TestReflexViewDO tr;
-        
-        tm = getTestManager(analysis.getTestId());
-        try {
-            trm = tm.getReflexTests();
-            /*
-             * find out if a reflex test needs to be added for this result
-             */
-            for (int i = 0; i < trm.count(); i++) {
-                tr = trm.getReflexAt(i);
-                if (tr.getTestAnalyteId().equals(data.getTestAnalyteId()) &&
-                                tr.getTestResultId().equals(data.getTestResultId()))
-                    break;
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        
+    /**
+     * notify the user if the results are overriden for either the sample or the
+     * analysis
+     */
+    private void showResultOverride() {
+        String label;
+        Integer typeId;
+
+        typeId = Constants.dictionary().QAEVENT_OVERRIDE;
+        label = null;
+
+        if (manager != null && analysis != null && manager.qaEvent.hasType(typeId) &&
+            manager.qaEvent.hasType(analysis, typeId))
+            label = Messages.get().result_overridden();
+        overrideLabel.setText(label);
     }
 }

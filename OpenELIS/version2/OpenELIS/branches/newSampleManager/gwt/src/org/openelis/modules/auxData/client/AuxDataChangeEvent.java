@@ -23,51 +23,41 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.sample1.client;
-
-import java.util.ArrayList;
-
-import org.openelis.domain.SampleTestRequestVO;
+package org.openelis.modules.auxData.client;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * This class is used to notify the handler that tests or a panel were chosen
- * by a user to be added to a sample
+ * This class is used to notify the handler that the aux data of a sample were
+ * changed due to some action by the user e.g. adding or removing aux group(s)
  */
-public class AddTestEvent extends GwtEvent<AddTestEvent.Handler> {
+public class AuxDataChangeEvent extends GwtEvent<AuxDataChangeEvent.Handler> {
 
-    private static Type<AddTestEvent.Handler> TYPE;
-    private ArrayList<SampleTestRequestVO>    tests;
-
-    public AddTestEvent(ArrayList<SampleTestRequestVO> tests) {
-        this.tests = tests;
+    private static Type<AuxDataChangeEvent.Handler> TYPE;
+    
+    public AuxDataChangeEvent() {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AddTestEvent.Handler> getAssociatedType() {
+    public Type<AuxDataChangeEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<AddTestEvent.Handler> getType() {
+    public static Type<AuxDataChangeEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AddTestEvent.Handler>();
+            TYPE = new Type<AuxDataChangeEvent.Handler>();
         }
         return TYPE;
     }
 
-    public ArrayList<SampleTestRequestVO> getTests() {
-        return tests;
-    }
-
     public static interface Handler extends EventHandler {
-        public void onAddTest(AddTestEvent event);
+        public void onAuxDataChange(AuxDataChangeEvent event);
     }
 
     @Override
     protected void dispatch(Handler handler) {
-        handler.onAddTest(this);
+        handler.onAuxDataChange(this);
     }
 }

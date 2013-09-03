@@ -28,7 +28,6 @@ package org.openelis.modules.sample1.client;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
@@ -38,18 +37,14 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.ui.event.GetMatchesEvent;
-import org.openelis.ui.event.GetMatchesHandler;
-import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleManager1;
 import org.openelis.modules.storage.client.StorageService;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.event.DataChangeEvent;
+import org.openelis.ui.event.GetMatchesEvent;
+import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
@@ -62,7 +57,6 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -92,7 +86,7 @@ public class StorageTabUI extends Screen {
 
     protected Screen                  parentScreen;
 
-    protected boolean                 canEdit, isVisible;
+    protected boolean                canEdit, isVisible;
 
     protected SampleManager1          manager;
 

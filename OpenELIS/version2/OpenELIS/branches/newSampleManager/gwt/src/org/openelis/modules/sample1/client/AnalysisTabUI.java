@@ -25,9 +25,11 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
@@ -55,12 +57,11 @@ import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.panel.client.PanelService;
+import org.openelis.modules.test.client.TestService;
 import org.openelis.modules.worksheet.client.WorksheetService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
@@ -125,7 +126,7 @@ public class AnalysisTabUI extends Screen {
 
     protected Screen                   parentScreen;
 
-    protected boolean                  canEdit, isVisible;
+    protected AnalysisTabUI            screen;
 
     protected SampleManager1           manager;
 
@@ -134,6 +135,8 @@ public class AnalysisTabUI extends Screen {
     protected SampleItemViewDO         sampleItem;
 
     protected String                   displayedUid;
+
+    protected boolean                  canEdit, isVisible, redraw;
 
     protected ArrayList<Item<Integer>> allUnitsModel, allSectionsModel;
 
@@ -149,7 +152,9 @@ public class AnalysisTabUI extends Screen {
 
     private void initialize() {
         ArrayList<Item<Integer>> model;
-        Item<Integer> r;
+        Item<Integer> row;
+
+        screen = this;
 
         addScreenHandler(testName, SampleMeta.getAnalysisTestName(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -168,13 +173,13 @@ public class AnalysisTabUI extends Screen {
 
         addScreenHandler(methodName,
                          SampleMeta.getAnalysisMethodName(),
-                         new ScreenHandler<Integer>() {
+                         new ScreenHandler<AutoCompleteValue>() {
                              public void onDataChange(DataChangeEvent event) {
                                  methodName.setValue(getMethodId(), getMethodName());
                              }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 setMethodId(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -190,11 +195,8 @@ public class AnalysisTabUI extends Screen {
 
         methodName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<QueryData> fields;
                 ArrayList<Item<Integer>> model;
                 ArrayList<TestMethodVO> tests;
-                Query query;
-                QueryData field;
                 Item<Integer> row;
 
                 if (sampleItem.getTypeOfSampleId() == null) {
@@ -202,27 +204,9 @@ public class AnalysisTabUI extends Screen {
                     return;
                 }
 
-                field = new QueryData();
                 try {
-                    field.setQuery(QueryFieldUtil.parseAutocomplete(analysis.getTestName()));
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    return;
-                }
-
-                fields = new ArrayList<QueryData>();
-                query = new Query();
-                fields.add(field);
-
-                field = new QueryData();
-                field.setQuery(String.valueOf(sampleItem.getTypeOfSampleId()));
-                fields.add(field);
-
-                query.setFields(fields);
-                query.setRowsPerPage(100);
-
-                try {
-                    tests = PanelService.get().fetchByNameSampleTypeWithTests(query);
+                    tests = TestService.get().fetchByNameSampleType(analysis.getTestName(),
+                                                                    sampleItem.getTypeOfSampleId());
                     model = new ArrayList<Item<Integer>>();
 
                     for (TestMethodVO t : tests) {
@@ -235,6 +219,7 @@ public class AnalysisTabUI extends Screen {
                     methodName.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });
@@ -320,47 +305,41 @@ public class AnalysisTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(section,
-                         SampleMeta.getAnalysisSectionId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 /*
-                                  * For all states other than Display and Query,
-                                  * the model depends on the analysis showing in
-                                  * the tab, which is known for certain only
-                                  * before this event is fired. So for those
-                                  * states, the model is generated and set here.
-                                  */
-                                 if ( !isState(DISPLAY, QUERY))
-                                     section.setModel(getSectionsModel());
-                                 section.setValue(getSectionId());
-                             }
+        addScreenHandler(section, SampleMeta.getAnalysisSectionId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * For all states other than Display and Query, the model
+                 * depends on the analysis showing in the tab, which is known
+                 * for certain only before this event is fired. So for those
+                 * states, the model is generated and set here.
+                 */
+                if ( !isState(DISPLAY, QUERY))
+                    section.setModel(getSectionsModel());
+                section.setValue(getSectionId());
+            }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setSection(event.getValue(), section.getDisplay());
-                             }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setSection(event.getValue(), section.getDisplay());
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 /*
-                                  * The model shown in this dropdown in Query as
-                                  * well as Display state is the list of all
-                                  * sections in the system. Also, In Query
-                                  * state, the model needs to be set in this
-                                  * dropdown before it can be switched to query
-                                  * mode. So for those states, the model is set
-                                  * here.
-                                  */
-                                 if (isState(DISPLAY, QUERY))
-                                     section.setModel(allSectionsModel);
-                                 section.setEnabled(isState(QUERY) ||
-                                                      (isState(ADD, UPDATE) && canEdit));
-                                 section.setQueryMode(isState(QUERY));
-                             }
+            public void onStateChange(StateChangeEvent event) {
+                /*
+                 * The model shown in this dropdown in Display and Query state
+                 * is the list of all sections in the system. Also, In Query
+                 * state, the model needs to be set in this dropdown before it
+                 * can be switched to query mode. So for those states, the model
+                 * is set here.
+                 */
+                if (isState(DISPLAY, QUERY))
+                    section.setModel(allSectionsModel);
+                section.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                section.setQueryMode(isState(QUERY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? isPreliminary : status;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? isPreliminary : status;
+            }
+        });
 
         addScreenHandler(unitOfMeasure,
                          SampleMeta.getAnalysisUnitOfMeasureId(),
@@ -384,18 +363,17 @@ public class AnalysisTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  /*
-                                  * The model shown in this dropdown in Query as
-                                  * well as Display state is the list of all
-                                  * units in the system. Also, In Query
-                                  * state, the model needs to be set in this
-                                  * dropdown before it can be switched to query
-                                  * mode. So for those states, the model is set
-                                  * here.
+                                  * The model shown in this dropdown in Query
+                                  * and Display states is the list of all units
+                                  * in the system. Also, In Query state, the
+                                  * model needs to be set in this dropdown
+                                  * before it can be switched to query mode. So
+                                  * for those states, the model is set here.
                                   */
                                  if (isState(DISPLAY, QUERY))
                                      unitOfMeasure.setModel(allUnitsModel);
                                  unitOfMeasure.setEnabled(isState(QUERY) ||
-                                                            (isState(ADD, UPDATE) && canEdit));
+                                                          (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasure.setQueryMode(isState(QUERY));
                              }
 
@@ -555,7 +533,6 @@ public class AnalysisTabUI extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                // TODO make it like neonatal
                 setPanelId(event.getValue());
                 setPanelName(panel.getValue().getDisplay());
             }
@@ -586,7 +563,8 @@ public class AnalysisTabUI extends Screen {
                     }
                     panel.showAutoMatches(model);
                 } catch (Exception e) {
-                    Window.alert("panel getMatches: " + e.getMessage());
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         });
@@ -657,39 +635,10 @@ public class AnalysisTabUI extends Screen {
                     uid = manager.getUid(analysis);
                 else
                     uid = null;
+                
                 displayAnalysis(uid);
             }
         });
-
-        // analysis status dropdown
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
-            model.add(new Item<Integer>(d.getId(), d.getEntry()));
-
-        status.setModel(model);
-
-        // analysis user action
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        for (DictionaryDO d : CategoryCache.getBySystemName("user_action")) {
-            r = new Item<Integer>(d.getId(), d.getEntry());
-            if (Constants.dictionary().AN_USER_AC_RELEASED.equals(d.getId()))
-                r.setEnabled(false);
-            model.add(r);
-        }
-
-        allUnitsModel = new ArrayList<Item<Integer>>();
-        allUnitsModel.add(new Item<Integer>(null, ""));
-        for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
-            if ("Y".equals(d.getIsActive()))
-                allUnitsModel.add(new Item<Integer>(d.getId(), d.getEntry()));
-        }
-
-        allSectionsModel = new ArrayList<Item<Integer>>();
-        allSectionsModel.add(new Item<Integer>(null, ""));
-        for (SectionDO s : SectionCache.getList())
-            allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
 
         /*
          * handlers for the events fired by the screen containing this tab
@@ -716,33 +665,81 @@ public class AnalysisTabUI extends Screen {
                         break;
                 }
 
+                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                    displayedUid = uid;
+                    redraw = true;
+                } else if (isState(QUERY)) {
+                    /*
+                     * No analysis is selected in the tree because it is empty
+                     * in query state, so the current uid is null. If there was
+                     * no analysis selected in the tree, before going in query
+                     * state, the previous (displayed) uid was null too. This
+                     * makes sure that the tab is redrawn for query state even
+                     * if both uids are null.
+                     */
+                    redraw = true;
+                }
+
                 displayAnalysis(uid);
             }
         });
 
-        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
-            @Override
-            public void onAnalysisChange(AnalysisChangeEvent event) {
-                switch (event.getAction()) {
-                    case SAMPLE_TYPE_CHANGED:
-                        unitOfMeasure.setModel(getUnitsModel());
-                        unitOfMeasure.setValue(getUnitOfMeasureId());
-                        break;
-                    case TEST_CHANGED:
-                        break;
+        bus.addHandler(SampleItemChangeEvent.getType(), new SampleItemChangeEvent.Handler() {
+            public void onSampleItemChange(SampleItemChangeEvent event) {
+                if (SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(event.getAction())) {
+                    unitOfMeasure.setModel(getUnitsModel());
+                    unitOfMeasure.setValue(getUnitOfMeasureId());
                 }
             }
         });
+
+        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
+            public void onAnalysisChange(AnalysisChangeEvent event) {
+                /*
+                 * this handler needs to respond to this event only if it is
+                 * fired from the main screen and not this tab
+                 */
+                if (screen != event.getSource()) {
+                    redraw = true;
+                    displayAnalysis(event.getUid());
+                }
+            }
+        });
+
+        // analysis status dropdown
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
+            model.add(new Item<Integer>(d.getId(), d.getEntry()));
+
+        status.setModel(model);
+
+        // analysis user action
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("user_action")) {
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            if (Constants.dictionary().AN_USER_AC_RELEASED.equals(d.getId()))
+                row.setEnabled(false);
+            model.add(row);
+        }
+
+        allUnitsModel = new ArrayList<Item<Integer>>();
+        allUnitsModel.add(new Item<Integer>(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
+            if ("Y".equals(d.getIsActive()))
+                allUnitsModel.add(new Item<Integer>(d.getId(), d.getEntry()));
+        }
+
+        allSectionsModel = new ArrayList<Item<Integer>>();
+        allSectionsModel.add(new Item<Integer>(null, ""));
+        for (SectionDO s : SectionCache.getList())
+            allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
     }
 
     public void setData(SampleManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     public boolean validate() {
@@ -754,127 +751,7 @@ public class AnalysisTabUI extends Screen {
         return super.validate();
     }
 
-    /**
-     * Returns the model for sections dropdown. In add, update, sections
-     * specific to the analysis' test are returned.
-     */
-    private ArrayList<Item<Integer>> getSectionsModel() {
-        ArrayList<Item<Integer>> model;
-        TestSectionManager tsm;
-        TestSectionViewDO ts;
-
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-
-        if (analysis != null && isState(ADD, UPDATE)) {
-            /*
-             * create the model from the sections associated with the analysis'
-             * test
-             */
-            tsm = getTestManager(analysis.getTestId()).getTestSections();
-            if (tsm != null) {
-                for (int i = 0; i < tsm.count(); i++ ) {
-                    ts = tsm.getSectionAt(i);
-                    model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
-                }
-            }
-        }
-
-        return model;
-    }
-
-    /**
-     * Returns the model for units dropdown. In add, update, units specific to
-     * the sample item's sample type are returned.
-     */
-    private ArrayList<Item<Integer>> getUnitsModel() {
-        ArrayList<Item<Integer>> model;
-        DictionaryDO d;
-        TestTypeOfSampleDO type;
-        TestTypeOfSampleManager tts;
-
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        if (analysis != null && isState(ADD, UPDATE)) {
-            try {
-                /*
-                 * create the model from the units associated with the sample
-                 * item's sample type
-                 */
-                tts = getTestManager(analysis.getTestId()).getSampleTypes();
-                for (int i = 0; i < tts.count(); i++ ) {
-                    type = tts.getTypeAt(i);
-                    if (type.getUnitOfMeasureId() != null &&
-                        DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(),
-                                            type.getTypeOfSampleId())) {
-                        d = DictionaryCache.getById(type.getUnitOfMeasureId());
-                        model.add(new Item<Integer>(d.getId(), d.getEntry()));
-                    }
-                }
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-        }
-        return model;
-    }
-
-    private ArrayList<Row> getWorksheetTableModel() {
-        ArrayList<Row> model;
-        ArrayList<WorksheetViewDO> ws;
-        Row row;
-
-        model = new ArrayList<Row>();
-        if (analysis == null)
-            return model;
-
-        if (analysis.getId() > 0) {
-            try {
-                ws = WorksheetService.get().fetchByAnalysisId(analysis.getId());
-
-                for (WorksheetViewDO w : ws) {
-                    row = new Row(4);
-                    row.setCell(0, w.getId());
-                    row.setCell(1, w.getCreatedDate());
-                    row.setCell(2, w.getStatusId());
-                    row.setCell(3, w.getSystemUser());
-                    model.add(row);
-                }
-            } catch (Exception e) {
-                Window.alert("getWorksheetTableModel: " + e.getMessage());
-            }
-        }
-        return model;
-    }
-
-    private ArrayList<Row> getAnalysisUserTableModel() {
-        ArrayList<Row> model;
-        AnalysisUserViewDO user;
-        Row row;
-
-        model = new ArrayList<Row>();
-        if (analysis == null)
-            return model;
-
-        try {
-            for (int i = 0; i < manager.analysisUser.count(analysis); i++ ) {
-                user = manager.analysisUser.get(analysis, i);
-
-                row = new Row(2);
-                row.setCell(0, new AutoCompleteValue(user.getSystemUserId(), user.getSystemUser()));
-                row.setCell(1, user.getActionId());
-                model.add(row);
-            }
-        } catch (Exception e) {
-            Window.alert("getAnalysisUserTableModel: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return model;
-    }
-
     private void displayAnalysis(String uid) {
-        /*
-         * don't redraw unless the data has changed
-         */
         if (uid != null) {
             analysis = (AnalysisViewDO)manager.getObject(uid);
             sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
@@ -886,24 +763,15 @@ public class AnalysisTabUI extends Screen {
         if ( !isVisible)
             return;
 
-        if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-            displayedUid = uid;
+        if (redraw) {
+            /*
+             * don't redraw unless the data has changed
+             */
+            redraw = false;
             evaluateEdit();
             setState(state);
             fireDataChange();
         }
-    }
-
-    /**
-     * returns the TestManager, for the specified id, from the cache maintained
-     * by the parent screen
-     */
-    private TestManager getTestManager(Integer testId) {
-        if ( ! (parentScreen instanceof CacheProvider)) {
-            Window.alert("Parent screen must implement " + CacheProvider.class.toString());
-            return null;
-        }
-        return ((CacheProvider)parentScreen).get(testId, TestManager.class);
     }
 
     private void evaluateEdit() {
@@ -928,8 +796,9 @@ public class AnalysisTabUI extends Screen {
                           !Constants.dictionary().ANALYSIS_RELEASED.equals(statId) &&
                           perm != null &&
                           (perm.hasAssignPermission() || perm.hasCompletePermission());
-            } catch (Exception anyE) {
-                Window.alert("canEdit:" + anyE.getMessage());
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -954,13 +823,6 @@ public class AnalysisTabUI extends Screen {
 
     private void setIsPreliminary(String isPreliminary) {
         analysis.setIsPreliminary(isPreliminary);
-    }
-
-    private Integer getTestId() {
-        if (analysis != null)
-            return analysis.getTestId();
-
-        return null;
     }
 
     private String getTestName() {
@@ -1059,7 +921,28 @@ public class AnalysisTabUI extends Screen {
 
     private void setUnitOfMeasureId(Integer unitOfMeasureId) {
         analysis.setUnitOfMeasureId(unitOfMeasureId);
-        bus.fireEvent(new AnalysisChangeEvent(displayedUid, AnalysisChangeEvent.Action.UNIT_CHANGED));
+        bus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
+                                                        unitOfMeasureId,
+                                                        AnalysisChangeEvent.Action.UNIT_CHANGED),
+                                this);
+    }
+
+    private void setMethodId(AutoCompleteValue value) {
+        TestMethodVO data;
+
+        if (value != null) {
+            data = (TestMethodVO)value.getData();
+            bus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
+                                                            data.getMethodId(),
+                                                            AnalysisChangeEvent.Action.METHOD_CHANGED),
+                                    this);
+        } else {
+            /*
+             * if the user blanks the field, selecting nothing, we put the
+             * method back in the autocomplete
+             */
+            methodName.setValue(getMethodId(), getMethodName());
+        }
     }
 
     private Integer getStatusId() {
@@ -1071,8 +954,10 @@ public class AnalysisTabUI extends Screen {
 
     private void setStatusId(Integer statusId) {
         analysis.setStatusId(statusId);
-        bus.fireEvent(new AnalysisChangeEvent(displayedUid,
-                                              AnalysisChangeEvent.Action.STATUS_CHANGED));
+        bus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
+                                                        statusId,
+                                                        AnalysisChangeEvent.Action.STATUS_CHANGED),
+                                this);
     }
 
     private Datetime getStartedDate() {
@@ -1117,5 +1002,140 @@ public class AnalysisTabUI extends Screen {
 
     private void setPrintedDate(Datetime printedDate) {
         analysis.setPrintedDate(printedDate);
+    }
+
+    /**
+     * Returns the model for sections dropdown. In add, update, sections
+     * specific to the analysis' test are returned.
+     */
+    private ArrayList<Item<Integer>> getSectionsModel() {
+        ArrayList<Item<Integer>> model;
+        TestSectionManager tsm;
+        TestSectionViewDO ts;
+
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+
+        if (analysis != null && isState(ADD, UPDATE)) {
+            try {
+                /*
+                 * create the model from the sections associated with the
+                 * analysis' test
+                 */
+                tsm = getTestManager(analysis.getTestId()).getTestSections();
+                if (tsm != null) {
+                    for (int i = 0; i < tsm.count(); i++ ) {
+                        ts = tsm.getSectionAt(i);
+                        model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
+                    }
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+
+        return model;
+    }
+
+    /**
+     * Returns the model for units dropdown. In add, update, units specific to
+     * the sample item's sample type are returned.
+     */
+    private ArrayList<Item<Integer>> getUnitsModel() {
+        ArrayList<Item<Integer>> model;
+        DictionaryDO d;
+        TestTypeOfSampleDO type;
+        TestTypeOfSampleManager ttsm;
+
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+        if (analysis != null && isState(ADD, UPDATE)) {
+            try {
+                /*
+                 * create the model from the units associated with the sample
+                 * item's sample type
+                 */
+                ttsm = getTestManager(analysis.getTestId()).getSampleTypes();
+                for (int i = 0; i < ttsm.count(); i++ ) {
+                    type = ttsm.getTypeAt(i);
+                    if (type.getUnitOfMeasureId() != null &&
+                        DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(),
+                                            type.getTypeOfSampleId())) {
+                        d = DictionaryCache.getById(type.getUnitOfMeasureId());
+                        model.add(new Item<Integer>(d.getId(), d.getEntry()));
+                    }
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return model;
+    }
+
+    /**
+     * returns the TestManager for the specified id, from the cache maintained
+     * by the parent screen
+     */
+    private TestManager getTestManager(Integer testId) throws Exception {
+        if ( ! (parentScreen instanceof CacheProvider))
+            throw new Exception("Parent screen must implement " + CacheProvider.class.toString());
+
+        return ((CacheProvider)parentScreen).get(testId, TestManager.class);
+    }
+
+    private ArrayList<Row> getWorksheetTableModel() {
+        ArrayList<Row> model;
+        ArrayList<WorksheetViewDO> ws;
+        Row row;
+
+        model = new ArrayList<Row>();
+        if (analysis == null)
+            return model;
+
+        if (analysis.getId() > 0) {
+            try {
+                ws = WorksheetService.get().fetchByAnalysisId(analysis.getId());
+
+                for (WorksheetViewDO w : ws) {
+                    row = new Row(4);
+                    row.setCell(0, w.getId());
+                    row.setCell(1, w.getCreatedDate());
+                    row.setCell(2, w.getStatusId());
+                    row.setCell(3, w.getSystemUser());
+                    model.add(row);
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return model;
+    }
+
+    private ArrayList<Row> getAnalysisUserTableModel() {
+        ArrayList<Row> model;
+        AnalysisUserViewDO user;
+        Row row;
+
+        model = new ArrayList<Row>();
+        if (analysis == null)
+            return model;
+
+        try {
+            for (int i = 0; i < manager.analysisUser.count(analysis); i++ ) {
+                user = manager.analysisUser.get(analysis, i);
+
+                row = new Row(2);
+                row.setCell(0, new AutoCompleteValue(user.getSystemUserId(), user.getSystemUser()));
+                row.setCell(1, user.getActionId());
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return model;
     }
 }

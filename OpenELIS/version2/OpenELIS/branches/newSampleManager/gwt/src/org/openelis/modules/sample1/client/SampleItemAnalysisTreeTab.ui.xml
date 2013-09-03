@@ -19,8 +19,8 @@
   <g:LayoutPanel>
     <g:layer top="0px" bottom="40px">
       <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <r:Column width="280" label="{msg.itemAnalyses}" />
-        <r:Column width="130" label="{msg.typeStatus}" />
+        <r:Column width="280" label="{msg.sample_itemAnalyses}" />
+        <r:Column width="130" label="{msg.sample_typeStatus}" />
         <r:Leaf key="sampleItem">
           <r:LeafColumn>
             <t:LabelCell />
@@ -56,16 +56,16 @@
                   <ui:text from="{msg.gen_addTest}:" />
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="testName" width="150px" case="LOWER">
+                  <w:AutoComplete ui:field="test" width="150px" case="LOWER" dropWidth = "620px">
                     <w:popup>
-                      <t:Table visibleRows="10" header="true" width="500px">
-                        <t:Column width="170" label="{msg.test}">
+                      <t:Table visibleRows="10" header="true">
+                        <t:Column width="170" label="{msg.gen_test}">
                           <t:LabelCell />
                         </t:Column>
-                        <t:Column width="150" label="{msg.method}">
+                        <t:Column width="150" label="{msg.gen_method}">
                           <t:LabelCell />
                         </t:Column>
-                        <t:Column width="290" label="{msg.description}">
+                        <t:Column width="290" label="{msg.gen_description}">
                           <t:LabelCell />
                         </t:Column>
                       </t:Table>
@@ -78,7 +78,7 @@
         </g:layer>
         <g:layer bottom="0px" top="0px" width="33%" right="0px">
           <g:HorizontalPanel>
-            <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
+            <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />
             <w:Button ui:field="popoutTreeButton" leftIcon="{res.style.popoutIcon}" />
           </g:HorizontalPanel>
         </g:layer>

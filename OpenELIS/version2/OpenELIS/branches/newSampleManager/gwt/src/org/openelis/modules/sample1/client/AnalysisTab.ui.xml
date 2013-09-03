@@ -34,9 +34,6 @@
               <w:AutoComplete ui:field="methodName" width="150px" case="LOWER">
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
-                    <!--  <t:Column width="170" label="{msg.test}">
-                      <t:LabelCell />
-                    </t:Column> -->
                     <t:Column width="150" label="{msg.method}">
                       <t:LabelCell />
                     </t:Column>

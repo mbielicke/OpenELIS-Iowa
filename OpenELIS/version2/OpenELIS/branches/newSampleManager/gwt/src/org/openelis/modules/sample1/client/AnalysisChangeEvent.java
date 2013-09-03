@@ -35,15 +35,17 @@ import com.google.gwt.event.shared.GwtEvent;
 public class AnalysisChangeEvent extends GwtEvent<AnalysisChangeEvent.Handler> {
 
     public enum Action {
-        TEST_CHANGED, SAMPLE_TYPE_CHANGED, STATUS_CHANGED, UNIT_CHANGED
+        METHOD_CHANGED, STATUS_CHANGED, UNIT_CHANGED
     }
     
     private static Type<AnalysisChangeEvent.Handler> TYPE;  
     private Action                                  action;     
     private String                                     uid;
+    private Integer                                 changeId;
 
-    public AnalysisChangeEvent(String uid, Action action) {
+    public AnalysisChangeEvent(String uid, Integer changeId, Action action) {
         this.uid = uid;
+        this.changeId = changeId;
         this.action = action;
     }
 
@@ -68,10 +70,14 @@ public class AnalysisChangeEvent extends GwtEvent<AnalysisChangeEvent.Handler> {
         return uid;
     }
     
+    public Integer getChangeId() {
+        return changeId;
+    }
+    
     public Action getAction() {
         return action;
     }
-
+    
     @Override
     protected void dispatch(Handler handler) {
         handler.onAnalysisChange(this);

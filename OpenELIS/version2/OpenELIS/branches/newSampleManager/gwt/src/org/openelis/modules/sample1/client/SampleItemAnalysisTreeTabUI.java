@@ -25,11 +25,14 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
+import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.constants.Messages;
@@ -37,10 +40,12 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.TestManager;
 import org.openelis.modules.panel.client.PanelService;
-import org.openelis.modules.sample1.client.AddTestEvent.AddType;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -48,6 +53,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
@@ -56,6 +62,7 @@ import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
@@ -95,12 +102,16 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                     popoutTreeButton;
 
     @UiField
-    protected AutoComplete                           testName;
+    protected AutoComplete                           test;
 
     @UiField
     protected Dropdown<Integer>                      analysisStatus;
 
-    protected Screen                                 screen, parentScreen;
+    protected Screen                                 parentScreen;
+
+    protected SampleItemAnalysisTreeTabUI            screen;
+
+    protected SampleItemPopoutLookupUI               treePopout;
 
     protected SampleManager1                         manager;
 
@@ -174,8 +185,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         tree.addNodeAddedHandler(new NodeAddedHandler() {
             public void onNodeAdded(NodeAddedEvent event) {
-                String uid;
-                Node node, parent;
+                Node node;
                 DictionaryDO dict;
                 SampleItemViewDO item;
 
@@ -194,20 +204,11 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                             item.setTypeOfSample(dict.getEntry());
                         } catch (Exception e) {
                             Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage(), e);
                         }
                     }
                     node.setData(manager.getUid(item));
                     setItemDisplay(node, item);
-                } else if ("analysis".equals(node.getType())) {
-                    parent = node.getParent();
-                    uid = (String)parent.getData();
-                    item = (SampleItemViewDO)manager.getObject(uid);
-                    // ana = manager.item. analysis.add(item);
-                    // addedIndex = anMan.addAnalysis();
-                    // node.setData(manager.getUid(ana));
-
-                    // treeUtility.updateAnalysisRow(addedRow);
-                    // itemsTestsTree.refreshRow(addedRow);
                 }
             }
         });
@@ -237,9 +238,9 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             }
         });
 
-        addScreenHandler(testName, "testName", new ScreenHandler<AutoCompleteValue>() {
+        addScreenHandler(test, "testName", new ScreenHandler<AutoCompleteValue>() {
             public void onDataChange(DataChangeEvent event) {
-                testName.setValue(null, null);
+                test.setValue(null, null);
             }
 
             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
@@ -247,17 +248,97 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                testName.setEnabled(canEdit && isState(ADD, UPDATE));
+                test.setEnabled(canEdit && isState(ADD, UPDATE));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? tree : tree;
             }
         });
 
-        testName.addGetMatchesHandler(new GetMatchesHandler() {
+        test.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                showTestMatches(event.getMatch());
+                Integer key;
+                Query query;
+                QueryData field;
+                Item<Integer> row;
+                Node node;
+                SampleItemViewDO item;
+                ArrayList<QueryData> fields;
+                ArrayList<Item<Integer>> model;
+                ArrayList<TestMethodVO> tests;
+
+                /*
+                 * to add a test, a sample item must be selected and it must
+                 * have a sample type
+                 */
+                if (tree.getSelectedNode() == -1) {
+                    parentScreen.getWindow()
+                                .setError(Messages.get().sample_sampleItemSelectedToAddAnalysis());
+                    return;
+                }
+
+                node = tree.getNodeAt(tree.getSelectedNode());
+                if ( !"sampleItem".equals(node.getType()))
+                    node = node.getParent();
+
+                item = (SampleItemViewDO)manager.getObject((String)node.getData());
+
+                if (item.getTypeOfSampleId() == null) {
+                    parentScreen.getWindow().setError(Messages.get()
+                                                              .sample_sampleItemTypeRequired());
+                    return;
+                }
+
+                fields = new ArrayList<QueryData>();
+                query = new Query();
+
+                try {
+                    field = new QueryData();
+                    field.setQuery(QueryFieldUtil.parseAutocomplete(event.getMatch()) + "%");
+                    fields.add(field);
+
+                    field = new QueryData();
+                    field.setQuery(String.valueOf(item.getTypeOfSampleId()));
+                    fields.add(field);
+
+                    query.setFields(fields);
+
+                    parentScreen.getWindow().setBusy();
+
+                    tests = PanelService.get().fetchByNameSampleTypeWithTests(query);
+
+                    model = new ArrayList<Item<Integer>>();
+                    for (TestMethodVO t : tests) {
+                        /*
+                         * Since the keys of the rows need to be unique and it
+                         * can happen that a panel has the same id as a test, a
+                         * negative number is used as the key for a row showing
+                         * a panel and a positive one for a row showing a test.
+                         * An index in a loop can't be used here because it can
+                         * clash with an id and two different rows may be
+                         * treated as the same.
+                         */
+
+                        key = t.getMethodId() == null ? -t.getTestId() : t.getTestId();
+
+                        row = new Item<Integer>(3);
+                        row.setKey(key);
+                        row.setCell(0, t.getTestName());
+                        row.setCell(1, t.getMethodName());
+                        row.setCell(2, t.getTestDescription());
+                        row.setData(t);
+
+                        model.add(row);
+                    }
+
+                    test.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+
+                parentScreen.getWindow().clearStatus();
             }
         });
 
@@ -320,8 +401,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             public void onAnalysisChange(AnalysisChangeEvent event) {
-                if (AnalysisChangeEvent.Action.TEST_CHANGED.equals(event.getAction()))
-                    analysisChanged(event.getUid());
+                analysisChanged(event.getUid());
             }
         });
     }
@@ -357,6 +437,30 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     @UiHandler("popoutTreeButton")
     protected void popoutTree(ClickEvent event) {
+        ModalWindow modal;
+
+        if (treePopout == null) {
+            treePopout = new SampleItemPopoutLookupUI() {
+                @Override
+                public void ok() {
+                    /*
+                     * don't reload the tree if the data in the popup couldn't
+                     * be changed
+                     */
+                    if (canEdit && isState(ADD, UPDATE))
+                        screen.fireDataChange();
+                }
+            };
+        }
+
+        modal = new ModalWindow();
+        modal.setSize("500px", "500px");
+        modal.setName(Messages.get().itemsAndAnalyses());
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(treePopout);
+
+        treePopout.setWindow(modal);
+        treePopout.setData(manager, state);
     }
 
     private Node getRoot() {
@@ -393,91 +497,12 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         return root;
     }
 
-    private void showTestMatches(String name) {
-        Integer key;
-        Query query;
-        QueryData field;
-        Item<Integer> row;
-        Node node;
-        SampleItemViewDO item;
-        ArrayList<QueryData> fields;
-        ArrayList<Item<Integer>> model;
-        ArrayList<TestMethodVO> tests;
-
-        /*
-         * to add a test, a sample item must be selected and it must have a
-         * sample type
-         */
-        if (tree.getSelectedNode() == -1) {
-            parentScreen.getWindow().setError(Messages.get().sample_sampleItemSelectedToAddAnalysis());
-            return;
-        }
-
-        node = tree.getNodeAt(tree.getSelectedNode());
-        if ( !"sampleItem".equals(node.getType()))
-            node = node.getParent();
-
-        item = (SampleItemViewDO)manager.getObject((String)node.getData());
-
-        if (item.getTypeOfSampleId() == null) {
-            parentScreen.getWindow().setError(Messages.get().sample_sampleItemTypeRequired());
-            return;
-        }
-
-        fields = new ArrayList<QueryData>();
-        query = new Query();
-
-        try {
-            field = new QueryData();
-            field.setQuery(QueryFieldUtil.parseAutocomplete(name) + "%");
-            fields.add(field);
-
-            field = new QueryData();
-            field.setQuery(String.valueOf(item.getTypeOfSampleId()));
-            fields.add(field);
-
-            query.setFields(fields);
-
-            parentScreen.getWindow().setBusy();
-            
-            tests = PanelService.get().fetchByNameSampleTypeWithTests(query);
-
-            model = new ArrayList<Item<Integer>>();
-            for (TestMethodVO t : tests) {
-                /*
-                 * Since the keys of the rows need to be unique and it can
-                 * happen that a panel has the same id as a test, a negative
-                 * number is used as the key for a row showing a panel and a
-                 * positive one for a row showing a test. An index in a loop
-                 * can't be used here because it can clash with an id and two
-                 * different rows may be treated as the same.
-                 */
-
-                key = t.getMethodId() == null ? -t.getTestId() : t.getTestId();
-
-                row = new Item<Integer>(4);
-                row.setKey(key);
-                row.setCell(0, t.getTestName());
-                row.setCell(1, t.getMethodName());
-                row.setCell(2, t.getTestDescription());
-                row.setData(t);
-
-                model.add(row);
-            }
-
-            testName.showAutoMatches(model);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-
-        parentScreen.getWindow().clearStatus();
-    }
-
     protected void addAnalysis(AutoCompleteValue val) {
         Node node;
         SampleItemViewDO item;
-        AddTestEvent.AddType type;
-        TestMethodVO test; 
+        TestMethodVO data;
+        SampleTestRequestVO test;
+        ArrayList<SampleTestRequestVO> tests;
 
         /*
          * find the sample item to get its sample type
@@ -488,57 +513,115 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             node = node.getParent();
 
         item = (SampleItemViewDO)manager.getObject((String)node.getData());
-        
-        test = (TestMethodVO)val.getData();
-        if (test.getMethodId() != null)
-            type = AddType.TEST;
+
+        tests = new ArrayList<SampleTestRequestVO>();
+        data = (TestMethodVO)val.getData();
+        if (data.getMethodId() != null)
+            test = new SampleTestRequestVO(item.getId(), data.getTestId(), null,
+                                           null, null, null, false, null);
         else
-            type = AddType.PANEL;
+            test = new SampleTestRequestVO(item.getId(), null, null, null, null,
+                                           data.getTestId(), false, null);
 
-        screen.getEventBus().fireEvent(new AddTestEvent(type,
-                                                        item.getId(),
-                                                        item.getTypeOfSampleId(),
-                                                        test.getTestId()));
-
+        tests.add(test);
+        screen.getEventBus().fireEvent(new AddTestEvent(tests));
     }
 
     private void evaluateEdit() {
-        canEdit = false;
-        if (manager != null)
-            canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                            .getStatusId());
+        canEdit = manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
+                                                                                    .getStatusId());
     }
 
-    private void sampleItemChanged(String uid, SampleItemChangeEvent.Action action) {
-        Node node;
+    private void sampleItemChanged(String itemUid, SampleItemChangeEvent.Action action) {
+        int i, j;
+        boolean found;
+        String anaUid;
+        Node parent, node;
         SampleItemViewDO item;
+        AnalysisViewDO ana;
+        TestManager tm;
+        ArrayList<TestTypeOfSampleDO> types;
 
-        node = tree.getNodeAt(tree.getSelectedNode());
-        if ("analysis".equals(node.getType()))
-            node = node.getParent();
+        for (i = 0; i < tree.getRoot().getChildCount(); i++ ) {
+            /*
+             * find the node showing the sample item with this uid and refresh
+             * its display
+             */
+            parent = tree.getRoot().getChildAt(i);
+            if (itemUid.equals(parent.getData())) {
+                item = (SampleItemViewDO)manager.getObject(itemUid);
+                setItemDisplay(parent, item);
+                tree.refreshNode(parent);
 
-        item = (SampleItemViewDO)manager.getObject(uid);
+                if ( !SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(action))
+                    break;
 
-        if (SampleItemChangeEvent.Action.CONTAINER_CHANGED.equals(action))
-            node.setCell(0, getDisplay(item.getItemSequence(), " - ", item.getContainer()));
-        else if (SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(action))
-            node.setCell(1, getDisplay(item.getTypeOfSample()));
+                for (j = 0; j < parent.getChildCount(); j++ ) {
+                    node = parent.getChildAt(j);
+                    anaUid = node.getData();
+                    ana = (AnalysisViewDO)manager.getObject(anaUid);
 
-        tree.refreshNode(node);
+                    try {
+                        tm = getTestManager(ana.getTestId());
+                        types = tm.getSampleTypes().getTypesBySampleType(item.getTypeOfSampleId());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        return;
+                    }
+
+                    /*
+                     * show an error in a node, if the test that it is showing,
+                     * doesn't have this sample type
+                     */
+                    found = false;
+                    for (TestTypeOfSampleDO t : types) {
+                        if (DataBaseUtil.isSame(item.getTypeOfSampleId(), t.getTypeOfSampleId())) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if ( !found)
+                        tree.addException(node,
+                                          0,
+                                          new Exception(Messages.get().analysis_sampleTypeInvalid()));
+                    else
+                        tree.clearExceptions(node, 0);
+                }
+
+                break;
+            }
+        }
     }
 
     private void analysisChanged(String uid) {
-        Node node;
-        AnalysisViewDO item;
+        int i, j;
+        boolean found;
+        Node parent, node;
+        AnalysisViewDO ana;
 
-        node = tree.getNodeAt(tree.getSelectedNode());
+        found = false;
+        for (i = 0; i < tree.getRoot().getChildCount(); i++ ) {
+            parent = tree.getRoot().getChildAt(i);
+            /*
+             * find the node showing the analysis with this uid and refresh its
+             * display
+             */
+            for (j = 0; j < parent.getChildCount(); j++ ) {
+                node = parent.getChildAt(j);
+                if (uid.equals(node.getData())) {
+                    ana = (AnalysisViewDO)manager.getObject(uid);
+                    setAnalysisDisplay(node, ana);
+                    tree.refreshNode(node);
+                    found = true;
+                    break;
+                }
+            }
 
-        item = (AnalysisViewDO)manager.getObject(uid);
-
-        node.setCell(0, getDisplay(item.getTestName(), " : ", item.getMethodName()));
-        node.setCell(1, item.getStatusId());
-
-        tree.refreshNode(node);
+            if (found)
+                break;
+        }
     }
 
     private void setItemDisplay(Node node, SampleItemViewDO item) {
@@ -547,7 +630,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     }
 
     private void setAnalysisDisplay(Node node, AnalysisViewDO ana) {
-        node.setCell(0, getDisplay(ana.getTestName(), " : ", ana.getMethodName()));
+        node.setCell(0, getDisplay(ana.getTestName(), " , ", ana.getMethodName()));
         node.setCell(1, ana.getStatusId());
     }
 
@@ -574,5 +657,16 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             return "<>";
 
         return val;
+    }
+
+    /**
+     * returns the TestManager for the specified id, from the cache maintained
+     * by the parent screen
+     */
+    private TestManager getTestManager(Integer testId) throws Exception {
+        if ( ! (parentScreen instanceof CacheProvider))
+            throw new Exception("Parent screen must implement " + CacheProvider.class.toString());
+
+        return ((CacheProvider)parentScreen).get(testId, TestManager.class);
     }
 }
