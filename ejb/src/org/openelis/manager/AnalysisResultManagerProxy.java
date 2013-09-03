@@ -28,7 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.bean.ResultBean;
 import org.openelis.constants.Messages;
