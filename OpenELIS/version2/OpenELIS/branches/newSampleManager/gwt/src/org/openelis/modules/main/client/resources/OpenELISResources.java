@@ -39,7 +39,7 @@ public interface OpenELISResources extends ClientBundle {
 	@Source("images/qcbuttonimage.gif")
 	ImageResource QCIcon();
 	
-	@Source("images/trackingbuttonimage.gif")
+	@Source("images/fieldlookup.png")
 	ImageResource trackingIcon();
 	
 	@Source("images/world_add.png")

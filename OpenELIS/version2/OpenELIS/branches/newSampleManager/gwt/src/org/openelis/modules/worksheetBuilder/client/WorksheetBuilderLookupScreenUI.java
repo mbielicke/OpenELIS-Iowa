@@ -26,7 +26,7 @@
 package org.openelis.modules.worksheetBuilder.client;
 
 import static org.openelis.modules.main.client.Logger.*;
-//import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.QUERY;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -49,28 +49,28 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.domain.WorksheetBuilderVO;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.meta.AnalysisViewMeta;
 import org.openelis.modules.result.client.ResultService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SectionPermission;
 import org.openelis.ui.common.data.Query;
-//import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.event.ActionEvent;
-import org.openelis.ui.event.ActionHandler;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
-import org.openelis.ui.event.HasActionHandlers;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
@@ -81,6 +81,7 @@ import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.TextBox;
+import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
@@ -89,8 +90,7 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.UnselectionEvent;
 import org.openelis.ui.widget.table.event.UnselectionHandler;
 
-public class WorksheetBuilderLookupScreenUI extends Screen
-                                            implements HasActionHandlers<WorksheetBuilderLookupScreenUI.Action> {
+public class WorksheetBuilderLookupScreenUI extends Screen {
 
     @UiTemplate("WorksheetBuilderLookup.ui.xml")
     interface WorksheetBuilderLookupUiBinder extends UiBinder<Widget, WorksheetBuilderLookupScreenUI> {
@@ -118,11 +118,10 @@ public class WorksheetBuilderLookupScreenUI extends Screen
     @UiField
     protected TextBox<Integer>                        accessionNumber;
 
-    public enum Action {
-        ADD
-    };
-
-    public WorksheetBuilderLookupScreenUI() throws Exception {
+    public WorksheetBuilderLookupScreenUI(EventBus bus) throws Exception {
+        if (bus != null)
+            setEventBus(bus);
+        
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Worksheet Creation Lookup Screen"));
@@ -130,28 +129,17 @@ public class WorksheetBuilderLookupScreenUI extends Screen
         initWidget(uiBinder.createAndBindUi(this));
         
         analyteMap = new HashMap<Integer, AnalysisResultManager>();
-
-        try {
-            CategoryCache.getBySystemNames("analysis_status", "unit_of_measure", "type_of_sample");
-        } catch (Exception e) {
-            throw new Exception("WorksheetBuilderLookupScreen: missing dictionary entry; " + e.getMessage());
-        }
-
-        initialize();
-//        setState(QUERY);
-        initializeDropdowns();
-        fireDataChange();
-        testId.setFocus(true);
-        
-        logger.fine("WorksheetBuilderLookup Screen Opened");
     }
     
     /**
      * Setup state and data change handles for every widget on the screen.  This
      * screen is query only, so most of the widgets do not need an onValueChange method.
      */
-//    @SuppressWarnings("unchecked")
-    private void initialize() {
+    public void initialize() throws Exception {
+        ArrayList<DictionaryDO> dictList;
+        ArrayList<Item<Integer>> model, model2;
+        ArrayList<SectionViewDO> sectList;
+
         //
         // screen fields and buttons
         //
@@ -159,9 +147,8 @@ public class WorksheetBuilderLookupScreenUI extends Screen
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 AutoCompleteValue selectedRow;
 
-                selectedRow = testId.getValue();
-                
                 //set the method
+                selectedRow = testId.getValue();
                 if (selectedRow != null)
                     methodName.setValue(((TestMethodVO)selectedRow.getData()).getMethodName());
                 else
@@ -170,6 +157,10 @@ public class WorksheetBuilderLookupScreenUI extends Screen
 
             public void onStateChange(StateChangeEvent event) {
                 testId.setEnabled(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? sectionId : enteredDate;
             }
         });
 
@@ -195,9 +186,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen
                         row.setData(tmVO);
                         model.add(row);
                     } 
-                    
                     testId.showAutoMatches(model);
-                        
                 } catch(Exception e) {
                     Window.alert(e.getMessage());                     
                 }
@@ -215,12 +204,20 @@ public class WorksheetBuilderLookupScreenUI extends Screen
                 sectionId.setEnabled(true);
                 sectionId.setQueryMode(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? accessionNumber : testId;
+            }
         });
 
         addScreenHandler(accessionNumber, AnalysisViewMeta.getAccessionNumber(), new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
                 accessionNumber.setEnabled(true);
                 accessionNumber.setQueryMode(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? analysisStatusId : sectionId;
             }
         });
 
@@ -229,12 +226,20 @@ public class WorksheetBuilderLookupScreenUI extends Screen
                 analysisStatusId.setEnabled(true);
                 analysisStatusId.setQueryMode(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? typeOfSampleId : accessionNumber;
+            }
         });
 
         addScreenHandler(typeOfSampleId, AnalysisViewMeta.getTypeOfSampleId(), new ScreenHandler<Integer>() {
             public void onStateChange(StateChangeEvent event) {
                 typeOfSampleId.setEnabled(true);
                 typeOfSampleId.setQueryMode(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? receivedDate : analysisStatusId;
             }
         });
 
@@ -243,12 +248,20 @@ public class WorksheetBuilderLookupScreenUI extends Screen
                 receivedDate.setEnabled(true);
                 receivedDate.setQueryMode(true);
             }
+
+            public Widget onTab(boolean forward) {
+                return forward ? enteredDate : typeOfSampleId;
+            }
         });
 
         addScreenHandler(enteredDate, AnalysisViewMeta.getEnteredDate(), new ScreenHandler<Datetime>() {
             public void onStateChange(StateChangeEvent event) {
                 enteredDate.setEnabled(true);
                 enteredDate.setQueryMode(true);
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? testId : receivedDate;
             }
         });
 
@@ -315,6 +328,68 @@ public class WorksheetBuilderLookupScreenUI extends Screen
                 event.cancel();
             }
         });
+        
+        try {
+            CategoryCache.getBySystemNames("analysis_status", "unit_of_measure", "type_of_sample");
+        } catch (Exception e) {
+            throw new Exception("WorksheetBuilderLookupScreen: missing dictionary entry; " + e.getMessage());
+        }
+
+        //
+        // load section dropdown model
+        //
+        sectList  = SectionCache.getList();
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+        model2 = new ArrayList<Item<Integer>>();
+        model2.add(new Item<Integer>(null, ""));
+        for (SectionViewDO resultDO : sectList) {
+            model.add(new Item<Integer>(resultDO.getId(),resultDO.getName()));
+            model2.add(new Item<Integer>(resultDO.getId(),resultDO.getName()));
+        }
+        sectionId.setModel(model);
+        tableSection.setModel(model2);
+        
+        //
+        // load unit of measure dropdown model
+        //
+        dictList  = CategoryCache.getBySystemName("unit_of_measure");
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+        tableUnit.setModel(model);
+        
+        //
+        // load analysis status dropdown model
+        //
+        dictList  = CategoryCache.getBySystemName("analysis_status");
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+        model2 = new ArrayList<Item<Integer>>();
+        model2.add(new Item<Integer>(null, ""));
+        for (DictionaryDO resultDO : dictList) {
+            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+            model2.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+        }
+        analysisStatusId.setModel(model);
+        tableStatus.setModel(model2);
+        
+        //
+        // load type of sample dropdown model
+        //
+        dictList  = CategoryCache.getBySystemName("type_of_sample");
+        model = new ArrayList<Item<Integer>>();
+        model.add(new Item<Integer>(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+        typeOfSampleId.setModel(model);
+
+        setState(QUERY);
+        fireDataChange();
+        testId.setFocus(true);
+        
+        logger.fine("WorksheetBuilderLookup Screen Opened");
     }
 
     @SuppressWarnings("unused")
@@ -334,8 +409,8 @@ public class WorksheetBuilderLookupScreenUI extends Screen
             window.setBusy(Messages.get().querying());
     
             query.setRowsPerPage(500);
-            WorksheetBuilderService.get().lookupAnalyses(query, new AsyncCallback<ArrayList<WorksheetBuilderVO>>() {
-                public void onSuccess(ArrayList<WorksheetBuilderVO> list) {
+            WorksheetBuilderService.get().fetchAnalysesByView(query, new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+                public void onSuccess(ArrayList<AnalysisViewVO> list) {
                     setQueryResult(list);
                 }
     
@@ -352,9 +427,27 @@ public class WorksheetBuilderLookupScreenUI extends Screen
         } else {
             window.setDone(Messages.get().emptyQueryException());
         }
+    }
 
-//        state = State.DEFAULT;
-//        setState(State.QUERY);
+    //
+    // overriding AutoComplete's getQuery to return the id of the
+    // selection instead of the text
+    //
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> fields;
+        QueryData            field;
+
+        fields = super.getQueryFields();
+        
+        if (testId.getValue() != null && testId.getValue().getId() != null) {
+            field = new QueryData();
+            field.setKey(AnalysisViewMeta.getTestId());
+            field.setQuery(testId.getValue().getId().toString());
+            field.setType(QueryData.Type.INTEGER);
+            fields.add(field);
+        }
+
+        return fields;
     }
 
     @SuppressWarnings("unused")
@@ -362,22 +455,24 @@ public class WorksheetBuilderLookupScreenUI extends Screen
     protected void addAnalyses(ClickEvent event) {
         int i;
         Integer selectedRows[];
+        AnalysisViewVO data;
         ArrayList<Row> selections;
+        Row row;
         SectionViewDO sectionVDO;
         StringBuffer message;
-        WorksheetBuilderVO analysisRow;
         
         message = new StringBuffer();
         selections = new ArrayList<Row>();
         selectedRows = analysesTable.getSelectedRows();
         for (i = 0; i < selectedRows.length; i++) {
-            analysisRow = (WorksheetBuilderVO) analysesTable.getRowAt(i).getData();
-            if (! isAnalysisEditable(analysisRow)) {
-                message.append(Messages.get().accessionNum()).append(analysisRow.getAccessionNumber())
-                       .append("\t").append(analysisRow.getTestName().trim()).append(", ")
-                       .append(analysisRow.getMethodName().trim());
+            row = analysesTable.getRowAt(selectedRows[i]);
+            data = (AnalysisViewVO) row.getData();
+            if (! isAnalysisEditable(data)) {
+                message.append(Messages.get().accessionNum()).append(data.getAccessionNumber())
+                       .append("\t").append(data.getTestName().trim()).append(", ")
+                       .append(data.getMethodName().trim());
                 try {
-                    sectionVDO = SectionCache.getById(analysisRow.getSectionId());
+                    sectionVDO = SectionCache.getById(data.getSectionId());
                     message.append("\t\t").append(sectionVDO.getName().trim());
                 } catch (Exception anyE) {
                     anyE.printStackTrace();
@@ -385,14 +480,14 @@ public class WorksheetBuilderLookupScreenUI extends Screen
                 }
                 message.append("\n");
             } else {
-                selections.add(analysesTable.getRowAt(i));
+                selections.add(row);
             }
         }
         
         if (message.length() > 0)
             Window.alert(Messages.get().worksheetItemsNotAdded()+":\n\n"+message.toString());
         if (selections.size() > 0)
-            ActionEvent.fire(this, Action.ADD, selections);
+            bus.fireEventFromSource(new RowsAddedEvent(selections), this);
     }
 
     @SuppressWarnings("unused")
@@ -403,91 +498,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen
             addRow.setEnabled(true);
     }
 
-    private void initializeDropdowns() {
-        ArrayList<DictionaryDO> dictList;
-        ArrayList<Item<Integer>> model;
-        ArrayList<SectionViewDO> sectList;
-        Item<Integer> row;
-
-        //
-        // load section dropdown model
-        //
-        sectList  = SectionCache.getList();
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        for (SectionViewDO resultDO : sectList) {
-            row = new Item<Integer>(resultDO.getId(),resultDO.getName());
-            row.setEnabled(true);
-            model.add(row);
-        }
-        sectionId.setModel(model);
-        tableSection.setModel(model);
-        
-        //
-        // load unit of measure dropdown model
-        //
-        dictList  = CategoryCache.getBySystemName("unit_of_measure");
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
-        tableUnit.setModel(model);
-        
-        //
-        // load analysis status dropdown model
-        //
-        dictList  = CategoryCache.getBySystemName("analysis_status");
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
-        analysisStatusId.setModel(model);
-        tableStatus.setModel(model);
-        
-        //
-        // load type of sample dropdown model
-        //
-        dictList  = CategoryCache.getBySystemName("type_of_sample");
-        model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        for (DictionaryDO resultDO : dictList)
-            model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
-        typeOfSampleId.setModel(model);
-    }
-
-    //
-    // overriding AutoComplete's getQuery to return the id of the
-    // selection instead of the text
-    //
-//    @SuppressWarnings("unchecked")
-//    public ArrayList<QueryData> getQueryFields() {
-//        ArrayList<QueryData> list;
-//        QueryData            qd;
-//        QueryFieldUtil       qField;
-//        Item<Integer>        row;
-//
-//        list = new ArrayList<QueryData>();
-//        for (String key : def.getWidgets().keySet()) {
-//            if (def.getWidget(key) instanceof AutoComplete) {
-//                row = ((AutoComplete)def.getWidget(key)).getSelection();
-//                if(row != null && row.key != null) {
-//                    qd = new QueryData();
-//                    qd.setKey(key);
-//                    qd.setQuery(((Integer)row.key).toString());
-//                    qd.setType(QueryData.Type.INTEGER);
-//                    list.add(qd);
-//
-//                    qField = new QueryFieldUtil();
-//                    qField.parse(qd.getQuery());
-//                }
-//            } else if (def.getWidget(key) instanceof HasField) {
-//                ((HasField)def.getWidget(key)).getQuery(list, key);
-//            }
-//        }
-//        return list;
-//    }
-
-    private void setQueryResult(ArrayList<WorksheetBuilderVO> list) {
+    private void setQueryResult(ArrayList<AnalysisViewVO> list) {
         ArrayList<Item<Integer>> model;
         Item<Integer>            row;
         
@@ -499,7 +510,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen
             window.setDone(Messages.get().queryingComplete());
 
             model = new ArrayList<Item<Integer>>();
-            for (WorksheetBuilderVO analysisRow : list) {
+            for (AnalysisViewVO analysisRow : list) {
                 row = new Item<Integer>(12);
                 row.setKey(analysisRow.getAnalysisId());
                 row.setCell(0, analysisRow.getAccessionNumber());
@@ -511,9 +522,15 @@ public class WorksheetBuilderLookupScreenUI extends Screen
                 row.setCell(6, analysisRow.getAnalysisStatusId());          
                 row.setCell(7, analysisRow.getCollectionDate());
                 row.setCell(8, analysisRow.getReceivedDate());
-                row.setCell(9, analysisRow.getDueDays());
-                row.setCell(10, analysisRow.getExpireDate());
-
+                if (analysisRow.getPriority() != null)
+                    row.setCell(9, DataBaseUtil.getDueDays(analysisRow.getReceivedDate(),
+                                                           analysisRow.getPriority()));
+                else
+                    row.setCell(9, DataBaseUtil.getDueDays(analysisRow.getReceivedDate(), 
+                                                           analysisRow.getTimeTaAverage()));
+                row.setCell(10, DataBaseUtil.getExpireDate(analysisRow.getCollectionDate(),
+                                                           analysisRow.getCollectionTime(),
+                                                           analysisRow.getTimeHolding()));
                 if (analysisRow.getPriority() != null)
                     row.setCell(11, analysisRow.getPriority());
 
@@ -531,7 +548,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen
      * Returns true if analysis can be added to the worksheet and the user has
      * permission to addRow it.
      */
-    private boolean isAnalysisEditable(WorksheetBuilderVO analysisRow) {
+    private boolean isAnalysisEditable(AnalysisViewVO analysisRow) {
         boolean editable;
         
         editable = false;
@@ -546,7 +563,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen
         return editable;
     }
 
-    private boolean canAddTest(WorksheetBuilderVO analysisRow) {
+    private boolean canAddTest(AnalysisViewVO analysisRow) {
         boolean       allow;
         SectionViewDO section;
         SectionPermission perm;
@@ -571,10 +588,11 @@ public class WorksheetBuilderLookupScreenUI extends Screen
         Integer selectedRows[];
         AnalysisResultManager arMan;
         
+        window.clearStatus();
         if (analyteTable.isVisible()) {
             selectedRows = analysesTable.getSelectedRows();
             if (selectedRows.length == 1) {
-                final WorksheetBuilderVO data = (WorksheetBuilderVO) analysesTable.getRowAt(selectedRows[0]).getData();
+                final AnalysisViewVO data = (AnalysisViewVO) analysesTable.getRowAt(selectedRows[0]).getData();
                 arMan = analyteMap.get(data.getAnalysisId());
                 if (arMan != null) {
                     loadAnalyteTable(arMan);
@@ -624,8 +642,13 @@ public class WorksheetBuilderLookupScreenUI extends Screen
         }
         analyteTable.setModel(model);
     }
-
-    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
+    
+    public void setWindow(WindowInt window) {
+        super.setWindow(window);
+        window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
+            public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
+                analysesTable.setModel(null);
+            }
+        });
     }
 }

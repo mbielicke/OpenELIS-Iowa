@@ -160,36 +160,6 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
         }
     }
 
-    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Query query) throws Exception {
-        ArrayList<QueryData> fields;
-        QueryData            field;
-        Integer              testId, typeOfSampleId;
-        String               unitOfMeasure;
-
-        fields = query.getFields();
-        field = fields.get(0);
-        if (field.getQuery() != null)
-            testId = Integer.valueOf(field.getQuery());
-        else
-            testId = null; 
-        field = fields.get(1);
-        if (field.getQuery() != null)
-            typeOfSampleId = Integer.valueOf(field.getQuery());
-        else
-            typeOfSampleId = null;
-        field = fields.get(2);
-        if (field.getQuery() != null)
-            unitOfMeasure = field.getQuery();
-        else
-            unitOfMeasure = null; 
-
-        try {
-            return testType.fetchUnitsForWorksheetAutocomplete(testId, typeOfSampleId, unitOfMeasure);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
     public TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception {
         try {        
             return testManager.fetchTestAnalytesByTestId(testId);

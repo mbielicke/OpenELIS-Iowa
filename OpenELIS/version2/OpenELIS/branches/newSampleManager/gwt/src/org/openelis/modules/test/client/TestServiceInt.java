@@ -42,8 +42,6 @@ public interface TestServiceInt extends XsrfProtectedService {
 
     TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception;
 
-    ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Query query) throws Exception;
-
     TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception;
 
     TestResultManager fetchTestResultByTestId(Integer testId) throws Exception;

@@ -30,10 +30,13 @@ import java.util.ArrayList;
 import org.openelis.domain.IdVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.WorksheetManager1;
+import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.HasRpcToken;
 
 public class WorksheetService1 implements WorksheetServiceInt1, WorksheetServiceInt1Async {
     
@@ -50,6 +53,7 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     
     private WorksheetService1() {
         service = (WorksheetServiceInt1Async)GWT.create(WorksheetServiceInt1.class);
+        ((HasRpcToken)service).setRpcToken(TokenService.getToken());
     }
 
     @Override
@@ -81,17 +85,17 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public ArrayList<IdVO> fetchByQuery(Query query) throws Exception {
+    public ArrayList<IdVO> query(Query query) throws Exception {
         Callback<ArrayList<IdVO>> callback;
         
         callback = new Callback<ArrayList<IdVO>>();
-        service.fetchByQuery(query, callback);
+        service.query(query, callback);
         return callback.getResult();
     }
     
     @Override
-    public void fetchByQuery(Query query, AsyncCallback<ArrayList<IdVO>> callback) {
-        service.fetchByQuery(query, callback);
+    public void query(Query query, AsyncCallback<ArrayList<IdVO>> callback) {
+        service.query(query, callback);
     }
 
     @Override
@@ -106,5 +110,33 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     @Override
     public void fetchForUpdate(Integer worksheetId, AsyncCallback<WorksheetManager1> callback) {
         service.fetchForUpdate(worksheetId, callback);
+    }
+
+    @Override
+    public void unlock(Integer worksheetId, Load[] elements, AsyncCallback<WorksheetManager1> callback) throws Exception {
+        service.unlock(worksheetId, elements, callback);
+    }
+
+    @Override
+    public WorksheetManager1 unlock(Integer worksheetId, Load... elements) throws Exception {
+        Callback<WorksheetManager1> callback;
+
+        callback = new Callback<WorksheetManager1>();
+        service.unlock(worksheetId, elements, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
+        Callback<WorksheetManager1> callback;
+
+        callback = new Callback<WorksheetManager1>();
+        service.update(wm, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void update(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) throws Exception {
+        service.update(wm, callback);
     }
 }

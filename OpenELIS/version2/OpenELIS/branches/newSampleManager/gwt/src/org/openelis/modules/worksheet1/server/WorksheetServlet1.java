@@ -33,10 +33,11 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetManager1Bean;
 import org.openelis.domain.IdVO;
-import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.WorksheetManager1;
+import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.modules.worksheet1.client.WorksheetServiceInt1;
 import org.openelis.ui.common.data.Query;
+import org.openelis.ui.server.RemoteServlet;
 
 @WebServlet("/openelis/worksheet1")
 public class WorksheetServlet1 extends RemoteServlet implements WorksheetServiceInt1 {
@@ -49,18 +50,50 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
     WorksheetManager1Bean worksheetManager1;
 
     public WorksheetManager1 getInstance() throws Exception {
-        return worksheetManager1.getInstance();
+        try {
+            return worksheetManager1.getInstance();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public WorksheetManager1 fetchById(Integer worksheetId, WorksheetManager1.Load... elements) throws Exception {
-        return worksheetManager1.fetchById(worksheetId, elements);
+        try {
+            return worksheetManager1.fetchById(worksheetId, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
-    public ArrayList<IdVO> fetchByQuery(Query query) throws Exception {
-        return worksheet.fetchByQuery(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+    public ArrayList<IdVO> query(Query query) throws Exception {
+        try {
+            return worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public WorksheetManager1 fetchForUpdate(Integer worksheetId) throws Exception {
-        return worksheetManager1.fetchForUpdate(worksheetId);
+        try {
+            return worksheetManager1.fetchForUpdate(worksheetId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 unlock(Integer worksheetId, Load... elements) throws Exception {
+        try {
+            return worksheetManager1.unlock(worksheetId, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
+        try {
+            return worksheetManager1.update(wm);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }
