@@ -86,6 +86,21 @@ public class QcAnalyteBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<QcAnalyteViewDO> fetchByLotId(Integer id) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("QcAnalyte.FetchByLotId");
+        query.setParameter("id", id);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
     public QcAnalyteDO add(QcAnalyteDO data) throws Exception {
         QcAnalyte entity;
 

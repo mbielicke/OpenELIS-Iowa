@@ -43,6 +43,8 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
+import org.openelis.domain.WorksheetAnalysisViewVO;
 import org.openelis.entity.WorksheetAnalysis;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -63,6 +65,58 @@ public class WorksheetAnalysisBean {
     private UserCacheBean       userCache;
 
     @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetAnalysisViewDO> fetchByWorksheetId(Integer id) throws Exception {
+        int i;
+        List list, returnList;
+        Query query;
+        WorksheetAnalysisViewDO waVDO;
+        WorksheetAnalysisViewVO waVVO;
+
+        query = manager.createNamedQuery("WorksheetAnalysisView.FetchByWorksheetId");
+        query.setParameter("worksheetId", id);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        returnList = new ArrayList<WorksheetAnalysisViewDO>();
+        for (i = 0; i < list.size(); i++) {
+            waVVO = (WorksheetAnalysisViewVO) list.get(i);
+            waVDO = new WorksheetAnalysisViewDO();
+            copyViewToDO(waVVO, waVDO);
+            returnList.add(waVDO);
+        }
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetAnalysisViewDO> fetchByWorksheetIds(ArrayList<Integer> ids) throws Exception {
+        int i;
+        List list, returnList;
+        Query query;
+        WorksheetAnalysisViewDO waVDO;
+        WorksheetAnalysisViewVO waVVO;
+
+        query = manager.createNamedQuery("WorksheetAnalysisView.FetchByWorksheetIds");
+        query.setParameter("worksheetIds", ids);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        returnList = new ArrayList<WorksheetAnalysisViewDO>();
+        for (i = 0; i < list.size(); i++) {
+            waVVO = (WorksheetAnalysisViewVO) list.get(i);
+            waVDO = new WorksheetAnalysisViewDO();
+            copyViewToDO(waVVO, waVDO);
+            returnList.add(waVDO);
+        }
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception {
         Query query;
         List list;
@@ -80,11 +134,16 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemIds(ArrayList<Integer> ids) throws Exception {
         Query query;
+        List list;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemIds");
         query.setParameter("ids", ids);
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        return DataBaseUtil.toArrayList(list);
     }
 
     public WorksheetAnalysisDO fetchById(Integer id) throws Exception {
@@ -242,5 +301,49 @@ public class WorksheetAnalysisBean {
 
         if (list.size() > 0)
             throw list;
-    }   
+    }
+    
+    private void copyViewToDO(WorksheetAnalysisViewVO waVVO, WorksheetAnalysisViewDO waVDO) {
+        waVDO.setId(waVVO.getId());
+        waVDO.setWorksheetItemId(waVVO.getWorksheetItemId());
+        waVDO.setAccessionNumber(waVVO.getAccessionNumber());
+        waVDO.setAnalysisId(waVVO.getAnalysisId());
+        waVDO.setQcLotId(waVVO.getQcLotId());
+        waVDO.setWorksheetAnalysisId(waVVO.getWorksheetAnalysisId());
+        waVDO.setQcSystemUserId(waVVO.getQcSystemUserId());
+        waVDO.setQcStartedDate(DataBaseUtil.toYM(waVVO.getQcStartedDate()));
+        waVDO.setIsFromOther(waVVO.getIsFromOther());
+        waVDO.setWorksheetId(waVVO.getWorksheetId());
+        waVDO.setDescription(waVVO.getDescription());
+        waVDO.setTestId(waVVO.getTestId());
+        waVDO.setTestName(waVVO.getTestName());
+        waVDO.setMethodName(waVVO.getMethodName());
+        waVDO.setUnitOfMeasureId(waVVO.getUnitOfMeasureId());
+        waVDO.setUnitOfMeasure(waVVO.getUnitOfMeasure());
+        waVDO.setStatusId(waVVO.getStatusId());
+        waVDO.setCollectionDate(DataBaseUtil.toYD(waVVO.getCollectionDate()));
+        waVDO.setReceivedDate(DataBaseUtil.toYM(waVVO.getReceivedDate()));
+
+        if (waVDO.getAnalysisId() != null) {
+            //
+            // Compute and set the number of days until the analysis is 
+            // due to be completed based on when the sample was received,
+            // what the tests average turnaround time is, and whether the
+            // client requested a priority number of days.
+            //
+            if (waVVO.getPriority() != null)
+                waVDO.setDueDays(DataBaseUtil.getDueDays(waVVO.getReceivedDate(), waVVO.getPriority()));
+            else
+                waVDO.setDueDays(DataBaseUtil.getDueDays(waVVO.getReceivedDate(), waVVO.getTimeTaAverage()));
+            
+            //
+            // Compute and set the expiration date on the analysis based
+            // on the collection date and the tests definition of holding
+            // hours.
+            //
+            waVDO.setExpireDate(DataBaseUtil.getExpireDate(waVVO.getCollectionDate(),
+                                                           waVVO.getCollectionTime(),
+                                                           waVVO.getTimeHolding()));
+        }
+    }
 }

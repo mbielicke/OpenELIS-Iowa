@@ -790,13 +790,13 @@ public class SampleManager1Bean {
     @RolesAllowed("sample-update")
     public ArrayList<SampleManager1> fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds,
                                                               SampleManager1.Load... elements) throws Exception {
-        ArrayList<Integer> ids;
+        HashSet<Integer> ids;
 
-        ids = new ArrayList<Integer>();
+        ids = new HashSet<Integer>();
         for (SampleItemViewDO data : item.fetchByAnalysisIds(analysisIds))
             ids.add(data.getSampleId());
 
-        lock.lock(Constants.table().SAMPLE, ids);
+        lock.lock(Constants.table().SAMPLE, new ArrayList<Integer>(ids));
         return fetchByAnalyses(analysisIds, elements);
     }
 

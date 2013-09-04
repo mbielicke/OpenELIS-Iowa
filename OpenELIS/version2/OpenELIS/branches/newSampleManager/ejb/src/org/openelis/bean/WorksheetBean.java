@@ -25,7 +25,11 @@
  */
 package org.openelis.bean;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -35,16 +39,26 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.poi.hssf.usermodel.HSSFName;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.ss.util.CellReference;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentLogDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.entity.Worksheet;
-import org.openelis.meta.WorksheetCompletionMeta;
+import org.openelis.meta.AnalysisViewMeta;
+import org.openelis.meta.WorksheetMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
@@ -61,15 +75,19 @@ import org.openelis.util.QueryBuilderV2;
 public class WorksheetBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                        manager;
+    private EntityManager                 manager;
 
     @EJB
-    private InstrumentLogBean                    instrumentLog;
-    
+    DictionaryBean                        dictionary;
     @EJB
-    private UserCacheBean                        userCache;
+    private InstrumentLogBean             instrumentLog;
+    @EJB
+    SystemVariableBean                    systemVariable;
+    @EJB
+    private UserCacheBean                 userCache;
 
-    private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
+    private static final WorksheetMeta    meta   = new WorksheetMeta();
+    private static final AnalysisViewMeta avMeta = new AnalysisViewMeta();
 
     public WorksheetViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -145,18 +163,17 @@ public class WorksheetBean {
     }
 
     @SuppressWarnings({"unchecked", "static-access"})
-    public ArrayList<IdVO> fetchByQuery(ArrayList<QueryData> fields, int first,
-                                        int max) throws Exception {
+    public ArrayList<IdVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        ArrayList<IdVO> list;
         Query query;
         QueryBuilderV2 builder;
-        ArrayList<IdVO> list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdVO(" +
-                          WorksheetCompletionMeta.getId() + ") ");
+                          WorksheetMeta.getId() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(WorksheetCompletionMeta.getId());
+        builder.setOrderBy(WorksheetMeta.getId());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -173,55 +190,57 @@ public class WorksheetBean {
         return list;
     }
 
-    @SuppressWarnings({"unchecked", "static-access"})
-    public ArrayList<WorksheetViewDO> fetchByQueryForLookup(ArrayList<QueryData> fields,
-                                                            int first, int max) throws Exception {
-        int i;
+    @SuppressWarnings("unchecked")
+    public ArrayList<AnalysisViewVO> fetchAnalysesByView(ArrayList<QueryData> fields, 
+                                                         int first, int max) throws Exception {
+        List list = null;
         Query query;
         QueryBuilderV2 builder;
-        ArrayList<WorksheetViewDO> list;
-        SystemUserVO user;
-        WorksheetViewDO worksheet;
 
         builder = new QueryBuilderV2();
-        builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.WorksheetViewDO(" +
-                          WorksheetCompletionMeta.getId() + ", " +
-                          WorksheetCompletionMeta.getCreatedDate() + ", " +
-                          WorksheetCompletionMeta.getSystemUserId() + ", " +
-                          WorksheetCompletionMeta.getStatusId() + ", " +
-                          WorksheetCompletionMeta.getFormatId() + ", " +
-                          WorksheetCompletionMeta.getSubsetCapacity() + ", " +
-                          WorksheetCompletionMeta.getRelatedWorksheetId() + ", " +
-                          WorksheetCompletionMeta.getInstrumentId() + ", " +
-                          WorksheetCompletionMeta.getInstrumentName() + ", " +
-                          WorksheetCompletionMeta.getDescription() + ") ");
+        builder.setMeta(avMeta);
+        builder.setSelect("distinct new org.openelis.domain.AnalysisViewVO("+
+                          AnalysisViewMeta.getSampleId()+", "+
+                          AnalysisViewMeta.getDomain()+", "+
+                          AnalysisViewMeta.getAccessionNumber()+", "+
+                          AnalysisViewMeta.getReceivedDate()+", "+
+                          AnalysisViewMeta.getCollectionDate()+", "+
+                          AnalysisViewMeta.getCollectionTime()+", "+
+                          AnalysisViewMeta.getEnteredDate()+", "+
+                          AnalysisViewMeta.getPrimaryOrganizationName()+", "+
+                          AnalysisViewMeta.getTodoDescription()+", "+
+                          AnalysisViewMeta.getWorksheetDescription()+", "+
+                          AnalysisViewMeta.getPriority()+", "+
+                          AnalysisViewMeta.getTestId()+", " +
+                          AnalysisViewMeta.getTestName()+", " +
+                          AnalysisViewMeta.getMethodName()+", "+
+                          AnalysisViewMeta.getTimeTaAverage()+", " +
+                          AnalysisViewMeta.getTimeHolding()+", " +
+                          AnalysisViewMeta.getTypeOfSampleId()+", "+
+                          AnalysisViewMeta.getAnalysisId()+", "+
+                          AnalysisViewMeta.getAnalysisStatusId()+", " +
+                          AnalysisViewMeta.getSectionId()+", "+
+                          AnalysisViewMeta.getSectionName()+", "+
+                          AnalysisViewMeta.getAvailableDate()+", "+
+                          AnalysisViewMeta.getStartedDate()+", "+
+                          AnalysisViewMeta.getCompletedDate()+", "+
+                          AnalysisViewMeta.getReleasedDate()+", "+
+                          AnalysisViewMeta.getAnalysisResultOverride()+", " +
+                          AnalysisViewMeta.getUnitOfMeasureId()+", " +
+                          AnalysisViewMeta.getWorksheetFormatId()+") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(WorksheetCompletionMeta.getId());
+        builder.setOrderBy(AnalysisViewMeta.getAccessionNumber());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
+
         builder.setQueryParams(query, fields);
 
-        list = (ArrayList<WorksheetViewDO>)query.getResultList();
+        list = DataBaseUtil.toArrayList(query.getResultList());
         if (list.isEmpty())
             throw new NotFoundException();
-
-        list = DataBaseUtil.subList(list, first, max);
-        if (list == null)
-            throw new LastPageException();
-
-        for (i = 0; i < list.size(); i++) {
-            worksheet = list.get(i);
-
-            if (worksheet.getSystemUserId() != null) {
-                user = userCache.getSystemUser(worksheet.getSystemUserId());
-                if (user != null)
-                    worksheet.setSystemUser(user.getLoginName());
-            }
-        }
-
-        return list;
+        
+        return (ArrayList<AnalysisViewVO>)list;
     }
 
     public WorksheetDO add(WorksheetDO data) throws Exception {
@@ -369,21 +388,83 @@ public class WorksheetBean {
 
         if (DataBaseUtil.isEmpty(data.getCreatedDate()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             WorksheetCompletionMeta.getCreatedDate()));
+                                             WorksheetMeta.getCreatedDate()));
 
         if (DataBaseUtil.isEmpty(data.getSystemUserId()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             WorksheetCompletionMeta.getSystemUserId()));
+                                             WorksheetMeta.getSystemUserId()));
 
         if (DataBaseUtil.isEmpty(data.getStatusId()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             WorksheetCompletionMeta.getStatusId()));
+                                             WorksheetMeta.getStatusId()));
 
         if (DataBaseUtil.isEmpty(data.getFormatId()))
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             WorksheetCompletionMeta.getFormatId()));
+                                             WorksheetMeta.getFormatId()));
 
         if (list.size() > 0)
             throw list;
+    }
+    
+    @TransactionTimeout(600)
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
+        int                 i;
+        AreaReference       aref;
+        ArrayList<IdNameVO> columnNames;
+        CellReference       cref[];
+        DictionaryViewDO    formatVDO;
+        FileInputStream     in;
+        HSSFName            name;
+        HSSFWorkbook        wb;
+
+        columnNames = new ArrayList<IdNameVO>();
+        
+        try {
+            formatVDO = dictionary.fetchById(formatId);
+        } catch (NotFoundException nfE) {
+            formatVDO = new DictionaryViewDO();
+            formatVDO.setEntry("DefaultTotal");
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving worksheet format: "+anyE.getMessage());
+        }
+
+        try {
+            in = new FileInputStream(getWorksheetTemplateFileName(formatVDO));
+        } catch (FileNotFoundException fnfE) {
+            throw new Exception("Error loading template file: "+fnfE.getMessage());
+        }
+        
+        try {
+            wb = new HSSFWorkbook(in, true);
+        } catch (IOException ioE) {
+            throw new Exception("Error loading workbook from template file: "+ioE.getMessage());
+        }
+
+        for (i = 0; i < wb.getNumberOfNames(); i++) {
+            name = wb.getNameAt(i);
+            if (name.getRefersToFormula() != null) {
+                aref = new AreaReference(name.getRefersToFormula());
+                cref = aref.getAllReferencedCells();
+                columnNames.add(new IdNameVO(new Integer(Short.valueOf(cref[0].getCol()).intValue()), name.getNameName()));
+            }
+        }
+        
+        return columnNames;
+    }
+    
+    private String getWorksheetTemplateFileName(DictionaryViewDO formatVDO) throws Exception {
+        ArrayList<SystemVariableDO> sysVars;
+        String                      dirName;
+        
+        dirName = "";
+        try {
+            sysVars = systemVariable.fetchByName("worksheet_template_directory", 1);
+            if (sysVars.size() > 0)
+                dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
+        }
+
+        return dirName+"OEWorksheet"+formatVDO.getEntry()+".xls";
     }
 }
