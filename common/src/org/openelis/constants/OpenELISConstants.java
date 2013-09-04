@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -6820,11 +6820,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String loadFromInstrumentFile();
 
   /**
-   * Translated "Load Template".
+   * Translated "Load QC Template".
    * 
-   * @return translated "Load Template"
+   * @return translated "Load QC Template"
    */
-  @DefaultMessage("Load Template")
+  @DefaultMessage("Load QC Template")
   @Key("loadTemplate")
   String loadTemplate();
 
@@ -7459,11 +7459,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String moveUp();
 
   /**
-   * Translated "More than one active QC was found matching ''{0}'' at row {1}".
+   * Translated "More than one active QC Lot was found matching ''{0}'' at row {1}".
    * 
-   * @return translated "More than one active QC was found matching ''{0}'' at row {1}"
+   * @return translated "More than one active QC Lot was found matching ''{0}'' at row {1}"
    */
-  @DefaultMessage("More than one active QC was found matching ''{0}'' at row {1}")
+  @DefaultMessage("More than one active QC Lot was found matching ''{0}'' at row {1}")
   @Key("multiMatchingActiveQc")
   String multiMatchingActiveQc(String arg0,  String arg1);
 
@@ -15316,6 +15316,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet();
 
   /**
+   * Translated "No Analyses Found For Worksheet Id: {0}".
+   * 
+   * @return translated "No Analyses Found For Worksheet Id: {0}"
+   */
+  @DefaultMessage("No Analyses Found For Worksheet Id: {0}")
+  @Key("worksheetAnalysesNotFound")
+  String worksheetAnalysesNotFound(String arg0);
+
+  /**
    * Translated "One or More items are directly/circularly linked to themself.".
    * 
    * @return translated "One or More items are directly/circularly linked to themself."
@@ -15350,6 +15359,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Worksheet Builder Lookup (2.0)")
   @Key("worksheetBuilderLookup")
   String worksheetBuilderLookup();
+
+  /**
+   * Translated "You must choose a format for this worksheet before adding analyses from another worksheet.".
+   * 
+   * @return translated "You must choose a format for this worksheet before adding analyses from another worksheet."
+   */
+  @DefaultMessage("You must choose a format for this worksheet before adding analyses from another worksheet.")
+  @Key("worksheetChooseFormatBeforeAddFromOther")
+  String worksheetChooseFormatBeforeAddFromOther();
 
   /**
    * Translated "Worksheet Completion".
@@ -15532,6 +15550,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheetLookup();
 
   /**
+   * Translated "More than one active QC Lot was found for position {0}".
+   * 
+   * @return translated "More than one active QC Lot was found for position {0}"
+   */
+  @DefaultMessage("More than one active QC Lot was found for position {0}")
+  @Key("worksheetMultiMatchingActiveQc")
+  String worksheetMultiMatchingActiveQc(String arg0);
+
+  /**
    * Translated "You may not save an empty worksheet".
    * 
    * @return translated "You may not save an empty worksheet"
@@ -15602,6 +15629,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Error fetching worksheet template directory system variable")
   @Key("worksheetTemplateDirectoryLookupException")
   String worksheetTemplateDirectoryLookupException();
+
+  /**
+   * Translated "The following analyses were removed due to a capacity overflow on the loaded template.\nIf you are updating this worksheet, the worksheet data for those analyses will be lost.".
+   * 
+   * @return translated "The following analyses were removed due to a capacity overflow on the loaded template.\nIf you are updating this worksheet, the worksheet data for those analyses will be lost."
+   */
+  @DefaultMessage("The following analyses were removed due to a capacity overflow on the loaded template.\nIf you are updating this worksheet, the worksheet data for those analyses will be lost.")
+  @Key("worksheetTemplateRemovedAnalyses")
+  String worksheetTemplateRemovedAnalyses();
 
   /**
    * Translated "Error loading column name/index mappings (to).\nResults will be copied by index.".
