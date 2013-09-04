@@ -56,7 +56,6 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -344,7 +343,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         addScreenHandler(removeRowButton, "removeRow", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                removeRowButton.setEnabled(canEdit && isState(ADD, UPDATE));
+                removeRowButton.setEnabled(false);
             }
         });
 
@@ -382,7 +381,6 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                                parentScreen,
                                new DataChangeEvent.Handler() {
                                    public void onDataChange(DataChangeEvent event) {
-                                       evaluateEdit();
                                        fireDataChange();
                                        /*
                                         * clear the tabs showing the data
@@ -409,11 +407,6 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     public void setData(SampleManager1 manager) {
         if ( !DataBaseUtil.isSame(this.manager, manager))
             this.manager = manager;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     @UiHandler("addItemButton")
@@ -517,19 +510,31 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         tests = new ArrayList<SampleTestRequestVO>();
         data = (TestMethodVO)val.getData();
         if (data.getMethodId() != null)
-            test = new SampleTestRequestVO(item.getId(), data.getTestId(), null,
-                                           null, null, null, false, null);
+            test = new SampleTestRequestVO(item.getId(),
+                                           data.getTestId(),
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           false,
+                                           null);
         else
-            test = new SampleTestRequestVO(item.getId(), null, null, null, null,
-                                           data.getTestId(), false, null);
+            test = new SampleTestRequestVO(item.getId(),
+                                           null,
+                                           null,
+                                           null,
+                                           null,
+                                           data.getTestId(),
+                                           false,
+                                           null);
 
         tests.add(test);
         screen.getEventBus().fireEvent(new AddTestEvent(tests));
     }
 
     private void evaluateEdit() {
-        canEdit = manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
-                                                                                    .getStatusId());
+        canEdit = manager != null &&
+                  !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
     }
 
     private void sampleItemChanged(String itemUid, SampleItemChangeEvent.Action action) {

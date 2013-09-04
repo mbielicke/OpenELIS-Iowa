@@ -682,6 +682,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_action();
 
   /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is not present in the system ".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is not present in the system "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is not present in the system ")
+  @Key("analysis.cantCancelUncommitedException")
+  String analysis_cantCancelUncommitedException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Cannot copy blank section".
    * 
    * @return translated "Cannot copy blank section"
@@ -709,22 +718,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_completedDateInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1} : {2}".
+   * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'': Insufficient privileges to add {1} : {2}"
+   * @return translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to add {1} : {2}")
+  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}")
   @Key("analysis.insufficientPrivilegesAddTestWarning")
   String analysis_insufficientPrivilegesAddTestWarning(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'' : Cannot add analyte '{0}' to {1} : {2} at this position".
+   * Translated "Accession # ''{0,number}'': Insufficient privileges to cancel {1}, {2}".
    * 
-   * @return translated "Accession # ''{0,number}'' : Cannot add analyte '{0}' to {1} : {2} at this position"
+   * @return translated "Accession # ''{0,number}'': Insufficient privileges to cancel {1}, {2}"
    */
-  @DefaultMessage("Accession # ''{0,number}'' : Cannot add analyte '{0}' to {1} : {2} at this position")
+  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to cancel {1}, {2}")
+  @Key("analysis.insufficientPrivilegesCancelException")
+  String analysis_insufficientPrivilegesCancelException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position".
+   * 
+   * @return translated "Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position")
   @Key("analysis.invalidPositionForAnalyteException")
-  String analysis_invalidPositionForAnalyteException(Integer arg0,  String arg1,  String arg2);
+  String analysis_invalidPositionForAnalyteException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is in ''{3}'' status".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is in ''{3}'' status"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is in ''{3}'' status")
+  @Key("analysis.invalidStatusForCancelException")
+  String analysis_invalidStatusForCancelException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
    * Translated "No Add permission for - {0} : {1}, {2}".
@@ -799,20 +826,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_testIdMissingException(String arg0,  String arg1);
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure invalid for sample type".
+   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type".
    * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure invalid for sample type"
+   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type"
    */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure invalid for sample type")
+  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type")
   @Key("analysis.unitInvalidWarning")
   String analysis_unitInvalidWarning(String arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure is required".
+   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required".
    * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure is required"
+   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required"
    */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2} : {3} - Unit of measure is required")
+  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required")
   @Key("analysis.unitRequiredException")
   String analysis_unitRequiredException(String arg0,  String arg1,  String arg2,  String arg3);
 
@@ -7693,11 +7720,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String noAssignTestPermission();
 
   /**
-   * Translated "Cannot cancel prep analysis ''{0} : {1}'' with released analytical analysis ''{2} : {3}''".
+   * Translated "Cannot cancel prep analysis ''{0}, {1}'' with released analytical analysis ''{2}, {3}''".
    * 
-   * @return translated "Cannot cancel prep analysis ''{0} : {1}'' with released analytical analysis ''{2} : {3}''"
+   * @return translated "Cannot cancel prep analysis ''{0}, {1}'' with released analytical analysis ''{2}, {3}''"
    */
-  @DefaultMessage("Cannot cancel prep analysis ''{0} : {1}'' with released analytical analysis ''{2} : {3}''")
+  @DefaultMessage("Cannot cancel prep analysis ''{0}, {1}'' with released analytical analysis ''{2}, {3}''")
   @Key("noCancelPrepWithReleasedTest")
   String noCancelPrepWithReleasedTest(String arg0,  String arg1,  String arg2,  String arg3);
 

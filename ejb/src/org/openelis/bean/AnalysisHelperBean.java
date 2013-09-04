@@ -48,6 +48,7 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
@@ -58,7 +59,6 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
 
@@ -82,6 +82,9 @@ public class AnalysisHelperBean {
 
     @EJB
     private MethodBean       method;
+
+    @EJB
+    private DictionaryCacheBean dictionaryCache;
 
     /**
      * Returns TestManagers for given test ids. For those tests that are not
@@ -331,6 +334,7 @@ public class AnalysisHelperBean {
             if ( !insertAna.getRowGroup().equals(lastrg) && !insertAna.getRowGroup().equals(nextrg))
                 throw new InconsistencyException(Messages.get()
                                                          .analysis_invalidPositionForAnalyteException(getSample(sm).getAccessionNumber(),
+                                                                                                      insertAna.getAnalyteName(),
                                                                                                       ana.getTestName(),
                                                                                                       ana.getMethodName()));
 
@@ -407,10 +411,10 @@ public class AnalysisHelperBean {
     /**
      * This method changes the specified analysis's method to the specified
      * method. The old results are removed and their values are merged with the
-     * results added from the new method. Returns a list of prep tests that could
-     * be added to satisfy the prep requirement for the new test.
+     * results added from the new method. Returns a list of prep tests that
+     * could be added to satisfy the prep requirement for the new test.
      */
-    public SampleTestReturnVO changeMethod(SampleManager1 sm, Integer analysisId,
+    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
                                                    Integer methodId) throws Exception {
         int i;
         Integer rowAnaId;
@@ -549,7 +553,7 @@ public class AnalysisHelperBean {
                     }
 
                     /*
-                     * the next level is used to keep to track of the values of
+                     * the next level is used to keep track of the values of
                      * individual analytes
                      */
                     if (row.get(r.getAnalyteId()) == null)
@@ -580,9 +584,10 @@ public class AnalysisHelperBean {
     }
 
     /**
-     * Loads the defaults, defined in this analysis' test, in the results of the
-     * analysis. Doesn't change the existing values if a default is not defined.
-     * Sets the type to null in all results of the analysis to force validation.
+     * This method sets the specified unit in the analysis and loads the
+     * defaults defined for this unit in this analysis' results that don't have
+     * a value. Sets the type to null in all results of this analysis to force
+     * validation.
      */
     public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
         ResultViewDO r;
@@ -614,6 +619,71 @@ public class AnalysisHelperBean {
         }
 
         return sm;
+    }
+    
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
+                                               Integer statusId) throws Exception {
+        Integer accession;
+        String status;
+        AnalysisViewDO data, ana;
+        ArrayList<AnalysisViewDO> anas;
+        Datetime now;
+        SystemUserPermission perm;
+
+        data = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(analysisId));
+        accession = getSample(sm).getAccessionNumber();
+
+        if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) {
+            if (data.getId() < 0)
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_cantCancelUncommitedException(accession,
+                                                                                                 data.getTestName(),
+                                                                                                 data.getMethodName()));
+
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId()) ||
+                Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId())) {
+                status = dictionaryCache.getById(data.getStatusId()).getEntry();
+
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_invalidStatusForCancelException(accession,
+                                                                                                   data.getTestName(),
+                                                                                                   data.getMethodName(),
+                                                                                                   status));
+            }
+
+            perm = userCache.getPermission();
+            if (data.getSectionName() == null ||
+                !perm.getSection(data.getSectionName()).hasCancelPermission()) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_insufficientPrivilegesCancelException(accession,
+                                                                                                         data.getTestName(),
+                                                                                                         data.getMethodName()));
+            }
+
+            anas = getAnalyses(sm);
+            /*
+             * check to see if any released analyses on this sample link have this
+             * analysis as their prep
+             */
+            /*
+             * if this analysis was the prep analysis for any analyses, then put
+             * those analyses in logged in status and set their available date
+             */
+            now = null;
+            for (int i = 0; i < anas.size(); i++ ) {
+                ana = anas.get(i);
+                if (analysisId.equals(ana.getPreAnalysisId())) {
+                    ana.setPreAnalysisId(null);
+                    ana.setPreAnalysisTest(null);
+                    ana.setPreAnalysisMethod(null);
+                    ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+                    if (now == null)
+                        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+                    ana.setAvailableDate(now);
+                }
+            }
+        }
+        return null;
     }
 
     private ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO ana, TestAnalyteViewDO ta,

@@ -1541,26 +1541,31 @@ public class SampleManager1Bean {
         }
         return sm;
     }
-    
+
     /**
-     * Sets the specified unit id in the analysis. Loads the defaults in the
-     * results of the analysis. Doesn't change the existing values if a default
-     * is not defined. Sets the type to null in all results of the analysis to
-     * force validation.
+     * This method changes the specified analysis's method to the specified
+     * method. The old results are removed and their values are merged with the
+     * results added from the new method. Returns a list of prep tests that
+     * could be added to satisfy the prep requirement for the new test.
+     */
+    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
+                                                   Integer methodId) throws Exception {
+        return analysisHelper.changeAnalysisMethod(sm, analysisId, methodId);
+    }
+
+    /**
+     * This method changes the specified analysis's unit to the specified unit.
+     * The defaults defined for this unit in this analysis' test are loaded in
+     * those results of the analysis that don't have a value. The type is set to
+     * null in all results of the analysis to force validation.
      */
     public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
         return analysisHelper.changeAnalysisUnit(sm, analysisId, unitId);
     }
+    
 
-    /**
-     * TODO comment Sets the specified test id in the analysis. Loads the
-     * defaults, defined in this analysis' test, in the results of the analysis.
-     * Doesn't change the existing values if a default is not defined. Sets the
-     * type to null in all results of the analysis to force validation.
-     */
-    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
-                                               Integer methodId) throws Exception {
-        return analysisHelper.changeMethod(sm, analysisId, methodId);
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
+        return analysisHelper.changeAnalysisStatus(sm, analysisId, unitId);
     }
 
     /**
