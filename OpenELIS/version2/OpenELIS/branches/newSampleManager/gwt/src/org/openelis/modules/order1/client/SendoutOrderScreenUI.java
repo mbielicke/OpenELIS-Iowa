@@ -1113,6 +1113,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected void add(ClickEvent event) {
         try {
             manager = OrderService1.get().getInstance(Constants.order().SEND_OUT);
+            cache = new HashMap<String, Object>();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.severe(e.getMessage());
@@ -1172,7 +1173,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     private void commit(boolean ignoreWarning) {
         finishEditing();
-        clearErrors();
 
         if ( !validate()) {
             window.setError(Messages.get().gen_correctErrors());
@@ -1190,8 +1190,41 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 commitUpdate(ignoreWarning);
                 break;
         }
+    }
 
+    protected void commitQuery() {
+        Query query;
+
+        query = new Query();
+        query.setFields(getQueryFields());
+        nav.setQuery(query);
         cache = null;
+    }
+
+    protected void commitUpdate(boolean ignoreWarning) {
+        if (state == ADD)
+            window.setBusy(Messages.get().gen_adding());
+        else
+            window.setBusy(Messages.get().gen_updating());
+
+        try {
+            manager = OrderService1.get().update(manager, ignoreWarning);
+            setData();
+            setState(DISPLAY);
+            fireDataChange();
+            window.clearStatus();
+            cache = null;
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+            if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                showWarningsDialog(e);
+        } catch (Exception e) {
+            if (state == ADD)
+                Window.alert("commitAdd(): " + e.getMessage());
+            else
+                Window.alert("commitUpdate(): " + e.getMessage());
+            window.clearStatus();
+        }
     }
 
     @UiHandler("abort")
@@ -1412,39 +1445,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
-        }
-    }
-
-    protected void commitQuery() {
-        Query query;
-
-        query = new Query();
-        query.setFields(getQueryFields());
-        nav.setQuery(query);
-    }
-
-    protected void commitUpdate(boolean ignoreWarning) {
-        if (state == ADD)
-            window.setBusy(Messages.get().gen_adding());
-        else
-            window.setBusy(Messages.get().gen_updating());
-
-        try {
-            manager = OrderService1.get().update(manager, ignoreWarning);
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.clearStatus();
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-            if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
-                showWarningsDialog(e);
-        } catch (Exception e) {
-            if (state == ADD)
-                Window.alert("commitAdd(): " + e.getMessage());
-            else
-                Window.alert("commitUpdate(): " + e.getMessage());
-            window.clearStatus();
         }
     }
 
@@ -1844,15 +1844,31 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         Integer prevId;
         ArrayList<Integer> ids;
         AuxDataViewDO aux;
+        OrderTestViewDO test;
+        ArrayList<TestManager> tms;
         ArrayList<AuxFieldGroupManager> afgms;
 
-        if (cache == null)
-            cache = new HashMap<String, Object>();
+        cache = new HashMap<String, Object>();
+
+        /*
+         * the list of tests to be fetched
+         */
+        ids = new ArrayList<Integer>();
+        for (i = 0; i < manager.test.count(); i++ ) {
+            test = manager.test.get(i);
+            ids.add(test.getTestId());
+        }
+
+        if (ids.size() > 0) {
+            tms = TestService.get().fetchByIds(ids);
+            for (TestManager tm : tms)
+                cache.put("tm:" + tm.getTest().getId(), tm);
+        }
 
         /*
          * the list of aux field groups to be fetched
          */
-        ids = new ArrayList<Integer>();
+        ids.clear();
         prevId = null;
         for (i = 0; i < manager.auxData.count(); i++ ) {
             aux = manager.auxData.get(i);
@@ -1863,9 +1879,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         }
 
         if (ids.size() > 0) {
-            /*
-             * cache AuxFieldGroupManagers
-             */
             afgms = AuxiliaryService.get().fetchByIds(ids);
             for (AuxFieldGroupManager afgm : afgms)
                 cache.put("am:" + afgm.getGroup().getId(), afgm);
