@@ -27,13 +27,10 @@ package org.openelis.manager;
 
 import java.util.Iterator;
 
-import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.LockBean;
-import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.Constants;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
@@ -148,15 +145,10 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        int sManIndex, sManCount;
         Integer id;
         Iterator<SampleManager> iter;
         LockBean lock;
-        ReportStatus status;
         SampleManager sManager;
-        SessionCacheBean session;
-
-        session = EJBFactory.getSessionCache();
 
         EJBFactory.getWorksheet().update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
@@ -167,9 +159,6 @@ public class WorksheetManagerProxy {
             manager.getItems().update();
 
             iter = manager.getSampleManagers().values().iterator();
-            sManCount = manager.getSampleManagers().values().size();
-            sManIndex = 0;
-            status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
                 if (manager.getLockedManagers()
@@ -180,8 +169,6 @@ public class WorksheetManagerProxy {
                     manager.getLockedManagers().remove(sManager.getSample()
                                                                .getAccessionNumber());
                 }
-                status.setPercentComplete((++sManIndex / sManCount) * 40 + 55);
-                session.setAttribute("WorksheetUpdateStatus", status);
             }
         }
 

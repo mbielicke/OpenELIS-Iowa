@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
@@ -64,17 +64,17 @@ public class WorksheetManager1Accessor {
         wm.items.add(item);
     }
     
-    public static ArrayList<WorksheetAnalysisDO> getAnalyses(WorksheetManager1 wm) {
+    public static ArrayList<WorksheetAnalysisViewDO> getAnalyses(WorksheetManager1 wm) {
         return wm.analyses;
     }
     
-    public static void setAnalyses(WorksheetManager1 wm, ArrayList<WorksheetAnalysisDO> analyses) {
+    public static void setAnalyses(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses) {
         wm.analyses = analyses;
     }
     
-    public static void addAnalysis(WorksheetManager1 wm, WorksheetAnalysisDO analysis) {
+    public static void addAnalysis(WorksheetManager1 wm, WorksheetAnalysisViewDO analysis) {
         if (wm.analyses == null)
-            wm.analyses = new ArrayList<WorksheetAnalysisDO>();
+            wm.analyses = new ArrayList<WorksheetAnalysisViewDO>();
         wm.analyses.add(analysis);
     }
     

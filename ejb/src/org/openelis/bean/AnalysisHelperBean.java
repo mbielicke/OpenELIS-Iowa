@@ -43,6 +43,7 @@ import org.openelis.domain.MethodDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -53,9 +54,11 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
 
@@ -69,10 +72,16 @@ import org.openelis.utilcommon.ResultFormatter;
 public class AnalysisHelperBean {
 
     @EJB
-    private TestManagerBean testManager;
+    private SectionCacheBean sectionCache;
 
     @EJB
-    private MethodBean      method;
+    private TestManagerBean  testManager;
+    
+    @EJB
+    private UserCacheBean    userCache;
+
+    @EJB
+    private MethodBean       method;
 
     /**
      * Returns TestManagers for given test ids. For those tests that are not
@@ -135,7 +144,7 @@ public class AnalysisHelperBean {
          * otherwise use the default section
          */
         if (sectionId != null) {
-            for (int i = 0; i < tsm.count(); i++ ) {
+            for (int i = 0; i < tsm.count(); i++) {
                 ts = tsm.getSectionAt(i);
                 if (ts.getSectionId().equals(sectionId))
                     break;
@@ -639,5 +648,38 @@ public class AnalysisHelperBean {
         if (def != null)
             r.setValue(def);
         r.setTypeId(null);
+    }
+
+    public void initiateAnalysis(AnalysisViewDO data) throws Exception {
+        SystemUserPermission perm;
+        SectionViewDO section;
+
+        assert data.getSectionId() != null : "section id is null";
+
+        // make sure the status is not released, cancelled, or in prep
+        if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_INPREP.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId()))
+            throw new FormErrorException(Messages.get().wrongStatusNoInitiate());
+
+        // make sure the user has complete permission for the section
+        section = sectionCache.getById(data.getSectionId());
+        perm = userCache.getPermission();
+        if (perm.getSection(section.getName()) == null ||
+            !perm.getSection(section.getName()).hasCompletePermission())
+            throw new FormErrorException(Messages.get()
+                                                 .insufficientPrivilegesInitiateAnalysis(data.getTestName(),
+                                                                                         data.getMethodName()));
+
+        if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_ON_HOLD.equals(data.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_REQUEUE.equals(data.getStatusId()))
+            data.setStatusId(Constants.dictionary().ANALYSIS_INITIATED);
+        else if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(data.getStatusId()))
+            data.setStatusId(Constants.dictionary().ANALYSIS_ERROR_INITIATED);
+
+        if (data.getStartedDate() == null)
+            data.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
     }
 }

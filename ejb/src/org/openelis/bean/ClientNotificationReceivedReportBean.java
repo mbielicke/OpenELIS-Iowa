@@ -1,7 +1,5 @@
 package org.openelis.bean;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -50,7 +48,6 @@ public class ClientNotificationReceivedReportBean {
         String from;
         Date lastRunDate, currentRunDate;
         Calendar cal;
-        DateFormat df;
         SystemVariableDO runBackDays;
         ArrayList<ClientNotificationVO> resultList;
 
@@ -60,7 +57,6 @@ public class ClientNotificationReceivedReportBean {
             /*
              * subtracting runBackDays from the current time for start date
              */
-            df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             cal = Calendar.getInstance();
             currentRunDate = cal.getTime();
             cal.add(Calendar.DAY_OF_MONTH, -Integer.valueOf(runBackDays.getValue()));

@@ -43,7 +43,6 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
 
 @Stateless
@@ -52,9 +51,6 @@ import org.openelis.ui.common.ModulePermission.ModuleFlags;
 public class WorksheetManagerBean {
     @Resource
     private SessionContext   ctx;
-
-    @EJB
-    private SessionCacheBean session;
 
     @EJB
     private LockBean         lockBean;
@@ -113,18 +109,11 @@ public class WorksheetManagerBean {
     public WorksheetManager update(WorksheetManager man) throws Exception {
         Iterator<SampleManager> iter;
         UserTransaction ut;
-        ReportStatus status;
         SampleManager sMan;
-
-        status = new ReportStatus();
-        session.setAttribute("WorksheetUpdateStatus", status);
 
         checkSecurity(ModuleFlags.UPDATE);
 
         man.validate();
-
-        status.setPercentComplete(5);
-        session.setAttribute("WorksheetUpdateStatus", status);
 
         ut = ctx.getUserTransaction();
         try {
@@ -132,9 +121,6 @@ public class WorksheetManagerBean {
             lockBean.validateLock(Constants.table().WORKSHEET, man.getWorksheet().getId());
             man.update();
             lockBean.unlock(Constants.table().WORKSHEET, man.getWorksheet().getId());
-            status = (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
-            status.setPercentComplete(95);
-            session.setAttribute("WorksheetUpdateStatus", status);
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -146,11 +132,6 @@ public class WorksheetManagerBean {
             man.getLockedManagers().clear();
             throw e;
         }
-
-        status = (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
-        status.setPercentComplete(100);
-        status.setStatus(ReportStatus.Status.SAVED);
-        session.setAttribute("WorksheetUpdateStatus", status);
 
         return man;
     }
@@ -191,10 +172,6 @@ public class WorksheetManagerBean {
 
     public WorksheetQcResultManager fetchWorksheetQcResultByWorksheetAnalysisId(Integer id) throws Exception {
         return WorksheetQcResultManager.fetchByWorksheetAnalysisId(id);
-    }
-
-    public ReportStatus getUpdateStatus() {
-        return (ReportStatus)session.getAttribute("WorksheetUpdateStatus");
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {

@@ -66,13 +66,12 @@ public class TestTypeOfSampleBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Integer testId, Integer typeOfSampleId, String unitOfMeasure) throws Exception {
+    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Integer analysisId, String unitOfMeasure) throws Exception {
         Query query;
         ArrayList<IdNameVO> unitList;
 
         query = manager.createNamedQuery("TestTypeOfSample.FetchUnitsForWorksheetAutocomplete");
-        query.setParameter("testId", testId);
-        query.setParameter("typeOfSampleId", typeOfSampleId);
+        query.setParameter("analysisId", analysisId);
         query.setParameter("unitOfMeasure", unitOfMeasure);
         unitList = (ArrayList<IdNameVO>)query.getResultList();
 

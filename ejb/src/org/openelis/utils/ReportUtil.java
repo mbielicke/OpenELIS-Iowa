@@ -111,7 +111,7 @@ public class ReportUtil {
             q.setQuery(q.getQuery().replaceAll("'", "''"));
             if (q.getQuery().contains(","))
                 return "in (" + q.getQuery() + ")";
-            else if ( !DataBaseUtil.isEmpty(q.getQuery()))
+            else if (!DataBaseUtil.isEmpty(q.getQuery()))
                 return " = " + q.getQuery();
         }
         return null;
@@ -130,7 +130,7 @@ public class ReportUtil {
             return null;
         str = q.getQuery().split(",");
         list = new int[str.length];
-        for (int i = 0; i < str.length; i++ ) {
+        for (int i = 0; i < str.length; i++) {
             try {
                 list[i] = Integer.parseInt(str[i]);
             } catch (Exception ex) {
@@ -270,7 +270,7 @@ public class ReportUtil {
                 args.add(String.valueOf(copies));
             }
 
-            for (int i = 0; i < options.length; i++ ) {
+            for (int i = 0; i < options.length; i++) {
                 args.add("-o");
                 args.add(String.valueOf(options[i]));
             }
@@ -299,31 +299,31 @@ public class ReportUtil {
             args.add("sendfax");
             args.add("-R");
 
-            if ( !DataBaseUtil.isEmpty(faxOwner)) {
+            if (!DataBaseUtil.isEmpty(faxOwner)) {
                 args.add("-o");
                 args.add(faxOwner);
             }
 
-            if ( !DataBaseUtil.isEmpty(faxEmail)) {
+            if (!DataBaseUtil.isEmpty(faxEmail)) {
                 args.add("-f");
                 args.add(faxEmail);
             }
 
-            if ( !DataBaseUtil.isEmpty(fromName)) {
+            if (!DataBaseUtil.isEmpty(fromName)) {
                 args.add("-X");
                 args.add(fromName);
             }
-            if ( !DataBaseUtil.isEmpty(toCompany)) {
+            if (!DataBaseUtil.isEmpty(toCompany)) {
                 args.add("-x");
                 args.add(toCompany);
             }
-            if ( !DataBaseUtil.isEmpty(faxNote)) {
+            if (!DataBaseUtil.isEmpty(faxNote)) {
                 args.add("-c");
                 args.add(faxNote);
             }
             faxNumber = faxNumber.replaceAll("[^0-9]", "");
             args.add("-d");
-            args.add( !DataBaseUtil.isEmpty(toName) ? toName + "@" + faxNumber : faxNumber);
+            args.add(!DataBaseUtil.isEmpty(toName) ? toName + "@" + faxNumber : faxNumber);
 
             args.add(file.toString());
             exec(args);
@@ -430,7 +430,7 @@ public class ReportUtil {
         String cmd[];
 
         cmd = new String[args.size()];
-        for (int i = 0; i < args.size(); i++ )
+        for (int i = 0; i < args.size(); i++)
             cmd[i] = args.get(i);
 
         exec(cmd);
@@ -467,7 +467,7 @@ public class ReportUtil {
         if (DataBaseUtil.isEmpty(clause))
             return map;
         str = clause.split(";");
-        for (int i = 0; i < str.length; i++ ) {
+        for (int i = 0; i < str.length; i++) {
             str1 = str[i].split(":");
             if (str1.length != 2)
                 continue;
@@ -499,7 +499,7 @@ public class ReportUtil {
         if (DataBaseUtil.isEmpty(clause))
             return map;
         str = clause.split(";");
-        for (int i = 0; i < str.length; i++ ) {
+        for (int i = 0; i < str.length; i++) {
             list = new ArrayList<Integer>();
             str1 = str[i].split(":");
             if (str1.length != 2)
@@ -509,7 +509,7 @@ public class ReportUtil {
             if (DataBaseUtil.isEmpty(key) || DataBaseUtil.isEmpty(value))
                 continue;
             str2 = value.split(",");
-            for (int j = 0; j < str2.length; j++ ) {
+            for (int j = 0; j < str2.length; j++) {
                 try {
                     list.add(Integer.parseInt(str2[j]));
                 } catch (Exception ex) {
@@ -540,19 +540,5 @@ public class ReportUtil {
         msg.saveChanges();
 
         Transport.send(msg);
-    }
-
-    /**
-     * This method returns a segment of a command like the one for printing or
-     * faxing a file, in the format: option "arg" . The first part of the string
-     * is the option to be used in the command e.g. -P, for specifying the
-     * printer, and the second part is the value for that option e.g.
-     * "printer 1". If arg is null or empty then it returns an empty string.
-     */
-    private static String getOption(String option, String arg) {
-        if (DataBaseUtil.isEmpty(arg))
-            return "";
-        arg = arg.trim().replaceAll("\"", "'");
-        return " " + option + " \"" + arg + "\"";
     }
 }
