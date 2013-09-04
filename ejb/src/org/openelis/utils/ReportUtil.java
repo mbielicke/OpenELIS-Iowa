@@ -522,18 +522,4 @@ public class ReportUtil {
 
         Transport.send(msg);
     }
-    
-    /** 
-     * This method returns a segment of a command like the one for printing or 
-     * faxing a file, in the format: option "arg" . The first part of the string
-     * is the option to be used in the command e.g. -P, for specifying the printer,
-     * and the second part is the value for that option e.g. "printer 1". If arg
-     * is null or empty then it returns an empty string.     
-     */
-    private static String getOption(String option, String arg) {
-        if (DataBaseUtil.isEmpty(arg))
-            return "";
-        arg = arg.trim().replaceAll("\"", "'");
-        return " "+option+" \""+arg+"\"";
-    }
 }
