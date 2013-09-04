@@ -32,32 +32,43 @@
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel>
-    <g:layer top="0px" bottom="30px">
-      <t:Table ui:field="worksheetItemTable" visibleRows="10" horizontalScroll="ALWAYS"
+    <g:layer top="0px" bottom="25px">
+      <t:Table ui:field="worksheetItemTable" horizontalScroll="ALWAYS"
                verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
         <t:Column width="50" label="{msg.position}">
           <t:LabelCell/>
         </t:Column>
-        <t:Column width="90" sortable="false" label="{msg.accessionNum}">
+        <t:Column width="90" label="{msg.accessionNum}">
           <t:LabelCell/>
         </t:Column>
-        <t:Column width="110" sortable="false" label="{msg.description}">
-          <t:LabelCell/>
+        <t:Column width="110" label="{msg.description}">
+          <t:AutoCompleteCell>
+            <w:AutoComplete ui:field="description" width="110" case="MIXED">
+              <w:popup>
+                <t:Table visibleRows="10" header="true" horizontalScroll="NEVER">
+                  <t:Column width="110" label="{msg.qcName}">
+                    <t:LabelCell/>
+                  </t:Column>
+                </t:Table>
+              </w:popup>
+            </w:AutoComplete>
+          </t:AutoCompleteCell>
         </t:Column>
         <t:Column width="70" label="{msg.qcLink}">
           <t:DropdownCell>
             <w:Dropdown ui:field="qcLink" width="70" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
-        <t:Column width="100" sortable="false" label="{msg.test}">
+        <t:Column width="100" label="{msg.test}">
           <t:LabelCell/>
         </t:Column>
-        <t:Column width="100" sortable="false" label="{msg.method}">
+        <t:Column width="100" label="{msg.method}">
           <t:LabelCell/>
         </t:Column>
         <t:Column width="100" label="{msg.unit}">
-          <t:LabelCell/>
 <!--
+          <t:LabelCell/>
+-->
           <t:AutoCompleteCell>
             <w:AutoComplete ui:field="unitOfMeasureId" width="100" case="MIXED">
               <w:popup>
@@ -69,11 +80,10 @@
               </w:popup>
             </w:AutoComplete>
           </t:AutoCompleteCell>
--->
         </t:Column>
         <t:Column width="75" label="{msg.status}">
           <t:DropdownCell>
-            <w:Dropdown ui:field="analysisStatusId" width="75" case="MIXED"/>
+            <w:Dropdown ui:field="analysisStatusId" width="75" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
         <t:Column width="75" label="{msg.collected}">
@@ -90,11 +100,13 @@
           <t:LabelCell/>
         </t:Column>
         <t:Column width="110" label="{msg.expire}">
-          <t:LabelCell/>
+          <t:CalendarCell>
+            <c:Calendar width="110px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+          </t:CalendarCell>
         </t:Column>
       </t:Table>
     </g:layer>
-    <g:layer bottom="0px" height="30px">
+    <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel>
         <w:Menu ui:field="addRowMenu" selfShow="true">
           <w:display>

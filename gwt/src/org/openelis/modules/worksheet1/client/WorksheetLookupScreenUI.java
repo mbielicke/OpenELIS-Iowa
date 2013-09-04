@@ -112,7 +112,6 @@ public class WorksheetLookupScreenUI extends Screen
         initialize();
 
         setState(QUERY);
-        initializeDropdowns();
         fireDataChange();
         worksheetId.setFocus(true);
     }
@@ -121,6 +120,10 @@ public class WorksheetLookupScreenUI extends Screen
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
+        Integer statusWorkingId;
+        ArrayList<DictionaryDO> dictList;
+        ArrayList<Item<Integer>> model;
+
         //
         // screen fields and buttons
         //
@@ -224,12 +227,6 @@ public class WorksheetLookupScreenUI extends Screen
                 cancel.setEnabled(true);
             }
         });
-    }
-    
-    private void initializeDropdowns() {
-        Integer statusWorkingId;
-        ArrayList<DictionaryDO> dictList;
-        ArrayList<Item<Integer>> model;
 
         statusWorkingId = null;
         //
@@ -237,7 +234,6 @@ public class WorksheetLookupScreenUI extends Screen
         //
         dictList  = CategoryCache.getBySystemName("worksheet_status");
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO resultDO : dictList) {
             if ("worksheet_working".equals(resultDO.getSystemName()))
                 statusWorkingId = resultDO.getId();
@@ -247,39 +243,7 @@ public class WorksheetLookupScreenUI extends Screen
         statusId.setValue(statusWorkingId);
         tableStatusId.setModel(model);
     }
-
-    //
-    // overriding AutoComplete's getQuery to return the id of the
-    // selection instead of the text
-    //
-//    @SuppressWarnings("unchecked")
-//    public ArrayList<QueryData> getQueryFields() {
-//        ArrayList<QueryData> list;
-//        QueryData            qd;
-//        QueryFieldUtil       qField;
-//        TableDataRow         row;
-//
-//        list = new ArrayList<QueryData>();
-//        for (String key : def.getWidgets().keySet()) {
-//            if (def.getWidget(key) instanceof AutoComplete) {
-//                row = ((AutoComplete)def.getWidget(key)).getSelection();
-//                if(row != null && row.key != null) {
-//                    qd = new QueryData();
-//                    qd.setKey(key);
-//                    qd.setQuery(((Integer)row.key).toString());
-//                    qd.setType(QueryData.Type.INTEGER);
-//                    list.add(qd);
-//
-//                    qField = new QueryFieldUtil();
-//                    qField.parse(qd.getQuery());
-//                }
-//            } else if (def.getWidget(key) instanceof HasField) {
-//                ((HasField)def.getWidget(key)).getQuery(list, key);
-//            }
-//        }
-//        return list;
-//    }
-
+    
     @UiHandler("search")
     protected void executeQuery(ClickEvent event) {
         Query query;
@@ -371,7 +335,7 @@ public class WorksheetLookupScreenUI extends Screen
         super.setWindow(window);
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {                
-                worksheetTable.clear();
+                worksheetTable.setModel(null);
             }
         });
     }

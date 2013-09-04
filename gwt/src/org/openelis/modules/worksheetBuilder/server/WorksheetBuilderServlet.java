@@ -30,12 +30,20 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
-import org.openelis.bean.WorksheetBuilderBean;
+import org.openelis.bean.ResultBean;
+import org.openelis.bean.TestAnalyteBean;
+import org.openelis.bean.TestTypeOfSampleBean;
+import org.openelis.bean.WorksheetBean;
+import org.openelis.bean.WorksheetManager1Bean;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
-import org.openelis.domain.WorksheetBuilderVO;
+import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
+import org.openelis.domain.WorksheetQcChoiceVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
+import org.openelis.manager.WorksheetManager1;
 import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderServiceInt;
 
 @WebServlet("/openelis/worksheetBuilder")
@@ -44,17 +52,90 @@ public class WorksheetBuilderServlet extends RemoteServlet implements WorksheetB
     private static final long serialVersionUID = 1L;
     
     @EJB
-    WorksheetBuilderBean worksheetBuilder;
+    ResultBean            result;
+    
+    @EJB
+    TestAnalyteBean       testAnalyte;
+    
+    @EJB
+    TestTypeOfSampleBean  testTypeOfSample;
+    
+    @EJB
+    WorksheetBean         worksheet;
+
+    @EJB
+    WorksheetManager1Bean worksheetManager;
 
     public ArrayList<IdVO> query(Query query) throws Exception {
-        return worksheetBuilder.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        try {
+            return worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
-    public ArrayList<WorksheetBuilderVO> lookupAnalyses(Query query) throws Exception {
-        return worksheetBuilder.lookupAnalyses(query.getFields(), 0, query.getRowsPerPage());
+    public ArrayList<AnalysisViewVO> fetchAnalysesByView(Query query) throws Exception {
+        try {
+            return worksheet.fetchAnalysesByView(query.getFields(), 0, query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Integer analysisId, String unitOfMeasure) throws Exception {
+        try {
+            return testTypeOfSample.fetchUnitsForWorksheetAutocomplete(analysisId, unitOfMeasure);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<ResultViewDO> fetchAnalytesByAnalysis(Integer analysisId, Integer testId) throws Exception {
+        try {
+            return worksheetManager.fetchAnalytesByAnalysis(analysisId, testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
-        return worksheetBuilder.getColumnNames(formatId);
+        try {
+            return worksheet.getColumnNames(formatId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetQcChoiceVO loadTemplate(WorksheetManager1 wm, Integer testId) throws Exception {
+        try {
+            return worksheetManager.loadTemplate(wm, testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 initializeResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses) throws Exception {
+        try {
+            return worksheetManager.initializeResults(wm, analyses);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses,
+                                                        Integer fromWorksheetId) throws Exception {
+        try {
+            return worksheetManager.initializeResultsFromOther(wm, analyses, fromWorksheetId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public WorksheetManager1 sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction) throws Exception {
+        try {
+            return worksheetManager.sortItems(wm, keys, direction);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

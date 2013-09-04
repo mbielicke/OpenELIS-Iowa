@@ -3,6 +3,7 @@ package org.openelis.modules.qc.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
@@ -60,6 +61,7 @@ public class QcService implements QcServiceInt, QcServiceIntAsync {
         service.fetchActiveByName(search, callback);
     }
 
+    @Override
     public void fetchActiveLotByName(String search, AsyncCallback<ArrayList<QcLotViewDO>> callback) {
         service.fetchActiveLotByName(search, callback);
     }
@@ -286,4 +288,17 @@ public class QcService implements QcServiceInt, QcServiceIntAsync {
         return callback.getResult();
     }
 
+    @Override
+    public void fetchAnalytesByLotId(Integer id, AsyncCallback<ArrayList<QcAnalyteViewDO>> callback) {
+        service.fetchAnalytesByLotId(id, callback);
+    }
+
+    @Override
+    public ArrayList<QcAnalyteViewDO> fetchAnalytesByLotId(Integer id) throws Exception {
+        Callback<ArrayList<QcAnalyteViewDO>> callback;
+        
+        callback = new Callback<ArrayList<QcAnalyteViewDO>>();
+        service.fetchAnalytesByLotId(id, callback);
+        return callback.getResult();
+    }
 }

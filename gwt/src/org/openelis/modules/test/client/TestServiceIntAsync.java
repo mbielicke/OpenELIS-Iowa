@@ -55,8 +55,6 @@ public interface TestServiceIntAsync {
 
     void fetchTestResultByTestId(Integer testId, AsyncCallback<TestResultManager> callback);
 
-    void fetchUnitsForWorksheetAutocomplete(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
-
     void fetchWithAnalytesAndResults(Integer testId, AsyncCallback<TestManager> callback);
 
     void fetchWithPrepTestsAndReflexTests(Integer testId, AsyncCallback<TestManager> callback);

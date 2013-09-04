@@ -1,48 +1,40 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.worksheetBuilder.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -50,98 +42,43 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
-import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
-import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleDO;
-import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestWorksheetDO;
-import org.openelis.domain.TestWorksheetItemDO;
-import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetBuilderVO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
-import org.openelis.domain.WorksheetQcResultViewDO;
-import org.openelis.domain.WorksheetResultViewDO;
+import org.openelis.domain.WorksheetQcChoiceVO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.Preferences;
-import org.openelis.manager.SampleDataBundle;
-import org.openelis.manager.SampleDomainInt;
-import org.openelis.manager.SampleEnvironmentalManager;
-import org.openelis.manager.SampleManager1;
-import org.openelis.manager.SamplePrivateWellManager;
-import org.openelis.manager.SampleSDWISManager;
-import org.openelis.manager.TestManager;
-import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
-import org.openelis.manager.WorksheetAnalysisManager;
-import org.openelis.manager.WorksheetItemManager;
-import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.manager.WorksheetQcResultManager;
-import org.openelis.manager.WorksheetResultManager;
-import org.openelis.meta.WorksheetBuilderMeta;
-import org.openelis.modules.analysis.client.AnalysisService;
-import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
-import org.openelis.modules.note.client.NotesTabUI;
 import org.openelis.modules.qc.client.QcLookupScreen;
-import org.openelis.modules.qc.client.QcService;
-import org.openelis.modules.result.client.ResultService;
-import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.SelectedType;
 import org.openelis.modules.sample1.client.SelectionEvent;
-import org.openelis.modules.test.client.TestService;
-import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
-import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
-import org.openelis.modules.worksheet.client.WorksheetService;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
-import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderLookupScreenUI.Action;
-import org.openelis.modules.worksheetCreation.client.WorksheetCreationService;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.ActionEvent;
 import org.openelis.ui.event.ActionHandler;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.ScreenNavigator;
-import org.openelis.ui.screen.State;
-import org.openelis.ui.services.CalendarService;
 import org.openelis.ui.widget.AutoComplete;
+import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
@@ -149,20 +86,14 @@ import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.ModalWindow;
-import org.openelis.ui.widget.NotesPanel;
 import org.openelis.ui.widget.QueryFieldUtil;
-import org.openelis.ui.widget.TabLayoutPanel;
-import org.openelis.ui.widget.TextBox;
-import org.openelis.ui.widget.WindowInt;
-import org.openelis.ui.widget.calendar.Calendar;
+import org.openelis.ui.widget.table.Column;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.ui.widget.table.event.CellEditedEvent;
 import org.openelis.ui.widget.table.event.CellEditedHandler;
-import org.openelis.ui.widget.table.event.UnselectionEvent;
-import org.openelis.ui.widget.table.event.UnselectionHandler;
 
 public class WorksheetItemTabUI extends Screen {
 
@@ -173,16 +104,15 @@ public class WorksheetItemTabUI extends Screen {
     private static WorksheetItemTabUiBinder             uiBinder = GWT.create(WorksheetItemTabUiBinder.class);
 
     private boolean                                     addRowDirection, canEdit,
-                                                        isVisible, tableLoaded;
-    private int                                         tempId, qcStartIndex;
-    private String                                      typeLastBothString, typeLastRunString,
-                                                        typeLastSubsetString, typeRandString;
-    private ModulePermission                            userPermission;
+                                                        isVisible;
     private WorksheetItemTabUI                          screen;
     private WorksheetManager1                           manager, displayedManager;
 
     @UiField
-    protected Button                                    removeRowButton;
+    protected AutoComplete                              description, unitOfMeasureId;
+    @UiField
+    protected Button                                    addRowButton, loadTemplateButton,
+                                                        removeRowButton, undoQcsButton;
     @UiField
     protected Dropdown<Integer>                         analysisStatusId, qcLink;
     @UiField
@@ -203,33 +133,34 @@ public class WorksheetItemTabUI extends Screen {
     
     protected ArrayList<Integer>                        formatIds;
     protected ArrayList<Item<Integer>>                  qcLinkModel;
-//    protected ArrayList<TableDataRow>                   qcLastRunList, qcLastBothList,
-//                                                        testWorksheetItems;
+    protected ArrayList<String>                         manualAnalysisUids, templateAnalysisUids;
     protected Confirm                                   worksheetRemoveDuplicateQCConfirm,
                                                         worksheetRemoveQCConfirm, 
                                                         worksheetRemoveLastOfQCConfirm, 
                                                         worksheetSaveConfirm, worksheetExitConfirm;
     protected HashMap<Integer, Exception>               qcErrors;
+    protected HashMap<Integer, DictionaryDO>            unitOfMeasureMap;
     protected HashMap<MenuItem, Integer>                templateMap;
+    protected HashMap<String, ArrayList<QcLotViewDO>>   qcChoices;
     protected HashMap<String, ArrayList<Item<Integer>>> unitModels;
     protected QcLookupScreen                            qcLookupScreen;
-//    protected TableDataRow                              qcItems[];
     protected TestWorksheetDO                           testWorksheetDO;
     protected TestWorksheetManager                      twManager;
-    protected WorksheetAnalysisSelectionScreen          waSelectionScreen;
+    protected WorksheetAnalysisSelectionScreenUI        waSelectionScreen;
     protected WorksheetBuilderLookupScreenUI            wbLookupScreen;
-    protected WorksheetLookupScreenUI                   wLookupScreen, wAnaLookupScreen;
+    protected WorksheetLookupScreenUI                   wLookupScreen;
     
     /**
      * Flags that specifies what type of data is in each row
      */
-    public enum ROW_TYPE {
-        ANALYSIS, QC, OTHER_ANALYSIS, OTHER_QC
+    public enum QC_SOURCE {
+        MANUAL, TEMPLATE;
     };
     
     public WorksheetItemTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        if (bus != null)
+            setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
         
@@ -238,10 +169,6 @@ public class WorksheetItemTabUI extends Screen {
         displayedManager = null;
         formatIds = new ArrayList<Integer>();
         qcErrors = new HashMap<Integer, Exception>();
-//        qcLastRunList = new ArrayList<TableDataRow>();
-//        qcLastBothList = new ArrayList<TableDataRow>();
-        qcStartIndex = 0;
-        tempId = -1;
         templateMap = new HashMap<MenuItem, Integer>();
     }
 
@@ -249,8 +176,11 @@ public class WorksheetItemTabUI extends Screen {
      * Setup state and data change handles for every widget on the screen
      */
     private void initialize() {
+        int i;
         ArrayList<DictionaryDO> dictList;
         ArrayList<Item<Integer>> model;
+        Column column;
+        MenuItem sortAsc, sortDesc;
 
         screen = this;
 
@@ -273,10 +203,10 @@ public class WorksheetItemTabUI extends Screen {
                     if (isState(ADD, UPDATE) && canEdit)
                         removeRowButton.setEnabled(true);
                     row = worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow());
-                    selEvent = new SelectionEvent(SelectedType.NONE, manager.getUid(((RowItem)row.getData()).worksheetAnalysis));
+                    selEvent = new SelectionEvent(SelectedType.ANALYSIS, (String)row.getData());
                 } else {
                     removeRowButton.setEnabled(false);
-                    selEvent = new SelectionEvent(SelectedType.NONE, null);
+                    selEvent = new SelectionEvent(SelectedType.ANALYSIS, null);
                 }
                 
                 bus.fireEvent(selEvent);
@@ -285,97 +215,134 @@ public class WorksheetItemTabUI extends Screen {
         
         worksheetItemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                WorksheetAnalysisViewDO data;
+                
                 //
-                //  only the QC Link and unit fields can be edited
+                // The only columns that can be edited are Description if there
+                // is more than one QC choice for the selected row, QC Link, and
+                // Unit of Measure if the row is linked to an editable analysis
                 //
-//                if (!isState(ADD, UPDATE) || !canEdit || (event.getCol() != 3 && event.getCol() != 6))
+                if (!isState(ADD, UPDATE) || !canEdit || (event.getCol() != 2 && event.getCol() != 3 && event.getCol() != 6)) {
                     event.cancel();
+                } else if (event.getCol() == 2 &&
+                           (qcChoices == null || qcChoices.get(worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow()).getData()) == null)) {
+                    event.cancel();
+                } else if (event.getCol() == 6) {
+                    data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
+                                                                                                .getData());
+                    if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId()))
+                        event.cancel();
+                }
             }
         });
         
         worksheetItemTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-//                int r, c;
-//                Object val;
-//                TableDataRow row;
-//
-//                r = event.getRow();
-//                c = event.getCol();
-//                
-//                row = worksheetItemTable.getRow(r);
-//                val = worksheetItemTable.getObject(r,c);
-//
-//                switch (c) {
-//                    case 3:
-//                        ((RowItem)row.data).worksheetAnalysis.setWorksheetAnalysisId((Integer)val);
-//                        break;
-//                    case 6:
-//                        ((RowItem)row.data).analysis.setUnitOfMeasureId((Integer)val);
-//                        break;
-//                }
+                int r, c;
+                Object val;
+                Row row;
+                WorksheetAnalysisViewDO waVDO;
+
+                r = event.getRow();
+                c = event.getCol();
+                
+                row = worksheetItemTable.getRowAt(r);
+                val = worksheetItemTable.getValueAt(r,c);
+
+                waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)row.getData());
+                switch (c) {
+                    case 2:
+                        waVDO.setQcLotId(((AutoCompleteValue)val).getId());
+                        break;
+                    case 3:
+                        waVDO.setWorksheetAnalysisId((Integer)val);
+                        break;
+                    case 6:
+                        waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
+                        break;
+                }
             }
         });
 
-//        worksheetItemTable.addSortHandler(new SortHandler() {
-//            public void onSort(SortEvent event) {
-//                int              i;
-//				ColumnComparator comparator;
-//                
-//                comparator = new ColumnComparator(event.getIndex(), event.getDirection());
-//                Collections.sort(worksheetItemTable.getData(), comparator);
-//                for (i = 0; i < worksheetItemTable.numRows(); i++)
-//                    worksheetItemTable.setCell(i, 0, i+1);
-//                worksheetItemTable.refresh();
-//            }
-//        });
-        
-//        unitOfMeasureId.addGetMatchesHandler(new GetMatchesHandler() {
-//            public void onGetMatches(GetMatchesEvent event) {
-//                ArrayList<QueryData> fields;
-//                ArrayList<Item<Integer>> model;
-//                ArrayList<IdNameVO> list;
-//                Query query;
-//                QueryData testIdField, typeOfSampleIdField, unitOfMeasureField;
-//                WorksheetBuilderVO data;
-//
-//                try {
-//                    query = new Query();
-//                    fields = new ArrayList<QueryData>();
-//                    model = new ArrayList<Item<Integer>>();
-//    
-//                    data = (WorksheetBuilderVO) worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
-//                                                                  .getData();
-//                    
-//                    testIdField = new QueryData();
-//                    testIdField.setType(QueryData.Type.INTEGER);
-//                    testIdField.setQuery(String.valueOf(data.getTestId()));
-//                    fields.add(testIdField);
-//    
-//                    typeOfSampleIdField = new QueryData();
-//                    typeOfSampleIdField.setType(QueryData.Type.INTEGER);
-//                    typeOfSampleIdField.setQuery(String.valueOf(data.getTypeOfSampleId()));
-//                    fields.add(typeOfSampleIdField);
-//    
-//                    unitOfMeasureField = new QueryData();
-//                    unitOfMeasureField.setType(QueryData.Type.INTEGER);
-//                    unitOfMeasureField.setQuery(QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
-//                    fields.add(unitOfMeasureField);
-//    
-//                    query.setFields(fields);
-//    
-//                    list = TestService.get().fetchUnitsForWorksheetAutocomplete(query);
-//                    for (IdNameVO unitVO : list)
-//                        model.add(new Item<Integer>(unitVO.getId(), unitVO.getName()));
-//                    unitOfMeasureId.showAutoMatches(model);
-//                } catch (Exception e) {
-//                    Window.alert(e.getMessage());
-//                }
-//            }
-//        });
+        //
+        // add header menus for column sorting to table
+        //
+        for (i = 0; i < worksheetItemTable.getColumnCount(); i++) {
+            //
+            // skip the columns for position (0) and qc link (3)
+            //
+            if (i == 0 || i == 3)
+                continue;
+
+            final int col = i;
+            column = worksheetItemTable.getColumnAt(i);
+            sortAsc = new MenuItem(UIResources.INSTANCE.menuCss().Ascending(), org.openelis.ui.messages.Messages.get().header_ascending(), "");
+            sortAsc.addCommand(new Command() {
+                public void execute() {
+                    sortItems(col, Table.SORT_ASCENDING);
+                }
+            });
+            column.addMenuItem(sortAsc);
+            sortDesc = new MenuItem(UIResources.INSTANCE.menuCss().Descending(), org.openelis.ui.messages.Messages.get().header_descending(), "");
+            sortDesc.addCommand(new Command() {
+                public void execute() {
+                    sortItems(col, Table.SORT_DESCENDING);
+                }
+            });
+            column.addMenuItem(sortDesc);
+        }
+
+        description.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<Item<Integer>> model;
+                ArrayList<QcLotViewDO> list;
+
+                model = new ArrayList<Item<Integer>>();
+                list = qcChoices.get(worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow()).getData());
+                for (QcLotViewDO qcLot : list)
+                    model.add(new Item<Integer>(qcLot.getId(), qcLot.getQcName() + "(" + qcLot.getLotNumber() + ")"));
+                description.showAutoMatches(model);
+            }
+        });
+
+        unitOfMeasureId.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<Item<Integer>> model;
+                ArrayList<IdNameVO> list;
+                WorksheetAnalysisViewDO data;
+
+                try {
+                    model = new ArrayList<Item<Integer>>();
+                    data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
+                                                                                                .getData());
+                    list = WorksheetBuilderService.get().fetchUnitsForWorksheetAutocomplete(data.getAnalysisId(), 
+                                                                                            QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
+                    for (IdNameVO unitVO : list)
+                        model.add(new Item<Integer>(unitVO.getId(), unitVO.getName()));
+                    unitOfMeasureId.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                addRowMenu.setEnabled(isState(ADD, UPDATE) && canEdit);
+                int i, j;
+                ArrayList<MenuItem> menuItems;
+                MenuItem item;
+                
+                enableAddRowMenu(isState(ADD, UPDATE) && canEdit);
+                for (i = 0; i < worksheetItemTable.getColumnCount(); i++) {
+                    menuItems = worksheetItemTable.getColumnAt(i).getMenuItems();
+                    if (menuItems != null) {
+                        for (j = 0; j < menuItems.size(); j++) {
+                            item = menuItems.get(j);
+                            item.setEnabled(isState(ADD, UPDATE) && canEdit);
+                        }
+                    }
+                }
             }
         });
 
@@ -386,12 +353,6 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                insertAnalysisAbove.setEnabled(isState(ADD, UPDATE) && canEdit);
-            }
-        });
-                
         insertAnalysisBelow.addCommand(new Command() {
             @Override
             public void execute() {
@@ -399,12 +360,6 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                insertAnalysisBelow.setEnabled(isState(ADD, UPDATE) && canEdit);
-            }
-        });
-                
         insertFromWorksheetAbove.addCommand(new Command() {
             @Override
             public void execute() {
@@ -412,12 +367,6 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                insertFromWorksheetAbove.setEnabled(isState(ADD, UPDATE) && canEdit);
-            }
-        });
-                
         insertFromWorksheetBelow.addCommand(new Command() {
             @Override
             public void execute() {
@@ -425,12 +374,6 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                insertFromWorksheetBelow.setEnabled(isState(ADD, UPDATE) && canEdit);
-            }
-        });
-                
         insertFromQcTableAbove.addCommand(new Command() {
             @Override
             public void execute() {
@@ -438,22 +381,10 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                insertFromQcTableAbove.setEnabled(isState(ADD, UPDATE) && canEdit);
-            }
-        });
-                
         insertFromQcTableBelow.addCommand(new Command() {
             @Override
             public void execute() {
                 insertFromQcTableBelow();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                insertFromQcTableBelow.setEnabled(isState(ADD, UPDATE) && canEdit);
             }
         });
 
@@ -465,13 +396,13 @@ public class WorksheetItemTabUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                loadTemplateMenu.setEnabled(false);
+                enableLoadTemplateMenu(false);
             }
         });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                undoQcsMenu.setEnabled(false);
+                enableUndoQcsMenu(false);
             }
         });
 
@@ -482,12 +413,6 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                undoAll.setEnabled(false);
-            }
-        });
-
         undoManual.addCommand(new Command() {
             @Override
             public void execute() {
@@ -495,22 +420,10 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                undoManual.setEnabled(false);
-            }
-        });
-
         undoTemplate.addCommand(new Command() {
             @Override
             public void execute() {
                 undoTemplateQcs();
-            }
-        });
-
-        addStateChangeHandler(new StateChangeEvent.Handler() {
-            public void onStateChange(StateChangeEvent event) {
-                undoTemplate.setEnabled(false);
             }
         });
 
@@ -526,6 +439,14 @@ public class WorksheetItemTabUI extends Screen {
          */
         bus.addHandlerToSource(StateChangeEvent.getType(), parentScreen, new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
+                templateMap.clear();
+                loadTemplateMenu.clear();
+                manualAnalysisUids = null;
+                templateAnalysisUids = null;
+                qcChoices = null;
+                if (wbLookupScreen != null && wbLookupScreen.isAttached())
+                    wbLookupScreen.getWindow().close();
+
                 evaluateEdit();
                 setState(event.getState());
             }
@@ -536,16 +457,6 @@ public class WorksheetItemTabUI extends Screen {
                 displayItemData();
             }
         });
-
-        try {            
-            typeLastSubsetString = DictionaryCache.getById(Constants.dictionary().POS_LAST_OF_SUBSET).getEntry();
-            typeLastRunString = DictionaryCache.getById(Constants.dictionary().POS_LAST_OF_RUN).getEntry();
-            typeLastBothString = DictionaryCache.getById(Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN).getEntry();
-            typeRandString = DictionaryCache.getById(Constants.dictionary().POS_RANDOM).getEntry();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            parentScreen.getWindow().close();
-        }
 
         //
         // load empty QC Link dropdown model
@@ -563,6 +474,64 @@ public class WorksheetItemTabUI extends Screen {
         for (DictionaryDO resultDO : dictList)
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         analysisStatusId.setModel(model);
+        
+
+        bus.addHandler(RowsAddedEvent.getType(), new RowsAddedEvent.Handler() {
+            public void onRowsAdded(RowsAddedEvent event) {
+                int index;
+                ArrayList<WorksheetAnalysisViewDO> newData;
+                ArrayList<Row> list;
+                WorksheetItemDO itemDO;
+                WorksheetAnalysisViewDO data;
+                
+                if (!wbLookupScreen.equals(event.getSource()))
+                    return;
+
+                if (worksheetItemTable.getSelectedRow() != -1) {
+                    index = worksheetItemTable.getSelectedRow();
+                    if (addRowDirection)
+                        index++;
+                } else {
+                    index = worksheetItemTable.getRowCount();
+                }
+                
+                list = (ArrayList<Row>)event.getRows();
+                if (list != null && list.size() > 0) {
+                    newData = new ArrayList<WorksheetAnalysisViewDO>();
+                    for (Row row : list) {
+                        itemDO = manager.item.add(index++);
+                        data = manager.analysis.add(itemDO);
+                        copyViewToDO((AnalysisViewVO)row.getData(), data);
+                        newData.add(data);
+
+                        //
+                        // add template to list
+                        //
+                        if (!templateMap.containsValue(data.getTestId())) {
+                            final MenuItem item = new MenuItem("AddRowButtonImage", data.getTestName()+", "+data.getMethodName(), null);
+                            item.setVisible(true);
+                            item.setEnabled(true);
+                            item.addHandler(new ClickHandler() {
+                                public void onClick(ClickEvent event) {
+                                    loadTemplate(templateMap.get(item));
+                                }
+                            }, ClickEvent.getType());
+                            loadTemplateMenu.add(item);
+                            enableLoadTemplateMenu(true);
+                            templateMap.put(item, data.getTestId());
+                        }
+                    }
+                    
+                    try {
+                        manager = WorksheetBuilderService.get().initializeResults(manager, newData);
+                        bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
+                    } catch (Exception anyE) {
+                        Window.alert(anyE.getMessage());
+                        anyE.printStackTrace();
+                    }
+                }
+            }
+        });
     }
     
     public void setData(WorksheetManager1 manager) {
@@ -583,10 +552,10 @@ public class WorksheetItemTabUI extends Screen {
     private void displayItemData() {
         int i, a, count1, count2, count3, count4;
         boolean dataChanged;
-        WorksheetAnalysisDO waDO1, waDO2;
+        WorksheetAnalysisViewDO waDO1, waDO2;
         WorksheetItemDO wiDO1, wiDO2;
 
-        if ( !isVisible)
+        if (!isVisible)
             return;
 
         count1 = displayedManager == null ? 0 : displayedManager.item.count();
@@ -609,6 +578,11 @@ public class WorksheetItemTabUI extends Screen {
                         for (a = 0; a < count2; a++ ) {
                             waDO1 = displayedManager.analysis.get(wiDO1, a);
                             waDO2 = manager.analysis.get(wiDO2, a);
+                            if (DataBaseUtil.isDifferent(waDO1.getAccessionNumber(), waDO2.getAccessionNumber()) ||
+                                DataBaseUtil.isDifferent(waDO1.getStatusId(), waDO2.getStatusId())) {
+                                dataChanged = true;
+                                break items;
+                            }
                             count3 = displayedManager.result.count(waDO1);
                             count4 = manager.result.count(waDO2);
                             if (count3 == count4) {
@@ -642,154 +616,75 @@ public class WorksheetItemTabUI extends Screen {
         }
     }
 
-    private ArrayList<Item<Object>> getTableModel() {
-        int i, j, pos;
-        AnalysisViewDO aVDO = null;
-        ArrayList<Item<Object>> model;
-        ArrayList<SampleOrganizationViewDO> orgs;
-        DictionaryDO dictDO;
-        Integer accessionNumber;
-        QcLotViewDO qcLotVDO;
-        RowItem data;
-        SampleDO sDO;
-        SampleManager1 sManager;
-        SampleOrganizationViewDO soVDO;
-        SamplePrivateWellViewDO spwVDO;
-        String description, location;
-        Item<Object> row;
-        TestManager tManager = null;
-        WorksheetAnalysisDO waDO;
+    private ArrayList<Row> getTableModel() {
+        int i, j;
+        ArrayList<Row> model;
+        Row row;
+        ValidationErrorsList multiQcMessages;
+        WorksheetAnalysisViewDO waDO;
         WorksheetItemDO wiDO;
         
         qcLinkModel.clear();
         qcLinkModel.add(new Item<Integer>(null, ""));
 
-        model = new ArrayList<Item<Object>>();
+        model = new ArrayList<Row>();
+        multiQcMessages = new ValidationErrorsList();
         if (manager != null) {
             try {
-                pos = 1;
                 for (i = 0; i < manager.item.count(); i++) {
                     wiDO = (WorksheetItemDO)manager.item.get(i);
     
-                    row = new Item<Object>(12);
-                    row.setCell(0, pos++);
+                    row = new Row(13);
+                    row.setCell(0, wiDO.getPosition());
                     for (j = 0; j < manager.analysis.count(wiDO); j++) {
                         waDO = manager.analysis.get(wiDO, j);
                         qcLinkModel.add(new Item<Integer>(waDO.getId(), waDO.getAccessionNumber()));
     
                         if (j > 0) {
-                            row = new Item<Object>(12);
-                            row.setCell(0, pos++);
+                            row = new Row(13);
+                            row.setCell(0, wiDO.getPosition());
                         }
-                        row.setKey(i + "_" + j);
                         row.setCell(1, waDO.getAccessionNumber());
                         
                         if (waDO.getAnalysisId() != null) {
-                            if (waDO.getAccessionNumber().startsWith("D"))
-                                accessionNumber = Integer.valueOf(waDO.getAccessionNumber().substring(1));
-                            else
-                                accessionNumber = Integer.valueOf(waDO.getAccessionNumber());
-                            sManager = ((WorksheetBuilderScreenUI)parentScreen).sampleManagers.get(accessionNumber);
-                            sDO = sManager.getSample();
-
-                            aVDO = (AnalysisViewDO) sManager.getObject("A:"+waDO.getAnalysisId());
-                            if (aVDO == null)
-                                throw new Exception("Cannot find analysis linked to worksheet analysis");
-                            tManager = TestService.get().fetchById(aVDO.getTestId());
-    
-                            description = "";
-                            if (Constants.domain().ENVIRONMENTAL.equals(sManager.getSample()
-                                                                                .getDomain())) {
-                                location = sManager.getSampleEnvironmental().getLocation();
-                                if (location != null && location.length() > 0)
-                                    description = "[loc]" + location;
-                                orgs = sManager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
-                                if (orgs.size() > 0) {
-                                    soVDO = orgs.get(0);
-                                    if (soVDO != null && soVDO.getOrganizationName() != null &&
-                                        soVDO.getOrganizationName().length() > 0) {
-                                        if (description.length() > 0)
-                                            description += " ";
-                                        description += "[rpt]" + soVDO.getOrganizationName();
-                                    }
-                                }
-                            } else if (Constants.domain().SDWIS.equals(sManager.getSample()
-                                                                                      .getDomain())) {
-                                location = sManager.getSampleSDWIS().getLocation();
-                                if (location != null && location.length() > 0)
-                                    description = "[loc]" + location;
-                                orgs = sManager.organization.getByType(Constants.dictionary().ORG_REPORT_TO);
-                                if (orgs.size() > 0) {
-                                    soVDO = orgs.get(0);
-                                    if (soVDO != null && soVDO.getOrganizationName() != null &&
-                                        soVDO.getOrganizationName().length() > 0) {
-                                        if (description.length() > 0)
-                                            description += " ";
-                                        description += "[rpt]" + soVDO.getOrganizationName();
-                                    }
-                                }
-                            } else if (Constants.domain().PRIVATEWELL.equals(sManager.getSample()
-                                                                                     .getDomain())) {
-                                spwVDO = sManager.getSamplePrivateWell();
-                                if (spwVDO.getLocation() != null &&
-                                    spwVDO.getLocation().length() > 0)
-                                    description = "[loc]" + spwVDO.getLocation();
-                                if (spwVDO.getOrganizationId() != null &&
-                                    spwVDO.getOrganization().getName() != null &&
-                                    spwVDO.getOrganization().getName().length() > 0) {
-                                    if (description.length() > 0)
-                                        description += " ";
-                                    description += "[rpt]" +
-                                                   spwVDO.getOrganization().getName();
-                                } else if (spwVDO.getReportToName() != null &&
-                                           spwVDO.getReportToName().length() > 0) {
-                                    if (description.length() > 0)
-                                        description += " ";
-                                    description += "[rpt]" + spwVDO.getReportToName();
-                                }
+                            row.setCell(2, new AutoCompleteValue(null, waDO.getDescription()));
+                            row.setCell(3, waDO.getWorksheetAnalysisId());
+                            row.setCell(4, waDO.getTestName());
+                            row.setCell(5, waDO.getMethodName());
+                            
+                            if (waDO.getUnitOfMeasureId() != null) {
+                                row.setCell(6, new AutoCompleteValue(waDO.getUnitOfMeasureId(),
+                                                                     waDO.getUnitOfMeasure()));
+                            } else {
+                                row.setCell(6, new AutoCompleteValue());
                             }
-                            row.setCell(2, description);
-                            row.setCell(3, waDO.getWorksheetAnalysisId());
-                            row.setCell(4, aVDO.getTestName());
-                            row.setCell(5, aVDO.getMethodName());
-                            
-//                            dictDO = DictionaryCache.getById(aVDO.getUnitOfMeasureId());
-//                            row.setCell(6, new Item<Integer>(dictDO.getId(), dictDO.getEntry()));
-                            
-                            row.setCell(7, aVDO.getStatusId());
-                            row.setCell(8, sDO.getCollectionDate());
-                            row.setCell(9, sDO.getReceivedDate());
-                            if (Constants.domain().ENVIRONMENTAL.equals(sManager.getSample()
-                                                                                .getDomain()))
-                                row.setCell(10, DataBaseUtil.getDueDays(sDO.getReceivedDate(),
-                                                                        sManager.getSampleEnvironmental()
-                                                                                .getPriority()));
-                            row.setCell(11, DataBaseUtil.getExpireDate(sDO.getCollectionDate(),
-                                                                       sDO.getCollectionTime(),
-                                                                       tManager.getTest()
-                                                                               .getTimeHolding()));
-                            
-                            data = new RowItem();
-                            data.worksheetItem = wiDO;
-                            data.worksheetAnalysis = waDO;
-                            data.analysis = aVDO;
-                            row.setData(data);
-                            model.add(row);
+                            row.setCell(7, waDO.getStatusId());
+                            row.setCell(8, waDO.getCollectionDate());
+                            row.setCell(9, waDO.getReceivedDate());
+                            row.setCell(10, waDO.getDueDays());
+                            row.setCell(11, waDO.getExpireDate());
                         } else if (waDO.getQcLotId() != null) {
-                            qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
-    
-                            row.setCell(2, qcLotVDO.getQcName());
+                            row.setCell(2, new AutoCompleteValue(waDO.getQcLotId(),
+                                                                 waDO.getDescription()));
                             row.setCell(3, waDO.getWorksheetAnalysisId());
-    
-                            data = new RowItem();
-                            data.worksheetItem = wiDO;
-                            data.worksheetAnalysis = waDO;
-                            data.qcLotVDO = qcLotVDO;
-                            row.setData(data); 
-                            model.add(row);
+                            row.setCell(6, new AutoCompleteValue());
+                            
+                            if (qcChoices != null && qcChoices.get(manager.getUid(waDO)) != null)
+                                multiQcMessages.add(new FormErrorException(Messages.get()
+                                                                                   .worksheetMultiMatchingActiveQc(wiDO.getPosition()
+                                                                                                                       .toString())));
                         }
+                        if (templateAnalysisUids != null && templateAnalysisUids.contains(manager.getUid(waDO)))
+                            row.setCell(12, QC_SOURCE.TEMPLATE);
+                        else if (manualAnalysisUids != null && manualAnalysisUids.contains(manager.getUid(waDO)))
+                            row.setCell(12, QC_SOURCE.MANUAL);
+                        row.setData(manager.getUid(waDO)); 
+                        model.add(row);
                     }
                 }
+                
+                if (multiQcMessages.size() > 0)
+                    parentScreen.showErrors(multiQcMessages);
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 e.printStackTrace();
@@ -801,7 +696,6 @@ public class WorksheetItemTabUI extends Screen {
          */
         qcLink.setModel(qcLinkModel);
 
-        tableLoaded = true;
         return model;
     }
 
@@ -818,86 +712,9 @@ public class WorksheetItemTabUI extends Screen {
     private void openLookupWindow() {
         org.openelis.ui.widget.Window win;
         
-        win = new org.openelis.ui.widget.Window(false);
-        win.setName(Messages.get().worksheetBuilderLookup());
         if (wbLookupScreen == null) {
             try {
-                wbLookupScreen = new WorksheetBuilderLookupScreenUI();
-                wbLookupScreen.addActionHandler(new org.openelis.ui.event.ActionHandler<WorksheetBuilderLookupScreenUI.Action>() {
-                    @SuppressWarnings("unchecked")
-                    public void onAction(org.openelis.ui.event.ActionEvent<Action> event) {
-                        int index;
-                        ArrayList<Item<Integer>> list;
-                        DictionaryDO unitDO;
-                        Item<Integer> newRow;
-                        WorksheetBuilderVO data;
-
-                        if (event.getAction() == WorksheetBuilderLookupScreenUI.Action.ADD) {
-                            if (worksheetItemTable.getSelectedRow() != -1) {
-                                index = worksheetItemTable.getSelectedRow();
-                                if (addRowDirection)
-                                    index++;
-                            } else {
-                                index = worksheetItemTable.getRowCount();
-                            }
-                            
-                            list = (ArrayList<Item<Integer>>)event.getData();
-                            if (list != null && list.size() > 0) {
-                                for (Item<Integer> row : list) {
-                                    newRow = new Item<Integer>(13);
-                                    data = (WorksheetBuilderVO)row.getData();
-
-                                    //
-                                    // set the format if it has not already been set
-                                    //
-//                                    if (formatId.getValue() == null)
-//                                        formatId.setValue(data.getWorksheetFormatId());
-                                    
-                                    //
-                                    // add template to list
-                                    //
-                                    if (!templateMap.containsValue(data.getTestId())) {
-                                        final MenuItem item = new MenuItem("AddRowButtonImage", data.getTestName()+", "+data.getMethodName(), null);
-                                        item.setVisible(true);
-                                        item.setEnabled(true);
-                                        item.addHandler(new ClickHandler() {
-                                            public void onClick(ClickEvent event) {
-                                                loadTemplate(templateMap.get(item));
-                                            }
-                                        }, ClickEvent.getType());
-                                        loadTemplateMenu.add(item);
-                                        templateMap.put(item, data.getTestId());
-                                    }
-
-                                    newRow.setKey(getNextTempId());                                       // fake worksheet analysis id
-                                    newRow.setCell(1, row.getCells().get(0)); // accession #
-                                    newRow.setCell(2, row.getCells().get(1));                 // description
-                                    newRow.setCell(4, row.getCells().get(2));                 // test name
-                                    newRow.setCell(5, row.getCells().get(3));                 // method name
-                                    
-                                    if (row.getCells().get(5) != null) {
-                                        try {                                                               // unit
-                                            unitDO = DictionaryCache.getById((Integer)row.getCells().get(5));
-                                            newRow.setCell(6, new Item<Integer>(unitDO.getId(), unitDO.getEntry()));
-                                        } catch (Exception anyE) {
-                                            anyE.printStackTrace();
-                                            Window.alert("error: " + anyE.getMessage());
-                                        }
-                                    }
-                                    
-                                    newRow.setCell(7, row.getCells().get(6));                 // status
-                                    newRow.setCell(8, row.getCells().get(7));                 // collection date
-                                    newRow.setCell(9, row.getCells().get(8));                 // received date and time
-                                    newRow.setCell(10, row.getCells().get(9));                // due days
-                                    newRow.setCell(11, row.getCells().get(10));               // expire date and time
-                                    newRow.setCell(12, ROW_TYPE.ANALYSIS);
-                                    newRow.setData(data);
-                                    worksheetItemTable.addRowAt(index++, newRow);
-                                }
-                            }
-                        }
-                    }
-                });
+                wbLookupScreen = new WorksheetBuilderLookupScreenUI(bus);
             } catch (Exception e) {
                 e.printStackTrace();
                 Window.alert("error: " + e.getMessage());
@@ -905,366 +722,75 @@ public class WorksheetItemTabUI extends Screen {
             }
         }
 
+        win = new org.openelis.ui.widget.Window();
+        win.setName(Messages.get().worksheetBuilderLookup());
+        win.setSize("1075px", "498px");
         wbLookupScreen.setWindow(win);
         win.setContent(wbLookupScreen);
+        try {
+            wbLookupScreen.initialize();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
+        }
         OpenELIS.getBrowser().addWindow(win, "wbLookupScreen");
     }
     
     private void loadTemplate(Integer testId) {
-/*
-        int                    i, j;
-        ArrayList<Object>      dataList;
-        ArrayList<QcLotViewDO> list;
-        Preferences            prefs;
-        QcLotViewDO            qcLotVDO = null;
-        TableDataRow           qcRow;
-        TestWorksheetItemDO    twiDO;
+        int i;
+        ArrayList<String> uids;
+        ArrayList<QcLotViewDO> choices, tempChoices;
+        String lastUid;
+        StringBuffer removedMessage;
+        WorksheetQcChoiceVO wqcVO;
         
         try {
-            twManager = TestWorksheetManager.fetchByTestId(testId);
-            //
-            // If there is no worksheet definition, an empty manager is returned
-            //
-            testWorksheetDO = twManager.getWorksheet();
-            if (testWorksheetDO.getId() == null) {
-                //
-                // If there is no worksheet definition for the test, load
-                // default template
-                //
-                manager.getWorksheet().setFormatId(Constants.dictionary().WF_TOTAL);
-                manager.getWorksheet().setSubsetCapacity(500);
-                return;
-            } else {
-                manager.getWorksheet().setFormatId(testWorksheetDO.getFormatId());
-            }
-            DataChangeEvent.fire(this, formatId);
-
-            //
-            // Only clear the error list if this is our first time through
-            //
-            if (qcStartIndex == 0)
-                qcErrors = new HashMap<Integer, Exception>(testWorksheetDO.getTotalCapacity());
+            wqcVO = WorksheetBuilderService.get().loadTemplate(manager, testId);
             
-            i = qcStartIndex;
-            qcStartIndex = 0;
-            prefs = Preferences.userRoot();
-            for (; i < twManager.itemCount(); i++) {
-                twiDO = twManager.getItemAt(i);
-                try {
-                    if (!Constants.dictionary().POS_DUPLICATE.equals(twiDO.getTypeId())) {
-                        list = QcService.get().fetchActiveByExactName(twiDO.getQcName());
-                        if (list.size() == 0) {
-                            if (Constants.dictionary().POS_RANDOM.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-1, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeRandString)));
-                            } else if (Constants.dictionary().POS_LAST_OF_RUN.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-2, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeLastRunString)));
-                            } else if (Constants.dictionary().POS_LAST_OF_SUBSET.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-3, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeLastSubsetString)));
-                            } else if (Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-4, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), typeLastBothString)));
-                            } else {
-                                for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getSubsetCapacity())
-                                    qcErrors.put(j, new FormErrorException(Messages.get().noMatchingActiveQc(twiDO.getQcName(), String.valueOf(j))));
-                            }
-                            continue;
-                        } else if (list.size() > 1) {
-                            //
-                            // look for a single qc in the list that matches the user's
-                            // location. if none or multiple match or the user has 
-                            // not specified a preference, show the lookup screen
-                            //
-                            qcLotVDO = null;
-                            for (QcLotViewDO tempQcLot : list) {
-                                if (tempQcLot.getLocationId() != null && tempQcLot.getLocationId().equals(prefs.getInt("location", -1))) {
-                                    if (qcLotVDO == null) {
-                                        qcLotVDO = tempQcLot;
-                                    } else {
-                                        qcLotVDO = null;
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            if (qcLotVDO == null) {
-                                Window.alert(new FormErrorException(Messages.get().multiMatchingActiveQc(twiDO.getQcName(), String.valueOf(i+1))).getMessage());
-                                openQCLookup(twiDO.getQcName(), list);
-                                qcStartIndex = i + 1;
-                                break;
-                            }
-                        } else {
-                            qcLotVDO = list.get(0);
-                        }
-                    } else {
-                        qcLotVDO = new QcLotViewDO();
-                        qcLotVDO.setQcName("Duplicate");
+            if (templateAnalysisUids == null)
+                templateAnalysisUids = new ArrayList<String>();
+            for (WorksheetAnalysisViewDO waVDO : wqcVO.getNewAnalyses())
+                templateAnalysisUids.add(manager.getUid(waVDO));
+            
+            lastUid = null;
+            choices = wqcVO.getChoices();
+            uids = wqcVO.getChoiceUids();
+            tempChoices = null;
+            if (choices != null) {
+                qcChoices = new HashMap<String, ArrayList<QcLotViewDO>>();
+                for (i = 0; i < choices.size(); i++) {
+                    if (!uids.get(i).equals(lastUid)) {
+                        tempChoices = new ArrayList<QcLotViewDO>();
+                        lastUid = uids.get(i);
+                        qcChoices.put(lastUid, tempChoices);
                     }
-
-                    qcRow = new TableDataRow(11);
-                    qcRow.cells.get(2).value = qcLotVDO.getQcName();             // description
-                    
-                    dataList = new ArrayList<Object>();
-                    dataList.add(twiDO);
-                    dataList.add(qcLotVDO);
-                    qcRow.data = dataList;
-                    
-                    testWorksheetItems.add(qcRow);
-                } catch (Exception anyE) {
-                    Window.alert("loadQCTemplate(): " + anyE.getMessage());
-                    window.clearStatus();
+                    tempChoices.add(choices.get(i));
                 }
+            } else {
+                qcChoices = null;
             }
+            
+            if (wqcVO.getErrors() != null && wqcVO.getErrors().size() > 0)
+                showErrors(wqcVO.getErrors());
+                
+            if (wqcVO.getRemovedAnalyses() != null) {
+                removedMessage = new StringBuffer();
+                removedMessage.append(Messages.get().worksheetTemplateRemovedAnalyses())
+                              .append("\n\n");
+                for (WorksheetAnalysisViewDO waVDO : wqcVO.getRemovedAnalyses()) {
+                    removedMessage.append("\t").append(waVDO.getAccessionNumber())
+                                  .append("\t").append(waVDO.getDescription()).append("\n");
+                }
+                Window.alert(removedMessage.toString());
+            }
+            
+            bus.fireEventFromSource(new WorksheetManagerModifiedEvent(wqcVO.getManager()), screen);
+            enableUndoQcsMenu(true);
         } catch (Exception anyE) {
-            Window.alert("loadQCTemplate(): " + anyE.getMessage());
-            window.clearStatus();
+            anyE.printStackTrace();
+            Window.alert("error: " + anyE.getMessage());
         }
-        
-        buildQCWorksheet();
-*/
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void buildQCWorksheet() {
-/*
-        int                      i, j, posNum, randSize, numSubsets, startIndex;
-        String                   accessionNumber;
-        ArrayList<TableDataRow>  qcRandList, qcLastWellList, lastOf;
-        TableDataRow             qcRow, qcRow1;
-        TestWorksheetItemDO      twiDO;
-
-        //
-        // initialize/clear the qcItems
-        //
-        qcItems = new TableDataRow[testWorksheetDO.getTotalCapacity()];
-
-        qcRandList     = new ArrayList<TableDataRow>();
-        qcLastWellList = new ArrayList<TableDataRow>();
-        qcLastRunList.clear();
-        qcLastBothList.clear();
-        numSubsets = testWorksheetDO.getTotalCapacity() / testWorksheetDO.getSubsetCapacity();
-        
-        //
-        // Insert Fixed/Duplicate QCItems into worksheet per subset and store 
-        // Random and LastOf QC Items for later.
-        //
-        for (i = 0; i < testWorksheetItems.size(); i++) {
-            qcRow = testWorksheetItems.get(i);
-            twiDO = (TestWorksheetItemDO) ((ArrayList<Object>)qcRow.data).get(0);
-            
-            qcRow.key = getNextTempId();                           // fake worksheet analysis id
-            
-            if (Constants.dictionary().POS_DUPLICATE.equals(twiDO.getTypeId()) || 
-                Constants.dictionary().POS_FIXED.equals(twiDO.getTypeId()) ||
-                Constants.dictionary().POS_FIXED_ALWAYS.equals(twiDO.getTypeId())) {
-                for (j = 0; j < numSubsets; j++) {
-                    posNum = j * testWorksheetDO.getSubsetCapacity() + twiDO.getPosition();
-                    
-                    //
-                    // Do NOT overwrite accession numbers on QCs pulled from other
-                    // worksheets
-                    //
-                    accessionNumber = (String) qcRow.cells.get(1).value;
-                    if (accessionNumber == null || accessionNumber.startsWith("X."))
-                        qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
-                    qcItems[posNum-1] = (TableDataRow) qcRow.clone();
-                    qcItems[posNum-1].key = qcRow.key;
-                    qcItems[posNum-1].data = qcRow.data;
-                }
-            } else if (Constants.dictionary().POS_RANDOM.equals(twiDO.getTypeId())) {
-                qcRandList.add(qcRow);
-            } else if (Constants.dictionary().POS_LAST_OF_SUBSET.equals(twiDO.getTypeId())) {
-                qcLastWellList.add(qcRow);
-            } else if (Constants.dictionary().POS_LAST_OF_RUN.equals(twiDO.getTypeId())) {
-                qcLastRunList.add(qcRow);
-            } else if (Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN.equals(twiDO.getTypeId())) {
-                qcLastBothList.add(qcRow);
-            }
-        }
-
-        //
-        // Insert Last of Well/Both QCItems into the worksheet per subset
-        //
-        if (! qcLastWellList.isEmpty())
-            lastOf = qcLastWellList;
-        else
-            lastOf = qcLastBothList;
-
-        startIndex = testWorksheetDO.getSubsetCapacity() - lastOf.size();
-        for (i = 0; i < numSubsets; i++) {
-            posNum = i * testWorksheetDO.getSubsetCapacity() + startIndex + 1;
-            for (j = 0; j < lastOf.size(); j++) {
-                qcRow = (TableDataRow) lastOf.get(j).clone();
-                qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
-                qcRow.key = lastOf.get(j).key;
-                qcRow.data = lastOf.get(j).data;
-                qcItems[posNum-1] = qcRow;
-                posNum++;
-            }
-        }
-
-        //
-        // Insert random QCItems into the worksheet per subset
-        //
-        randSize = qcRandList.size();
-        for (i = 0; i < numSubsets; i++) {
-            j = 0;
-            while (j < randSize) {
-                qcRow = (TableDataRow) qcRandList.get(j).clone();
-                qcRow.key = qcRandList.get(j).key;
-                qcRow.data = qcRandList.get(j).data;
-                posNum = (int) (Math.random() * (testWorksheetDO.getSubsetCapacity() - 1)) + i * testWorksheetDO.getSubsetCapacity() + 1;
-                if (qcItems[posNum-1] == null) {
-                    if (posNum < testWorksheetDO.getTotalCapacity()) {
-                        qcRow1 = qcItems[posNum];
-                        if (qcRow1 != null && Constants.dictionary().POS_DUPLICATE.equals(((TestWorksheetItemDO)((ArrayList<Object>)qcRow1.data).get(0)).getTypeId()))
-                            continue;
-                    }
-                    qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
-                    qcItems[posNum-1] = qcRow;
-                    j++;
-                }
-            }
-        }
-*/
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void mergeAnalysesAndQCs() {
-/*        
-        int                     i, j, k;
-        ArrayList<TableDataRow> items, lastOf;
-        Exception               tempE;
-        String                  message;
-        TableDataRow            row, dupedRow;
-        TestWorksheetItemDO     twiDO;
-        
-        //
-        // insert end of run QCs into lastOf list
-        //
-        if (!qcLastRunList.isEmpty())
-            lastOf = qcLastRunList;
-        else
-            lastOf = qcLastBothList;
-            
-        //
-        // Insert analyses, duplicates and fixed QCs into worksheet
-        //
-        j = 0;
-        items = new ArrayList<TableDataRow>();
-        for (i = 0; i < testWorksheetDO.getTotalCapacity() - lastOf.size(); i++) {
-            row = qcItems[i];
-            if (row == null) {
-                if (j >= analysisItems.size())
-                    break;
-
-                row = analysisItems.get(j);
-                j++;
-            } else {
-                twiDO = (TestWorksheetItemDO) ((ArrayList<Object>)row.data).get(0);
-                if (typeDup.equals(twiDO.getTypeId())) {
-                    //
-                    // copy previous analysis row and set it as the qc link for
-                    // this row
-                    //
-                    dupedRow = analysisItems.get(j-1); 
-                    row = new TableDataRow(11);
-                    row.key = getNextTempId();                                  // fake worksheet analysis id
-                    row.cells.get(1).value = "D"+dupedRow.cells.get(1).value;   // accession #
-                    row.cells.get(2).value = "Duplicate of "+
-                                             dupedRow.cells.get(1).value;       // description
-                    row.cells.get(3).value = dupedRow.key;                      // qc link
-                    row.cells.get(4).value = dupedRow.cells.get(4).value;       // test name
-                    row.cells.get(5).value = dupedRow.cells.get(5).value;       // method name
-                    row.cells.get(6).value = dupedRow.cells.get(6).value;       // status
-                    row.cells.get(7).value = dupedRow.cells.get(7).value;       // collection date
-                    row.cells.get(8).value = dupedRow.cells.get(8).value;       // received date and time
-                    row.cells.get(9).value = dupedRow.cells.get(9).value;       // due days
-                    row.cells.get(10).value = dupedRow.cells.get(10).value;     // expire date and time
-                    row.data = dupedRow.data;
-                }
-            }
-            row.cells.get(0).value = i + 1;
-            items.add(row);
-        }
-        
-        //
-        // Append Last of Run QCItems interweaving any fixedAlways QC items
-        //
-        for (k = 0; k < lastOf.size() && i < testWorksheetDO.getTotalCapacity();) {
-            row = qcItems[i];
-            if (row != null &&
-                typeFixedAlways.equals(((TestWorksheetItemDO)((ArrayList<Object>)row.data).get(0)).getTypeId())) {
-                row.cells.get(0).value = i + 1;
-                items.add(row);
-            } else {
-                row = lastOf.get(k);
-                row.cells.get(0).value = i + 1;
-                row.cells.get(1).value = "X."+(i + 1);     // qc accession #
-                items.add(row);
-                k++;
-            }
-            i++;
-        }
-        
-        //
-        // Add in any remaining fixed always QCs
-        //
-        k = i;
-        while (k < testWorksheetDO.getTotalCapacity()) {
-            row = qcItems[k];
-            if (row != null) {
-                twiDO = (TestWorksheetItemDO) ((ArrayList<Object>)row.data).get(0);
-                if (typeFixedAlways.equals(twiDO.getTypeId())) {
-                    row.cells.get(0).value = k + 1;
-                    items.add(row);
-                }
-            }
-            k++;
-        }
-
-        //
-        // If last subset contains only QC items and this is not a QC only worksheet,
-        // remove it
-        //
-        if (analysisItems.size() > 0) {
-            for (i--; i > -1 && items.get(i).data instanceof ArrayList && ((ArrayList<Object>)items.get(i).data).size() == 2; i--) {
-                if (i % testWorksheetDO.getTotalCapacity() == 0) {
-                    while (i < items.size())
-                        items.remove(i);
-                }
-            }
-        }
-
-        if (j < analysisItems.size())
-            Window.alert(Messages.get().worksheetIsFull"));
-
-        //
-        // load QC Link dropdown model
-        //
-        qcLinkModel.clear();
-        qcLinkModel.add(new TableDataRow(null, ""));
-        for (i = 0; i < items.size(); i++)
-            qcLinkModel.add(new TableDataRow(items.get(i).key,(String)items.get(i).cells.get(1).value));
-        ((Dropdown<Integer>)worksheetItemTable.getColumns().get(3).getColumnWidget()).setModel(qcLinkModel);
-        
-        worksheetItemTable.load(items);
-        
-        clearErrors();
-        if (!qcErrors.isEmpty()) {
-            message = "";
-            for (i = -4; i < items.size(); i++) {
-                tempE = (Exception)qcErrors.get(i+1);
-                if (tempE == null)
-                    continue;
-                if (message.length() > 0)
-                    message += "\n\n";
-                message += tempE.getMessage();
-            }
-
-            if (message.length() > 0) {
-                Window.alert(message);
-            }
-        }
-*/
     }
     
     private void insertFromWorksheetAbove() {
@@ -1278,89 +804,72 @@ public class WorksheetItemTabUI extends Screen {
     }
     
     private void openWorksheetAnalysisLookup() {
-        WindowInt modal;
+        ModalWindow modal;
+        
+        if (manager.getWorksheet().getFormatId() == null) {
+            Window.alert(Messages.get().worksheetChooseFormatBeforeAddFromOther());
+            return;
+        }
         
         try {
-            if (wAnaLookupScreen == null) {
-                wAnaLookupScreen = new WorksheetLookupScreenUI();
-                wAnaLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreenUI.Action>() {
+            if (wLookupScreen == null) {
+                wLookupScreen = new WorksheetLookupScreenUI();
+                wLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreenUI.Action>() {
                     @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreenUI.Action> event) {
                         Item<Integer> row;
-                        WindowInt modal2;
+                        ModalWindow modal2;
                         WorksheetViewDO wVDO;
 
                         if (event.getAction() == WorksheetLookupScreenUI.Action.SELECT) {
-/*
                             row = (Item<Integer>)event.getData();
                             if (row != null) {
                                 wVDO = (WorksheetViewDO)row.getData();
                                 try {
                                     if (waSelectionScreen == null) {
-                                        waSelectionScreen = new WorksheetAnalysisSelectionScreen();
-                                        waSelectionScreen.addActionHandler(new ActionHandler<WorksheetAnalysisSelectionScreen.Action>() {
-                                            public void onAction(ActionEvent<WorksheetAnalysisSelectionScreen.Action> event) {
-                                                int                      i, r;
-                                                ArrayList<TableDataRow>  list;
-                                                ArrayList<Object>        data, dataList;
-                                                AnalysisViewDO           aVDO;
-                                                Integer                  fromFormatId;
-                                                QcLotViewDO              qcLotVDO;
-                                                TableDataRow             newRow;
-                                                WorksheetAnalysisDO      waDO;
-                                                WorksheetResultManager   wrManager;      
-                                                WorksheetQcResultManager wqrManager;      
+                                        waSelectionScreen = new WorksheetAnalysisSelectionScreenUI();
+                                        waSelectionScreen.addActionHandler(new ActionHandler<WorksheetAnalysisSelectionScreenUI.Action>() {
+                                            public void onAction(ActionEvent<WorksheetAnalysisSelectionScreenUI.Action> event) {
+                                                int index;
+                                                ArrayList<WorksheetAnalysisViewDO> list, newData;
+                                                Integer fromWorksheetId;
+                                                WorksheetItemDO itemDO;
+                                                WorksheetAnalysisViewDO data;
     
-                                                if (event.getAction() == WorksheetAnalysisSelectionScreen.Action.OK) {
-                                                    data = (ArrayList<Object>)event.getData();
-                                                    
-                                                    list = (ArrayList<TableDataRow>)data.get(0);
-                                                    fromFormatId = (Integer)data.get(1);
+                                                if (event.getAction() == WorksheetAnalysisSelectionScreenUI.Action.SELECT) {
+                                                    list = (ArrayList<WorksheetAnalysisViewDO>)event.getData();
                                                     if (list != null && list.size() > 0) {
-                                                        r = worksheetItemTable.getSelectedRow();
-                                                        if (r == -1)
-                                                            r = worksheetItemTable.numRows();
-                                                        else if (addRowDirection)
-                                                            r++;
+                                                        newData = new ArrayList<WorksheetAnalysisViewDO>();
+                                                        if (worksheetItemTable.getSelectedRow() != -1) {
+                                                            index = worksheetItemTable.getSelectedRow();
+                                                            if (addRowDirection)
+                                                                index++;
+                                                        } else {
+                                                            index = worksheetItemTable.getRowCount();
+                                                        }
                                                         
-                                                        for (TableDataRow row : list) {
-                                                            waDO = (WorksheetAnalysisDO)row.data;
-                                                            newRow = new TableDataRow(11);
-                                                            try {
-                                                                if (waDO.getAnalysisId() != null) {
-                                                                    aVDO = AnalysisService.get().fetchById(waDO.getAnalysisId());
-                                                                    wrManager = WorksheetService.get().fetchWorksheeetResultByWorksheetAnalysisId(waDO.getId());
-                                                                    
-                                                                    newRow.key = getNextTempId();
-                                                                    newRow.cells.get(1).value = waDO.getAccessionNumber();
-                                                                    newRow.cells.get(4).value = aVDO.getTestName();
-                                                                    newRow.cells.get(5).value = aVDO.getMethodName();
-                                                                    newRow.cells.get(6).value = aVDO.getStatusId();
-                                                                    
-                                                                    dataList = new ArrayList<Object>();
-                                                                    dataList.add(aVDO);
-                                                                    dataList.add(wrManager);
-                                                                    dataList.add(fromFormatId);
-                                                                    newRow.data = dataList;
-                                                                } else if (waDO.getQcLotId() != null) {
-                                                                    qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
-                                                                    wqrManager = WorksheetService.get().fetchWorksheeetQcResultByWorksheetAnalysisId(waDO.getId());
-                                                                    
-                                                                    newRow.cells.get(1).value = waDO.getAccessionNumber();
-                                                                    newRow.cells.get(2).value = qcLotVDO.getQcName();
-                                                                    
-                                                                    dataList = new ArrayList<Object>();
-                                                                    dataList.add(qcLotVDO);
-                                                                    dataList.add(wqrManager);
-                                                                    dataList.add(fromFormatId);
-                                                                    newRow.data = dataList;
-                                                                }
-                                                                worksheetItemTable.addRow(r, newRow);
-                                                                r++;
-                                                            } catch (Exception anyE) {
-                                                                anyE.printStackTrace();
-                                                                Window.alert("error: " + anyE.getMessage());
-                                                            }
+                                                        if (manualAnalysisUids == null)
+                                                            manualAnalysisUids = new ArrayList<String>();
+
+                                                        fromWorksheetId = null;
+                                                        for (WorksheetAnalysisViewDO waDO : list) {
+                                                            if (fromWorksheetId == null)
+                                                                fromWorksheetId = waDO.getWorksheetId();
+                                                            
+                                                            itemDO = manager.item.add(index++);
+                                                            data = manager.analysis.add(itemDO);
+                                                            copyDO(waDO, data);
+                                                            data.setIsFromOther("Y");
+                                                            newData.add(data);
+                                                            manualAnalysisUids.add(manager.getUid(data));
+                                                        }
+
+                                                        try {
+                                                            manager = WorksheetBuilderService.get().initializeResultsFromOther(manager, newData, fromWorksheetId);
+                                                            bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
+                                                        } catch (Exception anyE) {
+                                                            Window.alert(anyE.getMessage());
+                                                            anyE.printStackTrace();
                                                         }
                                                     }
                                                 }
@@ -1369,17 +878,18 @@ public class WorksheetItemTabUI extends Screen {
                                     }
                                     
                                     modal2 = new ModalWindow();
-                                    waSelectionScreen.setWorksheetId(wVDO.getId());
-                                    waSelectionScreen.draw();
-                                    modal2.setContent(waSelectionScreen);
                                     modal2.setName(Messages.get().worksheetNumber()+wVDO.getId().toString());
+                                    modal2.setContent(waSelectionScreen);
+                                    modal2.setSize("502px", "365px");
+                                    waSelectionScreen.setWindow(modal2);
+                                    waSelectionScreen.setWorksheetId(wVDO.getId());
+                                    waSelectionScreen.initialize();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                     Window.alert("error: " + e.getMessage());
                                     return;
                                 }
                             }
-*/
                         }
                     }
                 });
@@ -1387,7 +897,9 @@ public class WorksheetItemTabUI extends Screen {
             
             modal = new ModalWindow();
             modal.setName(Messages.get().worksheetLookup());
-            modal.setContent(wAnaLookupScreen);
+            modal.setContent(wLookupScreen);
+            modal.setSize("636px", "482px");
+            wLookupScreen.setWindow(modal);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
@@ -1397,200 +909,377 @@ public class WorksheetItemTabUI extends Screen {
 
     private void insertFromQcTableAbove() {
         addRowDirection = false;
-//        openQCLookup();
+        openQCLookup();
     }
     
     private void insertFromQcTableBelow() {
         addRowDirection = true;
-//        openQCLookup();
+        openQCLookup();
     }
     
-    private void openQCLookup(String name, ArrayList<QcLotViewDO> list) {
-/*
-        ScreenWindow modal;
+    private void openQCLookup() {
+        ModalWindow win;
         
         try {
             if (qcLookupScreen == null) {
                 qcLookupScreen = new QcLookupScreen();
                 qcLookupScreen.postConstructor();
-                qcLookupScreen.addActionHandler(new ActionHandler<QcLookupScreen.Action>() {
+                qcLookupScreen.addActionHandler(new org.openelis.gwt.event.ActionHandler<QcLookupScreen.Action>() {
                     @SuppressWarnings("unchecked")
-                    public void onAction(ActionEvent<QcLookupScreen.Action> event) {
-                        int                    i, r;
-                        ArrayList<Object>      dataList;
+                    public void onAction(org.openelis.gwt.event.ActionEvent<QcLookupScreen.Action> event) {
+                        int index;
                         ArrayList<QcLotViewDO> list;
-                        TableDataRow           qcRow;
-                        QcLotViewDO            qcLotVDO;
-                        TestWorksheetItemDO    twiDO;
+                        ArrayList<WorksheetAnalysisViewDO> newData;
+                        WorksheetItemDO itemDO;
+                        WorksheetAnalysisViewDO data;
 
                         if (event.getAction() == QcLookupScreen.Action.OK) {
                             list = (ArrayList<QcLotViewDO>)event.getData();
-                            if (list != null) {
-                                if (qcStartIndex != 0) {
-                                    //
-                                    // If qcStartIndex != 0, then we are coming
-                                    // here because the popup was triggered by
-                                    // multiple matching qcs in a predefined location
-                                    // and we will only be getting one qc selected
-                                    // from the popup
-                                    //
-                                    twiDO = twManager.getItemAt(qcStartIndex - 1);
-
-                                    qcLotVDO = list.get(0);
-
-                                    qcRow = new TableDataRow(11);
-                                    qcRow.cells.get(2).value = qcLotVDO.getQcName();             // description
-                                    
-                                    dataList = new ArrayList<Object>();
-                                    dataList.add(twiDO);
-                                    dataList.add(qcLotVDO);
-                                    qcRow.data = dataList;
-                                    
-                                    testWorksheetItems.add(qcRow);
-                                    
-//                                    loadQCTemplate();
+                            if (list != null && list.size() > 0) {
+                                newData = new ArrayList<WorksheetAnalysisViewDO>();
+                                if (worksheetItemTable.getSelectedRow() != -1) {
+                                    index = worksheetItemTable.getSelectedRow();
+                                    if (addRowDirection)
+                                        index++;
                                 } else {
-                                    //
-                                    // If qcStartIndex == 0, then we are coming
-                                    // here because the popup was triggered by
-                                    // the user clicking the lookup button
-                                    //
-                                    r = worksheetItemTable.getSelectedRow();
-                                    if (r == -1)
-                                        r = worksheetItemTable.numRows();
-                                    else
-                                        r++;
-
-                                    for (i = 0; i < list.size(); i++) {
-                                        if (qcItems != null && qcItems[r+i] != null) {
-                                            Window.alert("Fixed QC already designated for position "+(r+i+1)+
-                                                         "; Please select a different position or "+
-                                                         "a shorter list of QCs to add");
-                                            return;
-                                        }
-                                    }
-                                    
-                                    for (i = 0; i < list.size(); i++) {
-                                        qcLotVDO  = list.get(i);
-
-                                        twiDO = new TestWorksheetItemDO();
-                                        twiDO.setPosition(r+1);
-                                        twiDO.setTypeId(Constants.dictionary().POS_FIXED);
-                                        twiDO.setQcName(qcLotVDO.getQcName());
-                                        
-                                        qcRow = new TableDataRow(11);
-                                        qcRow.cells.get(2).value = qcLotVDO.getQcName();             // description
-                                        
-                                        dataList = new ArrayList<Object>();
-                                        dataList.add(twiDO);
-                                        dataList.add(qcLotVDO);
-                                        qcRow.data = dataList;
-                                        
-                                        testWorksheetItems.add(qcRow);
-                                        r++;
-                                    }
-
-                                    buildQCWorksheet();
+                                    index = worksheetItemTable.getRowCount();
                                 }
                                 
-                                mergeAnalysesAndQCs();
+                                if (manualAnalysisUids == null)
+                                    manualAnalysisUids = new ArrayList<String>();
+
+                                for (QcLotViewDO qcLotVDO : list) {
+                                    itemDO = manager.item.add(index++);
+                                    data = manager.analysis.add(itemDO);
+                                    data.setAccessionNumber("X." + itemDO.getId());
+                                    data.setQcLotId(qcLotVDO.getQcId());
+                                    data.setIsFromOther("N");
+                                    data.setDescription(qcLotVDO.getQcName() + " (" +
+                                                        qcLotVDO.getLotNumber() + ")");
+                                    newData.add(data);
+                                    manualAnalysisUids.add(manager.getUid(data));
+                                }
+                                
+                                try {
+                                    manager = WorksheetBuilderService.get().initializeResults(manager, newData);
+                                    bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
+                                    enableUndoQcsMenu(true);
+                                } catch (Exception anyE) {
+                                    Window.alert(anyE.getMessage());
+                                    anyE.printStackTrace();
+                                }
                             }
                         }
                     }
                 });
-            }
-            
-            if (qcStartIndex != 0)
-                qcLookupScreen.enableMultiSelect(false);
-            else
                 qcLookupScreen.enableMultiSelect(true);
-            
-            modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-            modal.setName(Messages.get().QCLookup());
-            modal.setContent(qcLookupScreen);
-
-            if (list != null) {
-                qcLookupScreen.clearFields();
-                qcLookupScreen.setQueryResult(name, list);
-            } else if (name != null) {
-                qcLookupScreen.clearFields();
-                qcLookupScreen.executeQuery(name);
             }
+
+            win = new ModalWindow();
+            win.setName(Messages.get().QCLookup());
+            win.setSize("735px", "360px");
+            qcLookupScreen.setWindow(win);
+            win.setContent(qcLookupScreen);
+            qcLookupScreen.clearFields();
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
             return;
         }
-*/
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("removeRowButton")
     protected void removeRow(ClickEvent event) {
-/*
         int i, rowIndex;
-        Integer tempKey;
         Item<String> dataRow, tempRow;
-        
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO data, tempData;
+
         worksheetItemTable.finishEditing();
         rowIndex = worksheetItemTable.getSelectedRow();
-        if (rowIndex > -1 && worksheetItemTable.getRowCount() > 0) {
+        if (rowIndex > -1 && rowIndex < worksheetItemTable.getRowCount()) {
             dataRow = worksheetItemTable.getRowAt(rowIndex);
+            data = dataRow.getData();
             
+            //
+            // Check if other rows are linked to this one via QC Link
+            //
             for (i = 0; i < worksheetItemTable.getRowCount(); i++) {
                 tempRow = worksheetItemTable.getRowAt(i);
-                if (tempRow != dataRow && tempRow.cells.get(3).getValue() != null) {
-                    if (tempRow.cells.get(3).getValue() instanceof ArrayList) {
-                        if (((ArrayList<Object>)tempRow.cells.get(3).getValue()).size() > 0)
-                            tempKey = (Integer)((ArrayList<Object>)tempRow.cells.get(3).getValue()).get(0);
-                        else
-                            tempKey = null;
-                    } else {
-                        tempKey = (Integer)tempRow.cells.get(3).getValue();
-                    }
-                    
-                    if (((Integer)dataRow.key).equals(tempKey)) {
+                tempData = tempRow.getData();
+                if (tempRow != dataRow && tempData.getWorksheetAnalysisId() != null) {
+                    if (data.getId().equals(tempData.getWorksheetAnalysisId())) {
                         Window.alert(Messages.get().oneOrMoreQcLinkOnRemove());
                         return;
                     }
                 }
             }
             
-            worksheetItemTable.deleteRow(rowIndex);
+            if (manualAnalysisUids != null)
+                manualAnalysisUids.remove(manager.getUid(data));
+            if (templateAnalysisUids != null)
+                templateAnalysisUids.remove(manager.getUid(data));
+            if (qcChoices != null)
+                qcChoices.remove(manager.getUid(data));
+            
+            worksheetItemTable.removeRowAt(rowIndex);
+            wiDO = manager.item.getById(data.getWorksheetItemId());
+            manager.analysis.remove(wiDO, data);
+            if (manager.analysis.count(wiDO) == 0)
+                manager.item.remove(wiDO);
         }
-*/
     }
     
     private void undoAllQcs() {
+        ArrayList<String> analysisUids;
+        ArrayList<WorksheetAnalysisViewDO> analyses;
+        HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> qcLinks;
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO waVDO;
         
+        analysisUids = new ArrayList<String>();
+        if (manualAnalysisUids != null)
+            analysisUids.addAll(manualAnalysisUids);
+        if (templateAnalysisUids != null)
+            analysisUids.addAll(templateAnalysisUids);
+        
+        if (analysisUids.size() > 0) {
+            qcLinks = getQcLinkList();
+            for (String uid : analysisUids) {
+                waVDO = (WorksheetAnalysisViewDO)manager.getObject(uid);
+
+                //
+                // Remove QC Links from rows that are referencing this analysis
+                //
+                analyses = qcLinks.get(waVDO.getId());
+                if (analyses != null) {
+                    for (WorksheetAnalysisViewDO waVDO1 : analyses)
+                        waVDO1.setWorksheetAnalysisId(null);
+                }
+                
+                //
+                // Remove QC Choices for this analysis if needed
+                //
+                if (qcChoices != null)
+                    qcChoices.remove(manager.getUid(waVDO));
+                
+                wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+                manager.analysis.remove(wiDO, waVDO);
+                if (manager.analysis.count(wiDO) == 0)
+                    manager.item.remove(wiDO);
+            }
+        }
+        manualAnalysisUids = null;
+        templateAnalysisUids = null;
+        fireDataChange();
     }
 
     private void undoManualQcs() {
+        ArrayList<WorksheetAnalysisViewDO> analyses;
+        HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> qcLinks;
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO waVDO;
         
+        if (manualAnalysisUids != null) {
+            qcLinks = getQcLinkList();
+            for (String uid : manualAnalysisUids) {
+                waVDO = (WorksheetAnalysisViewDO)manager.getObject(uid);
+
+                //
+                // Remove QC Links from rows that are referencing this analysis
+                //
+                analyses = qcLinks.get(waVDO.getId());
+                if (analyses != null) {
+                    for (WorksheetAnalysisViewDO waVDO1 : analyses)
+                        waVDO1.setWorksheetAnalysisId(null);
+                }
+
+                //
+                // Remove QC Choices for this analysis if needed
+                //
+                if (qcChoices != null)
+                    qcChoices.remove(manager.getUid(waVDO));
+                
+                wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+                manager.analysis.remove(wiDO, waVDO);
+                if (manager.analysis.count(wiDO) == 0)
+                    manager.item.remove(wiDO);
+            }
+        }
+        manualAnalysisUids = null;
+        fireDataChange();
     }
 
     private void undoTemplateQcs() {
+        ArrayList<WorksheetAnalysisViewDO> analyses;
+        HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> qcLinks;
+        WorksheetItemDO wiDO;
+        WorksheetAnalysisViewDO waVDO;
         
+        if (templateAnalysisUids != null) {
+            qcLinks = getQcLinkList();
+            for (String uid : templateAnalysisUids) {
+                waVDO = (WorksheetAnalysisViewDO)manager.getObject(uid);
+
+                //
+                // Remove QC Links from rows that are referencing this analysis
+                //
+                analyses = qcLinks.get(waVDO.getId());
+                if (analyses != null) {
+                    for (WorksheetAnalysisViewDO waVDO1 : analyses)
+                        waVDO1.setWorksheetAnalysisId(null);
+                }
+
+                //
+                // Remove QC Choices for this analysis if needed
+                //
+                if (qcChoices != null)
+                    qcChoices.remove(manager.getUid(waVDO));
+                
+                wiDO = manager.item.getById(waVDO.getWorksheetItemId());
+                manager.analysis.remove(wiDO, waVDO);
+                if (manager.analysis.count(wiDO) == 0)
+                    manager.item.remove(wiDO);
+            }
+        }
+        templateAnalysisUids = null;
+        fireDataChange();
     }
 
-    private int getNextTempId() {
-        return --tempId;
+    private void enableAddRowMenu(boolean enable) {
+        addRowMenu.setEnabled(enable);
+        addRowButton.setEnabled(enable);
+        insertAnalysisAbove.setEnabled(enable);
+        insertAnalysisBelow.setEnabled(enable);
+        insertFromWorksheetAbove.setEnabled(enable);
+        insertFromWorksheetBelow.setEnabled(enable);
+        insertFromQcTableAbove.setEnabled(enable);
+        insertFromQcTableBelow.setEnabled(enable);
     }
     
-    private void loadDefaultQCTemplate() {
-        twManager = null;
-        if (testWorksheetDO == null)
-            testWorksheetDO = new TestWorksheetDO();
-        testWorksheetDO.setFormatId(Constants.dictionary().WF_TOTAL);
-        testWorksheetDO.setSubsetCapacity(500);
-        testWorksheetDO.setTotalCapacity(500);
-//        testWorksheetItems.clear();
-        buildQCWorksheet();
+    private void enableLoadTemplateMenu(boolean enable) {
+        Iterator<MenuItem> menuItems;
+        MenuItem menuItem;
+        
+        loadTemplateMenu.setEnabled(enable);
+        loadTemplateButton.setEnabled(enable);
+        
+        menuItems = templateMap.keySet().iterator();
+        while (menuItems.hasNext()) {
+            menuItem = menuItems.next();
+            menuItem.setEnabled(enable);
+        }
     }
     
-    private class RowItem {
-        AnalysisViewDO analysis;
-        QcLotViewDO qcLotVDO;
-        WorksheetAnalysisDO worksheetAnalysis;
-        WorksheetItemDO worksheetItem;
+    private void enableUndoQcsMenu(boolean enable) {
+        undoQcsMenu.setEnabled(enable);
+        undoQcsButton.setEnabled(enable);
+        undoAll.setEnabled(enable);
+        undoManual.setEnabled(enable);
+        undoTemplate.setEnabled(enable);
+    }
+    
+    private void copyDO(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
+        toDO.setAccessionNumber(fromDO.getAccessionNumber().toString());
+        toDO.setAnalysisId(fromDO.getAnalysisId());
+        toDO.setQcLotId(fromDO.getQcLotId());
+        toDO.setWorksheetAnalysisId(fromDO.getWorksheetAnalysisId());
+        toDO.setQcSystemUserId(fromDO.getQcSystemUserId());
+        toDO.setQcStartedDate(fromDO.getQcStartedDate());
+        toDO.setDescription(fromDO.getDescription());
+        toDO.setTestId(fromDO.getTestId());
+        toDO.setTestName(fromDO.getTestName());
+        toDO.setMethodName(fromDO.getMethodName());
+        toDO.setUnitOfMeasureId(fromDO.getUnitOfMeasureId());
+        toDO.setUnitOfMeasure(fromDO.getUnitOfMeasure());
+        toDO.setStatusId(fromDO.getStatusId());
+        toDO.setCollectionDate(fromDO.getCollectionDate());
+        toDO.setReceivedDate(fromDO.getReceivedDate());
+        toDO.setDueDays(fromDO.getDueDays());
+        toDO.setExpireDate(fromDO.getExpireDate());
+    }
+    
+    private void copyViewToDO(AnalysisViewVO avVO, WorksheetAnalysisViewDO waVDO) {
+        DictionaryDO unitDO;
+        
+        waVDO.setAccessionNumber(avVO.getAccessionNumber().toString());
+        waVDO.setAnalysisId(avVO.getAnalysisId());
+        waVDO.setIsFromOther("N");
+        waVDO.setDescription(avVO.getWorksheetDescription());
+        waVDO.setTestId(avVO.getTestId());
+        waVDO.setTestName(avVO.getTestName());
+        waVDO.setMethodName(avVO.getMethodName());
+        waVDO.setUnitOfMeasureId(avVO.getUnitOfMeasureId());
+        if (waVDO.getUnitOfMeasureId() != null) {
+            try {                                                               // unit
+                unitDO = DictionaryCache.getById(waVDO.getUnitOfMeasureId());
+                waVDO.setUnitOfMeasure(unitDO.getEntry());
+            } catch (Exception anyE) {
+                anyE.printStackTrace();
+                Window.alert("error: " + anyE.getMessage());
+            }
+        }
+        waVDO.setStatusId(avVO.getAnalysisStatusId());
+        waVDO.setCollectionDate(DataBaseUtil.toYD(avVO.getCollectionDate()));
+        waVDO.setReceivedDate(DataBaseUtil.toYM(avVO.getReceivedDate()));
+
+        //
+        // Compute and set the number of days until the analysis is 
+        // due to be completed based on when the sample was received,
+        // what the tests average turnaround time is, and whether the
+        // client requested a priority number of days.
+        //
+        if (avVO.getPriority() != null)
+            waVDO.setDueDays(DataBaseUtil.getDueDays(avVO.getReceivedDate(), avVO.getPriority()));
+        else
+            waVDO.setDueDays(DataBaseUtil.getDueDays(avVO.getReceivedDate(), avVO.getTimeTaAverage()));
+        
+        //
+        // Compute and set the expiration date on the analysis based
+        // on the collection date and the tests definition of holding
+        // hours.
+        //
+        waVDO.setExpireDate(DataBaseUtil.getExpireDate(avVO.getCollectionDate(),
+                                                       avVO.getCollectionTime(),
+                                                       avVO.getTimeHolding()));
+    }
+    
+    private HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> getQcLinkList() {
+        ArrayList<WorksheetAnalysisViewDO> analyses;
+        HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> qcLinks;
+        WorksheetAnalysisViewDO data;
+        
+        qcLinks = new HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>>();
+        for (Row row : worksheetItemTable.getModel()) {
+            data = (WorksheetAnalysisViewDO)manager.getObject((String)row.getData());
+            if (data.getWorksheetAnalysisId() != null) {
+                analyses = qcLinks.get(data.getWorksheetAnalysisId());
+                if (analyses == null) {
+                    analyses = new ArrayList<WorksheetAnalysisViewDO>();
+                    qcLinks.put(data.getWorksheetAnalysisId(), analyses);
+                }
+                analyses.add(data);
+            }
+        }
+        
+        return qcLinks;
+    }
+    
+    private void sortItems(int col, int direction) {
+        int i;
+        ArrayList<Object> keys;
+        
+        keys = new ArrayList<Object>();
+        for (i = 0; i < worksheetItemTable.getRowCount(); i++) 
+            keys.add(worksheetItemTable.getRowAt(i).getCell(col));
+        
+        try {
+            manager = WorksheetBuilderService.get().sortItems(manager, keys, direction);
+            bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
+        } catch (Exception anyE) {
+            anyE.printStackTrace();
+            Window.alert("error: " + anyE.getMessage());
+        }
     }
 }

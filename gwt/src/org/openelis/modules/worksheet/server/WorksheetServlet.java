@@ -32,6 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetManagerBean;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
@@ -54,8 +55,15 @@ public class WorksheetServlet extends RemoteServlet implements WorksheetServiceI
     WorksheetBean        worksheet;
 
     public ArrayList<WorksheetViewDO> query(Query query) throws Exception {
-        try {        
-            return worksheet.fetchByQueryForLookup(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        ArrayList<IdVO> idVOs;
+        ArrayList<Integer> ids;
+        
+        try {
+            idVOs = worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+            ids = new ArrayList<Integer>();
+            for (IdVO vo : idVOs)
+                ids.add(vo.getId());
+            return worksheet.fetchByIds(ids);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

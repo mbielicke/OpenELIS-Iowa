@@ -30,14 +30,15 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.QcAnalyteBean;
 import org.openelis.bean.QcBean;
 import org.openelis.bean.QcLotBean;
 import org.openelis.bean.QcManagerBean;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
-import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
@@ -56,6 +57,9 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
     
     @EJB
     QcBean        qc;
+    
+    @EJB
+    QcAnalyteBean qcAnalyte;
     
     @EJB
     QcLotBean     qcLot;
@@ -148,6 +152,14 @@ public class QcServlet extends RemoteServlet implements QcServiceInt {
     public QcLotViewDO fetchLotById(Integer id) throws Exception {
         try {        
             return qcLot.fetchById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ArrayList<QcAnalyteViewDO> fetchAnalytesByLotId(Integer id) throws Exception {
+        try {
+            return qcAnalyte.fetchByLotId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

@@ -37,14 +37,15 @@ UIRF Software License are applicable instead of those above.
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
-    <g:layer top="0px" height="105px">
+    <g:layer top="0px" height="100px">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
-			<td class="{res.style.Prompt}"><ui:text from="{msg.worksheetNumber}" /></td>
+			<td class="{res.style.Prompt}"><ui:text from="{msg.worksheetNumber}:" /></td>
 			<td>
 			  <w:TextBox ui:field="worksheetId" width="100px" field="Integer" />
     	  	</td>
+            <td class="{res.style.Prompt}"><ui:text from="{msg.username}" /></td>
 		    <td>
               <w:AutoComplete ui:field="systemUserId" width="166" case="LOWER">
                 <w:popup>
@@ -58,11 +59,11 @@ UIRF Software License are applicable instead of those above.
       	  	</td>
           </tr>
           <tr>
-      	    <td class="{res.style.Prompt}"><ui:text from="{msg.created}" /></td>
+      	    <td class="{res.style.Prompt}"><ui:text from="{msg.created}:" /></td>
       	  	<td>
               <c:Calendar ui:field="createdDate" width="134px" begin="0" end="4" /> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
             </td>
-            <td class="{res.style.Prompt}"><ui:text from="{msg.status}" /></td>
+            <td class="{res.style.Prompt}"><ui:text from="{msg.status}:" /></td>
             <td>
               <w:Dropdown ui:field="statusId" width="119px" field="Integer" />
             </td>
@@ -71,15 +72,15 @@ UIRF Software License are applicable instead of those above.
             </td>
           </tr>
           <tr>
-      	  <td class="{res.style.Prompt}"><ui:text from="{msg.description}" /></td>
-      	  <td colspan="4">
+      	  <td class="{res.style.Prompt}"><ui:text from="{msg.description}:" /></td>
+      	  <td colspan="3">
       	    <w:TextBox ui:field="description" width="400px" case="LOWER" field="String" />
           </td>
           </tr>
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="105" bottom="25px">
+    <g:layer top="100" bottom="25px">
       <t:Table ui:field="worksheetTable" visibleRows="9" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
         <t:Column width="100" label="{msg.worksheetNumber}" sortable="true">
           <t:LabelCell />
@@ -103,9 +104,11 @@ UIRF Software License are applicable instead of those above.
       </t:Table>
     </g:layer>
     <g:layer bottom="0px" height="25px">
-      <g:HorizontalPanel>
-        <w:Button ui:field="select" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.select}" />
-        <w:Button ui:field="cancel" leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.cancel}" />
+      <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
+        <g:HorizontalPanel>
+          <w:Button ui:field="select" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.select}" />
+          <w:Button ui:field="cancel" leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.cancel}" />
+        </g:HorizontalPanel>
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>
