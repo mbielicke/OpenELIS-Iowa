@@ -2198,7 +2198,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     private void setOrderId(Integer ordId) {
-        ValidationErrorsList errors;
         SampleTestReturnVO ret;
 
         if (ordId == null) {

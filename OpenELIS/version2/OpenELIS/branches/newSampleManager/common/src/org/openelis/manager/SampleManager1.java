@@ -60,6 +60,7 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.TestDO;
+import org.openelis.ui.common.Datetime;
 
 /**
  * This class encapsulates a sample and all its related information including
@@ -844,18 +845,22 @@ public class SampleManager1 implements Serializable {
          */
         public void remove(int i) {
             SampleItemViewDO data;
-
+            
             data = items.get(i);
+            assert analysis.count(data) == 0 : "one or more analyses are linked to the sample item";
+            
             items.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(getSampleItemUid(data.getId()));
         }
 
         public void remove(SampleItemViewDO data) {
+            assert analysis.count(data) == 0 : "one or more analyses are linked to the sample item";
+            
             items.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(getSampleItemUid(data.getId()));
-        }
+        }                
 
         /**
          * Returns the number of items associated with this sample
@@ -1050,12 +1055,32 @@ public class SampleManager1 implements Serializable {
             AnalysisViewDO data;
 
             data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
-            if (sampleItemId != null && !sampleItemId.equals(data.getSampleItemId()) &&
+            if (!sampleItemId.equals(data.getSampleItemId()) &&
                 !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
                 !Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
                 data.setSampleItemId(sampleItemId);
                 localmap = null;
             }
+        }
+        
+        public void removeAnalysis(Integer analysisId) {
+            AnalysisViewDO data, ana;
+
+            assert analysisId > 0 : "an existing analysis cannot be removed";
+            
+            data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
+            for (int i = 0; i < analyses.size(); i++) {
+                ana = analyses.get(i);
+                if (analysisId.equals(ana.getPreAnalysisId())) {
+                    ana.setPreAnalysisId(null);
+                    ana.setPreAnalysisTest(null);
+                    ana.setPreAnalysisMethod(null);
+                    ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+                    ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                }
+            }                
+            analyses.remove(data);            
+            localmap = null;
         }
 
         /*
