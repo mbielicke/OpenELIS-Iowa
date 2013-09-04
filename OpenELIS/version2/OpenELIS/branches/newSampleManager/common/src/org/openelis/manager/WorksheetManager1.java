@@ -32,7 +32,8 @@ import java.util.HashMap;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
@@ -56,11 +57,12 @@ public class WorksheetManager1 implements Serializable {
 
     protected WorksheetViewDO                     worksheet;
     protected ArrayList<WorksheetItemDO>          items;
-    protected ArrayList<WorksheetAnalysisDO>      analyses;
+    protected ArrayList<WorksheetAnalysisViewDO>  analyses;
     protected ArrayList<WorksheetResultViewDO>    results;
     protected ArrayList<WorksheetQcResultViewDO>  qcResults;
     protected ArrayList<NoteViewDO>               notes;
     protected ArrayList<DataObject>               removed;
+    protected ArrayList<ResultViewDO>             modifiedResults;
     protected int                                 nextUID  = -1;
 
     transient public final WorksheetItem          item     = new WorksheetItem();
@@ -68,7 +70,7 @@ public class WorksheetManager1 implements Serializable {
     transient public final WorksheetResult        result   = new WorksheetResult();
     transient public final WorksheetQcResult      qcResult = new WorksheetQcResult();
     transient public final WorksheetNote          note     = new WorksheetNote();
-    transient private HashMap<String, DataObject> doMap;
+    transient private HashMap<String, DataObject> uidMap;
 
     /**
      * Initialize an empty worksheet manager
@@ -101,7 +103,7 @@ public class WorksheetManager1 implements Serializable {
         return getWorksheetItemUid(data.getId());
     }
 
-    public String getUid(WorksheetAnalysisDO data) {
+    public String getUid(WorksheetAnalysisViewDO data) {
         return getWorksheetAnalysisUid(data.getId());
     }
 
@@ -121,30 +123,30 @@ public class WorksheetManager1 implements Serializable {
      * Returns the data object using its Uid.
      */
     public DataObject getObject(String uid) {
-        if (doMap == null) {
-            doMap = new HashMap<String, DataObject>();
+        if (uidMap == null) {
+            uidMap = new HashMap<String, DataObject>();
 
             if (items != null)
                 for (WorksheetItemDO data : items)
-                    doMap.put(getWorksheetItemUid(data.getId()), data);
+                    uidMap.put(getWorksheetItemUid(data.getId()), data);
 
             if (analyses != null)
-                for (WorksheetAnalysisDO data : analyses)
-                    doMap.put(getWorksheetAnalysisUid(data.getId()), data);
+                for (WorksheetAnalysisViewDO data : analyses)
+                    uidMap.put(getWorksheetAnalysisUid(data.getId()), data);
 
             if (results != null)
                 for (WorksheetResultViewDO data : results)
-                    doMap.put(getWorksheetResultUid(data.getId()), data);
+                    uidMap.put(getWorksheetResultUid(data.getId()), data);
 
             if (qcResults != null)
                 for (WorksheetQcResultViewDO data : qcResults)
-                    doMap.put(getWorksheetQcResultUid(data.getId()), data);
+                    uidMap.put(getWorksheetQcResultUid(data.getId()), data);
 
             if (notes != null)
                 for (NoteDO data : notes)
-                    doMap.put(getNoteUid(data.getId()), data);
+                    uidMap.put(getNoteUid(data.getId()), data);
         }
-        return doMap.get(uid);
+        return uidMap.get(uid);
     }
 
     /**
@@ -170,6 +172,14 @@ public class WorksheetManager1 implements Serializable {
     public String getNoteUid(Integer id) {
         return "N:" + id;
     }
+    
+    public ArrayList<ResultViewDO> getModifiedResults() {
+        return modifiedResults;
+    }
+
+    public void setModifiedResults(ArrayList<ResultViewDO> results) {
+        this.modifiedResults = results;
+    }
 
     /**
      * Class to manage worksheet items
@@ -192,23 +202,40 @@ public class WorksheetManager1 implements Serializable {
         /**
          * Returns a new item initialized with the next position
          */
-        public WorksheetItemDO add() {
+        public WorksheetItemDO add(int index) {
             int pos;
-            WorksheetItemDO data;
+            WorksheetItemDO data, temp;
 
             assert worksheet != null : "Manager.worksheet == null";
 
             if (items == null)
                 items = new ArrayList<WorksheetItemDO>();
 
-            if (items.size() > 0)
-                pos = items.get(items.size() - 1).getPosition() + 1;
-            else
+            if (items.size() > 0) {
+                if (index < items.size()) {
+                    pos = items.get(index).getPosition();
+                } else {
+                    pos = items.get(items.size() - 1).getPosition() + 1;
+                    index = items.size();
+                }
+            } else {
                 pos = 1;
+                index = 0;
+            }
 
             data = new WorksheetItemDO();
+            data.setId(getNextUID());
             data.setPosition(pos);
-            items.add(data);
+            items.add(index, data);
+            uidMapAdd(getWorksheetItemUid(data.getId()), data);
+
+            //
+            // increment the positions on all items after the added item by one
+            //
+            for (++index; index < items.size(); index++) {
+                temp = items.get(index);
+                temp.setPosition(temp.getPosition() + 1);
+            }
 
             return data;
         }
@@ -219,14 +246,43 @@ public class WorksheetManager1 implements Serializable {
         public void remove(int i) {
             WorksheetItemDO data;
 
-            data = items.remove(i);
-            if (data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            data = items.get(i);
+            items.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetItemUid(data.getId()));
+
+            //
+            // decrement the positions on all items after the removed item by one
+            //
+            for (; i < items.size(); i++) {
+                data = items.get(i);
+                data.setPosition(data.getPosition() - 1);
+            }
+            
+            while (analysis.count(data) > 0)
+                analysis.remove(data, 0);
         }
 
         public void remove(WorksheetItemDO data) {
-            if (items.remove(data) && data.getId() != null && data.getId() > 0)
-                removeDataObject(data);
+            int i;
+            
+            i = items.indexOf(data);
+            items.remove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetItemUid(data.getId()));
+
+            while (analysis.count(data) > 0)
+                analysis.remove(data, 0);
+
+            //
+            // decrement the positions on all items after the removed item by one
+            //
+            if (i != -1) {
+                for (; i < items.size(); i++) {
+                    data = items.get(i);
+                    data.setPosition(data.getPosition() - 1);
+                }
+            }
         }
 
         /**
@@ -243,14 +299,67 @@ public class WorksheetManager1 implements Serializable {
      * Class to manage worksheet analysis data
      */
     public class WorksheetAnalysis {
-        transient protected HashMap<Integer, ArrayList<WorksheetAnalysisDO>> map = null;
+        transient protected HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> localMap = null;
 
         /**
          * Returns the worksheet item's worksheet analysis at specified index.
          */
-        public WorksheetAnalysisDO get(WorksheetItemDO item, int i) {
-            mapBuild();
-            return map.get(item.getId()).get(i);
+        public WorksheetAnalysisViewDO get(WorksheetItemDO item, int i) {
+            localMapBuild();
+            return localMap.get(item.getId()).get(i);
+        }
+
+        /**
+         * Returns a new worksheet analysis for a worksheet item
+         */
+        public WorksheetAnalysisViewDO add(WorksheetItemDO item) {
+            WorksheetAnalysisViewDO data;
+
+            data = new WorksheetAnalysisViewDO();
+            data.setId(getNextUID());
+            data.setWorksheetItemId(item.getId());
+            if (analyses == null)
+                analyses = new ArrayList<WorksheetAnalysisViewDO>();
+            analyses.add(data);
+            localMapAdd(data);
+            uidMapAdd(getWorksheetAnalysisUid(data.getId()), data);
+
+            return data;
+        }
+
+        /**
+         * Removes a worksheet analysis
+         */
+        public void remove(WorksheetItemDO item, int i) {
+            WorksheetAnalysisViewDO data;
+
+            localMapBuild();
+            data = localMap.get(item.getId()).get(i);
+            analyses.remove(data);
+            localMapRemove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetAnalysisUid(data.getId()));
+            
+            if (data.getAnalysisId() != null)
+                while (result.count(data) > 0)
+                    result.remove(data, 0);
+            else if (data.getQcLotId() != null)
+                while (qcResult.count(data) > 0)
+                    qcResult.remove(data, 0);
+        }
+
+        public void remove(WorksheetItemDO item, WorksheetAnalysisViewDO data) {
+            analyses.remove(data);
+            localMapRemove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetAnalysisUid(data.getId()));
+            
+            if (data.getAnalysisId() != null)
+                while (result.count(data) > 0)
+                    result.remove(data, 0);
+            else if (data.getQcLotId() != null)
+                while (qcResult.count(data) > 0)
+                    qcResult.remove(data, 0);
         }
 
         /**
@@ -258,11 +367,11 @@ public class WorksheetManager1 implements Serializable {
          * worksheet item
          */
         public int count(WorksheetItemDO item) {
-            ArrayList<WorksheetAnalysisDO> l;
+            ArrayList<WorksheetAnalysisViewDO> l;
 
             if (analyses != null) {
-                mapBuild();
-                l = map.get(item.getId());
+                localMapBuild();
+                l = localMap.get(item.getId());
                 if (l != null)
                     return l.size();
             }
@@ -270,29 +379,42 @@ public class WorksheetManager1 implements Serializable {
         }
 
         /*
-         * create a hash map from analyses list
+         * create a hash localMap from analyses list
          */
-        private void mapBuild() {
-            if (map == null && analyses != null) {
-                map = new HashMap<Integer, ArrayList<WorksheetAnalysisDO>>();
-                for (WorksheetAnalysisDO data : analyses)
-                    mapAdd(data);
+        private void localMapBuild() {
+            if (localMap == null && analyses != null) {
+                localMap = new HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>>();
+                for (WorksheetAnalysisViewDO data : analyses)
+                    localMapAdd(data);
             }
         }
 
         /*
-         * adds a new worksheet analysis to the hash map
+         * adds a new worksheet analysis to the hash localMap
          */
-        private void mapAdd(WorksheetAnalysisDO data) {
-            ArrayList<WorksheetAnalysisDO> l;
+        private void localMapAdd(WorksheetAnalysisViewDO data) {
+            ArrayList<WorksheetAnalysisViewDO> l;
 
-            if (map != null) {
-                l = map.get(data.getWorksheetItemId());
+            if (localMap != null) {
+                l = localMap.get(data.getWorksheetItemId());
                 if (l == null) {
-                    l = new ArrayList<WorksheetAnalysisDO>();
-                    map.put(data.getWorksheetItemId(), l);
+                    l = new ArrayList<WorksheetAnalysisViewDO>();
+                    localMap.put(data.getWorksheetItemId(), l);
                 }
                 l.add(data);
+            }
+        }
+
+        /*
+         * removes the worksheet analysis from hash localMap
+         */
+        private void localMapRemove(WorksheetAnalysisViewDO data) {
+            ArrayList<WorksheetAnalysisViewDO> l;
+
+            if (localMap != null) {
+                l = localMap.get(data.getWorksheetItemId());
+                if (l != null)
+                    l.remove(data);
             }
         }
     }
@@ -301,26 +423,65 @@ public class WorksheetManager1 implements Serializable {
      * Class to manage worksheet result data
      */
     public class WorksheetResult {
-        transient protected HashMap<Integer, ArrayList<WorksheetResultViewDO>> map = null;
+        transient protected HashMap<Integer, ArrayList<WorksheetResultViewDO>> localMap = null;
 
         /**
          * Returns the worksheet analysis's worksheet result at specified index.
          */
-        public WorksheetResultViewDO get(WorksheetAnalysisDO analysis, int i) {
-            mapBuild();
-            return map.get(analysis.getId()).get(i);
+        public WorksheetResultViewDO get(WorksheetAnalysisViewDO analysis, int i) {
+            localMapBuild();
+            return localMap.get(analysis.getId()).get(i);
+        }
+
+        /**
+         * Returns a new worksheet result for a worksheet analysis
+         */
+        public WorksheetResultViewDO add(WorksheetAnalysisViewDO analysis) {
+            WorksheetResultViewDO data;
+
+            data = new WorksheetResultViewDO();
+            data.setId(getNextUID());
+            data.setWorksheetAnalysisId(analysis.getId());
+            if (results == null)
+                results = new ArrayList<WorksheetResultViewDO>();
+            results.add(data);
+            localMapAdd(data);
+            uidMapAdd(getWorksheetResultUid(data.getId()), data);
+
+            return data;
+        }
+
+        /**
+         * Removes a worksheet result
+         */
+        public void remove(WorksheetAnalysisViewDO analysis, int i) {
+            WorksheetResultViewDO data;
+
+            localMapBuild();
+            data = localMap.get(analysis.getId()).get(i);
+            results.remove(data);
+            localMapRemove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetResultUid(data.getId()));
+        }
+
+        public void remove(WorksheetAnalysisViewDO analysis, WorksheetResultViewDO data) {
+            results.remove(data);
+            localMapRemove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetResultUid(data.getId()));
         }
 
         /**
          * Returns the number of worksheet results associated with specified
          * worksheet analysis
          */
-        public int count(WorksheetAnalysisDO analysis) {
+        public int count(WorksheetAnalysisViewDO analysis) {
             ArrayList<WorksheetResultViewDO> l;
 
             if (results != null) {
-                mapBuild();
-                l = map.get(analysis.getId());
+                localMapBuild();
+                l = localMap.get(analysis.getId());
                 if (l != null)
                     return l.size();
             }
@@ -328,29 +489,42 @@ public class WorksheetManager1 implements Serializable {
         }
 
         /*
-         * create a hash map from worksheet results list
+         * create a hash localMap from worksheet results list
          */
-        private void mapBuild() {
-            if (map == null && results != null) {
-                map = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
+        private void localMapBuild() {
+            if (localMap == null && results != null) {
+                localMap = new HashMap<Integer, ArrayList<WorksheetResultViewDO>>();
                 for (WorksheetResultViewDO data : results)
-                    mapAdd(data);
+                    localMapAdd(data);
             }
         }
 
         /*
-         * adds a new worksheet results to the hash map
+         * adds a new worksheet results to the hash localMap
          */
-        private void mapAdd(WorksheetResultViewDO data) {
+        private void localMapAdd(WorksheetResultViewDO data) {
             ArrayList<WorksheetResultViewDO> l;
 
-            if (map != null) {
-                l = map.get(data.getWorksheetAnalysisId());
+            if (localMap != null) {
+                l = localMap.get(data.getWorksheetAnalysisId());
                 if (l == null) {
                     l = new ArrayList<WorksheetResultViewDO>();
-                    map.put(data.getWorksheetAnalysisId(), l);
+                    localMap.put(data.getWorksheetAnalysisId(), l);
                 }
                 l.add(data);
+            }
+        }
+
+        /*
+         * removes the worksheet result from hash localMap
+         */
+        private void localMapRemove(WorksheetResultViewDO data) {
+            ArrayList<WorksheetResultViewDO> l;
+
+            if (localMap != null) {
+                l = localMap.get(data.getWorksheetAnalysisId());
+                if (l != null)
+                    l.remove(data);
             }
         }
     }
@@ -359,26 +533,65 @@ public class WorksheetManager1 implements Serializable {
      * Class to manage worksheet qc result data
      */
     public class WorksheetQcResult {
-        transient protected HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> map = null;
+        transient protected HashMap<Integer, ArrayList<WorksheetQcResultViewDO>> localMap = null;
 
         /**
          * Returns the worksheet analysis's worksheet qc result at specified index.
          */
-        public WorksheetQcResultViewDO get(WorksheetAnalysisDO analysis, int i) {
-            mapBuild();
-            return map.get(analysis.getId()).get(i);
+        public WorksheetQcResultViewDO get(WorksheetAnalysisViewDO analysis, int i) {
+            localMapBuild();
+            return localMap.get(analysis.getId()).get(i);
+        }
+
+        /**
+         * Returns a new worksheet qc result for a worksheet analysis
+         */
+        public WorksheetQcResultViewDO add(WorksheetAnalysisViewDO analysis) {
+            WorksheetQcResultViewDO data;
+
+            data = new WorksheetQcResultViewDO();
+            data.setId(getNextUID());
+            data.setWorksheetAnalysisId(analysis.getId());
+            if (qcResults == null)
+                qcResults = new ArrayList<WorksheetQcResultViewDO>();
+            qcResults.add(data);
+            localMapAdd(data);
+            uidMapAdd(getWorksheetQcResultUid(data.getId()), data);
+
+            return data;
+        }
+
+        /**
+         * Removes a worksheet qc result
+         */
+        public void remove(WorksheetAnalysisViewDO analysis, int i) {
+            WorksheetQcResultViewDO data;
+
+            localMapBuild();
+            data = localMap.get(analysis.getId()).get(i);
+            qcResults.remove(data);
+            localMapRemove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetQcResultUid(data.getId()));
+        }
+
+        public void remove(WorksheetAnalysisViewDO analysis, WorksheetQcResultViewDO data) {
+            qcResults.remove(data);
+            localMapRemove(data);
+            dataObjectRemove(data.getId(), data);
+            uidMapRemove(getWorksheetQcResultUid(data.getId()));
         }
 
         /**
          * Returns the number of worksheet qc results associated with specified
          * worksheet analysis
          */
-        public int count(WorksheetAnalysisDO analysis) {
+        public int count(WorksheetAnalysisViewDO analysis) {
             ArrayList<WorksheetQcResultViewDO> l;
 
             if (qcResults != null) {
-                mapBuild();
-                l = map.get(analysis.getId());
+                localMapBuild();
+                l = localMap.get(analysis.getId());
                 if (l != null)
                     return l.size();
             }
@@ -386,29 +599,42 @@ public class WorksheetManager1 implements Serializable {
         }
 
         /*
-         * create a hash map from worksheet qc results list
+         * create a hash localMap from worksheet qc results list
          */
-        private void mapBuild() {
-            if (map == null && qcResults != null) {
-                map = new HashMap<Integer, ArrayList<WorksheetQcResultViewDO>>();
+        private void localMapBuild() {
+            if (localMap == null && qcResults != null) {
+                localMap = new HashMap<Integer, ArrayList<WorksheetQcResultViewDO>>();
                 for (WorksheetQcResultViewDO data : qcResults)
-                    mapAdd(data);
+                    localMapAdd(data);
             }
         }
 
         /*
-         * adds a new worksheet qc results to the hash map
+         * adds a new worksheet qc results to the hash localMap
          */
-        private void mapAdd(WorksheetQcResultViewDO data) {
+        private void localMapAdd(WorksheetQcResultViewDO data) {
             ArrayList<WorksheetQcResultViewDO> l;
 
-            if (map != null) {
-                l = map.get(data.getWorksheetAnalysisId());
+            if (localMap != null) {
+                l = localMap.get(data.getWorksheetAnalysisId());
                 if (l == null) {
                     l = new ArrayList<WorksheetQcResultViewDO>();
-                    map.put(data.getWorksheetAnalysisId(), l);
+                    localMap.put(data.getWorksheetAnalysisId(), l);
                 }
                 l.add(data);
+            }
+        }
+
+        /*
+         * removes the worksheet qc result from hash localMap
+         */
+        private void localMapRemove(WorksheetQcResultViewDO data) {
+            ArrayList<WorksheetQcResultViewDO> l;
+
+            if (localMap != null) {
+                l = localMap.get(data.getWorksheetAnalysisId());
+                if (l != null)
+                    l.remove(data);
             }
         }
     }
@@ -439,8 +665,10 @@ public class WorksheetManager1 implements Serializable {
             if (notes.size() == 0 ||
                 (notes.get(0).getId() != null && notes.get(0).getId() > 0)) {
                 data = new NoteViewDO();
+                data.setId(getNextUID());
                 data.setIsExternal("N");
                 notes.add(0, data);
+                uidMapAdd(getNoteUid(data.getId()), data);
             }
             
             return notes.get(0);
@@ -454,8 +682,9 @@ public class WorksheetManager1 implements Serializable {
 
             if (notes != null && notes.size() > 0) {
                 data = notes.get(0);
-                if (data.getId() == null || data.getId() < 0)
+                if (data.getId() < 0) {
                     notes.remove(0);
+                }
             }
         }
 
@@ -466,12 +695,32 @@ public class WorksheetManager1 implements Serializable {
             return (notes == null) ? 0 : notes.size();
         }
     }
-
+    
     /**
-     * Adds the specified data object to the list of objects that should be
-     * removed from the database.
+     * adds an object to uid map
      */
-    protected void removeDataObject(DataObject data) {
-        removed.add(data);
+    private void uidMapAdd(String uid, DataObject data) {
+        if (uidMap != null)
+            uidMap.put(uid, data);
+    }
+    
+    /**
+     * removes the object from uid map
+     */
+    private void uidMapRemove(String uid) {
+        if (uidMap != null)
+            uidMap.remove(uid);        
+    }
+    
+    /**
+     * adds the data object to the list of objects that should be removed from
+     * the database
+     */
+    private void dataObjectRemove(Integer id, DataObject data) {
+        if (removed == null)
+            removed = new ArrayList<DataObject>();
+
+        if (id > 0)
+            removed.add(data);
     }
 }
