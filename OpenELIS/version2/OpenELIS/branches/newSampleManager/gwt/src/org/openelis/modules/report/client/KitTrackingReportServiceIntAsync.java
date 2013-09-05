@@ -1,4 +1,4 @@
-package org.openelis.modules.report.kitTracking.client;
+package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
 
