@@ -32,14 +32,11 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -57,7 +54,7 @@ import org.openelis.utils.Auditable;
     		          + " from StandardNote s where s.typeId = :typeId order by s.name"),
     @NamedQuery( name = "StandardNote.FetchByNameOrDescription", 
                 query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
-                      + " from StandardNote s where (s.name like :name OR s.description like :description) order by s.name"),
+                      + " from StandardNote s, Dictionary d where (s.name like :name OR s.description like :description) and s.typeId = d.id order by d.sortOrder, s.name "),
     @NamedQuery( name = "StandardNote.FetchBySystemVariableName", 
                 query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
                       + " from StandardNote s, SystemVariable v where v.name = :name and s.name = v.value")                  
@@ -85,10 +82,6 @@ public class StandardNote implements Auditable, Cloneable {
 
     @Column(name = "text")
     private String       text;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id", insertable = false, updatable = false)
-    private Dictionary   dictionary;
 
     @Transient
     private StandardNote original;
@@ -137,7 +130,7 @@ public class StandardNote implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(text, this.text))
             this.text = text;
     }
-
+    
     public void setClone() {
         try {
             original = (StandardNote)this.clone();

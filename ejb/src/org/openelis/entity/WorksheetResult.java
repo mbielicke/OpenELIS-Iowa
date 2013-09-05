@@ -29,7 +29,18 @@ import org.openelis.ui.common.DataBaseUtil;
                 		"wr.value24,wr.value25,wr.value26,wr.value27,wr.value28," +
                 		"wr.value29,wr.value30,a.name,a.externalId,ta.resultGroup)"
                       + " from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
-                        " where wr.worksheetAnalysisId = :id order by wr.resultRow")})
+                        " where wr.worksheetAnalysisId = :id order by wr.resultRow"),
+    @NamedQuery( name = "WorksheetResult.FetchByWorksheetAnalysisIds",
+                query = "select new org.openelis.domain.WorksheetResultViewDO(wr.id,wr.worksheetAnalysisId,wr.testAnalyteId," +
+                        "wr.testResultId,wr.resultRow,wr.analyteId,wr.typeId,wr.value1," +
+                        "wr.value2,wr.value3,wr.value4,wr.value5,wr.value6,wr.value7," +
+                        "wr.value8,wr.value9,wr.value10,wr.value11,wr.value12,wr.value13," +
+                        "wr.value14,wr.value15,wr.value16,wr.value17,wr.value18," +
+                        "wr.value19,wr.value20,wr.value21,wr.value22,wr.value23," +
+                        "wr.value24,wr.value25,wr.value26,wr.value27,wr.value28," +
+                        "wr.value29,wr.value30,a.name,a.externalId,ta.resultGroup)"
+                      + " from WorksheetResult wr LEFT JOIN wr.analyte a LEFT JOIN wr.testAnalyte ta "+
+                        " where wr.worksheetAnalysisId in (:ids) order by wr.worksheetAnalysisId, wr.resultRow")})
 @Entity
 @Table(name = "worksheet_result")
 public class WorksheetResult {

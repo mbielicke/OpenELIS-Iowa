@@ -39,9 +39,8 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.OrderOrganizationDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.entity.OrderOrganization;
-import org.openelis.meta.OrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
@@ -64,6 +63,15 @@ public class OrderOrganizationBean {
             throw new NotFoundException();
         
         return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<OrderOrganizationViewDO> fetchByOrderIds(ArrayList<Integer> orderIds) {
+        Query query;
+
+        query = manager.createNamedQuery("OrderOrganization.FetchByOrderIds");
+        query.setParameter("ids", orderIds);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     public OrderOrganizationDO add(OrderOrganizationDO data) throws Exception {
@@ -115,12 +123,10 @@ public class OrderOrganizationBean {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (data.getTypeId() == null)
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrderMeta.getOrderOrganizationTypeId()));
-        if (data.getOrganizationId() == null)
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrderMeta.getOrderOrganizationOrganizationName()));
+        if (DataBaseUtil.isEmpty(data.getTypeId()))
+            list.add(new FormErrorException(Messages.get().order_organizationRequiredException(DataBaseUtil.asString(data.getId()))));
+        if (DataBaseUtil.isEmpty(data.getOrganizationId()))
+            list.add(new FormErrorException(Messages.get().order_organizationTypeRequiredException(DataBaseUtil.asString(data.getId()))));
         
         if (list.size() > 0)
             throw list;    

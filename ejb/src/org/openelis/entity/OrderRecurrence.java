@@ -54,6 +54,10 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.OrderRecurrenceDO(r.id, r.orderId,r.isActive," +
                 		"r.activeBegin, r.activeEnd, r.frequency, r.unitId)"
                       + " from OrderRecurrence r where r.orderId = :orderId"),
+                      @NamedQuery( name = "OrderRecurrence.FetchByOrderIds",
+                      query = "select new org.openelis.domain.OrderRecurrenceDO(r.id, r.orderId,r.isActive," +
+                              "r.activeBegin, r.activeEnd, r.frequency, r.unitId)"
+                            + " from OrderRecurrence r where r.orderId in ( :orderIds )"),
     @NamedQuery( name = "OrderRecurrence.FetchActiveList",
                 query = "select new org.openelis.domain.OrderRecurrenceDO(r.id, r.orderId,r.isActive," +
                         "r.activeBegin, r.activeEnd, r.frequency, r.unitId)"

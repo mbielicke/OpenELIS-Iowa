@@ -45,23 +45,23 @@ import org.openelis.ui.common.Datetime;
     @NamedQuery( name = "AnalysisView.FetchByAnalysisStatusId",
                 query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber," +
                         "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription," +
-                        "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.analysisId," +
-                        "av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
+                        "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.typeOfSampleId,"+
+                        "av.analysisId, av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
                         "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
                       + " from AnalysisView av where av.analysisStatusId = :statusId order by av.accessionNumber"),
     @NamedQuery( name = "AnalysisView.FetchOther",
                 query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber," +
                         "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription," +
-                        "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.analysisId," +
-                        "av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
+                        "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.typeOfSampleId,"+
+                        "av.analysisId, av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
                         "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
                       + " from AnalysisView av where av.analysisStatusId not in (select id from Dictionary d where d.systemName in ('analysis_logged_in', 'analysis_initiated',"
                       + " 'analysis_completed', 'analysis_released', 'analysis_cancelled')) order by av.accessionNumber"),
     @NamedQuery( name = "AnalysisView.FetchReleased",
                 query = "select distinct new org.openelis.domain.AnalysisViewVO(av.sampleId, av.domain, av.accessionNumber," +
                         "av.receivedDate, av.collectionDate, av.collectionTime, av.enteredDate, av.primaryOrganizationName, av.todoDescription," +
-                        "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.analysisId," +
-                        "av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
+                        "av.worksheetDescription, av.priority, av.testId, av.testName, av.methodName, av.timeTaAverage, av.timeHolding, av.typeOfSampleId,"+
+                        "av.analysisId, av.analysisStatusId, av.sectionId, av.sectionName, av.availableDate, av.startedDate, av.completedDate, av.releasedDate," +
                         "av.analysisResultOverride, av.unitOfMeasureId, av.worksheetFormatId)"
                       + " from AnalysisView av where av.releasedDate >= :releasedDate and av.analysisStatusId = (select id from Dictionary d where d.systemName = 'analysis_released')"
                       + " order by av.accessionNumber")})
@@ -117,6 +117,9 @@ public class AnalysisView  {
     @Column(name = "time_holding")
     private Integer                     timeHolding;
     
+    @Column(name = "type_of_sample_id")
+    private Integer                     typeOfSampleId;
+
     @Id
     @Column(name = "analysis_id")
     private Integer                     analysisId;
@@ -213,6 +216,10 @@ public class AnalysisView  {
 
     public Integer getTimeHolding() {
         return timeHolding;
+    }
+
+    public Integer getTypeOfSampleId() {
+        return typeOfSampleId;
     }
 
     public Integer getAnalysisId() {

@@ -68,6 +68,16 @@ public class WorksheetQcResultBean  {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetQcResultViewDO> fetchByWorksheetAnalysisIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("WorksheetQcResult.FetchByWorksheetAnalysisIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public WorksheetQcResultDO add(WorksheetQcResultDO data) throws Exception {
         WorksheetQcResult entity;
 

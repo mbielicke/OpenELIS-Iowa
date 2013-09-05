@@ -35,6 +35,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.entity.TestTypeOfSample;
 import org.openelis.meta.TestMeta;
@@ -62,6 +63,19 @@ public class TestTypeOfSampleBean {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(sampleTypeList);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Integer analysisId, String unitOfMeasure) throws Exception {
+        Query query;
+        ArrayList<IdNameVO> unitList;
+
+        query = manager.createNamedQuery("TestTypeOfSample.FetchUnitsForWorksheetAutocomplete");
+        query.setParameter("analysisId", analysisId);
+        query.setParameter("unitOfMeasure", unitOfMeasure);
+        unitList = (ArrayList<IdNameVO>)query.getResultList();
+
+        return DataBaseUtil.toArrayList(unitList);
     }
 
     public TestTypeOfSampleDO add(TestTypeOfSampleDO data) throws Exception {

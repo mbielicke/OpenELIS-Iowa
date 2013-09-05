@@ -47,11 +47,10 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
-public class TestAnalyteBean  {
+public class TestAnalyteBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager            manager;
+    private EntityManager manager;
 
     public ArrayList<ArrayList<TestAnalyteViewDO>> fetchByTestId(Integer testId) throws Exception {
         int i, j, rg;
@@ -65,7 +64,7 @@ public class TestAnalyteBean  {
         grid = null;
         query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
 
-        query.setParameter("testId", testId);
+        query.setParameter("id", testId);
         list = DataBaseUtil.toArrayList(query.getResultList());
 
         if (list.isEmpty())
@@ -74,13 +73,16 @@ public class TestAnalyteBean  {
         grid = new ArrayList<ArrayList<TestAnalyteViewDO>>();
 
         //
-        // This code creates a two dimensional "grid" of TestAnalyteViewDOs. 
-        // If a test analyte is marked as not being a column analyte, a list of 
-        // DOs is created with it being the first element in the the list and the
-        // list is added as a new row to the grid. If a test analyte is marked as 
+        // This code creates a two dimensional "grid" of TestAnalyteViewDOs.
+        // If a test analyte is marked as not being a column analyte, a list of
+        // DOs is created with it being the first element in the the list and
+        // the
+        // list is added as a new row to the grid. If a test analyte is marked
+        // as
         // being a column analyte it is added to an existing row that has as its
-        // first element a DO representing a test analyte with the same row group
-        // as this one and which is marked as not being a column analyte. 
+        // first element a DO representing a test analyte with the same row
+        // group
+        // as this one and which is marked as not being a column analyte.
         //
         for (i = 0; i < list.size(); i++ ) {
             data = list.get(i);
@@ -105,13 +107,22 @@ public class TestAnalyteBean  {
 
         return grid;
     }
-    
+
+    public ArrayList<TestAnalyteViewDO> fetchByTestIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("TestAnalyte.FetchByTestIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public ArrayList<TestAnalyteViewDO> fetchRowAnalytesByTestId(Integer testId) throws Exception {
         Query query;
         List list;
 
         query = manager.createNamedQuery("TestAnalyte.FetchRowAnalytesByTestId");
-        query.setParameter("testId", testId);
+        query.setParameter("id", testId);
 
         list = query.getResultList();
         if (list.isEmpty())
@@ -168,7 +179,7 @@ public class TestAnalyteBean  {
 
     public void delete(TestAnalyteDO data) throws Exception {
         TestAnalyte entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(TestAnalyte.class, data.getId());
@@ -180,18 +191,18 @@ public class TestAnalyteBean  {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        
+
         if (data.getAnalyteId() == null)
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                          TestMeta.getAnalyteAnalyteId()));        
-        
-        if (data.getTypeId() == null) 
+                                             TestMeta.getAnalyteAnalyteId()));
+
+        if (data.getTypeId() == null)
             list.add(new FieldErrorException(Messages.get().analyteTypeRequiredException(),
-                                          TestMeta.getAnalyteTypeId()));        
-        
+                                             TestMeta.getAnalyteTypeId()));
+
         if (data.getResultGroup() == null)
             list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                          TestMeta.getAnalyteResultGroup()));        
+                                             TestMeta.getAnalyteResultGroup()));
 
         if (list.size() > 0)
             throw list;

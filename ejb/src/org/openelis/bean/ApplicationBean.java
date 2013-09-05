@@ -76,15 +76,15 @@ public class ApplicationBean {
                           "instrument_log_pending", "log_level_error", "log_level_info",
                           "log_type_data_transmission", "micrograms_per_liter", 
                           "nanograms_per_liter", "nanograms_per_milliliter",
-                          "order_recurrence_unit_days",
-                          "order_recurrence_unit_months", "order_recurrence_unit_years",
-                          "order_status_back_ordered", "order_status_pending", 
-                          "order_status_processed", "order_status_recurring", "order_status_on_hold", 
-                          "order_status_cancelled", "org_bill_to", "org_finalrep_fax_number",
-                          "org_no_finalreport", "org_report_to", "org_second_report_to", 
-                          "pos_duplicate", "pos_fixed", "pos_fixed_always", "pos_random", 
-                          "pos_last_of_subset", "pos_last_of_run", "pos_last_of_subset_and_run", 
-                          "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
+                          "order_recurrence_unit_days", "order_recurrence_unit_months", 
+                          "order_recurrence_unit_years", "order_status_back_ordered", 
+                          "order_status_pending", "order_status_processed", "order_status_recurring",
+                          "order_status_on_hold", "order_status_cancelled", "org_finalrep_fax_number", 
+                          "org_no_finalreport", "org_report_to", "org_bill_to", 
+                          "org_second_report_to", "org_birth_hospital", "pos_duplicate", 
+                          "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
+                          "pos_last_of_run", "pos_last_of_subset_and_run", "pt_sample",
+                          "qaevent_internal", "qaevent_override", "qaevent_warning",
                           "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
                           "released_reportto_email", "org_hold_sample", "reflex_auto", 
                           "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
@@ -162,11 +162,12 @@ public class ApplicationBean {
         Constants.dictionary().ORDER_STATUS_RECURRING = dictId(map, "order_status_recurring");
         Constants.dictionary().ORDER_STATUS_ON_HOLD = dictId(map, "order_status_on_hold");
         Constants.dictionary().ORDER_STATUS_CANCELLED = dictId(map, "order_status_cancelled");
-        Constants.dictionary().ORG_BILL_TO = dictId(map, "org_bill_to");
         Constants.dictionary().ORG_FINALREP_FAX_NUMBER = dictId(map, "org_finalrep_fax_number");
         Constants.dictionary().ORG_NO_FINALREPORT = dictId(map, "org_no_finalreport");
         Constants.dictionary().ORG_REPORT_TO = dictId(map, "org_report_to");
+        Constants.dictionary().ORG_BILL_TO = dictId(map, "org_bill_to");
         Constants.dictionary().ORG_SECOND_REPORT_TO = dictId(map, "org_second_report_to");
+        Constants.dictionary().ORG_BIRTH_HOSPITAL = dictId(map, "org_birth_hospital");
         Constants.dictionary().POS_DUPLICATE = dictId(map, "pos_duplicate");
         Constants.dictionary().POS_FIXED = dictId(map, "pos_fixed");
         Constants.dictionary().POS_FIXED_ALWAYS = dictId(map, "pos_fixed_always");

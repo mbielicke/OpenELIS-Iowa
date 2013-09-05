@@ -27,7 +27,10 @@ import org.openelis.ui.common.DataBaseUtil;
                         "from WorksheetItem wi where wi.id = :id"),
     @NamedQuery( name = "WorksheetItem.FetchByWorksheetId",
                 query = "select new org.openelis.domain.WorksheetItemDO(wi.id,wi.worksheetId,wi.position) " +
-                        "from WorksheetItem wi where wi.worksheetId = :id")})
+                        "from WorksheetItem wi where wi.worksheetId = :id"),
+    @NamedQuery( name = "WorksheetItem.FetchByWorksheetIds",
+                query = "select new org.openelis.domain.WorksheetItemDO(wi.id,wi.worksheetId,wi.position) " +
+                        "from WorksheetItem wi where wi.worksheetId in (:ids) order by wi.worksheetId")})
 @Entity
 @Table(name = "worksheet_item")
 public class WorksheetItem {

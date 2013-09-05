@@ -41,10 +41,9 @@ import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.entity.OrderItem;
-import org.openelis.meta.OrderMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
-import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
@@ -156,12 +155,9 @@ public class OrderItemBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getInventoryItemId()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrderMeta.getOrderItemInventoryItemId()));
+            list.add(new FormErrorException(Messages.get().order_inventoryItemRequiredException(DataBaseUtil.asString(data.getId()))));
         if (DataBaseUtil.isEmpty(data.getQuantity()))
-            list.add(new FieldErrorException(Messages.get().fieldRequiredException(),
-                                             OrderMeta.getOrderItemQuantity()));
-        
+            list.add(new FormErrorException(Messages.get().order_inventoryQuantityRequiredException(DataBaseUtil.asString(data.getId()))));
         if (list.size() > 0)
             throw list;
     }

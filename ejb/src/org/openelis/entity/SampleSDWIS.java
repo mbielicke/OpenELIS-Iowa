@@ -218,8 +218,8 @@ public class SampleSDWIS implements Auditable, Cloneable {
                  .setField("pws_id", pwsId, original.pwsId)
                  .setField("state_lab_id", stateLabId, original.stateLabId)
                  .setField("facility_id", facilityId, original.facilityId)
-                 .setField("sample_type_id", sampleTypeId, original.sampleTypeId)
-                 .setField("sample_category_id", sampleCategoryId, original.sampleCategoryId)
+                 .setField("sample_type_id", sampleTypeId, original.sampleTypeId, Constants.table().DICTIONARY)
+                 .setField("sample_category_id", sampleCategoryId, original.sampleCategoryId, Constants.table().DICTIONARY)
                  .setField("sample_point_id", samplePointId, original.samplePointId)
                  .setField("location", location, original.location)
                  .setField("collector", collector, original.collector);

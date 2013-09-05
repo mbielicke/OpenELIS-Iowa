@@ -27,19 +27,15 @@ package org.openelis.report.finalreport;
 
 public class SectionLocationUtil {
     public static String getLocation (String name) {                                
-            if (name == null)
-                return name;
-            
+        if (name != null) {
             name = name.trim();
-            
             if (name.endsWith("-ank")) 
                 name = "Ankeny";
             else if (name.endsWith("-ic")) 
                 name = "Coralville";
             else if (name.endsWith("-lk")) 
                 name = "Lakeside";
-                        
-            return name;
-          
+        }                    
+        return name;
     }
 }

@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -23,27 +24,32 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery( name = "OrderTest.FetchByOrderId",
-            query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId,"+
-                    " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id," +
-                    " o.test.method.name, o.test.description, o.test.isActive)"
-                  + " from OrderTest o where o.orderId = :id order by o.itemSequence, o.sortOrder")
-
+@NamedQueries({
+               @NamedQuery(name = "OrderTest.FetchByOrderId",
+                           query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId,"
+                                   + " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id,"
+                                   + " o.test.method.name, o.test.description, o.test.isActive)"
+                                   + " from OrderTest o where o.orderId = :id order by o.itemSequence, o.sortOrder"),
+               @NamedQuery(name = "OrderTest.FetchByOrderIds",
+                           query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId,"
+                                   + " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id,"
+                                   + " o.test.method.name, o.test.description, o.test.isActive)"
+                                   + " from OrderTest o where o.orderId in ( :ids ) order by o.itemSequence, o.sortOrder")})
 @Entity
 @Table(name = "order_test")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class OrderTest implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer   id;
 
     @Column(name = "order_id")
     private Integer   orderId;
-    
+
     @Column(name = "item_sequence")
-    private Integer    itemSequence;
+    private Integer   itemSequence;
 
     @Column(name = "sort_order")
     private Integer   sortOrder;
@@ -101,8 +107,8 @@ public class OrderTest implements Auditable, Cloneable {
     public void setTestId(Integer testId) {
         if (DataBaseUtil.isDifferent(testId, this.testId))
             this.testId = testId;
-    }   
-    
+    }
+
     public Test getTest() {
         return test;
     }

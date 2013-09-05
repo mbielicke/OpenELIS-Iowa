@@ -4,7 +4,7 @@
 	<property name="com.jasperassistant.designer.DataSource" value="elis"/>
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="144"/>
+	<property name="ireport.y" value="141"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -423,33 +423,33 @@ Phone # 319-335-4500 or
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" x="85" y="146" width="60" height="10"/>
+				<reportElement positionType="Float" x="85" y="146" width="106" height="10"/>
 				<textElement>
 					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
 				</textElement>
-				<text><![CDATA[Sample Intact:]]></text>
+				<text><![CDATA[Evidence of Tampering:]]></text>
 			</staticText>
 			<rectangle>
-				<reportElement key="sampleIntactYes.check" positionType="Float" mode="Transparent" x="142" y="148" width="7" height="7" forecolor="#999999"/>
+				<reportElement key="sampleIntactYes.check" positionType="Float" mode="Transparent" x="181" y="148" width="7" height="7" forecolor="#999999"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement key="sampleIntactYes" positionType="Float" mode="Transparent" x="152" y="146" width="21" height="10"/>
+				<reportElement key="sampleIntactYes" positionType="Float" mode="Transparent" x="191" y="146" width="21" height="10"/>
 				<textElement>
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Yes]]></text>
 			</staticText>
 			<rectangle>
-				<reportElement key="sampleIntactNo.check" positionType="Float" mode="Transparent" x="177" y="148" width="7" height="7" forecolor="#999999"/>
+				<reportElement key="sampleIntactNo.check" positionType="Float" mode="Transparent" x="216" y="148" width="7" height="7" forecolor="#999999"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement key="sampleIntactNo" positionType="Float" mode="Transparent" x="187" y="146" width="16" height="10"/>
+				<reportElement key="sampleIntactNo" positionType="Float" mode="Transparent" x="226" y="146" width="16" height="10"/>
 				<textElement>
 					<font fontName="Arial" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
@@ -496,14 +496,14 @@ Phone # 319-335-4500 or
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement positionType="Float" x="372" y="161" width="100" height="10"/>
+				<reportElement positionType="Float" x="372" y="176" width="100" height="10"/>
 				<textElement>
 					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[Temperature ( Celsius ):]]></text>
 			</staticText>
 			<line>
-				<reportElement key="" positionType="Float" mode="Transparent" x="461" y="171" width="113" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
+				<reportElement key="" positionType="Float" mode="Transparent" x="461" y="186" width="113" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
@@ -544,16 +544,20 @@ Phone # 319-335-4500 or
 				<text><![CDATA[/         /                    :]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="" positionType="Float" mode="Opaque" x="425" y="222" width="149" height="24" forecolor="#999999" backcolor="#FFFFFF"/>
+				<reportElement key="" positionType="Float" mode="Opaque" x="425" y="199" width="149" height="69" forecolor="#8C8C8C" backcolor="#FFFFFF"/>
 				<box>
-					<topPen lineWidth="0.5"/>
-					<bottomPen lineWidth="0.5"/>
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
 				</box>
 				<textElement textAlignment="Center">
 					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[ACCESSION
-SAMPLE LABEL]]></text>
+				<text><![CDATA[
+
+PLACE THE ACCESSION LABEL WITHIN THIS BOX]]></text>
 			</staticText>
 			<staticText>
 				<reportElement key="" positionType="Float" mode="Opaque" x="255" y="222" width="149" height="24" forecolor="#000000" backcolor="#D2D2D2"/>
@@ -571,6 +575,39 @@ SAMPLE LABEL]]></text>
 				<text><![CDATA[
  BUILD ID _________________]]></text>
 			</staticText>
+			<staticText>
+				<reportElement positionType="Float" x="372" y="146" width="89" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[Evidence of Cooling:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="sampleIntactNo" positionType="Float" mode="Transparent" x="499" y="146" width="16" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[No]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="sampleIntactYes" positionType="Float" mode="Transparent" x="464" y="146" width="21" height="10"/>
+				<textElement>
+					<font fontName="Arial" size="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Yes]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement key="sampleIntactNo.check" positionType="Float" mode="Transparent" x="489" y="148" width="7" height="7" forecolor="#999999"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement key="sampleIntactYes.check" positionType="Float" mode="Transparent" x="454" y="148" width="7" height="7" forecolor="#999999"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+				</graphicElement>
+			</rectangle>
 		</band>
 	</lastPageFooter>
 </jasperReport>

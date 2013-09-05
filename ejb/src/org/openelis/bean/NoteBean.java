@@ -113,6 +113,35 @@ public class NoteBean {
 
         return list;
     }
+    
+    public ArrayList<NoteViewDO> fetchByIdsAndTables(ArrayList<Integer> referenceIds, ArrayList<Integer> referenceTableIds) {
+        Query query;
+        NoteViewDO data;
+        SystemUserVO user;
+        ArrayList<NoteViewDO> list;
+
+        // TODO
+        // we are currently returning any requested note without checking to see
+        // if the user have permission to this note -- we need to fix this
+        //        
+        query = manager.createNamedQuery("Note.FetchByIdsAndTables");
+        query.setParameter("ids", referenceIds);
+        query.setParameter("tableIds", referenceTableIds);
+
+        list = DataBaseUtil.toArrayList(query.getResultList());
+
+        for (int i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+
+            if (data.getSystemUserId() != null) {
+                user = userCache.getSystemUser(data.getSystemUserId());
+                if (user != null)
+                    data.setSystemUser(user.getLoginName());
+            }
+        }
+
+        return list;
+    }
 
     public ArrayList<NoteViewDO> fetchByRefTableRefIdIsExt(Integer refTableId,
                                                            Integer refId,

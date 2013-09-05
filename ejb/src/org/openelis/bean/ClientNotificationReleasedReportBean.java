@@ -48,7 +48,6 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.EntityLockedException;
 import org.openelis.ui.common.InconsistencyException;
-import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

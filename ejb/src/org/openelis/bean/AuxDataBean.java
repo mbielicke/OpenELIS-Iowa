@@ -40,6 +40,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
@@ -50,7 +51,11 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.AuxData;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -268,5 +273,37 @@ public class AuxDataBean {
         entity = manager.find(AuxData.class, data.getId());
         if (entity != null)
             manager.remove(entity);
+    }
+    
+    public void validate(AuxDataViewDO data, ResultFormatter rf, Integer accession, boolean ignoreWarning) throws Exception {
+        String value;
+        ValidationErrorsList e;
+        FormattedValue fv;
+
+        if ( !DataBaseUtil.isEmpty(data.getValue())) {
+            e = new ValidationErrorsList();
+            if (data.getTypeId() == null) {
+                e.add(new FormErrorException(Messages.get()
+                                                     .aux_valueInvalidException(accession,
+                                                                                   data.getAnalyteName(),
+                                                                                   data.getValue())));
+            } else {
+                fv = rf.format(data.getAuxFieldId(), null, data.getValue(), 
+                               data.getDictionary());
+                                
+                if (fv == null) {
+                    if (data.getDictionary() != null)
+                        value = data.getDictionary();
+                    else 
+                        value = data.getValue();
+                    e.add(new FormErrorException(Messages.get()
+                                                 .aux_valueInvalidException(accession,
+                                                                            data.getAnalyteName(),
+                                                                            value)));
+                }
+            }
+            if (e.size() > 0)
+                throw e;
+        }
     }
 }

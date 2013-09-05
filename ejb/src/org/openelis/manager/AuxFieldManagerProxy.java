@@ -31,7 +31,7 @@ import java.util.List;
 
 import org.openelis.bean.AuxFieldBean;
 import org.openelis.bean.AuxFieldValueBean;
-import org.openelis.bean.DictionaryBean;
+import org.openelis.constants.Messages;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;

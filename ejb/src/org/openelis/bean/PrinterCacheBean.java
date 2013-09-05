@@ -83,6 +83,7 @@ public class PrinterCacheBean {
     @Asynchronous
     @AccessTimeout(300000)
     @Lock(LockType.WRITE)
+    
     public void refresh() {
         String name, type;
         Printer printer;
