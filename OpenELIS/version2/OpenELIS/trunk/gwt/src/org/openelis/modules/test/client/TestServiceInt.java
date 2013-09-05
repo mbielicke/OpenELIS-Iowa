@@ -2,6 +2,7 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
@@ -22,8 +23,12 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 public interface TestServiceInt extends XsrfProtectedService {
 
     TestManager fetchById(Integer testId) throws Exception;
+    
+    ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception;
 
     ArrayList<TestMethodVO> fetchByName(String name) throws Exception;
+    
+    ArrayList<TestMethodVO> fetchByNameSampleType(String name, Integer typeId) throws Exception;
 
     TestViewDO fetchActiveByNameMethodName(Query query) throws Exception;
 

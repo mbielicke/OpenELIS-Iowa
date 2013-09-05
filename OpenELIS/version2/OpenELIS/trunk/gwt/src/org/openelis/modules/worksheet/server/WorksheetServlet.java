@@ -32,6 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetManagerBean;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
@@ -40,10 +41,10 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.modules.worksheet.client.WorkSheetServiceInt;
+import org.openelis.modules.worksheet.client.WorksheetServiceInt;
 
 @WebServlet("/openelis/worksheet")
-public class WorksheetServlet extends RemoteServlet implements WorkSheetServiceInt {
+public class WorksheetServlet extends RemoteServlet implements WorksheetServiceInt {
 
     private static final long serialVersionUID = 1L;
     
@@ -54,8 +55,15 @@ public class WorksheetServlet extends RemoteServlet implements WorkSheetServiceI
     WorksheetBean        worksheet;
 
     public ArrayList<WorksheetViewDO> query(Query query) throws Exception {
-        try {        
-            return worksheet.query(query.getFields(), 0, query.getRowsPerPage());
+        ArrayList<IdVO> idVOs;
+        ArrayList<Integer> ids;
+        
+        try {
+            idVOs = worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+            ids = new ArrayList<Integer>();
+            for (IdVO vo : idVOs)
+                ids.add(vo.getId());
+            return worksheet.fetchByIds(ids);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

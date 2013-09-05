@@ -120,26 +120,24 @@ import org.openelis.ui.widget.WindowInt;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean                     closeWindow, isPopup, successfulLoad,
-                                        tableLoaded;
-    private Integer                     origStatus;
+    private boolean           closeWindow, isPopup, successfulLoad, tableLoaded;//, commitDone;
+    private Integer           origStatus;
+    private ModulePermission  userPermission;
+    private WorksheetManager  manager;
 
-    private ModulePermission            userPermission;
-    private WorksheetManager            manager;
-
-    private AppButton                   lookupWorksheetButton, updateButton,
-                                        commitButton, abortButton, editWorksheetButton,
-                                        loadFromEditButton, loadFilePopupButton;
-    private NotesTab                    noteTab;
-    private TestPrepUtility             testPrepUtil;
-    private TestReflexUtility           testReflexUtil;
-    private Tabs                        tab;
-    private TabPanel                    tabPanel;
-    private TableWidget                 table;
+    private AppButton         lookupWorksheetButton, updateButton, commitButton,
+                              abortButton, editWorksheetButton, loadFromEditButton,
+                              loadFilePopupButton;
+    private NotesTab          noteTab;
+    private TestPrepUtility   testPrepUtil;
+    private TestReflexUtility testReflexUtil;
+    private Tabs              tab;
+    private TabPanel          tabPanel;
+    private TableWidget       table;
 
     protected Integer                   userId;
     protected String                    displayFileDirectory, templateFileDirectory,
-                                         userName;
+                                        userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
     protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
@@ -168,6 +166,8 @@ public class WorksheetCompletionScreen extends Screen {
     public WorksheetCompletionScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
         
+        ArrayList<SystemVariableDO> list;
+
         setWindow(window);
 
         isPopup = false;
@@ -177,8 +177,6 @@ public class WorksheetCompletionScreen extends Screen {
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException(
                                           "Worksheet Completion Screen"));
-
-        ArrayList<SystemVariableDO> list;
 
         closeWindow = false;
         tab = Tabs.WORKSHEET;

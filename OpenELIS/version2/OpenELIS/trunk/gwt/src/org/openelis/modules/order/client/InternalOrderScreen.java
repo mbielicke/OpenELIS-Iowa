@@ -103,6 +103,8 @@ public class InternalOrderScreen extends Screen {
     public InternalOrderScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(InternalOrderDef.class));
 
+        setWindow(window);
+        
         userPermission = UserCache.getPermission().getModule("internalorder");
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Internal Order Screen"));

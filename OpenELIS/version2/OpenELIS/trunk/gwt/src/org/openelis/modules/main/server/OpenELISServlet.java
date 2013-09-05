@@ -42,10 +42,10 @@ public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt
     private static final long serialVersionUID = 1L;
 
     @EJB
-    UserCacheBean   userCache;
-    
+    UserCacheBean             userCache;
+
     @EJB
-    ApplicationBean application;
+    ApplicationBean           application;
 
     public Constants getConstants() throws Exception {
         keepAlive();
@@ -66,7 +66,7 @@ public class OpenELISServlet extends RemoteServlet implements OpenELISServiceInt
     public Datetime getLastAccess() {
         return (Datetime)getThreadLocalRequest().getSession().getAttribute("last_access");
     }
-    
+
     public void logout() {
         HttpSession session;
 

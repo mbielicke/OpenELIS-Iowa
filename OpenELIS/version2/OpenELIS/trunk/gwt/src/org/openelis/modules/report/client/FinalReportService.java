@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.screen.Callback;
 import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.services.TokenService;
-import org.openelis.gwt.screen.Callback;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;

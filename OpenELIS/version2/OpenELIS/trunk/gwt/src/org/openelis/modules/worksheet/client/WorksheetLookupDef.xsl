@@ -65,11 +65,19 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'status')" />:
                 </text>
-                <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="searchButton,{meta:getCreatedDate()}" field="Integer" />
+                <dropdown key="{meta:getStatusId()}" width="100" popWidth="100" tab="{meta:getDescription()},{meta:getCreatedDate()}" field="Integer" />
+              </row>
+              <row>
+                <text style="Prompt">
+                  <xsl:value-of select="resource:getString($constants,'description')" />:
+                </text>
+                <widget colspan="3">
+                  <textbox key="{meta:getDescription()}" width="300" tab="searchButton,{meta:getStatusId()}" field="String" />
+                </widget>
               </row>
             </TablePanel>
             <widget halign="center" valign="middle">
-              <appButton key="searchButton" style="Button" tab="worksheetTable,{meta:getStatusId()}" action="search">
+              <appButton key="searchButton" style="Button" tab="worksheetTable,{meta:getDescription()}" action="search">
                 <HorizontalPanel>
                   <AbsolutePanel style="FindButtonImage" />
                   <text>
@@ -92,10 +100,7 @@ UIRF Software License are applicable instead of those above.
             <col key="{meta:getStatusId()}" width="100" sort="true" header="{resource:getString($constants,'status')}">
               <dropdown width="80" field="Integer" />
             </col>
-            <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
-              <label field="String"/>
-            </col>
-            <col key="{meta:getAnalysisTestMethodName()}" width="75" header="{resource:getString($constants,'method')}" sort="true">
+            <col key="{meta:getDescription()}" width="175" header="{resource:getString($constants,'description')}" sort="true">
               <label field="String"/>
             </col>
           </table>

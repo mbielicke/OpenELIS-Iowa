@@ -65,8 +65,16 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
     TestTypeOfSampleBean testType;
 
     public TestManager fetchById(Integer testId) throws Exception {
-        try {        
+        try {
             return testManager.fetchById(testId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        try {
+        	return testManager.fetchByIds(ids);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -75,6 +83,14 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
     public ArrayList<TestMethodVO> fetchByName(String name) throws Exception {
         try {        
             return test.fetchByName(name + "%", 1000);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }    
+    
+    public ArrayList<TestMethodVO> fetchByNameSampleType(String name, Integer typeId) throws Exception {
+        try { 
+            return test.fetchByNameSampleType(name, typeId, 1000);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

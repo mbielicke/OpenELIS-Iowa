@@ -69,7 +69,7 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
             <VerticalPanel spacing="0">
               <widget>
-                <table key="qcTable" width="auto" maxRows="6" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+                <table key="qcTable" width="auto" maxRows="8" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
                   <col key="{meta:getName()}" width="150" sort="false" header="{resource:getString($constants,'name')}">
                     <label field="String" />
                   </col>
@@ -93,7 +93,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
-        <VerticalPanel width="719px" spacing="0">
+        <VerticalPanel width="721px" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="okButton">

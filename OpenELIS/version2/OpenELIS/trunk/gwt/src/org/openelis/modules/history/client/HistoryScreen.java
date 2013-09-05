@@ -33,12 +33,6 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.HistoryVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
-import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -53,6 +47,12 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.modules.main.client.OpenELIS;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -160,7 +160,7 @@ public class HistoryScreen extends Screen {
                 }
             });
         }
-        
+
         instance.window.setName(title);
         instance.setReferenceVoList(referenceId);
         instance.setReferenceTableId(referenceTableId);

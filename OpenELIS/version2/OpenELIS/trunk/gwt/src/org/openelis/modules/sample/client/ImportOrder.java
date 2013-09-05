@@ -51,13 +51,6 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.exception.MultipleNoteException;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
-import org.openelis.gwt.screen.Screen;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.AuxFieldGroupManager;
@@ -75,6 +68,12 @@ import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.TestManager;
 import org.openelis.modules.auxData.client.AuxDataService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 
 public abstract class ImportOrder {
     protected OrderManager         orderMan;
