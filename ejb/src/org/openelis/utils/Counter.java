@@ -15,14 +15,11 @@ public class Counter {
      * returns false in order to satisfy Jasper's "print when".
      */
     public Boolean set(String key, boolean flag) {
-        int n = 0;
-        Integer oldCount;
+        Integer n;
 
         if (flag) {
-            oldCount = (Integer)count.get(key);
-            if (oldCount != null)
-                n = oldCount.intValue();
-            count.put(key, new Integer(n + 1));
+            n = count.get(key);
+            count.put(key, n != null ? n + 1 : 1);
         }
         return Boolean.FALSE;
     }
@@ -33,14 +30,9 @@ public class Counter {
      * returns false in order to satisfy Jasper's "print when".
      */
     public Boolean setIfAbsent(String key, boolean flag) {
-        int n = 0;
-        Integer oldCount;
+        if (flag && !count.containsKey(key))
+            count.put(key, 1);
 
-        if (flag) {
-            oldCount = (Integer)count.get(key);
-            if (oldCount == null)
-                count.put(key, new Integer(n + 1));
-        }
         return Boolean.FALSE;
     }
 
@@ -48,7 +40,7 @@ public class Counter {
      * Returns the counter value for "key".
      */
     public Integer get(String key) {
-        return (Integer)count.get(key);
+        return count.get(key);
     }
 
     /**
@@ -63,29 +55,30 @@ public class Counter {
      */
     public Integer getTotal() {
         int total = 0;
-        String key;
-        Enumeration<String> e;
 
-        e = count.keys();
-        while (e.hasMoreElements()) {
-            key = (String)e.nextElement();
-            total += ((Integer)count.get(key)).intValue();
-        }
-        return new Integer(total);
+        for (Integer value : count.values())
+            total += value;
+
+        return total;
+    }
+
+    public Integer getTotal(String... keys) {
+        int total = 0;
+
+        for (String key : keys)
+            total += count.get(key);
+
+        return total;
     }
 
     /**
      * Prints the keys and their counters
      */
     public String toString() {
-        String key;
         StringBuffer buff;
-        Enumeration<String> e;
 
-        e = count.keys();
         buff = new StringBuffer();
-        while (e.hasMoreElements()) {
-            key = (String)e.nextElement();
+        for (String key : count.keySet()) {
             if (buff.length() > 0)
                 buff.append('\n');
             buff.append(count.get(key)).append("  ").append(key);
@@ -97,35 +90,18 @@ public class Counter {
      * Returns all the keys
      */
     public ArrayList<String> getKeys() {
-        String key;
-        Enumeration<String> e;
-        ArrayList<String> tokens = new ArrayList<String>();
-
-        e = count.keys();
-        while (e.hasMoreElements()) {
-            key = (String)e.nextElement();
-            tokens.add(key);
-        }
-        return tokens;
+        return new ArrayList<String>(count.keySet());
     }
 
     /**
      * Adds all the keys and their counters to this class. Used for totals.
      */
     public Boolean add(Counter from) {
-        int n;
-        String key;
-        Integer oldCount;
-        Enumeration<String> e;
+        Integer n;
 
-        e = from.count.keys();
-        while (e.hasMoreElements()) {
-            key = (String)e.nextElement();
-            n = from.get(key).intValue();
-            oldCount = (Integer)count.get(key);
-            if (oldCount != null)
-                n += ((Integer)oldCount).intValue();
-            count.put(key, new Integer(n));
+        for (String key : from.getKeys()) {
+            n = count.get(key);
+            count.put(key, n != null ? from.get(key) + n : from.get(key));
         }
         return Boolean.FALSE;
     }
