@@ -1,24 +1,23 @@
 package org.openelis.modules.note.client;
 
-import static org.openelis.ui.screen.State.*;
-
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.ui.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.manager.HasNotesInt;
+import org.openelis.manager.NoteManager;
+import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.event.StateChangeHandler;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
-import org.openelis.manager.HasNotesInt;
-import org.openelis.manager.NoteManager;
 import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -100,6 +99,7 @@ public class NotesTabUI extends Screen {
         }
 
         modal = new ModalWindow();
+        modal.setSize("518px","569px");
         modal.setName(Messages.get().noteEditor());
         modal.setContent(editNote);
 
