@@ -37,11 +37,14 @@ import javax.transaction.UserTransaction;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.Constants;
+import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
+import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
@@ -51,27 +54,51 @@ import org.openelis.ui.common.ModulePermission.ModuleFlags;
 @TransactionManagement(TransactionManagementType.BEAN)
 public class TestManagerBean {
     @Resource
-    private SessionContext ctx;
+    private SessionContext  ctx;
 
     @EJB
-    private LockBean      lockBean;
-    
+    private LockBean        lockBean;
+
     @EJB
-    private UserCacheBean  userCache;
+    private UserCacheBean   userCache;
+
+    @EJB
+    private TestBean        test;
+
+    @EJB
+    private TestSectionBean testSection;
 
     public TestManager fetchById(Integer id) throws Exception {
         return TestManager.fetchById(id);
     }
-    
+
     public ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
         ArrayList<TestManager> managers;
-        
+
         managers = new ArrayList<TestManager>();
-        
+
         for (Integer id : ids)
             managers.add(TestManager.fetchById(id));
-        
+
         return managers;
+    }
+
+    public TestManager fetchActiveByNameMethodName(String testName, String methodName) throws Exception {
+        TestViewDO data;
+        TestManager man;
+        TestSectionManager tsm;
+        ArrayList<TestSectionViewDO> sections;
+
+        data = test.fetchActiveByNameMethodName(testName, methodName);
+        man = TestManager.getInstance();
+        man.setTest(data);
+
+        sections = (ArrayList<TestSectionViewDO>)testSection.fetchByTestId(data.getId());
+
+        tsm = man.getTestSections();
+        tsm.sections = sections;
+
+        return man;
     }
 
     public TestManager fetchWithSampleTypes(Integer id) throws Exception {

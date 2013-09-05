@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.openelis.bean.DictionaryBean;
 import org.openelis.bean.WorksheetAnalysisBean;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
@@ -44,7 +43,6 @@ import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;

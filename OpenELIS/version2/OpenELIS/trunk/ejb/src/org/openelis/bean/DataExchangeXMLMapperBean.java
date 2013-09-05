@@ -1016,6 +1016,9 @@ public class DataExchangeXMLMapperBean {
         parent.setAttribute("test_id", analysis.getTestId().toString());
         parent.setAttribute("section_id", analysis.getSectionId().toString());
 
+        if (analysis.getPanelId() != null)
+            parent.setAttribute("panel_id", analysis.getPanelId().toString());
+        
         if (analysis.getPreAnalysisId() != null)
             parent.setAttribute("pre_analysis_id", analysis.getPreAnalysisId().toString());
 
@@ -1024,6 +1027,9 @@ public class DataExchangeXMLMapperBean {
 
         if (analysis.getParentResultId() != null)
             parent.setAttribute("parent_result_id", analysis.getParentResultId().toString());
+
+        if (analysis.getIsPreliminary() != null)
+            parent.setAttribute("is_preliminary", analysis.getIsPreliminary());
 
         parent.setAttribute("is_reportable", analysis.getIsReportable());
 
@@ -1047,12 +1053,6 @@ public class DataExchangeXMLMapperBean {
         if (analysis.getPrintedDate() != null)
             parent.setAttribute("printed_date", getDatetimeForSchema(analysis.getPrintedDate()));
         
-        if (analysis.getPanelId() != null)
-            parent.setAttribute("panel_id", analysis.getPanelId().toString());
-        
-        if (analysis.getIsPreliminary() != null)
-            parent.setAttribute("is_preliminary", analysis.getIsPreliminary());
-
         return parent;
     }
 

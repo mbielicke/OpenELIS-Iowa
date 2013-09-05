@@ -45,14 +45,20 @@ import javax.persistence.Table;
 import org.openelis.ui.common.DataBaseUtil;
 
 @NamedQueries({
-    @NamedQuery( name = "InventoryXUse.FetchByOrderId",
-                query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.orderItemId," +
-                        "i.quantity,l.lotNumber,l.expirationDate,l.quantityOnhand,s.id,s.name,u.description,s.location," +
-                        "oi.id, oi.name,r.receivedDate,r.unitCost,r.externalReference, o.orderId)"
-                      + " from InventoryXUse i left join i.inventoryLocation l left join l.storageLocation s"
-                      + " left join s.storageUnit u left join i.orderItem o left join o.inventoryItem oi "
-                      + " left join o.inventoryReceipt r where o.order.id = :id order by o.id") })
-
+               @NamedQuery(name = "InventoryXUse.FetchByOrderId",
+                           query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.orderItemId,"
+                                   + "i.quantity,l.lotNumber,l.expirationDate,l.quantityOnhand,s.id,s.name,u.description,s.location,"
+                                   + "oi.id, oi.name,r.receivedDate,r.unitCost,r.externalReference, o.orderId)"
+                                   + " from InventoryXUse i left join i.inventoryLocation l left join l.storageLocation s"
+                                   + " left join s.storageUnit u left join i.orderItem o left join o.inventoryItem oi "
+                                   + " left join o.inventoryReceipt r where o.order.id = :id order by o.id"),
+               @NamedQuery(name = "InventoryXUse.FetchByOrderIds",
+                           query = "select new org.openelis.domain.InventoryXUseViewDO(i.id,i.inventoryLocationId,i.orderItemId,"
+                                   + "i.quantity,l.lotNumber,l.expirationDate,l.quantityOnhand,s.id,s.name,u.description,s.location,"
+                                   + "oi.id, oi.name,r.receivedDate,r.unitCost,r.externalReference, o.orderId)"
+                                   + " from InventoryXUse i left join i.inventoryLocation l left join l.storageLocation s"
+                                   + " left join s.storageUnit u left join i.orderItem o left join o.inventoryItem oi "
+                                   + " left join o.inventoryReceipt r where o.order.id in ( :ids ) order by o.id")})
 @Entity
 @Table(name = "inventory_x_use")
 public class InventoryXUse {
