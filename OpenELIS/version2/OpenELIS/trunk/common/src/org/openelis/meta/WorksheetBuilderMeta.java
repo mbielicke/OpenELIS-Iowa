@@ -26,7 +26,7 @@
 package org.openelis.meta;
 
 /**
- * Worksheet Creation META Data
+ * Worksheet Builder META Data
  */
 
 import java.util.Arrays;
@@ -35,10 +35,15 @@ import java.util.HashSet;
 import org.openelis.ui.common.Meta;
 import org.openelis.ui.common.MetaMap;
 
-public class WorksheetCreationMeta implements Meta, MetaMap {
+public class WorksheetBuilderMeta implements Meta, MetaMap {
     private static final String WSHT_ID  = "_worksheet.id",
+                                WSHT_CREATED_DATE = "_worksheet.createdDate",
+                                WSHT_SYSTEM_USER_ID = "_worksheet.systemUserId",
+                                WSHT_STATUS_ID = "_worksheet.statusId",
                                 WSHT_FORMAT_ID = "_worksheet.formatId",
                                 WSHT_RELATED_WORKSHEET_ID = "_worksheet.relatedWorksheetId",
+                                WSHT_INSTRUMENT_ID = "_worksheet.instrumentId",
+                                WSHT_DESCRIPTION = "_worksheet.description",
     
                                 WSHT_ITEM_POSITION = "_worksheetItem.position",
                                 
@@ -81,14 +86,18 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 
                                 SAMP_DESCRIPTION = "_sample.description",   // combined field for all domain descriptions
                                 ANA_DUE_DAYS = "_analysis.dueDays",
-                                ANA_EXPIRE_DATE = "_analysis.expireDate";
+                                ANA_EXPIRE_DATE = "_analysis.expireDate",
+                                INSTRUMENT_NAME = "_instrument.name";
                                 
 
     private static HashSet<String> names;
 
     static {
-        names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_FORMAT_ID, WSHT_RELATED_WORKSHEET_ID,
-                                                  WSHT_ITEM_POSITION, WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
+        names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_CREATED_DATE, WSHT_SYSTEM_USER_ID,
+                                                  WSHT_STATUS_ID, WSHT_FORMAT_ID,
+                                                  WSHT_RELATED_WORKSHEET_ID, WSHT_INSTRUMENT_ID,
+                                                  WSHT_DESCRIPTION, WSHT_ITEM_POSITION,
+                                                  WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
                                                   SAMP_ID, SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
                                                   SAMP_COLLECTION_DATE, SAMP_COLLECTION_TIME,
                                                   SAMP_RECEIVED_DATE, SAMP_ENTERED_DATE,
@@ -104,11 +113,23 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                                   ANA_PRE_ANALYSIS_ID, ANA_STATUS_ID,
                                                   ANA_UNIT_OF_MEASURE_ID, TEST_WORKSHEET_FORMAT_ID,
                                                   SAMP_DESCRIPTION, ANA_DUE_DAYS,
-                                                  ANA_EXPIRE_DATE));
+                                                  ANA_EXPIRE_DATE, INSTRUMENT_NAME));
     }
 
     public static String getWorksheetId() {
         return WSHT_ID;
+    }
+
+    public static String getWorksheetCreatedDate() {
+        return WSHT_CREATED_DATE;
+    }
+
+    public static String getWorksheetSystemUserId() {
+        return WSHT_SYSTEM_USER_ID;
+    }
+
+    public static String getWorksheetStatusId() {
+        return WSHT_STATUS_ID;
     }
 
     public static String getWorksheetFormatId() {
@@ -117,6 +138,14 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 
     public static String getWorksheetRelatedWorksheetId() {
         return WSHT_RELATED_WORKSHEET_ID;
+    }
+
+    public static String getWorksheetInstrumentId() {
+        return WSHT_INSTRUMENT_ID;
+    }
+
+    public static String getWorksheetDescription() {
+        return WSHT_DESCRIPTION;
     }
 
     public static String getWorksheetItemPosition() {
@@ -248,6 +277,10 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
         return ANA_EXPIRE_DATE;
     }
 
+    public static String getInstrumentName() {
+        return INSTRUMENT_NAME;
+    }
+
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
     }
@@ -255,15 +288,8 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
     public String buildFrom(String where) {
         String from;
         
-        from = "Sample _sample "+
-               " LEFT JOIN _sample.sampleEnvironmental _sampleEnvironmental "+
-               " LEFT JOIN _sample.samplePrivateWell _samplePrivateWell "+
-               " LEFT JOIN _sample.sampleSDWIS _sampleSDWIS "+
-//               " LEFT JOIN _sample.sampleHuman _sampleHuman "+
-//               ", IN (_sampleHuman.patient) _patient "+
-               ", IN (_sample.sampleItem) _sampleItem "+
-               ", IN (_sampleItem.analysis) _analysis "+
-               " LEFT JOIN _analysis.test.testWorksheet _testWorksheet ";
+        from = "Worksheet _worksheet"+
+               " LEFT JOIN _worksheet.instrument _instrument ";
 
         return from;
     }

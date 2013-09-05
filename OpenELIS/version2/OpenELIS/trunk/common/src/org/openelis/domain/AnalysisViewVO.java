@@ -38,13 +38,13 @@ public class AnalysisViewVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer        sampleId, accessionNumber, timeHolding, timeTaAverage,
+    protected Integer         sampleId, accessionNumber, timeHolding, timeTaAverage,
                               analysisId, priority, testId, analysisStatusId, sectionId,
-                              unitOfMeasureId, worksheetFormatId;                                                            
-    protected String         domain, primaryOrganizationName, testName, methodName,
+                              typeOfSampleId, unitOfMeasureId, worksheetFormatId;                                                            
+    protected String          domain, primaryOrganizationName, testName, methodName,
                               todoDescription, worksheetDescription, analysisResultOverride,
                               sectionName;
-    protected Datetime       availableDate, startedDate, completedDate, releasedDate,
+    protected Datetime        availableDate, startedDate, completedDate, releasedDate,
                               receivedDate, collectionDate, collectionTime, enteredDate;
 
     public AnalysisViewVO() {        
@@ -55,10 +55,10 @@ public class AnalysisViewVO implements Serializable {
                           Date enteredDate, String primaryOrganizationName, String todoDescription, 
                           String worksheetDescription, Integer priority, Integer testId,
                           String testName, String methodName, Integer timeTaAverage,
-                          Integer timeHolding, Integer analysisId, Integer analysisStatusId,
-                          Integer sectionId, String sectionName, Date availableDate,
-                          Date startedDate, Date completedDate, Date releasedDate,
-                          String analysisResultOverride, Integer unitOfMeasureId,
+                          Integer timeHolding, Integer typeOfSampleId, Integer analysisId, 
+                          Integer analysisStatusId, Integer sectionId, String sectionName, 
+                          Date availableDate, Date startedDate, Date completedDate, 
+                          Date releasedDate, String analysisResultOverride, Integer unitOfMeasureId,
                           Integer worksheetFormatId) {
         
         setSampleId(sampleId);
@@ -77,6 +77,7 @@ public class AnalysisViewVO implements Serializable {
         setMethodName(methodName);
         setTimeTaAverage(timeTaAverage);
         setTimeHolding(timeHolding);
+        setTypeOfSampleId(typeOfSampleId);
         setAnalysisId(analysisId);
         setAnalysisStatusId(analysisStatusId);
         setSectionId(sectionId);
@@ -136,6 +137,10 @@ public class AnalysisViewVO implements Serializable {
     
     public void setCollectionTime(Datetime collectionTime) {
         this.collectionTime = DataBaseUtil.toHM(collectionTime);
+    }
+    
+    public Datetime getEnteredDate() {
+        return enteredDate;
     }
     
     public void setEnteredDate(Datetime enteredDate) {
@@ -214,6 +219,14 @@ public class AnalysisViewVO implements Serializable {
         this.timeHolding = timeHolding;
     }
     
+    public Integer getTypeOfSampleId() {
+        return typeOfSampleId;
+    }
+
+    public void setTypeOfSampleId(Integer typeOfSampleId) {
+        this.typeOfSampleId = typeOfSampleId;
+    }
+
     public Integer getAnalysisId() {
         return analysisId;
     }

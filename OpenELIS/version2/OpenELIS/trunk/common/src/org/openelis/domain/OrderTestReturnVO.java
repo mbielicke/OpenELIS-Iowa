@@ -23,36 +23,38 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.meta;
+package org.openelis.domain;
+
+import java.io.Serializable;
+
+import org.openelis.manager.OrderManager1;
+import org.openelis.ui.common.ValidationErrorsList;
 
 /**
- * InventoryComponent META Data
+ * This class is used for transporting the data needed for adding tests to a
+ * order and any errors or warnings resulting from trying to do so
  */
+public class OrderTestReturnVO implements Serializable {
 
+    private static final long      serialVersionUID = 1L;
 
-public class InventoryComponentMeta {
-    private static final String   entityName  = "InventoryComponent";
+    protected OrderManager1        manager;
 
-    private static final String   ID = "id",
-                                  INVENTORY_ITEM_ID = "inventoryItemId",
-                                  COMPONENT_ID = "componentId",
-                                  QUANTITY = "quantity";
+    protected ValidationErrorsList errors;
 
-    private static final String[] columnNames = {ID, INVENTORY_ITEM_ID, COMPONENT_ID, QUANTITY};
-
-    public String getId() {
-        return ID;
+    public OrderManager1 getManager() {
+        return manager;
     }
 
-    public String getInventoryItemId() {
-        return INVENTORY_ITEM_ID;
+    public void setManager(OrderManager1 manager) {
+        this.manager = manager;
     }
 
-    public String getComponentId() {
-        return COMPONENT_ID;
+    public ValidationErrorsList getErrors() {
+        return errors;
     }
 
-    public String getQuantity() {
-        return QUANTITY;
+    public void setErrors(ValidationErrorsList errors) {
+        this.errors = errors;
     }
 }
