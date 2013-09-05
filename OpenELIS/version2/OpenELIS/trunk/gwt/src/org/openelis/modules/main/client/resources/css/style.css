@@ -13,6 +13,16 @@
 	margin: 4px 8px;
 }
 
+.FormTitle {
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-size:11px;    
+    -moz-user-select: none;
+    color:#486095;
+    text-align:center;
+    height:18px;
+    background:transparent url(../Images/buttonbarbg.gif) repeat-x scroll 0 0;
+}
+
 .Prompt {
 	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size: 11px;
@@ -273,4 +283,44 @@
 @sprite .button-Disabled .removeRowIcon {
 	gwt-image: 'removeRowDisabledIcon';
 	width: 20px;
+}
+
+@sprite .findIcon {
+	gwt-image: 'findIcon';
+	width: 20px;
+}
+
+@sprite .button-Disabled .findIcon {
+	gwt-image: 'findDisabledIcon';
+	width: 20px;
+}
+
+@sprite .selectAllIcon {
+	gwt-image:'selectAllIcon';
+	width:20px;
+}
+
+@sprite .button-Disabled .selectAllIcon {
+	gwt-image: 'selectAllDisabledIcon';
+	width: 20px;
+}
+
+@sprite .popoutIcon {
+    gwt-image:'popoutIcon';
+    width:20px;
+}
+
+@sprite .button-Disabled .popoutIcon {
+    gwt-image: 'popoutDisabledIcon';
+    width: 20px;
+}
+
+@sprite .fieldLookupIcon {
+    gwt-image:'fieldLookupIcon';
+    width:20px;
+}
+
+@sprite .button-Disabled .fieldLookupIcon {
+    gwt-image: 'fieldLookupDisabledIcon';
+    width: 20px;
 }
