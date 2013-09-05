@@ -14,12 +14,10 @@ import org.openelis.meta.OrganizationMeta;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
-import org.openelis.ui.event.StateChangeHandler;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
-import org.openelis.ui.widget.CSSUtils;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Queryable;
@@ -34,7 +32,6 @@ import org.openelis.ui.widget.table.event.RowAddedHandler;
 import org.openelis.ui.widget.table.event.RowDeletedEvent;
 import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -182,7 +179,6 @@ public class ParameterTabUI extends ResizeComposite {
                 add.setEnabled(parentScreen.isState(ADD, UPDATE));
             }
         });
-        
     }
 
     @UiHandler("remove")
