@@ -2,6 +2,7 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
@@ -26,8 +27,13 @@ public interface TestServiceIntAsync {
     void fetchActiveByNameMethodName(Query query, AsyncCallback<TestViewDO> callback);
 
     void fetchById(Integer testId, AsyncCallback<TestManager> callback);
+    
+    void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<TestManager>> callback);
 
     void fetchByName(String name, AsyncCallback<ArrayList<TestMethodVO>> callback);
+
+    void fetchByNameSampleType(String name, Integer typeId,
+                               AsyncCallback<ArrayList<TestMethodVO>> callback);
 
     void fetchByPanelId(Integer id, AsyncCallback<ArrayList<TestMethodVO>> callback);
 

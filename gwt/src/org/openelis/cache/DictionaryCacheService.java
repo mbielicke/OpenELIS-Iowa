@@ -1,5 +1,7 @@
 package org.openelis.cache;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.ui.services.TokenService;
@@ -54,5 +56,18 @@ public class DictionaryCacheService implements DictionaryCacheServiceInt,
         service.getById(id, callback);
         return callback.getResult();
     }
+    
+    @Override
+    public void getByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<DictionaryDO>> callback) {
+        service.getByIds(ids, callback);
+    }
 
+    @Override
+    public ArrayList<DictionaryDO> getByIds(ArrayList<Integer> ids) throws Exception {
+        Callback<ArrayList<DictionaryDO>> callback;
+        
+        callback = new Callback<ArrayList<DictionaryDO>>();
+        service.getByIds(ids, callback);
+        return callback.getResult();
+    }
 }

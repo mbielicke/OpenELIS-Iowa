@@ -25,6 +25,7 @@
  */
 package org.openelis.cache;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.DictionaryDO;
@@ -36,13 +37,13 @@ import org.openelis.domain.DictionaryDO;
  * restart the session to get updated objects.
  */
 
-public class DictionaryCache {    
+public class DictionaryCache {
     protected static HashMap<Object, DictionaryDO> cache;
-    
+
     static {
         cache = new HashMap<Object, DictionaryDO>();
     }
-    
+
     public static DictionaryDO getById(Integer id) throws Exception {
         DictionaryDO data;
 
@@ -52,14 +53,52 @@ public class DictionaryCache {
                 data = (DictionaryDO)DictionaryCacheService.get().getById(id);
                 add(data);
             } catch (Exception e) {
-                throw new Exception("DictionaryCache.getEntryFromId: id \"" + id +
+                throw new Exception("DictionaryCache.getById: id \"" + id +
                                     "\" not found in system.");
             }
         }
 
         return data;
-    }    
-    
+    }
+
+    public static ArrayList<DictionaryDO> getByIds(ArrayList<Integer> ids) throws Exception {
+        int i;
+        DictionaryDO data;
+        ArrayList<DictionaryDO> list;
+
+        i = 0;
+        /*
+         * only keep the ids that are not present in the cache
+         */
+        list = new ArrayList<DictionaryDO>();
+        while (i < ids.size()) {
+            data = cache.get(ids.get(i));
+            if (data != null) {
+                ids.remove(i);
+                list.add(data);
+            } else {
+                i++ ;
+            }
+        }
+
+        if (ids.size() > 0) {
+            /*
+             * fetch the dictionary records not in the cache 
+             */
+            try {
+                for (DictionaryDO d : DictionaryCacheService.get().getByIds(ids)) {
+                    add(d);
+                    list.add(d);
+                }
+            } catch (Exception e) {
+                throw new Exception("DictionaryCache.getIds: one or more of \"" + ids +
+                                    "\" not found in system.");
+            }
+        }
+
+        return list;
+    }
+
     public static Integer getIdBySystemName(String systemName) throws Exception {
         DictionaryDO data;
 
@@ -69,7 +108,7 @@ public class DictionaryCache {
 
         return null;
     }
-    
+
     public static DictionaryDO getBySystemName(String systemName) throws Exception {
         DictionaryDO data;
 
@@ -81,12 +120,12 @@ public class DictionaryCache {
             data = (DictionaryDO)DictionaryCacheService.get().getBySystemName(systemName);
             add(data);
         } catch (Exception e) {
-            throw new Exception("DictionaryCache.getBySystemNameInt: System name \"" + systemName +
+            throw new Exception("DictionaryCache.getBySystemName: System name \"" + systemName +
                                 "\" not found in system.");
         }
 
         return data;
-    }  
+    }
 
     public static String getSystemNameById(Integer id) throws Exception {
         DictionaryDO data;
@@ -96,8 +135,8 @@ public class DictionaryCache {
             return data.getSystemName();
 
         return null;
-    }   
-    
+    }
+
     /**
      * Friendly method for other caches to add new entries to DictionaryCache
      */

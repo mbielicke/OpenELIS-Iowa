@@ -51,6 +51,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -59,7 +60,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.meta.QcListMeta;
+import org.openelis.meta.QcChartMeta;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.ui.widget.WindowInt;
 
@@ -77,13 +78,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QcChartScreen extends Screen {
 
-    private QcChartVO            data;
     private AutoComplete<String> qcName;
     private CalendarLookUp       workSheetCreatedDateFrom, workSheetCreatedDateTo;
     private TextBox              numInstances;
-    private Dropdown<Integer>    plotType;
-    protected AppButton          getDataButton, recomputeButton, plotDataButton, selectButton,
-                                 selectAllButton, unselectAllButton, unselectButton;
+    private Dropdown<Integer>    plotType, qcLocation;
+    protected AppButton          getDataButton, recomputeButton, plotDataButton,
+                                 selectButton, selectAllButton, unselectAllButton,
+                                 unselectButton;
     private TableWidget          plotDataTable;
     private QcChartReportViewVO  results;
     private QcChartReportScreen  qcChartReportScreen;
@@ -105,8 +106,6 @@ public class QcChartScreen extends Screen {
         setState(State.DEFAULT);
         initializeDropdowns();
 
-        data = new QcChartVO();
-        data.setPlotTypeId(typeDynamicId);
         DataChangeEvent.fire(this);
     }
 
@@ -115,23 +114,10 @@ public class QcChartScreen extends Screen {
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
-        qcName = (AutoComplete)def.getWidget(QcListMeta.getQCName());
+        qcName = (AutoComplete)def.getWidget(QcChartMeta.getQCName());
         addScreenHandler(qcName, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                qcName.setSelection(data.getName(), data.getName());
-            }
-
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow row;
-                
                 disableScreenButtons();
-
-                row = qcName.getSelection();
-                data.setName(event.getValue());
-                if (row != null && row.key != null)
-                    data.setQcTypeId((Integer)row.data);
-                else
-                    data.setQcTypeId(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -171,66 +157,48 @@ public class QcChartScreen extends Screen {
 
         });
 
-        workSheetCreatedDateFrom = (CalendarLookUp)def.getWidget(QcListMeta.getWorksheetCreatedDateFrom());
+        workSheetCreatedDateFrom = (CalendarLookUp)def.getWidget(QcChartMeta.getWorksheetCreatedDateFrom());
         addScreenHandler(workSheetCreatedDateFrom, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                workSheetCreatedDateFrom.setValue(DataBaseUtil.toYM(data.getWorkSheetCreatedDateFrom()));
-            }
-
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-                data.setWorkSheetCreatedDateFrom(event.getValue());
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 workSheetCreatedDateFrom.enable(EnumSet.of(State.DEFAULT)
                                                        .contains(event.getState()));
             }
         });
 
-        workSheetCreatedDateTo = (CalendarLookUp)def.getWidget(QcListMeta.getWorksheetCreatedDateTo());
+        workSheetCreatedDateTo = (CalendarLookUp)def.getWidget(QcChartMeta.getWorksheetCreatedDateTo());
         addScreenHandler(workSheetCreatedDateTo, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                workSheetCreatedDateTo.setValue(DataBaseUtil.toYM(data.getWorkSheetCreatedDateTo()));
-            }
-
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-                data.setWorkSheetCreatedDateTo(event.getValue());
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 workSheetCreatedDateTo.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
 
-        numInstances = (TextBox)def.getWidget("numInstances");
+        numInstances = (TextBox)def.getWidget(QcChartMeta.getNumInstances());
         addScreenHandler(numInstances, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                numInstances.setFieldValue(data.getNumInstances());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                data.setNumInstances(event.getValue());
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 numInstances.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
 
         });
 
-        plotType = (Dropdown<Integer>)def.getWidget("plot");
+        plotType = (Dropdown<Integer>)def.getWidget(QcChartMeta.getPlotType());
         addScreenHandler(plotType, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                plotType.setValue(data.getPlotTypeId());
-            }
-
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 disableScreenButtons();
-                data.setPlotTypeId(event.getValue());                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 plotType.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+
+        qcLocation = (Dropdown<Integer>)def.getWidget(QcChartMeta.getLocationId());
+        addScreenHandler(qcLocation, new ScreenEventHandler<Integer>() {
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                disableScreenButtons();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                qcLocation.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -317,7 +285,7 @@ public class QcChartScreen extends Screen {
                 int list[];
 
                 list = plotDataTable.getSelectedRows();
-                for (int i = 0; i < list.length; i++ ) {
+                for (int i = 0; i < list.length; i++) {
                     plotDataTable.setCell(list[i], 0, "Y");
                     results.getQcList().get(list[i]).setIsPlot("Y");
                 }
@@ -331,7 +299,7 @@ public class QcChartScreen extends Screen {
         selectAllButton = (AppButton)def.getWidget("selectAllButton");
         addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                for (int i = 0; i < plotDataTable.numRows(); i++ ) {
+                for (int i = 0; i < plotDataTable.numRows(); i++) {
                     plotDataTable.setCell(i, 0, "Y");
                     results.getQcList().get(i).setIsPlot("Y");
                 }
@@ -345,7 +313,7 @@ public class QcChartScreen extends Screen {
         unselectAllButton = (AppButton)def.getWidget("unselectAllButton");
         addScreenHandler(unselectAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                for (int i = 0; i < plotDataTable.numRows(); i++ ) {
+                for (int i = 0; i < plotDataTable.numRows(); i++) {
                     plotDataTable.setCell(i, 0, "N");
                     results.getQcList().get(i).setIsPlot("N");
                 }
@@ -362,7 +330,7 @@ public class QcChartScreen extends Screen {
                 int list[];
 
                 list = plotDataTable.getSelectedRows();
-                for (int i = 0; i < list.length; i++ ) {
+                for (int i = 0; i < list.length; i++) {
                     plotDataTable.setCell(list[i], 0, "N");
                     results.getQcList().get(list[i]).setIsPlot("N");
                 }
@@ -380,13 +348,22 @@ public class QcChartScreen extends Screen {
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
+        list = CategoryCache.getBySystemName("laboratory_location");
+        for (DictionaryDO data : list) {
+            row = new TableDataRow(data.getId(), data.getEntry());
+            row.enabled = ("Y".equals(data.getIsActive()));
+            model.add(row);
+        }
+        qcLocation.setModel(model);
+
+        model = new ArrayList<TableDataRow>();
         list = CategoryCache.getBySystemName("qc_type");
         for (DictionaryDO data : list) {
             row = new TableDataRow(data.getId(), data.getEntry());
             row.enabled = ("Y".equals(data.getIsActive()));
             model.add(row);
         }
-        ((Dropdown)qcName.getColumnWidget(QcListMeta.getQCType())).setModel(model);
+        ((Dropdown)qcName.getColumnWidget(QcChartMeta.getQCType())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
         list = CategoryCache.getBySystemName("qc_chart_type");
@@ -399,6 +376,7 @@ public class QcChartScreen extends Screen {
                 typeDynamicId = data.getId();
         }
         plotType.setModel(model);
+        plotType.setSelection(typeDynamicId);
     }
 
     public void setResults(QcChartReportViewVO results) {
@@ -418,18 +396,18 @@ public class QcChartScreen extends Screen {
         fromEmpty = workSheetCreatedDateFrom.getValue() == null;
         toEmpty = workSheetCreatedDateTo.getValue() == null;
         numberEmpty = DataBaseUtil.isEmpty(numInstances.getValue());
-        if ( !fromEmpty) {
+        if (!fromEmpty) {
             if (toEmpty) {
                 workSheetCreatedDateTo.addException(new Exception(Messages.get().fieldRequiredException()));
                 valid = false;
-            } else if ( !numberEmpty) {
+            } else if (!numberEmpty) {
                 le = new Exception(Messages.get().requiredEitherFields());
                 workSheetCreatedDateTo.addException(le);
                 workSheetCreatedDateFrom.addException(le);
                 numInstances.addException(le);
                 valid = false;
             }
-        } else if ( !toEmpty) {
+        } else if (!toEmpty) {
             workSheetCreatedDateFrom.addException(new Exception(Messages.get().fieldRequiredException()));
             valid = false;
         } else if (toEmpty && numberEmpty) {
@@ -442,105 +420,118 @@ public class QcChartScreen extends Screen {
         return valid;
     }
 
+    //
+    // add QC Type as a separate query field since it is part of the
+    // QC Name field
+    //
+    @SuppressWarnings("unchecked")
+    public ArrayList<QueryData> getQueryFields() {
+        Object fieldValue;
+        ArrayList<QueryData> list;
+        ArrayList<TableDataRow> selections;
+        QueryData qd;
+        QueryFieldUtil qField;
+        TableDataRow row;
+
+        list = new ArrayList<QueryData>();
+        for (String key : def.getWidgets().keySet()) {
+            if (def.getWidget(key) instanceof AutoComplete) {
+                row = ((AutoComplete)def.getWidget(key)).getSelection();
+                if (row != null && row.key != null) {
+                    qd = new QueryData();
+                    qd.setKey(key);
+                    qd.setQuery((String)row.key);
+                    qd.setType(QueryData.Type.STRING);
+                    list.add(qd);
+
+                    qField = new QueryFieldUtil();
+                    qField.parse(qd.getQuery());
+                }
+            } else if (def.getWidget(key) instanceof CalendarLookUp) {
+                if (((CalendarLookUp)def.getWidget(key)).getStringValue() != null && ((CalendarLookUp)def.getWidget(key)).getStringValue().length() > 0) {
+                    qd = new QueryData();
+                    qd.setQuery(((CalendarLookUp)def.getWidget(key)).getStringValue());
+                    qd.setKey(key);
+                    qd.setType(QueryData.Type.DATE);
+                    list.add(qd);
+                }
+            } else if (def.getWidget(key) instanceof Dropdown) {
+                selections = ((Dropdown)def.getWidget(key)).getSelections();
+                if (selections.size() > 0) {
+                    row = selections.get(0);
+                    
+                    qd = new QueryData();
+                    qd.setKey(key);
+                    qd.setType(QueryData.Type.INTEGER);
+                    qd.setQuery(row.key.toString());
+                    list.add(qd);
+                }
+            } else if (def.getWidget(key) instanceof TextBox) {
+                fieldValue = ((TextBox)def.getWidget(key)).getFieldValue();
+                if (fieldValue != null) {
+                    qd = new QueryData();
+                    qd.setQuery(fieldValue.toString());
+                    qd.setKey(key);
+                    qd.setType(QueryData.Type.INTEGER);
+                    list.add(qd);
+                }
+            } else if (def.getWidget(key) instanceof HasField) {
+                ((HasField)def.getWidget(key)).getQuery(list, key);
+            }
+        }
+
+        row = qcName.getSelection();
+        if (row != null && row.key != null) {
+            qd = new QueryData();
+            qd.setKey(QcChartMeta.getQCType());
+            qd.setQuery(((Integer)row.data).toString());
+            qd.setType(QueryData.Type.INTEGER);
+            list.add(qd);
+
+            qField = new QueryFieldUtil();
+            qField.parse(qd.getQuery());
+        }
+
+        return list;
+    }
+
     protected void getPlotData() {
         Query query;
-        QueryData field;
-        Datetime fromDate, toDate;
-        Integer numInstance, plotType, qcType;
-        String qcName;
-        ArrayList<QueryData> fields;
 
         disableScreenButtons();
         clearErrors();
-        if ( !validate()) {
+        if (!validate()) {
             window.setError(Messages.get().correctErrors());
             return;
         }
 
         query = new Query();
-        fields = new ArrayList<QueryData>();
-
-        fromDate = data.getWorkSheetCreatedDateFrom();
-        if (fromDate != null) {
-            field = new QueryData();
-            field.setKey("WORKSHEET_CREATED_DATE_FROM");
-            field.setQuery(fromDate.toString());
-            field.setType(QueryData.Type.DATE);
-            fields.add(field);
-        }
-
-        toDate = data.getWorkSheetCreatedDateTo();
-        if (toDate != null) {
-            field = new QueryData();
-            field.setKey("WORKSHEET_CREATED_DATE_TO");
-            field.setQuery(toDate.toString());
-            field.setType(QueryData.Type.DATE);
-            fields.add(field);
-        }
-
-        numInstance = data.getNumInstances();
-        if (numInstance != null) {
-            field = new QueryData();
-            field.setKey("NUM_INSTANCES");
-            field.setQuery(numInstance.toString());
-            field.setType(QueryData.Type.INTEGER);
-            fields.add(field);
-        }
-
-        qcName = data.getName();
-        if (qcName != null) {
-            field = new QueryData();
-            field.setKey("QC_NAME");
-            field.setQuery(qcName);
-            field.setType(QueryData.Type.STRING);
-            fields.add(field);
-        }
-
-        qcType = data.getQcTypeId();
-        if (qcType != null) {
-            field = new QueryData();
-            field.setKey("QC_TYPE");
-            field.setQuery(qcType.toString());
-            field.setType(QueryData.Type.INTEGER);
-            fields.add(field);
-        }
-
-        plotType = data.getPlotTypeId();
-        if (plotType != null) {
-            field = new QueryData();
-            field.setKey("PLOT_TYPE");
-            field.setQuery(plotType.toString());
-            field.setType(QueryData.Type.INTEGER);
-            fields.add(field);
-        }
-
-        query.setFields(fields);
+        query.setFields(getQueryFields());
 
         window.setBusy();
-        if ( ( (fromDate != null) && (toDate != null)) || numInstance != null) {
-            QcChartReportService.get().fetchForQcChart(query, new AsyncCallback<QcChartReportViewVO>() {
-                public void onSuccess(QcChartReportViewVO result) {
-                    setResults(result);
-                    recomputeButton.enable(true);
-                    plotDataButton.enable(true);
-                    if (result.getQcList().size() > 0)
-                        window.setDone(Messages.get().loadCompleteMessage());
-                    else
-                        window.setDone(Messages.get().noRecordsFound());
-                }
+        QcChartReportService.get().fetchForQcChart(query, new AsyncCallback<QcChartReportViewVO>() {
+            public void onSuccess(QcChartReportViewVO result) {
+                setResults(result);
+                recomputeButton.enable(true);
+                plotDataButton.enable(true);
+                if (result.getQcList().size() > 0)
+                    window.setDone(Messages.get().loadCompleteMessage());
+                else
+                    window.setDone(Messages.get().noRecordsFound());
+            }
 
-                public void onFailure(Throwable error) {
-                    setResults(null);
-                    if (error instanceof NotFoundException) {
-                        window.setDone(Messages.get().noRecordsFound());
-                        setState(State.DEFAULT);
-                    } else {
-                        Window.alert("Error: Method call query failed; " + error.getMessage());
-                        window.setError(Messages.get().queryFailed());
-                    }
+            public void onFailure(Throwable error) {
+                setResults(null);
+                if (error instanceof NotFoundException) {
+                    window.setDone(Messages.get().noRecordsFound());
+                    setState(State.DEFAULT);
+                } else {
+                    Window.alert("Error: Method call query failed; " +
+                                 error.getMessage());
+                    window.setError(Messages.get().queryFailed());
                 }
-            });
-        }
+            }
+        });
         window.clearStatus();
     }
 
@@ -572,11 +563,11 @@ public class QcChartScreen extends Screen {
         int cnt;
 
         cnt = 0;
-        for (int i = 0; i < plotDataTable.numRows(); i++ ) {
+        for (int i = 0; i < plotDataTable.numRows(); i++) {
             if ("Y".equals(results.getQcList().get(i).getIsPlot()))
                 break;
             else
-                cnt++ ;
+                cnt++;
         }
         if (plotDataTable.numRows() == cnt) {
             window.setError(Messages.get().noSampleSelectedError());
@@ -588,7 +579,7 @@ public class QcChartScreen extends Screen {
             else
                 qcChartReportScreen.setWindow(window);
 
-            results.setQcName(data.getName());
+            results.setQcName((String)qcName.getSelection().getCells().get(0));
             qcChartReportScreen.runReport(results);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -605,7 +596,7 @@ public class QcChartScreen extends Screen {
         if (results == null || results.getQcList() == null || results.getQcList().size() == 0)
             return model;
 
-        for (int i = 0; i < results.getQcList().size(); i++ ) {
+        for (int i = 0; i < results.getQcList().size(); i++) {
             data = results.getQcList().get(i);
             tr = new TableDataRow(null,
                                   data.getIsPlot(),
@@ -632,83 +623,5 @@ public class QcChartScreen extends Screen {
         plotDataButton.enable(false);
         results = null;
         plotDataTable.load(getTableModel());
-    }
-
-    public class QcChartVO {
-        protected Integer numInstances, plotTypeId, qcTypeId;
-        protected String  name, dynamic, analyteName, plotData;
-        protected Datetime workSheetCreatedDateFrom, workSheetCreatedDateTo;
-
-        public Integer getNumInstances() {
-            return numInstances;
-        }
-
-        public void setNumInstances(Integer numInstances) {
-            this.numInstances = numInstances;
-        }
-
-        public Integer getPlotTypeId() {
-            return plotTypeId;
-        }
-
-        public void setPlotTypeId(Integer plotTypeId) {
-            this.plotTypeId = plotTypeId;
-        }
-
-        public Integer getQcTypeId() {
-            return qcTypeId;
-        }
-
-        public void setQcTypeId(Integer qcTypeId) {
-            this.qcTypeId = qcTypeId;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = DataBaseUtil.trim(name);
-        }
-
-        public String getDynamic() {
-            return dynamic;
-        }
-
-        public void setDynamic(String dynamic) {
-            this.dynamic = DataBaseUtil.trim(dynamic);
-        }
-
-        public String getAnalyteName() {
-            return analyteName;
-        }
-
-        public void setAnalyteName(String analyteName) {
-            this.analyteName = DataBaseUtil.trim(analyteName);
-        }
-
-        public String getPlotData() {
-            return plotData;
-        }
-
-        public void setPlotData(String plotData) {
-            this.plotData = DataBaseUtil.trim(plotData);
-        }
-
-        public Datetime getWorkSheetCreatedDateFrom() {
-            return workSheetCreatedDateFrom;
-        }
-
-        public void setWorkSheetCreatedDateFrom(Datetime workSheetCreatedDateFrom) {
-            this.workSheetCreatedDateFrom = DataBaseUtil.toYM(workSheetCreatedDateFrom);
-        }
-
-        public Datetime getWorkSheetCreatedDateTo() {
-            return workSheetCreatedDateTo;
-        }
-
-        public void setWorkSheetCreatedDateTo(Datetime workSheetCreatedDateTo) {
-            this.workSheetCreatedDateTo = DataBaseUtil.toYM(workSheetCreatedDateTo);
-        }
     }
 }

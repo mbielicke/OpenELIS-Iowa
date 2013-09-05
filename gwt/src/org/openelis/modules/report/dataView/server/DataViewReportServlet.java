@@ -43,15 +43,15 @@ import org.openelis.modules.report.dataView.client.DataViewServiceInt;
 
 @WebServlet("/openelis/dataViewReport")
 public class DataViewReportServlet extends RemoteServlet implements DataViewServiceInt {
-    
+
     private static final long serialVersionUID = 1L;
 
     @EJB
-    SystemVariableBean systemVariable;
-    
+    SystemVariableBean        systemVariable;
+
     @EJB
-    DataViewBean       dataView;
-    
+    DataViewBean              dataView;
+
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
         try {        
             return dataView.fetchEnvironmentalProjectListForWeb();

@@ -67,7 +67,7 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
             refTableId = Integer.parseInt(field.getQuery());
         else
             refTableId = null;
-        try {        
+        try {
             return analyteParameterManager.fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -99,7 +99,7 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
             refTableId = null;
         
         
-        try {        
+        try {
             return analyteParameter.fetchByAnalyteIdReferenceIdReferenceTableId(anaId, refId, refTableId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -107,7 +107,7 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
     }
     
     public ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception {
-        try {        
+        try {
             return analyteParameter.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -115,7 +115,7 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
     }
     
     public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception {
-        try {        
+        try {
             return analyteParameterManager.add(man);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -123,7 +123,7 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
     }
     
     public AnalyteParameterManager update(AnalyteParameterManager man) throws Exception {
-        try {        
+        try {
             return analyteParameterManager.update(man);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -131,7 +131,7 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
     }
     
     public AnalyteParameterManager fetchForUpdate(AnalyteParameterManager man) throws Exception {
-        try {        
+        try {
             return analyteParameterManager.fetchForUpdate(man);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
@@ -139,7 +139,7 @@ public class AnalyteParameterServlet extends RemoteServlet implements AnalytePar
     }
     
     public AnalyteParameterManager abortUpdate(AnalyteParameterManager man) throws Exception {
-        try {        
+        try {
             return analyteParameterManager.abortUpdate(man);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);

@@ -597,20 +597,20 @@ public class AnalyteParameterScreen extends Screen {
                         setQueryResult(result);
                     }
 
-                                     public void onFailure(Throwable error) {
-                                         setQueryResult(null);
-                                         if (error instanceof NotFoundException) {
-                                             window.setDone(Messages.get().noRecordsFound());
-                                             setState(State.DEFAULT);
-                                         } else if (error instanceof LastPageException) {
-                                             window.setError(Messages.get().noMoreRecordInDir());
-                                         } else {
-                                             Window.alert("Error: Analyte Parameter call query failed; " +
-                                                          error.getMessage());
-                                             window.setError(Messages.get().queryFailed());
-                                         }
-                                     }
-                                 });
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(Messages.get().noRecordsFound());
+                            setState(State.DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError(Messages.get().noMoreRecordInDir());
+                        } else {
+                            Window.alert("Error: Analyte Parameter call query failed; " +
+                                         error.getMessage());
+                            window.setError(Messages.get().queryFailed());
+                        }
+                    }
+                });
             }
 
             public boolean fetch(ReferenceIdTableIdNameVO entry) {
@@ -908,7 +908,6 @@ public class AnalyteParameterScreen extends Screen {
     private ArrayList<TableDataRow> getQcModel(String search) {
         ArrayList<TableDataRow> model;
         ArrayList<QcDO> list;
-        TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
         try {

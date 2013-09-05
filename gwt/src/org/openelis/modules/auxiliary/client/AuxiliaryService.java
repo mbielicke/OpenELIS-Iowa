@@ -3,13 +3,14 @@ package org.openelis.modules.auxiliary.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -47,6 +48,11 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
     public void fetchActive(AsyncCallback<ArrayList<AuxFieldGroupDO>> callback) {
         service.fetchActive(callback);
     }
+    
+    @Override
+    public void fetchAll(AsyncCallback<ArrayList<AuxFieldViewDO>> callback) {
+        service.fetchAll(callback);
+    }
 
     @Override
     public void fetchFieldByGroupId(Integer groupId, AsyncCallback<AuxFieldManager> callback) {
@@ -76,8 +82,15 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
     }
 
     @Override
-    public void fetchGroupById(Integer id, AsyncCallback<AuxFieldGroupManager> callback) {
-        service.fetchGroupById(id, callback);
+    public void fetchById(Integer id, AsyncCallback<AuxFieldGroupManager> callback) {
+        service.fetchById(id, callback);
+    }
+    
+    
+    @Override
+    public void fetchByIds(ArrayList<Integer> ids,
+                           AsyncCallback<ArrayList<AuxFieldGroupManager>> callback) {
+        service.fetchByIds(ids, callback);
     }
 
     @Override
@@ -103,13 +116,32 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
         service.fetchActive(callback);
         return callback.getResult();
     }
+    
 
     @Override
-    public AuxFieldGroupManager fetchGroupById(Integer id) throws Exception {
+    public ArrayList<AuxFieldViewDO> fetchAll() throws Exception {
+        Callback<ArrayList<AuxFieldViewDO>> callback;
+        
+        callback = new Callback<ArrayList<AuxFieldViewDO>>();
+        service.fetchAll(callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public AuxFieldGroupManager fetchById(Integer id) throws Exception {
         Callback<AuxFieldGroupManager> callback;
         
         callback = new Callback<AuxFieldGroupManager>();
-        service.fetchGroupById(id, callback);
+        service.fetchById(id, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<AuxFieldGroupManager> fetchByIds(ArrayList<Integer> ids) throws Exception {
+        Callback<ArrayList<AuxFieldGroupManager>> callback;
+        
+        callback = new Callback<ArrayList<AuxFieldGroupManager>>();
+        service.fetchByIds(ids, callback);
         return callback.getResult();
     }
 
@@ -201,7 +233,4 @@ public class AuxiliaryService implements AuxiliaryServiceInt, AuxiliaryServiceIn
         service.fetchFieldValueByFieldId(fieldId, callback);
         return callback.getResult();
     }
-    
-    
-
 }

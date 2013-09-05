@@ -482,12 +482,9 @@ public class WorksheetCreationLookupScreen extends Screen
             analysisRow = (WorksheetCreationVO) selections.get(i).data;
             if (! isAnalysisEditable(analysisRow)) {
                 selections.remove(i);
-
-                message.append(Messages.get().accessionNum())
-                       .append(analysisRow.getAccessionNumber())
-                       .append("\t")
-                       .append(analysisRow.getTestName().trim())
-                       .append(", ")
+                
+                message.append(Messages.get().accessionNum()).append(analysisRow.getAccessionNumber())
+                       .append("\t").append(analysisRow.getTestName().trim()).append(", ")
                        .append(analysisRow.getMethodName().trim());
                 try {
                     sectionVDO = SectionCache.getById(analysisRow.getSectionId());

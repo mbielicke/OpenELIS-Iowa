@@ -1,3 +1,29 @@
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+
+The contents of this file are subject to the UIRF Open-source Based
+Public Software License(the "License"); you may not use this file except
+in compliance with the License. You may obtain a copy of the License at
+openelis.uhl.uiowa.edu
+
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+
+The Original Code is OpenELIS code.
+
+The Initial Developer of the Original Code is The University of Iowa.
+Portions created by The University of Iowa are Copyright 2006-2008. All
+Rights Reserved.
+
+Contributor(s): ______________________________________.
+
+Alternatively, the contents of this file marked
+"Separately-Licensed" may be used under the terms of a UIRF Software
+license ("UIRF Software License"), in which case the provisions of a
+UIRF Software License are applicable instead of those above. 
+-->
 <module>
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
@@ -25,9 +51,10 @@
     <inherits name="org.openelis.modules.inventoryTransfer.InventoryTransfer"/>
     <inherits name="org.openelis.modules.label.Label"/> 
     <inherits name="org.openelis.modules.method.Method"/>
-    <inherits name="org.openelis.modules.newbornScreeningSampleLogin.NewbornScreeningSampleLogin"/>
+    <inherits name="org.openelis.modules.neonatalScreeningSampleLogin.NeonatalScreeningSampleLogin"/>
     <inherits name="org.openelis.modules.note.Note"/>
     <inherits name="org.openelis.modules.order.Order"/>
+    <inherits name="org.openelis.modules.order1.Order1"/>
     <inherits name="org.openelis.modules.orderFill.OrderFill"/>
     <inherits name="org.openelis.modules.organization.Organization"/>
     <inherits name="org.openelis.modules.privateWellWaterSampleLogin.PrivateWellWaterSampleLogin"/>
@@ -54,10 +81,13 @@
     <inherits name="org.openelis.modules.test.Test"/>
     <inherits name="org.openelis.modules.verification.Verification"/>
     <inherits name="org.openelis.modules.worksheet.Worksheet"/>
+    <inherits name="org.openelis.modules.worksheet1.Worksheet1"/>
+    <inherits name="org.openelis.modules.worksheetBuilder.WorksheetBuilder"/>
     <inherits name="org.openelis.modules.worksheetCompletion.WorksheetCompletion"/>
     <inherits name="org.openelis.modules.worksheetCreation.WorksheetCreation"/>
     <inherits name="org.openelis.modules.scriptlet.Scriptlet"/>
     <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
+    <inherits name="org.openelis.modules.sample1.Sample1"/>
     <inherits name="org.openelis.modules.report.Report"/>
     <inherits name="org.openelis.modules.report.dataView.DataView"/>
     <inherits name="org.openelis.modules.report.finalReportSingleReprint.FinalReportSingleReprint"/>

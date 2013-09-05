@@ -71,7 +71,7 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
     private ToBeVerifiedTab           toBeVerifiedTab;
     private OtherTab                  otherTab;
     private WorksheetTab              worksheetTab;
-        
+
     public enum Action {
         SHOW_SAMPLE
     };
@@ -279,8 +279,8 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
             public void onStateChange(StateChangeEvent<State> event) {
                 otherTab.setState(event.getState());
             }
-        });          
-        
+        });
+
         mySection.setValue("Y");
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);

@@ -3,6 +3,7 @@ package org.openelis.modules.qc.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
@@ -34,6 +35,8 @@ public interface QcServiceInt extends XsrfProtectedService {
     QcManager fetchWithLots(Integer id) throws Exception;
 
     QcLotViewDO fetchLotById(Integer id) throws Exception;
+
+    ArrayList<QcAnalyteViewDO> fetchAnalytesByLotId(Integer id) throws Exception;
 
     ArrayList<IdNameVO> query(Query query) throws Exception;
 
