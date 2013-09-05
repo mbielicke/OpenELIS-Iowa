@@ -51,13 +51,13 @@ import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.logging.client.LoggingScreen;
 import org.openelis.modules.method.client.MethodScreen;
-import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginScreen;
-import org.openelis.modules.order.client.InternalOrderScreen;
-import org.openelis.modules.order.client.SendoutOrderScreen;
-import org.openelis.modules.order.client.VendorOrderScreen;
+import org.openelis.modules.neonatalScreeningSampleLogin.client.NeonatalScreeningSampleLoginScreenUI;
+import org.openelis.modules.order1.client.InternalOrderScreenUI;
+import org.openelis.modules.order1.client.SendoutOrderScreenUI;
+import org.openelis.modules.order1.client.VendorOrderScreenUI;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
-import org.openelis.modules.organization.client.OrganizationScreenUI;
+//import org.openelis.modules.organization.client.OrganizationScreenUI;
 import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.preferences.client.PreferencesScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
@@ -98,6 +98,7 @@ import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
 import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
+import org.openelis.modules.worksheetBuilder.client.WorksheetBuilderScreenUI;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.ui.common.ModulePermission;
@@ -113,31 +114,32 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
-import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.visualization.client.VisualizationUtils;
 import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 
 public class OpenELIS extends Screen {
-    
+
     @UiTemplate("OpenELIS.ui.xml")
-    interface OpenELISUiBinder extends UiBinder<Widget,OpenELIS>{};
+    interface OpenELISUiBinder extends UiBinder<Widget, OpenELIS> {
+    };
+
     private static OpenELISUiBinder uiBinder = GWT.create(OpenELISUiBinder.class);
 
     @UiField
-    protected static Browser browser;
-    //protected CollapsePanel        favoritesCollapse;
-    OpenELISConstants msg = GWT.create(OpenELISConstants.class);
-    
+    protected static Browser        browser;
+    // protected CollapsePanel favoritesCollapse;
+    OpenELISConstants               msg      = GWT.create(OpenELISConstants.class);
+
     @UiField
     protected MenuItem              preference, logout, sampleLoginLabelReport,
                     sampleLoginLabelAdditionalReport, quickEntry, verification, tracking,
                     environmentalSampleLogin, privateWellWaterSampleLogin, sdwisSampleLogin,
-                    clinicalSampleLogin, newbornScreeningSampleLogin, animalSampleLogin,
+                    clinicalSampleLogin, neonatalScreeningSampleLogin, animalSampleLogin,
                     ptSampleLogin, testSampleManager, project, provider, organization,
-                    worksheetCreation, worksheetCompletion, addOrCancel, reviewAndRelease, toDo,
-                    labelFor, storage, QC, analyteParameter, internalOrder, vendorOrder,
-                    sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
+                    worksheetBuilder, worksheetCreation, worksheetCompletion, addOrCancel,
+                    reviewAndRelease, toDo, labelFor, storage, QC, analyteParameter, internalOrder,
+                    vendorOrder, sendoutOrder, fillOrder, shipping, buildKits, inventoryTransfer,
                     inventoryReceipt, inventoryAdjustment, inventoryItem, verificationReport,
                     testRequestFormReport, orderRequestForm, holdRefuseOrganization, testReport,
                     billingReport, sampleInhouseReport, volumeReport, toDoAnalyteReport,
@@ -151,16 +153,16 @@ public class OpenELIS extends Screen {
 
     public OpenELIS() throws Exception {
         Exception loadError;
-
+        
         try {
             loadError = null;
             Constants.setConstants(OpenELISService.get().getConstants());
         } catch (Exception anyE) {
             loadError = anyE;
         }
-        
+
         initWidget(uiBinder.createAndBindUi(this));
-        
+
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {
             public void run() {
@@ -168,13 +170,13 @@ public class OpenELIS extends Screen {
         }, PieChart.PACKAGE, PieChart.PACKAGE);
 
         initialize();
-
+        
         if (loadError != null)
             Window.alert("FATAL ERROR: "+loadError.getMessage()+"; Please contact IT support");
     }
 
     protected void initialize() {
-        
+
         addCommand(preference, "openelis", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -185,39 +187,38 @@ public class OpenELIS extends Screen {
                             window.setContent(new PreferencesScreen(window));
                             browser.addWindow(window, "preference");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
-        
+
         addCommand(logout, "openelis", new Command() {
             public void execute() {
                 try {
                     logout();
                 } catch (Throwable e) {
-                    remote().log(Level.SEVERE,e.getMessage(),e);
+                    remote().log(Level.SEVERE, e.getMessage(), e);
                     Window.alert(e.getMessage());
                 }
             }
         });
-        
-        addCommand(logs,"openelis",new Command() {
+
+        addCommand(logs, "openelis", new Command() {
             public void execute() {
                 org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                 window.setName(msg.logs());
                 window.setSize("1000px", "600px");
                 window.setContent(new LoggingScreen(window));
                 browser.addWindow(window, "logs");
-            } 
+            }
         });
 
         addCommand(quickEntry, "quickentry", new Command() {
@@ -230,13 +231,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new QuickEntryScreen(window));
                             browser.addWindow(window, "quickEntry");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -253,13 +254,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new VerificationScreen(window));
                             browser.addWindow(window, "verification");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -276,13 +277,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new SampleTrackingScreen(window));
                             browser.addWindow(window, "tracking");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -297,15 +298,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.environmentalSampleLogin());
                             window.setContent(new EnvironmentalSampleLoginScreen(window));
-                            browser.addWindow(window,"environmentalSampleLogin");
+                            browser.addWindow(window, "environmentalSampleLogin");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -320,36 +321,37 @@ public class OpenELIS extends Screen {
                             // browser.addScreen(new
                             // ClinicalSampleLoginScreen());
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
-        addCommand(newbornScreeningSampleLogin, "samplenewborn", new Command() {
+
+        addCommand(neonatalScreeningSampleLogin, "sampleneonatal", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.newbornScreeningSampleLogin());
-                            window.setContent(new NewbornScreeningSampleLoginScreen(window));
-                            browser.addWindow(window, "newbornScreeningSampleLogin");
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.neonatalScreeningSampleLogin());
+                            window.setSize("890px", "850px");
+                            window.setContent(new NeonatalScreeningSampleLoginScreenUI(window));
+                            browser.addWindow(window, "neonatalScreeningSampleLogin");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -363,13 +365,13 @@ public class OpenELIS extends Screen {
                         try {
                             // browser.addScreen(new AnimalSampleLoginScreen());
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -383,13 +385,13 @@ public class OpenELIS extends Screen {
                         try {
                             // browser.addScreen(new PTSampleLoginScreen());
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -406,13 +408,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new SDWISSampleLoginScreen(window));
                             browser.addWindow(window, "sdwisSampleLogin");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -427,15 +429,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.privateWellWaterSampleLogin());
                             window.setContent(new PrivateWellWaterSampleLoginScreen(window));
-                            browser.addWindow(window,"privateWellWaterSampleLogin");
+                            browser.addWindow(window, "privateWellWaterSampleLogin");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -452,13 +454,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new ProjectScreen(window));
                             browser.addWindow(window, "project");
                         } catch (Throwable caught) {
-                            remote().log(Level.SEVERE,caught.getMessage(),caught);
+                            remote().log(Level.SEVERE, caught.getMessage(), caught);
                             Window.alert(caught.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -475,13 +477,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new ProviderScreen(window));
                             browser.addWindow(window, "provider");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -495,19 +497,21 @@ public class OpenELIS extends Screen {
                     public void onSuccess() {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+//                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.organization());
 //                            window.setSize("877px", "631px");
                             window.setContent(new OrganizationScreen(window));
 //                            window.setContent(new OrganizationScreenUI(window));
                             browser.addWindow(window, "organization");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            e.printStackTrace();
                             Window.alert(e.getMessage());
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -525,13 +529,42 @@ public class OpenELIS extends Screen {
                             window.setContent(new WorksheetCreationScreen(window));
                             browser.addWindow(window, "worksheetCreation");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand(worksheetBuilder, "worksheetbuilder", new Command() {
+            public void execute() {
+
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        WorksheetBuilderScreenUI screen;
+                        
+                        try {
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                            window.setName(msg.worksheetBuilder());
+                            window.setSize("1075px", "498px");
+                            screen = new WorksheetBuilderScreenUI(window);
+                            window.setContent(screen);
+                            screen.initialize();
+                            browser.addWindow(window, "worksheetBuilder");
+                        } catch (Throwable e) {
+                            remote().log(Level.SEVERE, e.getMessage(), e);
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -547,15 +580,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.worksheetCompletion());
                             window.setContent(new WorksheetCompletionScreen(window));
-                            browser.addWindow(window,"worksheetCompletion");
+                            browser.addWindow(window, "worksheetCompletion");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -578,13 +611,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new CompleteReleaseScreen(window));
                             browser.addWindow(window, "reviewAndRelease");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -602,13 +635,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new StorageScreen(window));
                             browser.addWindow(window, "storage");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -620,6 +653,7 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         ToDoScreen screen;
+
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.toDo());
@@ -629,13 +663,13 @@ public class OpenELIS extends Screen {
                             browser.addWindow(window, "toDo");
                         } catch (Throwable e) {
                             e.printStackTrace();
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -658,13 +692,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new StorageLocationScreen(window));
                             browser.addWindow(window, "storageLocation");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -681,13 +715,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new QcScreen(window));
                             browser.addWindow(window, "QC");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -704,13 +738,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new AnalyteParameterScreen(window));
                             browser.addWindow(window, "analyteParameter");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -722,18 +756,19 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.internalOrder());
-                            window.setContent(new InternalOrderScreen(window));
+                            window.setSize("880px", "538px");
+                            window.setContent(new InternalOrderScreenUI(window));
                             browser.addWindow(window, "internalOrder");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -745,18 +780,19 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.vendorOrder());
-                            window.setContent(new VendorOrderScreen(window));
+                            window.setSize("880px", "580px");
+                            window.setContent(new VendorOrderScreenUI(window));
                             browser.addWindow(window, "vendorOrder");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -768,18 +804,19 @@ public class OpenELIS extends Screen {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.sendoutOrder());
-                            window.setContent(new SendoutOrderScreen(window));
+                            window.setSize("1020px", "601px");
+                            window.setContent(new SendoutOrderScreenUI(window));
                             browser.addWindow(window, "sendoutOrder");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -794,15 +831,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.fillOrder());
                             window.setContent(new OrderFillScreen(window));
-                            browser.addWindow(window,"fillOrder");
+                            browser.addWindow(window, "fillOrder");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -819,13 +856,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new ShippingScreen(window));
                             browser.addWindow(window, "shipping");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -842,13 +879,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new BuildKitsScreen(window));
                             browser.addWindow(window, "buildKits");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -865,13 +902,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new InventoryReceiptScreen(window));
                             browser.addWindow(window, "inventoryReceipt");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -888,13 +925,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new InventoryTransferScreen(window));
                             browser.addWindow(window, "inventoryTransfer");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -909,15 +946,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.inventoryAdjustment());
                             window.setContent(new InventoryAdjustmentScreen(window));
-                            browser.addWindow(window,"inventoryAdjustment");
+                            browser.addWindow(window, "inventoryAdjustment");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -934,13 +971,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new InventoryItemScreen(window));
                             browser.addWindow(window, "inventoryItem");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -957,13 +994,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new InstrumentScreen(window));
                             browser.addWindow(window, "instrument");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -980,19 +1017,19 @@ public class OpenELIS extends Screen {
                             window.setContent(new TestScreen(window));
                             browser.addWindow(window, "test");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
+
         addCommand(method, "method", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1000,23 +1037,23 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
                             window.setName(msg.method());
-                            window.setSize("843px", "384px");
+                            window.setSize("862px", "432px");
                             window.setContent(new MethodScreen(window));
                             browser.addWindow(window, "method");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
+
         addCommand(panel, "panel", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1027,13 +1064,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new PanelScreen(window));
                             browser.addWindow(window, "panel");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1050,13 +1087,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new QaEventScreen(window));
                             browser.addWindow(window, "QAEvent");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1073,13 +1110,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new SectionScreen(window));
                             browser.addWindow(window, "labSection");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1096,13 +1133,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new AnalyteScreen(window));
                             browser.addWindow(window, "analyte");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1119,19 +1156,19 @@ public class OpenELIS extends Screen {
                             window.setContent(new DictionaryScreen(window));
                             browser.addWindow(window, "dictionary");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
+
         addCommand(exchangeVocabularyMap, "exchangevocabularymap", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1142,19 +1179,19 @@ public class OpenELIS extends Screen {
                             window.setContent(new ExchangeVocabularyMapScreen(window));
                             browser.addWindow(window, "exchangeVocabularyMap");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
+
         addCommand(exchangeDataSelection, "exchangedataselection", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1165,13 +1202,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new ExchangeDataSelectionScreen(window));
                             browser.addWindow(window, "exchangeDataSelection");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1188,13 +1225,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new AuxiliaryScreen(window));
                             browser.addWindow(window, "auxiliaryPrompt");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1211,13 +1248,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new LabelScreen(window));
                             browser.addWindow(window, "label");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1234,13 +1271,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new StandardNoteScreen(window));
                             browser.addWindow(window, "standardNote");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1257,13 +1294,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new TestTrailerScreen(window));
                             browser.addWindow(window, "trailerForTest");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1280,13 +1317,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new StorageUnitScreen(window));
                             browser.addWindow(window, "storageUnit");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1309,13 +1346,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new SystemVariableScreen(window));
                             browser.addWindow(window, "systemVariable");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1335,13 +1372,13 @@ public class OpenELIS extends Screen {
                             screen.initialize();
                             browser.addWindow(window, "pws");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1358,13 +1395,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new CronScreen(window));
                             browser.addWindow(window, "cron");
                         } catch (Exception e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1381,13 +1418,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new TestReportScreen(window));
                             browser.addWindow(window, "testReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1402,15 +1439,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.sampleLogin());
                             window.setContent(new SampleLoginLabelReportScreen(window));
-                            browser.addWindow(window,"sampleLoginLabelReport");
+                            browser.addWindow(window, "sampleLoginLabelReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1425,15 +1462,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.sampleLogin());
                             window.setContent(new SampleLoginLabelAdditionalReportScreen(window));
-                            browser.addWindow(window,"sampleLoginLabelAdditionalReport");
+                            browser.addWindow(window, "sampleLoginLabelAdditionalReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1450,13 +1487,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new DataViewScreen(window));
                             browser.addWindow(window, "dataView");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1473,13 +1510,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new FinalReportSingleReprintScreen(window));
                             browser.addWindow(window, "finalReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1496,13 +1533,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new FinalReportBatchScreen(window));
                             browser.addWindow(window, "finalReportBatch");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1517,15 +1554,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.finalReport());
                             window.setContent(new FinalReportBatchReprintScreen(window));
-                            browser.addWindow(window,"finalReportBatchReprint");
+                            browser.addWindow(window, "finalReportBatchReprint");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1542,13 +1579,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new VerificationReportScreen(window));
                             browser.addWindow(window, "verificationReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1565,13 +1602,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new RequestformReportScreen(window));
                             browser.addWindow(window, "orderRequestForm");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1586,15 +1623,15 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             window.setName(msg.sampleInhouseReport());
                             window.setContent(new SampleInhouseReportScreen(window));
-                            browser.addWindow(window,"sampleInhouseReport");
+                            browser.addWindow(window, "sampleInhouseReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1611,13 +1648,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new VolumeReportScreen(window));
                             browser.addWindow(window, "volumeReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1634,13 +1671,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new TurnaroundReportScreen(window));
                             browser.addWindow(window, "turnaround");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1657,13 +1694,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new QASummaryReportScreen(window));
                             browser.addWindow(window, "QASummaryReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1680,13 +1717,13 @@ public class OpenELIS extends Screen {
                             window.setContent(new SDWISUnloadReportScreen(window));
                             browser.addWindow(window, "sdwisUnloadReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
@@ -1703,19 +1740,19 @@ public class OpenELIS extends Screen {
                             window.setContent(new QcChartScreen(window));
                             browser.addWindow(window, "qcChart");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
+
         addCommand(toDoAnalyteReport, "sampletracking", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1726,19 +1763,19 @@ public class OpenELIS extends Screen {
                             window.setContent(new ToDoAnalyteReportScreen(window));
                             browser.addWindow(window, "toDoAnalyteReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
+
         addCommand(turnAroundStatisticReport, "sampletracking", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1749,19 +1786,19 @@ public class OpenELIS extends Screen {
                             window.setContent(new TurnaroundStatisticScreen(window));
                             browser.addWindow(window, "turnAroundStatisticReport");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
+
         addCommand(kitTrackingReport, "sendoutorder", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1784,7 +1821,7 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        
+
         addCommand(holdRefuseOrganization, "sampletracking", new Command() {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1795,21 +1832,19 @@ public class OpenELIS extends Screen {
                             window.setContent(new HoldRefuseOrganizationReportScreen(window));
                             browser.addWindow(window, "holdRefuseOrganization");
                         } catch (Throwable e) {
-                            remote().log(Level.SEVERE,e.getMessage(),e);
+                            remote().log(Level.SEVERE, e.getMessage(), e);
                             Window.alert(e.getMessage());
                         }
                     }
 
                     public void onFailure(Throwable caught) {
-                        remote().log(Level.SEVERE,caught.getMessage(),caught);
+                        remote().log(Level.SEVERE, caught.getMessage(), caught);
                         Window.alert(caught.getMessage());
                     }
                 });
             }
         });
-        
     }
-    
 
     /**
      * Returns the browser associated with this application.
@@ -1817,8 +1852,6 @@ public class OpenELIS extends Screen {
     public static Browser getBrowser() {
         return browser;
     }
-
-
 
     /**
      * logout the user
@@ -1837,22 +1870,7 @@ public class OpenELIS extends Screen {
 
     /**
      * register a click handler
-     
-    private void addCommand(String screenName, String modulePermission, ClickHandler handler) {
-        MenuItem item;
-        ModulePermission perm;
-
-        item = ((MenuItem)def.getWidget(screenName));
-        if (item != null && modulePermission != null) {
-            perm = UserCache.getPermission().getModule(modulePermission);
-            if (perm != null && perm.hasSelectPermission()) {
-                item.enable(true);
-                item.addCommand(handler);
-            }
-        }
-    }
-    */
-    
+     */
     private void addCommand(MenuItem item, String modulePermission, Command handler) {
         ModulePermission perm;
 
@@ -1864,6 +1882,4 @@ public class OpenELIS extends Screen {
             }
         }
     }
-    
-    
 }
