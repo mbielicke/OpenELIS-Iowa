@@ -41,13 +41,14 @@ public class WorksheetDO extends DataObject {
     protected Datetime createdDate;
     protected Integer  id, systemUserId, statusId, formatId, subsetCapacity, relatedWorksheetId,
                        instrumentId;
+    protected String   description;
 
     public WorksheetDO() {
     }
 
     public WorksheetDO(Integer id, Date createdDate, Integer systemUserId,
                        Integer statusId, Integer formatId, Integer subsetCapacity, 
-                       Integer relatedWorksheetId, Integer instrumentId) {
+                       Integer relatedWorksheetId, Integer instrumentId, String description) {
         setId(id);
         setCreatedDate(DataBaseUtil.toYM(createdDate));
         setSystemUserId(systemUserId);
@@ -56,6 +57,7 @@ public class WorksheetDO extends DataObject {
         setSubsetCapacity(subsetCapacity);
         setRelatedWorksheetId(relatedWorksheetId);
         setInstrumentId(instrumentId);
+        setDescription(description);
         _changed = false;
     }
 
@@ -127,6 +129,15 @@ public class WorksheetDO extends DataObject {
 
     public void setInstrumentId(Integer instrumentId) {
         this.instrumentId = instrumentId;
+        _changed = true;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
         _changed = true;
     }
 }

@@ -40,7 +40,8 @@ public class TestSectionManager implements Serializable {
     private static final long                          serialVersionUID = 1L;
 
     protected Integer                                  testId;
-    protected ArrayList<TestSectionViewDO>             sections, deleted;
+    public ArrayList<TestSectionViewDO>                sections;
+    private ArrayList<TestSectionViewDO>               deleted;
 
     protected transient static TestSectionManagerProxy proxy;
 
@@ -58,18 +59,18 @@ public class TestSectionManager implements Serializable {
 
         return tsm;
     }
-    
+
     public int count() {
         if (sections == null)
             return 0;
 
         return sections.size();
     }
-    
+
     public TestSectionViewDO getSectionAt(int i) {
         return sections.get(i);
     }
-    
+
     public void setSectionAt(TestSectionViewDO data, int i) {
         if (sections == null)
             sections = new ArrayList<TestSectionViewDO>();
@@ -81,14 +82,14 @@ public class TestSectionManager implements Serializable {
             sections = new ArrayList<TestSectionViewDO>();
         sections.add(data);
     }
-    
+
     public void addSectionAt(TestSectionViewDO data, int i) {
         if (sections == null)
             sections = new ArrayList<TestSectionViewDO>();
 
         sections.add(i, data);
     }
-    
+
     public void removeSectionAt(int i) {
         TestSectionViewDO data;
         if (sections == null || i >= sections.size())
@@ -103,7 +104,7 @@ public class TestSectionManager implements Serializable {
             deleted.add(data);
         }
     }
-    
+
     // service methods
     public TestSectionManager add() throws Exception {
         return proxy().add(this);
@@ -116,16 +117,16 @@ public class TestSectionManager implements Serializable {
     public void validate() throws Exception {
         proxy().validate(this);
     }
-    
+
     public TestSectionViewDO getDefaultSection() throws Exception {
         DictionaryDO locationDict;
         Integer locationId;
         Preferences prefs;
         String locationName, locationSuffix, sectionName;
         TestSectionViewDO data;
-        
+
         data = null;
-        
+
         prefs = Preferences.userRoot();
         locationSuffix = "NONE";
         locationId = prefs.getInt("location", -1);
@@ -134,7 +135,7 @@ public class TestSectionManager implements Serializable {
             locationName = locationDict.getSystemName();
             locationSuffix = locationName.substring(locationName.lastIndexOf("_") + 1);
         }
-        
+
         for (int i = 0; i < sections.size(); i++ ) {
             if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(sections.get(i).getFlagId())) {
                 data = sections.get(i);
@@ -154,7 +155,7 @@ public class TestSectionManager implements Serializable {
     public ArrayList<TestSectionViewDO> getSections() {
         return sections;
     }
-    
+
     Integer getTestId() {
         return testId;
     }

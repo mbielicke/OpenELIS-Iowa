@@ -6,7 +6,7 @@ public class ResultViewDO extends ResultDO {
 
     private static final long serialVersionUID = 1L;
     
-    protected String analyte;
+    protected String analyte, dictionary;
     protected Integer rowGroup,testAnalyteTypeId, resultGroup;
     
     public ResultViewDO(){
@@ -30,6 +30,14 @@ public class ResultViewDO extends ResultDO {
 
     public void setAnalyte(String analyte) {
         this.analyte = DataBaseUtil.trim(analyte);
+    }
+
+    public String getDictionary() {
+        return dictionary;
+    }
+
+    public void setDictionary(String dictionary) {
+        this.dictionary = DataBaseUtil.trim(dictionary);
     }
 
     public Integer getRowGroup() {

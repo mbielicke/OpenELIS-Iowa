@@ -8,8 +8,6 @@ import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
-import com.google.gwt.user.client.Window;
-
 public class AuxFieldManager implements Serializable {
 
     private static final long                             serialVersionUID = 1L;
@@ -144,7 +142,7 @@ public class AuxFieldManager implements Serializable {
             else
                 addAuxFieldAndValuesAt(field, values.getValues(), newIndex);
         } catch(Exception e) {
-            Window.alert(e.getMessage());
+            e.printStackTrace();
         }     
     }
 

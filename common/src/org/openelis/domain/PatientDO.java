@@ -34,26 +34,33 @@ public class PatientDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, addressId, genderId, raceId, ethnicityId;
+    protected Integer         id, genderId, raceId, ethnicityId;
     protected String          lastName, firstName, middleName;
     protected Datetime        birthDate, birthTime;
+    protected AddressDO       address;
 
     public PatientDO() {
+        address = new AddressDO();
     }
 
     public PatientDO(Integer id, String lastName, String firstName, String middleName,
                      Integer addressId, Date birthDate, Date birthTime, Integer genderId,
-                     Integer raceId, Integer ethnicityId) {
+                     Integer raceId, Integer ethnicityId, String multipleUnit, String streetAddress,
+                     String city, String state, String zipCode, String workPhone,
+                     String homePhone, String cellPhone, String faxPhone, String email,
+                     String country) {
         setId(id);
         setLastName(lastName);
         setFirstName(firstName);
         setMiddleName(middleName);
-        setAddressId(addressId);
         setBirthDate(DataBaseUtil.toYD(birthDate));
         setBirthTime(DataBaseUtil.toHM(birthTime));
         setGenderId(genderId);
         setRaceId(raceId);
         setEthnicityId(ethnicityId);
+        
+        address = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
+                                workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;
     }
 
@@ -90,15 +97,6 @@ public class PatientDO extends DataObject {
 
     public void setMiddleName(String middleName) {
         this.middleName = DataBaseUtil.trim(middleName);
-        _changed = true;
-    }
-
-    public Integer getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(Integer addressId) {
-        this.addressId = addressId;
         _changed = true;
     }
 
@@ -145,5 +143,9 @@ public class PatientDO extends DataObject {
     public void setEthnicityId(Integer ethnicityId) {
         this.ethnicityId = ethnicityId;
         _changed = true;
+    }
+    
+    public AddressDO getAddress() {
+        return address;
     }
 }
