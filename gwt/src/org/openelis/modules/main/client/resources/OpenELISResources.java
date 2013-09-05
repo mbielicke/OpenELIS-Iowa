@@ -39,7 +39,7 @@ public interface OpenELISResources extends ClientBundle {
 	@Source("images/qcbuttonimage.gif")
 	ImageResource QCIcon();
 	
-	@Source("images/trackingbuttonimage.gif")
+	@Source("images/fieldlookup.png")
 	ImageResource trackingIcon();
 	
 	@Source("images/world_add.png")
@@ -156,4 +156,27 @@ public interface OpenELISResources extends ClientBundle {
 	@Source("images/removerowbuttonimagedisabled.gif")
 	ImageResource removeRowDisabledIcon();
 	
+    @Source("images/find.png")
+    ImageResource findIcon();
+    
+    @Source("images/finddisabled.png")
+    ImageResource findDisabledIcon();
+    
+    @Source("images/selectallbuttonimage.png")
+    ImageResource selectAllIcon();
+    
+    @Source("images/selectallbuttonimagedisabled.png")
+    ImageResource selectAllDisabledIcon();
+    
+    @Source("images/tablepopout.png")
+    ImageResource popoutIcon();
+    
+    @Source("images/tablepopoutdisabled.png")
+    ImageResource popoutDisabledIcon();
+    
+    @Source("images/fieldlookup.png")
+    ImageResource fieldLookupIcon();
+    
+    @Source("images/fieldlookupdisabled.png")
+    ImageResource fieldLookupDisabledIcon();
 }

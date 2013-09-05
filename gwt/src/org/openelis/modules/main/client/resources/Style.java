@@ -3,12 +3,14 @@ package org.openelis.modules.main.client.resources;
 import com.google.gwt.resources.client.CssResource;
 
 public interface Style extends CssResource {
-    
+	
 	public String AppBackground();
 	
 	public String WhiteContentPanel();
 	
 	public String Form();
+	
+	public String FormTitle();
 	
 	public String Prompt();
 	
@@ -103,7 +105,14 @@ public interface Style extends CssResource {
 	public String ScreenLabelLink();
 	
 	public String addRowIcon();
-
+	
 	public String removeRowIcon();
 	
+    public String findIcon();
+    
+    public String selectAllIcon();
+    
+    public String popoutIcon();
+    
+    public String fieldLookupIcon();
 }
