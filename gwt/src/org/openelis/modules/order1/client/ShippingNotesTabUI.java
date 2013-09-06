@@ -40,7 +40,6 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
@@ -134,11 +133,6 @@ public class ShippingNotesTabUI extends Screen {
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
     @UiHandler("editNoteButton")
     protected void editNote(ClickEvent event) {
         showNoteLookup();
@@ -168,7 +162,7 @@ public class ShippingNotesTabUI extends Screen {
             id2 = manager.shippingNote.get().getId();
         }
 
-        if ((count1 != count2) || DataBaseUtil.isDifferent(id1, id2)) {
+        if ( (count1 != count2) || DataBaseUtil.isDifferent(id1, id2)) {
             displayedManager = manager;
             setState(state);
             fireDataChange();
@@ -194,12 +188,17 @@ public class ShippingNotesTabUI extends Screen {
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
                 public void ok() {
-                    if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                    NoteViewDO note;
+                    if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                         manager.shippingNote.removeEditing();
-                    else
-                        setNoteFields(manager.shippingNote.getEditing(),
-                                      null,
-                                      editNoteLookup.getText());
+                    } else {
+                        note = manager.shippingNote.getEditing();
+                        note.setSubject(null);
+                        note.setText(editNoteLookup.getText());
+                        note.setSystemUser(UserCache.getPermission().getLoginName());
+                        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
+                        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+                    }
                     drawNote();
                 }
 
@@ -233,13 +232,5 @@ public class ShippingNotesTabUI extends Screen {
         editNoteLookup.setSubject(subject);
         editNoteLookup.setText(text);
         editNoteLookup.setHasSubject(false);
-    }
-
-    private void setNoteFields(NoteViewDO note, String subject, String text) {
-        note.setSubject(subject);
-        note.setText(text);
-        note.setSystemUser(UserCache.getPermission().getLoginName());
-        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
-        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
     }
 }

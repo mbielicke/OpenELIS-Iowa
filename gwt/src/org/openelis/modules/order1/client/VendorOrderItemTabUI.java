@@ -25,6 +25,7 @@
  */
 package org.openelis.modules.order1.client;
 
+import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
@@ -32,6 +33,7 @@ import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.Constants;
@@ -49,7 +51,6 @@ import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -87,22 +88,22 @@ public class VendorOrderItemTabUI extends Screen {
     private static VendorOrderItemTabUiBinder uiBinder = GWT.create(VendorOrderItemTabUiBinder.class);
 
     @UiField
-    protected Table                            table;
+    protected Table                           table;
 
     @UiField
-    protected Dropdown<Integer>                store, autocompleteStore, dispensedUnits;
+    protected Dropdown<Integer>               store, autocompleteStore, dispensedUnits;
 
     @UiField
-    protected AutoComplete                     inventoryItem;
+    protected AutoComplete                    inventoryItem;
 
     @UiField
-    protected Button                           removeButton, addButton;
+    protected Button                          removeItemButton, addItemButton;
 
-    protected Screen                           parentScreen;
+    protected Screen                          parentScreen;
 
-    protected boolean                          isVisible, canEdit;
+    protected boolean                         isVisible, canEdit;
 
-    protected OrderManager1                    manager, displayedManager;
+    protected OrderManager1                   manager, displayedManager;
 
     public VendorOrderItemTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -131,9 +132,10 @@ public class VendorOrderItemTabUI extends Screen {
             }
 
             public Object getQuery() {
-                ArrayList<QueryData> qds = new ArrayList<QueryData>();
+                ArrayList<QueryData> qds;
                 QueryData qd;
 
+                qds = new ArrayList<QueryData>();
                 for (int i = 0; i < 5; i++ ) {
                     qd = (QueryData) ((Queryable)table.getColumnWidget(i)).getQuery();
                     if (qd != null) {
@@ -161,13 +163,6 @@ public class VendorOrderItemTabUI extends Screen {
                 return qds;
             }
         });
-
-//        table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-//            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-//                if ( !isState(QUERY) && ! (canEdit && isState(ADD, UPDATE) && event.getCol() <= 1))
-//                    event.cancel();
-//            }
-//        });
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -248,13 +243,13 @@ public class VendorOrderItemTabUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                removeButton.setEnabled(canEdit && isState(ADD, UPDATE));
+                removeItemButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                addButton.setEnabled(canEdit && isState(ADD, UPDATE));
+                addItemButton.setEnabled(canEdit && isState(ADD, UPDATE));
             }
         });
 
@@ -314,13 +309,21 @@ public class VendorOrderItemTabUI extends Screen {
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    @UiHandler("addItemButton")
+    protected void addItem(ClickEvent event) {
+        int n;
+
+        table.finishEditing();
+        table.unselectAll();
+        table.addRow();
+        n = table.getRowCount() - 1;
+        table.selectRowAt(n);
+        table.scrollToVisible(table.getSelectedRow());
+        table.startEditing(n, 0);
     }
 
-    @UiHandler("removeButton")
-    protected void removeRow(ClickEvent event) {
+    @UiHandler("removeItemButton")
+    protected void removeItem(ClickEvent event) {
         int r;
         Integer[] rows;
 
@@ -331,17 +334,6 @@ public class VendorOrderItemTabUI extends Screen {
             if (r > -1 && table.getRowCount() > 0)
                 table.removeRowAt(r);
         }
-    }
-
-    @UiHandler("addButton")
-    protected void addRow(ClickEvent event) {
-        int n;
-
-        table.addRow();
-        n = table.getRowCount() - 1;
-        table.selectRowAt(n);
-        table.scrollToVisible(table.getSelectedRow());
-        table.startEditing(n, 0);
     }
 
     private void displayItems() {
@@ -412,11 +404,9 @@ public class VendorOrderItemTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = false;
-        if (manager != null) {
-            canEdit = !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
-                                                                                   .getStatusId());
-        }
+        canEdit = manager != null &&
+                  !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                                                                               .getStatusId());
     }
 
     private void getItemMatches(String match) {
@@ -445,8 +435,8 @@ public class VendorOrderItemTabUI extends Screen {
             }
             inventoryItem.showAutoMatches(model);
         } catch (Throwable e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         parentScreen.getWindow().clearStatus();
     }

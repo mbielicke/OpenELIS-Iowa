@@ -40,7 +40,6 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
@@ -134,11 +133,6 @@ public class InternalNotesTabUI extends Screen {
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
     @UiHandler("addNoteButton")
     protected void addNote(ClickEvent event) {
         String subject, text;
@@ -148,13 +142,17 @@ public class InternalNotesTabUI extends Screen {
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
                 public void ok() {
-
-                    if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                    NoteViewDO note;
+                    if (DataBaseUtil.isEmpty(editNoteLookup.getText())){
                         manager.internalNote.removeEditing();
-                    else
-                        setNoteFields(manager.internalNote.getEditing(),
-                                      editNoteLookup.getSubject(),
-                                      editNoteLookup.getText());
+                    }else{
+                        note = manager.internalNote.getEditing();
+                        note.setSubject(editNoteLookup.getSubject());
+                        note.setText(editNoteLookup.getText());
+                        note.setSystemUser(UserCache.getPermission().getLoginName());
+                        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
+                        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+                    }
                     drawNotes();
                 }
 
@@ -233,13 +231,5 @@ public class InternalNotesTabUI extends Screen {
                 notePanel.addNote(n.getSubject(), n.getSystemUser(), n.getText(), n.getTimestamp());
             }
         }
-    }
-
-    private void setNoteFields(NoteViewDO note, String subject, String text) {
-        note.setSubject(subject);
-        note.setText(text);
-        note.setSystemUser(UserCache.getPermission().getLoginName());
-        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
-        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
     }
 }

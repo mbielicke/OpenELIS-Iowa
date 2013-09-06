@@ -26,6 +26,7 @@
 package org.openelis.modules.order1.client;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.manager.OrderManager1;
@@ -34,7 +35,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
@@ -126,11 +126,6 @@ public class SendoutOrderFillTabUI extends Screen {
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
     private void displayFills() {
         int count1, count2;
         boolean dataChanged;
@@ -152,11 +147,15 @@ public class SendoutOrderFillTabUI extends Screen {
                 fill1 = displayedManager.fill.get(i);
                 fill2 = manager.fill.get(i);
                 if (DataBaseUtil.isDifferent(fill1.getInventoryItemId(), fill2.getInventoryItemId()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryItemName(), fill2.getInventoryItemName()) ||
-                    DataBaseUtil.isDifferent(fill1.getStorageLocationName(), fill2.getStorageLocationName()) ||
+                    DataBaseUtil.isDifferent(fill1.getInventoryItemName(),
+                                             fill2.getInventoryItemName()) ||
+                    DataBaseUtil.isDifferent(fill1.getStorageLocationName(),
+                                             fill2.getStorageLocationName()) ||
                     DataBaseUtil.isDifferent(fill1.getQuantity(), fill2.getQuantity()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryLocationLotNumber(), fill2.getInventoryLocationLotNumber()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryLocationExpirationDate(), fill2.getInventoryLocationExpirationDate())) {
+                    DataBaseUtil.isDifferent(fill1.getInventoryLocationLotNumber(),
+                                             fill2.getInventoryLocationLotNumber()) ||
+                    DataBaseUtil.isDifferent(fill1.getInventoryLocationExpirationDate(),
+                                             fill2.getInventoryLocationExpirationDate())) {
                     dataChanged = true;
                     break;
                 }
@@ -173,9 +172,9 @@ public class SendoutOrderFillTabUI extends Screen {
     }
 
     private ArrayList<Row> getTableModel() {
-        String location;
         Row row;
         InventoryXUseViewDO fillData;
+        StringBuffer buf;
         ArrayList<String> names;
         ArrayList<Row> model;
 
@@ -184,18 +183,20 @@ public class SendoutOrderFillTabUI extends Screen {
             return model;
 
         names = new ArrayList<String>();
-
+        buf = new StringBuffer();
+        
         for (int i = 0; i < manager.fill.count(); i++ ) {
             fillData = manager.fill.get(i);
             row = new Row(5);
             row.setCell(0, fillData.getInventoryItemName());
             names.clear();
             names.add(fillData.getStorageLocationName());
-            names.add(",");
+            names.add(", ");
             names.add(fillData.getStorageLocationUnitDescription());
+            names.add(" ");
             names.add(fillData.getStorageLocationLocation());
-            location = DataBaseUtil.concatWithSeparator(names, " ");
-            row.setCell(1, location);
+            buf.setLength(0);
+            row.setCell(1, concat(names, buf));
             row.setCell(2, fillData.getQuantity());
             row.setCell(3, fillData.getInventoryLocationLotNumber());
             row.setCell(4, fillData.getInventoryLocationExpirationDate());
@@ -204,5 +205,13 @@ public class SendoutOrderFillTabUI extends Screen {
         }
 
         return model;
+    }
+
+    private String concat(List<String> list, StringBuffer buf) {
+        for (String i : list) {
+            if (i != null)
+                buf.append(i);
+        }
+        return buf.toString();
     }
 }

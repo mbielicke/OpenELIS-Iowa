@@ -46,7 +46,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
@@ -98,7 +97,7 @@ public class RecurrenceTabUI extends Screen {
 
     protected Screen                     parentScreen;
 
-    protected boolean                    isVisible, isProcessed, hasRecurrence;
+    protected boolean                    isVisible, canEdit;
 
     protected OrderManager1              manager, displayedManager;
 
@@ -127,10 +126,10 @@ public class RecurrenceTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                active.setEnabled(isState(QUERY) || ( !isProcessed && isState(ADD, UPDATE)));
+                active.setEnabled(isState(QUERY) || ( !canEdit && isState(ADD, UPDATE)));
                 active.setQueryMode(isState(QUERY));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? beginDate : parentOrderNum;
             }
@@ -150,11 +149,11 @@ public class RecurrenceTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  beginDate.setEnabled(isState(QUERY) ||
-                                                      ( !isProcessed && hasRecurrence && isState(ADD,
-                                                                                                 UPDATE)));
+                                                      ( !canEdit && getRecurrence() != null && isState(ADD,
+                                                                                                       UPDATE)));
                                  beginDate.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? endDate : active;
                              }
@@ -174,11 +173,11 @@ public class RecurrenceTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  endDate.setEnabled(isState(QUERY) ||
-                                                    ( !isProcessed && hasRecurrence && isState(ADD,
-                                                                                               UPDATE)));
+                                                    ( !canEdit && getRecurrence() != null && isState(ADD,
+                                                                                                     UPDATE)));
                                  endDate.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? frequency : beginDate;
                              }
@@ -197,11 +196,11 @@ public class RecurrenceTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  frequency.setEnabled(isState(QUERY) ||
-                                                      ( !isProcessed && hasRecurrence && isState(ADD,
-                                                                                                 UPDATE)));
+                                                      ( !canEdit && getRecurrence() != null && isState(ADD,
+                                                                                                       UPDATE)));
                                  frequency.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? unit : endDate;
                              }
@@ -218,10 +217,10 @@ public class RecurrenceTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 unit.setEnabled(isState(QUERY) ||
-                                ( !isProcessed && hasRecurrence && isState(ADD, UPDATE)));
+                                ( !canEdit && getRecurrence() != null && isState(ADD, UPDATE)));
                 unit.setQueryMode(isState(QUERY));
             }
-            
+
             public Widget onTab(boolean forward) {
                 return forward ? parentOrderNum : frequency;
             }
@@ -238,7 +237,7 @@ public class RecurrenceTabUI extends Screen {
                                  parentOrderNum.setEnabled(isState(QUERY));
                                  parentOrderNum.setQueryMode(isState(QUERY));
                              }
-                             
+
                              public Widget onTab(boolean forward) {
                                  return forward ? active : unit;
                              }
@@ -262,7 +261,7 @@ public class RecurrenceTabUI extends Screen {
 
         addScreenHandler(showDatesButton, "showDatesButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                showDatesButton.setEnabled(hasRecurrence &&
+                showDatesButton.setEnabled(getRecurrence() != null &&
                                            "Y".equals(getRecurrence().getIsActive()));
             }
         });
@@ -310,11 +309,6 @@ public class RecurrenceTabUI extends Screen {
             displayedManager = this.manager;
             this.manager = manager;
         }
-    }
-
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     @UiHandler("showDatesButton")
@@ -654,18 +648,9 @@ public class RecurrenceTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        isProcessed = false;
-        hasRecurrence = false;
-        if (manager != null) {
-            isProcessed = Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
-                                                                                      .getStatusId());
-            /*
-             * this is done to disable all the fields other than the checkbox
-             * for active if the order doesn't have a recurrence DO
-             */
-            hasRecurrence = getRecurrence() != null;
-        }
-
+        canEdit = manager != null &&
+                  Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                                                                              .getStatusId());
     }
 
     private String getIsActive() {
