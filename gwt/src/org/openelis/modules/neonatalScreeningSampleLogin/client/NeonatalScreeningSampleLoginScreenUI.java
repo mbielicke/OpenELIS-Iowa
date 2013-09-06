@@ -228,8 +228,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
 
-    protected Long                                      day      = 86400000L;
-
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
      */
@@ -2161,7 +2159,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (accNum == null || accNum < 0) {
             manager.getSample().setAccessionNumber(accNum);
             window.setError(Messages.get()
-                                    .sample_accessionNumberNotValidException(DataBaseUtil.asString(accNum)));
+                                    .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accNum)));
             return;
         }
 
@@ -2720,7 +2718,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     private Integer getNeonatalTransfusionAge() {
         Datetime cd, td;
-        Long diff;
+        Long diff, day;
         Double numDays;
 
         cd = getCollectionDate();
@@ -2729,6 +2727,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             return null;
 
         diff = cd.getDate().getTime() - td.getDate().getTime();
+        day = 86400000L;
         numDays = diff.doubleValue() / day.doubleValue();
 
         return numDays.intValue();

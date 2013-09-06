@@ -379,7 +379,7 @@ public abstract class SampleOrganizationLookupUI extends Screen {
         numbh = 0;
 
         e = new ValidationErrorsList();
-        accession = DataBaseUtil.asString(manager.getSample().getAccessionNumber());
+        accession = DataBaseUtil.toString(manager.getSample().getAccessionNumber());
         /*
          * the sample can't have more than one report-to, bill-to or birthing
          * hospital

@@ -347,7 +347,7 @@ public class TestTabUI extends Screen {
         if (tree.getSelectedNodes().length > 1) {
             parentScreen.getWindow()
                         .setError(Messages.get()
-                                          .order_multiTestCheckNotAllowed(DataBaseUtil.asString(manager.getOrder()
+                                          .order_multiTestCheckNotAllowed(DataBaseUtil.toString(manager.getOrder()
                                                                                                        .getId())));
             return;
         }

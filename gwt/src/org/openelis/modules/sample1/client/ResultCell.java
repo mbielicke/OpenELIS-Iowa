@@ -86,11 +86,11 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
     public String display(Object val) {
         Integer dictId;
         if ( ! (val instanceof Value))
-            return DataBaseUtil.asString(val);
+            return DataBaseUtil.toString(val);
 
         value = (Value)val;
         if (value.display != null)
-            return DataBaseUtil.asString(value.display);
+            return DataBaseUtil.toString(value.display);
 
         if (value.dictId != null) {
             try {
@@ -101,7 +101,7 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
             }
         }
 
-        return DataBaseUtil.asString(value.display);
+        return DataBaseUtil.toString(value.display);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
                 dictId = Integer.valueOf(value.dictId);
             dropdownCell.startEditing(dictId, container, event);
         } else {
-            textboxCell.startEditing(DataBaseUtil.asString(value.display), container, event);
+            textboxCell.startEditing(DataBaseUtil.toString(value.display), container, event);
         }
     }
 
@@ -151,7 +151,7 @@ public class ResultCell implements CellEditor, CellRenderer, IsWidget {
              * was set in the cell
              */
             if (dd.getValue() != null)
-                dictId = DataBaseUtil.asString(dd.getValue());
+                dictId = DataBaseUtil.toString(dd.getValue());
         } else {
             tb = (TextBox)editor;
             tb.finishEditing();
