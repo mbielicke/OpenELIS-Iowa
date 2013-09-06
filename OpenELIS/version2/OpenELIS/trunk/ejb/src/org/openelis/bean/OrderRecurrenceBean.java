@@ -143,41 +143,41 @@ public class OrderRecurrenceBean {
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceActiveBeginRequiredException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_recurrenceActiveBeginRequiredException(DataBaseUtil.toString(data.getOrderId()))));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceActiveEndRequiredException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_recurrenceActiveEndRequiredException(DataBaseUtil.toString(data.getOrderId()))));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getFrequency())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceFrequencyRequiredException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_recurrenceFrequencyRequiredException(DataBaseUtil.toString(data.getOrderId()))));
             validateFreq = false;
         } else if (data.getFrequency() < 1) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_freqInvalidException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_freqInvalidException(DataBaseUtil.toString(data.getOrderId()))));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isEmpty(data.getUnitId())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_recurrenceUnitRequiredException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_recurrenceUnitRequiredException(DataBaseUtil.toString(data.getOrderId()))));
             validateFreq = false;
         }
 
         if (DataBaseUtil.isAfter(data.getActiveBegin(), data.getActiveEnd())) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_endDateAfterBeginDateException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_endDateAfterBeginDateException(DataBaseUtil.toString(data.getOrderId()))));
             validateFreq = false;
         }
 
         if (validateFreq && !isFrequencyValid(data))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_notAllDatesValid(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_notAllDatesValid(DataBaseUtil.toString(data.getOrderId()))));
 
         if (list.size() > 0)
             throw list;

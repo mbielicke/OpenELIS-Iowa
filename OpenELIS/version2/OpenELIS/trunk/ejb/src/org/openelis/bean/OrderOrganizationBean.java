@@ -124,9 +124,9 @@ public class OrderOrganizationBean {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getTypeId()))
-            list.add(new FormErrorException(Messages.get().order_organizationRequiredException(DataBaseUtil.asString(data.getId()))));
+            list.add(new FormErrorException(Messages.get().order_organizationRequiredException(DataBaseUtil.toString(data.getId()))));
         if (DataBaseUtil.isEmpty(data.getOrganizationId()))
-            list.add(new FormErrorException(Messages.get().order_organizationTypeRequiredException(DataBaseUtil.asString(data.getId()))));
+            list.add(new FormErrorException(Messages.get().order_organizationTypeRequiredException(DataBaseUtil.toString(data.getId()))));
         
         if (list.size() > 0)
             throw list;    

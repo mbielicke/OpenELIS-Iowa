@@ -128,14 +128,14 @@ public class OrderContainerBean {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getContainerId()))
             list.add(new FormErrorException(Messages.get()
-                                                    .order_containerRequiredException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_containerRequiredException(DataBaseUtil.toString(data.getOrderId()))));
         num = data.getItemSequence();
         if (DataBaseUtil.isEmpty(num)) {
             list.add(new FormErrorException(Messages.get()
-                                                    .order_containerItemSequenceRequiredException(DataBaseUtil.asString(data.getOrderId()))));
+                                                    .order_containerItemSequenceRequiredException(DataBaseUtil.toString(data.getOrderId()))));
         } else if (num > MAX_QUANTITY) {
             list.add(new FormErrorException(Messages.get()
-                                            .order_qtyNotMoreThanMaxException(DataBaseUtil.asString(data.getOrderId()), DataBaseUtil.asString(MAX_QUANTITY))));
+                                            .order_qtyNotMoreThanMaxException(DataBaseUtil.toString(data.getOrderId()), DataBaseUtil.toString(MAX_QUANTITY))));
         }
 
         if (list.size() > 0)

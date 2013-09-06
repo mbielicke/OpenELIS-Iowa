@@ -1581,7 +1581,7 @@ public class SampleManager1Bean {
          */
         if (accession == null || accession <= 0)
             throw new FormErrorException(Messages.get()
-                                                 .sample_accessionNumberNotValidException(DataBaseUtil.asString(accession)));
+                                                 .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accession)));
 
         try {
             sys = systemVariable.fetchByName("last_accession_number");
