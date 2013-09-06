@@ -71,9 +71,9 @@
 		</g:layer>
 		<g:layer bottom="0px" height="25px">
 			<g:HorizontalPanel>
-				<w:Button ui:field="addButton" leftIcon="{res.style.addRowIcon}"
+				<w:Button ui:field="addItemButton" leftIcon="{res.style.addRowIcon}"
 					text="{msg.gen_addRow}" />
-				<w:Button ui:field="removeButton" leftIcon="{res.style.removeRowIcon}"
+				<w:Button ui:field="removeItemButton" leftIcon="{res.style.removeRowIcon}"
 					text="{msg.gen_removeRow}" />
 			</g:HorizontalPanel>
 		</g:layer>

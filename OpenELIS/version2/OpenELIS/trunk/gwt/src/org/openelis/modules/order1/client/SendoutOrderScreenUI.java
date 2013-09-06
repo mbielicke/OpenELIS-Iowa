@@ -914,7 +914,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                     });
                 } catch (Exception e) {
                     Window.alert("Error: Send-out Order call query failed; " + e.getMessage());
-                    e.printStackTrace();
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
 
@@ -1009,7 +1009,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
                     try {
-                        manager =  OrderService1.get().removeAuxGroups(manager, event.getGroupIds());
+                        manager = OrderService1.get().removeAuxGroups(manager, event.getGroupIds());
                         setData();
                         setState(state);
                         bus.fireEvent(new AuxDataChangeEvent());
@@ -1116,7 +1116,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             cache = new HashMap<String, Object>();
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
             window.clearStatus();
             return;
         }
@@ -1155,7 +1155,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-            e.printStackTrace();
             window.clearStatus();
             return;
         }
@@ -1202,7 +1201,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     protected void commitUpdate(boolean ignoreWarning) {
-        if (state == ADD)
+        if (isState(ADD))
             window.setBusy(Messages.get().gen_adding());
         else
             window.setBusy(Messages.get().gen_updating());
@@ -1219,10 +1218,11 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
                 showWarningsDialog(e);
         } catch (Exception e) {
-            if (state == ADD)
+            if (isState(ADD))
                 Window.alert("commitAdd(): " + e.getMessage());
             else
                 Window.alert("commitUpdate(): " + e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
             window.clearStatus();
         }
     }
@@ -1233,7 +1233,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         clearErrors();
         window.setBusy(Messages.get().gen_cancelChanges());
 
-        if (state == QUERY) {
+        if (isState(QUERY)) {
             try {
                 manager = null;
                 setData();
@@ -1242,9 +1242,10 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 window.setDone(Messages.get().gen_queryAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
                 window.clearStatus();
             }
-        } else if (state == ADD) {
+        } else if (isState(ADD)) {
             if ( !Window.confirm(Messages.get().order_abortWarning())) {
                 window.setDone(Messages.get().gen_enterInformationPressCommit());
                 return;
@@ -1254,7 +1255,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             setState(DEFAULT);
             fireDataChange();
             window.setDone(Messages.get().gen_addAborted());
-        } else if (state == UPDATE) {
+        } else if (isState(UPDATE)) {
             if ( !Window.confirm(Messages.get().order_abortWarning())) {
                 window.clearStatus();
                 return;
@@ -1271,6 +1272,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 window.setDone(Messages.get().gen_updateAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
                 window.clearStatus();
             }
         }
@@ -1285,6 +1287,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             fireDataChange();
         } catch (Exception ex) {
             Window.alert(ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -1303,6 +1306,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                                                          } catch (Throwable e) {
                                                              shippingManager = null;
                                                              Window.alert(e.getMessage());
+                                                             logger.log(Level.SEVERE,
+                                                                        e.getMessage(),
+                                                                        e);
                                                              window.clearStatus();
                                                          }
                                                      }
@@ -1321,8 +1327,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             else
                 window.setDone(Messages.get().gen_noRecordsFound());
         } catch (Throwable e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
             window.clearStatus();
             return;
         }
@@ -1443,8 +1449,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                                       Constants.table().ORDER_CONTAINER,
                                       refVoList);
         } catch (Exception e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -1483,7 +1489,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             cache.put(cacheKey, obj);
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return (T)obj;
     }
@@ -1536,6 +1542,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 showHoldRefuseWarning(org.getId(), org.getName());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }
     }
@@ -1566,8 +1573,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
             shipTo.showAutoMatches(model);
         } catch (Throwable e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         window.clearStatus();
     }
@@ -1625,8 +1632,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             }
             description.showAutoMatches(model);
         } catch (Throwable e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         window.clearStatus();
     }
@@ -1819,8 +1826,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 return false;
             } catch (Exception e) {
                 fetchById(null);
-                e.printStackTrace();
                 Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
                 return false;
             }
         }
@@ -1917,6 +1924,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 window.clearStatus();
         } catch (Exception ex) {
             Window.alert(ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 
@@ -1928,6 +1936,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             fireDataChange();
         } catch (Exception ex) {
             Window.alert(ex.getMessage());
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
         }
     }
 

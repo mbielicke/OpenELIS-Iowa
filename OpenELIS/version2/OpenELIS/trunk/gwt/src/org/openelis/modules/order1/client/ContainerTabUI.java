@@ -45,7 +45,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -122,9 +121,10 @@ public class ContainerTabUI extends Screen {
             }
 
             public Object getQuery() {
-                ArrayList<QueryData> qds = new ArrayList<QueryData>();
+                ArrayList<QueryData> qds;
                 QueryData qd;
 
+                qds = new ArrayList<QueryData>();
                 for (int i = 0; i < 3; i++ ) {
                     qd = (QueryData) ((Queryable)table.getColumnWidget(i)).getQuery();
                     if (qd != null) {
@@ -149,7 +149,7 @@ public class ContainerTabUI extends Screen {
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( (state != State.ADD && state != State.UPDATE) || event.getCol() == 0)
+                if ( !isState(ADD, UPDATE) || event.getCol() == 0)
                     event.cancel();
             }
         });
@@ -285,27 +285,8 @@ public class ContainerTabUI extends Screen {
         this.manager = manager;
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
-    @UiHandler("removeContainerButton")
-    protected void removeRow(ClickEvent event) {
-        int r;
-        Integer[] rows;
-
-        rows = table.getSelectedRows();
-        Arrays.sort(rows);
-        for (int i = rows.length - 1; i >= 0; i-- ) {
-            r = rows[i];
-            if (r > -1 && table.getRowCount() > 0)
-                table.removeRowAt(r);
-        }
-    }
-
     @UiHandler("addContainerButton")
-    protected void addRow(ClickEvent event) {
+    protected void addContainer(ClickEvent event) {
         int n;
         OrderContainerDO data;
         Row row;
@@ -323,11 +304,26 @@ public class ContainerTabUI extends Screen {
         table.selectRowAt(n);
         table.scrollToVisible(table.getSelectedRow());
         table.startEditing(n, 1);
+    }
+    
+    @UiHandler("removeContainerButton")
+    protected void removeContainer(ClickEvent event) {
+        int r;
+        Integer[] rows;
 
+        rows = table.getSelectedRows();
+        Arrays.sort(rows);
+        for (int i = rows.length - 1; i >= 0; i-- ) {
+            r = rows[i];
+            if (r > -1 && table.getRowCount() > 0)
+                table.removeRowAt(r);
+        }
     }
 
+    
+
     @UiHandler("duplicateContainerButton")
-    protected void duplicateRow(ClickEvent event) {
+    protected void duplicateContainer(ClickEvent event) {
         int n;
         OrderContainerDO data;
         Row row;

@@ -34,7 +34,6 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
@@ -126,11 +125,6 @@ public class InternalOrderFillTabUI extends Screen {
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
     private void displayFills() {
         int count1, count2;
         boolean dataChanged;
@@ -173,9 +167,9 @@ public class InternalOrderFillTabUI extends Screen {
     }
 
     private ArrayList<Row> getTableModel() {
-        String location;
         Row row;
         InventoryXUseViewDO fillData;
+        StringBuffer buf;
         ArrayList<String> names;
         ArrayList<Row> model;
 
@@ -184,18 +178,20 @@ public class InternalOrderFillTabUI extends Screen {
             return model;
 
         names = new ArrayList<String>();
-
+        buf = new StringBuffer();
+        
         for (int i = 0; i < manager.fill.count(); i++ ) {
             fillData = manager.fill.get(i);
             row = new Row(5);
             row.setCell(0, fillData.getInventoryItemName());
             names.clear();
             names.add(fillData.getStorageLocationName());
-            names.add(",");
+            names.add(", ");
             names.add(fillData.getStorageLocationUnitDescription());
+            names.add(" ");
             names.add(fillData.getStorageLocationLocation());
-            location = DataBaseUtil.concatWithSeparator(names, " ");
-            row.setCell(1, location);
+            buf.setLength(0);
+            row.setCell(1, concat(names, buf));
             row.setCell(2, fillData.getQuantity());
             row.setCell(3, fillData.getInventoryLocationLotNumber());
             row.setCell(4, fillData.getInventoryLocationExpirationDate());
@@ -204,5 +200,13 @@ public class InternalOrderFillTabUI extends Screen {
         }
 
         return model;
+    }
+    
+    private String concat(ArrayList<String> list, StringBuffer buf) {
+        for (String i : list) {
+            if (i != null)
+                buf.append(i);
+        }
+        return buf.toString();
     }
 }

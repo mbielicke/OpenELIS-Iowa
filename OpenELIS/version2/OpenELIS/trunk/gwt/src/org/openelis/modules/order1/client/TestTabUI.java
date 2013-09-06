@@ -25,6 +25,7 @@
  */
 package org.openelis.modules.order1.client;
 
+import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
@@ -32,6 +33,7 @@ import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
@@ -50,7 +52,6 @@ import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -301,11 +302,6 @@ public class TestTabUI extends Screen {
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
     @UiHandler("removeTestButton")
     protected void removeTest(ClickEvent event) {
         Node selRow;
@@ -410,10 +406,9 @@ public class TestTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-        canEdit = false;
-        if (manager != null)
-            canEdit = !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
-                                                                                   .getStatusId());
+        canEdit = manager != null &&
+                  !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                                                                               .getStatusId());
     }
 
     private void displayTests() {
@@ -493,6 +488,7 @@ public class TestTabUI extends Screen {
             testName.showAutoMatches(model);
         } catch (Exception e) {
             Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
         parentScreen.getWindow().clearStatus();

@@ -25,12 +25,14 @@
  */
 package org.openelis.modules.order1.client;
 
+import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
 import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
@@ -47,7 +49,6 @@ import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -98,7 +99,7 @@ public class OrganizationTabUI extends Screen {
     protected AutoComplete                 organizationName;
 
     @UiField
-    protected Button                       removeButton, addButton;
+    protected Button                       removeOrganizationButton, addOrganizationButton;
 
     protected Screen                       parentScreen;
 
@@ -134,9 +135,10 @@ public class OrganizationTabUI extends Screen {
             }
 
             public Object getQuery() {
-                ArrayList<QueryData> qds = new ArrayList<QueryData>();
+                ArrayList<QueryData> qds;
                 QueryData qd;
 
+                qds = new ArrayList<QueryData>();
                 for (int i = 0; i < 9; i++ ) {
                     qd = (QueryData) ((Queryable)table.getColumnWidget(i)).getQuery();
                     if (qd != null) {
@@ -279,13 +281,13 @@ public class OrganizationTabUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                removeButton.setEnabled(isState(ADD, UPDATE));
+                removeOrganizationButton.setEnabled(isState(ADD, UPDATE));
             }
         });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                addButton.setEnabled(isState(ADD, UPDATE));
+                addOrganizationButton.setEnabled(isState(ADD, UPDATE));
             }
         });
 
@@ -352,13 +354,8 @@ public class OrganizationTabUI extends Screen {
         }
     }
 
-    public void setState(State state) {
-        this.state = state;
-        bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
-    @UiHandler("removeButton")
-    protected void removeRow(ClickEvent event) {
+    @UiHandler("removeOrganizationButton")
+    protected void removeOrganization(ClickEvent event) {
         int r;
 
         r = table.getSelectedRow();
@@ -366,8 +363,8 @@ public class OrganizationTabUI extends Screen {
             table.removeRowAt(r);
     }
 
-    @UiHandler("addButton")
-    protected void addRow(ClickEvent event) {
+    @UiHandler("addOrganizationButton")
+    protected void addOrganization(ClickEvent event) {
         int n;
 
         table.addRow();
@@ -473,8 +470,8 @@ public class OrganizationTabUI extends Screen {
             }
             organizationName.showAutoMatches(model);
         } catch (Throwable e) {
-            e.printStackTrace();
             Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         parentScreen.getWindow().clearStatus();
     }
