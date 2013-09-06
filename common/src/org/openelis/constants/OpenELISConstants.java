@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/dshirazi/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -11644,13 +11644,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberNotInUse(Integer arg0);
 
   /**
-   * Translated "Accession # ''{0}'': Number is invalid".
+   * Translated "Accession # ''{0,number}'': Number is invalid".
    * 
-   * @return translated "Accession # ''{0}'': Number is invalid"
+   * @return translated "Accession # ''{0,number}'': Number is invalid"
    */
-  @DefaultMessage("Accession # ''{0}'': Number is invalid")
+  @DefaultMessage("Accession # ''{0,number}'': Number is invalid")
   @Key("sample.accessionNumberNotValidException")
-  String sample_accessionNumberNotValidException(String arg0);
+  String sample_accessionNumberNotValidException(Integer arg0);
 
   /**
    * Translated "Birth (D,T)".

@@ -273,20 +273,20 @@ public class OrderBean {
         
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getStatusId()))
-            list.add(new FormErrorException(Messages.get().order_statusRequiredException(DataBaseUtil.asString(data.getId()))));
+            list.add(new FormErrorException(Messages.get().order_statusRequiredException(DataBaseUtil.toString(data.getId()))));
 
         if (DataBaseUtil.isEmpty(data.getNeededInDays()))
-            list.add(new FormErrorException(Messages.get().order_neededInDaysRequiredException(DataBaseUtil.asString(data.getId()))));
+            list.add(new FormErrorException(Messages.get().order_neededInDaysRequiredException(DataBaseUtil.toString(data.getId()))));
         
         if (Constants.order().SEND_OUT.equals(data.getType())) { 
             if (DataBaseUtil.isEmpty(data.getNumberOfForms()))
-                list.add(new FormErrorException(Messages.get().order_numFormsRequiredException(DataBaseUtil.asString(data.getId()))));
+                list.add(new FormErrorException(Messages.get().order_numFormsRequiredException(DataBaseUtil.toString(data.getId()))));
             
             if (DataBaseUtil.isEmpty(data.getShipFromId()))
-                list.add(new FormErrorException(Messages.get().order_shipFromRequiredException(DataBaseUtil.asString(data.getId()))));
+                list.add(new FormErrorException(Messages.get().order_shipFromRequiredException(DataBaseUtil.toString(data.getId()))));
             
             if (DataBaseUtil.isEmpty(data.getCostCenterId()))
-                list.add(new FormErrorException(Messages.get().order_costCenterRequiredException(DataBaseUtil.asString(data.getId()))));
+                list.add(new FormErrorException(Messages.get().order_costCenterRequiredException(DataBaseUtil.toString(data.getId()))));
         }
         if (list.size() > 0)
             throw list;

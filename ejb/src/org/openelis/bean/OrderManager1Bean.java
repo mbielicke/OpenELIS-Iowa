@@ -1057,10 +1057,10 @@ public class OrderManager1Bean {
                 }
                 if (rcnt > 1)
                     e.add(new FormErrorException(Messages.get()
-                                                         .order_multipleReportToException(DataBaseUtil.asString(orderId))));
+                                                         .order_multipleReportToException(DataBaseUtil.toString(orderId))));
                 if (bcnt > 1)
                     e.add(new FormErrorException(Messages.get()
-                                                         .order_multipleBillToException(DataBaseUtil.asString(orderId))));
+                                                         .order_multipleBillToException(DataBaseUtil.toString(orderId))));
             }
 
             if (getContainers(om) != null) {
@@ -1090,7 +1090,7 @@ public class OrderManager1Bean {
                     if (itemId != null) {
                         if (itemIds.contains(itemId))
                             e.add(new FormErrorException(Messages.get()
-                                                                 .order_duplicateInvItemVendorOrderException(DataBaseUtil.asString(orderId),
+                                                                 .order_duplicateInvItemVendorOrderException(DataBaseUtil.toString(orderId),
                                                                                                              data.getInventoryItemName())));
                         else
                             itemIds.add(itemId);
@@ -1124,7 +1124,7 @@ public class OrderManager1Bean {
         TestTypeOfSampleManager samTypeMan;
 
         for (OrderManager1 om : oms) {
-            ordNum = DataBaseUtil.asString(getOrder(om).getId());
+            ordNum = DataBaseUtil.toString(getOrder(om).getId());
             ots = getTests(om);
             ocs = getContainers(om);
 

@@ -259,7 +259,7 @@ public class AnalysisManagerProxy {
             if (analysisDO.isChanged()) {
                 if (analysisDO.getTestId() == null)
                     errorsList.add(new FormErrorException(Messages.get().analysisTestIdMissing(
-                                                          DataBaseUtil.asString(sampleItemSequence))));
+                                                          DataBaseUtil.toString(sampleItemSequence))));
 
                 if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                     errorsList.add(new FormErrorException(Messages.get().analysisSectionIdMissing(
