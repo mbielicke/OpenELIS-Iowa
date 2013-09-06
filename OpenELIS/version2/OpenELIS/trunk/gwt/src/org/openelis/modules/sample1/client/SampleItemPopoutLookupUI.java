@@ -292,13 +292,13 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
         SampleItemViewDO item;
         Node root, inode, anode;
         StringBuffer buf;
-        ArrayList<Object> labels;
+        ArrayList<String> labels;
 
         root = new Node();
         if (manager == null)
             return root;
 
-        labels = new ArrayList<Object>();
+        labels = new ArrayList<String>();
         buf = new StringBuffer(); 
         for (i = 0; i < manager.item.count(); i++ ) {
             item = manager.item.get(i);
@@ -384,11 +384,10 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
                   !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
     }
     
-    private String concat(List<Object> list, StringBuffer buf) {
-        buf = new StringBuffer();
-        for (Object i : list) {
+    private String concat(List<String> list, StringBuffer buf) {
+        for (String i : list) {
             if (i != null)
-                buf.append(i.toString());
+                buf.append(i);
         }
         return buf.toString();
     }
