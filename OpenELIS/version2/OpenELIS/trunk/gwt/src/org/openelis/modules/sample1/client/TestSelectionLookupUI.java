@@ -267,7 +267,7 @@ public abstract class TestSelectionLookupUI extends Screen {
         labels = new ArrayList<String>();
 
         if (manager.getSample().getAccessionNumber() != null)
-            accession = DataBaseUtil.asString(manager.getSample().getAccessionNumber());
+            accession = DataBaseUtil.toString(manager.getSample().getAccessionNumber());
         else
             accession = Messages.get().testSelection_newAccession();
 

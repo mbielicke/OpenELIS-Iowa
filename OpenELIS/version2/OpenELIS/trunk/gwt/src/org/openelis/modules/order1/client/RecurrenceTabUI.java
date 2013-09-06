@@ -552,7 +552,7 @@ public class RecurrenceTabUI extends Screen {
         String orderId;
 
         data = getRecurrence();
-        orderId = DataBaseUtil.asString(data.getOrderId());
+        orderId = DataBaseUtil.toString(data.getOrderId());
         freq = data.getFrequency();
         unit = data.getUnitId();
         bdt = data.getActiveBegin();
@@ -644,7 +644,7 @@ public class RecurrenceTabUI extends Screen {
             endDate.clearExceptions();
         } else if (edt.before(bdt)) {
             endDate.addException(new Exception(Messages.get()
-                                                       .order_endDateAfterBeginDateException(DataBaseUtil.asString(data.getOrderId()))));
+                                                       .order_endDateAfterBeginDateException(DataBaseUtil.toString(data.getOrderId()))));
             return false;
         } else {
             endDate.clearExceptions();

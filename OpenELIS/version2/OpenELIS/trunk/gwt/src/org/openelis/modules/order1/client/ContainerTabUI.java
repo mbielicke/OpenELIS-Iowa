@@ -335,7 +335,7 @@ public class ContainerTabUI extends Screen {
         if (table.getSelectedRows().length > 1) {
             parentScreen.getWindow()
                         .setError(Messages.get()
-                                          .order_multiRowDuplicateNotAllowed(DataBaseUtil.asString(manager.getOrder()
+                                          .order_multiRowDuplicateNotAllowed(DataBaseUtil.toString(manager.getOrder()
                                                                                                           .getId())));
             return;
         }
@@ -365,7 +365,7 @@ public class ContainerTabUI extends Screen {
         if (table.getSelectedRows().length > 1) {
             parentScreen.getWindow()
                         .setError(Messages.get()
-                                          .order_multiRowMoveNotAllowed(DataBaseUtil.asString(manager.getOrder()
+                                          .order_multiRowMoveNotAllowed(DataBaseUtil.toString(manager.getOrder()
                                                                                                      .getId())));
             return;
         }
@@ -390,7 +390,7 @@ public class ContainerTabUI extends Screen {
         if (table.getSelectedRows().length > 1) {
             parentScreen.getWindow()
                         .setError(Messages.get()
-                                          .order_multiRowMoveNotAllowed(DataBaseUtil.asString(manager.getOrder()
+                                          .order_multiRowMoveNotAllowed(DataBaseUtil.toString(manager.getOrder()
                                                                                                      .getId())));
             return;
         }
