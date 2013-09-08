@@ -80,9 +80,9 @@ public class OrderServlet extends RemoteServlet implements OrderServiceInt {
         }
     }
     
-    public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
+    public OrderManager fetchByOrderItemId(Integer id) throws Exception {
         try {
-            return order.fetchByShippingItemId(id);
+            return orderManager.fetchByOrderItemId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

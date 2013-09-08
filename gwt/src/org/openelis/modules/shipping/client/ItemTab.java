@@ -40,7 +40,6 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -69,7 +68,6 @@ import com.google.gwt.user.client.rpc.SyncCallback;
 public class ItemTab extends Screen {
 
     private ShippingManager    manager;
-    private OrderManager       orderManager;
     private TableWidget        itemTable, trackingTable;
     private AppButton          addItemButton, removeItemButton, addTrackingButton,
                                removeTrackingButton, lookupItemButton;
@@ -393,50 +391,38 @@ public class ItemTab extends Screen {
     }
 
     private void showOrder(ShippingItemDO data) {
-        ScreenWindow modal;
-
         try {
             window.setBusy(Messages.get().fetching());
-            OrderService.get().fetchByShippingItemId(data.getId(), new SyncCallback<OrderViewDO>() {
-                public void onSuccess(OrderViewDO result) {                                    
+            OrderService.get().fetchByOrderItemId(data.getReferenceId(), new SyncCallback<OrderManager>() {
+                public void onSuccess(OrderManager result) {                    
+                    ScreenWindow modal;
                     try {
-                        if(result != null)
-                            orderManager = OrderManager.fetchById(result.getId());
-                        else
-                            orderManager = null;
+                        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                        modal.setName(Messages.get().sendoutOrder());
+                        if (sendoutOrderScreen == null)
+                            sendoutOrderScreen = new SendoutOrderScreen(modal);
+                        
+                        modal.setContent(sendoutOrderScreen);
+                        sendoutOrderScreen.setManager(result);
+                        window.clearStatus();
                     } catch (Throwable e) {
-                        orderManager = null;
                         e.printStackTrace();
                         Window.alert(e.getMessage());
                         window.clearStatus();
                     }                                        
                 }
+                
                 public void onFailure(Throwable error) {    
-                    orderManager = null;
                     error.printStackTrace();
                     Window.alert("Error: Fetch failed; " + error.getMessage());                    
                     window.clearStatus();
                 }
-            });    
-            
-            if(orderManager != null) {
-                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                modal.setName(Messages.get().sendoutOrder());
-                if (sendoutOrderScreen == null)
-                    sendoutOrderScreen = new SendoutOrderScreen(modal);
-
-                modal.setContent(sendoutOrderScreen);
-                sendoutOrderScreen.setManager(orderManager);
-                window.clearStatus();
-            }
-
+            });                
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
             window.clearStatus();
-            return;
         }
-
     }
 
     private void showSample(ShippingItemDO data) {
