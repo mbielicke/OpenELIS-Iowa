@@ -66,8 +66,8 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public void fetchByShippingItemId(Integer id, AsyncCallback<OrderViewDO> callback) {
-        service.fetchByShippingItemId(id, callback);
+    public void fetchByOrderItemId(Integer id, AsyncCallback<OrderManager> callback) {
+        service.fetchByOrderItemId(id, callback);
     }
 
     @Override
@@ -197,11 +197,11 @@ public class OrderService implements OrderServiceInt, OrderServiceIntAsync {
     }
 
     @Override
-    public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
-        Callback<OrderViewDO> callback;
+    public OrderManager fetchByOrderItemId(Integer id) throws Exception {
+        Callback<OrderManager> callback;
         
-        callback = new Callback<OrderViewDO>();
-        service.fetchByShippingItemId(id, callback);
+        callback = new Callback<OrderManager>();
+        service.fetchByOrderItemId(id, callback);
         return callback.getResult();
 
     }

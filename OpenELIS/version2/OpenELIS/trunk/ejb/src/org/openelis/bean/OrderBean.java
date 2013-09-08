@@ -104,12 +104,11 @@ public class OrderBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
+    public OrderViewDO fetchByOrderItemId(Integer id) throws Exception {
         Query query;
         OrderViewDO data;
         
-        query = manager.createNamedQuery("Order.FetchByShippingItemId");
-        query.setParameter("referenceTableId", Constants.table().ORDER_ITEM);
+        query = manager.createNamedQuery("Order.FetchByOrderItemId");
         query.setParameter("id", id);
         
         try {

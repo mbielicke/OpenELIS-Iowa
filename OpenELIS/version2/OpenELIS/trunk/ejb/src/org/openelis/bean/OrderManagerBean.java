@@ -73,9 +73,19 @@ public class OrderManagerBean {
 
     @EJB
     private UserCacheBean userCache;
+    
+    @EJB
+    private OrderBean order;
 
     public OrderManager fetchById(Integer id) throws Exception {
         return OrderManager.fetchById(id);
+    }
+    
+    public OrderManager fetchByOrderItemId(Integer id) throws Exception {
+        OrderViewDO data;
+        
+        data = order.fetchByOrderItemId(id);
+        return OrderManager.fetchById(data.getId());
     }
 
     public OrderManager fetchWithOrganizations(Integer id) throws Exception {

@@ -26,7 +26,7 @@ public interface OrderServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> fetchByDescription(String search) throws Exception;
 
-    OrderViewDO fetchByShippingItemId(Integer id) throws Exception;
+    OrderManager fetchByOrderItemId(Integer id) throws Exception;
 
     OrderManager fetchWithOrganizations(Integer id) throws Exception;
 

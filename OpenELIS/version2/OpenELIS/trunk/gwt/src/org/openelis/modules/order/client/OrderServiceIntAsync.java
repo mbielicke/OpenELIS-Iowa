@@ -30,7 +30,7 @@ public interface OrderServiceIntAsync {
 
     void fetchById(Integer id, AsyncCallback<OrderManager> callback);
 
-    void fetchByShippingItemId(Integer id, AsyncCallback<OrderViewDO> callback);
+    void fetchByOrderItemId(Integer id, AsyncCallback<OrderManager> callback);
 
     void fetchContainerByOrderId(Integer id, AsyncCallback<OrderContainerManager> callback);
 
