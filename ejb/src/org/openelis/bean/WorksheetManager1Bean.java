@@ -44,7 +44,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
@@ -259,7 +258,7 @@ public class WorksheetManager1Bean {
 
         ids = new ArrayList<Integer>();
 
-        for (IdVO vo : worksheet.query(fields, first, max))
+        for (IdNameVO vo : worksheet.query(fields, first, max))
             ids.add(vo.getId());
         return fetchByIds(ids, elements);
     }
