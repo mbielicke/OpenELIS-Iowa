@@ -43,6 +43,7 @@ public class Constants implements Serializable {
     protected Audit           audit            = new Audit();
     protected Dictionary      dictionary       = new Dictionary();
     protected Order           order            = new Order();
+    protected SystemProperty  systemProperty   = new SystemProperty();
 
     /**
      * This method is used to set a serialized instance of this class for the
@@ -91,6 +92,13 @@ public class Constants implements Serializable {
      */
     public static Order order() {
         return constants.order;
+    }
+
+    /**
+     * Locale reference
+     */
+    public static SystemProperty systemProperty() {
+        return constants.systemProperty;
     }
 
     /**
@@ -207,5 +215,14 @@ public class Constants implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public final String       INTERNAL         = "I", VENDOR = "V", SEND_OUT = "S";
+    }
+
+    /**
+     * Class represent the language locale for all the messages
+     */
+    public static class SystemProperty implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        public String             LOCALE, SECURITY_APPLICATION;
     }
 }
