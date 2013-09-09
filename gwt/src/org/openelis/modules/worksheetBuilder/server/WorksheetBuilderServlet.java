@@ -37,7 +37,6 @@ import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetManager1Bean;
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
@@ -66,7 +65,7 @@ public class WorksheetBuilderServlet extends RemoteServlet implements WorksheetB
     @EJB
     WorksheetManager1Bean worksheetManager;
 
-    public ArrayList<IdVO> query(Query query) throws Exception {
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
             return worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
         } catch (Exception anyE) {

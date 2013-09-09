@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
@@ -76,15 +75,15 @@ public class WorksheetBuilderService implements WorksheetBuilderServiceInt,
     }
 
     @Override
-    public void query(Query query, AsyncCallback<ArrayList<IdVO>> callback) {
+    public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.query(query, callback);
     }
 
     @Override
-    public ArrayList<IdVO> query(Query query) throws Exception {
-        Callback<ArrayList<IdVO>> callback;
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        Callback<ArrayList<IdNameVO>> callback;
         
-        callback = new Callback<ArrayList<IdVO>>();
+        callback = new Callback<ArrayList<IdNameVO>>();
         service.query(query, callback);
         return callback.getResult();
     }

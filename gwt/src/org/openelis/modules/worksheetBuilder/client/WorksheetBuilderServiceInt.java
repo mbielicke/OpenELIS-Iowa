@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
@@ -42,7 +41,7 @@ import com.google.gwt.user.client.rpc.XsrfProtectedService;
 @RemoteServiceRelativePath("worksheetBuilder")
 public interface WorksheetBuilderServiceInt extends XsrfProtectedService {
 
-    ArrayList<IdVO> query(Query query) throws Exception;
+    ArrayList<IdNameVO> query(Query query) throws Exception;
 
     ArrayList<AnalysisViewVO> fetchAnalysesByView(Query query) throws Exception;
 

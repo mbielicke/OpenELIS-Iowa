@@ -127,7 +127,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     private static WorksheetBuilderUiBinder             uiBinder = GWT.create(WorksheetBuilderUiBinder.class);
 
     private ModulePermission                            userPermission;
-    private ScreenNavigator<IdVO>                       nav;
+    private ScreenNavigator<IdNameVO>                   nav;
     private WorksheetManager1                           manager;
 
     @UiField
@@ -493,13 +493,13 @@ public class WorksheetBuilderScreenUI extends Screen {
         //
         // left hand navigation panel
         //
-        nav = new ScreenNavigator<IdVO>(atozTable, atozNext, atozPrev) {
+        nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(21);
-                WorksheetService1.get().query(query, new AsyncCallback<ArrayList<IdVO>>() {
-                    public void onSuccess(ArrayList<IdVO> result) {
+                WorksheetService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
+                    public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
 
@@ -519,20 +519,20 @@ public class WorksheetBuilderScreenUI extends Screen {
                 });
             }
 
-            public boolean fetch(IdVO entry) {
+            public boolean fetch(IdNameVO entry) {
                 return fetchById((entry == null) ? null : entry.getId());
             }
 
             public ArrayList<Item<Integer>> getModel() {
-                ArrayList<IdVO> result;
+                ArrayList<IdNameVO> result;
                 ArrayList<Item<Integer>> model;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
                     model = new ArrayList<Item<Integer>>();
-                    for (IdVO entry : result)
-                        model.add(new Item<Integer>(entry.getId(), entry.getId()));
+                    for (IdNameVO entry : result)
+                        model.add(new Item<Integer>(entry.getId(), entry.getId(), entry.getName()));
                 }
                 return model;
             }

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
@@ -42,7 +41,7 @@ public interface WorksheetBuilderServiceIntAsync {
 
     void getColumnNames(Integer formatId, AsyncCallback<ArrayList<IdNameVO>> callback);
 
-    void query(Query query, AsyncCallback<ArrayList<IdVO>> callback);
+    void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void fetchAnalysesByView(Query query, AsyncCallback<ArrayList<AnalysisViewVO>> callback);
     

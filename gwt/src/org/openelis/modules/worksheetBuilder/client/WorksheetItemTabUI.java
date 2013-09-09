@@ -28,6 +28,7 @@ package org.openelis.modules.worksheetBuilder.client;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -191,6 +192,7 @@ public class WorksheetItemTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 worksheetItemTable.setEnabled(true);
+                worksheetItemTable.setAllowMultipleSelection(true);
             }
         });
 
@@ -481,16 +483,22 @@ public class WorksheetItemTabUI extends Screen {
                 int index;
                 ArrayList<WorksheetAnalysisViewDO> newData;
                 ArrayList<Row> list;
+                Integer selectedRows[];
                 WorksheetItemDO itemDO;
                 WorksheetAnalysisViewDO data;
                 
                 if (!wbLookupScreen.equals(event.getSource()))
                     return;
 
-                if (worksheetItemTable.getSelectedRow() != -1) {
-                    index = worksheetItemTable.getSelectedRow();
-                    if (addRowDirection)
+                selectedRows = worksheetItemTable.getSelectedRows();
+                if (selectedRows.length > 0) {
+                    Arrays.sort(selectedRows);
+                    if (addRowDirection) {
+                        index = selectedRows[selectedRows.length - 1];
                         index++;
+                    } else {
+                        index = selectedRows[0];
+                    }
                 } else {
                     index = worksheetItemTable.getRowCount();
                 }
@@ -832,7 +840,7 @@ public class WorksheetItemTabUI extends Screen {
                                             public void onAction(ActionEvent<WorksheetAnalysisSelectionScreenUI.Action> event) {
                                                 int index;
                                                 ArrayList<WorksheetAnalysisViewDO> list, newData;
-                                                Integer fromWorksheetId;
+                                                Integer fromWorksheetId, selectedRows[];
                                                 WorksheetItemDO itemDO;
                                                 WorksheetAnalysisViewDO data;
     
@@ -840,10 +848,15 @@ public class WorksheetItemTabUI extends Screen {
                                                     list = (ArrayList<WorksheetAnalysisViewDO>)event.getData();
                                                     if (list != null && list.size() > 0) {
                                                         newData = new ArrayList<WorksheetAnalysisViewDO>();
-                                                        if (worksheetItemTable.getSelectedRow() != -1) {
-                                                            index = worksheetItemTable.getSelectedRow();
-                                                            if (addRowDirection)
+                                                        selectedRows = worksheetItemTable.getSelectedRows();
+                                                        if (selectedRows.length > 0) {
+                                                            Arrays.sort(selectedRows);
+                                                            if (addRowDirection) {
+                                                                index = selectedRows[selectedRows.length - 1];
                                                                 index++;
+                                                            } else {
+                                                                index = selectedRows[0];
+                                                            }
                                                         } else {
                                                             index = worksheetItemTable.getRowCount();
                                                         }
@@ -930,6 +943,7 @@ public class WorksheetItemTabUI extends Screen {
                         int index;
                         ArrayList<QcLotViewDO> list;
                         ArrayList<WorksheetAnalysisViewDO> newData;
+                        Integer selectedRows[];
                         WorksheetItemDO itemDO;
                         WorksheetAnalysisViewDO data;
 
@@ -937,10 +951,15 @@ public class WorksheetItemTabUI extends Screen {
                             list = (ArrayList<QcLotViewDO>)event.getData();
                             if (list != null && list.size() > 0) {
                                 newData = new ArrayList<WorksheetAnalysisViewDO>();
-                                if (worksheetItemTable.getSelectedRow() != -1) {
-                                    index = worksheetItemTable.getSelectedRow();
-                                    if (addRowDirection)
+                                selectedRows = worksheetItemTable.getSelectedRows();
+                                if (selectedRows.length > 0) {
+                                    Arrays.sort(selectedRows);
+                                    if (addRowDirection) {
+                                        index = selectedRows[selectedRows.length - 1];
                                         index++;
+                                    } else {
+                                        index = selectedRows[0];
+                                    }
                                 } else {
                                     index = worksheetItemTable.getRowCount();
                                 }
@@ -991,27 +1010,35 @@ public class WorksheetItemTabUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("removeRowButton")
     protected void removeRow(ClickEvent event) {
-        int i, rowIndex;
-        Item<String> dataRow, tempRow;
+        int i, j, rowIndex;
+        Integer rows[];
+        Row dataRow, tempRow;
+        StringBuffer buffer;
         WorksheetItemDO wiDO;
         WorksheetAnalysisViewDO data, tempData;
 
+        buffer = new StringBuffer();
         worksheetItemTable.finishEditing();
-        rowIndex = worksheetItemTable.getSelectedRow();
-        if (rowIndex > -1 && rowIndex < worksheetItemTable.getRowCount()) {
+        rows = worksheetItemTable.getSelectedRows();
+        Arrays.sort(rows);
+        ROW:
+        for (i = rows.length - 1; i >= 0; i--) {
+            rowIndex = rows[i];
             dataRow = worksheetItemTable.getRowAt(rowIndex);
-            data = dataRow.getData();
+            data = (WorksheetAnalysisViewDO)manager.getObject((String)dataRow.getData());
             
             //
             // Check if other rows are linked to this one via QC Link
             //
-            for (i = 0; i < worksheetItemTable.getRowCount(); i++) {
-                tempRow = worksheetItemTable.getRowAt(i);
-                tempData = tempRow.getData();
+            for (j = 0; j < worksheetItemTable.getRowCount(); j++) {
+                tempRow = worksheetItemTable.getRowAt(j);
+                tempData = (WorksheetAnalysisViewDO)manager.getObject((String)tempRow.getData());
                 if (tempRow != dataRow && tempData.getWorksheetAnalysisId() != null) {
                     if (data.getId().equals(tempData.getWorksheetAnalysisId())) {
-                        Window.alert(Messages.get().oneOrMoreQcLinkOnRemove());
-                        return;
+                        if (buffer.length() > 0)
+                            buffer.insert(0, "\n");
+                        buffer.insert(0, "Row " + (i + 1) + ": " + Messages.get().oneOrMoreQcLinkOnRemove());
+                        continue ROW;
                     }
                 }
             }
@@ -1029,6 +1056,11 @@ public class WorksheetItemTabUI extends Screen {
             if (manager.analysis.count(wiDO) == 0)
                 manager.item.remove(wiDO);
         }
+        
+        if (buffer.length() > 0)
+            Window.alert(buffer.toString());
+        
+        fireDataChange();
     }
     
     private void undoAllQcs() {

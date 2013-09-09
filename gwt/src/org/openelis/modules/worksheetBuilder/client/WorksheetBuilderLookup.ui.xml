@@ -88,7 +88,7 @@ UIRF Software License are applicable instead of those above.
                   <ui:text from="{msg.section}:"/>
                 </td>
       	  	    <td>
-                  <w:Dropdown ui:field="sectionId" width="130px" case="LOWER" field="Integer"/>
+                  <w:Dropdown ui:field="sectionId" width="150px" case="LOWER" field="Integer"/>
                 </td>
               </tr>
               <tr>
@@ -102,7 +102,7 @@ UIRF Software License are applicable instead of those above.
                   <ui:text from="{msg.status}:"/>
                 </td>
                 <td>
-                  <w:Dropdown ui:field="analysisStatusId" width="100px" case="MIXED" field="Integer"/>
+                  <w:Dropdown ui:field="analysisStatusId" width="130px" case="MIXED" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.sampleType}:"/>
