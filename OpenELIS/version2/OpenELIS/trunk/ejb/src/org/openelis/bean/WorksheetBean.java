@@ -163,23 +163,24 @@ public class WorksheetBean {
     }
 
     @SuppressWarnings({"unchecked", "static-access"})
-    public ArrayList<IdVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        ArrayList<IdVO> list;
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        ArrayList<IdNameVO> list;
         Query query;
         QueryBuilderV2 builder;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdVO(" +
-                          WorksheetMeta.getId() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          WorksheetMeta.getId() + ", " +
+                          WorksheetMeta.getDescription() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(WorksheetMeta.getId());
+        builder.setOrderBy(WorksheetMeta.getId() + " desc");
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
 
-        list = (ArrayList<IdVO>)query.getResultList();
+        list = (ArrayList<IdNameVO>)query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
 
