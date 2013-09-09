@@ -45,7 +45,10 @@
                 <g:layer top="0px" bottom="28px">
                   <t:Table ui:field="atozTable" horizontalScroll="ALWAYS"
                            verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-                    <t:Column width="175" label="{msg.worksheetNumber}">
+                    <t:Column width="50" label="{msg.id}">
+                      <t:LabelCell/>
+                    </t:Column>
+                    <t:Column width="150" label="{msg.description}">
                       <t:LabelCell/>
                     </t:Column>
                   </t:Table>

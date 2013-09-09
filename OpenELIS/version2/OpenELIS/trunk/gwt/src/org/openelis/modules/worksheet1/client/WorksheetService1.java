@@ -27,7 +27,7 @@ package org.openelis.modules.worksheet1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdVO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
@@ -85,16 +85,16 @@ public class WorksheetService1 implements WorksheetServiceInt1, WorksheetService
     }
 
     @Override
-    public ArrayList<IdVO> query(Query query) throws Exception {
-        Callback<ArrayList<IdVO>> callback;
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        Callback<ArrayList<IdNameVO>> callback;
         
-        callback = new Callback<ArrayList<IdVO>>();
+        callback = new Callback<ArrayList<IdNameVO>>();
         service.query(query, callback);
         return callback.getResult();
     }
     
     @Override
-    public void query(Query query, AsyncCallback<ArrayList<IdVO>> callback) {
+    public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.query(query, callback);
     }
 

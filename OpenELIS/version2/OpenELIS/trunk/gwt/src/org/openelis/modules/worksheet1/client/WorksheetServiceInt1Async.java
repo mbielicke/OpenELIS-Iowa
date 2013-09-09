@@ -27,7 +27,7 @@ package org.openelis.modules.worksheet1.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdVO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.ui.common.data.Query;
@@ -37,7 +37,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface WorksheetServiceInt1Async {
     public void getInstance(AsyncCallback<WorksheetManager1> callback);
     public void fetchById(Integer worksheetId, WorksheetManager1.Load elements[], AsyncCallback<WorksheetManager1> callback);
-    public void query(Query query, AsyncCallback<ArrayList<IdVO>> callback);
+    public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
     public void fetchForUpdate(Integer worksheetId, AsyncCallback<WorksheetManager1> callback);
     public void unlock(Integer worksheetId, Load elements[], AsyncCallback<WorksheetManager1> callback) throws Exception;
     public void update(WorksheetManager1 wm, AsyncCallback<WorksheetManager1> callback) throws Exception;

@@ -32,6 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.WorksheetBean;
 import org.openelis.bean.WorksheetManager1Bean;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
@@ -65,7 +66,7 @@ public class WorksheetServlet1 extends RemoteServlet implements WorksheetService
         }
     }
     
-    public ArrayList<IdVO> query(Query query) throws Exception {
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
             return worksheet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
         } catch (Exception anyE) {

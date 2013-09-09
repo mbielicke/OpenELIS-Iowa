@@ -340,7 +340,6 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         //
         sectList  = SectionCache.getList();
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         model2 = new ArrayList<Item<Integer>>();
         model2.add(new Item<Integer>(null, ""));
         for (SectionViewDO resultDO : sectList) {
@@ -365,7 +364,6 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         //
         dictList  = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         model2 = new ArrayList<Item<Integer>>();
         model2.add(new Item<Integer>(null, ""));
         for (DictionaryDO resultDO : dictList) {
@@ -380,7 +378,6 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         //
         dictList  = CategoryCache.getBySystemName("type_of_sample");
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO resultDO : dictList)
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         typeOfSampleId.setModel(model);
