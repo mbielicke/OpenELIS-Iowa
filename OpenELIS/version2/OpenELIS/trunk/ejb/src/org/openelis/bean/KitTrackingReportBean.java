@@ -43,7 +43,6 @@ import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
@@ -60,6 +59,7 @@ import org.openelis.ui.common.Prompt.Case;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -74,9 +74,6 @@ public class KitTrackingReportBean {
 
     @EJB
     private SessionCacheBean  session;
-
-    @EJB
-    private UserCacheBean     userCache;
 
     @EJB
     private SectionBean       section;
@@ -167,7 +164,7 @@ public class KitTrackingReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String dir, frDate, tDate, section, shipFrom, shipTo, reportTo, description, orderStatus, sortBy, userName, printer, printstat;
+        String dir, frDate, tDate, section, shipFrom, shipTo, reportTo, description, orderStatus, sortBy, userName;
         /*
          * push status into session so we can query it while the report is
          * running
@@ -180,7 +177,7 @@ public class KitTrackingReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        userName = userCache.getName();
+        userName = User.getName(ctx);
 
         frDate = ReportUtil.getSingleParameter(param, "FROM_DATE");
         tDate = ReportUtil.getSingleParameter(param, "TO_DATE");
@@ -191,7 +188,6 @@ public class KitTrackingReportBean {
         description = ReportUtil.getSingleParameter(param, OrderMeta.getDescription());
         orderStatus = ReportUtil.getSingleParameter(param, OrderMeta.getStatusId());
         sortBy = ReportUtil.getSingleParameter(param, "SORT_BY");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
         if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
             throw new InconsistencyException("You must specify From Date and To Date for this report");
