@@ -80,7 +80,7 @@ public class InventoryTransferManagerProxy {
         order = orderMan.getOrder();
         order.setNeededInDays(0);
         order.setOrderedDate(date);
-        order.setRequestedBy(EJBFactory.getUserCache().getName());
+        order.setRequestedBy(null);
         order.setType(OrderManager.TYPE_INTERNAL);
         order.setStatusId(statusProcessed);
         orderMan.add();

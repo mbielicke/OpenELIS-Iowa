@@ -41,7 +41,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.OrganizationParameterDO;
-import org.openelis.entity.AttachmentItem;
 import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.OrganizationPrintDataSource;
 import org.openelis.ui.common.DataBaseUtil;
@@ -53,6 +52,7 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -61,6 +61,9 @@ import org.openelis.utils.ReportUtil;
           authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
           mappedName = "java:/OpenELISDS")
 public class FinalReportBean {
+
+    @Resource
+    private SessionContext            ctx;
 
     @EJB
     private SessionCacheBean          session;
@@ -94,12 +97,6 @@ public class FinalReportBean {
 
     @EJB
     private SectionCacheBean          section;
-
-    @EJB
-    private UserCacheBean             userCache;
-
-    @Resource
-    private SessionContext            ctx;
 
     private static final Logger       log = Logger.getLogger("openelis");
 
@@ -833,7 +830,7 @@ public class FinalReportBean {
         File tempFile;
         Connection con;
         JasperReport jreport;
-        String dir, uploadDir, printstat, toCompany, faxOwner, faxEmail;
+        String dir, uploadDir, printstat, toCompany, faxOwner, faxEmail, userName;
         JasperPrint print, faxPrint;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
@@ -842,6 +839,7 @@ public class FinalReportBean {
         ArrayList<OrganizationPrint> orgFaxList;
 
         con = null;
+        userName = User.getName(ctx);
         try {
             con = ReportUtil.getConnection(ctx);
 
@@ -855,7 +853,7 @@ public class FinalReportBean {
             jparam = new HashMap<String, Object>();
             jparam.put("REPORT_TYPE", reportType);
             jparam.put("SUBREPORT_DIR", dir);
-            jparam.put("LOGNAME", userCache.getName());
+            jparam.put("LOGNAME", userName);
             jparam.put("CONNECTION", con);
 
             /*
@@ -882,7 +880,7 @@ public class FinalReportBean {
                     faxEmail = null;
                 }
             } else {
-                faxOwner = userCache.getSystemUser().getLoginName();
+                faxOwner = userName;
                 faxEmail = faxOwner;
             }
             for (OrganizationPrint o : orgPrintList) {
@@ -939,7 +937,7 @@ public class FinalReportBean {
             if (print.getPages().size() > 0) {
                 tempFile = export(print);
                 if (ReportUtil.isPrinter(printer)) {
-                    printstat = ReportUtil.print(tempFile, printer, 1);
+                    printstat = ReportUtil.print(tempFile, userName, printer, 1);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 } else if ("-attachment-".equals(printer)) {
                     status.setMessage(tempFile.getName())

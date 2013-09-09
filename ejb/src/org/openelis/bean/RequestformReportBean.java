@@ -31,24 +31,27 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class RequestformReportBean {
 
     @Resource
-    private SessionContext    ctx;
+    private SessionContext   ctx;
 
     @EJB
     private SessionCacheBean session;
 
     @EJB
-    private OrderBean         order;
-    
+    private OrderBean        order;
+
     @EJB
-    private PrinterCacheBean  printers;
+    private PrinterCacheBean printers;
 
     /*
      * Returns the prompt for a single re-print
@@ -61,8 +64,8 @@ public class RequestformReportBean {
             p = new ArrayList<Prompt>();
 
             p.add(new Prompt("ORDERID", Prompt.Type.INTEGER).setPrompt("Order #:")
-                                                          .setWidth(100)
-                                                          .setRequired(true));
+                                                            .setWidth(100)
+                                                            .setRequired(true));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
@@ -77,7 +80,7 @@ public class RequestformReportBean {
             throw e;
         }
     }
-    
+
     /*
      * Execute the report and send its output to specified location
      */
@@ -92,7 +95,7 @@ public class RequestformReportBean {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;        
+        JRExporter jexport;
         OrderViewDO data;
 
         /*
@@ -117,13 +120,13 @@ public class RequestformReportBean {
                 data = order.fetchById(Integer.parseInt(orderId));
                 if (!"S".equals(data.getType()))
                     throw new InconsistencyException("You must specify a valid Send-out order #");
-            } catch (NumberFormatException  e) {
+            } catch (NumberFormatException e) {
                 throw new InconsistencyException("You must specify a valid Send-out order #");
-            } catch (NotFoundException  e) {
+            } catch (NotFoundException e) {
                 throw new InconsistencyException("You must specify a valid Send-out order #");
             }
         }
-        
+
         /*
          * start the report
          */
@@ -157,10 +160,10 @@ public class RequestformReportBean {
 
             if (ReportUtil.isPrinter(printer)) {
                 copies = 1;
-                if (useNumForms != null) 
-                    copies = data.getNumberOfForms();     
+                if (useNumForms != null)
+                    copies = data.getNumberOfForms();
                 if (copies > 0) {
-                    printstat = ReportUtil.print(tempFile, printer, copies);                 
+                    printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, copies);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 }
             } else {

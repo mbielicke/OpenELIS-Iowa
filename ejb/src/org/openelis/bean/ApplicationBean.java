@@ -103,8 +103,21 @@ public class ApplicationBean {
                           "worksheet_complete", "worksheet_failed", "worksheet_void",
                           "worksheet_working"};
         
+        /*
+         * One time system wide initializations
+         */
         Constants.setConstants(new Constants());
+        com.teklabs.gwt.i18n.server.LocaleProxy.initialize();
+        
+        /*
+         * system properties
+         */
+        Constants.systemProperty().LOCALE = System.getProperty("org.openelis.locale");
+        Constants.systemProperty().SECURITY_APPLICATION = System.getProperty("org.openelis.system.security.application");
 
+        /*
+         * load the dictionary constants
+         */
         try {
             list = dictionary.fetchBySystemNames(Arrays.asList(names));
         } catch (Exception e) {
@@ -117,9 +130,6 @@ public class ApplicationBean {
         for (DictionaryDO data : list)
             map.put(data.getSystemName(), data.getId());
 
-        /*
-         * load the dictionary constants
-         */
         Constants.dictionary().ANALYSIS_CANCELLED = dictId(map, "analysis_cancelled");
         Constants.dictionary().ANALYSIS_COMPLETED = dictId(map, "analysis_completed");
         Constants.dictionary().ANALYSIS_ERROR_COMPLETED = dictId(map, "analysis_error_completed");

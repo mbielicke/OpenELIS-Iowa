@@ -60,6 +60,7 @@ import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -260,7 +261,7 @@ public class OrderManagerBean {
         newData.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         newData.setOrderedDate(now);
         newData.setNeededInDays(oldData.getNeededInDays());
-        newData.setRequestedBy(forRecurrence ? oldData.getRequestedBy() : userCache.getName());
+        newData.setRequestedBy(forRecurrence ? oldData.getRequestedBy() : User.getName(ctx));
         newData.setCostCenterId(oldData.getCostCenterId());
         newData.setType(oldData.getType());
         newData.setExternalOrderNumber(oldData.getExternalOrderNumber());

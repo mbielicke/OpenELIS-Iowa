@@ -48,6 +48,7 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.TableFieldErrorException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utils.EJBFactory;
+import org.openelis.utils.User;
 
 public class BuildKitManagerProxy {
 
@@ -96,7 +97,7 @@ public class BuildKitManagerProxy {
         order = orderMan.getOrder();
         order.setNeededInDays(0);
         order.setOrderedDate(date);
-        order.setRequestedBy(EJBFactory.getUserCache().getName());
+        order.setRequestedBy(null);
         order.setType(OrderManager.TYPE_INTERNAL);
         order.setStatusId(statusProcessed);
         orderMan.add();

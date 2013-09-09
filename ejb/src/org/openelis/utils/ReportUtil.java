@@ -235,9 +235,9 @@ public class ReportUtil {
      * printer's status. NOTE: This method is very "lpr" and "cups" dependent
      * and will not work on non unix platforms.
      */
-    public static String print(File file, String destination, int copies, String... options) throws Exception {
+    public static String print(File file, String userName, String destination, int copies, String... options) throws Exception {
         try {
-            return printWithoutDelete(file, destination, copies, options);
+            return printWithoutDelete(file, userName, destination, copies, options);
         } catch (Exception anyE) {
             throw anyE;
         } finally {
@@ -250,7 +250,7 @@ public class ReportUtil {
      * NOTE: This method is very "lpr" and "cups" dependent and will not work on
      * non unix platforms.
      */
-    public static String printWithoutDelete(File file, String destination, int copies,
+    public static String printWithoutDelete(File file, String userName, String destination, int copies,
                                             String... options) throws Exception {
         String status;
         ArrayList<String> args;
@@ -262,7 +262,7 @@ public class ReportUtil {
             args = new ArrayList<String>();
             args.add("lpr");
             args.add("-U");
-            args.add(EJBFactory.getUserCache().getName());
+            args.add(userName);
             args.add("-P");
             args.add(destination);
             if (copies > 1) {
@@ -398,9 +398,7 @@ public class ReportUtil {
 
         path = String.format("%010d", id).toCharArray();
         if (path != null && path.length == 10) {
-            return path[6] + File.separator +
-                   path[7] + File.separator +
-                   path[8] + File.separator +
+            return path[6] + File.separator + path[7] + File.separator + path[8] + File.separator +
                    path[9];
         }
         return ".";

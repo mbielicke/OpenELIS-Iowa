@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.io.File;
@@ -52,24 +52,24 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class HoldRefuseOrganizationReportBean {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext   ctx;
 
     @EJB
     private SessionCacheBean session;
 
     @EJB
     private PrinterCacheBean printers;
-
-    @EJB
-    private UserCacheBean    userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -122,7 +122,7 @@ public class HoldRefuseOrganizationReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
-        userName = userCache.getName();
+        userName = User.getName(ctx);
 
         /*
          * start the report
@@ -156,7 +156,7 @@ public class HoldRefuseOrganizationReportBean {
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
+                printstat = ReportUtil.print(tempFile, userName, printer, 1);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);
@@ -178,6 +178,5 @@ public class HoldRefuseOrganizationReportBean {
 
         return status;
     }
-
 
 }

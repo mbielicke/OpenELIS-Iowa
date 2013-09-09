@@ -14,7 +14,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -46,27 +48,29 @@ import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
 public class TurnaroundStatisticReportBean {
+
+    @Resource
+    private SessionContext          ctx;
+
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
-    
-    @EJB
-    private SessionCacheBean       session;
 
     @EJB
-    private DictionaryCacheBean    dictionaryCache;
-    
-    @EJB
-    private SampleQAEventBean      sampleQAEvent;
+    private SessionCacheBean        session;
 
     @EJB
-    private AnalysisQAEventBean    analysisQAEvent;
+    private DictionaryCacheBean     dictionaryCache;
 
     @EJB
-    private UserCacheBean          userCache;
+    private SampleQAEventBean       sampleQAEvent;
+
+    @EJB
+    private AnalysisQAEventBean     analysisQAEvent;
 
     private static final SampleMeta meta = new SampleMeta();
 
@@ -89,10 +93,12 @@ public class TurnaroundStatisticReportBean {
         param = ReportUtil.getMapParameter(paramList);
         plotInterval = ReportUtil.getSingleParameter(param, "PLOT_INTERVAL");
         excludePT = ReportUtil.getSingleParameter(param, "EXCLUDE_PT");
-        
-        anaRelDateFrom = ReportUtil.getSingleParameter(param, SampleWebMeta.getAnalysisReleasedDateFrom());
-        anaRelDateTo = ReportUtil.getSingleParameter(param, SampleWebMeta.getAnalysisReleasedDateTo());
-        anaRelDateParam = format.format(format.parse(anaRelDateFrom)) + ".." + 
+
+        anaRelDateFrom = ReportUtil.getSingleParameter(param,
+                                                       SampleWebMeta.getAnalysisReleasedDateFrom());
+        anaRelDateTo = ReportUtil.getSingleParameter(param,
+                                                     SampleWebMeta.getAnalysisReleasedDateTo());
+        anaRelDateParam = format.format(format.parse(anaRelDateFrom)) + ".." +
                           format.format(format.parse(anaRelDateTo));
         paramList.remove(param.get(SampleWebMeta.getAnalysisReleasedDateFrom()));
         paramList.remove(param.get(SampleWebMeta.getAnalysisReleasedDateTo()));
@@ -120,9 +126,9 @@ public class TurnaroundStatisticReportBean {
                 ("EXCLUDE_PT").equals(paramList.get(i).getKey())) {
                 paramList.remove(i);
                 if (i > 0)
-                    i-- ;
+                    i--;
             } else {
-                i++ ;
+                i++;
             }
         }
 
@@ -132,8 +138,9 @@ public class TurnaroundStatisticReportBean {
          */
         resultList = getValues(paramList, excludePT);
         /*
-         * Filtering out records which don't have sample or analysis QA overrides. This
-         * was needed since outer queries could not be written using EJBQL.
+         * Filtering out records which don't have sample or analysis QA
+         * overrides. This was needed since outer queries could not be written
+         * using EJBQL.
          */
         i = 0;
         sampleOverrideMap = new HashMap<Integer, Boolean>();
@@ -142,7 +149,7 @@ public class TurnaroundStatisticReportBean {
             analysisId = (Integer)result[8];
             sampleId = (Integer)result[13];
             sampleHasOverride = sampleOverrideMap.get(sampleId);
-            
+
             if (sampleHasOverride == null) {
                 try {
                     sampleQAEvent.fetchResultOverrideBySampleId(sampleId);
@@ -158,7 +165,7 @@ public class TurnaroundStatisticReportBean {
             } else if (sampleHasOverride) {
                 resultList.remove(i);
                 continue;
-            } 
+            }
 
             try {
                 analysisQAEvent.fetchResultOverrideByAnalysisId(analysisId);
@@ -167,7 +174,7 @@ public class TurnaroundStatisticReportBean {
                  */
                 resultList.remove(i);
             } catch (NotFoundException exc) {
-                i++ ;
+                i++;
             }
         }
 
@@ -181,7 +188,7 @@ public class TurnaroundStatisticReportBean {
 
         return data;
     }
-    
+
     private ArrayList<Object[]> getValues(ArrayList<QueryData> fields, String excludePT) throws Exception {
         QueryBuilderV2 builder;
         Query query;
@@ -200,11 +207,13 @@ public class TurnaroundStatisticReportBean {
                           SampleMeta.getAnalysisCompletedDate() + "," +
                           SampleMeta.getAnalysisStartedDate() + "," + SampleMeta.getId());
         builder.addWhere(SampleMeta.getAnalysisTestIsActive() + "=" + "'Y'");
-        builder.addWhere(SampleMeta.getAnalysisStatusId() + "=" + Constants.dictionary().ANALYSIS_RELEASED);
+        builder.addWhere(SampleMeta.getAnalysisStatusId() + "=" +
+                         Constants.dictionary().ANALYSIS_RELEASED);
         builder.addWhere(SampleMeta.getAnalysisTestMethodId() + "=" +
                          SampleMeta.getAnalysisMethodId());
         if ("Y".equals(excludePT))
-            builder.addWhere(SampleMeta.getItemTypeOfSampleId() + "!=" + Constants.dictionary().PT_SAMPLE);
+            builder.addWhere(SampleMeta.getItemTypeOfSampleId() + "!=" +
+                             Constants.dictionary().PT_SAMPLE);
         builder.constructWhere(fields);
         builder.setOrderBy(SampleMeta.getAnalysisReleasedDate() + ", " +
                            SampleMeta.getAnalysisTestName() + ", " +
@@ -215,9 +224,9 @@ public class TurnaroundStatisticReportBean {
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     private TurnAroundReportViewVO getDataForDailyReport(ArrayList<Object[]> resultList,
-                                                       Date startDate) throws Exception {
+                                                         Date startDate) throws Exception {
         Integer currTestId, prevTestId;
         DateFormat format;
         Date currReleaseDate, nextReleasedDate;
@@ -262,15 +271,15 @@ public class TurnaroundStatisticReportBean {
                 values.add(value);
                 plotValues = value.getPlotValues();
                 /*
-                 * The nextreleased date needs to be set to the current released date so
-                 * that all the analyses released during that day can be grouped
-                 * by this date.
+                 * The nextreleased date needs to be set to the current released
+                 * date so that all the analyses released during that day can be
+                 * grouped by this date.
                  */
                 nextReleasedDate = currReleaseDate;
                 prevTestId = currTestId;
             }
         }
-        
+
         data.setValues(values);
         calculateStatistics(data);
 
@@ -294,7 +303,7 @@ public class TurnaroundStatisticReportBean {
 
         calStart = Calendar.getInstance();
         nextReleasedDate = getNextSunday(calStart, startDate);
-       
+
         testValueMap = new HashMap<Integer, Value>();
         calPlot = Calendar.getInstance();
 
@@ -303,8 +312,8 @@ public class TurnaroundStatisticReportBean {
             currTestId = (Integer)result[9];
             /*
              * for the purpose of calculating the statistics for a test, the
-             * rows returned from the database are grouped first by week and then
-             * by test
+             * rows returned from the database are grouped first by week and
+             * then by test
              */
             if (currReleasedDate.compareTo(nextReleasedDate) <= 0) {
                 value = testValueMap.get(currTestId);
@@ -330,19 +339,19 @@ public class TurnaroundStatisticReportBean {
                 values.add(value);
                 /*
                  * The next released date needs to be set to the next Sunday
-                 * that all the analyses released during this period
-                 * can be grouped by this date.
+                 * that all the analyses released during this period can be
+                 * grouped by this date.
                  */
                 nextReleasedDate = getNextSunday(calStart, currReleasedDate);
             }
         }
-        
+
         data.setValues(values);
         calculateStatistics(data);
-        
+
         return data;
     }
-    
+
     private TurnAroundReportViewVO fetchForMonthlyReport(ArrayList<Object[]> resultList,
                                                          Date startDate) throws Exception {
         Integer currTestId;
@@ -398,8 +407,9 @@ public class TurnaroundStatisticReportBean {
                 testValueMap.put(currTestId, value);
                 values.add(value);
                 /*
-                 * The next released date needs to be set to the 1st of the next month
-                 * that all the analyses released during this period can be grouped by this date.
+                 * The next released date needs to be set to the 1st of the next
+                 * month that all the analyses released during this period can
+                 * be grouped by this date.
                  */
                 nextReleasedDate = getFirstOfNextMonth(calStart, currReleasedDate);
             }
@@ -407,10 +417,10 @@ public class TurnaroundStatisticReportBean {
 
         data.setValues(values);
         calculateStatistics(data);
-        
+
         return data;
     }
-    
+
     /*
      * Copies common fields to the data VO for plotting
      */
@@ -423,7 +433,7 @@ public class TurnaroundStatisticReportBean {
         value.setPlotDate((Timestamp)result[7]);
         value.setTest((String)result[2]);
         value.setMethod((String)result[3]);
-        
+
         plotValues = new ArrayList<PlotValue>();
         plotValues.add(createPlotValue(result));
         value.setPlotValues(plotValues);
@@ -434,25 +444,25 @@ public class TurnaroundStatisticReportBean {
     private Value createValueWeekly(Object[] result, Calendar calPlot) throws Exception {
         Value value;
         ArrayList<PlotValue> plotValues;
-        
+
         value = new Value();
         value.setIsPlot("Y");
         value.setTest((String)result[2]);
         value.setMethod((String)result[3]);
         /*
-         * Setting the plotDate to the latest previous Sunday because the date in 
-         * the calendar may be several weeks after the latest plot date. 
+         * Setting the plotDate to the latest previous Sunday because the date
+         * in the calendar may be several weeks after the latest plot date.
          */
         calPlot.add(Calendar.DATE, - (calPlot.get(Calendar.DAY_OF_WEEK) - Calendar.SUNDAY));
         value.setPlotDate(calPlot.getTime());
-        
+
         plotValues = new ArrayList<PlotValue>();
         plotValues.add(createPlotValue(result));
         value.setPlotValues(plotValues);
 
         return value;
     }
-    
+
     private Value createValueMonthly(Object[] result, Calendar calPlot) throws Exception {
         Value value;
         ArrayList<PlotValue> plotValues;
@@ -462,12 +472,13 @@ public class TurnaroundStatisticReportBean {
         value.setTest((String)result[2]);
         value.setMethod((String)result[3]);
         /*
-         * Setting the plotDate to the latest previous 1st of the Month because the date in
-         * the calendar may be several months after the latest plot date. 
+         * Setting the plotDate to the latest previous 1st of the Month because
+         * the date in the calendar may be several months after the latest plot
+         * date.
          */
-        calPlot.set(Calendar.DAY_OF_MONTH, 1);   
+        calPlot.set(Calendar.DAY_OF_MONTH, 1);
         value.setPlotDate(calPlot.getTime());
-        
+
         plotValues = new ArrayList<PlotValue>();
         plotValues.add(createPlotValue(result));
         value.setPlotValues(plotValues);
@@ -484,14 +495,14 @@ public class TurnaroundStatisticReportBean {
         cal.set(Calendar.DAY_OF_WEEK, 1);
         return cal.getTime();
     }
-    
+
     private Date getFirstOfNextMonth(Calendar cal, Date currPlotDate) {
         cal.setTime(currPlotDate);
         /*
          * Set the date to be the 1st of the next month.
          */
         cal.add(Calendar.MONTH, 1);
-        cal.set(Calendar.DAY_OF_MONTH, 1);        
+        cal.set(Calendar.DAY_OF_MONTH, 1);
         return cal.getTime();
     }
 
@@ -522,41 +533,41 @@ public class TurnaroundStatisticReportBean {
                 colDateTime = JasperUtil.concatDateAndTime(colDate, colTime);
             else
                 colDateTime = colDate;
-            
+
             if (recDate != null)
-                plotValue.setStatAt(StatisticType.COL_REC,
-                                    JasperUtil.delta_hours(colDateTime, recDate));
+                plotValue.setStatAt(StatisticType.COL_REC, JasperUtil.delta_hours(colDateTime,
+                                                                                  recDate));
             if (availDate != null)
-                plotValue.setStatAt(StatisticType.COL_RDY,
-                                    JasperUtil.delta_hours(colDateTime, availDate));
+                plotValue.setStatAt(StatisticType.COL_RDY, JasperUtil.delta_hours(colDateTime,
+                                                                                  availDate));
             if (relDate != null)
-                plotValue.setStatAt(StatisticType.COL_REL,
-                                    JasperUtil.delta_hours(colDateTime, relDate));
+                plotValue.setStatAt(StatisticType.COL_REL, JasperUtil.delta_hours(colDateTime,
+                                                                                  relDate));
         }
 
         if (recDate != null) {
             if (availDate != null)
-                plotValue.setStatAt(StatisticType.REC_RDY,
-                                    JasperUtil.delta_hours(recDate, availDate));
+                plotValue.setStatAt(StatisticType.REC_RDY, JasperUtil.delta_hours(recDate,
+                                                                                  availDate));
 
             if (complDate != null)
-                plotValue.setStatAt(StatisticType.REC_COM,
-                                    JasperUtil.delta_hours(recDate, complDate));
+                plotValue.setStatAt(StatisticType.REC_COM, JasperUtil.delta_hours(recDate,
+                                                                                  complDate));
 
             if (relDate != null)
                 plotValue.setStatAt(StatisticType.REC_REL, JasperUtil.delta_hours(recDate, relDate));
         }
-        
+
         if (startedDate != null) {
             if (complDate != null)
-                plotValue.setStatAt(StatisticType.INI_COM,
-                                    JasperUtil.delta_hours(startedDate, complDate));
+                plotValue.setStatAt(StatisticType.INI_COM, JasperUtil.delta_hours(startedDate,
+                                                                                  complDate));
 
             if (relDate != null)
-                plotValue.setStatAt(StatisticType.INI_REL,
-                                    JasperUtil.delta_hours(startedDate, relDate));
+                plotValue.setStatAt(StatisticType.INI_REL, JasperUtil.delta_hours(startedDate,
+                                                                                  relDate));
         }
-        
+
         if (complDate != null && relDate != null)
             plotValue.setStatAt(StatisticType.COM_REL, JasperUtil.delta_hours(complDate, relDate));
 
@@ -580,7 +591,7 @@ public class TurnaroundStatisticReportBean {
         fromDate = data.getFromDate().toString();
         toDate = data.getToDate().toString();
         printer = data.getPrinter();
-        
+
         intervalType = dictionaryCache.getById(data.getIntervalId()).getEntry();
         /*
          * push status into session so we can query it while the report is
@@ -592,7 +603,7 @@ public class TurnaroundStatisticReportBean {
         values = data.getValues();
         if (values.size() > 1)
             Collections.sort(values, new MyComparator());
-        
+
         calculateStatistics(data);
         ds = new TurnaroundDataSource();
         ds.setTypes(data.getTypes());
@@ -605,7 +616,7 @@ public class TurnaroundStatisticReportBean {
         map = new HashMap<String, ArrayList<Value>>();
         for (Value value : values) {
             key = DataBaseUtil.concatWithSeparator(value.getTest(), ", ", value.getMethod());
-            if ( !map.containsKey(key)) {
+            if (!map.containsKey(key)) {
                 valueList = new ArrayList<Value>();
                 map.put(key, valueList);
             } else {
@@ -621,11 +632,11 @@ public class TurnaroundStatisticReportBean {
         dir = ReportUtil.getResourcePath(url);
 
         tempFile = File.createTempFile("turnaroundstatisticreport", ".pdf", new File("/tmp"));
-        
-        userName = userCache.getName();
-        
+
+        userName = User.getName(ctx);
+
         jparam = new HashMap<String, Object>();
-        jparam.put("LOGNAME", userCache.getName());
+        jparam.put("LOGNAME", userName);
         jparam.put("SUBREPORT_DIR", dir);
         jparam.put("FROM_DATE", fromDate);
         jparam.put("TO_DATE", toDate);
@@ -645,7 +656,7 @@ public class TurnaroundStatisticReportBean {
         status.setPercentComplete(100);
 
         if (ReportUtil.isPrinter(printer)) {
-            printstat = ReportUtil.print(tempFile, printer, 1);
+            printstat = ReportUtil.print(tempFile, userName, printer, 1);
             status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
         } else {
             tempFile = ReportUtil.saveForUpload(tempFile);
@@ -684,7 +695,7 @@ public class TurnaroundStatisticReportBean {
 
             for (PlotValue plotValue : val.getPlotValues()) {
                 for (StatisticType type : StatisticType.values()) {
-                   
+
                     statValue = plotValue.getStatAt(type);
                     if (statValue == null)
                         continue;
@@ -696,10 +707,12 @@ public class TurnaroundStatisticReportBean {
                         stat = val.getStats(type);
                         count = stat.getNumTested();
                         /*
-                         * Only analyses with isPlot set to "Y" should be considered in the calculation of statistics                      * not be considered in the number tested
+                         * Only analyses with isPlot set to "Y" should be
+                         * considered in the calculation of statistics * not be
+                         * considered in the number tested
                          */
                         if ("Y".equals(plotValue.getIsPlot())) {
-                            stat.setNumTested( ++count);
+                            stat.setNumTested(++count);
                             stat.setSum(statValue + stat.getSum());
                             min = stat.getMin();
                             stat.setMin(statValue < min ? statValue : min);
@@ -708,7 +721,9 @@ public class TurnaroundStatisticReportBean {
                         }
                     } else if ("Y".equals(plotValue.getIsPlot())) {
                         /*
-                         * Only analyses with isPlot set to "Y" should be considered in the calculation of statistics                      * not be considered in the number tested
+                         * Only analyses with isPlot set to "Y" should be
+                         * considered in the calculation of statistics * not be
+                         * considered in the number tested
                          */
                         stat = val.getStats(type);
                         stat.setMin(statValue);
@@ -760,7 +775,7 @@ public class TurnaroundStatisticReportBean {
                             stat = val.getStats(statType);
                             if (stat.getNumTested() > 1)
                                 stat.setSd((int)Math.sqrt(stat.getSqDiffSum() /
-                                                                      (stat.getNumTested() - 1)));
+                                                          (stat.getNumTested() - 1)));
                         }
                     }
                 }

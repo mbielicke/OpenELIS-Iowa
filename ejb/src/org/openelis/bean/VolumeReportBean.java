@@ -56,6 +56,7 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -71,9 +72,6 @@ public class VolumeReportBean {
 
     @EJB
     private SectionBean      section;
-
-    @EJB
-    private UserCacheBean    userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -128,7 +126,7 @@ public class VolumeReportBean {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String frDate, tDate, fromDate, toDate, section, userName, dir, printstat;
+        String frDate, tDate, fromDate, toDate, section, userName;
         fromDate = toDate = null;
         /*
          * push status into session so we can query it while the report is
@@ -142,7 +140,7 @@ public class VolumeReportBean {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        userName = userCache.getName();
+        userName = User.getName(ctx);
 
         frDate = ReportUtil.getSingleParameter(param, "FROM");
         tDate = ReportUtil.getSingleParameter(param, "TO");
@@ -172,7 +170,6 @@ public class VolumeReportBean {
 
             con = ReportUtil.getConnection(ctx);
             url = ReportUtil.getResourceURL("org/openelis/report/volume/main.jasper");
-            dir = ReportUtil.getResourcePath(url);
 
             tempFile = File.createTempFile("volume", ".xls", new File("/tmp"));
 

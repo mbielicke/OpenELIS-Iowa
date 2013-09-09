@@ -41,6 +41,7 @@ import java.util.Iterator;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
@@ -73,6 +74,7 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.Counter;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -80,7 +82,11 @@ import org.openelis.utils.ReportUtil;
           type = DataSource.class,
           authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
           mappedName = "java:/OpenELISDS")
-public class SDWISUnloadReportBean {          
+public class SDWISUnloadReportBean {
+
+    @Resource
+    private SessionContext                     ctx;
+
     @EJB
     private SessionCacheBean                   session;
 
@@ -88,38 +94,45 @@ public class SDWISUnloadReportBean {
     private PrinterCacheBean                   printers;
 
     @EJB
-    AnalysisBean                              analysis;
+    AnalysisBean                               analysis;
+
     @EJB
-    AnalysisQAEventBean                       analysisQA;
+    AnalysisQAEventBean                        analysisQA;
+    
     @EJB
-    AnalyteBean                               analyte;
+    AnalyteBean                                analyte;
+    
     @EJB
-    AuxDataBean                               auxData;
+    AuxDataBean                                auxData;
+    
     @EJB
     DictionaryCacheBean                        dictionaryCache;
+    
     @EJB
-    ResultBean                                result;
+    ResultBean                                 result;
+    
     @EJB
     SampleBean                                 sample;
+    
     @EJB
     SampleQAEventBean                          sampleQA;
+    
     @EJB
     SampleSDWISBean                            sampleSdwis;
+    
     @EJB
     SectionCacheBean                           sectionCache;
-    @EJB
-    UserCacheBean                              userCache;
-    
-    private static HashMap<String, String>    methodCodes, contaminantIds;
+
+    private static HashMap<String, String>     methodCodes, contaminantIds;
 
     private ArrayList<HashMap<String, Object>> statusList;
-    
+
     @PostConstruct
     public void init() {
         initMethodCodes();
         initContaminantIds();
     }
-    
+
     /*
      * Returns the prompt for a single re-print
      */
@@ -217,8 +230,7 @@ public class SDWISUnloadReportBean {
         param = ReportUtil.getMapParameter(paramList);
 
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        beginReleased = format.parse(ReportUtil.getSingleParameter(param,
-                                                                   "BEGIN_RELEASED"));
+        beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
         endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
@@ -293,13 +305,11 @@ public class SDWISUnloadReportBean {
                         // no qa events found means sample is not overridden
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up result override Sample QAEvents for accession #" +
-                                            sDO.getAccessionNumber() +
-                                            "; " +
-                                            anyE.getMessage());
+                                            sDO.getAccessionNumber() + "; " + anyE.getMessage());
                     }
 
                     if (sampleOverride) {
-                        if ( !Constants.dictionary().SDWIS_CATEGORY_BACTERIAL.equals(ssVDO.getSampleCategoryId())) {
+                        if (!Constants.dictionary().SDWIS_CATEGORY_BACTERIAL.equals(ssVDO.getSampleCategoryId())) {
                             addStatusRow(ssVDO.getPwsNumber0(),
                                          sDO.getAccessionNumber(),
                                          "Warning: Sample has a Result Override QAEvent and will be Skipped!");
@@ -316,15 +326,14 @@ public class SDWISUnloadReportBean {
                     aIter = analyses.iterator();
                     while (aIter.hasNext()) {
                         surVO = aIter.next();
-                        if ( Constants.dictionary().ANALYSIS_RELEASED.equals(surVO.getStatusId()) &&
+                        if (Constants.dictionary().ANALYSIS_RELEASED.equals(surVO.getStatusId()) &&
                             "Y".equals(surVO.getIsReportable())) {
                             try {
                                 analysisQaList = analysisQA.fetchResultOverrideByAnalysisId(surVO.getAnalysisId());
                                 if (analysisQaList.size() > 0) {
                                     addStatusRow(ssVDO.getPwsNumber0(),
                                                  sDO.getAccessionNumber(),
-                                                 "Warning: Test '" + surVO.getTestName() +
-                                                                 ", " +
+                                                 "Warning: Test '" + surVO.getTestName() + ", " +
                                                                  surVO.getMethodName() +
                                                                  "' has a Result Override QAEvent");
                                     continue;
@@ -345,10 +354,9 @@ public class SDWISUnloadReportBean {
 
                             secVDO = sectionCache.getById(surVO.getSectionId());
                             if (secVDO != null) {
-                                if ( !secVDO.getName().endsWith(location)) {
-                                    location = secVDO.getName()
-                                                     .substring(secVDO.getName()
-                                                                      .indexOf("-"));
+                                if (!secVDO.getName().endsWith(location)) {
+                                    location = secVDO.getName().substring(secVDO.getName()
+                                                                                .indexOf("-"));
 
                                     writeSampleRow(writer,
                                                    sDO,
@@ -356,12 +364,12 @@ public class SDWISUnloadReportBean {
                                                    location,
                                                    sampleOverride,
                                                    sampleCounts);
-                                    if ( !sampleOverride)
+                                    if (!sampleOverride)
                                         addStatusRow(ssVDO.getPwsNumber0(),
                                                      sDO.getAccessionNumber(),
                                                      "Generated");
                                 }
-                                if ( !sampleOverride)
+                                if (!sampleOverride)
                                     writeResultRows(writer, sDO, ssVDO, surVO);
                             }
                         }
@@ -381,11 +389,9 @@ public class SDWISUnloadReportBean {
              * Print the status report
              */
             jparam = new HashMap<String, Object>();
-            jparam.put("USER_NAME", userCache.getName());
-            jparam.put("BEGIN_RELEASED", ReportUtil.toString(beginReleased,
-                                                             "yyyy-MM-dd HH:mm"));
-            jparam.put("END_RELEASED", ReportUtil.toString(endReleased,
-                                                           "yyyy-MM-dd HH:mm"));
+            jparam.put("USER_NAME", User.getName(ctx));
+            jparam.put("BEGIN_RELEASED", ReportUtil.toString(beginReleased, "yyyy-MM-dd HH:mm"));
+            jparam.put("END_RELEASED", ReportUtil.toString(endReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("SAMPLE_COUNTS", sampleCounts);
 
             sds = new StatusDataSource();
@@ -395,8 +401,7 @@ public class SDWISUnloadReportBean {
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, sds);
             jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM,
-                                 new FileOutputStream(statFile));
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(statFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setPercentComplete(90);
@@ -405,7 +410,7 @@ public class SDWISUnloadReportBean {
 
             status.setPercentComplete(100);
 
-            ReportUtil.print(statFile, printer, 1);
+            ReportUtil.print(statFile, User.getName(ctx), printer, 1);
 
             tempFile = ReportUtil.saveForUpload(tempFile);
             status.setMessage(tempFile.getName())
@@ -433,39 +438,62 @@ public class SDWISUnloadReportBean {
         today = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
 
         row = new StringBuilder();
-        row.append("#HDR")                                                          // col 1-4
-           .append(" ")                                                             // col 5
-           .append("CREATED")                                                       // col 6-12
-           .append(" ")                                                             // col 13
-           .append(getPaddedString(ReportUtil.toString(today.getDate(),
-                                                       "MM/dd/yyyy"), 10))          // col 14-23
-           .append(" ")                                                             // col 24
-           .append("LAB-ID")                                                        // col 25-30
-           .append(" ")                                                             // col 31
-           .append("     ")                                                         // col 32-36
-           .append(" ")                                                             // col 37
-           .append("AGENCY")                                                        // col 38-43
-           .append(" ")                                                             // col 44
-           .append("IA")                                                            // col 45-46
-           .append(" ")                                                             // col 47
-           .append("PURPOSE")                                                       // col 48-54
-           .append(" ")                                                             // col 55
-           .append("NEW")                                                           // col 56-58
-           .append(" ")                                                             // col 59
-           .append("TYPE")                                                          // col 60-63
-           .append(" ")                                                             // col 64
-           .append("RT")                                                            // col 65-66
-           .append(" ")                                                             // col 67
-           .append("REFERENCE")                                                     // col 68-76
-           .append(" ")                                                             // col 77
-           .append("                              ");                               // col 78-107 TODO: transaction reference number
-        
+        row.append("#HDR") // col 1-4
+           .append(" ")
+           // col 5
+           .append("CREATED")
+           // col 6-12
+           .append(" ")
+           // col 13
+           .append(getPaddedString(ReportUtil.toString(today.getDate(), "MM/dd/yyyy"), 10))
+           // col 14-23
+           .append(" ")
+           // col 24
+           .append("LAB-ID")
+           // col 25-30
+           .append(" ")
+           // col 31
+           .append("     ")
+           // col 32-36
+           .append(" ")
+           // col 37
+           .append("AGENCY")
+           // col 38-43
+           .append(" ")
+           // col 44
+           .append("IA")
+           // col 45-46
+           .append(" ")
+           // col 47
+           .append("PURPOSE")
+           // col 48-54
+           .append(" ")
+           // col 55
+           .append("NEW")
+           // col 56-58
+           .append(" ")
+           // col 59
+           .append("TYPE")
+           // col 60-63
+           .append(" ")
+           // col 64
+           .append("RT")
+           // col 65-66
+           .append(" ")
+           // col 67
+           .append("REFERENCE")
+           // col 68-76
+           .append(" ")
+           // col 77
+           .append("                              "); // col 78-107 TODO:
+                                                      // transaction reference
+                                                      // number
+
         writer.println(row.toString());
     }
 
-    protected void writeSampleRow(PrintWriter writer, SampleDO sVDO,
-                                  SampleSDWISViewDO ssVDO, String location,
-                                  boolean sampleOverride, Counter sampleCounts) throws Exception {
+    protected void writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO,
+                                  String location, boolean sampleOverride, Counter sampleCounts) throws Exception {
         ArrayList<AuxDataViewDO> adList;
         AuxDataViewDO adVDO;
         DictionaryDO sampCatDO, sampTypeDO;
@@ -553,38 +581,53 @@ public class SDWISUnloadReportBean {
         }
 
         row = new StringBuilder();
-        row.append("#SAM")                                                          // col 1-4
-           .append(sampCatDO.getCode())                                      // col 5-6
-           .append(sampTypeDO.getCode())                                     // col 7-8
-           .append(getPaddedString(pbType, 3))                                      // col 9-11
-           .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                       // col 12-20
-           .append(getPaddedString(ssVDO.getFacilityId(), 12))                      // col 21-32
-           .append(getPaddedString(ssVDO.getSamplePointId(), 11))                   // col 33-43
-           .append(getPaddedString(ssVDO.getLocation(), 40))                        // col 44-83
-           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionDate(),
-                                                       "yyyyMMdd"), 8))             // col 84-91
-           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionTime(),
-                                                       "HHmm"), 4))                 // col 92-95
-           .append(getPaddedString(ssVDO.getCollector(), 20))                       // col 96-115
-           .append(getPaddedString(ReportUtil.toString(sVDO.getReceivedDate(),
-                                                       "yyyyMMdd"), 8))             // col 116-123
-           .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20)); // col 124-143
-        
-        if (origSampleNumber != null && origSampleNumber.length() > 0)              // col 144-163
-            row.append(getPaddedString("OE"+origSampleNumber, 20));
+        row.append("#SAM") // col 1-4
+           .append(sampCatDO.getCode())
+           // col 5-6
+           .append(sampTypeDO.getCode())
+           // col 7-8
+           .append(getPaddedString(pbType, 3))
+           // col 9-11
+           .append(getPaddedString(ssVDO.getPwsNumber0(), 9))
+           // col 12-20
+           .append(getPaddedString(ssVDO.getFacilityId(), 12))
+           // col 21-32
+           .append(getPaddedString(ssVDO.getSamplePointId(), 11))
+           // col 33-43
+           .append(getPaddedString(ssVDO.getLocation(), 40))
+           // col 44-83
+           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionDate(), "yyyyMMdd"), 8))
+           // col 84-91
+           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionTime(), "HHmm"), 4))
+           // col 92-95
+           .append(getPaddedString(ssVDO.getCollector(), 20))
+           // col 96-115
+           .append(getPaddedString(ReportUtil.toString(sVDO.getReceivedDate(), "yyyyMMdd"), 8))
+           // col 116-123
+           .append(getPaddedString("OE" + sVDO.getAccessionNumber().toString(), 20)); // col
+                                                                                      // 124-143
+
+        if (origSampleNumber != null && origSampleNumber.length() > 0) // col
+                                                                       // 144-163
+            row.append(getPaddedString("OE" + origSampleNumber, 20));
         else
             row.append(getPaddedString("", 20));
-        
-        row.append(getPaddedString(repeatCode, 2))                                  // col 164-165
-           .append(getPaddedString(freeChlorine, 5))                                // col 166-170
-           .append(getPaddedString(totalChlorine, 5))                               // col 171-175
-           .append(getPaddedString(compIndicator, 1))                               // col 176
-           .append(getPaddedString(compLabNumber, 20));                             // col 177-196
-        
-        if (compDateString != null && compDateString.length() > 0) {                // col 197-204
+
+        row.append(getPaddedString(repeatCode, 2)) // col 164-165
+           .append(getPaddedString(freeChlorine, 5))
+           // col 166-170
+           .append(getPaddedString(totalChlorine, 5))
+           // col 171-175
+           .append(getPaddedString(compIndicator, 1))
+           // col 176
+           .append(getPaddedString(compLabNumber, 20)); // col 177-196
+
+        if (compDateString != null && compDateString.length() > 0) { // col
+                                                                     // 197-204
             try {
                 row.append(getPaddedString(ReportUtil.toString(dateDashFormat.parse(compDateString),
-                                                               "yyyyMMdd"), 8));
+                                                               "yyyyMMdd"),
+                                           8));
             } catch (ParseException parE) {
                 throw new Exception("Invalid Composite Date for accession #" +
                                     sVDO.getAccessionNumber() + "; " + parE.getMessage());
@@ -592,16 +635,16 @@ public class SDWISUnloadReportBean {
         } else {
             row.append(getPaddedString(compDateString, 8));
         }
-        
-        row.append(getPaddedString(compQuarter, 1));                                // col 205
-        row.append(getPaddedString(sampleOverrideString, 1));                       // col 206
-        
-        if ("-ank".equals(location))                                                // col 207-211
-            row.append("397  ");                                                    // Ankeny DNR ID
+
+        row.append(getPaddedString(compQuarter, 1)); // col 205
+        row.append(getPaddedString(sampleOverrideString, 1)); // col 206
+
+        if ("-ank".equals(location)) // col 207-211
+            row.append("397  "); // Ankeny DNR ID
         else if ("-ic".equals(location))
-            row.append("027  ");                                                    // Iowa City DNR ID
+            row.append("027  "); // Iowa City DNR ID
         else if ("-lk".equals(location))
-            row.append("393  ");                                                    // Lakeside DNR ID
+            row.append("393  "); // Lakeside DNR ID
         else
             row.append("     ");
 
@@ -613,8 +656,7 @@ public class SDWISUnloadReportBean {
     }
 
     protected void writeResultRows(PrintWriter writer, SampleDO sample,
-                                   SampleSDWISViewDO sampleSDWIS,
-                                   SDWISUnloadReportVO surVO) throws Exception {
+                                   SampleSDWISViewDO sampleSDWIS, SDWISUnloadReportVO surVO) throws Exception {
         int i;
         AnalyteViewDO alVDO;
         ArrayList<ResultViewDO> resultRow;
@@ -643,8 +685,8 @@ public class SDWISUnloadReportBean {
         if (methodCode == null) {
             addStatusRow(sampleSDWIS.getPwsNumber0(),
                          sample.getAccessionNumber(),
-                         "Warning: No method code for test '" + surVO.getTestName() +
-                                         ", " + surVO.getMethodName() + "'");
+                         "Warning: No method code for test '" + surVO.getTestName() + ", " +
+                                         surVO.getMethodName() + "'");
             return;
         }
 
@@ -674,10 +716,9 @@ public class SDWISUnloadReportBean {
                                          surVO.getMethodName() + "'");
             return;
         } catch (Exception anyE) {
-            throw new Exception("Error retrieving result records for '" +
-                                surVO.getTestName() + ", " + surVO.getMethodName() +
-                                "' on accession #" + sample.getAccessionNumber() + "; " +
-                                anyE.getMessage());
+            throw new Exception("Error retrieving result records for '" + surVO.getTestName() +
+                                ", " + surVO.getMethodName() + "' on accession #" +
+                                sample.getAccessionNumber() + "; " + anyE.getMessage());
         }
         rowIter = results.iterator();
         while (rowIter.hasNext()) {
@@ -689,8 +730,7 @@ public class SDWISUnloadReportBean {
             if (contaminantIds.get(rVDO.getAnalyte()) == null) {
                 addStatusRow(sampleSDWIS.getPwsNumber0(),
                              sample.getAccessionNumber(),
-                             "Error: Compound id not found for '" + rVDO.getAnalyte() +
-                                             "'");
+                             "Error: Compound id not found for '" + rVDO.getAnalyte() + "'");
                 continue;
             }
 
@@ -704,10 +744,9 @@ public class SDWISUnloadReportBean {
                                                    .getEntry());
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up dictionary result for '" +
-                                            surVO.getTestName() + ", " +
-                                            surVO.getMethodName() + "' on accession #" +
-                                            sample.getAccessionNumber() + "; " +
-                                            anyE.getMessage());
+                                            surVO.getTestName() + ", " + surVO.getMethodName() +
+                                            "' on accession #" + sample.getAccessionNumber() +
+                                            "; " + anyE.getMessage());
                     }
                 } else {
                     if (rVDO.getValue() != null) {
@@ -734,10 +773,10 @@ public class SDWISUnloadReportBean {
                             if (rVDO.getValue().startsWith(">"))
                                 rVDO.setValue(rVDO.getValue().substring(1));
                             if (rVDO.getValue().indexOf(".") != -1)
-                                rVDO.setValue(rVDO.getValue()
-                                                  .substring(0,
-                                                             rVDO.getValue().indexOf(".")));
-                            if ( !rVDO.getValue().startsWith("<"))
+                                rVDO.setValue(rVDO.getValue().substring(0,
+                                                                        rVDO.getValue()
+                                                                            .indexOf(".")));
+                            if (!rVDO.getValue().startsWith("<"))
                                 rowData.put("count", rVDO.getValue());
                         }
                     }
@@ -770,11 +809,9 @@ public class SDWISUnloadReportBean {
                         alVDO = analyte.fetchById(crVDO.getAnalyteId());
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up result column analyte '" +
-                                            crVDO.getAnalyte() + "' for '" +
-                                            surVO.getTestName() + ", " +
-                                            surVO.getMethodName() + "' on accession #" +
-                                            sample.getAccessionNumber() + "; " +
-                                            anyE.getMessage());
+                                            crVDO.getAnalyte() + "' for '" + surVO.getTestName() +
+                                            ", " + surVO.getMethodName() + "' on accession #" +
+                                            sample.getAccessionNumber() + "; " + anyE.getMessage());
                     }
                     if ("quant_limit".equals(alVDO.getExternalId())) {
                         rowData.put("detection", crVDO.getValue());
@@ -791,31 +828,44 @@ public class SDWISUnloadReportBean {
             }
         }
 
-        for (i = 0; i < resultData.size(); i++ ) {
+        for (i = 0; i < resultData.size(); i++) {
             rowData = resultData.get(i);
-            
+
             row = new StringBuilder();
-            row.append("#RES")                                                                              // col 1-4
-               .append(getPaddedString(rowData.get("contaminantId"), 4))                                    // col 5-8
-               .append(getPaddedString(methodCode, 12))                                                     // col 9-20
-               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(),
-                                                           "yyyyMMdd"), 8))                                 // col 21-28
-               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(),
-                                                           "HHmm"), 4))                                     // col 29-32
-               .append(getPaddedString(ReportUtil.toString(surVO.getCompletedDate(),
-                                                           "yyyyMMdd"), 8))                                 // col 33-40
-               .append(getPaddedString(rowData.get("microbe"), 1))                                          // col 41
-               .append(getPaddedNumber(rowData.get("count"), 5))                                            // col 42-46
-               .append(getPaddedString(rowData.get("countType"), 10))                                       // col 47-56
-               .append(getPaddedString(rowData.get("countUnits"), 9))                                       // col 57-65
-               .append(getPaddedString(rowData.get("ltIndicator"), 1))                                      // col 66
-               .append("MRL")                                                                               // col 67-69
-               .append(getPaddedString(rowData.get("concentration"), 14))                                   // col 70-83
-               .append(getPaddedString(rowData.get("concentrationUnit"), 9))                                // col 84-92
-               .append(getPaddedString(rowData.get("detection"), 16))                                       // col 93-108
-               .append(getPaddedString(rowData.get("detectionUnit"), 9))                                    // col 109-117
-               .append(getPaddedString(rowData.get("radMeasureError"), 9));                                 // col 118-126
-            
+            row.append("#RES") // col 1-4
+               .append(getPaddedString(rowData.get("contaminantId"), 4))
+               // col 5-8
+               .append(getPaddedString(methodCode, 12))
+               // col 9-20
+               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(), "yyyyMMdd"), 8))
+               // col 21-28
+               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(), "HHmm"), 4))
+               // col 29-32
+               .append(getPaddedString(ReportUtil.toString(surVO.getCompletedDate(), "yyyyMMdd"), 8))
+               // col 33-40
+               .append(getPaddedString(rowData.get("microbe"), 1))
+               // col 41
+               .append(getPaddedNumber(rowData.get("count"), 5))
+               // col 42-46
+               .append(getPaddedString(rowData.get("countType"), 10))
+               // col 47-56
+               .append(getPaddedString(rowData.get("countUnits"), 9))
+               // col 57-65
+               .append(getPaddedString(rowData.get("ltIndicator"), 1))
+               // col 66
+               .append("MRL")
+               // col 67-69
+               .append(getPaddedString(rowData.get("concentration"), 14))
+               // col 70-83
+               .append(getPaddedString(rowData.get("concentrationUnit"), 9))
+               // col 84-92
+               .append(getPaddedString(rowData.get("detection"), 16))
+               // col 93-108
+               .append(getPaddedString(rowData.get("detectionUnit"), 9))
+               // col 109-117
+               .append(getPaddedString(rowData.get("radMeasureError"), 9)); // col
+                                                                            // 118-126
+
             writer.println(row.toString());
         }
     }
@@ -930,7 +980,7 @@ public class SDWISUnloadReportBean {
 
     private void initContaminantIds() {
         contaminantIds = new HashMap<String, String>();
-        
+
         // @formatter:off
         contaminantIds.put("1,1,1,2-Tetrachloroethane",             "2986");
         contaminantIds.put("1,1,1-Trichloroethane",                 "2981");

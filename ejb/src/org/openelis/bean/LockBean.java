@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -41,19 +43,23 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.entity.Lock;
 import org.openelis.ui.common.EntityLockedException;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
 public class LockBean {
 
+    @Resource
+    private SessionContext ctx;
+
     @PersistenceContext
     private EntityManager  manager;
 
     @EJB
-    private UserCacheBean userCache;
+    private UserCacheBean  userCache;
 
     private static int     DEFAULT_LOCK_TIME = 15 * 60 * 1000, // 15 M * 60 S *
-                           GRACE_LOCK_TIME = 2 * 60 * 1000; // 1000 Millis
+                    GRACE_LOCK_TIME = 2 * 60 * 1000; // 1000 Millis
 
     /**
      * Method creates a new lock entry for the specified table reference and id.
@@ -110,10 +116,10 @@ public class LockBean {
         if (locks.size() > 0) {
             for (Lock l : locks) {
                 if (l.getExpires() >= now) {
-                    throw new EntityLockedException(Messages.get().entityLockException(
-                                                    userCache.getSystemUser(l.getSystemUserId())
-                                                             .getLoginName(),
-                                                    new Date(l.getExpires()).toString()));
+                    throw new EntityLockedException(Messages.get()
+                                                            .entityLockException(userCache.getSystemUser(l.getSystemUserId())
+                                                                                          .getLoginName(),
+                                                                                 new Date(l.getExpires()).toString()));
                 }
                 manager.remove(l);
                 manager.flush();
@@ -124,7 +130,7 @@ public class LockBean {
          * insert all the locks
          */
         userId = userCache.getId();
-        sessionId = userCache.getSessionId();
+        sessionId = User.getSessionId(ctx);
         try {
             for (Integer id : referenceIds) {
                 lock = new Lock();
@@ -137,13 +143,15 @@ public class LockBean {
             }
             manager.flush();
         } catch (ConstraintViolationException e) {
-            throw new EntityLockedException(Messages.get().entityLockException(
-                                            "unknown",
-                                            new Date(lockTimeMillis + now).toString()));
+            throw new EntityLockedException(Messages.get()
+                                                    .entityLockException("unknown",
+                                                                         new Date(lockTimeMillis +
+                                                                                  now).toString()));
         } catch (PersistenceException e) {
-            throw new EntityLockedException(Messages.get().entityLockException(
-                                            "unknown",
-                                            new Date(lockTimeMillis + now).toString()));
+            throw new EntityLockedException(Messages.get()
+                                                    .entityLockException("unknown",
+                                                                         new Date(lockTimeMillis +
+                                                                                  now).toString()));
         }
     }
 
@@ -171,7 +179,7 @@ public class LockBean {
         locks = query.getResultList();
         if (locks.size() > 0) {
             userId = userCache.getId();
-            sessionId = userCache.getSessionId();
+            sessionId = User.getSessionId(ctx);
             for (Lock l : locks) {
                 if (l.getSystemUserId().equals(userId) && l.getSessionId().equals(sessionId)) {
                     manager.remove(l);
@@ -222,10 +230,10 @@ public class LockBean {
             throw new EntityLockedException(Messages.get().expiredLockException());
 
         userId = userCache.getId();
-        sessionId = userCache.getSessionId();
+        sessionId = User.getSessionId(ctx);
         timeMillis = System.currentTimeMillis();
         for (Lock l : locks) {
-            if ( !l.getSystemUserId().equals(userId) || !l.getSessionId().equals(sessionId))
+            if (!l.getSystemUserId().equals(userId) || !l.getSessionId().equals(sessionId))
                 throw new EntityLockedException(Messages.get().expiredLockException());
             //
             // if the lock has expired, we are going to refresh its expiration
@@ -246,7 +254,7 @@ public class LockBean {
         String sessionId;
 
         try {
-            sessionId = userCache.getSessionId();
+            sessionId = User.getSessionId(ctx);
             removeLocks(sessionId);
         } catch (Exception e) {
             // ignore
