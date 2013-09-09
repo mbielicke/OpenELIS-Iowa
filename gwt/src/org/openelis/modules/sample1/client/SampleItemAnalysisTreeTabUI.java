@@ -29,7 +29,6 @@ import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
@@ -115,6 +114,8 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     protected SampleManager1                         manager;
 
     protected boolean                                canEdit;
+    
+    private static final String    SAMPLE_ITEM_LEAF = "sampleItem", ANALYSIS_LEAF = "analysis";
 
     public SampleItemAnalysisTreeTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -132,7 +133,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         screen = this;
 
-        addScreenHandler(tree, "itemsTestsTree", new ScreenHandler<String>() {
+        addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 tree.setRoot(getRoot());
             }
@@ -155,7 +156,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 enable = false;
                 selEvent = null;
 
-                if ("sampleItem".equals(selection.getType())) {
+                if (SAMPLE_ITEM_LEAF.equals(selection.getType())) {
                     if (canEdit && isState(ADD, UPDATE))
                         enable = !selection.hasChildren();
                     if (uid != null)
@@ -190,7 +191,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
                 node = event.getNode();
 
-                if ("sampleItem".equals(node.getType())) {
+                if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
                     item = manager.item.add();
                     /*
                      * if the domain of the sample is sdwis then we set the
@@ -207,7 +208,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                         }
                     }
                     node.setData(manager.getUid(item));
-                    setItemDisplay(node, item);
+                    setItemDisplay(node, item, new StringBuffer());
                 }
             }
         });
@@ -221,7 +222,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 row = event.getNode();
                 uid = (String)row.getData();
 
-                if ("sampleItem".equals(row.getType())) {
+                if (SAMPLE_ITEM_LEAF.equals(row.getType())) {
                     item = (SampleItemViewDO)manager.getObject(uid);
                     manager.item.remove(item);
                 } else {
@@ -237,7 +238,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             }
         });
 
-        addScreenHandler(test, "testName", new ScreenHandler<AutoCompleteValue>() {
+        addScreenHandler(test, "test", new ScreenHandler<AutoCompleteValue>() {
             public void onDataChange(DataChangeEvent event) {
                 test.setValue(null, null);
             }
@@ -278,7 +279,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 }
 
                 node = tree.getNodeAt(tree.getSelectedNode());
-                if ( !"sampleItem".equals(node.getType()))
+                if ( !SAMPLE_ITEM_LEAF.equals(node.getType()))
                     node = node.getParent();
 
                 item = (SampleItemViewDO)manager.getObject((String)node.getData());
@@ -414,7 +415,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         Node node;
 
         node = new Node(2);
-        node.setType("sampleItem");
+        node.setType(SAMPLE_ITEM_LEAF);
         node.setOpen(true);
         tree.addNode(node);
         tree.refreshNode(node);
@@ -458,6 +459,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     private Node getRoot() {
         int i, j;
+        StringBuffer buf;
         Node root, inode, anode;
         AnalysisViewDO ana;
         SampleItemViewDO item;
@@ -465,24 +467,28 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         root = new Node();
         if (manager == null)
             return root;
-
+        
+        buf = new StringBuffer();
         for (i = 0; i < manager.item.count(); i++ ) {
             item = manager.item.get(i);
 
             inode = new Node(2);
-            inode.setType("sampleItem");
+            inode.setType(SAMPLE_ITEM_LEAF);
             inode.setOpen(true);
             inode.setData(manager.getUid(item));
-            setItemDisplay(inode, item);
+            buf.setLength(0);
+            setItemDisplay(inode, item, buf);
+            
             root.add(inode);
 
             for (j = 0; j < manager.analysis.count(item); j++ ) {
                 ana = manager.analysis.get(item, j);
 
                 anode = new Node(2);
-                anode.setType("analysis");
+                anode.setType(ANALYSIS_LEAF);
                 anode.setData(manager.getUid(ana));
-                setAnalysisDisplay(anode, ana);
+                buf.setLength(0);
+                setAnalysisDisplay(anode, ana, buf);
                 inode.add(anode);
             }
         }
@@ -502,7 +508,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
          */
         node = tree.getNodeAt(tree.getSelectedNode());
 
-        if ( !"sampleItem".equals(node.getType()))
+        if ( !SAMPLE_ITEM_LEAF.equals(node.getType()))
             node = node.getParent();
 
         item = (SampleItemViewDO)manager.getObject((String)node.getData());
@@ -555,7 +561,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             parent = tree.getRoot().getChildAt(i);
             if (itemUid.equals(parent.getData())) {
                 item = (SampleItemViewDO)manager.getObject(itemUid);
-                setItemDisplay(parent, item);
+                setItemDisplay(parent, item, new StringBuffer());
                 tree.refreshNode(parent);
 
                 if ( !SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(action))
@@ -617,7 +623,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 node = parent.getChildAt(j);
                 if (uid.equals(node.getData())) {
                     ana = (AnalysisViewDO)manager.getObject(uid);
-                    setAnalysisDisplay(node, ana);
+                    setAnalysisDisplay(node, ana, new StringBuffer());
                     tree.refreshNode(node);
                     found = true;
                     break;
@@ -629,34 +635,22 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         }
     }
 
-    private void setItemDisplay(Node node, SampleItemViewDO item) {
-        node.setCell(0, getDisplay(item.getItemSequence(), " - ", item.getContainer()));
+    private void setItemDisplay(Node node, SampleItemViewDO item, StringBuffer buf) {
+        buf.append(getDisplay(item.getItemSequence()));
+        buf.append(" - ");
+        buf.append(getDisplay(item.getContainer()));
+        node.setCell(0, buf.toString());
         node.setCell(1, getDisplay(item.getTypeOfSample()));
     }
 
-    private void setAnalysisDisplay(Node node, AnalysisViewDO ana) {
-        node.setCell(0, getDisplay(ana.getTestName(), " , ", ana.getMethodName()));
+    private void setAnalysisDisplay(Node node, AnalysisViewDO ana, StringBuffer buf) {
+        buf.append(getDisplay(ana.getTestName()));
+        buf.append(", ");
+        buf.append(getDisplay(ana.getMethodName()));
+        node.setCell(0, buf.toString());
         node.setCell(1, ana.getStatusId());
     }
 
-    /**
-     * Creates a display label by delimiting the objects by "delim". A null
-     * object is replaced by "<>".
-     */
-    private String getDisplay(Object o1, String delim, Object o2) {
-        List<Object> list;
-
-        list = new ArrayList<Object>();
-        list.add(getDisplay(o1));
-        list.add(getDisplay(o2));
-
-        return DataBaseUtil.concatWithSeparator(list, delim);
-    }
-
-    /**
-     * Returns the display label for the object. If the object is null, the
-     * label is "<>".
-     */
     private Object getDisplay(Object val) {
         if (val == null)
             return "<>";
