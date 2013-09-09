@@ -43,12 +43,14 @@ import net.sf.ehcache.Element;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
 import org.openelis.ui.common.ModulePermission.ModuleFlags;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SectionPermission.SectionFlags;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.utils.EJBFactory;
+import org.openelis.utils.User;
 
 /**
  * This class provides application level cache handling for user and permission
@@ -57,7 +59,6 @@ import org.openelis.utils.EJBFactory;
 @SecurityDomain("openelis")
 @Singleton
 @Lock(LockType.READ)
-
 public class UserCacheBean {
 
     @Resource
@@ -93,76 +94,13 @@ public class UserCacheBean {
     }
 
     /**
-     * Returns the system user's login name associated with this context. Please
-     * note that we concat username, sessionId, and locale on initial login and
-     * you will need a special login class for JBOSS to parse the username.
-     */
-    // TODO
-    /*
-     * This method has been altered to work for jboss 7 bug where the
-     * unauthenticatedIdentity is always being set to anonymous instead of the
-     * configured value of 'system'. We change the user name to 'system' so that
-     * cron jobs that call managers or access beens that use OpenELIS security
-     * checks will work properly. More info can found at these two links
-     * 
-     * https://community.jboss.org/thread/175405
-     * 
-     * https://issues.jboss.org/browse/AS7-3154
-     */
-    public String getName() {
-        String parts[];
-
-        parts = ctx.getCallerPrincipal().getName().split(";", 3);
-        if (parts.length > 0) {
-            if (parts[0].equals("anonymous"))
-                return "system";
-            else
-                return parts[0];
-        }
-
-        return null;
-    }
-
-    /**
-     * Returns the system user's session id associated with this context. Please
-     * note that we concat username, sessionId, and locale on initial login and
-     * you will need a special login class for JBOSS to parse the username.
-     */
-    public String getSessionId() {
-        String parts[];
-
-        parts = ctx.getCallerPrincipal().getName().split(";", 3);
-        // the user 'system' will not have session id
-        if (parts.length > 1)
-            return parts[1];
-
-        return "";
-    }
-
-    /**
-     * Returns the system user's locale associated with this context. Please
-     * note that we concat username, sessionId, and locale on initial login and
-     * you will need a special login class for JBOSS to parse the username.
-     */
-    public String getLocale() {
-        String parts[];
-
-        parts = ctx.getCallerPrincipal().getName().split(";", 3);
-        // the user 'system' will not have locale
-        if (parts.length > 2)
-            return parts[2];
-
-        return "";
-    }
-
-    /**
      * Returns the system user data associated with this context.
      */
     public SystemUserVO getSystemUser() {
         Element e;
         String name;
 
-        name = getName();
+        name = User.getName(ctx);
         e = cache.get(name);
         if (e != null)
             return (SystemUserVO)e.getValue();
@@ -229,7 +167,7 @@ public class UserCacheBean {
      * module for the specified operation.
      */
     public void applyPermission(String module, ModuleFlags flag) throws Exception {
-        if ( !getPermission().has(module, flag))
+        if (!getPermission().has(module, flag))
             throw new PermissionException(Messages.get().modulePermException(flag.name(), module));
     }
 
@@ -238,7 +176,7 @@ public class UserCacheBean {
      * section for the specified operation.
      */
     public void applyPermission(String section, SectionFlags flag) throws Exception {
-        if ( !getPermission().has(section, flag))
+        if (!getPermission().has(section, flag))
             throw new PermissionException(Messages.get().sectionPermException(flag.name(), section));
     }
 
@@ -264,7 +202,7 @@ public class UserCacheBean {
 
         name = null;
         try {
-            name = getName();
+            name = User.getName(ctx);
             e = permCache.get(name);
             if (e != null) {
                 data = (SystemUserPermission)e.getValue();
@@ -310,18 +248,19 @@ public class UserCacheBean {
      */
     public SystemUserPermission getPermission() {
         Element e;
-        String name, appName;
+        String name;
         SystemUserPermission data;
 
-        name = getName();
+        name = User.getName(ctx);
         e = permCache.get(name);
         if (e != null) {
             return (SystemUserPermission)e.getValue();
         }
 
         try {
-            appName = System.getProperty("org.openelis.system.security.application");
-            data = EJBFactory.getSecurity().fetchByApplicationAndLoginName(appName, name);
+            data = EJBFactory.getSecurity()
+                             .fetchByApplicationAndLoginName(Constants.systemProperty().SECURITY_APPLICATION,
+                                                             name);
             if (data != null) {
                 permCache.put(new Element(name, data));
                 cache.put(new Element(data.getLoginName(), data.getUser()));

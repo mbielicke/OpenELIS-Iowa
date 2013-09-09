@@ -38,6 +38,7 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -126,7 +127,7 @@ public class ShippingReportBean {
         Integer shippingId, orderId, prevOrderId, methodId;
         String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel,
                requestForm, instruction, dir, printstat, itemUri, uriPath, method,
-               costCenter,fromAptSuite, fromStreetAddr, toAptSuite, toStreetAddr;
+               costCenter,fromAptSuite, fromStreetAddr, toAptSuite, toStreetAddr, userName;
         URL url;
         File tempFile;
         HashMap<String, Object> jparam;
@@ -193,6 +194,7 @@ public class ShippingReportBean {
          * start the report
          */
         con = null;
+        userName = User.getName(ctx);
         try {
             if (printManifest) {
                 status.setMessage("Initializing report");
@@ -226,7 +228,7 @@ public class ShippingReportBean {
                     //
                     // print the manifest
                     //
-                    printstat = ReportUtil.print(tempFile, printer, 1);
+                    printstat = ReportUtil.print(tempFile, userName, printer, 1);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 } else {
                     tempFile = ReportUtil.saveForUpload(tempFile);
@@ -294,7 +296,7 @@ public class ShippingReportBean {
                                                          shipToAddr.getZipCode());
                     }
                     ps.close();
-                    printstat = ReportUtil.print(tempFile, barcodePrinter, 1);
+                    printstat = ReportUtil.print(tempFile, userName, barcodePrinter, 1);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 }
             }
@@ -330,7 +332,7 @@ public class ShippingReportBean {
                             data.getQuantity() > 0) {
                             itemUri = itemUri.replaceAll(PRN_PREFIX, "");
                             tempFile = new File(uriPath, itemUri);
-                            ReportUtil.printWithoutDelete(tempFile, printer, data.getQuantity());
+                            ReportUtil.printWithoutDelete(tempFile, userName, printer, data.getQuantity());
                         }
                     }
                     prevOrderId = orderId;

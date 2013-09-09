@@ -31,30 +31,30 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class TestReportBean {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext   ctx;
 
     @EJB
     private SessionCacheBean session;
 
     @EJB
-    private SectionBean     section;
+    private SectionBean      section;
 
     @EJB
-    private TestBean        test;
-    
+    private TestBean         test;
+
     @EJB
     private PrinterCacheBean printers;
-
-    @EJB
-    private UserCacheBean   userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -133,14 +133,14 @@ public class TestReportBean {
         detail = ReportUtil.getSingleParameter(param, "DETAIL");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
-		if (DataBaseUtil.isEmpty(detail) || DataBaseUtil.isEmpty(printer))
-			throw new InconsistencyException("You must specify the detail selection and printer for this report");
+        if (DataBaseUtil.isEmpty(detail) || DataBaseUtil.isEmpty(printer))
+            throw new InconsistencyException("You must specify the detail selection and printer for this report");
 
-		if ( !DataBaseUtil.isEmpty(section))
+        if (!DataBaseUtil.isEmpty(section))
             section = " and s.id " + section;
         else
             section = "";
-        if ( !DataBaseUtil.isEmpty(test))
+        if (!DataBaseUtil.isEmpty(test))
             test = " and t.id " + test;
         else
             test = "";
@@ -158,8 +158,8 @@ public class TestReportBean {
 
             tempFile = File.createTempFile("test", ".pdf", new File("/tmp"));
 
-            userName = userCache.getName();
-            
+            userName = User.getName(ctx);
+
             jparam = new HashMap<String, Object>();
             jparam.put("DETAIL", detail);
             jparam.put("SECTION", section);
@@ -182,7 +182,7 @@ public class TestReportBean {
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
+                printstat = ReportUtil.print(tempFile, userName, printer, 1);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);
@@ -233,11 +233,12 @@ public class TestReportBean {
             for (TestMethodVO n : t)
                 if ("N".equals(n.getIsActive()))
                     l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
-                                             n.getMethodName() + 
-                                             " ["+n.getActiveBegin()+".."+n.getActiveEnd()+"]"));
+                                                                       n.getMethodName() + " [" +
+                                                                       n.getActiveBegin() + ".." +
+                                                                       n.getActiveEnd() + "]"));
                 else
                     l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
-                                             n.getMethodName()));
+                                                                       n.getMethodName()));
         } catch (Exception e) {
             e.printStackTrace();
         }

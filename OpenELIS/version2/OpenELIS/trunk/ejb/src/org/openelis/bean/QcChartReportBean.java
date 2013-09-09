@@ -11,7 +11,9 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 
 import net.sf.jasperreports.engine.JRExporter;
@@ -40,26 +42,28 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
 public class QcChartReportBean {
+
+    @Resource
+    private SessionContext        ctx;
+
     @EJB
     private SessionCacheBean      session;
 
     @EJB
     private WorksheetAnalysisBean worksheetAnalysis;
-    
-    @EJB
-    private CategoryCacheBean      categoryCache;
 
     @EJB
-    private AnalyteParameterBean   analyteParameter;
-    
-    @EJB
-    private UserCacheBean          userCache;
+    private CategoryCacheBean     categoryCache;
 
-    private static final Logger    log = Logger.getLogger("openelis");
+    @EJB
+    private AnalyteParameterBean  analyteParameter;
+
+    private static final Logger   log = Logger.getLogger("openelis");
 
     public QcChartReportViewVO fetchForQcChart(ArrayList<QueryData> paramList) throws Exception {
         Integer plot, qc, number, location;
@@ -75,8 +79,10 @@ public class QcChartReportBean {
 
         param = ReportUtil.getMapParameter(paramList);
 
-        worksheetCreatedDateFrom = ReportUtil.getSingleParameter(param, QcChartMeta.getWorksheetCreatedDateFrom());
-        worksheetCreatedDateTo = ReportUtil.getSingleParameter(param, QcChartMeta.getWorksheetCreatedDateTo());
+        worksheetCreatedDateFrom = ReportUtil.getSingleParameter(param,
+                                                                 QcChartMeta.getWorksheetCreatedDateFrom());
+        worksheetCreatedDateTo = ReportUtil.getSingleParameter(param,
+                                                               QcChartMeta.getWorksheetCreatedDateTo());
         numInstances = ReportUtil.getSingleParameter(param, QcChartMeta.getNumInstances());
         qcName = ReportUtil.getSingleParameter(param, QcChartMeta.getQCName());
         qcType = ReportUtil.getSingleParameter(param, QcChartMeta.getQCType());
@@ -90,7 +96,7 @@ public class QcChartReportBean {
         } catch (Exception e) {
             throw new InconsistencyException("You must specify a valid plot type, qc type, or location.");
         }
-        
+
         /*
          * The report can be run either by dates or number of instances going
          * back from now.
@@ -102,7 +108,8 @@ public class QcChartReportBean {
                 endDate = ReportUtil.getDate(worksheetCreatedDateTo);
                 resultList = worksheetAnalysis.fetchByDateForQcChart(startDate.getDate(),
                                                                      endDate.getDate(),
-                                                                     qcName, location);
+                                                                     qcName,
+                                                                     location);
             } else if (numInstances != null) {
                 number = Integer.parseInt(numInstances);
                 resultList = worksheetAnalysis.fetchByInstancesForQcChart(number, qcName, location);
@@ -271,10 +278,10 @@ public class QcChartReportBean {
 
             tempFile = File.createTempFile("qcreport", ".pdf", new File("/tmp"));
 
-            userName = userCache.getName();
+            userName = User.getName(ctx);
 
             jparam = new HashMap<String, Object>();
-            jparam.put("LOGNAME", userCache.getName());
+            jparam.put("LOGNAME", userName);
             jparam.put("QCNAME", qcName);
             jparam.put("USER_NAME", userName);
 
@@ -282,8 +289,7 @@ public class QcChartReportBean {
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, ds);
             jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM,
-                                 new FileOutputStream(tempFile));
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
             status.setMessage("Outputing report").setPercentComplete(20);
@@ -292,7 +298,7 @@ public class QcChartReportBean {
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
+                printstat = ReportUtil.print(tempFile, userName, printer, 1);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);
@@ -399,7 +405,7 @@ public class QcChartReportBean {
         vo = categoryCache.getBySystemName(worksheetFormat);
         list = vo.getDictionaryList();
         columns = new HashMap<String, Integer>();
-        for (i = 0; i < list.size(); i++ )
+        for (i = 0; i < list.size(); i++)
             columns.put(list.get(i).getSystemName(), i);
         map.put(worksheetFormat, columns);
     }
@@ -408,8 +414,7 @@ public class QcChartReportBean {
      * Retrieves values from columns of the worksheet depending on the
      * appropriate worksheet format and the column name.
      */
-    protected String getValue(String worksheetFormat, String columnName,
-                              QcChartResultVO result,
+    protected String getValue(String worksheetFormat, String columnName, QcChartResultVO result,
                               HashMap<String, HashMap<String, Integer>> map) throws Exception {
         Integer column;
         String value;
@@ -461,16 +466,16 @@ public class QcChartReportBean {
         numValue = qcList.size();
         sum = 0.0;
         recovery = 0.0;
-        for (i = 0; i < numValue; i++ )
+        for (i = 0; i < numValue; i++)
             sum += qcList.get(i).getPlotValue();
 
         if (QcChartReportViewVO.ReportType.SPIKE_CONC.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++ ) {
+            for (i = 0; i < numValue; i++) {
                 if (qcList.get(i).getValue2() != null)
                     recovery += Double.valueOf(qcList.get(i).getValue2());
             }
         } else if (QcChartReportViewVO.ReportType.SPIKE_PERCENT.equals(list.getReportType())) {
-            for (i = 0; i < numValue; i++ )
+            for (i = 0; i < numValue; i++)
                 recovery += qcList.get(i).getPlotValue();
         }
 
@@ -478,7 +483,7 @@ public class QcChartReportBean {
         meanRecovery = recovery / numValue;
         sqDiffSum = 0.0;
         if (numValue > 1) {
-            for (i = 0; i < numValue; i++ ) {
+            for (i = 0; i < numValue; i++) {
                 diff = qcList.get(i).getPlotValue() - mean;
                 sqDiffSum += diff * diff;
             }
@@ -494,7 +499,7 @@ public class QcChartReportBean {
             lWL = mean;
             lCL = mean;
         }
-        for (i = 0; i < numValue; i++ ) {
+        for (i = 0; i < numValue; i++) {
             value = qcList.get(i);
             value.setMean(mean);
             value.setMeanRecovery(meanRecovery);

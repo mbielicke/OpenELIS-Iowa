@@ -30,6 +30,7 @@ import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -124,7 +125,7 @@ public class VerificationReportBean {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        userName = userCache.getName();
+        userName = User.getName(ctx);
         
 //        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
 //        if (beginEntered != null && beginEntered.length() > 0)
@@ -204,7 +205,7 @@ public class VerificationReportBean {
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1, "Duplex=DuplexNoTumble");
+                printstat = ReportUtil.print(tempFile, userName, printer, 1, "Duplex=DuplexNoTumble");
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);

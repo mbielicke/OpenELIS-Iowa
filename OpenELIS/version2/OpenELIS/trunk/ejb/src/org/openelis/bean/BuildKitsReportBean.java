@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.io.File;
@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
@@ -47,31 +48,34 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class BuildKitsReportBean {
-    
-    @EJB
-    private SessionCacheBean session;
+    @Resource
+    private SessionContext      ctx;
 
     @EJB
-    private PrinterCacheBean      printer;
-	
-	@EJB
-    private DictionaryBean    dictionary;
-    
-    @EJB
-    private CategoryCacheBean     categoryCache;
+    private SessionCacheBean    session;
 
     @EJB
-    private LabelReportBean       labelReport;
+    private PrinterCacheBean    printer;
 
     @EJB
-    private OrderBean             order;
+    private CategoryCacheBean   categoryCache;
 
-    private static final Logger  log = Logger.getLogger("openelis");
+    @EJB
+    private LabelReportBean     labelReport;
+
+    @EJB
+    private OrderBean           order;
+
+    private static final Logger log = Logger.getLogger("openelis");
 
     public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<OptionListItem> list;
@@ -81,11 +85,10 @@ public class BuildKitsReportBean {
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("LOT_NUMBER", Prompt.Type.STRING).setPrompt("Lot #:")
-                                                               .setHidden(true));
+            p.add(new Prompt("LOT_NUMBER", Prompt.Type.STRING).setPrompt("Lot #:").setHidden(true));
             p.add(new Prompt("ORDER_ID", Prompt.Type.INTEGER).setPrompt("Order Id:")
                                                              .setHidden(true));
-            p.add(new Prompt("CREATED_DATE", Prompt.Type.DATETIME).setPrompt("Created Date:")                                                                  
+            p.add(new Prompt("CREATED_DATE", Prompt.Type.DATETIME).setPrompt("Created Date:")
                                                                   .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                                   .setDatetimeEndCode(Prompt.Datetime.DAY)
                                                                   .setHidden(true));
@@ -96,21 +99,21 @@ public class BuildKitsReportBean {
             p.add(new Prompt("ENDING_NUMBER", Prompt.Type.INTEGER).setPrompt("Ending #:")
                                                                   .setHidden(true));
             p.add(new Prompt("STARTING_NUMBER", Prompt.Type.INTEGER).setPrompt("Starting #:")
-                                                                    .setDefaultValue("1")                                                              
+                                                                    .setDefaultValue("1")
                                                                     .setWidth(30)
                                                                     .setRequired(true));
             p.add(new Prompt("NUMBER_OF_LABELS_PER_KIT", Prompt.Type.INTEGER).setPrompt("# Labels/Kit:")
-                                                                     .setDefaultValue("1")                                                              
-                                                                     .setWidth(30)
-                                                                     .setRequired(true));
+                                                                             .setDefaultValue("1")
+                                                                             .setWidth(30)
+                                                                             .setRequired(true));
             p.add(new Prompt("KIT_DESCRIPTION", Prompt.Type.STRING).setPrompt("Description:")
                                                                    .setHidden(true));
             d = categoryCache.getBySystemName("kit_special_instructions").getDictionaryList();
             list = getInstructions(d);
             p.add(new Prompt("SPECIAL_INSTRUCTIONS", Prompt.Type.ARRAY).setPrompt("Special Instructions:")
-                                                                        .setWidth(200)
-                                                                        .setOptionList(list)
-                                                                        .setMutiSelect(false));
+                                                                       .setWidth(200)
+                                                                       .setOptionList(list)
+                                                                       .setMutiSelect(false));
             list = printer.getListByType("zpl");
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Barcode Printer:")
                                                           .setWidth(150)
@@ -125,14 +128,13 @@ public class BuildKitsReportBean {
     }
 
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        int i,j, startNum, endNum, numLabels;
+        int i, j, startNum, endNum, numLabels;
         ReportStatus status;
         HashMap<String, QueryData> param;
-        String lotNumber, orderId, createdDate, expiredDate, kitDesc, specInstr,
-               printer, printstat;
+        String lotNumber, orderId, createdDate, expiredDate, kitDesc, specInstr, printer, printstat;
         PrintStream ps;
         File tempFile;
-        
+
         /*
          * push status into session so we can query it while the report is
          * running
@@ -153,10 +155,10 @@ public class BuildKitsReportBean {
         printer = ReportUtil.getSingleParameter(param, "BARCODE");
         startNum = 0;
         numLabels = 0;
-        
+
         if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify the order id and printer for this report");
-        
+
         //
         // find the order record
         //
@@ -168,7 +170,7 @@ public class BuildKitsReportBean {
             e.printStackTrace();
             throw e;
         }
-        
+
         try {
             startNum = Integer.parseInt(ReportUtil.getSingleParameter(param, "STARTING_NUMBER"));
         } catch (Exception e) {
@@ -177,19 +179,20 @@ public class BuildKitsReportBean {
             if (startNum < 1)
                 throw new InconsistencyException("Starting number must be at least 1");
         }
-        
+
         try {
-            numLabels = Integer.parseInt(ReportUtil.getSingleParameter(param, "NUMBER_OF_LABELS_PER_KIT"));
+            numLabels = Integer.parseInt(ReportUtil.getSingleParameter(param,
+                                                                       "NUMBER_OF_LABELS_PER_KIT"));
         } catch (Exception e) {
             throw new InconsistencyException("You must specify a valid number of labels per kit");
         } finally {
             if (numLabels < 1)
                 throw new InconsistencyException("Number of labels per kit must be at least 1");
         }
-        
+
         endNum = Integer.parseInt(ReportUtil.getSingleParameter(param, "ENDING_NUMBER"));
-        
-        log.info("Printing labels for order # "+orderId+" starting at "+ startNum);
+
+        log.info("Printing labels for order # " + orderId + " starting at " + startNum);
 
         status.setPercentComplete(50);
         /*
@@ -199,29 +202,36 @@ public class BuildKitsReportBean {
         ps = new PrintStream(tempFile);
         for (i = startNum; i <= endNum; i++) {
             for (j = 0; j < numLabels; j++) {
-                labelReport.kitLabel(ps, "State Hygienic Laboratory", "Iowa City 319-335-4500",
-                                     "Ankeny 515-725-1600", lotNumber, createdDate,
-                                     orderId + "." + i, expiredDate, kitDesc, specInstr);                
+                labelReport.kitLabel(ps,
+                                     "State Hygienic Laboratory",
+                                     "Iowa City 319-335-4500",
+                                     "Ankeny 515-725-1600",
+                                     lotNumber,
+                                     createdDate,
+                                     orderId + "." + i,
+                                     expiredDate,
+                                     kitDesc,
+                                     specInstr);
             }
         }
         ps.close();
-        
-        printstat = ReportUtil.print(tempFile, printer, 1);
+
+        printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, 1);
         status.setPercentComplete(100).setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
 
         return status;
     }
-    
+
     private ArrayList<OptionListItem> getInstructions(ArrayList<DictionaryDO> entries) {
         ArrayList<OptionListItem> list;
-        
+
         list = new ArrayList<OptionListItem>();
         list.add(new OptionListItem(null, ""));
         for (DictionaryDO data : entries) {
-            if ("Y".equals(data.getIsActive())) 
-                list.add(new OptionListItem(data.getEntry(), data.getEntry()));            
-        } 
-        
+            if ("Y".equals(data.getIsActive()))
+                list.add(new OptionListItem(data.getEntry(), data.getEntry()));
+        }
+
         return list;
     }
 }

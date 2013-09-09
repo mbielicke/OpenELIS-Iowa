@@ -25,42 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.addAnalyte;
-import static org.openelis.manager.OrderManager1Accessor.addAuxilliary;
-import static org.openelis.manager.OrderManager1Accessor.addContainer;
-import static org.openelis.manager.OrderManager1Accessor.addFill;
-import static org.openelis.manager.OrderManager1Accessor.addInternalNote;
-import static org.openelis.manager.OrderManager1Accessor.addItem;
-import static org.openelis.manager.OrderManager1Accessor.addOrganization;
-import static org.openelis.manager.OrderManager1Accessor.addReceipt;
-import static org.openelis.manager.OrderManager1Accessor.getAnalytes;
-import static org.openelis.manager.OrderManager1Accessor.getAuxilliary;
-import static org.openelis.manager.OrderManager1Accessor.getContainers;
-import static org.openelis.manager.OrderManager1Accessor.getCustomerNote;
-import static org.openelis.manager.OrderManager1Accessor.getFills;
-import static org.openelis.manager.OrderManager1Accessor.getInternalNotes;
-import static org.openelis.manager.OrderManager1Accessor.getItems;
-import static org.openelis.manager.OrderManager1Accessor.getOrder;
-import static org.openelis.manager.OrderManager1Accessor.getOrganizations;
-import static org.openelis.manager.OrderManager1Accessor.getRecurrence;
-import static org.openelis.manager.OrderManager1Accessor.getRemoved;
-import static org.openelis.manager.OrderManager1Accessor.getSampleNote;
-import static org.openelis.manager.OrderManager1Accessor.getShippingNote;
-import static org.openelis.manager.OrderManager1Accessor.getTests;
-import static org.openelis.manager.OrderManager1Accessor.setAnalytes;
-import static org.openelis.manager.OrderManager1Accessor.setAuxilliary;
-import static org.openelis.manager.OrderManager1Accessor.setContainers;
-import static org.openelis.manager.OrderManager1Accessor.setCustomerNote;
-import static org.openelis.manager.OrderManager1Accessor.setFills;
-import static org.openelis.manager.OrderManager1Accessor.setItems;
-import static org.openelis.manager.OrderManager1Accessor.setOrder;
-import static org.openelis.manager.OrderManager1Accessor.setOrganizations;
-import static org.openelis.manager.OrderManager1Accessor.setReceipts;
-import static org.openelis.manager.OrderManager1Accessor.setRecurrence;
-import static org.openelis.manager.OrderManager1Accessor.setRemoved;
-import static org.openelis.manager.OrderManager1Accessor.setSampleNote;
-import static org.openelis.manager.OrderManager1Accessor.setShippingNote;
-import static org.openelis.manager.OrderManager1Accessor.setTests;
+import static org.openelis.manager.OrderManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,8 +33,10 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
@@ -104,16 +71,17 @@ import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
 public class OrderManager1Bean {
 
-    @EJB
-    private LockBean              lock;
+    @Resource
+    private SessionContext        ctx;
 
     @EJB
-    private UserCacheBean         userCache;
+    private LockBean              lock;
 
     @EJB
     private OrderBean             order;
@@ -175,7 +143,7 @@ public class OrderManager1Bean {
         o = new OrderViewDO();
         o.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         o.setOrderedDate(now);
-        o.setRequestedBy(userCache.getName());
+        o.setRequestedBy(User.getName(ctx));
         setOrder(om, o);
         if (Constants.order().SEND_OUT.equals(type))
             o.setOrganization(new OrganizationDO());
@@ -384,7 +352,7 @@ public class OrderManager1Bean {
         newData.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
         newData.setOrderedDate(now);
         newData.setNeededInDays(oldm.getOrder().getNeededInDays());
-        newData.setRequestedBy(userCache.getName());
+        newData.setRequestedBy(User.getName(ctx));
         newData.setCostCenterId(oldm.getOrder().getCostCenterId());
         newData.setType(oldm.getOrder().getType());
         newData.setOrganization(oldm.getOrder().getOrganization());

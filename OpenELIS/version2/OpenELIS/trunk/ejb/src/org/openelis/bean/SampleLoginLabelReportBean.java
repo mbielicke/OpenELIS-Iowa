@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
@@ -23,13 +25,17 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
 public class SampleLoginLabelReportBean {
 
+    @Resource
+    private SessionContext      ctx;
+
     @EJB
-    private CategoryCacheBean    category;
+    private CategoryCacheBean   category;
 
     @EJB
     private DictionaryCacheBean dictionary;
@@ -38,18 +44,18 @@ public class SampleLoginLabelReportBean {
     private SessionCacheBean    session;
 
     @EJB
-    private SystemVariableBean   sysvar;
+    private SystemVariableBean  sysvar;
 
     @EJB
-    private SampleBean           sample;
+    private SampleBean          sample;
 
     @EJB
-    private PrinterCacheBean      printer;
+    private PrinterCacheBean    printer;
 
     @EJB
-    private LabelReportBean       labelReport;
+    private LabelReportBean     labelReport;
 
-    private static final Logger  log = Logger.getLogger("openelis");
+    private static final Logger log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for new setup accession login labels
@@ -164,13 +170,15 @@ public class SampleLoginLabelReportBean {
             data.setValue(String.valueOf(laccession + samples));
             sysvar.updateAsSystem(data);
         } catch (Exception e) {
-            log.log(Level.SEVERE, "System variable 'last_accession_number' is not available or valid", e);
+            log.log(Level.SEVERE,
+                    "System variable 'last_accession_number' is not available or valid",
+                    e);
             if (data != null)
                 sysvar.abortUpdate(data.getId());
             throw e;
         }
-        
-        log.fine("Starting at accession # "+laccession+" for "+samples+" labels");
+
+        log.fine("Starting at accession # " + laccession + " for " + samples + " labels");
 
         status.setPercentComplete(50);
         /*
@@ -178,15 +186,15 @@ public class SampleLoginLabelReportBean {
          */
         tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
         ps = new PrintStream(tempFile);
-        for (i = 0; i < samples; i++ ) {
-            laccession++ ;
+        for (i = 0; i < samples; i++) {
+            laccession++;
             labelReport.sampleLoginLabel(ps, laccession, -1, received, location);
-            for (j = 0; j < containers; j++ )
+            for (j = 0; j < containers; j++)
                 labelReport.sampleLoginLabel(ps, laccession, j, received, location);
         }
         ps.close();
 
-        printstat = ReportUtil.print(tempFile, printer, 1);
+        printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, 1);
         status.setPercentComplete(100).setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
 
         return status;
@@ -323,7 +331,7 @@ public class SampleLoginLabelReportBean {
                                     " has never been issued.\nYou need to run sample login label rather than additional label");
         }
 
-        log.info("Reprinting accession # "+accession+" for "+starting+" labels");
+        log.info("Reprinting accession # " + accession + " for " + starting + " labels");
 
         status.setPercentComplete(50);
         /*
@@ -331,11 +339,11 @@ public class SampleLoginLabelReportBean {
          */
         tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
         ps = new PrintStream(tempFile);
-        for (i = 0; i < containers; i++ )
+        for (i = 0; i < containers; i++)
             labelReport.sampleLoginLabel(ps, accession, i + starting, received, location);
         ps.close();
 
-        printstat = ReportUtil.print(tempFile, printer, 1);
+        printstat = ReportUtil.print(tempFile, User.getName(ctx), printer, 1);
         status.setPercentComplete(100).setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
 
         return status;

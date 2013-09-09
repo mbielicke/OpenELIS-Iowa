@@ -34,7 +34,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +57,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
@@ -92,7 +92,6 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.util.UTFResource;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
@@ -161,8 +160,6 @@ public class DataViewBean {
 
     private static final Logger             log  = Logger.getLogger("openelis");
 
-    private static UTFResource              resource;
-
     private static HashMap<Integer, String> dictEntryMap;
 
     @PostConstruct
@@ -200,20 +197,6 @@ public class DataViewBean {
 
         } catch (Throwable e) {
             log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
-        }
-
-        try {
-            if (resource == null) {
-                try {
-                    locale = userCache.getLocale();
-                } catch (Exception e) {
-                    locale = "en";
-                }
-                resource = UTFResource.getBundle("org.openelis.constants.OpenELISConstants",
-                                                 new Locale(locale));
-            }
-        } catch (Throwable e) {
-            log.log(Level.SEVERE, "Failed to initialize resource bundle", e);
         }
     }
 
@@ -610,8 +593,8 @@ public class DataViewBean {
         }
 
         if (!excludeResults || !excludeAuxData) {
-            allCols.add(resource.getString("analyte"));
-            allCols.add(resource.getString("value"));
+            allCols.add(Messages.get().analyte());
+            allCols.add(Messages.get().value());
         }
 
         comparator = new DataViewComparator();
@@ -1868,23 +1851,23 @@ public class DataViewBean {
 
         headers = new ArrayList<String>();
         if ("Y".equals(data.getAccessionNumber()))
-            headers.add(resource.getString("accessionNum"));
+            headers.add(Messages.get().accessionNum());
         if ("Y".equals(data.getRevision()))
-            headers.add(resource.getString("sampleRevision"));
+            headers.add(Messages.get().sampleRevision());
         if ("Y".equals(data.getCollectionDate()))
-            headers.add(resource.getString("collectionDate"));
+            headers.add(Messages.get().collectionDate());
         if ("Y".equals(data.getReceivedDate()))
-            headers.add(resource.getString("receivedDate"));
+            headers.add(Messages.get().receivedDate());
         if ("Y".equals(data.getEnteredDate()))
-            headers.add(resource.getString("enteredDate"));
+            headers.add(Messages.get().enteredDate());
         if ("Y".equals(data.getReleasedDate()))
-            headers.add(resource.getString("releasedDate"));
+            headers.add(Messages.get().releasedDate());
         if ("Y".equals(data.getStatusId()))
-            headers.add(resource.getString("sampleStatus"));
+            headers.add(Messages.get().sampleStatus());
         if ("Y".equals(data.getProjectName()))
-            headers.add(resource.getString("project"));
+            headers.add(Messages.get().project());
         if ("Y".equals(data.getClientReferenceHeader()))
-            headers.add(resource.getString("clntRef"));
+            headers.add(Messages.get().clntRef());
 
         return headers;
     }
@@ -1894,21 +1877,21 @@ public class DataViewBean {
 
         headers = new ArrayList<String>();
         if ("Y".equals(data.getOrganizationId()))
-            headers.add(resource.getString("organizationNum"));
+            headers.add(Messages.get().organizationNum());
         if ("Y".equals(data.getOrganizationName()))
-            headers.add(resource.getString("organizationName"));
+            headers.add(Messages.get().organizationName());
         if ("Y".equals(data.getOrganizationAttention()))
-            headers.add(resource.getString("attention"));
+            headers.add(Messages.get().attention());
         if ("Y".equals(data.getOrganizationAddressMultipleUnit()))
-            headers.add(resource.getString("aptSuite"));
+            headers.add(Messages.get().aptSuite());
         if ("Y".equals(data.getOrganizationAddressAddress()))
-            headers.add(resource.getString("address"));
+            headers.add(Messages.get().address());
         if ("Y".equals(data.getOrganizationAddressCity()))
-            headers.add(resource.getString("city"));
+            headers.add(Messages.get().city());
         if ("Y".equals(data.getOrganizationAddressState()))
-            headers.add(resource.getString("state"));
+            headers.add(Messages.get().state());
         if ("Y".equals(data.getOrganizationAddressZipCode()))
-            headers.add(resource.getString("zipcode"));
+            headers.add(Messages.get().zipcode());
 
         return headers;
     }
@@ -1918,17 +1901,17 @@ public class DataViewBean {
 
         headers = new ArrayList<String>();
         if ("Y".equals(data.getSampleItemTypeofSampleId()))
-            headers.add(resource.getString("sampleType"));
+            headers.add(Messages.get().sampleType());
         if ("Y".equals(data.getSampleItemSourceOfSampleId()))
-            headers.add(resource.getString("source"));
+            headers.add(Messages.get().source());
         if ("Y".equals(data.getSampleItemSourceOther()))
-            headers.add(resource.getString("sourceOther"));
+            headers.add(Messages.get().sourceOther());
         if ("Y".equals(data.getSampleItemContainerId()))
-            headers.add(resource.getString("container"));
+            headers.add(Messages.get().container());
         if ("Y".equals(data.getSampleItemContainerReference()))
-            headers.add(resource.getString("containerReference"));
+            headers.add(Messages.get().containerReference());
         if ("Y".equals(data.getSampleItemItemSequence()))
-            headers.add(resource.getString("sequence"));
+            headers.add(Messages.get().sequence());
 
         return headers;
     }
@@ -1938,35 +1921,35 @@ public class DataViewBean {
 
         headers = new ArrayList<String>();
         if ("Y".equals(data.getAnalysisId()))
-            headers.add(resource.getString("analysisId"));
+            headers.add(Messages.get().analysisId());
         if ("Y".equals(data.getAnalysisTestNameHeader()))
-            headers.add(resource.getString("test"));
+            headers.add(Messages.get().test());
         if ("Y".equals(data.getAnalysisTestMethodNameHeader()))
-            headers.add(resource.getString("method"));
+            headers.add(Messages.get().method());
         if ("Y".equals(data.getAnalysisStatusIdHeader()))
-            headers.add(resource.getString("analysisStatus"));
+            headers.add(Messages.get().analysisStatus());
         if ("Y".equals(data.getAnalysisRevision()))
-            headers.add(resource.getString("analysisRevision"));
+            headers.add(Messages.get().analysisRevision());
         if ("Y".equals(data.getAnalysisIsReportableHeader()))
-            headers.add(resource.getString("reportable"));
+            headers.add(Messages.get().reportable());
         if ("Y".equals(data.getAnalysisUnitOfMeasureId()))
-            headers.add(resource.getString("unit"));
+            headers.add(Messages.get().unit());
         if ("Y".equals(data.getAnalysisQaName()))
-            headers.add(resource.getString("QAEvent"));
+            headers.add(Messages.get().QAEvent());
         if ("Y".equals(data.getAnalysisCompletedDate()))
-            headers.add(resource.getString("completedDate"));
+            headers.add(Messages.get().completedDate());
         if ("Y".equals(data.getAnalysisCompletedBy()))
-            headers.add(resource.getString("completedBy"));
+            headers.add(Messages.get().completedBy());
         if ("Y".equals(data.getAnalysisReleasedDate()))
-            headers.add(resource.getString("releasedDate"));
+            headers.add(Messages.get().releasedDate());
         if ("Y".equals(data.getAnalysisReleasedBy()))
-            headers.add(resource.getString("releasedBy"));
+            headers.add(Messages.get().releasedBy());
         if ("Y".equals(data.getAnalysisStartedDate()))
-            headers.add(resource.getString("startedDate"));
+            headers.add(Messages.get().startedDate());
         if ("Y".equals(data.getAnalysisPrintedDate()))
-            headers.add(resource.getString("printedDate"));
+            headers.add(Messages.get().printedDate());
         if ("Y".equals(data.getAnalysisSectionName()))
-            headers.add(resource.getString("section"));
+            headers.add(Messages.get().section());
 
         return headers;
     }
@@ -1976,19 +1959,19 @@ public class DataViewBean {
 
         headers = new ArrayList<String>();
         if ("Y".equals(data.getSampleEnvironmentalIsHazardous()))
-            headers.add(resource.getString("hazardous"));
+            headers.add(Messages.get().hazardous());
         if ("Y".equals(data.getSampleEnvironmentalPriority()))
-            headers.add(resource.getString("priority"));
+            headers.add(Messages.get().priority());
         if ("Y".equals(data.getSampleEnvironmentalCollectorHeader()))
-            headers.add(resource.getString("collector"));
+            headers.add(Messages.get().collector());
         if ("Y".equals(data.getSampleEnvironmentalCollectorPhone()))
-            headers.add(resource.getString("phone"));
+            headers.add(Messages.get().phone());
         if ("Y".equals(data.getSampleEnvironmentalLocationHeader()))
-            headers.add(resource.getString("location"));
+            headers.add(Messages.get().location());
         if ("Y".equals(data.getSampleEnvironmentalLocationAddressCityHeader()))
-            headers.add(resource.getString("locationCity"));
+            headers.add(Messages.get().locationCity());
         if ("Y".equals(data.getSampleEnvironmentalDescription()))
-            headers.add(resource.getString("description"));
+            headers.add(Messages.get().description());
 
         return headers;
     }
@@ -1998,27 +1981,27 @@ public class DataViewBean {
 
         headers = new ArrayList<String>();
         if ("Y".equals(data.getSamplePrivateWellOwner()))
-            headers.add(resource.getString("owner"));
+            headers.add(Messages.get().owner());
         if ("Y".equals(data.getSamplePrivateWellCollector()))
-            headers.add(resource.getString("collector"));
+            headers.add(Messages.get().collector());
         if ("Y".equals(data.getSamplePrivateWellWellNumber()))
-            headers.add(resource.getString("wellNum"));
+            headers.add(Messages.get().wellNum());
         if ("Y".equals(data.getSamplePrivateWellReportToAddressWorkPhone()))
-            headers.add(resource.getString("phone"));
+            headers.add(Messages.get().phone());
         if ("Y".equals(data.getSamplePrivateWellReportToAddressFaxPhone()))
-            headers.add(resource.getString("faxNumber"));
+            headers.add(Messages.get().faxNumber());
         if ("Y".equals(data.getSamplePrivateWellLocation()))
-            headers.add(resource.getString("location"));
+            headers.add(Messages.get().location());
         if ("Y".equals(data.getSamplePrivateWellLocationAddressMultipleUnit()))
-            headers.add(resource.getString("locationAptSuite"));
+            headers.add(Messages.get().locationAptSuite());
         if ("Y".equals(data.getSamplePrivateWellLocationAddressStreetAddress()))
-            headers.add(resource.getString("locationAddress"));
+            headers.add(Messages.get().locationAddress());
         if ("Y".equals(data.getSamplePrivateWellLocationAddressCity()))
-            headers.add(resource.getString("locationCity"));
+            headers.add(Messages.get().locationCity());
         if ("Y".equals(data.getSamplePrivateWellLocationAddressState()))
-            headers.add(resource.getString("locationState"));
+            headers.add(Messages.get().locationState());
         if ("Y".equals(data.getSamplePrivateWellLocationAddressZipCode()))
-            headers.add(resource.getString("locationZipCode"));
+            headers.add(Messages.get().locationZipCode());
 
         return headers;
     }
@@ -2028,23 +2011,23 @@ public class DataViewBean {
 
         headers = new ArrayList<String>();
         if ("Y".equals(data.getSampleSDWISPwsId()))
-            headers.add(resource.getString("pwsId"));
+            headers.add(Messages.get().pwsId());
         if ("Y".equals(data.getSampleSDWISPwsName()))
-            headers.add(resource.getString("pwsName"));
+            headers.add(Messages.get().pwsName());
         if ("Y".equals(data.getSampleSDWISStateLabId()))
-            headers.add(resource.getString("stateLabNo"));
+            headers.add(Messages.get().stateLabNo());
         if ("Y".equals(data.getSampleSDWISFacilityId()))
-            headers.add(resource.getString("facilityId"));
+            headers.add(Messages.get().facilityId());
         if ("Y".equals(data.getSampleSDWISSampleTypeId()))
-            headers.add(resource.getString("sampleType"));
+            headers.add(Messages.get().sampleType());
         if ("Y".equals(data.getSampleSDWISSampleCategoryId()))
-            headers.add(resource.getString("sampleCat"));
+            headers.add(Messages.get().sampleCat());
         if ("Y".equals(data.getSampleSDWISSamplePointId()))
-            headers.add(resource.getString("samplePtId"));
+            headers.add(Messages.get().samplePtId());
         if ("Y".equals(data.getSampleSDWISLocation()))
-            headers.add(resource.getString("location"));
+            headers.add(Messages.get().location());
         if ("Y".equals(data.getSampleSDWISCollector()))
-            headers.add(resource.getString("collector"));
+            headers.add(Messages.get().collector());
 
         return headers;
     }
@@ -2308,7 +2291,7 @@ public class DataViewBean {
             cell = row.createCell(startCol++);
             if (analysis != null) {
                 isRep = "Y".equals(analysis.getIsReportable());
-                cell.setCellValue(isRep ? resource.getString("yes") : resource.getString("no"));
+                cell.setCellValue(isRep ? Messages.get().yes() : Messages.get().no());
             }
         }
         if ("Y".equals(data.getAnalysisUnitOfMeasureId())) {
@@ -2397,7 +2380,7 @@ public class DataViewBean {
             cell = row.createCell(startCol++);
             if (env != null) {
                 isHaz = "Y".equals(env.getIsHazardous());
-                cell.setCellValue(isHaz ? resource.getString("yes") : resource.getString("no"));
+                cell.setCellValue(isHaz ? Messages.get().yes() : Messages.get().no());
             }
         }
         if ("Y".equals(data.getSampleEnvironmentalPriority())) {

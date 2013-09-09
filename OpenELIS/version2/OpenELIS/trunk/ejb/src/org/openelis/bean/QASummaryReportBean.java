@@ -58,6 +58,7 @@ import org.openelis.ui.common.Prompt;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.utils.ReportUtil;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -79,9 +80,6 @@ public class QASummaryReportBean {
     
     @EJB
     private PrinterCacheBean printers;
-    
-    @EJB
-    private UserCacheBean    userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -200,7 +198,7 @@ public class QASummaryReportBean {
         else
             test = "";        
 
-        userName = userCache.getName();
+        userName = User.getName(ctx);
         /*
          * start the report
          */
@@ -238,7 +236,7 @@ public class QASummaryReportBean {
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
+                printstat = ReportUtil.print(tempFile, userName, printer, 1);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);
