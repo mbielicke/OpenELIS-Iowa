@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.shipping.client.ShippingServiceInt
+path: F759A94BC40AA67BDE55E9017B07543B.gwt.rpc

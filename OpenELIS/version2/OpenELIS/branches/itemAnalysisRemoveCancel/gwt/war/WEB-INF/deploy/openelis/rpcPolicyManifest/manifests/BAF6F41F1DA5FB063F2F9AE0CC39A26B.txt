@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.label.client.LabelServiceInt
+path: 6BE76E1DDDA4E32D1390594DACD35227.gwt.rpc

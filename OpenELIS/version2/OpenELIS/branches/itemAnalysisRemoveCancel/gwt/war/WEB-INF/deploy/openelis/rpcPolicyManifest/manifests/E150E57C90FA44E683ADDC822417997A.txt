@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.client.SampleLoginLabelReportServiceInt
+path: F4C3F7E3629C33B852A68994C981AB6A.gwt.rpc

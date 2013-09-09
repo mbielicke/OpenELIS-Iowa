@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.report.client.BuildKitsReportServiceInt
+path: E374FE0F3769B9EA0FA8CC2B7E7CA292.gwt.rpc

@@ -1,0 +1,2 @@
+serviceClass: org.openelis.modules.test.client.TestServiceInt
+path: D5AF839CB17D3DF9D572663FC9D1DCCD.gwt.rpc
