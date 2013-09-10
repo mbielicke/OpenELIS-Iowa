@@ -34,8 +34,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
@@ -71,11 +73,15 @@ import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.utils.User;
 
 @Stateless
 @SecurityDomain("openelis")
 public class WorksheetManager1Bean {
 
+    @Resource
+    private SessionContext               ctx;
+    
     @EJB
     AnalysisHelperBean                   aHelper;
     
@@ -146,7 +152,7 @@ public class WorksheetManager1Bean {
         w.setCreatedDate(now);
         w.setSystemUserId(userCache.getId());
         w.setStatusId(Constants.dictionary().WORKSHEET_WORKING);
-        w.setSystemUser(userCache.getName());
+        w.setSystemUser(User.getName(ctx));
 
         setWorksheet(wm, w);
 
