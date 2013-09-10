@@ -350,10 +350,12 @@ public class AuxDataTab extends Screen {
                 row = new TableDataRow(3);
                 row.cells.get(0).setValue(data.getIsReportable());
                 row.cells.get(1).setValue(field.getAnalyteName());
-                if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
-                    row.cells.get(2).setValue(data.getDictionary());
-                else
-                    row.cells.get(2).setValue(data.getValue());
+                if (state != State.QUERY) {
+                    if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()))
+                        row.cells.get(2).setValue(data.getDictionary());
+                    else
+                        row.cells.get(2).setValue(data.getValue());
+                }
 
                 validatorItem = AuxDataUtil.getValidatorForValues(values);
                 row.data = validatorItem;
@@ -374,7 +376,7 @@ public class AuxDataTab extends Screen {
             errors = AuxDataUtil.addAuxGroupsFromAuxFields(fields, manager);
             DataChangeEvent.fire(this);
             // auxValsTable.fireEvents(true);
-            if (errors != null && errors.size() > 0)
+            if (errors != null && errors.size() > 0 && state != State.QUERY)
                 showErrors(errors);
         } catch (Exception e) {
             Window.alert(e.getMessage());
