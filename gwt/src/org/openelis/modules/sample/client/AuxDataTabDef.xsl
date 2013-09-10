@@ -115,7 +115,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'description')" />:
           </text>
-          <textbox key="auxDesc" width="275" style="ScreenTextboxDisplayOnly" field="String" />
+          <textbox key="auxDesc" width="250" style="ScreenTextboxDisplayOnly" field="String" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>

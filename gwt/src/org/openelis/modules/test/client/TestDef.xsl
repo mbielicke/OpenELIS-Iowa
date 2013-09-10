@@ -45,7 +45,7 @@ UIRF Software License are applicable instead of those above.
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Test" name="{resource:getString($constants,'test')}">
       <HorizontalPanel padding="0" spacing="0">
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225" height="100%">
+          <HorizontalPanel width="225">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>

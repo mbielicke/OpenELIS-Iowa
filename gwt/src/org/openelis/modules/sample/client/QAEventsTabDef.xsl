@@ -40,7 +40,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:template name="QAEventsTab">
     <HorizontalPanel padding="0" spacing="0">
       <VerticalPanel>
-        <table key="sampleQATable" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="analysisQATable,analysisQATable" title="" width="auto">
+        <table key="sampleQATable" maxRows="7" showScroll="ALWAYS" style="ScreenTableWithSides" tab="analysisQATable,analysisQATable" title="" width="auto">
           <col header="{resource:getString($constants,'sampleQAEvent')}" key="{meta:getSampleSubQaName()}" width="172">
             <label field="String" />
           </col>
@@ -80,7 +80,7 @@ UIRF Software License are applicable instead of those above.
       </VerticalPanel>
       <HorizontalPanel width="10" />
       <VerticalPanel>
-        <table key="analysisQATable" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="sampleQATable,sampleQATable" title="" width="auto">
+        <table key="analysisQATable" maxRows="7" showScroll="ALWAYS" style="ScreenTableWithSides" tab="sampleQATable,sampleQATable" title="" width="auto">
           <col header="{resource:getString($constants,'analysisQAEvent')}" key="{meta:getAnalysisSubQaName()}" width="172">
             <label field="String" />
           </col>
