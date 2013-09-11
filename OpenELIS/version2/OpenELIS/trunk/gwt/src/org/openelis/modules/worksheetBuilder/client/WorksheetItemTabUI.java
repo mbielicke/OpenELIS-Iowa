@@ -840,6 +840,7 @@ public class WorksheetItemTabUI extends Screen {
                                             public void onAction(ActionEvent<WorksheetAnalysisSelectionScreenUI.Action> event) {
                                                 int index;
                                                 ArrayList<WorksheetAnalysisViewDO> list, newData;
+                                                HashMap<Integer, Integer> qcLinkMap;
                                                 Integer fromWorksheetId, selectedRows[];
                                                 WorksheetItemDO itemDO;
                                                 WorksheetAnalysisViewDO data;
@@ -865,20 +866,27 @@ public class WorksheetItemTabUI extends Screen {
                                                             manualAnalysisUids = new ArrayList<String>();
 
                                                         fromWorksheetId = null;
+                                                        qcLinkMap = new HashMap<Integer, Integer>();
                                                         for (WorksheetAnalysisViewDO waDO : list) {
                                                             if (fromWorksheetId == null)
                                                                 fromWorksheetId = waDO.getWorksheetId();
                                                             
                                                             itemDO = manager.item.add(index++);
                                                             data = manager.analysis.add(itemDO);
+                                                            qcLinkMap.put(waDO.getId(), data.getId());
                                                             copyDO(waDO, data);
                                                             data.setIsFromOther("Y");
                                                             newData.add(data);
                                                             manualAnalysisUids.add(manager.getUid(data));
                                                         }
+                                                        
+                                                        for (WorksheetAnalysisViewDO waDO : newData) {
+                                                            if (waDO.getWorksheetAnalysisId() != null)
+                                                                waDO.setWorksheetAnalysisId(qcLinkMap.get(waDO.getWorksheetAnalysisId()));
+                                                        }
 
                                                         try {
-                                                            manager = WorksheetBuilderService.get().initializeResultsFromOther(manager, newData, fromWorksheetId);
+                                                            manager = WorksheetBuilderService.get().initializeResultsFromOther(manager, list, newData, fromWorksheetId);
                                                             bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
                                                         } catch (Exception anyE) {
                                                             Window.alert(anyE.getMessage());

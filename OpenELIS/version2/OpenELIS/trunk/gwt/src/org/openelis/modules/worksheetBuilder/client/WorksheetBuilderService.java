@@ -162,18 +162,20 @@ public class WorksheetBuilderService implements WorksheetBuilderServiceInt,
     }
 
     @Override
-    public void initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses,
+    public void initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                           ArrayList<WorksheetAnalysisViewDO> toAnalyses, 
                                            Integer fromWorksheetId, AsyncCallback<WorksheetManager1> callback) {
-        service.initializeResultsFromOther(wm, analyses, fromWorksheetId, callback);
+        service.initializeResultsFromOther(wm, fromAnalyses, toAnalyses, fromWorksheetId, callback);
     }
 
     @Override
-    public WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses,
+    public WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                                        ArrayList<WorksheetAnalysisViewDO> toAnalyses,
                                                         Integer fromWorksheetId) throws Exception {
         Callback<WorksheetManager1> callback;
         
         callback = new Callback<WorksheetManager1>();
-        service.initializeResultsFromOther(wm, analyses, fromWorksheetId, callback);
+        service.initializeResultsFromOther(wm, fromAnalyses, toAnalyses, fromWorksheetId, callback);
         return callback.getResult();
     }
 

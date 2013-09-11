@@ -121,10 +121,12 @@ public class WorksheetBuilderServlet extends RemoteServlet implements WorksheetB
         }
     }
     
-    public WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses,
+    public WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                                        ArrayList<WorksheetAnalysisViewDO> toAnalyses,
                                                         Integer fromWorksheetId) throws Exception {
         try {
-            return worksheetManager.initializeResultsFromOther(wm, analyses, fromWorksheetId);
+            return worksheetManager.initializeResultsFromOther(wm, fromAnalyses,
+                                                               toAnalyses, fromWorksheetId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
