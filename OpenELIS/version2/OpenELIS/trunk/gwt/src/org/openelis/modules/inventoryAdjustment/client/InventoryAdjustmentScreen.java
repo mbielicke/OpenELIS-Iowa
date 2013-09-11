@@ -105,7 +105,8 @@ public class InventoryAdjustmentScreen extends Screen {
 
     private Dropdown<Integer>          inventoryItemStoreId;
     private CalendarLookUp             adjustmentDate;
-    private TextBox                    id, description, systemUserId;
+    private TextBox                    description, systemUserId;
+    private TextBox<Integer>           id;
     private AutoComplete<Integer>      inventoryLocationId,
                     inventoryLocationInventoryItemName;
 
@@ -261,7 +262,7 @@ public class InventoryAdjustmentScreen extends Screen {
                              }
                          });
 
-        id = (TextBox)def.getWidget(InventoryAdjustmentMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(InventoryAdjustmentMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getInventoryAdjustment().getId());

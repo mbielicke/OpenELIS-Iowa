@@ -71,8 +71,8 @@ public class FinalReportSingleReprintScreen extends Screen {
     private FormVO                               data;
     private SampleManager                        manager;
     private FinalReportSingleReprintScreen       screen;
-    private TextBox                              accessionNumber, faxNumber, from, toName,
-                                                 toCompany;
+    private TextBox                              faxNumber, from, toName, toCompany;
+    private TextBox<Integer>                     accessionNumber;
     private CheckBox                             print, fax;
     private Dropdown<Integer>                    organization;
     private Dropdown<String>                     printer, destination;
@@ -96,7 +96,7 @@ public class FinalReportSingleReprintScreen extends Screen {
     private void initialize() {
         screen = this;
         
-        accessionNumber = (TextBox)def.getWidget("accessionNumber");
+        accessionNumber = (TextBox<Integer>)def.getWidget("accessionNumber");
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setFieldValue(data.getAccessionNumber());

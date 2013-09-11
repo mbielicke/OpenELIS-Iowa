@@ -85,8 +85,8 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
 
     private CalendarLookUp   effBeginDt, effEndDt;
     private TextBox          number0, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
-                             dPwsStTypeCd, activityStatusCd, dPopulationCount, startDay, startMonth, endDay,
-                             endMonth;
+                             dPwsStTypeCd, activityStatusCd;
+    private TextBox<Integer> dPopulationCount, startDay, startMonth, endDay, endMonth;
     private TextArea         activityRsnTxt;
     private AppButton        queryButton, previousButton, nextButton, commitButton, abortButton,
                              selectButton;
@@ -318,7 +318,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         });
 
-        dPopulationCount = (TextBox)def.getWidget(PWSMeta.getDPopulationCount());
+        dPopulationCount = (TextBox<Integer>)def.getWidget(PWSMeta.getDPopulationCount());
         addScreenHandler(dPopulationCount, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 dPopulationCount.setFieldValue(manager.getPWS().getDPopulationCount());
@@ -350,7 +350,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         });
 
-        startDay = (TextBox)def.getWidget(PWSMeta.getStartDay());
+        startDay = (TextBox<Integer>)def.getWidget(PWSMeta.getStartDay());
         addScreenHandler(startDay, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 startDay.setFieldValue(manager.getPWS().getStartDay());
@@ -366,7 +366,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         });
 
-        startMonth = (TextBox)def.getWidget(PWSMeta.getStartMonth());
+        startMonth = (TextBox<Integer>)def.getWidget(PWSMeta.getStartMonth());
         addScreenHandler(startMonth, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 startMonth.setFieldValue(manager.getPWS().getStartMonth());
@@ -398,7 +398,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         });
 
-        endDay = (TextBox)def.getWidget(PWSMeta.getEndDay());
+        endDay = (TextBox<Integer>)def.getWidget(PWSMeta.getEndDay());
         addScreenHandler(endDay, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 endDay.setFieldValue(manager.getPWS().getEndDay());
@@ -414,7 +414,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         });
 
-        endMonth = (TextBox)def.getWidget(PWSMeta.getEndMonth());
+        endMonth = (TextBox<Integer>)def.getWidget(PWSMeta.getEndMonth());
         addScreenHandler(endMonth, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 endMonth.setFieldValue(manager.getPWS().getEndMonth());

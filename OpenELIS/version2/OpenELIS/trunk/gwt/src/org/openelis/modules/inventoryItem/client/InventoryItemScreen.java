@@ -108,9 +108,9 @@ public class InventoryItemScreen extends Screen {
                     updateButton, commitButton, abortButton;
     protected MenuItem            duplicate, invItemHistory, invComponentHistory,
                     invLocationHistory;
-    private TextBox               id, name, description, quantityMinLevel,
-                    quantityToReorder, quantityMaxLevel, productUri, parentRatio,
-                    averageLeadTime, averageCost, averageDailyUse;
+    private TextBox               name, description, productUri, averageCost;
+    private TextBox<Integer>      id, quantityMinLevel, quantityToReorder, quantityMaxLevel,
+                                  parentRatio, averageLeadTime, averageDailyUse;
     private CheckBox              isActive, isReorderAuto, isLotMaintained,
                     isSerialMaintained, isBulk, isNotForSale, isSubAssembly, isLabor,
                     isNotInventoried;
@@ -288,7 +288,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        id = (TextBox)def.getWidget(InventoryItemMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(InventoryItemMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getInventoryItem().getId());
@@ -372,7 +372,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        quantityMinLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMinLevel());
+        quantityMinLevel = (TextBox<Integer>)def.getWidget(InventoryItemMeta.getQuantityMinLevel());
         addScreenHandler(quantityMinLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 quantityMinLevel.setFieldValue(manager.getInventoryItem()
@@ -390,7 +390,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        quantityToReorder = (TextBox)def.getWidget(InventoryItemMeta.getQuantityToReorder());
+        quantityToReorder = (TextBox<Integer>)def.getWidget(InventoryItemMeta.getQuantityToReorder());
         addScreenHandler(quantityToReorder, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 quantityToReorder.setFieldValue(manager.getInventoryItem()
@@ -408,7 +408,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        quantityMaxLevel = (TextBox)def.getWidget(InventoryItemMeta.getQuantityMaxLevel());
+        quantityMaxLevel = (TextBox<Integer>)def.getWidget(InventoryItemMeta.getQuantityMaxLevel());
         addScreenHandler(quantityMaxLevel, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 quantityMaxLevel.setFieldValue(manager.getInventoryItem()
@@ -670,7 +670,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        parentRatio = (TextBox)def.getWidget(InventoryItemMeta.getParentRatio());
+        parentRatio = (TextBox<Integer>)def.getWidget(InventoryItemMeta.getParentRatio());
         addScreenHandler(parentRatio, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 parentRatio.setFieldValue(manager.getInventoryItem().getParentRatio());
@@ -687,7 +687,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        averageLeadTime = (TextBox)def.getWidget(InventoryItemMeta.getAverageLeadTime());
+        averageLeadTime = (TextBox<Integer>)def.getWidget(InventoryItemMeta.getAverageLeadTime());
         addScreenHandler(averageLeadTime, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 averageLeadTime.setFieldValue(manager.getInventoryItem().getAverageLeadTime());
@@ -715,7 +715,7 @@ public class InventoryItemScreen extends Screen {
             }
         });
 
-        averageDailyUse = (TextBox)def.getWidget(InventoryItemMeta.getAverageDailyUse());
+        averageDailyUse = (TextBox<Integer>)def.getWidget(InventoryItemMeta.getAverageDailyUse());
         addScreenHandler(averageDailyUse, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 averageDailyUse.setFieldValue(manager.getInventoryItem().getAverageDailyUse());

@@ -103,7 +103,8 @@ public class BuildKitsScreen extends Screen {
     private BuildKitManager         manager;
     private AppButton               addButton, commitButton, abortButton;
     private CalendarLookUp          locationExpirationDate;
-    private TextBox                 numRequested, qcReference, locationLotNumber;
+    private TextBox                 qcReference, locationLotNumber;
+    private TextBox<Integer>        numRequested;
     private AutoComplete<Integer>   name, locationStorageLocationName,
                     componentLocationStorageLocationName;
     private AppButton               transferButton;
@@ -283,12 +284,12 @@ public class BuildKitsScreen extends Screen {
             }
         });
 
-        numRequested = (TextBox)def.getWidget("numRequested");
+        numRequested = (TextBox<Integer>)def.getWidget("numRequested");
         addScreenHandler(numRequested, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     if (manager == null || manager.getInventoryItem() == null) {
-                        numRequested.setValue(null);
+                        numRequested.setFieldValue(null);
                         numRequested.enable(false);
                         return;
                     }
@@ -300,8 +301,7 @@ public class BuildKitsScreen extends Screen {
                 if (state == State.ADD && name.getValue() != null) {
                     numRequested.enable(true);
                     if (manager.getInventoryReceipt() != null)
-                        numRequested.setValue(DataBaseUtil.toString(manager.getInventoryReceipt()
-                                                                           .getQuantityReceived()));
+                        numRequested.setFieldValue(manager.getInventoryReceipt().getQuantityReceived());
                 } else {
                     numRequested.enable(false);
                 }

@@ -91,7 +91,8 @@ public class InternalOrderScreen extends Screen {
     private AppButton        queryButton, previousButton, nextButton, addButton,
                     updateButton, commitButton, abortButton;
     private MenuItem         duplicate, orderHistory, itemHistory;
-    private TextBox          id, neededInDays, requestedBy;
+    private TextBox          requestedBy;
+    private TextBox<Integer> id, neededInDays;
     private CalendarLookUp   orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
     private TabPanel          tabPanel;
@@ -262,7 +263,7 @@ public class InternalOrderScreen extends Screen {
         //
         // screen fields
         //
-        id = (TextBox)def.getWidget(OrderMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(OrderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getOrder().getId());
@@ -278,7 +279,7 @@ public class InternalOrderScreen extends Screen {
             }
         });
 
-        neededInDays = (TextBox)def.getWidget(OrderMeta.getNeededInDays());
+        neededInDays = (TextBox<Integer>)def.getWidget(OrderMeta.getNeededInDays());
         addScreenHandler(neededInDays, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 neededInDays.setFieldValue(manager.getOrder().getNeededInDays());

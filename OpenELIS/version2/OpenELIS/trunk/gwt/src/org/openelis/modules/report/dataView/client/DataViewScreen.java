@@ -75,8 +75,9 @@ import com.google.gwt.user.client.ui.TabPanel;
 public class DataViewScreen extends Screen {
     private DataViewVO           data;
     private DataViewScreen       screen;
-    private TextBox              analysisTestName, analysisMethodName, accessionNumberFrom,
-                                 accessionNumberTo, clientReference, reportToOrganizationName;
+    private TextBox              analysisTestName, analysisMethodName, clientReference,
+                                 reportToOrganizationName;
+    private TextBox<Integer>     accessionNumberFrom, accessionNumberTo; 
     private CheckBox             excludeResultOverride, excludeResults, excludeAuxData;
     private Dropdown<Integer>    analysisStatusId, projectId;
     private Dropdown<String>     analysisIsReportable;

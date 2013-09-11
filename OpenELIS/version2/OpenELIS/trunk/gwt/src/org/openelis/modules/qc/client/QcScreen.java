@@ -96,7 +96,8 @@ public class QcScreen extends Screen {
     private ScreenNavigator       nav;
     private AutoComplete<Integer> inventoryItem;
     private Dropdown<Integer>     typeId;
-    private TextBox               id, name, source;
+    private TextBox               name, source;
+    private TextBox<Integer>      id;
     private CheckBox              isActive;
     private TabPanel              tabPanel;
 
@@ -268,7 +269,7 @@ public class QcScreen extends Screen {
         //
         // screen fields
         //
-        id = (TextBox)def.getWidget(QcMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(QcMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getQc().getId());

@@ -105,13 +105,14 @@ public class ShippingScreen extends Screen implements
     private Tabs                  tab;
 
     private AppButton             queryButton, previousButton, nextButton, addButton,
-                    updateButton, commitButton, abortButton;
+                                  updateButton, commitButton, abortButton;
     protected MenuItem            processShipping, print, shippingHistory,
-                    shippingItemHistory, shippingTrackingHistory;
-    private TextBox               id, numberOfPackages, cost, shippedToAttention,
-                    shippedToAddressMultipleUnit, processedById,
-                    shippedToAddressStreetAddress, shippedToAddressCity,
-                    shippedToAddressState, shippedToAddressZipCode;
+                                  shippingItemHistory, shippingTrackingHistory;
+    private TextBox               cost, shippedToAttention,
+                                  shippedToAddressMultipleUnit, processedById,
+                                  shippedToAddressStreetAddress, shippedToAddressCity,
+                                  shippedToAddressState, shippedToAddressZipCode;
+    private TextBox<Integer>      id, numberOfPackages;
     private CalendarLookUp        shippedDate, processedDate;
     private Dropdown<Integer>     statusId, shippedFromId, shippedMethodId;
     private AutoComplete<Integer> shippedToName;
@@ -381,7 +382,7 @@ public class ShippingScreen extends Screen implements
             }
         });
 
-        numberOfPackages = (TextBox)def.getWidget(ShippingMeta.getNumberOfPackages());
+        numberOfPackages = (TextBox<Integer>)def.getWidget(ShippingMeta.getNumberOfPackages());
         addScreenHandler(numberOfPackages, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 numberOfPackages.setFieldValue(manager.getShipping().getNumberOfPackages());

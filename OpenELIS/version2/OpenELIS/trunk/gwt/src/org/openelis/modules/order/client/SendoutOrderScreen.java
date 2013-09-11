@@ -133,10 +133,10 @@ public class SendoutOrderScreen extends Screen {
     private MenuItem                     duplicate, shippingInfo, orderRequestForm,
                     orderHistory, organizationHistory, itemHistory, testHistory,
                     containerHistory;
-    private TextBox                      id, neededInDays, numberOfForms, requestedBy,
-                    organizationAttention, organizationAddressMultipleUnit,
-                    organizationAddressStreetAddress, organizationAddressCity,
-                    organizationAddressZipCode;
+    private TextBox                      requestedBy, organizationAttention, organizationAddressMultipleUnit,
+                                         organizationAddressStreetAddress, organizationAddressCity,
+                                         organizationAddressZipCode;
+    private TextBox<Integer>             id, neededInDays, numberOfForms;
     private CalendarLookUp               orderedDate;
     private Dropdown<Integer>            status, shipFrom, costCenter;
     private Dropdown<String>             organizationAddressState;
@@ -401,7 +401,7 @@ public class SendoutOrderScreen extends Screen {
         //
         // screen fields
         //
-        id = (TextBox)def.getWidget(OrderMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(OrderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getOrder().getId());
@@ -417,7 +417,7 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        neededInDays = (TextBox)def.getWidget(OrderMeta.getNeededInDays());
+        neededInDays = (TextBox<Integer>)def.getWidget(OrderMeta.getNeededInDays());
         addScreenHandler(neededInDays, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 neededInDays.setFieldValue(manager.getOrder().getNeededInDays());
@@ -434,7 +434,7 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        numberOfForms = (TextBox)def.getWidget(OrderMeta.getNumberOfForms());
+        numberOfForms = (TextBox<Integer>)def.getWidget(OrderMeta.getNumberOfForms());
         addScreenHandler(numberOfForms, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 numberOfForms.setFieldValue(manager.getOrder().getNumberOfForms());

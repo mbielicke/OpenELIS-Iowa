@@ -131,7 +131,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        subsetCapacity = (TextBox)def.getWidget(TestMeta.getWorksheetSubsetCapacity());
+        subsetCapacity = (TextBox<Integer>)def.getWidget(TestMeta.getWorksheetSubsetCapacity());
         addScreenHandler(subsetCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
@@ -157,7 +157,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        totalCapacity = (TextBox)def.getWidget(TestMeta.getWorksheetTotalCapacity());
+        totalCapacity = (TextBox<Integer>)def.getWidget(TestMeta.getWorksheetTotalCapacity());
         addScreenHandler(totalCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
