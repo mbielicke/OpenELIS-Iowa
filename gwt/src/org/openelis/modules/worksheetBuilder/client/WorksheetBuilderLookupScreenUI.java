@@ -499,14 +499,10 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         ArrayList<Item<Integer>> model;
         Item<Integer>            row;
         
+        model = new ArrayList<Item<Integer>>();
         if (list == null || list.size() == 0) {
             window.setDone(Messages.get().noRecordsFound());
-            
-            analysesTable.clear();
         } else {
-            window.setDone(Messages.get().queryingComplete());
-
-            model = new ArrayList<Item<Integer>>();
             for (AnalysisViewVO analysisRow : list) {
                 row = new Item<Integer>(12);
                 row.setKey(analysisRow.getAnalysisId());
@@ -536,9 +532,10 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                 model.add(row);
             }
 
-            analysesTable.setModel(model);
-            showAnalytes();
+            window.setDone(Messages.get().queryingComplete());
         }
+
+        analysesTable.setModel(model);
     }
     
     /**
