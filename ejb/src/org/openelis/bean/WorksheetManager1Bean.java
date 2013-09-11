@@ -1168,9 +1168,10 @@ public class WorksheetManager1Bean {
     }
     
     public WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm,
-                                                        ArrayList<WorksheetAnalysisViewDO> analyses,
+                                                        ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                                        ArrayList<WorksheetAnalysisViewDO> toAnalyses,
                                                         Integer fromWorksheetId) throws Exception {
-        int i;
+        int a, i;
         ArrayList<IdNameVO> columnNames;
         ArrayList<WorksheetQcResultViewDO> fromWqrVDOs;
         ArrayList<WorksheetResultViewDO> fromWrVDOs;
@@ -1178,6 +1179,7 @@ public class WorksheetManager1Bean {
         HashMap<String, Integer> toColumnMap;
         Integer toIndex;
         String fromName;
+        WorksheetAnalysisViewDO fromWaVDO, toWaVDO;
         WorksheetQcResultViewDO toWqrVDO;
         WorksheetResultViewDO toWrVDO;
         WorksheetViewDO fromWorksheet, toWorksheet;
@@ -1198,11 +1200,13 @@ public class WorksheetManager1Bean {
                 toColumnMap.put(vo.getName(), vo.getId());
         }
 
-        for (WorksheetAnalysisViewDO waVDO : analyses) {
-            if (waVDO.getAnalysisId() != null) {
-                fromWrVDOs = wResult.fetchByWorksheetAnalysisId(waVDO.getId());
+        for (a = 0; a < fromAnalyses.size() && a < toAnalyses.size(); a++) {
+            fromWaVDO = fromAnalyses.get(a);
+            toWaVDO = toAnalyses.get(a);
+            if (fromWaVDO.getAnalysisId() != null) {
+                fromWrVDOs = wResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
                 for (WorksheetResultViewDO fromWrVDO : fromWrVDOs) {
-                    toWrVDO = wm.result.add(waVDO);
+                    toWrVDO = wm.result.add(toWaVDO);
                     toWrVDO.setTestAnalyteId(fromWrVDO.getTestAnalyteId());
                     toWrVDO.setTestResultId(fromWrVDO.getTestResultId());
                     toWrVDO.setResultRow(fromWrVDO.getResultRow());
@@ -1225,10 +1229,10 @@ public class WorksheetManager1Bean {
                     toWrVDO.setAnalyteExternalId(fromWrVDO.getAnalyteExternalId());
                     toWrVDO.setResultGroup(fromWrVDO.getResultGroup());
                 }
-            } else if (waVDO.getQcLotId() != null) {
-                fromWqrVDOs = wqResult.fetchByWorksheetAnalysisId(waVDO.getId());
+            } else if (fromWaVDO.getQcLotId() != null) {
+                fromWqrVDOs = wqResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
                 for (WorksheetQcResultViewDO fromWqrVDO : fromWqrVDOs) {
-                    toWqrVDO = wm.qcResult.add(waVDO);
+                    toWqrVDO = wm.qcResult.add(toWaVDO);
                     toWqrVDO.setSortOrder(fromWqrVDO.getSortOrder());
                     toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
                     toWqrVDO.setTypeId(fromWqrVDO.getTypeId());
