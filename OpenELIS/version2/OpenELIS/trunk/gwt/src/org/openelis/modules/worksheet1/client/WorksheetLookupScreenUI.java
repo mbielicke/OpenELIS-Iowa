@@ -284,16 +284,10 @@ public class WorksheetLookupScreenUI extends Screen
         ArrayList<Item<Integer>> model;
         Item<Integer> row;
         
-        window.setDone(Messages.get().queryingComplete());
-
+        model = new ArrayList<Item<Integer>>();
         if (list == null || list.size() == 0) {
             window.setDone(Messages.get().noRecordsFound());
-            
-            worksheetTable.clear();
         } else {
-            window.setDone(Messages.get().queryingComplete());
-
-            model = new ArrayList<Item<Integer>>();
             for (WorksheetViewDO worksheetRow : list) {
                 row = new Item<Integer>(5);
                 row.setKey(worksheetRow.getId());
@@ -306,8 +300,10 @@ public class WorksheetLookupScreenUI extends Screen
                 model.add(row);
             }
 
-            worksheetTable.setModel(model);
+            window.setDone(Messages.get().queryingComplete());
         }
+
+        worksheetTable.setModel(model);
     }
     
     @UiHandler("select")
