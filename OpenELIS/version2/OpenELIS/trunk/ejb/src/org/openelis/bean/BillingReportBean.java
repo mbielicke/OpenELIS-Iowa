@@ -28,12 +28,10 @@ package org.openelis.bean;
 import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -53,7 +51,6 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ResultDO;
-import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
@@ -65,7 +62,6 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.NotFoundException;
-import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -73,9 +69,6 @@ public class BillingReportBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
-
-    @EJB
-    private SampleBean              sample;
 
     @EJB
     private SystemVariableBean      systemVariable;
@@ -102,9 +95,6 @@ public class BillingReportBean {
     private AnalysisQAEventBean     analysisQaevent;
 
     @EJB
-    private ResultBean              result;
-
-    @EJB
     private AnalyteBean             analyte;
 
     @EJB
@@ -113,23 +103,23 @@ public class BillingReportBean {
     @EJB
     private AnalysisReportFlagsBean analysisReportFlags;
 
-    @EJB
-    private DictionaryBean          dictionary;
-
     private static final String     RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
                                     EOL = "\r\n";
 
     private static final Logger     log   = Logger.getLogger("openelis");
 
     /**
-     * Execute the report and email its output to specified addresses
+     * This method is called from a cron job to create and export a billing
+     * file. The export file is placed into directory specified by
+     * 'billing_directory' system variable. The report tracks the last it was
+     * run and only scans for sample that has been released since its last run.
      */
 
     @Asynchronous
     @TransactionTimeout(600)
     public void runReport() throws Exception {
         String poAnalyteName, billDir;
-        ArrayList<Object[]> resultList;
+        ArrayList<Object[]> billables;
         Date lastRunDate, currentRunDate, now;
         SystemVariableDO lastRun;
         Calendar cal;
@@ -182,18 +172,19 @@ public class BillingReportBean {
             return;
         }
 
-        resultList = fetchForBillingReport(lastRunDate, currentRunDate);
-        log.fine("Considering " + resultList.size() + " cases to run");
-        if (resultList.size() == 0) {
+        billables = fetchForBillingReport(lastRunDate, currentRunDate);
+        log.fine("Considering " + billables.size() + " cases to run");
+        if (billables.size() == 0) {
             systemVariable.abortUpdate(lastRun.getId());
             return;
         }
+
         out = null;
         tempFile = null;
         try {
             tempFile = File.createTempFile("billingReport", ".txt", new File(billDir));
             out = new FileWriter(tempFile);
-            outputBilling(out, currentRunDate, poAnalyteName, resultList);
+            outputBilling(out, currentRunDate, poAnalyteName, billables);
             out.close();
 
             lastRun.setValue(df.format(now));
@@ -214,19 +205,21 @@ public class BillingReportBean {
         }
     }
 
+    /**
+     * The method exports billing records for each sample and analysis. All analysis
+     * have to reportable to be billed (with exception of two billing test). The routine
+     * tracks previously sent billing information and issues credit records if the
+     * analysis such as # of analytes, QAevents, etc. is changed. 
+     */
     private void outputBilling(FileWriter out, Date currentDate, String poAnalyteName,
-                              ArrayList<Object[]> resultList) throws Exception {
-        int i;
+                               ArrayList<Object[]> billables) throws Exception {
         boolean needCharge, needCredit;
         Double sampleCharge, anaCharge, billedOverride;
-        Integer billedAnalytes, samId, prevSamId, accession, anaId, statusId, testId,
+        Integer samId, prevSamId, accession, anaId, statusId, testId, billedAnalytes, billAnalytes, 
                 BILLING_MISC_ID, BILLING_RUSH_ID, SECTION_ANALYTE_ID;
-        String clientCode;
-        Object[] row;
-        String domain, clientReference, billingType, lastName, projectName,
-               domainInfo, testName, methodName, section, labCode, currentDateStr,
-               po, procedure, anaReportable, tokens[];
-        Datetime currDateTime;        
+        String clientCode, domain, clientReference, billingType, lastName, projectName, domainInfo,
+               testName, methodName, section, labCode, currentDateStr, po, procedure, anaReportable, tokens[];
+        Datetime currDateTime;
         Timestamp recieved, billed;
         SimpleDateFormat df;
         AddressDO addr;
@@ -237,7 +230,7 @@ public class BillingReportBean {
         AnalysisReportFlagsDO anaRepFlags;
         ArrayList<SampleQaEventViewDO> sampleQas;
         ArrayList<AnalysisQaEventViewDO> anaQas;
-        ArrayList<ResultDO> billableAnalytes;
+        ArrayList<ResultDO> analytes;
         StringBuilder hdr, dtrcr, dtrch;
 
         hdr = new StringBuilder();
@@ -269,9 +262,11 @@ public class BillingReportBean {
             SECTION_ANALYTE_ID = null;
         }
         
+        /*
+         * export each billable and update the analysis flags  
+         */
         sampleCharge = null;
-        for (i = 0; i < resultList.size(); i++) {
-            row = resultList.get(i);
+        for (Object[] row : billables) {
             samId = (Integer)row[0];
             accession = (Integer)row[1];
             domain = (String)row[2];
@@ -336,9 +331,9 @@ public class BillingReportBean {
                     log.severe("Problem with fetching sample qa events for id " + samId);
                     throw e;
                 }
-                
-                hdr.setLength(0);
+
                 df.applyPattern("yyyyMMdd");
+                hdr.setLength(0);
                 hdr.append("HDR").append("|")
                     .append(currentDateStr).append("|")
                     .append(accession).append("|")
@@ -347,21 +342,10 @@ public class BillingReportBean {
                     .append(clientCode).append("|")                
                     .append(lastName).append("|")
                     .append("|")                                // reserved for patient first name
-                    .append(org.getName()).append("|");                
-                if (addr.getMultipleUnit() != null) {
-                    hdr.append(addr.getMultipleUnit()).append("|"); 
-                    if (addr.getStreetAddress() != null)
-                        hdr.append(addr.getStreetAddress()).append("|");
-                    else 
-                        hdr.append("|");
-                } else if (addr.getStreetAddress() != null) {
-                    hdr.append(addr.getStreetAddress()).append("|")
-                        .append("|");
-                } else {
-                    hdr.append("||");
-                }
-                
-                hdr.append(DataBaseUtil.toString(addr.getCity())).append("|")
+                    .append(org.getName()).append("|")
+                    .append(DataBaseUtil.toString(addr.getMultipleUnit())).append("|")
+                    .append(DataBaseUtil.toString(addr.getStreetAddress())).append("|")
+                    .append(DataBaseUtil.toString(addr.getCity())).append("|")
                     .append(DataBaseUtil.toString(addr.getState())).append("|")
                     .append(DataBaseUtil.toString(addr.getZipCode())).append("|")
                     .append(domainInfo).append("|")
@@ -392,18 +376,21 @@ public class BillingReportBean {
             }
 
             try {
-                billableAnalytes = fetchForBillingByAnalysisId(anaId);
+                analytes = fetchForBillingByAnalysisId(anaId);
+                billAnalytes = 0;
+
                 /*
                  * Override the section and calculate the total miscellaneous
                  * charge 
                  */
-                if (testId.equals(BILLING_MISC_ID) && billableAnalytes.size() > 0) {
+                if (testId.equals(BILLING_MISC_ID) && analytes.size() > 0) {
                     anaCharge = 0.0;
-                    for (ResultDO data : billableAnalytes) {
+                    for (ResultDO data : analytes) {
                         if (data.getAnalyteId().equals(SECTION_ANALYTE_ID)) {
                             section = data.getValue();
                         } else {
-                            if (data.getValue() != null) {
+                            if ("Y".equals(data.getIsReportable()) && data.getValue() != null) {
+                                billAnalytes++;
                                 try {
                                     anaCharge += Double.parseDouble(data.getValue());
                                 } catch (NumberFormatException numE) {
@@ -415,6 +402,10 @@ public class BillingReportBean {
                             }
                         }
                     }
+                } else {
+                    for (ResultDO data : analytes)
+                        if ("Y".equals(data.getIsReportable()))
+                            billAnalytes++;
                 }
             } catch (Exception e) {
                 log.severe("Problem with fetching results for analysis with id "+ anaId);
@@ -430,10 +421,8 @@ public class BillingReportBean {
                 labCode = tokens[1];            
             procedure = testName + " by " + methodName;
             /*
-             * if the values set for the fields billed_analytes and
-             * billed_zero in AnalysisReportFlags for this analysis are
-             * different from the ones determined right now, then we create
-             * a row with "CR" as the transaction type with the old values
+             * create a credit record (CR) if we have billed this analysis
+             * previously and analysis data has changed
              */ 
             dtrcr.setLength(0);
             dtrch.setLength(0);            
@@ -446,17 +435,17 @@ public class BillingReportBean {
                 else if ("N".equals(anaReportable) && !testId.equals(BILLING_MISC_ID) &&
                                 !testId.equals(BILLING_RUSH_ID))  
                     needCredit = true;
-                else if (billableAnalytes.size() != billedAnalytes)
+                else if (billAnalytes != billedAnalytes)
                     needCredit = true;
                 else if (DataBaseUtil.isDifferent(billedOverride, anaCharge))
                     needCredit = true;
             }
                         
-            //
-            //  we need to figure out if we charge for this analysis
-            //
+            /*
+             *  figure out if we charge for this analysis
+             */
             needCharge = false;
-            if (billed == null || billableAnalytes.size() != billedAnalytes ||
+            if (billed == null || billAnalytes != billedAnalytes ||
                 DataBaseUtil.isDifferent(billedOverride, anaCharge)) {                
                 if (!Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId) && ("Y".equals(anaReportable) ||
                     testId.equals(BILLING_MISC_ID) || testId.equals(BILLING_RUSH_ID))) 
@@ -483,7 +472,7 @@ public class BillingReportBean {
                      .append(testId).append("|")
                      .append(procedure).append("|")
                      .append("CH").append("|")
-                     .append(billableAnalytes.size()).append("|")
+                     .append(billAnalytes).append("|")
                      .append(anaCharge).append("|")
                      .append(labCode.toUpperCase()).append("|")
                      .append(section).append("|");
@@ -516,7 +505,7 @@ public class BillingReportBean {
             try {                
                 anaRepFlags = analysisReportFlags.fetchForUpdateByAnalysisId(anaId);
                 anaRepFlags.setBilledDate(needCharge ? currDateTime : null);
-                anaRepFlags.setBilledAnalytes(billableAnalytes.size());
+                anaRepFlags.setBilledAnalytes(billAnalytes);
                 anaRepFlags.setBilledOverride(anaCharge);
                 analysisReportFlags.update(anaRepFlags);
             } catch (Exception e) {
