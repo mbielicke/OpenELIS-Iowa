@@ -55,7 +55,8 @@ public interface WorksheetBuilderServiceIntAsync {
     void initializeResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses,
                            AsyncCallback<WorksheetManager1> callback);
 
-    void initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses,
+    void initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                    ArrayList<WorksheetAnalysisViewDO> toAnalyses, 
                                     Integer fromWorksheetId, AsyncCallback<WorksheetManager1> callback);
 
     void sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction,

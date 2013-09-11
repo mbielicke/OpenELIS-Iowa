@@ -55,7 +55,8 @@ public interface WorksheetBuilderServiceInt extends XsrfProtectedService {
 
     WorksheetManager1 initializeResults(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses) throws Exception;
 
-    WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> analyses,
+    WorksheetManager1 initializeResultsFromOther(WorksheetManager1 wm, ArrayList<WorksheetAnalysisViewDO> fromAnalyses,
+                                                 ArrayList<WorksheetAnalysisViewDO> toAnalyses,
                                                  Integer fromWorksheetId) throws Exception;
     
     WorksheetManager1 sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction) throws Exception;
