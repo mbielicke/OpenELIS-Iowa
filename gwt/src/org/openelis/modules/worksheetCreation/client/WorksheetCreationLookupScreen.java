@@ -209,7 +209,7 @@ public class WorksheetCreationLookupScreen extends Screen
             }
         });
 
-        accessionNumber = (TextBox)def.getWidget(WorksheetCreationMeta.getSampleAccessionNumber());
+        accessionNumber = (TextBox<Integer>)def.getWidget(WorksheetCreationMeta.getSampleAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumber.enable(true);

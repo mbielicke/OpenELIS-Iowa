@@ -140,19 +140,19 @@ public class TestScreen extends Screen {
 
     private ScreenNavigator          nav;
     private TableWidget              sectionTable;
-    private TextBox                  id, name, description, reportingDescription,
-                    reportingSequence, timeTaMax, timeTaAverage, timeTaWarning,
-                    timeTransit, timeHolding, labelQty;
+    private TextBox                  name, description, reportingDescription;
+    private TextBox<Integer>         id, reportingSequence, timeTaMax, timeTaAverage,
+                                     timeTaWarning, timeTransit, timeHolding, labelQty;
     private AppButton                queryButton, previousButton, nextButton, addButton,
-                    updateButton, commitButton, abortButton, removeSectionButton,
-                    addSectionButton;
+                                     updateButton, commitButton, abortButton, removeSectionButton,
+                                     addSectionButton;
     private Dropdown<Integer>        sortingMethod, reportingMethod, testFormat,
-                    revisionMethod;
+                                     revisionMethod;
     private AutoComplete<Integer>    testTrailer, scriptlet, method, label;
     protected MenuItem               duplicate, testHistory, testSectionHistory,
-                    testSampleTypeHistory, testAnalyteHistory, testResultHistory,
-                    testPrepHistory, testReflexHistory, testWorksheetHistory,
-                    testWorksheetItemHistory, testWorksheetAnalyteHistory;
+                                     testSampleTypeHistory, testAnalyteHistory, testResultHistory,
+                                     testPrepHistory, testReflexHistory, testWorksheetHistory,
+                                     testWorksheetItemHistory, testWorksheetAnalyteHistory;
     private TabPanel                 testTabPanel;
     private ButtonGroup              atoz;
     private CheckBox                 isActive, isReportable;
@@ -429,7 +429,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        id = (TextBox)def.getWidget(TestMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(TestMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getTest().getId());
@@ -542,7 +542,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTaMax = (TextBox)def.getWidget(TestMeta.getTimeTaMax());
+        timeTaMax = (TextBox<Integer>)def.getWidget(TestMeta.getTimeTaMax());
         addScreenHandler(timeTaMax, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaMax.setFieldValue(manager.getTest().getTimeTaMax());
@@ -559,7 +559,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTaAverage = (TextBox)def.getWidget(TestMeta.getTimeTaAverage());
+        timeTaAverage = (TextBox<Integer>)def.getWidget(TestMeta.getTimeTaAverage());
         addScreenHandler(timeTaAverage, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaAverage.setFieldValue(manager.getTest().getTimeTaAverage());
@@ -576,7 +576,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTaWarning = (TextBox)def.getWidget(TestMeta.getTimeTaWarning());
+        timeTaWarning = (TextBox<Integer>)def.getWidget(TestMeta.getTimeTaWarning());
         addScreenHandler(timeTaWarning, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTaWarning.setFieldValue(manager.getTest().getTimeTaWarning());
@@ -593,7 +593,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeTransit = (TextBox)def.getWidget(TestMeta.getTimeTransit());
+        timeTransit = (TextBox<Integer>)def.getWidget(TestMeta.getTimeTransit());
         addScreenHandler(timeTransit, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeTransit.setFieldValue(manager.getTest().getTimeTransit());
@@ -610,7 +610,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        timeHolding = (TextBox)def.getWidget(TestMeta.getTimeHolding());
+        timeHolding = (TextBox<Integer>)def.getWidget(TestMeta.getTimeHolding());
         addScreenHandler(timeHolding, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 timeHolding.setFieldValue(manager.getTest().getTimeHolding());
@@ -718,10 +718,10 @@ public class TestScreen extends Screen {
 
         });
 
-        labelQty = (TextBox)def.getWidget(TestMeta.getLabelQty());
+        labelQty = (TextBox<Integer>)def.getWidget(TestMeta.getLabelQty());
         addScreenHandler(labelQty, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                labelQty.setValue(Util.toString(manager.getTest().getLabelQty()));
+                labelQty.setFieldValue(manager.getTest().getLabelQty());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -934,7 +934,7 @@ public class TestScreen extends Screen {
             }
         });
 
-        reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
+        reportingSequence = (TextBox<Integer>)def.getWidget(TestMeta.getReportingSequence());
         addScreenHandler(reportingSequence, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingSequence.setFieldValue(manager.getTest().getReportingSequence());

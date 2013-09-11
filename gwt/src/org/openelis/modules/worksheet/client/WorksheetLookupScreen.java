@@ -129,7 +129,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         //
         // screen fields and buttons
         //
-        worksheetNumber = (TextBox)def.getWidget(WorksheetCompletionMeta.getId());
+        worksheetNumber = (TextBox<Integer>)def.getWidget(WorksheetCompletionMeta.getId());
         addScreenHandler(worksheetNumber, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 worksheetNumber.enable(true);

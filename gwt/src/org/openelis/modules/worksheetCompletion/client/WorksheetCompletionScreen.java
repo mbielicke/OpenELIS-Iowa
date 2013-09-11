@@ -272,7 +272,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
         });
 
-        worksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getId());
+        worksheetId = (TextBox<Integer>)def.getWidget(WorksheetCompletionMeta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetId.setFieldValue(manager.getWorksheet().getId());
@@ -298,7 +298,7 @@ public class WorksheetCompletionScreen extends Screen {
             }
         });
 
-        relatedWorksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getRelatedWorksheetId());
+        relatedWorksheetId = (TextBox<Integer>)def.getWidget(WorksheetCompletionMeta.getRelatedWorksheetId());
         addScreenHandler(relatedWorksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 relatedWorksheetId.setFieldValue(manager.getWorksheet()

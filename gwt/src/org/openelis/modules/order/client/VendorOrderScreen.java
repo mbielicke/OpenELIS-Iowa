@@ -92,11 +92,10 @@ public class VendorOrderScreen extends Screen {
 
     private CalendarLookUp   orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
-    private TextBox           id, neededInDays, organizationAttention,
-                              organizationAddressMultipleUnit, requestedBy,
-                              organizationAddressStreetAddress, organizationAddressCity,
-                              externalOrderNumber, organizationAddressState,
-                              organizationAddressZipCode;
+    private TextBox           organizationAttention, organizationAddressMultipleUnit,
+                              requestedBy, organizationAddressStreetAddress, organizationAddressCity,
+                              externalOrderNumber, organizationAddressState, organizationAddressZipCode;
+    private TextBox<Integer>  id, neededInDays;
     private ItemTab           itemTab;
     private FillTab           fillTab;
     private ShipNoteTab       shipNoteTab;
@@ -269,7 +268,7 @@ public class VendorOrderScreen extends Screen {
         //
         // screen fields
         //
-        id = (TextBox)def.getWidget(OrderMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(OrderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getOrder().getId());
@@ -285,7 +284,7 @@ public class VendorOrderScreen extends Screen {
             }
         });
 
-        neededInDays = (TextBox)def.getWidget(OrderMeta.getNeededInDays());
+        neededInDays = (TextBox<Integer>)def.getWidget(OrderMeta.getNeededInDays());
         addScreenHandler(neededInDays, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 neededInDays.setFieldValue(manager.getOrder().getNeededInDays());

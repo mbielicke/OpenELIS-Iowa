@@ -124,7 +124,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected AutoComplete<Integer>                     test, samplePrep, panel;
     protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId, userActionId;
     protected CheckBox                                  isPreliminary, isReportable;
-    protected TextBox                                   method, revision;
+    protected TextBox                                   method;
+    protected TextBox<Integer>                          revision;
     protected CalendarLookUp                            startedDate, completedDate, releasedDate,
                                                         printedDate;
     protected TableWidget                               worksheetTable, analysisUserTable;
@@ -417,10 +418,10 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
-        revision = (TextBox)def.getWidget(SampleMeta.getAnalysisRevision());
+        revision = (TextBox<Integer>)def.getWidget(SampleMeta.getAnalysisRevision());
         addScreenHandler(revision, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                revision.setValue(Util.toString(analysis.getRevision()));
+                revision.setFieldValue(analysis.getRevision());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {

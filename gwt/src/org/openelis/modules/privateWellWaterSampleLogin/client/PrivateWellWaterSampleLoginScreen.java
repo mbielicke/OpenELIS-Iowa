@@ -455,8 +455,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(Util.toString(manager.getSample()
-                                                              .getAccessionNumber()));
+                accessionNumber.setFieldValue(manager.getSample().getAccessionNumber());
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
@@ -468,11 +467,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                 if (oldNumber != null) {
                     if (quickUpdate) {
                         Window.alert(Messages.get().cantChangeQuickEntryAccessionNumber());
-                        accessionNumber.setValue(Util.toString(oldNumber));
+                        accessionNumber.setFieldValue(oldNumber);
                         setFocus(accessionNumber);
                         return;
                     } else if ( !Window.confirm(Messages.get().accessionNumberEditConfirm())) {
-                        accessionNumber.setValue(Util.toString(oldNumber));
+                        accessionNumber.setFieldValue(oldNumber);
                         setFocus(accessionNumber);
                         return;
                     }
@@ -493,7 +492,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     } else if (manager.getSample().getOrderId() != null) {
                         Window.alert(Messages.get().cantLoadQEIfOrderNumPresent());
                         quickEntryMan.abortUpdate();
-                        accessionNumber.setValue(Util.toString(oldNumber));
+                        accessionNumber.setFieldValue(oldNumber);
                         setFocus(accessionNumber);
                         window.clearStatus();
                         return;
@@ -540,12 +539,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                     }
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
-                    accessionNumber.setValue(Util.toString(oldNumber));
+                    accessionNumber.setFieldValue(oldNumber);
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                    accessionNumber.setValue(Util.toString(oldNumber));
+                    accessionNumber.setFieldValue(oldNumber);
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 }
@@ -563,7 +562,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         orderNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getOrderId());
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
+                orderNumber.setFieldValue(manager.getSample().getOrderId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -592,7 +591,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
                      */
                     if ( !DataBaseUtil.isSame(orderId, prevOrderId)) {
                         importOrder(prevOrderId);
-                        orderNumber.setValue(Util.toString(prevOrderId));
+                        orderNumber.setFieldValue(prevOrderId);
                     }
                     event.preventDefault();
                     event.stopPropagation();

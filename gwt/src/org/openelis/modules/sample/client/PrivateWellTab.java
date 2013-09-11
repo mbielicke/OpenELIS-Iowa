@@ -175,7 +175,7 @@ public class PrivateWellTab extends Screen {
 //                    // it's a free text entry we only want to clear out the
 //                    // address values if it was an org before
 //                    //
-//                    wellOrganizationId.setValue("");
+//                    wellOrganizationId.setFieldValue(null);
 //
 //                    if (wellDO.getOrganizationId() != null)
 //                       setAddress(null);
@@ -187,7 +187,7 @@ public class PrivateWellTab extends Screen {
 //                    enableAddressValues = true;
                 } else {
                     // it's a clear out
-                    wellOrganizationId.setValue("");
+                    wellOrganizationId.setFieldValue(null);
                     
                     setAddress(null);
 
@@ -237,7 +237,7 @@ public class PrivateWellTab extends Screen {
 //                        enableReportToFields(false);
                     } else {
                         Window.alert("Cannot copy previous non-organization");
-//                        wellOrganizationId.setValue("");
+//                        wellOrganizationId.setFieldValue(null);
 //                        setAddress(prevData.getReportToAddress());
 //                        data.setOrganization(null);
 //                        data.setOrganizationId(null);                        
@@ -1011,7 +1011,7 @@ public class PrivateWellTab extends Screen {
         wellNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getWellWellNumber());
         addScreenHandler(wellNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                wellNumber.setValue(Util.toString(getWellManager().getPrivateWell().getWellNumber()));
+                wellNumber.setFieldValue(getWellManager().getPrivateWell().getWellNumber());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1037,7 +1037,7 @@ public class PrivateWellTab extends Screen {
                     wnum = prevData.getWellNumber();
                     
                     data.setWellNumber(wnum);                    
-                    wellNumber.setValue(Util.toString(wnum));
+                    wellNumber.setFieldValue(wnum);
                                         
                     event.preventDefault();
                     event.stopPropagation();

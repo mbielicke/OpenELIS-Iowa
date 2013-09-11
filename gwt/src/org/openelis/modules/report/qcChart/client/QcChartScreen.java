@@ -80,7 +80,7 @@ public class QcChartScreen extends Screen {
 
     private AutoComplete<String> qcName;
     private CalendarLookUp       workSheetCreatedDateFrom, workSheetCreatedDateTo;
-    private TextBox              numInstances;
+    private TextBox<Integer>     numInstances;
     private Dropdown<Integer>    plotType, qcLocation;
     protected AppButton          getDataButton, recomputeButton, plotDataButton,
                                  selectButton, selectAllButton, unselectAllButton,
@@ -172,7 +172,7 @@ public class QcChartScreen extends Screen {
             }
         });
 
-        numInstances = (TextBox)def.getWidget(QcChartMeta.getNumInstances());
+        numInstances = (TextBox<Integer>)def.getWidget(QcChartMeta.getNumInstances());
         addScreenHandler(numInstances, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 numInstances.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));

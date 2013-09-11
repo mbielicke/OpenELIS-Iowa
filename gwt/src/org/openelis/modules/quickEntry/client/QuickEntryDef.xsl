@@ -86,7 +86,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'tubeNum')" />:
               </text>
-              <textbox key="tubeNumber" width="75px" field="Integer" tab="entry, entry"/>
+              <textbox key="tubeNumber" width="75px" field="String" tab="entry, entry"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'received')" />:
               </text>

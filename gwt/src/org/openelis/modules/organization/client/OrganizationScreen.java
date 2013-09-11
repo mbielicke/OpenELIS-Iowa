@@ -101,7 +101,8 @@ public class OrganizationScreen extends Screen {
                     updateButton, commitButton, abortButton;
     private MenuItem              orgHistory, orgAddressHistory, orgContactHistory,
                     orgContactAddressHistory, orgParameterHistory;
-    private TextBox               id, name, multipleUnit, city, zipCode, streetAddress;
+    private TextBox               name, multipleUnit, city, zipCode, streetAddress;
+    private TextBox<Integer>      id;
     private CheckBox              isActive;
     private Dropdown<String>      stateCode, country;
     private AutoComplete<Integer> parentName;
@@ -305,7 +306,7 @@ public class OrganizationScreen extends Screen {
         //
         // screen fields
         //
-        id = (TextBox)def.getWidget(OrganizationMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(OrganizationMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getOrganization().getId());

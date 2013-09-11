@@ -25,11 +25,11 @@ import com.google.gwt.user.client.Window;
 
 public class SampleTab extends Screen {
 	
-	TextBox<Integer> orderNumber;
+	TextBox<Integer> accessionNumber, orderNumber;
 	TextBox<Datetime> collectedTime;
 	CalendarLookUp collectedDate,receivedDate;
 	Dropdown<Integer> statusId;
-	TextBox accessionNumber, clientReference;
+	TextBox clientReference;
 	
 	SampleManager manager;
 	
@@ -48,22 +48,20 @@ public class SampleTab extends Screen {
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
+                accessionNumber.setFieldValue(manager.getSample().getAccessionNumber());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 Integer oldNumber, val;                
-                String oldNumStr;
                 SampleManager quickEntryMan;
 
                 val = event.getValue();
                 if (val == null)
                     return;
                 oldNumber = manager.getSample().getAccessionNumber();
-                oldNumStr = Util.toString(oldNumber);                
                 if (oldNumber != null) {                    
                     if (!Window.confirm(Messages.get().accessionNumberEditConfirm())) {
-                        accessionNumber.setValue(oldNumStr);
+                        accessionNumber.setFieldValue(oldNumber);
                         setFocus(accessionNumber);
                         return;
                     }
@@ -79,12 +77,12 @@ public class SampleTab extends Screen {
                         throw new Exception(Messages.get().quickEntryNumberExists());
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
-                    accessionNumber.setValue(oldNumStr);
+                    accessionNumber.setFieldValue(oldNumber);
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                    accessionNumber.setValue(oldNumStr);
+                    accessionNumber.setFieldValue(oldNumber);
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 }
@@ -102,7 +100,7 @@ public class SampleTab extends Screen {
         orderNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getOrderId());
         addScreenHandler(orderNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
+                orderNumber.setFieldValue(manager.getSample().getOrderId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

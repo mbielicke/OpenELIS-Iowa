@@ -26,10 +26,19 @@
 package org.openelis.modules.quickEntry.client;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
@@ -41,17 +50,8 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FieldErrorException;
-import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
-import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -64,7 +64,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -85,18 +84,15 @@ import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.TestPrepUtility;
 import org.openelis.modules.test.client.TestService;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 public class QuickEntryScreen extends Screen {
 
@@ -580,7 +576,7 @@ public class QuickEntryScreen extends Screen {
                         managers.put(sampleMan.getSample().getAccessionNumber(),
                                      new Item(sampleMan, 0));
 
-                    accessionNumber.setValue(val);
+                    accessionNumber.setFieldValue(Integer.valueOf(val));
                     addAnalysisRow();
                 } catch (NumberFormatException e) {
                     ex = new Exception(Messages.get().invalidEntryException(val));

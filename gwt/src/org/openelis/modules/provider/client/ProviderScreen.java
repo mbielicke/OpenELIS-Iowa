@@ -83,7 +83,8 @@ public class ProviderScreen extends Screen {
     private LocationTab       locationTab;
     private NotesTab          notesTab;
 
-    private TextBox           id, lastName, firstName, npi, middleName;
+    private TextBox           lastName, firstName, npi, middleName;
+    private TextBox<Integer>  id;
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
                               commitButton, abortButton;
     protected MenuItem        providerHistory, providerLocationHistory;
@@ -228,7 +229,7 @@ public class ProviderScreen extends Screen {
             }
         });
 
-        id = (TextBox)def.getWidget(ProviderMeta.getId());
+        id = (TextBox<Integer>)def.getWidget(ProviderMeta.getId());
         addScreenHandler(id, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 id.setFieldValue(manager.getProvider().getId());

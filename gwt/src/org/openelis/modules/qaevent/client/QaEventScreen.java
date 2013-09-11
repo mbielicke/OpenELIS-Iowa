@@ -83,7 +83,8 @@ public class QaEventScreen extends Screen {
     private QaEventViewDO         data;
     private ModulePermission      userPermission;
 
-    private TextBox               name, description, reportingSequence, methodName;
+    private TextBox               name, description, methodName;
+    private TextBox<Integer>      reportingSequence;
     private CheckBox              isBillable;
     private AppButton             queryButton, previousButton, nextButton, addButton, 
                                   updateButton, commitButton, abortButton;
@@ -370,7 +371,7 @@ public class QaEventScreen extends Screen {
             }
         });
 
-        reportingSequence = (TextBox)def.getWidget(QaEventMeta.getReportingSequence());
+        reportingSequence = (TextBox<Integer>)def.getWidget(QaEventMeta.getReportingSequence());
         addScreenHandler(reportingSequence, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 reportingSequence.setFieldValue(data.getReportingSequence());
