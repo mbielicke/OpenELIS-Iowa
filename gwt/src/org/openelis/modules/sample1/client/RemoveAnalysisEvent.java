@@ -29,36 +29,41 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * This class is used to notify the handler that the results of a sample were
- * changed due to some action by the user e.g. changing the unit of an analysis
- * or row analytes being added etc.
+ * The event is used to inform the handler that an analysis is to be removed.
+ * The unique identifier for the analysis is specified through uid.
  */
-public class ResultChangeEvent extends GwtEvent<ResultChangeEvent.Handler> {
+public class RemoveAnalysisEvent extends GwtEvent<RemoveAnalysisEvent.Handler> {
 
-    private static Type<ResultChangeEvent.Handler> TYPE;
-    
-    public ResultChangeEvent() {
+    private static Type<RemoveAnalysisEvent.Handler> TYPE;
+    private String                                   uid;
+
+    public RemoveAnalysisEvent(String uid) {
+        this.uid = uid;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<ResultChangeEvent.Handler> getAssociatedType() {
+    public Type<RemoveAnalysisEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<ResultChangeEvent.Handler> getType() {
+    public static Type<RemoveAnalysisEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<ResultChangeEvent.Handler>();
+            TYPE = new Type<RemoveAnalysisEvent.Handler>();
         }
         return TYPE;
-    }    
+    }
 
     public static interface Handler extends EventHandler {
-        public void onResultChange(ResultChangeEvent event);
+        public void onAnalysisRemove(RemoveAnalysisEvent event);
+    }
+
+    public String getUid() {
+        return uid;
     }
 
     @Override
     protected void dispatch(Handler handler) {
-        handler.onResultChange(this);
+        handler.onAnalysisRemove(this);
     }
 }

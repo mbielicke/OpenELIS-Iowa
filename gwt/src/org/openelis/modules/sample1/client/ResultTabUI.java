@@ -231,7 +231,6 @@ public class ResultTabUI extends Screen {
                                 values = rf.getDictionaryValues(rg, unitId);
                                 if (values != null) {
                                     model = new ArrayList<Item<Integer>>();
-                                    model.add(new Item<Integer>(null, ""));
                                     for (FormattedValue v : values)
                                         model.add(new Item<Integer>(v.getId(), v.getDisplay()));
                                 }
@@ -443,6 +442,72 @@ public class ResultTabUI extends Screen {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
+    
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+    
+    private void evaluateEdit() {
+        Integer sectId, statId;
+        SectionPermission perm;
+        SectionViewDO sect;
+
+        canEdit = false;
+        if (manager != null) {
+            sectId = getSectionId();
+            statId = getStatusId();
+
+            if (sectId == null) {
+                canEdit = true;
+                return;
+            }
+            try {
+                sect = SectionCache.getById(getSectionId());
+                perm = UserCache.getPermission().getSection(sect.getName());
+                canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
+                          !Constants.dictionary().ANALYSIS_RELEASED.equals(statId) &&
+                          perm != null &&
+                          (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception e) {
+                Window.alert("canEdit:" + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+    }
+    
+    private void displayResults(String uid) {
+        if (uid != null)
+            analysis = (AnalysisViewDO)manager.getObject(uid);
+        else
+            analysis = null;
+
+        if ( !isVisible)
+            return;
+
+        if (analysis != null) {
+            table.setVisible(true);
+            /*
+             * Reset the table's view, so that if its model is changed, it shows
+             * its headers and columns correctly. Otherwise, problems like
+             * widths of the columns not being correct or the headers not
+             * showing may happen.
+             */
+            table.onResize();
+        } else {
+            table.setVisible(false);
+        }
+
+        if (redraw) {
+            /*
+             * don't redraw unless the data has changed
+             */
+            redraw = false;
+            evaluateEdit();
+            setState(state);
+            fireDataChange();
+        }
+    }
 
     @UiHandler("addResultButton")
     protected void addResult(ClickEvent event) {
@@ -536,68 +601,7 @@ public class ResultTabUI extends Screen {
     protected void uncheckAll(ClickEvent event) {
         check("N");
     }
-
-    private void displayResults(String uid) {
-        if (uid != null)
-            analysis = (AnalysisViewDO)manager.getObject(uid);
-        else
-            analysis = null;
-
-        if ( !isVisible)
-            return;
-
-        if (analysis != null) {
-            table.setVisible(true);
-            /*
-             * Reset the table's view, so that if its model is changed, it shows
-             * its headers and columns correctly. Otherwise, problems like
-             * widths of the columns not being correct or the headers not
-             * showing may happen.
-             */
-            table.onResize();
-        } else {
-            table.setVisible(false);
-        }
-
-        if (redraw) {
-            /*
-             * don't redraw unless the data has changed
-             */
-            redraw = false;
-            evaluateEdit();
-            setState(state);
-            fireDataChange();
-        }
-    }
-
-    private void evaluateEdit() {
-        Integer sectId, statId;
-        SectionPermission perm;
-        SectionViewDO sect;
-
-        canEdit = false;
-        if (manager != null) {
-            sectId = getSectionId();
-            statId = getStatusId();
-
-            if (sectId == null) {
-                canEdit = true;
-                return;
-            }
-            try {
-                sect = SectionCache.getById(getSectionId());
-                perm = UserCache.getPermission().getSection(sect.getName());
-                canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
-                          !Constants.dictionary().ANALYSIS_RELEASED.equals(statId) &&
-                          perm != null &&
-                          (perm.hasAssignPermission() || perm.hasCompletePermission());
-            } catch (Exception e) {
-                Window.alert("canEdit:" + e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
-        }
-    }
-
+    
     private Integer getSectionId() {
         if (analysis != null)
             return analysis.getSectionId();

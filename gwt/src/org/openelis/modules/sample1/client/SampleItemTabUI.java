@@ -264,7 +264,6 @@ public class SampleItemTabUI extends Screen {
 
         // sample type dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("type_of_sample")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled("Y".equals(d.getIsActive()));
@@ -274,7 +273,6 @@ public class SampleItemTabUI extends Screen {
 
         // source dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("source_of_sample")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled("Y".equals(d.getIsActive()));
@@ -284,7 +282,6 @@ public class SampleItemTabUI extends Screen {
 
         // sample container dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("sample_container")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled("Y".equals(d.getIsActive()));
@@ -294,7 +291,6 @@ public class SampleItemTabUI extends Screen {
 
         // unit of measure dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled("Y".equals(d.getIsActive()));
@@ -355,6 +351,11 @@ public class SampleItemTabUI extends Screen {
     public void setData(SampleManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
+    }
+    
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     public boolean validate() {

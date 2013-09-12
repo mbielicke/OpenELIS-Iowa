@@ -80,6 +80,9 @@ public interface SampleServiceInt1Async {
 
     public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
                          AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+    
+    public void removeAnalysis(SampleManager1 sm, Integer analysisId,
+                               AsyncCallback<SampleManager1> callback) throws Exception;
 
     public void addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                ArrayList<TestAnalyteViewDO> analytes, ArrayList<Integer> indexes,
@@ -93,6 +96,9 @@ public interface SampleServiceInt1Async {
     
     public void changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer unitId,
                                      AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+    
+    public void changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId,
+                                     AsyncCallback<SampleManager1> callback) throws Exception;
 
     public void changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId,
                                 AsyncCallback<SampleManager1> callback) throws Exception;
