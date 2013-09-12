@@ -634,7 +634,7 @@ public class AnalysisTabUI extends Screen {
                     uid = manager.getUid(analysis);
                 else
                     uid = null;
-                
+
                 displayAnalysis(uid);
             }
         });
@@ -686,8 +686,14 @@ public class AnalysisTabUI extends Screen {
         bus.addHandler(SampleItemChangeEvent.getType(), new SampleItemChangeEvent.Handler() {
             public void onSampleItemChange(SampleItemChangeEvent event) {
                 if (SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(event.getAction())) {
-                    unitOfMeasure.setModel(getUnitsModel());
-                    unitOfMeasure.setValue(getUnitOfMeasureId());
+                    String uid;
+                    
+                    redraw = true;
+                    if (analysis != null)
+                        uid = manager.getUid(analysis);
+                    else
+                        uid = null;
+                    displayAnalysis(uid);
                 }
             }
         });
@@ -736,7 +742,7 @@ public class AnalysisTabUI extends Screen {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
-    
+
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
@@ -1014,7 +1020,6 @@ public class AnalysisTabUI extends Screen {
         TestSectionViewDO ts;
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
 
         if (analysis != null && isState(ADD, UPDATE)) {
             try {
@@ -1049,8 +1054,9 @@ public class AnalysisTabUI extends Screen {
         TestTypeOfSampleManager ttsm;
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
-        if (analysis != null && isState(ADD, UPDATE)) {
+
+        if (analysis != null && isState(ADD, UPDATE) && sampleItem != null &&
+            sampleItem.getTypeOfSampleId() != null) {
             try {
                 /*
                  * create the model from the units associated with the sample
