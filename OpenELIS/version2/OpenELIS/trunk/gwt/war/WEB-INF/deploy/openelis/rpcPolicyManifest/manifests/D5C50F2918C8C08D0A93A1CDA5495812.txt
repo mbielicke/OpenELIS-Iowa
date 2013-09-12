@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.report.client.SDWISUnloadReportServiceInt
-path: 282A86D98F2A295637E027FECFEFB615.gwt.rpc

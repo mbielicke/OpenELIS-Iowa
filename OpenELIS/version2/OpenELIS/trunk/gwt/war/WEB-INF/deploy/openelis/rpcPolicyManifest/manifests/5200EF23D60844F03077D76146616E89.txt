@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.auxData.client.AuxDataServiceInt
-path: B4A3813E3F5F9F661A072F5B40CE6493.gwt.rpc

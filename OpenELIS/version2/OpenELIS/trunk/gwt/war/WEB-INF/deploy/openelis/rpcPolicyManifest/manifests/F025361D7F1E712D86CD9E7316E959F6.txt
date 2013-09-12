@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.dictionary.client.DictionaryServiceInt
-path: 3BA52494550CA39B0AFFF29F189AC086.gwt.rpc

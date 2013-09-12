@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.preferences.client.PrinterServiceInt
-path: 42F0BB948D36E4F78E75A694FEE461BB.gwt.rpc

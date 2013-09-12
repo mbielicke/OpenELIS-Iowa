@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.worksheetCreation.client.WorksheetCreationServiceInt
-path: 1B2AFECDFEF198D39AAAE06DDFF5EB09.gwt.rpc

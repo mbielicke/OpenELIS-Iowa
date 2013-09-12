@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.history.client.HistoryServiceInt
-path: 5D041F319820E69B55A1343DB58888E3.gwt.rpc

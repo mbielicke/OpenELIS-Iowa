@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.report.client.HoldRefuseOrganizationReportServiceInt
-path: 33DC1DAD6F2A30C2E84F3EB31FC376A5.gwt.rpc
