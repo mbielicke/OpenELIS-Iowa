@@ -952,8 +952,6 @@ public class SampleManager1Bean {
                         note.delete( ((NoteViewDO)data));
                     else if (data instanceof SampleItemViewDO)
                         item.delete( ((SampleItemViewDO)data));
-                    else if (data instanceof AnalysisViewDO)
-                        analysis.delete( ((AnalysisViewDO)data));
                     else if (data instanceof AnalysisQaEventViewDO)
                         analysisQA.delete( ((AnalysisQaEventViewDO)data));
                     else if (data instanceof StorageViewDO)
@@ -1487,6 +1485,15 @@ public class SampleManager1Bean {
     }
 
     /**
+     * This method removes the analysis with the specified id and all of its
+     * child data, e.g. results, qa events etc. It also removes any links
+     * between other analyses and this one.
+     */
+    public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
+        return analysisHelper.removeAnalysis(sm, analysisId);
+    }
+
+    /**
      * Adds result rows to the analysis, with the specified row analytes, at the
      * positions specified by the corresponding indexes. Assumes that the two
      * lists are of the same length and the indexes are sorted in ascending
@@ -1562,8 +1569,12 @@ public class SampleManager1Bean {
     public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
         return analysisHelper.changeAnalysisUnit(sm, analysisId, unitId);
     }
-    
 
+    /**
+     * This method changes the specified analysis's status to the specified
+     * status. It also updates any links between other analyses and this one, if
+     * need be, because of the change in status.
+     */
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
         return analysisHelper.changeAnalysisStatus(sm, analysisId, unitId);
     }
@@ -1743,7 +1754,12 @@ public class SampleManager1Bean {
                         }
                 }
             }
-
+            
+            try {
+                validateForDelete(sm);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
         }
 
         if (e.size() > 0)
@@ -1782,6 +1798,48 @@ public class SampleManager1Bean {
                                                      .analysis_noAssignPermission(DataBaseUtil.toString(accession),
                                                                                   data.getTestName(),
                                                                                   data.getMethodName()));
+        }
+    }
+
+    /**
+     * Validate that removing any record won't cause any discrepancies in the
+     * data e.g. links to nonexistent records
+     */
+    protected void validateForDelete(SampleManager1 sm) throws Exception {
+        Integer accession;
+        SampleItemViewDO item;
+        AnalysisViewDO ana;
+
+        if (getRemoved(sm) == null)
+            return;
+
+        accession = DataBaseUtil.toInteger(getSample(sm).getAccessionNumber());
+        for (DataObject data : getRemoved(sm)) {
+            if (data instanceof SampleItemViewDO) {
+                item = (SampleItemViewDO)data;
+                /*
+                 * find out if this sample item is linked to any analyses
+                 */
+                if (getAnalyses(sm) != null) {
+                    for (AnalysisViewDO a : getAnalyses(sm)) {
+                        if (item.getId().equals(a.getSampleItemId()))
+                            throw new FormErrorException(Messages.get()
+                                                                 .sampleItem_cantRemoveException(accession,
+                                                                                                 item.getItemSequence()));
+                    }
+                }
+            } else if (data instanceof AnalysisViewDO) {
+                /*
+                 * previously committed analyses can't be removed; uncommitted
+                 * analyses have negative ids, so they shouldn't be in this list
+                 * either
+                 */
+                ana = (AnalysisViewDO) data;
+                throw new FormErrorException(Messages.get()
+                                                 .analysis_cantRemoveInUpdateException(accession,
+                                                                                       ana.getTestName(),
+                                                                                       ana.getMethodName()));
+            }
         }
     }
 

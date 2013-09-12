@@ -60,6 +60,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         UIResources.INSTANCE.collapse().ensureInjected();
         UIResources.INSTANCE.text().ensureInjected();
         UIResources.INSTANCE.dragDrop().ensureInjected();
+        UIResources.INSTANCE.general().ensureInjected();
         
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             public void onUncaughtException(Throwable e) {

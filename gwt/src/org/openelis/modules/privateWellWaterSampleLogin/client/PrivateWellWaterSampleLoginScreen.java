@@ -455,8 +455,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionNumber.setValue(Util.toString(manager.getSample()
-                                                              .getAccessionNumber()));
+                accessionNumber.setFieldValue(manager.getSample()
+                                                              .getAccessionNumber());
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {

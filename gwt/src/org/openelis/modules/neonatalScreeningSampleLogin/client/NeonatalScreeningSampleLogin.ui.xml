@@ -99,7 +99,7 @@
                   <ui:text from="{msg.time}:" />
                 </td>
                 <td>
-                  <c:Calendar ui:field="collectionTime" width="60px" begin="3" end="5" />
+                  <c:Calendar ui:field="collectionTime" width="60px" begin="3" end="4" />
                 </td>
               </tr>
               <tr>
@@ -183,7 +183,7 @@
                     </td>
                     <td colspan="3">
                       <c:Calendar ui:field="patientBirthTime" width="60px"
-                         begin="3" end="5" />
+                         begin="3" end="4" />
                     </td>
                   </tr>
                   <tr>

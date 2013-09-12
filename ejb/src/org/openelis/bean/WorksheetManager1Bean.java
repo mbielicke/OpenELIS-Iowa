@@ -567,12 +567,12 @@ public class WorksheetManager1Bean {
             for (SampleManager1 sMan : sMans) {
                 for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
                     if (initAnalysisIds.contains(ana.getId()))
-                        aHelper.initiateAnalysis(ana);
+                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
                     if (updatedAnalyses.containsKey(ana.getId())) {
                         waVDO = updatedAnalyses.get(ana.getId());
                         if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
                                                      ana.getUnitOfMeasureId()))
-                            sampleMan.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
+                            aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
                     }
                     results = newResults.get(ana.getId());
                     if (results != null && results.size() > 0) {
@@ -588,7 +588,7 @@ public class WorksheetManager1Bean {
                             analytes.add(taVDO);
                             analyteIndexes.add(res.getSortOrder());
                         }
-                        sampleMan.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
+                        aHelper.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
                     }
                     if (!sMansByAnalysisId.containsKey(ana.getId()))
                         sMansByAnalysisId.put(ana.getId(), sMan);
