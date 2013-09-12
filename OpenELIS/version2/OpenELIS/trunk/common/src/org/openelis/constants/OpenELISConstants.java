@@ -700,6 +700,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantCancelUncommitedException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} - It is in ''{3}'' status".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} - It is in ''{3}'' status"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot change the status of {1}, {2} - It is in ''{3}'' status")
+  @Key("analysis.cantChangeStatusException")
+  String analysis_cantChangeStatusException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
    * Translated "Cannot copy blank section".
    * 
    * @return translated "Cannot copy blank section"
@@ -718,11 +727,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantRemoveCommitedException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during update - It should be either cancelled or removed separately".
+   * Translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during update - It should be either cancelled or removed separately"
+   * @return translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot remove {1}, {2} during update - It should be either cancelled or removed separately")
+  @DefaultMessage("Accession # ''{0,number}'': Cannot remove {1}, {2} during add/update - It should be cancelled or removed separately")
   @Key("analysis.cantRemoveInUpdateException")
   String analysis_cantRemoveInUpdateException(Integer arg0,  String arg1,  String arg2);
 
@@ -779,15 +788,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position")
   @Key("analysis.invalidPositionForAnalyteException")
   String analysis_invalidPositionForAnalyteException(Integer arg0,  String arg1,  String arg2,  String arg3);
-
-  /**
-   * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is in ''{3}'' status".
-   * 
-   * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is in ''{3}'' status"
-   */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is in ''{3}'' status")
-  @Key("analysis.invalidStatusForCancelException")
-  String analysis_invalidStatusForCancelException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in ''{3}'' status".
