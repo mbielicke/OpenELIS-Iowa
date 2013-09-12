@@ -374,7 +374,6 @@ public class QAEventsTabUI extends Screen {
 
         // qa event type dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("qaevent_type");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());

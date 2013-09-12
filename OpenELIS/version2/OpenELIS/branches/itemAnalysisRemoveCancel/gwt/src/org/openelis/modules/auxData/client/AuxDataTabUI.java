@@ -670,7 +670,6 @@ public abstract class AuxDataTabUI extends Screen {
                 values = rf.getDictionaryValues(fieldId, null);
                 if (values != null) {
                     model = new ArrayList<Item<Integer>>();
-                    model.add(new Item<Integer>(null, ""));
                     for (FormattedValue v : values)
                         model.add(new Item<Integer>(v.getId(), v.getDisplay()));
                 }

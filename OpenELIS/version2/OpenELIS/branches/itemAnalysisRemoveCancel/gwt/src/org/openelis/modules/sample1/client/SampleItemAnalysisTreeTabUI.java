@@ -58,6 +58,7 @@ import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.ModalWindow;
@@ -114,8 +115,11 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
     protected SampleManager1                         manager;
 
     protected boolean                                canEdit;
-    
-    private static final String    SAMPLE_ITEM_LEAF = "sampleItem", ANALYSIS_LEAF = "analysis";
+
+    protected Confirm                                cancelAnalysisConfirm;
+
+    private static final String                      SAMPLE_ITEM_LEAF = "sampleItem",
+                    ANALYSIS_LEAF = "analysis";
 
     public SampleItemAnalysisTreeTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -222,12 +226,14 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 row = event.getNode();
                 uid = (String)row.getData();
 
+                /*
+                 * this code is only executed for sample items because analyses
+                 * are removed in the back-end and the tree has to be reload in
+                 * that case
+                 */
                 if (SAMPLE_ITEM_LEAF.equals(row.getType())) {
                     item = (SampleItemViewDO)manager.getObject(uid);
                     manager.item.remove(item);
-                } else {
-                    // ana = (AnalysisViewDO)manager.getObject(uid);
-                    // manager.analysis.remove(ana);
                 }
             }
         });
@@ -356,7 +362,6 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         // analysis status dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("analysis_status");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -400,7 +405,21 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             public void onAnalysisChange(AnalysisChangeEvent event) {
-                analysisChanged(event.getUid());
+                analysisChanged(event);
+            }
+        });
+
+        bus.addHandler(RemoveAnalysisEvent.getType(), new RemoveAnalysisEvent.Handler() {
+            @Override
+            public void onAnalysisRemove(RemoveAnalysisEvent event) {
+                if (event.getSource() != screen) {
+                    fireDataChange();
+                    /*
+                     * clear the tabs showing the data related to the nodes in
+                     * the tree e.g. sample item, analysis or results
+                     */
+                    bus.fireEvent(new SelectionEvent(SelectedType.NONE, null));
+                }
             }
         });
     }
@@ -425,8 +444,55 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     @UiHandler("removeRowButton")
     protected void removeRow(ClickEvent event) {
-        if (tree.getSelectedNode() == -1)
-            removeRowButton.setEnabled(false);
+        final String uid;
+        Node node;
+        AnalysisViewDO ana;
+
+        node = tree.getNodeAt(tree.getSelectedNode());
+        if (SAMPLE_ITEM_LEAF.equals(node.getType())) {
+            /*
+             * since this button is only enabled if the sample item doesn't have
+             * any analyses linked to it, this node can be removed without doing
+             * any other checks
+             */
+            tree.removeNode(node);
+        } else {
+            uid = (String)node.getData();
+            ana = (AnalysisViewDO)manager.getObject(uid);
+
+            if (ana.getId() > 0) {
+                /*
+                 * existing analyses cannot be removed, only cancelled
+                 */
+                if (cancelAnalysisConfirm == null) {
+                    cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                        Messages.get().cancelAnalysisCaption(),
+                                                        Messages.get().cancelAnalysisMessage(),
+                                                        Messages.get().no(),
+                                                        Messages.get().yes());
+                    cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                        public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+                            switch (event.getSelectedItem().intValue()) {
+
+                                case 1:
+                                    bus.fireEvent(new AnalysisChangeEvent(uid,
+                                                                          Constants.dictionary().ANALYSIS_CANCELLED,
+                                                                          AnalysisChangeEvent.Action.STATUS_CHANGED));
+                                    break;
+                            }
+                        }
+                    });
+                }
+
+                cancelAnalysisConfirm.show();
+            } else {
+                /*
+                 * remove this analysis as it is not an existing one
+                 */
+                bus.fireEventFromSource(new RemoveAnalysisEvent(uid), this);
+            }
+        }
+
     }
 
     @UiHandler("popoutTreeButton")
@@ -467,7 +533,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         root = new Node();
         if (manager == null)
             return root;
-        
+
         buf = new StringBuffer();
         for (i = 0; i < manager.item.count(); i++ ) {
             item = manager.item.get(i);
@@ -478,7 +544,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             inode.setData(manager.getUid(item));
             buf.setLength(0);
             setItemDisplay(inode, item, buf);
-            
+
             root.add(inode);
 
             for (j = 0; j < manager.analysis.count(item); j++ ) {
@@ -606,13 +672,23 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         }
     }
 
-    private void analysisChanged(String uid) {
+    private void analysisChanged(AnalysisChangeEvent event) {
         int i, j;
         boolean found;
+        String uid;
         Node parent, node;
         AnalysisViewDO ana;
 
+        /*
+         * if an analysis' status changed then some other analyses may have been
+         * affected too, so the tree needs to be reloaded
+         */
+        if (AnalysisChangeEvent.Action.STATUS_CHANGED.equals(event.getAction()))
+            fireDataChange();
+
         found = false;
+        uid = event.getUid();
+
         for (i = 0; i < tree.getRoot().getChildCount(); i++ ) {
             parent = tree.getRoot().getChildAt(i);
             /*
@@ -625,6 +701,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                     ana = (AnalysisViewDO)manager.getObject(uid);
                     setAnalysisDisplay(node, ana, new StringBuffer());
                     tree.refreshNode(node);
+                    tree.selectNodeAt(node);
                     found = true;
                     break;
                 }

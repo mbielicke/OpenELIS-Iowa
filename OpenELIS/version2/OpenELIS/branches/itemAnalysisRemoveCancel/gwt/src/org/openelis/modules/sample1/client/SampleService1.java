@@ -266,6 +266,21 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     
 
     @Override
+    public void removeAnalysis(SampleManager1 sm, Integer analysisId,
+                               AsyncCallback<SampleManager1> callback) throws Exception {
+        service.removeAnalysis(sm, analysisId, callback);
+    }
+
+    @Override
+    public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.removeAnalysis(sm, analysisId, callback);
+        return callback.getResult();
+    }
+
+    @Override
     public void addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                ArrayList<TestAnalyteViewDO> analytes, ArrayList<Integer> indexes,
                                AsyncCallback<SampleManager1> callback) throws Exception {
@@ -315,21 +330,6 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
     
     @Override
-    public void changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId,
-                                       AsyncCallback<SampleManager1> callback) throws Exception {
-        service.changeAnalysisUnit(sm, analysisId, unitId, callback);
-    }
-
-    @Override
-    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
-        Callback<SampleManager1> callback;
-
-        callback = new Callback<SampleManager1>();
-        service.changeAnalysisUnit(sm, analysisId, unitId, callback);
-        return callback.getResult();
-    }
-    
-    @Override
     public void changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer methodId,
                                        AsyncCallback<SampleTestReturnVO> callback) throws Exception {
         service.changeAnalysisMethod(sm, analysisId, methodId, callback);
@@ -341,6 +341,37 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
         callback = new Callback<SampleTestReturnVO>();
         service.changeAnalysisMethod(sm, analysisId, methodId, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId,
+                                       AsyncCallback<SampleManager1> callback) throws Exception {
+        service.changeAnalysisStatus(sm, analysisId, statusId, callback);
+    }
+
+    @Override
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.changeAnalysisStatus(sm, analysisId, statusId, callback);
+        return callback.getResult();
+    }
+    
+    
+    @Override
+    public void changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId,
+                                       AsyncCallback<SampleManager1> callback) throws Exception {
+        service.changeAnalysisUnit(sm, analysisId, unitId, callback);
+    }
+
+    @Override
+    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.changeAnalysisUnit(sm, analysisId, unitId, callback);
         return callback.getResult();
     }
 }

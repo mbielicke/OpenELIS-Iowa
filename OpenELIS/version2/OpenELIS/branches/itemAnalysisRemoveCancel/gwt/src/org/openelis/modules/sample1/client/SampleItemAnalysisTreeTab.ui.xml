@@ -48,7 +48,7 @@
             <w:Button ui:field="addItemButton" leftIcon="{res.style.addRowIcon}" text="{msg.addItem}" />
           </g:HorizontalPanel>
         </g:layer>
-        <g:layer bottom="0px" top="0px" width="47%" left="85px">
+        <g:layer bottom="0px" top="0px" width="46%" left="85px">
           <g:HTMLPanel>
             <table>
               <tr>
@@ -56,7 +56,7 @@
                   <ui:text from="{msg.gen_addTest}:" />
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="test" width="150px" case="LOWER" dropWidth = "620px">
+                  <w:AutoComplete ui:field="test" width="145px" case="LOWER" dropWidth = "620px">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
                         <t:Column width="170" label="{msg.gen_test}">
@@ -76,9 +76,9 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer bottom="0px" top="0px" width="33%" right="0px">
+        <g:layer bottom="0px" top="0px" width="34%" right="0px">
           <g:HorizontalPanel>
-            <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />
+            <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}"  text="{msg.gen_removeRow}"/>
             <w:Button ui:field="popoutTreeButton" leftIcon="{res.style.popoutIcon}" />
           </g:HorizontalPanel>
         </g:layer>

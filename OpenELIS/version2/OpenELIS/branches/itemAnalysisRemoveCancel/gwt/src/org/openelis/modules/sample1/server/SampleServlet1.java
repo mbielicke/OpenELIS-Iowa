@@ -92,6 +92,10 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         return sampleManager1.addTests(sm, tests);
     }
     
+    public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
+        return sampleManager1.removeAnalysis(sm, analysisId);
+    }
+    
     public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                          ArrayList<TestAnalyteViewDO> analytes,
                                          ArrayList<Integer> indexes) throws Exception {
@@ -100,6 +104,10 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     
     public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer methodId) throws Exception {
         return sampleManager1.changeAnalysisMethod(sm, analysisId, methodId);
+    }
+    
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer methodId) throws Exception {
+        return sampleManager1.changeAnalysisStatus(sm, analysisId, methodId);
     }
     
     public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {

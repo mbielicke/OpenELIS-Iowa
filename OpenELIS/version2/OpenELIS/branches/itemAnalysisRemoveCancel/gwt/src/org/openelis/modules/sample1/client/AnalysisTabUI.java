@@ -242,7 +242,6 @@ public class AnalysisTabUI extends Screen {
                 status.setQueryMode(isState(QUERY));
 
                 model = status.getModel();
-                // TODO if necessary, change this code
                 for (i = 0; i < model.size(); i++ ) {
                     r = model.get(i);
                     if ( !Constants.dictionary().ANALYSIS_INITIATED.equals(r.getKey()) &&
@@ -708,7 +707,6 @@ public class AnalysisTabUI extends Screen {
 
         // analysis status dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new Item<Integer>(d.getId(), d.getEntry()));
 
@@ -716,7 +714,6 @@ public class AnalysisTabUI extends Screen {
 
         // analysis user action
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("user_action")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             if (Constants.dictionary().AN_USER_AC_RELEASED.equals(d.getId()))
@@ -725,14 +722,12 @@ public class AnalysisTabUI extends Screen {
         }
 
         allUnitsModel = new ArrayList<Item<Integer>>();
-        allUnitsModel.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
             if ("Y".equals(d.getIsActive()))
                 allUnitsModel.add(new Item<Integer>(d.getId(), d.getEntry()));
         }
 
         allSectionsModel = new ArrayList<Item<Integer>>();
-        allSectionsModel.add(new Item<Integer>(null, ""));
         for (SectionDO s : SectionCache.getList())
             allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
     }
@@ -740,6 +735,11 @@ public class AnalysisTabUI extends Screen {
     public void setData(SampleManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
+    }
+    
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
     public boolean validate() {
