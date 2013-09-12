@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.section.client.SectionServiceInt
-path: 987376E5AE93EEDB63FDA5992E122E2F.gwt.rpc

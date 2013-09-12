@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.completeRelease.client.CompleteReleaseServiceInt
-path: 500BCF62BCA8C3670C30EC2EE9546CB1.gwt.rpc

@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.report.client.TestReportServiceInt
-path: BE398D3FEFA6BAAFD251D613BB63BDF9.gwt.rpc

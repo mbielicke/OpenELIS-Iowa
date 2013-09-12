@@ -1,2 +1,0 @@
-serviceClass: org.openelis.gwt.services.CalendarServiceInt
-path: D48017D7CE866739F922A5602867B053.gwt.rpc

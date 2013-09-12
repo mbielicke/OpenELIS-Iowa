@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.report.client.VolumeReportServiceInt
-path: 93218620F111C99679B8EB71799E3B93.gwt.rpc

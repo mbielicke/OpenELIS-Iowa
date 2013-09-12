@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.pws.client.PWSServiceInt
-path: 791215CE85A32F9CDDAEC31B5CEE0374.gwt.rpc

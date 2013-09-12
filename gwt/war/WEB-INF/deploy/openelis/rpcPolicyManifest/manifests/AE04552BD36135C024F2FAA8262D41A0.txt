@@ -1,2 +1,0 @@
-serviceClass: org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentServiceInt
-path: FAF4D6D9CE2A32BD91B858669BF2B1D7.gwt.rpc
