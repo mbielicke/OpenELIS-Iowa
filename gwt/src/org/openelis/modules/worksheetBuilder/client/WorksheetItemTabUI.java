@@ -132,7 +132,6 @@ public class WorksheetItemTabUI extends Screen {
     
     
     
-    protected ArrayList<Integer>                        formatIds;
     protected ArrayList<Item<Integer>>                  qcLinkModel;
     protected ArrayList<String>                         manualAnalysisUids, templateAnalysisUids;
     protected Confirm                                   worksheetRemoveDuplicateQCConfirm,
@@ -168,7 +167,6 @@ public class WorksheetItemTabUI extends Screen {
         addRowDirection = true;
         manager = null;
         displayedManager = null;
-        formatIds = new ArrayList<Integer>();
         qcErrors = new HashMap<Integer, Exception>();
         templateMap = new HashMap<MenuItem, Integer>();
     }
@@ -756,10 +754,12 @@ public class WorksheetItemTabUI extends Screen {
         try {
             wqcVO = WorksheetBuilderService.get().loadTemplate(manager, testId);
             
-            if (templateAnalysisUids == null)
-                templateAnalysisUids = new ArrayList<String>();
-            for (WorksheetAnalysisViewDO waVDO : wqcVO.getNewAnalyses())
-                templateAnalysisUids.add(manager.getUid(waVDO));
+            if (wqcVO.getNewAnalyses() != null) {
+                if (templateAnalysisUids == null)
+                    templateAnalysisUids = new ArrayList<String>();
+                for (WorksheetAnalysisViewDO waVDO : wqcVO.getNewAnalyses())
+                    templateAnalysisUids.add(manager.getUid(waVDO));
+            }
             
             lastUid = null;
             choices = wqcVO.getChoices();
