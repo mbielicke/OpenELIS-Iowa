@@ -711,6 +711,19 @@ public class AnalysisHelperBean {
         accession = DataBaseUtil.toInteger(getSample(sm).getAccessionNumber());
         perm = userCache.getPermission();
 
+        /*
+         * can't change the status of a cancelled or released analysis
+         */
+        if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId())) {
+                        status = dictionaryCache.getById(ana.getStatusId()).getEntry();
+                        throw new InconsistencyException(Messages.get()
+                                                                 .analysis_cantChangeStatusException(accession,
+                                                                                                           ana.getTestName(),
+                                                                                                           ana.getMethodName(),
+                                                                                                           status));
+        }
+        
         if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) {
             if (ana.getId() < 0)
                 throw new InconsistencyException(Messages.get()
@@ -718,15 +731,7 @@ public class AnalysisHelperBean {
                                                                                                  ana.getTestName(),
                                                                                                  ana.getMethodName()));
 
-            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) ||
-                Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId())) {
-                status = dictionaryCache.getById(ana.getStatusId()).getEntry();
-                throw new InconsistencyException(Messages.get()
-                                                         .analysis_invalidStatusForCancelException(accession,
-                                                                                                   ana.getTestName(),
-                                                                                                   ana.getMethodName(),
-                                                                                                   status));
-            }
+
 
             if (ana.getSectionName() == null ||
                 !perm.getSection(ana.getSectionName()).hasCancelPermission()) {
@@ -796,6 +801,14 @@ public class AnalysisHelperBean {
 
             if (ana.getStartedDate() == null)
                 ana.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
+            
+        } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
+            
+        } else if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusId) || 
+                    Constants.dictionary().ANALYSIS_REQUEUE.equals(statusId) ||
+                    Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId)) {            
+            ana.setStatusId(statusId);
         }
 
         return sm;
