@@ -122,7 +122,7 @@ public class WorksheetLookupScreenUI extends Screen
     private void initialize() {
         Integer statusWorkingId;
         ArrayList<DictionaryDO> dictList;
-        ArrayList<Item<Integer>> model;
+        ArrayList<Item<Integer>> model, model2;
 
         //
         // screen fields and buttons
@@ -234,14 +234,16 @@ public class WorksheetLookupScreenUI extends Screen
         //
         dictList  = CategoryCache.getBySystemName("worksheet_status");
         model = new ArrayList<Item<Integer>>();
+        model2 = new ArrayList<Item<Integer>>();
         for (DictionaryDO resultDO : dictList) {
             if ("worksheet_working".equals(resultDO.getSystemName()))
                 statusWorkingId = resultDO.getId();
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
+            model2.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         }
         statusId.setModel(model);
         statusId.setValue(statusWorkingId);
-        tableStatusId.setModel(model);
+        tableStatusId.setModel(model2);
     }
     
     @UiHandler("search")
