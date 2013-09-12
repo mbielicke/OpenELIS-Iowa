@@ -682,11 +682,20 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_action();
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is not present in the system ".
+   * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is not present in the system "
+   * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is not present in the system ")
+  @DefaultMessage("Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}")
+  @Key("analysis.cantCancelPrepWithReleasedTest")
+  String analysis_cantCancelPrepWithReleasedTest(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It does not exist in the system ".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It does not exist in the system "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot cancel {1}, {2} - It does not exist in the system ")
   @Key("analysis.cantCancelUncommitedException")
   String analysis_cantCancelUncommitedException(Integer arg0,  String arg1,  String arg2);
 
@@ -698,6 +707,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Cannot copy blank section")
   @Key("analysis.cantCopyBlankSect")
   String analysis_cantCopyBlankSect();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot remove {1}, {2} - It exists in the system ".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot remove {1}, {2} - It exists in the system "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot remove {1}, {2} - It exists in the system ")
+  @Key("analysis.cantRemoveCommitedException")
+  String analysis_cantRemoveCommitedException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during update - It should be either cancelled or removed separately".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot remove {1}, {2} during update - It should be either cancelled or removed separately"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot remove {1}, {2} during update - It should be either cancelled or removed separately")
+  @Key("analysis.cantRemoveInUpdateException")
+  String analysis_cantRemoveInUpdateException(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "An analysis can not be its own prep analysis".
@@ -736,6 +763,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_insufficientPrivilegesCancelException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}".
+   * 
+   * @return translated "Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Insufficient privileges to initiate {1}, {2}")
+  @Key("analysis.insufficientPrivilegesInitiateException")
+  String analysis_insufficientPrivilegesInitiateException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position".
    * 
    * @return translated "Accession # ''{0,number}'' : Cannot add analyte ''{1}'' to {2}, {3} at this position"
@@ -745,13 +781,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_invalidPositionForAnalyteException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is in ''{3}'' status".
+   * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is in ''{3}'' status".
    * 
-   * @return translated "Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is in ''{3}'' status"
+   * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is in ''{3}'' status"
    */
-  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} cannot be cancelled because it is in ''{3}'' status")
+  @DefaultMessage("Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is in ''{3}'' status")
   @Key("analysis.invalidStatusForCancelException")
   String analysis_invalidStatusForCancelException(Integer arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in ''{3}'' status".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in ''{3}'' status"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in ''{3}'' status")
+  @Key("analysis.invalidStatusForInitiateException")
+  String analysis_invalidStatusForInitiateException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
    * Translated "No Add permission for - {0} : {1}, {2}".
@@ -11959,15 +12004,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_sampleItemSelectedToAddAnalysis();
 
   /**
-   * Translated "Accession # ''{0,number}'' : Item {1,number} - Type missing".
-   * 
-   * @return translated "Accession # ''{0,number}'' : Item {1,number} - Type missing"
-   */
-  @DefaultMessage("Accession # ''{0,number}'' : Item {1,number} - Type missing")
-  @Key("sample.sampleItemTypeMissing")
-  String sample_sampleItemTypeMissing(Integer arg0,  Integer arg1);
-
-  /**
    * Translated "Sample type is required before adding test".
    * 
    * @return translated "Sample type is required before adding test"
@@ -12137,6 +12173,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Item")
   @Key("sampleItem")
   String sampleItem();
+
+  /**
+   * Translated "Accession # ''{0,number}'' : Cannot remove Item {1,number} - One or more analyses are linked to it ".
+   * 
+   * @return translated "Accession # ''{0,number}'' : Cannot remove Item {1,number} - One or more analyses are linked to it "
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : Cannot remove Item {1,number} - One or more analyses are linked to it ")
+  @Key("sampleItem.cantRemoveException")
+  String sampleItem_cantRemoveException(Integer arg0,  Integer arg1);
+
+  /**
+   * Translated "Accession # ''{0,number}'' : Item {1,number} - Type missing".
+   * 
+   * @return translated "Accession # ''{0,number}'' : Item {1,number} - Type missing"
+   */
+  @DefaultMessage("Accession # ''{0,number}'' : Item {1,number} - Type missing")
+  @Key("sampleItem.typeMissing")
+  String sampleItem_typeMissing(Integer arg0,  Integer arg1);
 
   /**
    * Translated "An item must be selected to add an analysis if there are more than one item present".

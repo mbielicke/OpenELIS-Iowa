@@ -69,6 +69,7 @@ import org.openelis.modules.sample1.client.AnalysisChangeEvent;
 import org.openelis.modules.sample1.client.AnalysisNotesTabUI;
 import org.openelis.modules.sample1.client.AnalysisTabUI;
 import org.openelis.modules.sample1.client.QAEventsTabUI;
+import org.openelis.modules.sample1.client.RemoveAnalysisEvent;
 import org.openelis.modules.sample1.client.ResultChangeEvent;
 import org.openelis.modules.sample1.client.ResultTabUI;
 import org.openelis.modules.sample1.client.SampleHistoryUtility1;
@@ -1575,8 +1576,30 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
+            @Override
             public void onAddTest(AddTestEvent event) {
                 addTests(event.getTests());
+            }
+        });
+        
+        bus.addHandler(RemoveAnalysisEvent.getType(), new RemoveAnalysisEvent.Handler() {
+            @Override
+            public void onAnalysisRemove(RemoveAnalysisEvent event) {
+                AnalysisViewDO ana;
+
+                if (screen == event.getSource())
+                    return;
+                
+                ana = (AnalysisViewDO)manager.getObject(event.getUid());
+                try {
+                    manager = SampleService1.get().removeAnalysis(manager, ana.getId());
+                    setData();
+                    setState(state);
+                    bus.fireEventFromSource(event, screen);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
 
@@ -1591,6 +1614,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         changeAnalysisMethod(event.getUid(), event.getChangeId());
                         break;
                     case STATUS_CHANGED:
+                        changeAnalysisStatus(event.getUid(), event.getChangeId());
                         break;
                     case UNIT_CHANGED:
                         changeAnalysisUnit(event.getUid(), event.getChangeId());
@@ -1609,7 +1633,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                                   event.getIndexes());
                     setData();
                     setState(state);
-                    bus.fireEvent(new ResultChangeEvent(ResultChangeEvent.Action.ROW_ANALYTE_ADDED));
+                    bus.fireEvent(new ResultChangeEvent());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1671,7 +1695,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * load models in the dropdowns
          */
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("sample_status")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled( ("Y".equals(d.getIsActive())));
@@ -1681,7 +1704,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         status.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("gender")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled( ("Y".equals(d.getIsActive())));
@@ -1692,7 +1714,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         nextOfKinGenderId.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("race")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled( ("Y".equals(d.getIsActive())));
@@ -1703,7 +1724,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         nextOfKinRaceId.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("ethnicity")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled( ("Y".equals(d.getIsActive())));
@@ -1714,7 +1734,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         nextOfKinEthnicityId.setModel(model);
 
         stmodel = new ArrayList<Item<String>>();
-        stmodel.add(new Item<String>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("state")) {
             strow = new Item<String>(d.getEntry(), d.getEntry());
             strow.setEnabled( ("Y".equals(d.getIsActive())));
@@ -1725,7 +1744,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         nextOfKinAddrState.setModel(stmodel);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("patient_relation")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled( ("Y".equals(d.getIsActive())));
@@ -1735,7 +1753,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         nextOfKinRelationId.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO d : CategoryCache.getBySystemName("feeding")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled( ("Y".equals(d.getIsActive())));
@@ -3140,12 +3157,28 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setData();
             setState(state);
             bus.fireEventFromSource(new AnalysisChangeEvent(uid, methodId, AnalysisChangeEvent.Action.METHOD_CHANGED), this);
-            bus.fireEvent(new ResultChangeEvent(ResultChangeEvent.Action.METHOD_CHANGED));
+            bus.fireEvent(new ResultChangeEvent());
             
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
             else if (ret.getTests() != null && ret.getTests().size() > 0)
                 showTestSelectionLookup(ret);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+    
+    private void changeAnalysisStatus(String uid, Integer statusId) {
+        AnalysisViewDO ana;
+
+        ana = (AnalysisViewDO)manager.getObject(uid);
+        try {
+            manager = SampleService1.get().changeAnalysisStatus(manager, ana.getId(), statusId);
+            setData();
+            setState(state);
+            bus.fireEventFromSource(new AnalysisChangeEvent(uid, statusId, AnalysisChangeEvent.Action.STATUS_CHANGED), this);
+            bus.fireEvent(new ResultChangeEvent());
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -3161,7 +3194,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setData();
             setState(state);            
             bus.fireEventFromSource(new AnalysisChangeEvent(uid, unitId, AnalysisChangeEvent.Action.UNIT_CHANGED), this);
-            bus.fireEvent(new ResultChangeEvent(ResultChangeEvent.Action.UNIT_CHANGED));
+            bus.fireEvent(new ResultChangeEvent());
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
