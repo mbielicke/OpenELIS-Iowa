@@ -95,7 +95,7 @@ UIRF Software License are applicable instead of those above.
         </t:Column>
         <t:Column width="100" label="{msg.status}" sortable="true">
           <t:DropdownCell>
-            <w:Dropdown ui:field="tableStatusId" width="84" case="MIXED"/>
+            <w:Dropdown ui:field="tableStatusId" width="84" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
         <t:Column width="175" label="{msg.description}" sortable="true">
