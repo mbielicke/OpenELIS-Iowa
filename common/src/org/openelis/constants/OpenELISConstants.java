@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -7592,6 +7592,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must Commit or Abort changes first")
   @Key("mustCommitOrAbort")
   String mustCommitOrAbort();
+
+  /**
+   * Translated "The sample must have at least one analysis assigned.".
+   * 
+   * @return translated "The sample must have at least one analysis assigned."
+   */
+  @DefaultMessage("The sample must have at least one analysis assigned.")
+  @Key("mustHaveAnalysesToVerify")
+  String mustHaveAnalysesToVerify();
 
   /**
    * Translated "The default printer and default barcode printer must be specified to process orders  ".
@@ -15748,11 +15757,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String wrongStatusForProcessing();
 
   /**
-   * Translated "The status of the sample record must be \"Not Verified\"             ".
+   * Translated "The status of the sample record must be \"Not Verified\"".
    * 
-   * @return translated "The status of the sample record must be \"Not Verified\"             "
+   * @return translated "The status of the sample record must be \"Not Verified\""
    */
-  @DefaultMessage("The status of the sample record must be \"Not Verified\"             ")
+  @DefaultMessage("The status of the sample record must be \"Not Verified\"")
   @Key("wrongStatusForVerifying")
   String wrongStatusForVerifying();
 
