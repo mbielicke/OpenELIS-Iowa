@@ -455,7 +455,7 @@ public class WorksheetManager1Bean {
 
         if (getNotes(wm) != null) {
             for (NoteViewDO data : getNotes(wm)) {
-                if (data.getId() == null) {
+                if (data.getId() < 0) {
                     data.setReferenceTableId(Constants.table().WORKSHEET);
                     data.setReferenceId(getWorksheet(wm).getId());
                     note.add(data);
