@@ -31,14 +31,13 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.manager.WorksheetManager1;
-import org.openelis.modules.note.client.EditNoteScreen;
+import org.openelis.modules.note.client.EditNoteLookupUI;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
@@ -52,7 +51,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
 public class WorksheetNotesTabUI extends Screen {
@@ -63,18 +61,15 @@ public class WorksheetNotesTabUI extends Screen {
 
     private static WorksheetNotesTabUiBinder uiBinder = GWT.create(WorksheetNotesTabUiBinder.class);
 
-    protected boolean                        canEdit, isVisible;
-    protected Integer                        userId;
-    protected String                         userName;
     @UiField
-    protected Button                         editButton;
-    protected EditNoteScreen                 editNote;
-    protected NoteViewDO                     note;
+    protected Button                         addNoteButton;
     @UiField
     protected NotesPanel                     notesPanel;
+    
+    protected boolean                        canEdit, isVisible;
+    protected EditNoteLookupUI               editNoteLookup;
     protected Screen                         parentScreen;
     protected WorksheetManager1              displayedManager, manager;
-    protected WorksheetNotesTabUI            screen;
 
     public WorksheetNotesTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -83,16 +78,20 @@ public class WorksheetNotesTabUI extends Screen {
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
-        userId = UserCache.getPermission().getSystemUserId();
-        userName = UserCache.getPermission().getLoginName();
+        manager = null;
+        displayedManager = null;
     }
 
     public void initialize() {
-        screen = this;
+        addDataChangeHandler(new DataChangeEvent.Handler() {
+            public void onDataChange(DataChangeEvent event) {
+                drawNotes();
+            }
+        });
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                editButton.setEnabled(isState(ADD, UPDATE) && canEdit);
+                addNoteButton.setEnabled(isState(ADD, UPDATE) && canEdit);
             }
         });
 
@@ -121,7 +120,7 @@ public class WorksheetNotesTabUI extends Screen {
     }
 
     public void setData(WorksheetManager1 manager) {
-        if (!DataBaseUtil.isSame(this.manager, manager)) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
             displayedManager = this.manager;
             this.manager = manager;
         }
@@ -136,7 +135,7 @@ public class WorksheetNotesTabUI extends Screen {
 
     private void displayNotes() {
         boolean dataChanged;
-        int count1, count2, i;
+        int count1, count2;
         NoteViewDO note1, note2;
 
         if (!isVisible)
@@ -161,56 +160,68 @@ public class WorksheetNotesTabUI extends Screen {
         if (dataChanged) {
             displayedManager = manager;
             evaluateEdit();
-            notesPanel.clearNotes();
+            setState(state);
+            fireDataChange();
+        }
+    }
+    
+    private void drawNotes() {
+        int i;
+        NoteViewDO note;
+
+        notesPanel.clearNotes();
+        if (manager != null) {
             for (i = 0; i < manager.note.count(); i++) {
-                note1 = manager.note.get(i);
-                notesPanel.addNote(note1.getSubject(),
-                                   note1.getSystemUser(),
-                                   note1.getText(),
-                                   note1.getTimestamp());
+                note = manager.note.get(i);
+                notesPanel.addNote(note.getSubject(),
+                                   note.getSystemUser(),
+                                   note.getText(),
+                                   note.getTimestamp());
             }
         }
     }
 
     @SuppressWarnings("unused")
-    @UiHandler("editButton")
-    protected void showEditWindow(ClickEvent event) {
+    @UiHandler("addNoteButton")
+    protected void showNoteLookup(ClickEvent event) {
         ModalWindow modal;
+        NoteViewDO note;
 
-        if (editNote == null) {
-            try {
-                editNote = new EditNoteScreen();
-                editNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
-                    public void onAction(ActionEvent<EditNoteScreen.Action> event) {
-                        if (event.getAction() == EditNoteScreen.Action.OK) {
-                            if (note.getText() == null || note.getText().trim().length() == 0)
-                                manager.note.removeEditing();
-                            fireDataChange();
-                        }
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert("Error in EditNote:" + e.getMessage());
-                return;
-            }
+        if (editNoteLookup == null) {
+            editNoteLookup = new EditNoteLookupUI() {
+                public void ok() {
+                    if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
+                        manager.note.removeEditing();
+                    else
+                        setNoteFields(manager.note.getEditing(), editNoteLookup.getSubject(),
+                                      editNoteLookup.getText());
+                    drawNotes();
+                }
+                
+                public void cancel() {
+                    // ignore
+                }
+            };
         }
 
         modal = new ModalWindow();
-        modal.setSize("518px", "569px");
+        modal.setSize("620px", "550px");
         modal.setName(Messages.get().noteEditor());
-        modal.setContent(editNote);
+        modal.setCSS(UIResources.INSTANCE.popupWindow());
+        modal.setContent(editNoteLookup);
 
-        note = null;
-        try {
-            note = manager.note.getEditing();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert("Error in EditNote:" + e.getMessage());
-        }
-        note.setSystemUser(userName);
-        note.setSystemUserId(userId);
+        note = manager.note.getEditing();
+        editNoteLookup.setWindow(modal);
+        editNoteLookup.setSubject(note.getSubject());
+        editNoteLookup.setText(note.getText());
+        editNoteLookup.setHasSubject("N".equals(note.getIsExternal()));
+    }
+
+    private void setNoteFields(NoteViewDO note, String subject, String text) {
+        note.setSubject(subject);
+        note.setText(text);
+        note.setSystemUser(UserCache.getPermission().getLoginName());
+        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
         note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-        editNote.setNote(note);
     }
 }
