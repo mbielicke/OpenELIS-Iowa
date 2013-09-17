@@ -396,7 +396,7 @@ public class FinalReportBean {
             throw e;
         }
 
-        print(printList, "C", false, status, "-attachment-");
+        print(printList, "R", false, status, "-attachment-");
 
         /*
          * save it as attachment to the sample
