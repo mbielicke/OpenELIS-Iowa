@@ -25,13 +25,15 @@
  */
 package org.openelis.modules.verification.client;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.user.client.Window;
+
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -39,14 +41,12 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.sample.client.SampleService;
+import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.widget.WindowInt;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Window;
 
 public class VerificationScreen extends Screen {
 
@@ -58,7 +58,7 @@ public class VerificationScreen extends Screen {
         super((ScreenDefInt)GWT.create(VerificationDef.class));
 
         setWindow(window);
-        
+
         userPermission = UserCache.getPermission().getModule("verification");
         if (userPermission == null)
             throw new PermissionException(Messages.get().screenPermException("Verification Screen"));
@@ -103,6 +103,7 @@ public class VerificationScreen extends Screen {
     }
 
     private void verifySample(String code) {
+        int i;
         Exception le;
         SampleManager manager;
 
@@ -117,11 +118,20 @@ public class VerificationScreen extends Screen {
                 window.setBusy(Messages.get().updating());
 
                 manager = SampleService.get().fetchByAccessionNumber(new Integer(code));
-                if ( !Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
-                                                                               .getStatusId())) {
+                if (!Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(manager.getSample()
+                                                                              .getStatusId())) {
                     window.setError(Messages.get().wrongStatusForVerifying());
                     return;
                 }
+
+                for (i = 0; i < manager.getSampleItems().count(); i++) {
+                    if (manager.getSampleItems().getAnalysisAt(0).count() > 0)
+                        break;
+                }
+                if (i >= manager.getSampleItems().count()) {
+                    window.setError(Messages.get().mustHaveAnalysesToVerify());
+                    return;
+                }                    
 
                 manager = manager.fetchForUpdate();
                 manager.getSample().setStatusId(Constants.dictionary().SAMPLE_LOGGED_IN);
