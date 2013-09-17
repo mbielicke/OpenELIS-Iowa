@@ -750,14 +750,19 @@ public class AuxiliaryScreen extends Screen {
                 int r, fr;
                 GridFieldErrorException ex;
 
+                if (state == State.DISPLAY || state == State.DEFAULT)
+                    return;
+                
                 auxFieldTable.finishEditing();
                 r = auxFieldValueTable.getSelectedRow();
                 fr = auxFieldTable.getSelectedRow();
 
-                for (int i = 0; i < valueErrorList.size(); i++ ) {
-                    ex = valueErrorList.get(i);
-                    if (ex.getColumnIndex() == r)
-                        valueErrorList.remove(i);
+                if (valueErrorList != null) {
+                    for (int i = 0; i < valueErrorList.size(); i++ ) {
+                        ex = valueErrorList.get(i);
+                        if (ex.getColumnIndex() == r)
+                            valueErrorList.remove(i);
+                    }
                 }
 
                 clearFieldError(fr);

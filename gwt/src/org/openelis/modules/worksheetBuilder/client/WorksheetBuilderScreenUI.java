@@ -456,7 +456,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                createdDate.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit()));
+                createdDate.setEnabled(isState(QUERY));
                 createdDate.setQueryMode(isState(QUERY));
             }
 

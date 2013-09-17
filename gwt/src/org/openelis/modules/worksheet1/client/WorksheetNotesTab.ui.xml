@@ -24,21 +24,23 @@
  * of those above.
 -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:w='urn:import:org.openelis.ui.widget'>
-             
-  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
-  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+    xmlns:w='urn:import:org.openelis.ui.widget'>
+    <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
+    <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes"/>
+    <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+        field="res"/>
 
-  <g:LayoutPanel>
-    <g:layer top="0px" bottom="30px">
-      <w:NotesPanel ui:field="notesPanel" />
-    </g:layer>
-    <g:layer bottom="0px" height="30px">
-      <g:AbsolutePanel>
-        <w:Button ui:field="editButton" leftIcon="{res.style.standardNoteIcon}"
-                  text="{msg.addNote}" />
-      </g:AbsolutePanel>
-    </g:layer>
-  </g:LayoutPanel>
+    <g:LayoutPanel>
+        <g:layer top="0px" bottom="30px">
+            <g:HTMLPanel styleName="{res.style.WhiteContentPanel}">
+                <w:NotesPanel ui:field="notesPanel"/>
+            </g:HTMLPanel>
+        </g:layer>
+        <g:layer bottom="0px" height="25px">
+            <g:AbsolutePanel>
+                <w:Button ui:field="addNoteButton" leftIcon="{res.style.standardNoteIcon}"
+                    text="{msg.gen_addNote}"/>
+            </g:AbsolutePanel>
+        </g:layer>
+    </g:LayoutPanel>
 </ui:UiBinder>
