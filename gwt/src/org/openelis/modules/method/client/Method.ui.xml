@@ -30,8 +30,8 @@
             <g:layer bottom="0px" height="26px">
               <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                 <g:HorizontalPanel>
-                  <w:Button ui:field="atozPrev" leftIcon="{libRes.buttonPanel.PreviousButtonImage}" enabled="false" css="{libRes.buttonPanel}" />
-                  <w:Button ui:field="atozNext" leftIcon="{libRes.buttonPanel.NextButtonImage}" enabled="false" css="{libRes.buttonPanel}" />
+                  <w:Button ui:field="atozPrev" leftIcon="{libRes.atozButton.PreviousPageButtonImage}" enabled="false" css="{libRes.atozButton}" />
+                  <w:Button ui:field="atozNext" leftIcon="{libRes.atozButton.NextPageButtonImage}" enabled="false" css="{libRes.atozButton}" />
                 </g:HorizontalPanel>
               </g:HorizontalPanel>
             </g:layer>
