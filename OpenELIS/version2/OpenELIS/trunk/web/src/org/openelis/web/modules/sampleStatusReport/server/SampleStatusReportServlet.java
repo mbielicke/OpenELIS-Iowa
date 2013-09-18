@@ -11,7 +11,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.web.modules.sampleStatusReport.client.SampleStatusReportServiceInt;
 
 @WebServlet("/openelisweb/sampleStatus")
@@ -23,18 +23,34 @@ public class SampleStatusReportServlet extends RemoteServlet implements SampleSt
     SampleStatusReportBean sampleStatusReport;
     
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(Query query) throws Exception {        
-        return sampleStatusReport.getSampleListForSampleStatusReport(query.getFields());
+        try {
+            return sampleStatusReport.getSampleListForSampleStatusReport(query.getFields());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }    
     
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
-        return sampleStatusReport.getProjectList();
+        try {
+            return sampleStatusReport.getProjectList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<SampleQaEventViewDO> getSampleQaEventsBySampleId(Integer id) throws Exception {
-        return sampleStatusReport.getSampleQaEventsBySampleId(id);
+        try {
+            return sampleStatusReport.getSampleQaEventsBySampleId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<AnalysisQaEventViewDO> getAnalysisQaEventsByAnalysisId(Integer id) throws Exception {
-        return sampleStatusReport.getAnalysisQaEventsByAnalysisId(id);
+        try {
+            return sampleStatusReport.getAnalysisQaEventsByAnalysisId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

@@ -35,7 +35,7 @@ import org.openelis.bean.SystemVariableBean;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.ui.common.ReportStatus;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.web.modules.dataView.client.DataViewServiceInt;
 
 @WebServlet("/openelisweb/dataViewReport")
@@ -50,21 +50,38 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     DataViewBean       dataView;
     
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
-        return dataView.fetchEnvironmentalProjectListForWeb();  
+        try {
+            return dataView.fetchEnvironmentalProjectListForWeb();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
-        return dataView.fetchAnalyteAndAuxField(data);
+        try {
+            return dataView.fetchAnalyteAndAuxField(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
-        return dataView.fetchAnalyteAndAuxFieldForWebEnvironmental(data);
+        try {
+            return dataView.fetchAnalyteAndAuxFieldForWebEnvironmental(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ReportStatus runReport(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = dataView.runReport(data);
+        try {
+            st = dataView.runReport(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 
@@ -74,7 +91,12 @@ public class DataViewReportServlet extends RemoteServlet implements DataViewServ
     public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = dataView.runReportForWebEnvironmental(data);
+        try {
+            st = dataView.runReportForWebEnvironmental(data);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
         if (st.getStatus() == ReportStatus.Status.SAVED)
             getThreadLocalRequest().getSession().setAttribute(st.getMessage(), st);
 

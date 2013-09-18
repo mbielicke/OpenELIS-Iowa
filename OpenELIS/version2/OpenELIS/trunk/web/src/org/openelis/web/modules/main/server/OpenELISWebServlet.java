@@ -36,17 +36,16 @@ import javax.servlet.http.HttpSession;
 import org.openelis.bean.ApplicationBean;
 import org.openelis.bean.UserCacheBean;
 import org.openelis.ui.common.Datetime;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.util.UTFResource;
 import org.openelis.web.modules.main.client.OpenELISRPC;
 import org.openelis.web.modules.main.client.OpenELISWebServiceInt;
-
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 /**
  * This class loads initial data for the main screen of the OpenELIS Web app
  */
 @WebServlet("/openelisweb/service")
-public class OpenELISWebServlet extends RemoteServiceServlet implements OpenELISWebServiceInt  {
+public class OpenELISWebServlet extends RemoteServlet implements OpenELISWebServiceInt  {
 
     private static final long serialVersionUID = 1L;
     
@@ -56,15 +55,15 @@ public class OpenELISWebServlet extends RemoteServiceServlet implements OpenELIS
     @EJB
     private ApplicationBean application;
 
-    public OpenELISRPC initialData() {
+    public OpenELISRPC initialData() throws Exception {
         OpenELISRPC rpc;
 
         rpc = new OpenELISRPC();
         rpc.appConstants = getConstants();
         try {
             rpc.constants = application.getConstants();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
         
         keepAlive();
@@ -88,7 +87,7 @@ public class OpenELISWebServlet extends RemoteServiceServlet implements OpenELIS
                 session.invalidate();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // ignore
         }
     }
 

@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.UserCacheBean;
 import org.openelis.ui.common.SystemUserPermission;
 import org.openelis.ui.common.SystemUserVO;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.web.cache.UserCacheServiceInt;
 
 @WebServlet("/openelisweb/userCache")
@@ -45,18 +45,34 @@ public class UserCacheServlet extends RemoteServlet implements UserCacheServiceI
     UserCacheBean userCache;
 
     public SystemUserVO getSystemUser(Integer id) throws Exception {
-        return userCache.getSystemUser(id);
+        try {
+            return userCache.getSystemUser(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<SystemUserVO> getSystemUsers(String name) throws Exception {
-        return userCache.getSystemUsers(name + "%", 10);
+        try {
+            return userCache.getSystemUsers(name + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<SystemUserVO> getEmployees(String name) throws Exception {
-        return userCache.getEmployees(name + "%", 10);
+        try {
+            return userCache.getEmployees(name + "%", 10);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public SystemUserPermission getPermission() throws Exception {
-       return userCache.getPermission();
+       try {
+            return userCache.getPermission();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }        
 }

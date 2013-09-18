@@ -32,7 +32,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.CategoryCacheBean;
 import org.openelis.domain.CategoryCacheVO;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.web.cache.CategoryCacheServiceInt;
 
 @WebServlet("/openelisweb/categoryCache")
@@ -44,11 +44,19 @@ public class CategoryCacheServlet extends RemoteServlet implements CategoryCache
     CategoryCacheBean categoryCache;
 
     public CategoryCacheVO getBySystemName(String systemName) throws Exception {
-        return categoryCache.getBySystemName(systemName);
+	try {
+            return categoryCache.getBySystemName(systemName);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<CategoryCacheVO> getBySystemNames(String... systemNames) throws Exception {        
-        return categoryCache.getBySystemNames(systemNames);
+        try {
+            return categoryCache.getBySystemNames(systemNames);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }

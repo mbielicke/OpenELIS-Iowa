@@ -25,24 +25,7 @@
  */
 package org.openelis.web.modules.main.client;
 
-
-import org.openelis.constants.Messages;
-import org.openelis.domain.Constants;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.screen.Screen;
-import org.openelis.ui.widget.Label;
-import org.openelis.ui.widget.web.WebWindow;
-import org.openelis.web.cache.UserCache;
-import org.openelis.web.modules.dataView.client.DataViewEnvironmentalScreen;
-import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScreen;
-import org.openelis.web.modules.finalReport.client.FinalReportPrivateWellScreen;
-import org.openelis.web.modules.finalReport.client.FinalReportSDWISScreen;
-import org.openelis.web.modules.home.client.HomeScreen;
-import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceScreen;
-import org.openelis.web.modules.sampleStatusReport.client.SampleStatusScreen;
-
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -60,6 +43,20 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.constants.Messages;
+import org.openelis.domain.Constants;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.widget.Label;
+import org.openelis.ui.widget.web.WebWindow;
+import org.openelis.web.cache.UserCache;
+import org.openelis.web.modules.dataView.client.DataViewEnvironmentalScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportPrivateWellScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportSDWISScreen;
+import org.openelis.web.modules.home.client.HomeScreen;
+import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceScreen;
+import org.openelis.web.modules.sampleStatusReport.client.SampleStatusScreen;
+
 /**
  * 
  * This class draws the initial screen for the OpenELIS Web interface. All
@@ -67,28 +64,29 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  */
 public class OpenELIS extends ResizeComposite {
-    
+
     @UiTemplate("OpenELIS.ui.xml")
-    interface OpenELISUiBinder extends UiBinder<Widget, OpenELIS>{};
+    interface OpenELISUiBinder extends UiBinder<Widget, OpenELIS> {
+    };
+
     private static final OpenELISUiBinder uiBinder = GWT.create(OpenELISUiBinder.class);
 
     /**
      * This panel is where the screen content is displayed
-     */    
-    protected AbsolutePanel           linksPanel;
-    
+     */
+    protected AbsolutePanel               linksPanel;
+
     @UiField
-    protected Label<String>           logo;
-    
+    protected Label<String>               logo;
+
     @UiField
-    protected HorizontalPanel         header;
-    
+    protected HorizontalPanel             header;
 
     /**
      * Static window used to display status messages
      */
     @UiField
-    protected WebWindow               window;
+    protected WebWindow                   window;
 
     /**
      * No-arg Constructor
@@ -98,16 +96,20 @@ public class OpenELIS extends ResizeComposite {
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
 
-        rpc = OpenELISWebService.get().initialData();
-
-        Constants.setConstants(rpc.constants);
+        try {
+            rpc = OpenELISWebService.get().initialData();
+            Constants.setConstants(rpc.constants);
+        } catch (Exception anyE) {
+            Window.alert("APPLICATION UNAVAILABLE; Please contact Laboratory for support");
+            logout();
+            return;
+        }
 
         initWidget(uiBinder.createAndBindUi(this));
 
         initialize();
-        
-        setScreen(new HomeScreen(window), "Home", "home");
 
+        setScreen(new HomeScreen(window), "Home", "home");
     }
 
     /**
@@ -144,7 +146,8 @@ public class OpenELIS extends ResizeComposite {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        setScreen(new FinalReportEnvironmentalScreen(window), Messages.get().environmentalFinalReport(),
+                        setScreen(new FinalReportEnvironmentalScreen(window),
+                                  Messages.get().environmentalFinalReport(),
                                   "finalReportEnvironmental");
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -175,7 +178,9 @@ public class OpenELIS extends ResizeComposite {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        setScreen(new FinalReportSDWISScreen(window), Messages.get().sdwisFinalReport(),"finalReportSDWIS");
+                        setScreen(new FinalReportSDWISScreen(window),
+                                  Messages.get().sdwisFinalReport(),
+                                  "finalReportSDWIS");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -189,7 +194,8 @@ public class OpenELIS extends ResizeComposite {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        setScreen(new DataViewEnvironmentalScreen(window), Messages.get().environmentalResultByAnalyte(),
+                        setScreen(new DataViewEnvironmentalScreen(window),
+                                  Messages.get().environmentalResultByAnalyte(),
                                   "environmentalResultByAnalyte");
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -209,7 +215,9 @@ public class OpenELIS extends ResizeComposite {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        setScreen(new SampleStatusScreen(window), Messages.get().sampleInhouseStatusReport(), "sampleStatus");
+                        setScreen(new SampleStatusScreen(window),
+                                  Messages.get().sampleInhouseStatusReport(),
+                                  "sampleStatus");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -229,7 +237,9 @@ public class OpenELIS extends ResizeComposite {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        setScreen(new NotificationPreferenceScreen(window), Messages.get().notificationPreference(), "notificationPref");
+                        setScreen(new NotificationPreferenceScreen(window),
+                                  Messages.get().notificationPreference(),
+                                  "notificationPref");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -280,8 +290,8 @@ public class OpenELIS extends ResizeComposite {
      * content.
      */
     private void setScreen(Widget screen, String name, String key) {
-        //screen.getDefinition().setName(name);
-        window.setContent(screen);//setContent(screen);
+        // screen.getDefinition().setName(name);
+        window.setContent(screen);// setContent(screen);
     }
 
     /**
@@ -331,13 +341,14 @@ public class OpenELIS extends ResizeComposite {
                     l.setStyleName("link");
                 }
             });
-            
+
             return l;
         }
 
         public Label<String> add(String text, String style) {
             //
-            // since the menus are based on user permission, we will delay adding a
+            // since the menus are based on user permission, we will delay
+            // adding a
             // menu section until the user has a menu item for that section.
             //
             if (first) {
@@ -353,7 +364,7 @@ public class OpenELIS extends ResizeComposite {
                 addLabel( (count == 0) ? title : "", "section-label");
             }
 
-            count++ ;
+            count++;
             return addLabel(text, style);
         }
 
