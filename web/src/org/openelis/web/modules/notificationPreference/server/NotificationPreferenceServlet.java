@@ -40,7 +40,7 @@ import org.openelis.domain.OrganizationViewDO;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.data.Query;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceServiceInt;
 
 @WebServlet("/openelisweb/notificationPreference")
@@ -58,7 +58,11 @@ public class NotificationPreferenceServlet extends RemoteServlet implements Noti
     private OrganizationParameterBean organizationParameter;
 
     public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception {
-        return organization.fetchByIds(ids);
+        try {
+            return organization.fetchByIds(ids);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception {
@@ -73,27 +77,43 @@ public class NotificationPreferenceServlet extends RemoteServlet implements Noti
             list = organization.fetchActiveByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<OrganizationDO>(0);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
         }
         return list;
     }
     
     public ArrayList<OrganizationParameterDO> fetchParametersByDictionarySystemName(String systemName) throws Exception {
-        return organizationParameter.fetchByDictionarySystemName(systemName);
+        try {
+            return organizationParameter.fetchByDictionarySystemName(systemName);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<OrganizationParameterDO> fetchParametersByOrganizationId(Integer id) throws Exception {
-        return organizationParameter.fetchByOrganizationId(id);
+        try {
+            return organizationParameter.fetchByOrganizationId(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return organization.query(query.getFields(),
-                                                  query.getPage() * query.getRowsPerPage(),
-                                                  query.getRowsPerPage());
+        try {
+            return organization.query(query.getFields(),
+                                      query.getPage() * query.getRowsPerPage(),
+                                      query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<OrganizationParameterDO> updateForNotify(ArrayList<OrganizationParameterDO> parameters) throws Exception {
-        return organizationManager.updateForNotify(parameters);
+        try {
+            return organizationManager.updateForNotify(parameters);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

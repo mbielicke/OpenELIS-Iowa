@@ -30,7 +30,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.DictionaryCacheBean;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.gwt.server.RemoteServlet;
+import org.openelis.ui.server.RemoteServlet;
 import org.openelis.web.cache.DictionaryCacheServiceInt;
 
 @WebServlet("/openelisweb/dictionaryCache")
@@ -42,11 +42,19 @@ public class DictionaryCacheServlet extends RemoteServlet implements DictionaryC
     DictionaryCacheBean dictionaryCache;
 
     public DictionaryDO getBySystemName(String systemName) throws Exception {
-        return dictionaryCache.getBySystemName(systemName);
+        try {
+            return dictionaryCache.getBySystemName(systemName);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public DictionaryDO getById(Integer id) throws Exception {
-        return dictionaryCache.getById(id);
+        try {
+            return dictionaryCache.getById(id);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
 }
