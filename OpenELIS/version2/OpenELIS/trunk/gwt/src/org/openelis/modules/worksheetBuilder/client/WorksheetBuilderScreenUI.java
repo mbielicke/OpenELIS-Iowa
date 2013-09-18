@@ -624,7 +624,6 @@ public class WorksheetBuilderScreenUI extends Screen {
         //
         dictList  = CategoryCache.getBySystemName("worksheet_status");
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO resultDO : dictList)
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         statusId.setModel(model);
@@ -634,7 +633,6 @@ public class WorksheetBuilderScreenUI extends Screen {
         //
         dictList = CategoryCache.getBySystemName("test_worksheet_format");
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         for (DictionaryDO resultDO : dictList)
             model.add(new Item<Integer>(resultDO.getId(),resultDO.getEntry()));
         formatId.setModel(model);
