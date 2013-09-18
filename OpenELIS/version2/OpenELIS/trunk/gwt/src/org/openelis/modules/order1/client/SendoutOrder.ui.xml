@@ -51,11 +51,11 @@
 								width="100%">
 								<g:HorizontalPanel>
 									<w:Button ui:field="atozPrev"
-										leftIcon="{uiRes.buttonPanel.PreviousButtonImage}" enabled="false"
-										css="{uiRes.buttonPanel}" />
+										leftIcon="{uiRes.atozButton.PreviousPageButtonImage}" enabled="false"
+										css="{uiRes.atozButton}" />
 									<w:Button ui:field="atozNext"
-										leftIcon="{uiRes.buttonPanel.NextButtonImage}" enabled="false"
-										css="{uiRes.buttonPanel}" />
+										leftIcon="{uiRes.atozButton.NextPageButtonImage}" enabled="false"
+										css="{uiRes.atozButton}" />
 								</g:HorizontalPanel>
 							</g:HorizontalPanel>
 						</g:layer>

@@ -110,7 +110,7 @@
       <g:HorizontalPanel>
         <w:Menu ui:field="addRowMenu" selfShow="true">
           <w:display>
-            <w:Button ui:field="addRowButton" text="{msg.addRow}" leftIcon="{res.style.addRowIcon}"/>
+            <w:Button ui:field="addRowButton" text="{msg.addRow}" rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
           </w:display>
           <w:MenuItem ui:field="insertAnalysisAbove" description=""
                       enabled="false" icon="{res.style.addRowIcon}"
@@ -136,12 +136,12 @@
         <w:Menu ui:field="loadTemplateMenu" selfShow="true">
           <w:display>
             <w:Button ui:field="loadTemplateButton" text="{msg.loadTemplate}"
-                      leftIcon="{res.style.addRowIcon}"/>
+                      rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
           </w:display>
         </w:Menu>
         <w:Menu ui:field="undoQcsMenu" selfShow="true">
           <w:display>
-            <w:Button ui:field="undoQcsButton" text="{msg.undoQc}" leftIcon="{res.style.removeRowIcon}"/>
+            <w:Button ui:field="undoQcsButton" text="{msg.undoQc}" rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
           </w:display>
           <w:MenuItem ui:field="undoAll" description="" enabled="false"
                       icon="{res.style.removeRowIcon}" display="All"/>

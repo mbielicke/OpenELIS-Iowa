@@ -42,9 +42,9 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <g:LayoutPanel>
-                <g:layer top="0px" bottom="28px">
-                  <t:Table ui:field="atozTable" horizontalScroll="ALWAYS"
-                           verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+                <g:layer top="0px" bottom="27px">
+                  <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
+                           header="true" styleName="{uiRes.table.ScreenTableWithSides}">
                     <t:Column width="50" label="{msg.id}">
                       <t:LabelCell/>
                     </t:Column>
@@ -56,10 +56,10 @@
                 <g:layer bottom="0px" height="28px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
-                      <w:Button ui:field="atozPrev" leftIcon="{uiRes.buttonPanel.PreviousButtonImage}"
-                                enabled="false" css="{uiRes.buttonPanel}"/>
-                      <w:Button ui:field="atozNext" leftIcon="{uiRes.buttonPanel.NextButtonImage}"
-                                enabled="false" css="{uiRes.buttonPanel}"/>
+                      <w:Button ui:field="atozPrev" leftIcon="{uiRes.atozButton.PreviousPageButtonImage}"
+                                enabled="false" css="{uiRes.atozButton}"/>
+                      <w:Button ui:field="atozNext" leftIcon="{uiRes.atozButton.NextPageButtonImage}"
+                                enabled="false" css="{uiRes.atozButton}"/>
                     </g:HorizontalPanel>
                   </g:HorizontalPanel>
                 </g:layer>
