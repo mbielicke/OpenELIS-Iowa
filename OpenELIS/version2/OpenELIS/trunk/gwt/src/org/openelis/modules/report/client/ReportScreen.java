@@ -195,6 +195,8 @@ public abstract class ReportScreen<T extends Serializable> extends Screen {
 
 		main = new VerticalPanel();
 		main.setStyleName("WhiteContentPanel");
+		main.setWidth("100%");
+		main.setHeight("100%");
 		def.getPanel().add(main);
 		tp = new FlexTable();
 		tp.setStyleName("Form");
