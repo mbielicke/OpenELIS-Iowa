@@ -1,0 +1,65 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table'
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+    <g:layer top="0px" height="40px">
+      <g:HorizontalPanel>
+        <g:HorizontalPanel width="250px" />
+        <w:Button ui:field="copyToEmptyButton" text="{msg.testSelection_copyToEmpty}" />
+        <w:Button ui:field="copyToAllButton" text="{msg.testSelection_copyToAll}" />
+      </g:HorizontalPanel>
+    </g:layer>
+    <g:layer top="45px" height="200px">
+      <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+        <r:Column width="250" label="" />
+        <r:Column width="200" label="{msg.gen_section}" />
+        <r:Column width="50" label="{msg.gen_select}" />
+        <r:Leaf key="analysis">
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+        </r:Leaf>
+        <r:Leaf key="test">
+          <r:LeafColumn>
+            <t:LabelCell />
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:DropdownCell>
+              <w:Dropdown width="200px" field="Integer" ui:field="section" />
+            </t:DropdownCell>
+          </r:LeafColumn>
+          <r:LeafColumn>
+            <t:CheckBoxCell>
+              <w:Check/>
+            </t:CheckBoxCell>
+          </r:LeafColumn>
+        </r:Leaf>
+      </r:Tree>
+    </g:layer>
+    <g:layer bottom="0px" height="25px">
+      <g:HorizontalPanel width="100%" height="100%" horizontalAlignment="CENTER">
+        <w:Button ui:field="okButton" text="{msg.gen_ok}" />
+      </g:HorizontalPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
