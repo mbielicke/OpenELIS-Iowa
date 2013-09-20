@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -528,7 +529,8 @@ public class WorksheetManager1Bean {
                             analysisIds.add(data.getAnalysisId());
                         }
                     } else if (!amap.containsKey(data.getId())) {
-                        if (data.isChanged() && !updatedAnalyses.containsKey(data.getAnalysisId())) {
+                        if (data.getAnalysisId() != null && data.isChanged() &&
+                            !updatedAnalyses.containsKey(data.getAnalysisId())) {
                             updatedAnalyses.put(data.getAnalysisId(), data);
                             analysisIds.add(data.getAnalysisId());
                         }
@@ -1204,53 +1206,61 @@ public class WorksheetManager1Bean {
             fromWaVDO = fromAnalyses.get(a);
             toWaVDO = toAnalyses.get(a);
             if (fromWaVDO.getAnalysisId() != null) {
-                fromWrVDOs = wResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
-                for (WorksheetResultViewDO fromWrVDO : fromWrVDOs) {
-                    toWrVDO = wm.result.add(toWaVDO);
-                    toWrVDO.setTestAnalyteId(fromWrVDO.getTestAnalyteId());
-                    toWrVDO.setTestResultId(fromWrVDO.getTestResultId());
-                    toWrVDO.setResultRow(fromWrVDO.getResultRow());
-                    toWrVDO.setAnalyteId(fromWrVDO.getAnalyteId());
-                    toWrVDO.setTypeId(fromWrVDO.getTypeId());
-                    if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
-                        for (i = 0; i < 30; i++) {
-                            fromName = fromColumnMap.get(i + 9);
-                            if (fromName != null) {
-                                toIndex = toColumnMap.get(fromName);
-                                if (toIndex != null)
-                                    toWrVDO.setValueAt(toIndex.intValue() - 9, fromWrVDO.getValueAt(i));
+                try {
+                    fromWrVDOs = wResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
+                    for (WorksheetResultViewDO fromWrVDO : fromWrVDOs) {
+                        toWrVDO = wm.result.add(toWaVDO);
+                        toWrVDO.setTestAnalyteId(fromWrVDO.getTestAnalyteId());
+                        toWrVDO.setTestResultId(fromWrVDO.getTestResultId());
+                        toWrVDO.setResultRow(fromWrVDO.getResultRow());
+                        toWrVDO.setAnalyteId(fromWrVDO.getAnalyteId());
+                        toWrVDO.setTypeId(fromWrVDO.getTypeId());
+                        if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
+                            for (i = 0; i < 30; i++) {
+                                fromName = fromColumnMap.get(i + 9);
+                                if (fromName != null) {
+                                    toIndex = toColumnMap.get(fromName);
+                                    if (toIndex != null)
+                                        toWrVDO.setValueAt(toIndex.intValue() - 9, fromWrVDO.getValueAt(i));
+                                }
                             }
+                        } else {
+                            for (i = 0; i < 30; i++)
+                                toWrVDO.setValueAt(i, fromWrVDO.getValueAt(i));
                         }
-                    } else {
-                        for (i = 0; i < 30; i++)
-                            toWrVDO.setValueAt(i, fromWrVDO.getValueAt(i));
+                        toWrVDO.setAnalyteName(fromWrVDO.getAnalyteName());
+                        toWrVDO.setAnalyteExternalId(fromWrVDO.getAnalyteExternalId());
+                        toWrVDO.setResultGroup(fromWrVDO.getResultGroup());
                     }
-                    toWrVDO.setAnalyteName(fromWrVDO.getAnalyteName());
-                    toWrVDO.setAnalyteExternalId(fromWrVDO.getAnalyteExternalId());
-                    toWrVDO.setResultGroup(fromWrVDO.getResultGroup());
+                } catch (NotFoundException nfE) {
+                    log.log(Level.INFO, nfE.getMessage());
                 }
             } else if (fromWaVDO.getQcLotId() != null) {
-                fromWqrVDOs = wqResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
-                for (WorksheetQcResultViewDO fromWqrVDO : fromWqrVDOs) {
-                    toWqrVDO = wm.qcResult.add(toWaVDO);
-                    toWqrVDO.setSortOrder(fromWqrVDO.getSortOrder());
-                    toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
-                    toWqrVDO.setTypeId(fromWqrVDO.getTypeId());
-                    if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
-                        for (i = 0; i < 30; i++) {
-                            fromName = fromColumnMap.get(i + 9);
-                            if (fromName != null) {
-                                toIndex = toColumnMap.get(fromName);
-                                if (toIndex != null)
-                                    toWqrVDO.setValueAt(toIndex.intValue() - 9, fromWqrVDO.getValueAt(i));
+                try {
+                    fromWqrVDOs = wqResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
+                    for (WorksheetQcResultViewDO fromWqrVDO : fromWqrVDOs) {
+                        toWqrVDO = wm.qcResult.add(toWaVDO);
+                        toWqrVDO.setSortOrder(fromWqrVDO.getSortOrder());
+                        toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
+                        toWqrVDO.setTypeId(fromWqrVDO.getTypeId());
+                        if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
+                            for (i = 0; i < 30; i++) {
+                                fromName = fromColumnMap.get(i + 9);
+                                if (fromName != null) {
+                                    toIndex = toColumnMap.get(fromName);
+                                    if (toIndex != null)
+                                        toWqrVDO.setValueAt(toIndex.intValue() - 9, fromWqrVDO.getValueAt(i));
+                                }
                             }
+                        } else {
+                            for (i = 0; i < 30; i++)
+                                toWqrVDO.setValueAt(i, fromWqrVDO.getValueAt(i));
                         }
-                    } else {
-                        for (i = 0; i < 30; i++)
-                            toWqrVDO.setValueAt(i, fromWqrVDO.getValueAt(i));
+                        toWqrVDO.setAnalyteId(fromWqrVDO.getAnalyteId());
+                        toWqrVDO.setAnalyteName(fromWqrVDO.getAnalyteName());
                     }
-                    toWqrVDO.setAnalyteId(fromWqrVDO.getAnalyteId());
-                    toWqrVDO.setAnalyteName(fromWqrVDO.getAnalyteName());
+                } catch (NotFoundException nfE) {
+                    log.log(Level.INFO, nfE.getMessage());
                 }
             }
         }
