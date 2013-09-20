@@ -439,7 +439,7 @@ public class SampleManagerOrderHelperBean {
                 auxiliary = new ArrayList<AuxDataViewDO>();
                 setAuxilliary(sm, auxiliary);
             }
-            auxDataHelper.addAuxGroups(auxiliary, grps);
+            auxDataHelper.addAuxGroups(auxiliary, grps, e);
 
             /*
              * set negative ids in the newly added aux data

@@ -845,10 +845,10 @@ public class SampleManager1 implements Serializable {
          */
         public void remove(int i) {
             SampleItemViewDO data;
-            
+
             data = items.get(i);
             assert analysis.count(data) == 0 : "one or more analyses are linked to the sample item";
-            
+
             items.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(getSampleItemUid(data.getId()));
@@ -856,11 +856,11 @@ public class SampleManager1 implements Serializable {
 
         public void remove(SampleItemViewDO data) {
             assert analysis.count(data) == 0 : "one or more analyses are linked to the sample item";
-            
+
             items.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(getSampleItemUid(data.getId()));
-        }                
+        }
 
         /**
          * Returns the number of items associated with this sample
@@ -1035,12 +1035,32 @@ public class SampleManager1 implements Serializable {
          * Returns true if the sample has at least one released analysis
          */
         public boolean hasReleasedAnalysis() {
-            if (analyses == null)
-                return false;
+            if (analyses != null) {
+                for (AnalysisViewDO a : analyses) {
+                    if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
+                        return true;
+                }
+            }
+            
+            return false;
+        }
 
-            for (AnalysisViewDO a : analyses) {
-                if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
-                    return true;
+        /**
+         * Returns true if at least one released analysis is linked to the
+         * sample item
+         */
+        public boolean hasReleasedAnalysis(SampleItemViewDO item) {
+            ArrayList<AnalysisViewDO> l;
+
+            if (analyses != null) {
+                localmapBuild();
+                l = localmap.get(item.getId());
+                if (l != null) {
+                    for (AnalysisViewDO a : l) {
+                        if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
+                            return true;
+                    }
+                }
             }
 
             return false;
@@ -1055,21 +1075,21 @@ public class SampleManager1 implements Serializable {
             AnalysisViewDO data;
 
             data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
-            if (!sampleItemId.equals(data.getSampleItemId()) &&
+            if ( !sampleItemId.equals(data.getSampleItemId()) &&
                 !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
                 !Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
                 data.setSampleItemId(sampleItemId);
                 localmap = null;
             }
         }
-        
+
         public void removeAnalysis(Integer analysisId) {
             AnalysisViewDO data, ana;
 
             assert analysisId > 0 : "an existing analysis cannot be removed";
-            
+
             data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
-            for (int i = 0; i < analyses.size(); i++) {
+            for (int i = 0; i < analyses.size(); i++ ) {
                 ana = analyses.get(i);
                 if (analysisId.equals(ana.getPreAnalysisId())) {
                     ana.setPreAnalysisId(null);
@@ -1078,8 +1098,8 @@ public class SampleManager1 implements Serializable {
                     ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
                     ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                 }
-            }                
-            analyses.remove(data);            
+            }
+            analyses.remove(data);
             localmap = null;
         }
 
