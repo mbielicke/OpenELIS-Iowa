@@ -266,17 +266,17 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public OrderManager1 addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
-        Callback<OrderManager1> callback;
+    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        Callback<OrderTestReturnVO> callback;
 
-        callback = new Callback<OrderManager1>();
+        callback = new Callback<OrderTestReturnVO>();
         service.addAuxGroups(om, groupIds, callback);
         return callback.getResult();
     }
 
     @Override
     public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderManager1> callback) throws Exception {
+                             AsyncCallback<OrderTestReturnVO> callback) throws Exception {
         service.addAuxGroups(om, groupIds, callback);
     }
 

@@ -26,26 +26,26 @@
               <t:Table ui:field="sampleQATable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
               >
-                <t:Column width="172" label="{msg.sampleQAEvent}">
+                <t:Column width="172" label="{msg.sample_qaEvents}">
                   <t:LabelCell />
                 </t:Column>
-                <t:Column width="90" label="{msg.type}">
+                <t:Column width="90" label="{msg.gen_type}">
                   <t:DropdownCell>
-                    <w:Dropdown ui:field = "sampleQAType" /> <!-- width="90" ui:field = "sampleQaTypeId" -->
+                    <w:Dropdown ui:field = "sampleQAType" />
                   </t:DropdownCell>
                 </t:Column>
-                <t:Column width="61" label="{msg.billable}">
+                <t:Column width="61" label="{msg.gen_billable}">
                   <t:CheckCell>
-                    <w:Check /> <!-- ui:field = "sampleQaIsBillable" -->
+                    <w:Check />
                   </t:CheckCell>
                 </t:Column>
               </t:Table>
             </g:layer>
             <g:layer bottom="0px" height="20px">
-              <g:HorizontalPanel> <!-- style="{res.type.TableButtonFooter}" -->
+              <g:HorizontalPanel>
                 <w:Button ui:field="removeSampleQAButton" leftIcon="{res.style.removeRowIcon}"
                   text="{msg.removeRow}" />
-                <w:Button ui:field="sampleQALookupButton" text="{msg.qaEvents}" />  <!-- leftIcon="{res.style.PickerButtonImage}" -->
+                <w:Button ui:field="sampleQALookupButton" text="{msg.gen_qaEvents}" />
               </g:HorizontalPanel>
             </g:layer>
           </g:LayoutPanel>
@@ -56,17 +56,17 @@
               <t:Table ui:field="analysisQATable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
               >
-                <t:Column width="172" label="{msg.analysisQAEvent}">
+                <t:Column width="172" label="{msg.analysis_qaEvents}">
                   <t:LabelCell />
                 </t:Column>
-                <t:Column width="90" label="{msg.type}">
+                <t:Column width="90" label="{msg.gen_type}">
                   <t:DropdownCell>
-                    <w:Dropdown ui:field = "analysisQAType"/> <!-- width="90" ui:field = "analysisQaTypeId" -->
+                    <w:Dropdown ui:field = "analysisQAType"/>
                   </t:DropdownCell>
                 </t:Column>
-                <t:Column width="61" label="{msg.billable}">
+                <t:Column width="61" label="{msg.gen_billable}">
                   <t:CheckCell>
-                    <w:Check /> <!-- ui:field = "analysisQaIsBillable" -->
+                    <w:Check />
                   </t:CheckCell>
                 </t:Column>
               </t:Table>
@@ -76,10 +76,10 @@
                 <g:HorizontalPanel>
                   <w:Button ui:field="removeAnalysisQAButton" leftIcon="{res.style.removeRowIcon}"
                     text="{msg.removeRow}" />
-                  <w:Button ui:field="analysisQALookupButton" text="{msg.qaEvents}" />
+                  <w:Button ui:field="analysisQALookupButton" text="{msg.gen_qaEvents}" />
                 </g:HorizontalPanel>
                 <g:HTMLPanel> 
-                  <ui:text from="{msg.resultsOverridden}"/>
+                  <ui:text from="{msg.result_overridden}"/>
                 </g:HTMLPanel>
               </g:HTMLPanel>
             </g:layer>

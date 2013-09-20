@@ -70,8 +70,8 @@ public class SampleItemTabUI extends Screen {
     protected TextBox<Double>            quantity;
 
     @UiField
-    protected Dropdown<Integer>          typeOfSampleId, sourceOfSampleId, containerId,
-                    unitOfMeasureId;
+    protected Dropdown<Integer>          typeOfSample, sourceOfSample, container,
+                    unitOfMeasure;
 
     protected Screen                     parentScreen;
 
@@ -83,7 +83,7 @@ public class SampleItemTabUI extends Screen {
 
     protected String                     displayedUid;
 
-    protected boolean                    canEdit, isVisible, redraw;
+    protected boolean                   canEdit, isVisible, redraw, hasReleasedAnalysis;
 
     public SampleItemTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -101,47 +101,47 @@ public class SampleItemTabUI extends Screen {
 
         screen = this;
 
-        addScreenHandler(typeOfSampleId,
+        addScreenHandler(typeOfSample,
                          SampleMeta.getItemTypeOfSampleId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 typeOfSampleId.setValue(getTypeOfSampleId());
+                                 typeOfSample.setValue(getTypeOfSampleId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setTypeOfSample(event.getValue(), typeOfSampleId.getDisplay());
+                                 setTypeOfSample(event.getValue(), typeOfSample.getDisplay());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 typeOfSampleId.setEnabled(isState(QUERY) ||
-                                                           (isState(ADD, UPDATE) && canEdit));
-                                 typeOfSampleId.setQueryMode(isState(QUERY));
+                                 typeOfSample.setEnabled(isState(QUERY) ||
+                                                           (isState(ADD, UPDATE) && canEdit && !hasReleasedAnalysis));
+                                 typeOfSample.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? sourceOfSampleId : unitOfMeasureId;
+                                 return forward ? sourceOfSample : unitOfMeasure;
                              }
                          });
 
-        addScreenHandler(sourceOfSampleId,
+        addScreenHandler(sourceOfSample,
                          SampleMeta.getItemSourceOfSampleId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 sourceOfSampleId.setValue(getSourceOfSampleId());
+                                 sourceOfSample.setValue(getSourceOfSampleId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setSourceOfSample(event.getValue(), sourceOfSampleId.getDisplay());
+                                 setSourceOfSample(event.getValue(), sourceOfSample.getDisplay());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 sourceOfSampleId.setEnabled(isState(QUERY) ||
+                                 sourceOfSample.setEnabled(isState(QUERY) ||
                                                              (isState(ADD, UPDATE) && canEdit));
-                                 sourceOfSampleId.setQueryMode(isState(QUERY));
+                                 sourceOfSample.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? sourceOther : typeOfSampleId;
+                                 return forward ? sourceOther : typeOfSample;
                              }
                          });
 
@@ -160,25 +160,25 @@ public class SampleItemTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? containerId : sourceOfSampleId;
+                return forward ? container : sourceOfSample;
             }
         });
 
-        addScreenHandler(containerId,
+        addScreenHandler(container,
                          SampleMeta.getItemContainerId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 containerId.setValue(getContainerId());
+                                 container.setValue(getContainerId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setContainer(event.getValue(), containerId.getDisplay());
+                                 setContainer(event.getValue(), container.getDisplay());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 containerId.setEnabled(isState(QUERY) ||
+                                 container.setEnabled(isState(QUERY) ||
                                                         (isState(ADD, UPDATE) && canEdit));
-                                 containerId.setQueryMode(isState(QUERY));
+                                 container.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
@@ -204,7 +204,7 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? quantity : containerId;
+                                 return forward ? quantity : container;
                              }
                          });
 
@@ -223,15 +223,15 @@ public class SampleItemTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? unitOfMeasureId : containerReference;
+                return forward ? unitOfMeasure : containerReference;
             }
         });
 
-        addScreenHandler(unitOfMeasureId,
+        addScreenHandler(unitOfMeasure,
                          SampleMeta.getItemUnitOfMeasureId(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 unitOfMeasureId.setValue(getUnitOfMeasureId());
+                                 unitOfMeasure.setValue(getUnitOfMeasureId());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -239,13 +239,13 @@ public class SampleItemTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 unitOfMeasureId.setEnabled(isState(QUERY) ||
+                                 unitOfMeasure.setEnabled(isState(QUERY) ||
                                                             (isState(ADD, UPDATE) && canEdit));
-                                 unitOfMeasureId.setQueryMode(isState(QUERY));
+                                 unitOfMeasure.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? typeOfSampleId : quantity;
+                                 return forward ? typeOfSample : quantity;
                              }
                          });
 
@@ -269,7 +269,7 @@ public class SampleItemTabUI extends Screen {
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        typeOfSampleId.setModel(model);
+        typeOfSample.setModel(model);
 
         // source dropdown
         model = new ArrayList<Item<Integer>>();
@@ -278,7 +278,7 @@ public class SampleItemTabUI extends Screen {
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        sourceOfSampleId.setModel(model);
+        sourceOfSample.setModel(model);
 
         // sample container dropdown
         model = new ArrayList<Item<Integer>>();
@@ -287,7 +287,7 @@ public class SampleItemTabUI extends Screen {
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        containerId.setModel(model);
+        container.setModel(model);
 
         // unit of measure dropdown
         model = new ArrayList<Item<Integer>>();
@@ -296,7 +296,7 @@ public class SampleItemTabUI extends Screen {
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        unitOfMeasureId.setModel(model);
+        unitOfMeasure.setModel(model);
 
         /*
          * handlers for the events fired by the screen containing this tab
@@ -369,9 +369,12 @@ public class SampleItemTabUI extends Screen {
 
     private void evaluateEdit() {
         canEdit = false;
-        if (manager != null && sampleItem != null)
+        hasReleasedAnalysis = false;
+        if (manager != null && sampleItem != null) {
             canEdit = !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                             .getStatusId());
+            hasReleasedAnalysis = manager.analysis.hasReleasedAnalysis(sampleItem);
+        }
     }
 
     private void displaySampleItem(String uid) {
