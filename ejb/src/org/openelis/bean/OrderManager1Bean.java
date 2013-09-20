@@ -59,6 +59,7 @@ import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderManager1;
@@ -661,7 +662,9 @@ public class OrderManager1Bean {
     /**
      * Adds aux groups with ids to the order based on the list of group
      */
-    public OrderManager1 addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        OrderTestReturnVO ret;
+        ValidationErrorsList errors;
         ArrayList<AuxDataViewDO> auxiliary;
 
         auxiliary = getAuxilliary(om);
@@ -670,9 +673,14 @@ public class OrderManager1Bean {
             setAuxilliary(om, auxiliary);
         }
 
-        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds));
+        ret = new OrderTestReturnVO();
+        ret.setManager(om);
+        errors = new ValidationErrorsList();
+        ret.setErrors(errors);
+        
+        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds), errors);
 
-        return om;
+        return ret;
     }
 
     /**

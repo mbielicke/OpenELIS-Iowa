@@ -66,7 +66,10 @@ import org.openelis.utils.Auditable;
                       + " from Panel p LEFT JOIN p.panelItem pi, Test t LEFT JOIN t.method m " +
                       	" INNER JOIN t.testTypeOfSample type LEFT JOIN type.typeDictionary d " +
                       	" where pi.name=t.name AND " +
-                        " pi.methodName=m.name AND t.isActive='Y' order by p.name, d.entry")
+                        " pi.methodName=m.name AND t.isActive='Y' order by p.name, d.entry"),
+   @NamedQuery( name = "Panel.FetchAll", 
+               query = "select distinct new org.openelis.domain.PanelDO(p.id,p.name,p.description)"
+                      + " from Panel p"),
 })
 
 @Entity
