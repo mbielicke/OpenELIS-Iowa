@@ -34,10 +34,14 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
+import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
 
 /**
@@ -56,7 +60,7 @@ public class AuxDataHelperBean {
      * Adds aux groups specified by the list of ids to the list of aux data, if
      * the group isn't already present in the list of aux data.
      */
-    public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, Set<Integer> groupIds) throws Exception {
+    public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, Set<Integer> groupIds, ValidationErrorsList e) throws Exception {
         Set<Integer> addIds;
 
         /*
@@ -65,7 +69,7 @@ public class AuxDataHelperBean {
          */
         addIds = getDifference(auxiliary, groupIds);
 
-        addAuxGroups(auxiliary, addIds, null);
+        addAuxGroups(auxiliary, addIds, null, e);
     }
 
     /**
@@ -75,7 +79,8 @@ public class AuxDataHelperBean {
      * field in the group.
      */
     public void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary,
-                             HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grpMap) throws Exception {
+                             HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grpMap,
+                             ValidationErrorsList e) throws Exception {
         Set<Integer> addIds;
 
         /*
@@ -84,7 +89,7 @@ public class AuxDataHelperBean {
          */
         addIds = getDifference(auxiliary, grpMap.keySet());
 
-        addAuxGroups(auxiliary, addIds, grpMap);
+        addAuxGroups(auxiliary, addIds, grpMap, e);
     }
 
     /**
@@ -116,10 +121,12 @@ public class AuxDataHelperBean {
      * the group.
      */
     private void addAuxGroups(ArrayList<AuxDataViewDO> auxiliary, Set<Integer> addIds,
-                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps) throws Exception {
+                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps, 
+                              ValidationErrorsList e) throws Exception {
         HashMap<Integer, AuxDataViewDO> auxMap;
         AuxFieldViewDO af;
         AuxFieldManager afm;
+        AuxFieldGroupDO afg;
         AuxFieldGroupManager afgm;
         AuxDataViewDO aux1, aux2;
         ResultFormatter rf;
@@ -134,6 +141,17 @@ public class AuxDataHelperBean {
              * added
              */
             afgm = auxFieldGroupManager.fetchByIdWithFields(id);
+            afg = afgm.getGroup();
+            
+            /*
+             * the aux group must be active to be added to the manager
+             */
+            if ("N".equals(afg.getIsActive())) {
+                e.add(new FormErrorWarning(Messages.get()
+                                           .aux_inactiveGroupException(afg.getName())));
+                continue;
+            }
+            
             afm = afgm.getFields();
             rf = afgm.getFormatter();
             for (int i = 0; i < afm.count(); i++ ) {
