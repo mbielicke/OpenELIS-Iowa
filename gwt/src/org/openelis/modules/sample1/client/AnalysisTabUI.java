@@ -49,8 +49,6 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.WorksheetViewDO;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
@@ -75,7 +73,6 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.QueryFieldUtil;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Row;
@@ -104,10 +101,10 @@ public class AnalysisTabUI extends Screen {
     protected TextBox<String>          testName;
 
     @UiField
-    protected AutoComplete             methodName, samplePrep, panel;
+    protected AutoComplete             methodName;
 
     @UiField
-    protected Dropdown<Integer>        section, unitOfMeasure, status;
+    protected Dropdown<Integer>        section, unitOfMeasure, status, panel, samplePrep;
 
     @UiField
     protected CheckBox                 isReportable, isPreliminary;
@@ -179,7 +176,7 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
-                                 setMethodId(event.getValue());
+                                 setMethod(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -200,7 +197,7 @@ public class AnalysisTabUI extends Screen {
                 Item<Integer> row;
 
                 if (sampleItem.getTypeOfSampleId() == null) {
-                    window.setError(Messages.get().sampleItemTypeRequired());
+                    window.setError(Messages.get().sample_sampleItemTypeRequired());
                     return;
                 }
 
@@ -377,7 +374,48 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? startedDate : isReportable;
+                                 return forward ? panel : isReportable;
+                             }
+                         });
+
+        addScreenHandler(panel, SampleMeta.getAnalysisPanelId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                panel.setValue(getPanelId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setPanel(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                panel.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                panel.setQueryMode(isState(QUERY));
+            }
+
+            public Widget onTab(boolean forward) {
+                return forward ? samplePrep : unitOfMeasure;
+            }
+        });
+
+        addScreenHandler(samplePrep,
+                         SampleMeta.getAnalysisSamplePrep(),
+                         new ScreenHandler<Integer>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 samplePrep.setModel(getPrepModel());
+                                 samplePrep.setValue(getPreAnalysisId());
+                             }
+
+                             public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 setPreAnalysisId(event.getValue());
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 samplePrep.setEnabled(isState(ADD, UPDATE) && canEdit);
+                                 samplePrep.setQueryMode(false);
+                             }
+
+                             public Widget onTab(boolean forward) {
+                                 return forward ? startedDate : panel;
                              }
                          });
 
@@ -399,7 +437,7 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? completedDate : unitOfMeasure;
+                                 return forward ? completedDate : samplePrep;
                              }
                          });
 
@@ -437,8 +475,7 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 releasedDate.setEnabled(isState(QUERY) ||
-                                                         (isState(ADD, UPDATE) && canEdit));
+                                 releasedDate.setEnabled(isState(QUERY));
                                  releasedDate.setQueryMode(isState(QUERY));
                              }
 
@@ -468,45 +505,6 @@ public class AnalysisTabUI extends Screen {
                              }
                          });
 
-        addScreenHandler(samplePrep,
-                         SampleMeta.getAnalysisSamplePrep(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 String tmLabel;
-
-                                 tmLabel = null;
-
-                                 if (getPreAnalysisTest() != null)
-                                     tmLabel = getPreAnalysisTest() + " : " +
-                                               getPreAnalysisMethod();
-
-                                 samplePrep.setValue(getPreAnalysisId(), tmLabel);
-                             }
-
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 samplePrep.setEnabled(isState(ADD, UPDATE) && canEdit);
-                                 samplePrep.setQueryMode(false);
-                             }
-                         });
-
-        samplePrep.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<Item<Integer>> model;
-                Item<Integer> row;
-                AnalysisViewDO anDO;
-                SampleItemViewDO itemDO;
-                SampleItemManager itemMan;
-                AnalysisManager anMan;
-                Integer currentId;
-                String match;
-                int numOfRows, i, j;
-
-            }
-        });
-
         addScreenHandler(revision, SampleMeta.getAnalysisRevision(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 revision.setValue(getRevision());
@@ -523,48 +521,6 @@ public class AnalysisTabUI extends Screen {
 
             public Widget onTab(boolean forward) {
                 return forward ? worksheetTable : printedDate;
-            }
-        });
-
-        addScreenHandler(panel, SampleMeta.getAnalysisPanelId(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                panel.setValue(getPanelId(), getPanelName());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                setPanelId(event.getValue());
-                setPanelName(panel.getValue().getDisplay());
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                panel.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
-                panel.setQueryMode(isState(QUERY));
-            }
-        });
-
-        panel.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                int i;
-                ArrayList<Item<Integer>> model;
-                ArrayList<PanelDO> list;
-                Item<Integer> row;
-                PanelDO data;
-
-                try {
-                    list = PanelService.get()
-                                       .fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<Item<Integer>>();
-
-                    for (i = 0; i < list.size(); i++ ) {
-                        data = list.get(i);
-                        row = new Item<Integer>(data.getId(), data.getName());
-                        model.add(row);
-                    }
-                    panel.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
-                }
             }
         });
 
@@ -686,14 +642,8 @@ public class AnalysisTabUI extends Screen {
         bus.addHandler(SampleItemChangeEvent.getType(), new SampleItemChangeEvent.Handler() {
             public void onSampleItemChange(SampleItemChangeEvent event) {
                 if (SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED.equals(event.getAction())) {
-                    String uid;
-                    
-                    redraw = true;
-                    if (analysis != null)
-                        uid = manager.getUid(analysis);
-                    else
-                        uid = null;
-                    displayAnalysis(uid);
+                    unitOfMeasure.setModel(getUnitsModel());
+                    unitOfMeasure.setValue(getUnitOfMeasureId());
                 }
             }
         });
@@ -727,15 +677,26 @@ public class AnalysisTabUI extends Screen {
             model.add(row);
         }
 
+        allSectionsModel = new ArrayList<Item<Integer>>();
+        for (SectionDO s : SectionCache.getList())
+            allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
+        
         allUnitsModel = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
             if ("Y".equals(d.getIsActive()))
                 allUnitsModel.add(new Item<Integer>(d.getId(), d.getEntry()));
         }
-
-        allSectionsModel = new ArrayList<Item<Integer>>();
-        for (SectionDO s : SectionCache.getList())
-            allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
+        
+        try {
+            model = new ArrayList<Item<Integer>>();
+            for (PanelDO p : PanelService.get().fetchAll())
+                model.add(new Item<Integer>(p.getId(), p.getName()));            
+            panel.setModel(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            window.close();
+        }
     }
 
     public void setData(SampleManager1 manager) {
@@ -809,131 +770,14 @@ public class AnalysisTabUI extends Screen {
         }
     }
 
-    private Integer getRevision() {
-        if (analysis != null)
-            return analysis.getRevision();
-
-        return null;
-    }
-
-    private void setRevision(Integer revision) {
-        analysis.setRevision(revision);
-    }
-
-    private String getIsPreliminary() {
-        if (analysis != null)
-            return analysis.getIsPreliminary();
-
-        return null;
-    }
-
-    private void setIsPreliminary(String isPreliminary) {
-        analysis.setIsPreliminary(isPreliminary);
-    }
-
     private String getTestName() {
         if (analysis != null)
             return analysis.getTestName();
 
         return null;
     }
-
-    private Integer getMethodId() {
-        if (analysis != null)
-            return analysis.getMethodId();
-
-        return null;
-    }
-
-    private String getMethodName() {
-        if (analysis != null)
-            return analysis.getMethodName();
-
-        return null;
-    }
-
-    private Integer getPreAnalysisId() {
-        if (analysis != null)
-            return analysis.getPreAnalysisId();
-
-        return null;
-    }
-
-    private String getPreAnalysisTest() {
-        if (analysis != null)
-            return analysis.getPreAnalysisTest();
-
-        return null;
-    }
-
-    private String getPreAnalysisMethod() {
-        if (analysis != null)
-            return analysis.getPreAnalysisMethod();
-
-        return null;
-    }
-
-    private Integer getSectionId() {
-        if (analysis != null)
-            return analysis.getSectionId();
-
-        return null;
-    }
-
-    private void setSection(Integer sectionId, String sectionName) {
-        analysis.setSectionId(sectionId);
-        analysis.setSectionName(sectionName);
-    }
-
-    private Integer getPanelId() {
-        if (analysis != null)
-            return analysis.getPanelId();
-
-        return null;
-    }
-
-    private void setPanelId(Integer panelId) {
-        analysis.setPanelId(panelId);
-    }
-
-    private String getPanelName() {
-        if (analysis != null)
-            return analysis.getPanelName();
-
-        return null;
-    }
-
-    private void setPanelName(String panelName) {
-        analysis.setPanelName(panelName);
-    }
-
-    private String getIsReportable() {
-        if (analysis != null)
-            return analysis.getIsReportable();
-
-        return null;
-    }
-
-    private void setIsReportable(String isReportable) {
-        analysis.setIsReportable(isReportable);
-    }
-
-    private Integer getUnitOfMeasureId() {
-        if (analysis != null)
-            return analysis.getUnitOfMeasureId();
-
-        return null;
-    }
-
-    private void setUnitOfMeasureId(Integer unitOfMeasureId) {
-        analysis.setUnitOfMeasureId(unitOfMeasureId);
-        bus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
-                                                        unitOfMeasureId,
-                                                        AnalysisChangeEvent.Action.UNIT_CHANGED),
-                                this);
-    }
-
-    private void setMethodId(AutoCompleteValue value) {
+    
+    private void setMethod(AutoCompleteValue value) {
         TestMethodVO data;
 
         if (value != null) {
@@ -951,6 +795,20 @@ public class AnalysisTabUI extends Screen {
         }
     }
 
+    private Integer getMethodId() {
+        if (analysis != null)
+            return analysis.getMethodId();
+
+        return null;
+    }
+
+    private String getMethodName() {
+        if (analysis != null)
+            return analysis.getMethodName();
+
+        return null;
+    }
+
     private Integer getStatusId() {
         if (analysis != null)
             return analysis.getStatusId();
@@ -959,13 +817,85 @@ public class AnalysisTabUI extends Screen {
     }
 
     private void setStatusId(Integer statusId) {
-        analysis.setStatusId(statusId);
         bus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
                                                         statusId,
                                                         AnalysisChangeEvent.Action.STATUS_CHANGED),
                                 this);
     }
+    
+    private Integer getSectionId() {
+        if (analysis != null)
+            return analysis.getSectionId();
 
+        return null;
+    }
+
+    private void setSection(Integer sectionId, String sectionName) {
+        analysis.setSectionId(sectionId);
+        analysis.setSectionName(sectionName);
+    }
+    
+    private String getIsPreliminary() {
+        if (analysis != null)
+            return analysis.getIsPreliminary();
+
+        return null;
+    }
+
+    private void setIsPreliminary(String isPreliminary) {
+        analysis.setIsPreliminary(isPreliminary);
+    }
+
+    private String getIsReportable() {
+        if (analysis != null)
+            return analysis.getIsReportable();
+
+        return null;
+    }
+
+    private void setIsReportable(String isReportable) {
+        analysis.setIsReportable(isReportable);
+    }
+    
+    private Integer getUnitOfMeasureId() {
+        if (analysis != null)
+            return analysis.getUnitOfMeasureId();
+
+        return null;
+    }
+
+    private void setUnitOfMeasureId(Integer unitOfMeasureId) {
+        bus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
+                                                        unitOfMeasureId,
+                                                        AnalysisChangeEvent.Action.UNIT_CHANGED),
+                                this);
+    }
+    
+    private Integer getPanelId() {
+        if (analysis != null)
+            return analysis.getPanelId();
+
+        return null;
+    }
+
+    private void setPanel(Integer panelId) {
+        analysis.setPanelId(panelId);
+    }
+    
+    private Integer getPreAnalysisId() {
+        if (analysis != null)
+            return analysis.getPreAnalysisId();
+
+        return null;
+    }
+
+    private void setPreAnalysisId(Integer preAnalysisId) {
+        bus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
+                                                        preAnalysisId,
+                                                        AnalysisChangeEvent.Action.PREP_CHANGED),
+                                this);
+    }
+    
     private Datetime getStartedDate() {
         if (analysis != null)
             return analysis.getStartedDate();
@@ -1009,6 +939,19 @@ public class AnalysisTabUI extends Screen {
     private void setPrintedDate(Datetime printedDate) {
         analysis.setPrintedDate(printedDate);
     }
+    
+    private Integer getRevision() {
+        if (analysis != null)
+            return analysis.getRevision();
+
+        return null;
+    }
+    
+    private void setRevision(Integer revision) {
+        analysis.setRevision(revision);
+    }
+    
+    
 
     /**
      * Returns the model for sections dropdown. In add, update, sections
@@ -1075,6 +1018,49 @@ public class AnalysisTabUI extends Screen {
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+        return model;
+    }
+
+    /**
+     * Returns the model created from all analyses in the sample, except the one
+     * shown currently in the tab and any cancelled ones.
+     */
+    private ArrayList<Item<Integer>> getPrepModel() {
+        int i;
+        int j;
+        StringBuffer buf;
+        AnalysisViewDO ana;
+        SampleItemViewDO item;
+        Item<Integer> row;
+        ArrayList<Item<Integer>> model;
+        
+        model = new ArrayList<Item<Integer>>();
+        if (manager != null && analysis != null) {
+            buf = new StringBuffer();
+            for (i = 0; i < manager.item.count(); i++ ) {
+                item = manager.item.get(i);
+                for (j = 0; j < manager.analysis.count(item); j++ ) {
+                    ana = manager.analysis.get(item, j);
+                    if ( !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) &&
+                        !ana.getId().equals(analysis.getId())) {
+                        row = new Item<Integer>(3);
+                        row.setKey(ana.getId());
+
+                        buf.setLength(0);
+                        buf.append(ana.getTestName());
+                        buf.append(", ");
+                        buf.append(ana.getMethodName());
+                        row.setCell(0, buf.toString());
+                        row.setCell(1, item.getTypeOfSample());
+                        row.setCell(2, item.getItemSequence());
+
+                        row.setData(ana);
+
+                        model.add(row);
+                    }
+                }
             }
         }
         return model;

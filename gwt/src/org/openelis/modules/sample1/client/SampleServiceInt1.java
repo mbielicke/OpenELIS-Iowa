@@ -81,13 +81,16 @@ public interface SampleServiceInt1 extends RemoteService {
                                          ArrayList<TestAnalyteViewDO> analytes,
                                          ArrayList<Integer> indexes) throws Exception;
             
-    public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
-    
-    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
-    
     public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer methodId) throws Exception;
     
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId) throws Exception ;
     
     public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception;
+    
+    public SampleManager1 changeAnalysisPrep(SampleManager1 sm, Integer analysisId,
+                                             Integer preAnalysisId) throws Exception;
+    
+    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
+    
+    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception;
 }

@@ -35,7 +35,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class AnalysisChangeEvent extends GwtEvent<AnalysisChangeEvent.Handler> {
 
     public enum Action {
-        METHOD_CHANGED, STATUS_CHANGED, UNIT_CHANGED
+        METHOD_CHANGED, STATUS_CHANGED, UNIT_CHANGED, PREP_CHANGED
     }
     
     private static Type<AnalysisChangeEvent.Handler> TYPE;  
