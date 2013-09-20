@@ -80,7 +80,7 @@ public class PanelBean {
         }
         return data;
     }
-    
+
     public ArrayList<PanelDO> fetchByIds(Collection<Integer> ids) {
         Query query;
 
@@ -95,11 +95,11 @@ public class PanelBean {
 
     public ArrayList<PanelDO> fetchByName(String name, int maxResults) throws Exception {
         Query query;
-        
+
         query = manager.createNamedQuery("Panel.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
@@ -130,7 +130,7 @@ public class PanelBean {
         }
 
         returnList = new ArrayList<TestMethodVO>();
-        for (i = 0; i < panelList.size(); i++) {
+        for (i = 0; i < panelList.size(); i++ ) {
             panelDO = panelList.get(i);
             testDO = new TestMethodVO();
 
@@ -145,8 +145,8 @@ public class PanelBean {
         while (i < maxResults && j < testList.size()) {
             testDO = testList.get(j);
             returnList.add(testDO);
-            i++;
-            j++;
+            i++ ;
+            j++ ;
         }
 
         return returnList;
@@ -176,7 +176,7 @@ public class PanelBean {
         }
 
         returnList = new ArrayList<TestMethodVO>();
-        for (i = 0; i < panelList.size(); i++) {
+        for (i = 0; i < panelList.size(); i++ ) {
             panelDO = panelList.get(i);
             testDO = new TestMethodVO();
 
@@ -191,8 +191,8 @@ public class PanelBean {
         while (i < maxResults && j < testList.size()) {
             testDO = testList.get(j);
             returnList.add(testDO);
-            i++;
-            j++;
+            i++ ;
+            j++ ;
         }
 
         return returnList;
@@ -200,36 +200,50 @@ public class PanelBean {
 
     public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception {
         int i;
-        List<PanelItemDO> panelItemList;
+        boolean found;
         PanelItemDO panelItem;
-        TestViewDO testDO;
-        ArrayList<IdVO> returnList;
         IdVO idVO;
+        Query query;
+        List<TestViewDO> tests;
+        ArrayList<IdVO> returnList;
+        List<PanelItemDO> panelItemList;
 
         // fetch the panelitems
-        Query query = manager.createNamedQuery("PanelItem.FetchByPanelId");
+        query = manager.createNamedQuery("PanelItem.FetchByPanelId");
         query.setParameter("id", panelId);
         panelItemList = query.getResultList();
 
         // fetch the testid from each row by test name, method name
         returnList = new ArrayList<IdVO>();
-        query = manager.createNamedQuery("Test.FetchActiveByNameMethodName");
-        for (i = 0; i < panelItemList.size(); i++) {
+        query = manager.createNamedQuery("Test.FetchByNameMethodName");
+        for (i = 0; i < panelItemList.size(); i++ ) {
             panelItem = panelItemList.get(i);
 
-            if (!"T".equals(panelItem.getType()))
+            if ( !"T".equals(panelItem.getType()))
                 continue;
 
             query.setParameter("name", panelItem.getName());
             query.setParameter("methodName", panelItem.getMethodName());
-            try {
-                testDO = (TestViewDO)query.getSingleResult();
-                idVO = new IdVO();
-                idVO.setId(testDO.getId());
 
+            tests = query.getResultList();
+            /*
+             * find an active test and add its id; if such a test can't be found
+             * then add the id of the first test returned by the query
+             */
+            found = false;
+            if (tests.size() > 0) {
+                idVO = new IdVO();
+                for (TestViewDO t : tests) {
+                    if ("Y".equals(t.getIsActive())) {
+                        idVO.setId(t.getId());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    idVO.setId(tests.get(0).getId());
+                
                 returnList.add(idVO);
-            } catch (NoResultException e) {
-                // do nothing
             }
         }
 
@@ -272,6 +286,16 @@ public class PanelBean {
         }
 
         return returnList;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<PanelDO> fetchAll() throws Exception {
+        Query query;
+        List<PanelDO> panels;
+
+        query = manager.createNamedQuery("Panel.FetchAll");
+        panels = query.getResultList();
+        return DataBaseUtil.toArrayList(panels);
     }
 
     @SuppressWarnings("unchecked")
@@ -319,7 +343,7 @@ public class PanelBean {
     public PanelDO update(PanelDO data) throws Exception {
         Panel entity;
 
-        if (!data.isChanged())
+        if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);

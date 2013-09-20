@@ -1508,7 +1508,9 @@ public class SampleManager1Bean {
     /**
      * Adds aux groups with the passed ids to the sample
      */
-    public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        SampleTestReturnVO ret;
+        ValidationErrorsList errors;
         ArrayList<AuxDataViewDO> auxiliary;
 
         auxiliary = getAuxilliary(sm);
@@ -1517,7 +1519,12 @@ public class SampleManager1Bean {
             setAuxilliary(sm, auxiliary);
         }
 
-        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds));
+        ret = new SampleTestReturnVO();
+        ret.setManager(sm);
+        errors = new ValidationErrorsList();
+        ret.setErrors(errors);
+        
+        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds), errors);
 
         /*
          * set negative ids in the newly added aux data
@@ -1527,7 +1534,7 @@ public class SampleManager1Bean {
                 aux.setId(sm.getNextUID());
         }
 
-        return sm;
+        return ret;
     }
 
     /**
@@ -1561,6 +1568,15 @@ public class SampleManager1Bean {
     }
 
     /**
+     * This method changes the specified analysis's status to the specified
+     * status. It also updates any links between other analyses and this one, if
+     * need be, because of the change in status.
+     */
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
+        return analysisHelper.changeAnalysisStatus(sm, analysisId, unitId);
+    }
+
+    /**
      * This method changes the specified analysis's unit to the specified unit.
      * The defaults defined for this unit in this analysis' test are loaded in
      * those results of the analysis that don't have a value. The type is set to
@@ -1571,12 +1587,13 @@ public class SampleManager1Bean {
     }
 
     /**
-     * This method changes the specified analysis's status to the specified
-     * status. It also updates any links between other analyses and this one, if
-     * need be, because of the change in status.
+     * This method sets preAnalysisId as the prep analysis id of the specified
+     * analysis. If preAnalysisId is null then the analysis is taken out of
+     * in-prep status.
      */
-    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
-        return analysisHelper.changeAnalysisStatus(sm, analysisId, unitId);
+    public SampleManager1 changeAnalysisPrep(SampleManager1 sm, Integer analysisId,
+                                             Integer preAnalysisId) throws Exception {
+        return analysisHelper.changeAnalysisPrep(sm, analysisId, preAnalysisId);
     }
 
     /**
@@ -1754,7 +1771,7 @@ public class SampleManager1Bean {
                         }
                 }
             }
-            
+
             try {
                 validateForDelete(sm);
             } catch (Exception err) {
@@ -1834,11 +1851,11 @@ public class SampleManager1Bean {
                  * analyses have negative ids, so they shouldn't be in this list
                  * either
                  */
-                ana = (AnalysisViewDO) data;
+                ana = (AnalysisViewDO)data;
                 throw new FormErrorException(Messages.get()
-                                                 .analysis_cantRemoveInUpdateException(accession,
-                                                                                       ana.getTestName(),
-                                                                                       ana.getMethodName()));
+                                                     .analysis_cantRemoveInUpdateException(accession,
+                                                                                           ana.getTestName(),
+                                                                                           ana.getMethodName()));
             }
         }
     }
