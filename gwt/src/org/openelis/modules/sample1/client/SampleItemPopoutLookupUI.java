@@ -285,6 +285,11 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
         window.close();
         ok();
     }
+    
+    private void evaluateEdit() {
+        canEdit = manager != null &&
+                  !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
+    }
 
     private Node getRoot() {
         int i, j;
@@ -309,14 +314,13 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
             inode.setKey(item.getId());
             inode.setCell(0, item.getItemSequence());
             
-            labels.clear();
-            labels.add(item.getTypeOfSample());
+            buf.setLength(0);
+            buf.append(item.getTypeOfSample());
             if (item.getContainer() != null) {
                 labels.add(" [");
                 labels.add(item.getContainer());
                 labels.add("]");
             }
-            buf.setLength(0);
             inode.setCell(1, concat(labels, buf));
             
             inode.setData(item);
@@ -379,11 +383,6 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
         return model;
     }
 
-    private void evaluateEdit() {
-        canEdit = manager != null &&
-                  !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
-    }
-    
     private String concat(List<String> list, StringBuffer buf) {
         for (String i : list) {
             if (i != null)

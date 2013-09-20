@@ -104,6 +104,12 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
     public void update(PanelManager man, AsyncCallback<PanelManager> callback) {
         service.update(man, callback);
     }
+    
+
+    @Override
+    public void fetchAll(AsyncCallback<ArrayList<PanelDO>> callback) {
+        service.fetchAll(callback);
+    }
 
     @Override
     public PanelManager fetchById(Integer id) throws Exception {
@@ -231,4 +237,12 @@ public class PanelService implements PanelServiceInt, PanelServiceIntAsync {
         return callback.getResult();
     }
 
+    @Override
+    public ArrayList<PanelDO> fetchAll() throws Exception {
+        Callback<ArrayList<PanelDO>> callback;
+        
+        callback = new Callback<ArrayList<PanelDO>>();
+        service.fetchAll(callback);
+        return callback.getResult();
+    }
 }

@@ -123,7 +123,7 @@ public class OrderServlet1 extends RemoteServlet implements OrderServiceInt1 {
         return order.fetchByDescription(search, max);
     }
 
-    public OrderManager1 addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
         return orderManager1.addAuxGroups(om, groupIds);
     }
 

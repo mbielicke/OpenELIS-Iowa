@@ -95,6 +95,14 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
         }
         return null;
     }
+    
+    public ArrayList<PanelDO> fetchAll() throws Exception {
+        try {        
+            return panel.fetchAll();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {        
@@ -121,7 +129,11 @@ public class PanelServlet extends RemoteServlet implements PanelServiceInt {
     }
 
     public void delete(PanelManager man) throws Exception {
-        panelManager.delete(man);
+        try {   
+            panelManager.delete(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public PanelManager fetchForUpdate(Integer id) throws Exception {

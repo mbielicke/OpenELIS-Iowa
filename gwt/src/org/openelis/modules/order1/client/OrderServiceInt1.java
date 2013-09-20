@@ -76,7 +76,7 @@ public interface OrderServiceInt1 extends RemoteService {
 
     public ArrayList<IdNameVO> fetchByDescription(String search, int max) throws Exception;
 
-    public OrderManager1 addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
+    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
 
     public OrderManager1 removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception;
 

@@ -25,6 +25,8 @@ public interface PanelServiceInt extends XsrfProtectedService {
     ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception;
 
     ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(Query query) throws Exception;
+    
+    ArrayList<PanelDO> fetchAll() throws Exception;
 
     ArrayList<IdNameVO> query(Query query) throws Exception;
 

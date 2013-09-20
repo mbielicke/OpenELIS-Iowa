@@ -990,12 +990,19 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
+                OrderTestReturnVO ret;
+                
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
                     try {
-                        manager = OrderService1.get().addAuxGroups(manager, event.getGroupIds());
+                        ret = OrderService1.get().addAuxGroups(manager, event.getGroupIds());
+                        manager = ret.getManager();
                         setData();
                         setState(state);
                         bus.fireEvent(new AuxDataChangeEvent());
+                        if (ret.getErrors() != null && ret.getErrors().size() > 0)
+                            showErrors(ret.getErrors());
+                        else
+                            window.clearStatus();
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);

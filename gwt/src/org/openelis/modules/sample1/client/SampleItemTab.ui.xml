@@ -23,21 +23,21 @@
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sampleType}:" />
+              <ui:text from="{msg.gen_sampleType}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="typeOfSampleId" width="150px" field="Integer" />
+              <w:Dropdown ui:field="typeOfSample" width="150px" field="Integer" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.source}:" />
+              <ui:text from="{msg.sampleItem_source}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="sourceOfSampleId" width="150px" field="Integer" />
+              <w:Dropdown ui:field="sourceOfSample" width="150px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.sourceOther}:" />
+              <ui:text from="{msg.sampleItem_sourceOther}:" />
             </td>
             <td>
               <w:TextBox ui:field="sourceOther" width="215px" maxLength="40" />
@@ -45,13 +45,13 @@
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.container}:" />
+              <ui:text from="{msg.gen_container}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="containerId" width="225px" />
+              <w:Dropdown ui:field="container" width="225px" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.containerReference}:" />
+              <ui:text from="{msg.sampleItem_containerReference}:" />
             </td>
             <td>
               <w:TextBox ui:field="containerReference" width="150px" maxLength="20" />
@@ -59,16 +59,16 @@
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.qty}:" />
+              <ui:text from="{msg.gen_qty}:" />
             </td>
             <td>
               <w:TextBox ui:field="quantity" width="150px" maxLength="20" field="Double" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.unit}:" />
+              <ui:text from="{msg.gen_unit}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="unitOfMeasureId" width="150px" /> <!-- popWidth="150px" -->
+              <w:Dropdown ui:field="unitOfMeasure" width="150px" />
             </td>
           </tr>
         </table>

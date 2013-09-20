@@ -21,8 +21,8 @@
       <g:LayoutPanel>
         <g:layer width="83%" left="0px">
           <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-            <r:Column width="55" label="{msg.sequence}" />
-            <r:Column width="350" label="{msg.itemAnalyses}" />
+            <r:Column width="60" label="{msg.gen_sequence}" />
+            <r:Column width="340" label="{msg.itemAnalyses}" />
             <r:Leaf key="sampleItem">
               <r:LeafColumn>
                 <t:LabelCell />
@@ -57,7 +57,7 @@
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom="80px" height="20px">
+            <g:layer bottom="75px" height="25px">
               <g:HTMLPanel>
                 <g:HorizontalPanel>
                   <w:Button ui:field="moveButton" text="{msg.move}" />

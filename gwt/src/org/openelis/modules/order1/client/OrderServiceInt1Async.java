@@ -81,7 +81,7 @@ public interface OrderServiceInt1Async {
                                    AsyncCallback<ArrayList<IdNameVO>> callback) throws Exception;
 
     public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderManager1> callback) throws Exception;
+                             AsyncCallback<OrderTestReturnVO> callback) throws Exception;
 
     public void removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
                                 AsyncCallback<OrderManager1> callback) throws Exception;

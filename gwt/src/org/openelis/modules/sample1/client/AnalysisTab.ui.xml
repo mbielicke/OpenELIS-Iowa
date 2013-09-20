@@ -22,22 +22,22 @@
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.test}:" />
+              <ui:text from="{msg.gen_test}:" />
             </td>
             <td>
               <w:TextBox ui:field="testName" field="String" width="144px" case="LOWER" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.method}:" />
+              <ui:text from="{msg.gen_method}:" />
             </td>
             <td colspan="3">
-              <w:AutoComplete ui:field="methodName" width="150px" case="LOWER">
+              <w:AutoComplete ui:field="methodName" width="150px" case="LOWER" dropWidth = "450px">
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
-                    <t:Column width="150" label="{msg.method}">
+                    <t:Column width="150" label="{msg.gen_method}">
                       <t:LabelCell />
                     </t:Column>
-                    <t:Column width="290" label="{msg.description}">
+                    <t:Column width="290" label="{msg.gen_description}">
                       <t:LabelCell />
                     </t:Column>
                   </t:Table>
@@ -45,95 +45,93 @@
               </w:AutoComplete>
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.started}:" />
+              <ui:text from="{msg.analysis_started}:" />
             </td>
             <td>
-              <c:Calendar ui:field="startedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+              <c:Calendar ui:field="startedDate" begin="0" end="4" width="125px" /> 
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.status}:" />
+              <ui:text from="{msg.gen_status}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="status" width="150px" field="Integer" /> <!-- popWidth="150px" -->
+              <w:Dropdown ui:field="status" width="150px" field="Integer" /> 
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.preliminary}:" />
+              <ui:text from="{msg.analysis_preliminary}:" />
             </td>
             <td>
               <w:CheckBox ui:field="isPreliminary" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.testReportable}:" />
+              <ui:text from="{msg.gen_reportable}:" />
             </td>
             <td>
               <w:CheckBox ui:field="isReportable" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.completed}:" />
+              <ui:text from="{msg.analysis_completed}:" />
             </td>
             <td>
-              <c:Calendar ui:field="completedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+              <c:Calendar ui:field="completedDate" begin="0" end="4" width="125px" />
             </td>
           </tr>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.section}:" />
+              <ui:text from="{msg.gen_section}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="section" width="151px" case="LOWER" field="Integer" /> <!-- popWidth="150px" -->
+              <w:Dropdown ui:field="section" width="151px" case="LOWER" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.unit}:" />
+              <ui:text from="{msg.gen_unit}:" />
             </td>
             <td colspan="3">
-              <w:Dropdown ui:field="unitOfMeasure" width="150px" field="Integer" /> <!-- popWidth="150px" -->
+              <w:Dropdown ui:field="unitOfMeasure" width="150px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.released}:" />
+              <ui:text from="{msg.analysis_released}:" />
             </td>
             <td>
-              <c:Calendar ui:field="releasedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+              <c:Calendar ui:field="releasedDate" begin="0" end="4" width="125px" />
             </td>
           </tr>
           <td class="{res.style.Prompt}">
-            <ui:text from="{msg.panel}:" />
+            <ui:text from="{msg.gen_panel}:" />
           </td>
           <td colspan="5">
-            <w:AutoComplete ui:field="panel" width="365x" case="LOWER">
-              <w:popup>
-                <t:Table visibleRows="10" header="true">
-                  <t:Column width="350" label="{msg.name}">
-                    <t:LabelCell />
-                  </t:Column>
-                </t:Table>
-              </w:popup>
-            </w:AutoComplete>
+            <w:Dropdown ui:field="panel" width="365x" field="Integer" />            
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.printed}:" />
+              <ui:text from="{msg.analysis_printed}:" />
             </td>
             <td>
-              <c:Calendar ui:field="printedDate" begin="0" end="4" width="125px" /> <!-- pattern="{msg.dateTimePattern}" -->
+              <c:Calendar ui:field="printedDate" begin="0" end="4" width="125px" />
             </td>
           </td>
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.samplePrep}:" />
+              <ui:text from="{msg.analysis_samplePrep}:" />
             </td>
             <td colspan="5">
-              <w:AutoComplete ui:field="samplePrep" width="365x" case="LOWER">
+               <w:Dropdown ui:field="samplePrep" width="365px" field="Integer">
                 <w:popup>
-                  <t:Table visibleRows="10" header="true">
-                    <t:Column width="350" label="{msg.name}">
+                  <t:Table header="true">
+                    <t:Column width="130" label="{msg.gen_name}">
+                      <t:LabelCell />
+                    </t:Column>
+                    <t:Column width="130" label="{msg.gen_sampleType}">
+                      <t:LabelCell />
+                    </t:Column>
+                    <t:Column width="60" label="{msg.gen_sequence}">
                       <t:LabelCell />
                     </t:Column>
                   </t:Table>
                 </w:popup>
-              </w:AutoComplete>
+            </w:Dropdown>
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.revision}:" />
+              <ui:text from="{msg.analysis_revision}:" />
             </td>
             <td>
               <w:TextBox ui:field="revision" width="60px" field="Integer" />
@@ -150,29 +148,29 @@
               <t:Table ui:field="worksheetTable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
               >
-                <t:Column width="70" label="{msg.worksheet}">
+                <t:Column width="70" label="{msg.gen_worksheet}">
                   <t:LabelCell>
                     <w:Label field="Integer" />
                   </t:LabelCell>
                 </t:Column>
-                <t:Column width="115" label="{msg.created}">
+                <t:Column width="115" label="{msg.gen_created}">
                   <t:CalendarCell>
                     <c:Calendar width="115" begin="0" end="2" />
                   </t:CalendarCell>
                 </t:Column>
-                <t:Column width="115" label="{msg.status}">
+                <t:Column width="115" label="{msg.gen_status}">
                   <t:DropdownCell>
                     <w:Dropdown width="100" />
                   </t:DropdownCell>
                 </t:Column>
-                <t:Column width="120" label="{msg.user}">
+                <t:Column width="120" label="{msg.gen_user}">
                   <t:LabelCell />
                 </t:Column>
               </t:Table>
             </g:layer>
             <g:layer bottom="0px" height="20px">
               <g:HTMLPanel>
-                <w:Button ui:field="selectWkshtButton" text="{msg.select}" /> <!-- leftIcon="{res.style.selectIcon}" -->
+                <w:Button ui:field="selectWkshtButton" text="{msg.gen_select}" />
               </g:HTMLPanel>
             </g:layer>
           </g:LayoutPanel>
@@ -183,7 +181,7 @@
               <t:Table ui:field="userTable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true"  styleName="{uiRes.table.ScreenTableWithSides}"
               > 
-                <t:Column width="115" label="{msg.user}">
+                <t:Column width="115" label="{msg.gen_user}">
                   <t:AutoCompleteCell>
                     <w:AutoComplete case="LOWER" required="true">
                       <w:popup>
@@ -205,8 +203,8 @@
             </g:layer>
             <g:layer bottom="0px" height="20px">
               <g:HorizontalPanel> 
-                <w:Button ui:field="addActionButton" text="{msg.addRow}" leftIcon="{res.style.addRowIcon}"/>
-                <w:Button ui:field="removeActionButton" text="{msg.removeRow}" leftIcon="{res.style.removeRowIcon}"/>
+                <w:Button ui:field="addActionButton" text="{msg.gen_addRow}" leftIcon="{res.style.addRowIcon}"/>
+                <w:Button ui:field="removeActionButton" text="{msg.gen_removeRow}" leftIcon="{res.style.removeRowIcon}"/>
               </g:HorizontalPanel>
             </g:layer>
           </g:LayoutPanel>
