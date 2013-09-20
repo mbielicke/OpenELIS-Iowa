@@ -88,12 +88,6 @@ public interface SampleServiceInt1Async {
                                ArrayList<TestAnalyteViewDO> analytes, ArrayList<Integer> indexes,
                                AsyncCallback<SampleManager1> callback) throws Exception;
 
-    public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
-                             AsyncCallback<SampleManager1> callback) throws Exception;
-
-    public void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
-                                AsyncCallback<SampleManager1> callback) throws Exception;
-    
     public void changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer unitId,
                                      AsyncCallback<SampleTestReturnVO> callback) throws Exception;
     
@@ -102,6 +96,13 @@ public interface SampleServiceInt1Async {
 
     public void changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId,
                                 AsyncCallback<SampleManager1> callback) throws Exception;
-    
 
+    public void changeAnalysisPrep(SampleManager1 sm, Integer analysisId, Integer preAnalysisId,
+                            AsyncCallback<SampleManager1> callback) throws Exception;
+    
+    public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
+                             AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+
+    public void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
+                                AsyncCallback<SampleManager1> callback) throws Exception;
 }

@@ -26,13 +26,13 @@
               <g:HTMLPanel width="100%" height="100%">
                 <table class="{res.style.Form}">
                   <tr>
-                    <td class="{res.style.Prompt}"> <!-- class="{res.style.Title}" -->
-                      <ui:text from="{msg.external}:" />
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.gen_external}:" />
                     </td>
                    </tr> 
                    <tr>
                     <td>
-                      <w:NotesPanel ui:field="externalNotePanel" /> <!-- width="351px" height="190" style="ScreenTableWithSides" -->
+                      <w:NotesPanel ui:field="externalNotePanel" />
                     </td>                    
                   </tr>
                 </table>
@@ -41,7 +41,7 @@
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>
                 <w:Button ui:field="editNoteButton" leftIcon="{res.style.standardNoteIcon}"
-                  text="{msg.editNote}" />
+                  text="{msg.gen_editNote}" />
               </g:AbsolutePanel>
             </g:layer>
           </g:LayoutPanel>
@@ -50,15 +50,15 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="30px">
               <g:HTMLPanel width="100%" height="100%">
-                <table class="{res.style.Form}"> <!-- class="{res.style.TabSubForm}" -->
+                <table class="{res.style.Form}">
                   <tr>
-                    <td class="{res.style.Prompt}"> <!-- class="{res.style.Title}" -->
-                      <ui:text from="{msg.internal}:" />
+                    <td class="{res.style.Prompt}">
+                      <ui:text from="{msg.gen_internal}:" />
                     </td>
                    </tr> 
                    <tr>
                     <td>
-                      <w:NotesPanel ui:field="internalNotePanel" /> <!-- width="351px" height="190" style="ScreenTableWithSides" -->
+                      <w:NotesPanel ui:field="internalNotePanel" />
                     </td>
                   </tr>
                 </table>
@@ -67,7 +67,7 @@
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>
                 <w:Button ui:field="addNoteButton" leftIcon="{res.style.standardNoteIcon}"
-                  text="{msg.addNote}" />
+                  text="{msg.gen_addNote}" />
               </g:AbsolutePanel>
             </g:layer>
           </g:LayoutPanel>

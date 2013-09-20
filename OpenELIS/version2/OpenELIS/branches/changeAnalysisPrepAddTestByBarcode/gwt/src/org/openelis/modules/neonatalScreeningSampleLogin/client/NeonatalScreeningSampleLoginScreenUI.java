@@ -139,8 +139,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected SampleManager1                            manager;
 
     @UiField
-    protected Calendar                                  collectionDate, collectionTime, receivedDate,
-                    patientBirthDate, patientBirthTime, nextOfKinBirthDate, transfusionDate;
+    protected Calendar                                  collectionDate, collectionTime,
+                    receivedDate, patientBirthDate, patientBirthTime, nextOfKinBirthDate,
+                    transfusionDate;
 
     @UiField
     protected TextBox<Integer>                          accessionNumber, orderId, birthOrder,
@@ -1467,19 +1468,22 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * tabs
          */
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
-        
-        addScreenHandler(sampleItemAnalysisTreeTab, "sampleItemAnalysisTreeTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                /*
-                 * ignore because the the tab gets refreshed only when some or
-                 * no node in the tree is selected
-                 */
-            }
 
-            public Object getQuery() {
-                return null;
-            }
-        });
+        addScreenHandler(sampleItemAnalysisTreeTab,
+                         "sampleItemAnalysisTreeTab",
+                         new ScreenHandler<Object>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 /*
+                                  * ignore because the the tab gets refreshed
+                                  * only when some or no node in the tree is
+                                  * selected
+                                  */
+                             }
+
+                             public Object getQuery() {
+                                 return null;
+                             }
+                         });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1578,10 +1582,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
-                addTests(event.getTests());
+                if (event.getSource() != screen)
+                    addTests(event.getTests());
             }
         });
-        
+
         bus.addHandler(RemoveAnalysisEvent.getType(), new RemoveAnalysisEvent.Handler() {
             @Override
             public void onAnalysisRemove(RemoveAnalysisEvent event) {
@@ -1589,7 +1594,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 if (screen == event.getSource())
                     return;
-                
+
                 ana = (AnalysisViewDO)manager.getObject(event.getUid());
                 try {
                     manager = SampleService1.get().removeAnalysis(manager, ana.getId());
@@ -1603,23 +1608,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        bus.addHandler(AnalysisChangeEvent.getType() , new AnalysisChangeEvent.Handler() {
+        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
-                if (screen == event.getSource())
-                    return;
-                    
-                switch (event.getAction()) {
-                    case METHOD_CHANGED:
-                        changeAnalysisMethod(event.getUid(), event.getChangeId());
-                        break;
-                    case STATUS_CHANGED:
-                        changeAnalysisStatus(event.getUid(), event.getChangeId());
-                        break;
-                    case UNIT_CHANGED:
-                        changeAnalysisUnit(event.getUid(), event.getChangeId());
-                        break;
-                }
+                analysisChanged(event);
             }
         });
 
@@ -1644,12 +1636,18 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
+                SampleTestReturnVO ret;
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
                     try {
-                        manager = SampleService1.get().addAuxGroups(manager, event.getGroupIds());
+                        ret = SampleService1.get().addAuxGroups(manager, event.getGroupIds());
+                        manager = ret.getManager();
                         setData();
                         setState(state);
                         bus.fireEvent(new AuxDataChangeEvent());
+                        if (ret.getErrors() != null && ret.getErrors().size() > 0)
+                            showErrors(ret.getErrors());
+                        else
+                            window.clearStatus();
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -2228,7 +2226,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         try {
             window.setBusy(Messages.get().fetching());
-            
+
             ret = SampleService1.get().setOrderId(manager, ordId);
             manager = ret.getManager();
             setData();
@@ -2421,7 +2419,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void setPatientFirstName(String name) {
         manager.getSampleNeonatal().getPatient().setFirstName(name);
     }
-    
+
     private Integer getPatientGenderId() {
         if (manager == null)
             return null;
@@ -2541,7 +2539,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void setNextOfKinMiddleName(String name) {
         manager.getSampleNeonatal().getNextOfKin().setMiddleName(name);
     }
-    
+
     private String getNextOfKinFirstName() {
         if (manager == null)
             return null;
@@ -2560,7 +2558,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     private void setNeonatalNextOfKinRelationId(Integer nextOfKinRelationId) {
         manager.getSampleNeonatal().setNextOfKinRelationId(nextOfKinRelationId);
-    }    
+    }
 
     private Integer getNextOfKinGenderId() {
         if (manager == null)
@@ -2610,7 +2608,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     private void setNextOfKinAddressHomePhone(String homePhone) {
         manager.getSampleNeonatal().getNextOfKin().getAddress().setHomePhone(homePhone);
-    }    
+    }
 
     private String getNextOfKinAddressMultipleUnit() {
         if (manager == null)
@@ -2656,12 +2654,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         if (manager == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getAddress().getZipCode();
-    }        
+    }
 
     private void setNextOfKinAddressZipCode(String zipCode) {
         manager.getSampleNeonatal().getNextOfKin().getAddress().setZipCode(zipCode);
     }
-    
+
     private String getNeonatalIsNicu() {
         if (manager == null)
             return null;
@@ -2700,7 +2698,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     private void setNeonatalFeedingId(Integer feedingId) {
         manager.getSampleNeonatal().setFeedingId(feedingId);
-    }    
+    }
 
     private Integer getNeonatalWeight() {
         if (manager == null)
@@ -2854,7 +2852,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             return null;
         return manager.getSampleNeonatal().getProviderFirstName();
     }
-    
+
     private String getNeonatalFormNumber() {
         if (manager == null)
             return null;
@@ -2880,15 +2878,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
          * qaEventsTab.setData(null);
          */
     }
-    
+
     private void evaluateEdit() {
         canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                                             .getStatusId()));
     }
-    
+
     /**
-     * creates or updates the cache of objects like TestManager that are used
-     * frequently by the different parts of the screen
+     * creates the cache of objects like TestManager that are used frequently by
+     * the different parts of the screen
      */
     private void buildCache() throws Exception {
         int i, j;
@@ -3135,30 +3133,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             manager = ret.getManager();
             setData();
             setState(state);
-            fireDataChange();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() != null && ret.getTests().size() > 0)
-                showTestSelectionLookup(ret);            
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-    }
-
-    private void changeAnalysisMethod(String uid, Integer methodId) {
-        AnalysisViewDO ana;
-        SampleTestReturnVO ret;        
-
-        ana = (AnalysisViewDO)manager.getObject(uid);
-        try {
-            ret = SampleService1.get().changeAnalysisMethod(manager, ana.getId(), methodId);
-            manager = ret.getManager();
-            setData();
-            setState(state);
-            bus.fireEventFromSource(new AnalysisChangeEvent(uid, methodId, AnalysisChangeEvent.Action.METHOD_CHANGED), this);
-            bus.fireEvent(new ResultChangeEvent());
-            
+            bus.fireEventFromSource(new AddTestEvent(tests), this);
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
             else if (ret.getTests() != null && ret.getTests().size() > 0)
@@ -3168,33 +3143,59 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
-    
-    private void changeAnalysisStatus(String uid, Integer statusId) {
-        AnalysisViewDO ana;
 
-        ana = (AnalysisViewDO)manager.getObject(uid);
+    private void analysisChanged(AnalysisChangeEvent event) {
+        AnalysisViewDO ana;
+        SampleTestReturnVO ret;
+
+        if (screen == event.getSource())
+            return;
+
+        ana = (AnalysisViewDO)manager.getObject(event.getUid());
+        ret = null;
         try {
-            manager = SampleService1.get().changeAnalysisStatus(manager, ana.getId(), statusId);
+            switch (event.getAction()) {
+                case METHOD_CHANGED:
+                    ret = SampleService1.get().changeAnalysisMethod(manager,
+                                                                    ana.getId(),
+                                                                    event.getChangeId());
+                    manager = ret.getManager();
+                    break;
+                case STATUS_CHANGED:
+                    manager = SampleService1.get().changeAnalysisStatus(manager,
+                                                                        ana.getId(),
+                                                                        event.getChangeId());
+                    break;
+                case UNIT_CHANGED:
+                    manager = SampleService1.get().changeAnalysisUnit(manager,
+                                                                      ana.getId(),
+                                                                      event.getChangeId());
+                    break;
+                case PREP_CHANGED:
+                    manager = SampleService1.get().changeAnalysisPrep(manager,
+                                                                      ana.getId(),
+                                                                      event.getChangeId());
+                    break;
+            }
+
             setData();
             setState(state);
-            bus.fireEventFromSource(new AnalysisChangeEvent(uid, statusId, AnalysisChangeEvent.Action.STATUS_CHANGED), this);
-            bus.fireEvent(new ResultChangeEvent());
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-    }
 
-    private void changeAnalysisUnit(String uid, Integer unitId) {
-        AnalysisViewDO ana;
-        
-        ana = (AnalysisViewDO)manager.getObject(uid);
-        try {
-            manager = SampleService1.get().changeAnalysisUnit(manager, ana.getId(), unitId);
-            setData();
-            setState(state);            
-            bus.fireEventFromSource(new AnalysisChangeEvent(uid, unitId, AnalysisChangeEvent.Action.UNIT_CHANGED), this);
+            /*
+             * notify all tabs that need to refresh themselves because of the
+             * change in the analysis
+             */
+            bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
+                                                            event.getChangeId(),
+                                                            event.getAction()), this);
             bus.fireEvent(new ResultChangeEvent());
+
+            if (ret != null) {
+                if (ret.getErrors() != null && ret.getErrors().size() > 0)
+                    showErrors(ret.getErrors());
+                else if (ret.getTests() != null && ret.getTests().size() > 0)
+                    showTestSelectionLookup(ret);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);

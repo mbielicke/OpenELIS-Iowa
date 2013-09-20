@@ -19,24 +19,15 @@
   <g:LayoutPanel>
     <g:layer top="0px" bottom="40px">
       <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <r:Column width="280" label="{msg.sample_itemAnalyses}" />
-        <r:Column width="130" label="{msg.sample_typeStatus}" />
+        <r:Column width="280" label="{msg.sample_itemAnalyses}" />        
         <r:Leaf key="sampleItem">
           <r:LeafColumn>
             <t:LabelCell />
-          </r:LeafColumn>
-          <r:LeafColumn>
-            <t:LabelCell />
-          </r:LeafColumn>
+          </r:LeafColumn>          
         </r:Leaf>
         <r:Leaf key="analysis">
           <r:LeafColumn>
             <t:LabelCell />
-          </r:LeafColumn>
-          <r:LeafColumn>
-            <t:DropdownCell>
-              <w:Dropdown ui:field="analysisStatus" width="110px" field="Integer" />
-            </t:DropdownCell>
           </r:LeafColumn>
         </r:Leaf>
       </r:Tree>

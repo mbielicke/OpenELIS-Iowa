@@ -22,23 +22,23 @@
       <t:Table ui:field="storageTable" verticalScroll="ALWAYS" visibleRows="8"
         horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
       >
-        <t:Column width="155" label="{msg.user}">
+        <t:Column width="155" label="{msg.gen_user}">
           <t:LabelCell>
             <w:Label field="Integer" />
           </t:LabelCell>
         </t:Column>
-        <t:Column width="259" label="{msg.location}">
+        <t:Column width="259" label="{msg.gen_location}">
           <t:AutoCompleteCell>
             <w:AutoComplete ui:field = "location" width="215" case="LOWER" required="true">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
-                  <t:Column width="140" label="{msg.parent}">
+                  <t:Column width="140" label="{msg.gen_parent}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="140" label="{msg.storageUnit}">
+                  <t:Column width="140" label="{msg.gen_storageUnit}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="140" label="{msg.location}">
+                  <t:Column width="140" label="{msg.gen_location}">
                     <t:LabelCell />
                   </t:Column>
                 </t:Table>
@@ -46,22 +46,22 @@
             </w:AutoComplete>
           </t:AutoCompleteCell>
         </t:Column>
-        <t:Column width="135" label="{msg.checkIn}">
+        <t:Column width="135" label="{msg.gen_checkIn}">
           <t:CalendarCell>
-            <c:Calendar begin="0" end="4" required="true" /> <!-- width="110" pattern="{resource:getString($constants,'dateTimePattern')}" -->
+            <c:Calendar begin="0" end="4" required="true" />
           </t:CalendarCell>
         </t:Column>
-        <t:Column width="136" label="{msg.checkOut}">
+        <t:Column width="136" label="{msg.gen_checkOut}">
           <t:CalendarCell>
-            <c:Calendar begin="0" end="4" required="true" /> <!-- width="110" pattern="{resource:getString($constants,'dateTimePattern')}" -->
+            <c:Calendar begin="0" end="4" required="true" />
           </t:CalendarCell>
         </t:Column>
       </t:Table>
     </g:layer>
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel>
-        <w:Button ui:field="addStorageButton" leftIcon="{res.style.addRowIcon}" text="{msg.addRow}" />
-        <w:Button ui:field="removeStorageButton" leftIcon="{res.style.removeRowIcon}" text="{msg.removeRow}" />
+        <w:Button ui:field="addStorageButton" leftIcon="{res.style.addRowIcon}" text="{msg.gen_addRow}" />
+        <w:Button ui:field="removeStorageButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>
