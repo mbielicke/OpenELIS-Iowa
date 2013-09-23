@@ -160,11 +160,13 @@ public class ResultFormatter implements Serializable {
     }
 
     /**
-     * This method is used in the EJB to validate the result against the specified
-     * result.
+     * This method is used in the EJB to validate the result value against the
+     * specified result rule.
      * 
      * @param id
-     *        specifies the rule/format id (test_result.id) to use for validation.
+     *        specifies the rule/format id (test_result.id) to use for
+     *        validation. In case of null value, the method searches through all
+     *        the rules for match.
      * @param group
      *        specifies the is the rule/format group (test_result.result_group).
      * @param unitId
@@ -180,30 +182,37 @@ public class ResultFormatter implements Serializable {
         if (value == null || value.length() == 0 || value.trim().length() == 0)
             return;
 
-        /*
-         * match the first range
-         */
         fv = null;
         u = getMap(group, unitId);
         if (u != null && u.items != null) {
             for (Item item : u.items) {
-                if (id.equals(item.id)) {
-                    if (isTypeNumeric(item.type))
-                        fv = ((NumericItem)item).format(value);
-                    else if (isTypeDictionary(item.type))
-                        fv = ((DictionaryItem)item).formatById(value);
-                    else if (isTypeAlphaMixed(item.type))
-                        fv = value;
-                    else if (isTypeAlphaUpper(item.type))
-                        fv = value.toUpperCase();
-                    else if (isTypeAlphaLower(item.type))
-                        fv = value.toLowerCase();
-                    else if (isTypeTiter(item.type))
-                        fv = ((TiterItem)item).format(value);
-                    else if (isTypeDate(item.type) || isTypeTime(item.type) ||
-                               isTypeDateTime(item.type))
-                        fv = ((DateTimeItem)item).format(value);
-                    break;
+                /*
+                 * results have the id of the rule but aux data does not. for
+                 * results, we check only the specified rule while for aux data,
+                 * we run through all the rules until one succeeds.
+                 */
+                if (id == null || item.id == id) {
+                    try {
+                        if (isTypeNumeric(item.type))
+                            fv = ((NumericItem)item).format(value);
+                        else if (isTypeDictionary(item.type))
+                            fv = ((DictionaryItem)item).formatById(value);
+                        else if (isTypeAlphaMixed(item.type))
+                            fv = value;
+                        else if (isTypeAlphaUpper(item.type))
+                            fv = value.toUpperCase();
+                        else if (isTypeAlphaLower(item.type))
+                            fv = value.toLowerCase();
+                        else if (isTypeTiter(item.type))
+                            fv = ((TiterItem)item).format(value);
+                        else if (isTypeDate(item.type) || isTypeTime(item.type) ||
+                                   isTypeDateTime(item.type))
+                            fv = ((DateTimeItem)item).format(value);
+                    } catch (Exception e) {
+                        fv = null;
+                    }
+                    if (id != null || fv != null)
+                        break;
                 }
             }
         }
