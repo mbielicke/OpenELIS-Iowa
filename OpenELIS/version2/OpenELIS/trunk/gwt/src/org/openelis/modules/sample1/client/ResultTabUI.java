@@ -311,6 +311,7 @@ public class ResultTabUI extends Screen {
                              * the value is not valid
                              */
                             table.addException(r, c, e);
+                            data.setValue(value.getDisplay());
                             data.setTypeId(null);
                             data.setTestResultId(null);
                             return;

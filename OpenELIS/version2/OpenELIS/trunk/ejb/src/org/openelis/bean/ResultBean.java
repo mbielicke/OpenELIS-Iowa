@@ -639,7 +639,6 @@ public class ResultBean {
                          AnalysisViewDO analysis, boolean ignoreWarning) throws Exception {
         String test, method, value;
         ValidationErrorsList e;
-        FormattedValue fv;
 
         if ( !DataBaseUtil.isEmpty(data.getValue())) {
             e = new ValidationErrorsList();
@@ -652,18 +651,18 @@ public class ResultBean {
                                                                                    method,
                                                                                    data.getAnalyte(),
                                                                                    data.getValue())));
-            } else {                
-                fv = rf.format(data.getResultGroup(),
-                                   analysis.getUnitOfMeasureId(),
-                                   data.getValue(),
-                                   data.getDictionary());
-                
-                if (fv == null) {
+            } else {
+                try {
+                    rf.isValid(data.getTestResultId(),
+                               data.getResultGroup(),
+                               analysis.getUnitOfMeasureId(),
+                               data.getValue());
+                } catch (Exception ex) {
                     if (data.getDictionary() != null)
                         value = data.getDictionary();
-                    else 
+                    else
                         value = data.getValue();
-                    
+
                     e.add(new FormErrorException(Messages.get()
                                                          .result_valueInvalidException(accession,
                                                                                        test,
@@ -672,6 +671,7 @@ public class ResultBean {
                                                                                        value)));
                 }
             }
+
             if (e.size() > 0)
                 throw e;
         }

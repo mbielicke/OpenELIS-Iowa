@@ -55,24 +55,22 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
-import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 
 @Stateless
 @SecurityDomain("openelis")
 public class AuxDataBean {
     @PersistenceContext(unitName = "openelis")
-    private EntityManager        manager;
+    private EntityManager       manager;
 
     @EJB
     private DictionaryCacheBean dictionaryCache;
-    
+
     @EJB
     private DictionaryBean      dictionary;
 
-    private static final Logger  log = Logger.getLogger("openelis");
+    private static final Logger log = Logger.getLogger("openelis");
 
-    public ArrayList<AuxDataViewDO> fetchById(Integer referenceId,
-                                              Integer referenceTableId) throws Exception {
+    public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
         ArrayList<AuxDataViewDO> list;
         AuxDataViewDO data;
@@ -120,8 +118,7 @@ public class AuxDataBean {
             data = list.get(i);
 
             value = data.getValue();
-            if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()) &&
-                value != null) {
+            if (Constants.dictionary().AUX_DICTIONARY.equals(data.getTypeId()) && value != null) {
                 dict = dictMap.get(value);
                 /*
                  * the following helps avoid creating new integers from the same
@@ -137,9 +134,8 @@ public class AuxDataBean {
                         dictMap.put(value, dict);
                         data.setDictionary(dict.getEntry());
                     } catch (Exception e) {
-                        log.log(Level.SEVERE,
-                                "Failed to lookup dictionary entry with id: " + dictId,
-                                e);
+                        log.log(Level.SEVERE, "Failed to lookup dictionary entry with id: " +
+                                              dictId, e);
                     }
                 } else {
                     data.setDictionary(dict.getEntry());
@@ -274,34 +270,34 @@ public class AuxDataBean {
         if (entity != null)
             manager.remove(entity);
     }
-    
-    public void validate(AuxDataViewDO data, ResultFormatter rf, Integer accession, boolean ignoreWarning) throws Exception {
+
+    public void validate(AuxDataViewDO data, ResultFormatter rf, Integer accession,
+                         boolean ignoreWarning) throws Exception {
         String value;
         ValidationErrorsList e;
-        FormattedValue fv;
 
         if ( !DataBaseUtil.isEmpty(data.getValue())) {
             e = new ValidationErrorsList();
             if (data.getTypeId() == null) {
                 e.add(new FormErrorException(Messages.get()
                                                      .aux_valueInvalidException(accession,
-                                                                                   data.getAnalyteName(),
-                                                                                   data.getValue())));
+                                                                                data.getAnalyteName(),
+                                                                                data.getValue())));
             } else {
-                fv = rf.format(data.getAuxFieldId(), null, data.getValue(), 
-                               data.getDictionary());
-                                
-                if (fv == null) {
+                try {
+                    rf.isValid(null, data.getAuxFieldId(), null, data.getValue());
+                } catch (Exception ex) {
                     if (data.getDictionary() != null)
                         value = data.getDictionary();
-                    else 
+                    else
                         value = data.getValue();
                     e.add(new FormErrorException(Messages.get()
-                                                 .aux_valueInvalidException(accession,
-                                                                            data.getAnalyteName(),
-                                                                            value)));
+                                                         .aux_valueInvalidException(accession,
+                                                                                    data.getAnalyteName(),
+                                                                                    value)));
                 }
             }
+
             if (e.size() > 0)
                 throw e;
         }
