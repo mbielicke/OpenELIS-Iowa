@@ -48,7 +48,7 @@ public class ResultHelper {
                                    ResultFormatter rf) throws Exception {
         FormattedValue fv;
 
-        fv = rf.format(data.getResultGroup(), unitId, value, data.getDictionary());
+        fv = rf.format(data.getResultGroup(), unitId, value);
         if (fv != null) {
             if (DataBaseUtil.isDifferent(data.getValue(), fv.getDisplay()))
                 data.setValue(fv.getDisplay());            
@@ -71,7 +71,7 @@ public class ResultHelper {
     public static void formatValue(AuxDataViewDO data, String value, ResultFormatter rf) throws Exception {
         FormattedValue fv;
 
-        fv = rf.format(data.getAuxFieldId(), null, value, data.getDictionary());
+        fv = rf.format(data.getAuxFieldId(), null, value);
         if (fv != null) {
             if (DataBaseUtil.isDifferent(data.getValue(), fv.getDisplay()))
                 data.setValue(fv.getDisplay());
