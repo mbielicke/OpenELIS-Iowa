@@ -154,7 +154,9 @@ public class WorksheetCompletionScreen extends Screen {
     };
 
     public WorksheetCompletionScreen(final Integer worksheetId, WindowInt window) throws Exception {
-        this(window);
+        super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
+        
+        preInitialize(window);
         isPopup = true;
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             public void execute() {
@@ -166,11 +168,16 @@ public class WorksheetCompletionScreen extends Screen {
     public WorksheetCompletionScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
         
+        preInitialize(window);
+        isPopup = false;
+        openLookupWindow();
+    }
+
+    private void preInitialize(WindowInt window) throws Exception {
         ArrayList<SystemVariableDO> list;
 
         setWindow(window);
-
-        isPopup = false;
+        
         successfulLoad = false;
 
         userPermission = UserCache.getPermission().getModule("worksheet");
@@ -207,8 +214,6 @@ public class WorksheetCompletionScreen extends Screen {
         initialize();
 
         setState(State.DEFAULT);
-        if (!isPopup)
-            openLookupWindow();
         initializeDropdowns();
     }
 

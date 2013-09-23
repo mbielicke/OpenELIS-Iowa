@@ -184,7 +184,8 @@ public class WorksheetCreationScreen extends Screen {
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (wasExitCalled) {
-                    wcLookupScreen.getWindow().close();
+                    if (wcLookupScreen.isAttached())
+                        wcLookupScreen.getWindow().close();
                 } else {
                     event.cancel();
                     exit();
