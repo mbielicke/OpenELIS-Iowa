@@ -196,16 +196,17 @@ public class CompletedTab extends Screen {
                 sectName = data.getSectionName();
                 if (sectOnly && perm.getSection(sectName) == null)
                     continue;
-                row = new TableDataRow(9);
+                row = new TableDataRow(10);
                 row.cells.get(0).setValue(data.getAccessionNumber());
-                row.cells.get(1).setValue(data.getDomain());
-                row.cells.get(2).setValue(sectName);
-                row.cells.get(3).setValue(data.getTestName());
-                row.cells.get(4).setValue(data.getMethodName());
-                row.cells.get(5).setValue(data.getAnalysisResultOverride());
-                row.cells.get(6).setValue(data.getCompletedDate());
-                row.cells.get(7).setValue(data.getToDoDescription());
-                row.cells.get(8).setValue(data.getPrimaryOrganizationName());
+                row.cells.get(1).setValue(data.getPriority());
+                row.cells.get(2).setValue(data.getDomain());
+                row.cells.get(3).setValue(sectName);
+                row.cells.get(4).setValue(data.getTestName());
+                row.cells.get(5).setValue(data.getMethodName());
+                row.cells.get(6).setValue(data.getAnalysisResultOverride());
+                row.cells.get(7).setValue(data.getCompletedDate());
+                row.cells.get(8).setValue(data.getToDoDescription());
+                row.cells.get(9).setValue(data.getPrimaryOrganizationName());
                 row.data = data;
                 model.add(row);
             }
