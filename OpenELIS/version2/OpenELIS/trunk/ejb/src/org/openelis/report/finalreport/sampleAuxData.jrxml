@@ -13,31 +13,30 @@
      analyte.name analyte_name,
      aux_data.value aux_data_value
 FROM
-     aux_data, aux_field, analyte, dictionary
+     aux_data
+     join aux_field on aux_data.aux_field_id = aux_field.id
+     join analyte on aux_field.analyte_id = analyte.id
 WHERE
-     aux_data.reference_id = $P{SAMPLE_ID}
-     AND aux_data.reference_table_id = $P{SAMPLE_REFERENCE_TABLE_ID}
-     AND aux_data.aux_field_id = aux_field.id
-     AND aux_data.is_reportable = 'Y'
-     AND aux_field.analyte_id = analyte.id
-     AND aux_data.type_id = dictionary.id
-     AND dictionary.system_name != 'aux_dictionary'
+     aux_data.reference_id = $P{SAMPLE_ID} and
+     aux_data.reference_table_id = $P{SAMPLE_REFERENCE_TABLE_ID} and
+     aux_data.is_reportable = 'Y' and
+     (aux_data.type_id is null or
+      aux_data.type_id in (select d.id from dictionary d where d.system_name != 'aux_dictionary'))
 UNION
 SELECT
      aux_data.sort_order,
      analyte.name analyte_name,
-     d2.entry aux_data_value
+     dictionary.entry aux_data_value
 FROM
-     aux_data, aux_field, analyte, dictionary d1, outer dictionary d2
+     aux_data
+     join aux_field on aux_data.aux_field_id = aux_field.id
+     join analyte on aux_field.analyte_id = analyte.id
+     join dictionary on CAST(aux_data.value AS integer) = dictionary.id
 WHERE
-     aux_data.reference_id = $P{SAMPLE_ID}
-     AND aux_data.reference_table_id = $P{SAMPLE_REFERENCE_TABLE_ID}
-     AND aux_data.aux_field_id = aux_field.id
-     AND aux_data.is_reportable = 'Y'
-     AND aux_field.analyte_id = analyte.id
-     AND aux_data.type_id = d1.id
-     AND d1.system_name = 'aux_dictionary'
-     AND CAST(aux_data.value AS integer) = d2.id
+     aux_data.reference_id = $P{SAMPLE_ID} and
+     aux_data.reference_table_id = $P{SAMPLE_REFERENCE_TABLE_ID} and
+     aux_data.is_reportable = 'Y' and
+     aux_data.type_id = (select d.id from dictionary d where d.system_name = 'aux_dictionary')
 ORDER BY aux_data.sort_order]]>
 	</queryString>
 	<field name="sort_order" class="java.lang.Integer"/>
