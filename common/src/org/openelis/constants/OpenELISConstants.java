@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -15721,29 +15721,38 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheetAnalysisLinkError();
 
   /**
+   * Translated "Worksheet Row Selection".
+   * 
+   * @return translated "Worksheet Row Selection"
+   */
+  @DefaultMessage("Worksheet Row Selection")
+  @Key("worksheetAnalysisSelection")
+  String worksheetAnalysisSelection();
+
+  /**
+   * Translated "Worksheet Builder".
+   * 
+   * @return translated "Worksheet Builder"
+   */
+  @DefaultMessage("Worksheet Builder")
+  @Key("worksheetBuilder")
+  String worksheetBuilder();
+
+  /**
+   * Translated "Create a list of analyses for batch/run processing.".
+   * 
+   * @return translated "Create a list of analyses for batch/run processing."
+   */
+  @DefaultMessage("Create a list of analyses for batch/run processing.")
+  @Key("worksheetBuilderDescription")
+  String worksheetBuilderDescription();
+
+  /**
    * Translated "Worksheet Analysis Selection".
    * 
    * @return translated "Worksheet Analysis Selection"
    */
   @DefaultMessage("Worksheet Analysis Selection")
-  @Key("worksheetAnalysisSelection")
-  String worksheetAnalysisSelection();
-
-  /**
-   * Translated "Worksheet Builder (2.0)".
-   * 
-   * @return translated "Worksheet Builder (2.0)"
-   */
-  @DefaultMessage("Worksheet Builder (2.0)")
-  @Key("worksheetBuilder")
-  String worksheetBuilder();
-
-  /**
-   * Translated "Worksheet Builder Lookup (2.0)".
-   * 
-   * @return translated "Worksheet Builder Lookup (2.0)"
-   */
-  @DefaultMessage("Worksheet Builder Lookup (2.0)")
   @Key("worksheetBuilderLookup")
   String worksheetBuilderLookup();
 

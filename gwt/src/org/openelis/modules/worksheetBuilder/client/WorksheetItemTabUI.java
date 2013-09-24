@@ -904,7 +904,7 @@ public class WorksheetItemTabUI extends Screen {
                                     }
                                     
                                     modal2 = new ModalWindow();
-                                    modal2.setName(Messages.get().worksheetNumber()+wVDO.getId().toString());
+                                    modal2.setName(Messages.get().worksheetAnalysisSelection() + " (#" + wVDO.getId().toString() + ")");
                                     modal2.setContent(waSelectionScreen);
                                     modal2.setSize("502px", "365px");
                                     waSelectionScreen.setWindow(modal2);

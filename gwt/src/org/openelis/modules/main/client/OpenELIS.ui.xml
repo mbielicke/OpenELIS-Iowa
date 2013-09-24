@@ -77,7 +77,7 @@
               <w:Menu label="{msg.analysis}">
                 <w:MenuItem description="{msg.worksheetCreationDescription}" enabled="false" icon="{res.style.worksheetCreationIcon}"
                   ui:field="worksheetCreation" display="{msg.worksheetCreation}" />
-                <w:MenuItem description="" enabled="false" icon="{res.style.worksheetCreationIcon}" ui:field="worksheetBuilder"
+                <w:MenuItem description="{msg.worksheetBuilderDescription}" enabled="false" icon="{res.style.worksheetCreationIcon}" ui:field="worksheetBuilder"
                   display="{msg.worksheetBuilder}" />
                 <w:MenuItem description="{msg.worksheetCompletionDescription}" enabled="false" icon="{res.style.worksheetCompletionIcon}"
                   ui:field="worksheetCompletion" display="{msg.worksheetCompletion}" />
