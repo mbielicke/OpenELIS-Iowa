@@ -29,6 +29,8 @@ import static org.openelis.manager.WorksheetManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -84,13 +86,10 @@ public class WorksheetManager1Bean {
     private SessionContext               ctx;
     
     @EJB
-    AnalysisHelperBean                   aHelper;
+    private AnalysisHelperBean           aHelper;
     
     @EJB
-    CategoryBean                         category;
-    
-    @EJB
-    DictionaryBean                       dictionary;
+    private DictionaryCacheBean          dictionary;
     
     @EJB
     private LockBean                     lock;
@@ -99,22 +98,22 @@ public class WorksheetManager1Bean {
     private NoteBean                     note;
     
     @EJB
-    QcAnalyteBean                        qcAnalyte;
+    private QcAnalyteBean                qcAnalyte;
     
     @EJB
-    QcLotBean                            qcLot;
+    private QcLotBean                    qcLot;
     
     @EJB
-    ResultBean                           result;
+    private ResultBean                   result;
     
     @EJB
     private SampleManager1Bean           sampleMan;
     
     @EJB
-    TestAnalyteBean                      testAnalyte;
+    private TestAnalyteBean              testAnalyte;
     
     @EJB
-    TestWorksheetAnalyteBean             twAnalyte;
+    private TestWorksheetAnalyteBean     twAnalyte;
     
     @EJB
     private UserCacheBean                userCache;
@@ -1268,10 +1267,11 @@ public class WorksheetManager1Bean {
         return wm;
     }
     
-    public WorksheetManager1 sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction) {
+    public WorksheetManager1 sortItems(WorksheetManager1 wm, int col, int dir) {
         int i;
         
-        DataBaseUtil.sort(keys, WorksheetManager1Accessor.getItems(wm), direction);
+        Collections.sort(WorksheetManager1Accessor.getItems(wm),
+                         new WorksheetComparator(wm, col, dir));
         
         for (i = 0; i < wm.item.count(); i++)
             wm.item.get(i).setPosition(i + 1);
@@ -1373,6 +1373,97 @@ public class WorksheetManager1Bean {
                 wrVDO.setTypeId(rVDO.getTypeId());
                 wrVDO.setAnalyteName(rVDO.getAnalyte());
             }
+        }
+    }
+    
+    class WorksheetComparator<T extends WorksheetItemDO> implements Comparator<T> {
+        int col, dir;
+        WorksheetManager1 wm;
+        
+        public WorksheetComparator(WorksheetManager1 wm, int col, int dir) {
+            this.wm = wm;
+            this.col = col;
+            this.dir = dir;
+        }
+        
+        public int compare(WorksheetItemDO wiDO1, WorksheetItemDO wiDO2) {
+            Comparable c1, c2;
+            WorksheetAnalysisViewDO waVDO1, waVDO2;
+            
+            c1 = null;
+            c2 = null;
+            waVDO1 = wm.analysis.get(wiDO1, 0);
+            waVDO2 = wm.analysis.get(wiDO2, 0);
+            switch (col) {
+                case 0:         // position
+                case 3:         // qc link
+                    return 0;
+                    
+                case 1:
+                    c1 = waVDO1.getAccessionNumber();
+                    c2 = waVDO2.getAccessionNumber();
+                    break;
+                    
+                case 2:
+                    c1 = waVDO1.getDescription();
+                    c2 = waVDO2.getDescription();
+                    break;
+                    
+                case 4:
+                    c1 = waVDO1.getTestName();
+                    c2 = waVDO2.getTestName();
+                    break;
+                    
+                case 5:
+                    c1 = waVDO1.getMethodName();
+                    c2 = waVDO2.getMethodName();
+                    break;
+                    
+                case 6:
+                    c1 = waVDO1.getUnitOfMeasure();
+                    c2 = waVDO2.getUnitOfMeasure();
+                    break;
+                    
+                case 7:
+                    try {
+                        c1 = dictionary.getById(waVDO1.getStatusId()).getEntry();
+                    } catch (Exception ignE) {}
+                    try {
+                        c2 = dictionary.getById(waVDO2.getStatusId()).getEntry();
+                    } catch (Exception ignE) {}
+                    break;
+                    
+                case 8:
+                    c1 = waVDO1.getCollectionDate();
+                    c2 = waVDO2.getCollectionDate();
+                    break;
+                    
+                case 9:
+                    c1 = waVDO1.getReceivedDate();
+                    c2 = waVDO2.getReceivedDate();
+                    break;
+                    
+                case 10:
+                    c1 = waVDO1.getDueDays();
+                    c2 = waVDO2.getDueDays();
+                    break;
+                    
+                case 11:
+                    c1 = waVDO1.getExpireDate();
+                    c2 = waVDO2.getExpireDate();
+                    break;
+            }
+            
+            if (c1 == null && c2 == null) {
+                return 0;
+            } else if (c1 != null && c2 != null) {
+                return dir * c1.compareTo(c2);
+            } else {
+                if (c1 == null && c2 != null)
+                    return 1;
+                else 
+                    return -1;
+            }           
         }
     }
 }
