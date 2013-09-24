@@ -72,8 +72,8 @@
           <t:AutoCompleteCell>
             <w:AutoComplete ui:field="unitOfMeasureId" width="100" case="MIXED">
               <w:popup>
-                <t:Table visibleRows="10" header="true">
-                  <t:Column width="100" label="{msg.unit}">
+                <t:Table visibleRows="10">
+                  <t:Column width="100">
                     <t:LabelCell/>
                   </t:Column>
                 </t:Table>
