@@ -132,9 +132,9 @@ public class WorksheetBuilderServlet extends RemoteServlet implements WorksheetB
         }
     }
     
-    public WorksheetManager1 sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction) throws Exception {
+    public WorksheetManager1 sortItems(WorksheetManager1 wm, int col, int dir) throws Exception {
         try {
-            return worksheetManager.sortItems(wm, keys, direction);
+            return worksheetManager.sortItems(wm, col, dir);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
