@@ -623,6 +623,7 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private ArrayList<Row> getTableModel() {
+        boolean hasOther;
         int i, j;
         ArrayList<Row> model;
         Row row;
@@ -633,6 +634,7 @@ public class WorksheetItemTabUI extends Screen {
         qcLinkModel.clear();
         qcLinkModel.add(new Item<Integer>(null, ""));
 
+        hasOther = false;
         model = new ArrayList<Row>();
         multiQcMessages = new ValidationErrorsList();
         if (manager != null) {
@@ -697,6 +699,9 @@ public class WorksheetItemTabUI extends Screen {
             }
         }        
 
+        if (isState(ADD))
+            bus.fireEventFromSource(new FormatSetEnabledEvent(!hasOther), screen);
+        
         /*
          * Reload the model for the QC Link column
          */
@@ -1306,16 +1311,9 @@ public class WorksheetItemTabUI extends Screen {
         return qcLinks;
     }
     
-    private void sortItems(int col, int direction) {
-        int i;
-        ArrayList<Object> keys;
-        
-        keys = new ArrayList<Object>();
-        for (i = 0; i < worksheetItemTable.getRowCount(); i++) 
-            keys.add(worksheetItemTable.getRowAt(i).getCell(col));
-        
+    private void sortItems(int col, int dir) {
         try {
-            manager = WorksheetBuilderService.get().sortItems(manager, keys, direction);
+            manager = WorksheetBuilderService.get().sortItems(manager, col, dir);
             bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
         } catch (Exception anyE) {
             anyE.printStackTrace();

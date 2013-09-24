@@ -650,6 +650,12 @@ public class WorksheetBuilderScreenUI extends Screen {
                 fireDataChange();
             }
         });
+        
+        bus.addHandler(FormatSetEnabledEvent.getType(), new FormatSetEnabledEvent.Handler() {
+            public void onFormatSetEnabled(FormatSetEnabledEvent event) {
+                formatId.setEnabled(event.getEnable());
+            }
+        });
 
         setData();
         setState(DEFAULT);
