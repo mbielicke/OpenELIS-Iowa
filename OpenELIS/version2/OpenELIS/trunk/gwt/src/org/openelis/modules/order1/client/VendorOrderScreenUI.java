@@ -120,7 +120,7 @@ public class VendorOrderScreenUI extends Screen {
 
     @UiField
     protected Button                        query, previous, next, add, update, commit, abort,
-                    atozNext, atozPrev;
+                    optionsButton, atozNext, atozPrev;
 
     @UiField
     protected Menu                          optionsMenu;
@@ -282,7 +282,8 @@ public class VendorOrderScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                optionsMenu.setEnabled(true);
+                optionsMenu.setEnabled(isState(DISPLAY));
+                optionsButton.setEnabled(isState(DISPLAY));
             }
         });
 
@@ -709,7 +710,6 @@ public class VendorOrderScreenUI extends Screen {
 
         // order status dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -720,7 +720,6 @@ public class VendorOrderScreenUI extends Screen {
         status.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("cost_centers");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());

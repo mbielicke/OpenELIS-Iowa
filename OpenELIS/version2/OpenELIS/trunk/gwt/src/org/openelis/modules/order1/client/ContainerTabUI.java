@@ -259,7 +259,6 @@ public class ContainerTabUI extends Screen {
                                });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("sample_container");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -269,7 +268,6 @@ public class ContainerTabUI extends Screen {
         container.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("type_of_sample");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());

@@ -251,13 +251,15 @@ public class OrganizationTabUI extends Screen {
         table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 OrderOrganizationViewDO data;
-                
+
                 /*
-                 * When the fields of the order organizations are updated in the handler for cellEditedEvent,
-                 * the index of the row can't be used to access the organization that corresponds to a given
-                 * row, because that organization may be of type ship to. In order to keep track of the
-                 * organization corresponding to this row, we set it as the data of the row that caused it to 
-                 * be added to the manager.
+                 * When the fields of the order organizations are updated in the
+                 * handler for cellEditedEvent, the index of the row can't be
+                 * used to access the organization that corresponds to a given
+                 * row, because that organization may be of type ship to. In
+                 * order to keep track of the organization corresponding to this
+                 * row, we set it as the data of the row that caused it to be
+                 * added to the manager.
                  */
                 data = manager.organization.add();
                 event.getRow().setData(data);
@@ -267,7 +269,7 @@ public class OrganizationTabUI extends Screen {
         table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 OrderOrganizationViewDO data;
-                
+
                 data = event.getRow().getData();
                 manager.organization.remove(data);
             }
@@ -318,7 +320,6 @@ public class OrganizationTabUI extends Screen {
                                });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("organization_type");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -328,27 +329,27 @@ public class OrganizationTabUI extends Screen {
         type.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO data : list) {
-            if ("Y".equals(data.getIsActive()))
-                smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
+            item = new Item<Integer>(data.getId(), data.getEntry());
+            item.setEnabled( ("Y".equals(data.getIsActive())));
+            smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
         }
         orgState.setModel(smodel);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("country");
         for (DictionaryDO data : list) {
-            if ("Y".equals(data.getIsActive()))
-                smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
+            item = new Item<Integer>(data.getId(), data.getEntry());
+            item.setEnabled( ("Y".equals(data.getIsActive())));
+            smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
         }
         orgCountry.setModel(smodel);
 
     }
 
     public void setData(OrderManager1 manager) {
-        if ( DataBaseUtil.isDifferent(this.manager, manager)) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
             displayedManager = this.manager;
             this.manager = manager;
         }
@@ -373,7 +374,7 @@ public class OrganizationTabUI extends Screen {
         table.scrollToVisible(table.getSelectedRow());
         table.startEditing(n, 0);
     }
-    
+
     private void displayOrganizations() {
         int count1, count2;
         boolean dataChanged;

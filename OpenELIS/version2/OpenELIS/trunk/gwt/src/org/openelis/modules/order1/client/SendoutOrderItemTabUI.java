@@ -260,7 +260,6 @@ public class SendoutOrderItemTabUI extends Screen {
                                });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("inventory_store");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -271,12 +270,9 @@ public class SendoutOrderItemTabUI extends Screen {
         autocompleteStore.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("inventory_unit");
-        for (DictionaryDO data : list) {
-            if ("Y".equals(data.getIsActive()))
-                model.add(new Item<Integer>(data.getId(), data.getEntry()));
-        }
+        for (DictionaryDO data : list)
+            model.add(new Item<Integer>(data.getId(), data.getEntry()));
         dispensedUnits.setModel(model);
     }
 
@@ -300,7 +296,7 @@ public class SendoutOrderItemTabUI extends Screen {
         table.scrollToVisible(table.getSelectedRow());
         table.startEditing(n, 0);
     }
-    
+
     @UiHandler("removeItemButton")
     protected void removeItem(ClickEvent event) {
         int r;
@@ -383,8 +379,9 @@ public class SendoutOrderItemTabUI extends Screen {
     }
 
     private void evaluateEdit() {
-            canEdit = manager != null && !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
-                                                                                   .getStatusId());
+        canEdit = manager != null &&
+                  !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
+                                                                               .getStatusId());
     }
 
     private void getItemMatches(String match) {
