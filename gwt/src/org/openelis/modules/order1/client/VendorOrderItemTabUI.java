@@ -281,7 +281,6 @@ public class VendorOrderItemTabUI extends Screen {
                                });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("inventory_store");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -292,11 +291,11 @@ public class VendorOrderItemTabUI extends Screen {
         autocompleteStore.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("inventory_unit");
         for (DictionaryDO data : list) {
-            if ("Y".equals(data.getIsActive()))
-                model.add(new Item<Integer>(data.getId(), data.getEntry()));
+            item = new Item<Integer>(data.getId(), data.getEntry());
+            item.setEnabled( ("Y".equals(data.getIsActive())));
+            model.add(item);
         }
         dispensedUnits.setModel(model);
     }

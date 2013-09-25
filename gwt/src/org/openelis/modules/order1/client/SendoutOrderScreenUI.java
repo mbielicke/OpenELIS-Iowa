@@ -140,7 +140,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     @UiField
     protected Button                         query, previous, next, add, update, commit, abort,
-                    atozNext, atozPrev;
+                    optionsButton, atozNext, atozPrev;
 
     @UiField
     protected Menu                           optionsMenu;
@@ -376,7 +376,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                optionsMenu.setEnabled(true);
+                optionsMenu.setEnabled(isState(DISPLAY));
+                optionsButton.setEnabled(isState(DISPLAY));
             }
         });
 
@@ -991,7 +992,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
                 OrderTestReturnVO ret;
-                
+
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
                     try {
                         ret = OrderService1.get().addAuxGroups(manager, event.getGroupIds());
@@ -1045,7 +1046,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         // order status dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -1056,7 +1056,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         status.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("cost_centers");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -1067,7 +1066,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         costCenter.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("laboratory_location");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());

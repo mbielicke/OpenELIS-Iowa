@@ -79,6 +79,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
+
 public class InternalOrderItemTabUI extends Screen {
     @UiTemplate("InternalOrderItemTab.ui.xml")
     interface InternalOrderItemTabUiBinder extends UiBinder<Widget, InternalOrderItemTabUI> {
@@ -259,7 +260,6 @@ public class InternalOrderItemTabUI extends Screen {
                                });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("inventory_store");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -270,12 +270,9 @@ public class InternalOrderItemTabUI extends Screen {
         autocompleteStore.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("inventory_unit");
-        for (DictionaryDO data : list) {
-            if ("Y".equals(data.getIsActive()))
-                model.add(new Item<Integer>(data.getId(), data.getEntry()));
-        }
+        for (DictionaryDO data : list)
+            model.add(new Item<Integer>(data.getId(), data.getEntry()));
         dispensedUnits.setModel(model);
     }
 
@@ -286,7 +283,7 @@ public class InternalOrderItemTabUI extends Screen {
             evaluateEdit();
         }
     }
-    
+
     @UiHandler("addItemButton")
     protected void addItem(ClickEvent event) {
         int n;

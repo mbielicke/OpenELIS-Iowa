@@ -294,7 +294,6 @@ public class RecurrenceTabUI extends Screen {
                                });
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("order_recurrence_unit");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
