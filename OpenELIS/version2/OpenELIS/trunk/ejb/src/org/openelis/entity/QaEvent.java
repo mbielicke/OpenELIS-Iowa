@@ -65,9 +65,9 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "QaEvent.FetchByTestId",
                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
-                      + " from QaEvent q left join q.test t left join t.method m where q.testId = :testId" +
+                      + " from QaEvent q where q.testId = :testId" +
                       		" or (q.testId is null and q.name not in " +
-                      		    "(select q2.name from QaEvent q2 where q2.testId=q.testId)) order by q.name"),
+                      		    "(select q2.name from QaEvent q2 where q2.testId=:testId)) order by q.name"),
     @NamedQuery( name = "QaEvent.FetchByCommon",
                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
