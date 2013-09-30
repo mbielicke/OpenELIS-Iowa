@@ -25,7 +25,10 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
+
+import java.util.logging.Level;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
@@ -166,6 +169,21 @@ public class AnalysisNotesTabUI extends Screen {
                 displayNotes(uid);
             }
         });
+        
+        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
+            @Override
+            public void onAnalysisChange(AnalysisChangeEvent event) {
+                if (AnalysisChangeEvent.Action.STATUS_CHANGED.equals(event.getAction()) ||
+                    AnalysisChangeEvent.Action.SECTION_CHANGED.equals(event.getAction())) {
+                    /*
+                     * reevaluate the permissions for this section or status to
+                     * enable or disable the widgets in the tab
+                     */
+                    evaluateEdit();
+                    setState(state);
+                }
+            }
+        });
     }
 
     public void setData(SampleManager1 manager) {
@@ -290,18 +308,21 @@ public class AnalysisNotesTabUI extends Screen {
 
         canEdit = false;
         if (manager != null) {
+            perm = null;
             sectId = getSectionId();
             statId = getStatusId();
-            if (sectId != null) {
-                try {
+
+            try {
+                if (sectId != null) {
                     sect = SectionCache.getById(sectId);
                     perm = UserCache.getPermission().getSection(sect.getName());
-                    canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
-                              perm != null &&
-                              (perm.hasAssignPermission() || perm.hasCompletePermission());
-                } catch (Exception anyE) {
-                    Window.alert("canEdit:" + anyE.getMessage());
                 }
+                canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
+                                    perm != null &&
+                                    (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception e) {
+                Window.alert("canEdit:" + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
             }
         }
     }

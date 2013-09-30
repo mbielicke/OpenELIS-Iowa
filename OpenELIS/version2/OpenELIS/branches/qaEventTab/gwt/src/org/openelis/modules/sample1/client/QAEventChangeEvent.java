@@ -29,57 +29,43 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * The event used to inform the handler that some field of an analysis
- * changed. The unique identifier for the analysis is specified through uid.
+ * This event is used to inform the handler that the sample's or an analysis's
+ * qa events have changed, e.g. by a new qa event being added or a qa event's
+ * type being changed. The unique identifier for the analysis is specified
+ * through uid. In the case of the sample the uid is null.
  */
-public class AnalysisChangeEvent extends GwtEvent<AnalysisChangeEvent.Handler> {
+public class QAEventChangeEvent extends GwtEvent<QAEventChangeEvent.Handler> {
 
-    public enum Action {
-        METHOD_CHANGED, STATUS_CHANGED, UNIT_CHANGED, PREP_CHANGED, SECTION_CHANGED
-    }
-    
-    private static Type<AnalysisChangeEvent.Handler> TYPE;  
-    private Action                                  action;     
-    private String                                     uid;
-    private Integer                                 changeId;
+    private static Type<QAEventChangeEvent.Handler> TYPE;
+    private String                                  uid;
 
-    public AnalysisChangeEvent(String uid, Integer changeId, Action action) {
+    public QAEventChangeEvent(String uid) {
         this.uid = uid;
-        this.changeId = changeId;
-        this.action = action;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AnalysisChangeEvent.Handler> getAssociatedType() {
+    public Type<QAEventChangeEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
-    
-    public static Type<AnalysisChangeEvent.Handler> getType() {
+
+    public static Type<QAEventChangeEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AnalysisChangeEvent.Handler>();
+            TYPE = new Type<QAEventChangeEvent.Handler>();
         }
         return TYPE;
     }
 
     public static interface Handler extends EventHandler {
-        public void onAnalysisChange(AnalysisChangeEvent event);
+        public void onQAEventChange(QAEventChangeEvent event);
     }
 
     public String getUid() {
         return uid;
     }
-    
-    public Integer getChangeId() {
-        return changeId;
-    }
-    
-    public Action getAction() {
-        return action;
-    }
-    
+
     @Override
     protected void dispatch(Handler handler) {
-        handler.onAnalysisChange(this);
+        handler.onQAEventChange(this);
     }
 }

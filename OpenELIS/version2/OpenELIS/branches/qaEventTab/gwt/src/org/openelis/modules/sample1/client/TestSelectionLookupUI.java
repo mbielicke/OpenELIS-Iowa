@@ -106,7 +106,6 @@ public abstract class TestSelectionLookupUI extends Screen {
     }
 
     private void initialize() {
-
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 tree.setRoot(getRoot());
@@ -226,7 +225,7 @@ public abstract class TestSelectionLookupUI extends Screen {
     }
 
     /**
-     * returns the list of nodes showing selected prep tests
+     * returns the list of selected prep / reflex tests
      */
     public ArrayList<SampleTestRequestVO> getSelectedTests() {
         return selectedTests;
@@ -242,7 +241,7 @@ public abstract class TestSelectionLookupUI extends Screen {
      */
     public abstract void ok();
 
-    public Node getRoot() {
+    private Node getRoot() {
         int i;
         boolean isPrep;
         Integer anaId;
@@ -416,7 +415,7 @@ public abstract class TestSelectionLookupUI extends Screen {
 
                 if ( !"Y".equals(child.getCell(2)))
                     continue;
-                
+
                 if (td.test.getSectionId() == null) {
                     t = td.testManager.getTest();
                     if (td.test.getResultId() == null)
@@ -543,6 +542,10 @@ public abstract class TestSelectionLookupUI extends Screen {
         return null;
     }
 
+    /**
+     * This class is used to keep track of the data associated with each prep or
+     * reflex test that can be chosen for an analysis in the tree
+     */
     private static class TestData {
         boolean             isOptional;
         TestManager         testManager;

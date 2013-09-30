@@ -47,6 +47,11 @@ public class QaEventService implements QAEventServiceInt, QAEventServiceIntAsync
     }
 
     @Override
+    public void fetchAll(AsyncCallback<ArrayList<QaEventDO>> callback) {
+        service.fetchAll(callback);
+    }
+
+    @Override
     public void fetchById(Integer id, AsyncCallback<QaEventViewDO> callback) {
         service.fetchById(id, callback);
     }
@@ -97,6 +102,15 @@ public class QaEventService implements QAEventServiceInt, QAEventServiceIntAsync
         service.fetchByCommon(callback);
         return callback.getResult();
     }
+    
+    @Override
+    public ArrayList<QaEventDO> fetchAll() throws Exception {
+        Callback<ArrayList<QaEventDO>> callback;
+        
+        callback = new Callback<ArrayList<QaEventDO>>();
+        service.fetchAll(callback);
+        return callback.getResult();
+    }
 
     @Override
     public ArrayList<IdNameVO> query(Query query) throws Exception {
@@ -141,5 +155,4 @@ public class QaEventService implements QAEventServiceInt, QAEventServiceIntAsync
         service.abortUpdate(id, callback);
         return callback.getResult();
     }
-
 }

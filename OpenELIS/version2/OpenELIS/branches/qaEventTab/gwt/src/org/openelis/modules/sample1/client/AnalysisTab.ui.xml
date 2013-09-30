@@ -25,13 +25,13 @@
               <ui:text from="{msg.gen_test}:" />
             </td>
             <td>
-              <w:TextBox ui:field="testName" field="String" width="144px" case="LOWER" />
+              <w:TextBox ui:field="test" field="String" width="144px" case="LOWER" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.gen_method}:" />
             </td>
             <td colspan="3">
-              <w:AutoComplete ui:field="methodName" width="150px" case="LOWER" dropWidth = "450px">
+              <w:AutoComplete ui:field="method" width="150px" case="LOWER" dropWidth = "450px">
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
                     <t:Column width="150" label="{msg.gen_method}">
