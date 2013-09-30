@@ -2,10 +2,10 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
@@ -39,6 +39,8 @@ public interface TestServiceInt extends XsrfProtectedService {
     ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception;
 
     ArrayList<TestMethodVO> fetchList() throws Exception;
+
+    ArrayList<TestSectionViewDO> fetchTestSectionsByTestId(Integer testId) throws Exception;
 
     TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception;
 

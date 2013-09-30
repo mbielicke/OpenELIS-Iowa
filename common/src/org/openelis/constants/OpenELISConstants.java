@@ -10960,6 +10960,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String receivedDateNoValueException();
 
   /**
+   * Translated "Received date is NOT today.  Is ''{0}'' the correct date to use?".
+   * 
+   * @return translated "Received date is NOT today.  Is ''{0}'' the correct date to use?"
+   */
+  @DefaultMessage("Received date is NOT today.  Is ''{0}'' the correct date to use?")
+  @Key("receivedDateNotTodayExceptionBody")
+  String receivedDateNotTodayExceptionBody(String arg0);
+
+  /**
+   * Translated "Received date is not today".
+   * 
+   * @return translated "Received date is not today"
+   */
+  @DefaultMessage("Received date is not today")
+  @Key("receivedDateNotTodayExceptionTitle")
+  String receivedDateNotTodayExceptionTitle();
+
+  /**
    * Translated "Received date required".
    * 
    * @return translated "Received date required"
@@ -10976,24 +10994,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Received date shouldn''t be more than 180 days before entered date")
   @Key("receivedTooOldWarning")
   String receivedTooOldWarning();
-
-  /**
-   * Translated "Received date is NOT today.  Is ''{0}'' the correct date to use?".
-   * 
-   * @return translated "Received date is NOT today.  Is ''{0}'' the correct date to use?"
-   */
-  @DefaultMessage("Received date is NOT today.  Is ''{0}'' the correct date to use?")
-  @Key("recievedDateNotTodayExceptionBody")
-  String recievedDateNotTodayExceptionBody(String arg0);
-
-  /**
-   * Translated "Received date is not today".
-   * 
-   * @return translated "Received date is not today"
-   */
-  @DefaultMessage("Received date is not today")
-  @Key("recievedDateNotTodayExceptionTitle")
-  String recievedDateNotTodayExceptionTitle();
 
   /**
    * Translated "This record must have at least one active analyte   ".
