@@ -51,6 +51,7 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
+import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -166,6 +167,9 @@ public class SampleManager1Bean {
 
     @EJB
     private AuxDataBean                  auxData;
+
+    @EJB
+    private QaEventBean                  qaEvent;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -1325,13 +1329,13 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get().enterAccNumBeforeOrderLoad());
 
         e = new ValidationErrorsList();
-        // TODO uncomment the code
-        /*
-         * if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
-         * Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
-         * Constants.domain().SDWIS.equals(data.getDomain()))
-         */
-        return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
+        
+        if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
+                         Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
+                         Constants.domain().SDWIS.equals(data.getDomain()))         
+            return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
+        else 
+            return null;
     }
 
     /**
@@ -1523,8 +1527,8 @@ public class SampleManager1Bean {
         ret.setManager(sm);
         errors = new ValidationErrorsList();
         ret.setErrors(errors);
-        
-        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds), errors);
+
+        auxDataHelper.addAuxGroups(auxiliary, groupIds, errors);
 
         /*
          * set negative ids in the newly added aux data
@@ -1633,13 +1637,17 @@ public class SampleManager1Bean {
         SystemVariableDO sys;
         ValidationErrorsList e;
         Integer accession, maxAccession;
+        QaEventDO qa;
+        ArrayList<QaEventDO> qas;
         HashMap<Integer, SampleItemViewDO> imap;
         HashMap<Integer, AnalysisViewDO> amap;
+        HashMap<Integer, QaEventDO> qamap;
         SystemUserPermission permission;
 
         e = new ValidationErrorsList();
         imap = new HashMap<Integer, SampleItemViewDO>();
         amap = new HashMap<Integer, AnalysisViewDO>();
+        qamap = new HashMap<Integer, QaEventDO>();
 
         // user permission for adding/updating analysis
         permission = userCache.getPermission();
@@ -1655,6 +1663,12 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get()
                                                  .systemVariable_missingInvalidSystemVariable("last_accession_number"));
         }
+
+        /*
+         * this map is used to validate analysis qa events
+         */
+        for (QaEventDO data : qaEvent.fetchAll())
+            qamap.put(data.getId(), data);
 
         for (SampleManager1 sm : sms) {
             /*
@@ -1731,6 +1745,26 @@ public class SampleManager1Bean {
                         } catch (Exception err) {
                             DataBaseUtil.mergeException(e, err);
                         }
+                }
+            }
+
+            /*
+             * test specific analysis qa events must be valid for the analysis's
+             * test
+             */
+
+            if (getAnalysisQAs(sm) != null) {
+                for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
+                    qa = qamap.get(data.getQaEventId());
+                    ana = amap.get(data.getAnalysisId());
+                    if (qa.getTestId() != null && !qa.getTestId().equals(ana.getTestId())) {
+                        e.add(new FormErrorException(Messages.get()
+                                                             .analysis_qaEventInvalidException(getSample(sm).getAccessionNumber(),
+                                                                                               imap.get(ana.getSampleItemId()).getItemSequence(),
+                                                                                      ana.getTestName(),
+                                                                                      ana.getMethodName(),
+                                                                                      qa.getName())));
+                    }
                 }
             }
 

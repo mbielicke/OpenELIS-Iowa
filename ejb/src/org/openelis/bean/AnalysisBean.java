@@ -297,11 +297,11 @@ public class AnalysisBean {
         if (data.getStartedDate() != null && data.getCompletedDate() != null &&
             data.getStartedDate().compareTo(data.getCompletedDate()) == 1)
             e.add(new FormErrorException(Messages.get().analysis_startedDateInvalidException(accession,
-                                         DataBaseUtil.toString(sequence), test, method)));
+                                         sequence, test, method)));
         if (data.getCompletedDate() != null && data.getReleasedDate() != null &&
             data.getCompletedDate().compareTo(data.getReleasedDate()) == 1)
             e.add(new FormErrorException(Messages.get().analysis_completedDateInvalidException(accession,
-                                         DataBaseUtil.toString(sequence), test, method)));
+                                         sequence, test, method)));
         if (e.size() > 0)
             throw e;
     }
