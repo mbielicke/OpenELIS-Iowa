@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -700,6 +700,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cancelMessage();
 
   /**
+   * Translated "Analysis is released. You cannot add non-internal QA events.".
+   * 
+   * @return translated "Analysis is released. You cannot add non-internal QA events."
+   */
+  @DefaultMessage("Analysis is released. You cannot add non-internal QA events.")
+  @Key("analysis.cantAddQAEvent")
+  String analysis_cantAddQAEvent();
+
+  /**
    * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
    * 
    * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
@@ -763,6 +772,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantRemoveInUpdateException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Analysis has been released. You cannot remove non-internal QA events.".
+   * 
+   * @return translated "Analysis has been released. You cannot remove non-internal QA events."
+   */
+  @DefaultMessage("Analysis has been released. You cannot remove non-internal QA events.")
+  @Key("analysis.cantRemoveQAEvent")
+  String analysis_cantRemoveQAEvent();
+
+  /**
    * Translated "Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}".
    * 
    * @return translated "Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}"
@@ -790,13 +808,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_completed();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date")
   @Key("analysis.completedDateInvalidException")
-  String analysis_completedDateInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3);
+  String analysis_completedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}".
@@ -880,6 +898,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_noReleasePermission(String arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "A QA event has been added that makes this analysis not billable".
+   * 
+   * @return translated "A QA event has been added that makes this analysis not billable"
+   */
+  @DefaultMessage("A QA event has been added that makes this analysis not billable")
+  @Key("analysis.notBillable")
+  String analysis_notBillable();
+
+  /**
    * Translated "Preliminary".
    * 
    * @return translated "Preliminary"
@@ -896,6 +923,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Printed")
   @Key("analysis.printed")
   String analysis_printed();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''")
+  @Key("analysis.qaEventInvalidException")
+  String analysis_qaEventInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "Analysis QA Events ".
@@ -961,13 +997,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_started();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed")
   @Key("analysis.startedDateInvalidException")
-  String analysis_startedDateInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3);
+  String analysis_startedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0}'': Item {1} - One or more tests are missing".
@@ -5306,6 +5342,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Printer")
   @Key("gen.printer")
   String gen_printer();
+
+  /**
+   * Translated "Are you sure you want to change this?".
+   * 
+   * @return translated "Are you sure you want to change this?"
+   */
+  @DefaultMessage("Are you sure you want to change this?")
+  @Key("gen.qaEventEditConfirm")
+  String gen_qaEventEditConfirm();
 
   /**
    * Translated "QA Events".
@@ -12004,6 +12049,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_cantAddOrgTypeToDomainException();
 
   /**
+   * Translated "Sample is released. You cannot add non-internal QA events.".
+   * 
+   * @return translated "Sample is released. You cannot add non-internal QA events."
+   */
+  @DefaultMessage("Sample is released. You cannot add non-internal QA events.")
+  @Key("sample.cantAddQAEvent")
+  String sample_cantAddQAEvent();
+
+  /**
+   * Translated "One or more analysis have been released. You cannot remove non-internal sample QA events.".
+   * 
+   * @return translated "One or more analysis have been released. You cannot remove non-internal sample QA events."
+   */
+  @DefaultMessage("One or more analysis have been released. You cannot remove non-internal sample QA events.")
+  @Key("sample.cantRemoveQAEvent")
+  String sample_cantRemoveQAEvent();
+
+  /**
    * Translated "Please choose a test or panel".
    * 
    * @return translated "Please choose a test or panel"
@@ -12218,6 +12281,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0}'': Missing or undefined domain")
   @Key("sample.noDomainException")
   String sample_noDomainException(String arg0);
+
+  /**
+   * Translated "A QA event has been added that makes this sample and all its analyses not billable".
+   * 
+   * @return translated "A QA event has been added that makes this sample and all its analyses not billable"
+   */
+  @DefaultMessage("A QA event has been added that makes this sample and all its analyses not billable")
+  @Key("sample.notBillable")
+  String sample_notBillable();
 
   /**
    * Translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order".
