@@ -1,0 +1,43 @@
+
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents of this file are subject 
+  to the UIRF Open-source Based Public Software License(the "License"); you may not use this file except 
+  in compliance with the License. You may obtain a copy of the License at openelis.uhl.uiowa.edu Software 
+  distributed under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
+  express or implied. See the License for the specific language governing rights and limitations under 
+  the License. The Original Code is OpenELIS code. The Initial Developer of the Original Code is The University 
+  of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. All Rights Reserved. Contributor(s): 
+  ______________________________________. Alternatively, the contents of this file marked "Separately-Licensed" 
+  may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
+  of a UIRF Software License are applicable instead of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
+  xmlns:s="urn:import:org.openelis.modules.sample1.client"
+>
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+  <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  <g:LayoutPanel>
+    <g:layer top="0px" bottom="25px">
+      <t:Table ui:field="table" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+        <t:Column label="A" >
+          <t:CheckBoxCell/>
+        </t:Column>
+        <t:Column label="B">
+          <t:LabelCell />
+        </t:Column>
+      </t:Table>
+    </g:layer>
+    <g:layer bottom="0px" height="25px">
+      <g:HorizontalPanel>
+        <w:Button ui:field="addResultButton" leftIcon="{res.style.addRowIcon}" text="{msg.gen_addRow}" />
+        <w:Button ui:field="removeResultButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />
+        <w:Button ui:field="checkAllButton" text="{msg.gen_checkAll}" />
+        <w:Button ui:field="uncheckAllButton" text="{msg.gen_uncheckAll}" />
+        <g:HTMLPanel>
+          <w:Label ui:field = "overrideLabel"/>
+        </g:HTMLPanel>
+      </g:HorizontalPanel>
+    </g:layer>
+  </g:LayoutPanel>
+</ui:UiBinder>
