@@ -13,7 +13,6 @@
   xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
-  <!-- this tab uses xsl:when and xsl:otherwise to determine the layout of the widgets -->
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />

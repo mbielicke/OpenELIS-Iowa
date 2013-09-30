@@ -113,7 +113,7 @@
                   <ui:text from="{msg.status}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" /> <!-- popWidth="110" -->
+                  <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.clntRef}:" />

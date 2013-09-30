@@ -55,7 +55,6 @@ import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
-import org.openelis.modules.auxData.client.AuxDataChangeEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
@@ -1637,13 +1636,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
                 SampleTestReturnVO ret;
-                if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+                ArrayList<Integer> ids;
+                
+                if (screen == event.getSource())
+                    return; 
+                
+                ids = event.getGroupIds(); 
+                if (ids != null && ids.size() > 0) {
                     try {
-                        ret = SampleService1.get().addAuxGroups(manager, event.getGroupIds());
+                        ret = SampleService1.get().addAuxGroups(manager, ids);
                         manager = ret.getManager();
                         setData();
                         setState(state);
-                        bus.fireEvent(new AuxDataChangeEvent());
+                        bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
                         if (ret.getErrors() != null && ret.getErrors().size() > 0)
                             showErrors(ret.getErrors());
                         else
@@ -1660,12 +1665,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             @Override
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+                    if (screen == event.getSource())
+                        return; 
+                    
                     try {
                         manager = SampleService1.get()
                                                 .removeAuxGroups(manager, event.getGroupIds());
                         setData();
                         setState(state);
-                        bus.fireEvent(new AuxDataChangeEvent());
+                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()), screen);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -2874,9 +2882,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         analysisNotesTab.setData(manager);
         sampleNotesTab.setData(manager);
         storageTab.setData(manager);
-        /*
-         * qaEventsTab.setData(null);
-         */
+        qaEventTab.setData(manager);
+         
     }
 
     private void evaluateEdit() {
@@ -3228,7 +3235,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         modal = new ModalWindow();
         modal.setSize("520px", "350px");
-        modal.setName(Messages.get().prepTestPicker());
+        modal.setName(Messages.get().testSelection_prepTestSelection());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(testSelectionLookup);
 
