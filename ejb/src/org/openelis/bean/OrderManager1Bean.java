@@ -678,7 +678,7 @@ public class OrderManager1Bean {
         errors = new ValidationErrorsList();
         ret.setErrors(errors);
         
-        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds), errors);
+        auxDataHelper.addAuxGroups(auxiliary, groupIds, errors);
 
         return ret;
     }

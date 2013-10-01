@@ -106,24 +106,24 @@ public class ResultTabUI extends Screen {
     protected Screen                                    parentScreen;
 
     protected ResultTabUI                               screen;
-    
+
     protected SampleManager1                            manager;
-    
+
     protected AnalysisViewDO                            analysis;
 
     protected String                                    displayedUid;
-    
-    protected boolean                                  canEdit, isVisible, redraw;
-    
-    protected int                                       averageCharWidth = 8, defaultNumChars = 10;
+
+    protected boolean                                   canEdit, isVisible, redraw;
 
     protected TestReflexUtility1                        testReflexUtility;
 
     protected TestSelectionLookupUI                     testSelectionLookup;
-    
+
     protected TestAnalyteLookupUI                       testAnalyteLookup;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
+    
+    protected static int                                averageCharWidth = 8, defaultNumChars = 10;
 
     public ResultTabUI(Screen parentScreen, EventBus bus) {
         this.parentScreen = parentScreen;
@@ -423,10 +423,25 @@ public class ResultTabUI extends Screen {
 
                 if (DataBaseUtil.isDifferent(displayedUid, uid)) {
                     displayedUid = uid;
-                    redraw = true;                
+                    redraw = true;
                 }
-                
+
                 displayResults(uid);
+            }
+        });
+
+        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
+            @Override
+            public void onAnalysisChange(AnalysisChangeEvent event) {
+                if (AnalysisChangeEvent.Action.STATUS_CHANGED.equals(event.getAction()) ||
+                    AnalysisChangeEvent.Action.SECTION_CHANGED.equals(event.getAction())) {
+                    /*
+                     * reevaluate the permissions for this section or status to
+                     * enable or disable the widgets in the tab
+                     */
+                    evaluateEdit();
+                    setState(state);
+                }
             }
         });
 
@@ -437,18 +452,25 @@ public class ResultTabUI extends Screen {
                 displayResults(manager.getAnalysisUid(analysis.getId()));
             }
         });
+
+        bus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
+            @Override
+            public void onQAEventChange(QAEventChangeEvent event) {
+                showResultOverride();
+            }
+        });
     }
 
     public void setData(SampleManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
-    
+
     public void setState(State state) {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     private void evaluateEdit() {
         Integer sectId, statId;
         SectionPermission perm;
@@ -456,16 +478,15 @@ public class ResultTabUI extends Screen {
 
         canEdit = false;
         if (manager != null) {
+            perm = null;
             sectId = getSectionId();
             statId = getStatusId();
 
-            if (sectId == null) {
-                canEdit = true;
-                return;
-            }
             try {
-                sect = SectionCache.getById(getSectionId());
-                perm = UserCache.getPermission().getSection(sect.getName());
+                if (sectId != null) {
+                    sect = SectionCache.getById(sectId);
+                    perm = UserCache.getPermission().getSection(sect.getName());
+                }
                 canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
                           !Constants.dictionary().ANALYSIS_RELEASED.equals(statId) &&
                           perm != null &&
@@ -476,7 +497,7 @@ public class ResultTabUI extends Screen {
             }
         }
     }
-    
+
     private void displayResults(String uid) {
         if (uid != null)
             analysis = (AnalysisViewDO)manager.getObject(uid);
@@ -602,7 +623,7 @@ public class ResultTabUI extends Screen {
     protected void uncheckAll(ClickEvent event) {
         check("N");
     }
-    
+
     private Integer getSectionId() {
         if (analysis != null)
             return analysis.getSectionId();
@@ -635,7 +656,7 @@ public class ResultTabUI extends Screen {
 
         model = new ArrayList<Row>();
         table.clearExceptions();
-        
+
         if (analysis == null || manager.result.count(analysis) == 0)
             return model;
 
@@ -656,7 +677,7 @@ public class ResultTabUI extends Screen {
 
         validateResults = canEdit && isState(ADD, UPDATE);
         rf = null;
-        
+
         try {
             if (validateResults) {
                 tm = getTestManager(analysis.getTestId());
@@ -693,8 +714,7 @@ public class ResultTabUI extends Screen {
                         resetMaxChars(maxChars, 1, data.getAnalyte());
                     }
 
-                    if (validateResults && data.getValue() != null &&
-                                    data.getTypeId() == null) {
+                    if (validateResults && data.getValue() != null && data.getTypeId() == null) {
                         /*
                          * Since the type is not set, the value was either not
                          * validated and formatted before or the validation
@@ -707,7 +727,7 @@ public class ResultTabUI extends Screen {
                                                      analysis.getUnitOfMeasureId(),
                                                      rf);
 
-                        } catch (Exception e) {                            
+                        } catch (Exception e) {
                             table.addException(row, j + 2, e);
                         }
                     }
@@ -925,8 +945,8 @@ public class ResultTabUI extends Screen {
         typeId = Constants.dictionary().QAEVENT_OVERRIDE;
         label = null;
 
-        if (manager != null && analysis != null && manager.qaEvent.hasType(typeId) &&
-            manager.qaEvent.hasType(analysis, typeId))
+        if (manager != null && analysis != null &&
+            (manager.qaEvent.hasType(typeId) || manager.qaEvent.hasType(analysis, typeId)))
             label = Messages.get().result_overridden();
         overrideLabel.setText(label);
     }

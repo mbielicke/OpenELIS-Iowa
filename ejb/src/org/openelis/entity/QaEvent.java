@@ -72,6 +72,10 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
                       + " from QaEvent q where q.testId is null order by q.name"),
+    @NamedQuery( name = "QaEvent.FetchAll",
+                query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
+                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
+                      + " from QaEvent q order by q.name, q.testId"),                   
     @NamedQuery( name = "QaEvent.FetchByAnalysisId",
                  query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
                          "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"

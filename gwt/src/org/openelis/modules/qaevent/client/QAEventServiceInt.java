@@ -18,6 +18,8 @@ public interface QAEventServiceInt extends XsrfProtectedService {
     ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception;
 
     ArrayList<QaEventDO> fetchByCommon() throws Exception;
+    
+    ArrayList<QaEventDO> fetchAll() throws Exception;
 
     ArrayList<IdNameVO> query(Query query) throws Exception;
 

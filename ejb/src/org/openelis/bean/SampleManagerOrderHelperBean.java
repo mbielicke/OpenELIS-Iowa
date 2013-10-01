@@ -147,6 +147,7 @@ public class SampleManagerOrderHelperBean {
         AuxDataViewDO aux;
         AuxDataManager am;
         SampleTestReturnVO ret;
+        ArrayList<Integer> grpIds;
         HashMap<Integer, AuxDataViewDO> auxGrp;
         HashMap<Integer, HashMap<Integer, AuxDataViewDO>> auxGrps;
 
@@ -169,6 +170,7 @@ public class SampleManagerOrderHelperBean {
          */
         domainGrpId = getDomainAuxGroupId(data);
         am = om.getAuxData();
+        grpIds = new ArrayList<Integer>();
         auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
         for (int i = 0; i < am.count(); i++ ) {
             aux = am.getAuxDataAt(i);
@@ -176,6 +178,7 @@ public class SampleManagerOrderHelperBean {
             if (auxGrp == null) {
                 auxGrp = new HashMap<Integer, AuxDataViewDO>();
                 auxGrps.put(aux.getGroupId(), auxGrp);
+                grpIds.add(aux.getGroupId());
             }
             auxGrp.put(aux.getAnalyteId(), aux);
         }
@@ -199,7 +202,7 @@ public class SampleManagerOrderHelperBean {
         copySampleItems(sm, om, e);
         ret = copyTests(sm, om, e);
         copyNotes(sm, om);
-        copyAuxData(sm, auxGrps, e);
+        copyAuxData(sm, grpIds, auxGrps, e);
 
         return ret;
     }
@@ -424,14 +427,14 @@ public class SampleManagerOrderHelperBean {
     /**
      * Add to the sample, the aux groups specified in the order
      */
-    private void copyAuxData(SampleManager1 sm,
+    private void copyAuxData(SampleManager1 sm, ArrayList<Integer> grpIds,
                              HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps,
                              ValidationErrorsList e) throws Exception {
         ArrayList<AuxDataViewDO> auxiliary;
 
         /*
-         * fields for the aux group present in the order but not in the sample
-         * are fetched and aux data for them is added to the sample
+         * aux groups present in the order but not in the sample are added to
+         * the sample
          */
         if (grps.size() > 0) {
             auxiliary = getAuxilliary(sm);
@@ -439,7 +442,7 @@ public class SampleManagerOrderHelperBean {
                 auxiliary = new ArrayList<AuxDataViewDO>();
                 setAuxilliary(sm, auxiliary);
             }
-            auxDataHelper.addAuxGroups(auxiliary, grps, e);
+            auxDataHelper.addAuxGroups(auxiliary, grpIds, grps, e);
 
             /*
              * set negative ids in the newly added aux data
@@ -604,8 +607,13 @@ public class SampleManagerOrderHelperBean {
                 for (j = 0; j < otm.getAnalytesAt(i).count(); j++ )
                     analyteIds.add(otm.getAnalytesAt(i).getAnalyteAt(j).getAnalyteId());
             }
-            tests.add(new SampleTestRequestVO(item.getId(), otm.getTestAt(i).getTestId(),
-                                              null, null, null, null, false,
+            tests.add(new SampleTestRequestVO(item.getId(),
+                                              otm.getTestAt(i).getTestId(),
+                                              null,
+                                              null,
+                                              null,
+                                              null,
+                                              false,
                                               analyteIds));
         }
 

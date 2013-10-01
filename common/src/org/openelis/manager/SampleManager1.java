@@ -480,6 +480,7 @@ public class SampleManager1 implements Serializable {
             data.setId(getNextUID());
             if (event != null) {
                 data.setQaEventId(event.getId());
+                data.setQaEventName(event.getName());
                 data.setTypeId(event.getTypeId());
                 data.setIsBillable(event.getIsBillable());
             }
@@ -503,6 +504,7 @@ public class SampleManager1 implements Serializable {
             data.setAnalysisId(analysis.getId());
             if (event != null) {
                 data.setQaEventId(event.getId());
+                data.setQaEventName(event.getName());
                 data.setTypeId(event.getTypeId());
                 data.setIsBillable(event.getIsBillable());
             }
