@@ -113,7 +113,7 @@
                   <ui:text from="{msg.status}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" /> <!-- popWidth="110" -->
+                  <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.clntRef}:" />
@@ -649,7 +649,7 @@
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
-              <s:QAEventsTabUI ui:field="qaEventTab" />
+              <s:QAEventTabUI ui:field="qaEventTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

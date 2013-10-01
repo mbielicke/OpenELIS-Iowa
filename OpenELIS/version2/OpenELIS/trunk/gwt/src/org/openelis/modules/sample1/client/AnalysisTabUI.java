@@ -98,10 +98,10 @@ public class AnalysisTabUI extends Screen {
     private static AnalysisTabUIBinder uiBinder = GWT.create(AnalysisTabUIBinder.class);
 
     @UiField
-    protected TextBox<String>          testName;
+    protected TextBox<String>          test;
 
     @UiField
-    protected AutoComplete             methodName;
+    protected AutoComplete             method;
 
     @UiField
     protected Dropdown<Integer>        section, unitOfMeasure, status, panel, samplePrep;
@@ -153,26 +153,26 @@ public class AnalysisTabUI extends Screen {
 
         screen = this;
 
-        addScreenHandler(testName, SampleMeta.getAnalysisTestName(), new ScreenHandler<Integer>() {
+        addScreenHandler(test, SampleMeta.getAnalysisTestName(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                testName.setValue(getTestName());
+                test.setValue(getTestName());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                testName.setEnabled(isState(QUERY));
-                testName.setQueryMode(isState(QUERY));
+                test.setEnabled(isState(QUERY));
+                test.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? methodName : userTable;
+                return forward ? method : userTable;
             }
         });
 
-        addScreenHandler(methodName,
+        addScreenHandler(method,
                          SampleMeta.getAnalysisMethodName(),
                          new ScreenHandler<AutoCompleteValue>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 methodName.setValue(getMethodId(), getMethodName());
+                                 method.setValue(getMethodId(), getMethodName());
                              }
 
                              public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
@@ -180,17 +180,17 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public void onStateChange(StateChangeEvent event) {
-                                 methodName.setEnabled(isState(QUERY) ||
-                                                       (isState(ADD, UPDATE) && canEdit));
-                                 methodName.setQueryMode(isState(QUERY));
+                                 method.setEnabled(isState(QUERY) ||
+                                                   (isState(ADD, UPDATE) && canEdit));
+                                 method.setQueryMode(isState(QUERY));
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? status : testName;
+                                 return forward ? status : test;
                              }
                          });
 
-        methodName.addGetMatchesHandler(new GetMatchesHandler() {
+        method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<Item<Integer>> model;
                 ArrayList<TestMethodVO> tests;
@@ -213,7 +213,7 @@ public class AnalysisTabUI extends Screen {
                         row.setData(t);
                         model.add(row);
                     }
-                    methodName.showAutoMatches(model);
+                    method.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -253,7 +253,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? section : methodName;
+                return forward ? section : method;
             }
         });
 
@@ -548,7 +548,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? testName : worksheetTable;
+                return forward ? test : worksheetTable;
             }
         });
 
@@ -680,17 +680,17 @@ public class AnalysisTabUI extends Screen {
         allSectionsModel = new ArrayList<Item<Integer>>();
         for (SectionDO s : SectionCache.getList())
             allSectionsModel.add(new Item<Integer>(s.getId(), s.getName()));
-        
+
         allUnitsModel = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
             if ("Y".equals(d.getIsActive()))
                 allUnitsModel.add(new Item<Integer>(d.getId(), d.getEntry()));
         }
-        
+
         try {
             model = new ArrayList<Item<Integer>>();
             for (PanelDO p : PanelService.get().fetchAll())
-                model.add(new Item<Integer>(p.getId(), p.getName()));            
+                model.add(new Item<Integer>(p.getId(), p.getName()));
             panel.setModel(model);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -776,7 +776,7 @@ public class AnalysisTabUI extends Screen {
 
         return null;
     }
-    
+
     private void setMethod(AutoCompleteValue value) {
         TestMethodVO data;
 
@@ -788,10 +788,10 @@ public class AnalysisTabUI extends Screen {
                                     this);
         } else {
             /*
-             * if the user blanks the field, selecting nothing, we put the
-             * method back in the autocomplete
+             * if the user blanks the field, selecting nothing, the previous
+             * methiod is put back in the autocomplete
              */
-            methodName.setValue(getMethodId(), getMethodName());
+            method.setValue(getMethodId(), getMethodName());
         }
     }
 
@@ -822,7 +822,7 @@ public class AnalysisTabUI extends Screen {
                                                         AnalysisChangeEvent.Action.STATUS_CHANGED),
                                 this);
     }
-    
+
     private Integer getSectionId() {
         if (analysis != null)
             return analysis.getSectionId();
@@ -833,8 +833,16 @@ public class AnalysisTabUI extends Screen {
     private void setSection(Integer sectionId, String sectionName) {
         analysis.setSectionId(sectionId);
         analysis.setSectionName(sectionName);
+
+        /*
+         * notify the tabs showing the analysis' child data to reevaluate the
+         * permissions for this section
+         */
+        bus.fireEvent(new AnalysisChangeEvent(displayedUid,
+                                              sectionId,
+                                              AnalysisChangeEvent.Action.SECTION_CHANGED));
     }
-    
+
     private String getIsPreliminary() {
         if (analysis != null)
             return analysis.getIsPreliminary();
@@ -856,7 +864,7 @@ public class AnalysisTabUI extends Screen {
     private void setIsReportable(String isReportable) {
         analysis.setIsReportable(isReportable);
     }
-    
+
     private Integer getUnitOfMeasureId() {
         if (analysis != null)
             return analysis.getUnitOfMeasureId();
@@ -870,7 +878,7 @@ public class AnalysisTabUI extends Screen {
                                                         AnalysisChangeEvent.Action.UNIT_CHANGED),
                                 this);
     }
-    
+
     private Integer getPanelId() {
         if (analysis != null)
             return analysis.getPanelId();
@@ -881,7 +889,7 @@ public class AnalysisTabUI extends Screen {
     private void setPanel(Integer panelId) {
         analysis.setPanelId(panelId);
     }
-    
+
     private Integer getPreAnalysisId() {
         if (analysis != null)
             return analysis.getPreAnalysisId();
@@ -895,7 +903,7 @@ public class AnalysisTabUI extends Screen {
                                                         AnalysisChangeEvent.Action.PREP_CHANGED),
                                 this);
     }
-    
+
     private Datetime getStartedDate() {
         if (analysis != null)
             return analysis.getStartedDate();
@@ -939,19 +947,17 @@ public class AnalysisTabUI extends Screen {
     private void setPrintedDate(Datetime printedDate) {
         analysis.setPrintedDate(printedDate);
     }
-    
+
     private Integer getRevision() {
         if (analysis != null)
             return analysis.getRevision();
 
         return null;
     }
-    
+
     private void setRevision(Integer revision) {
         analysis.setRevision(revision);
     }
-    
-    
 
     /**
      * Returns the model for sections dropdown. In add, update, sections
@@ -1035,7 +1041,7 @@ public class AnalysisTabUI extends Screen {
         SampleItemViewDO item;
         Item<Integer> row;
         ArrayList<Item<Integer>> model;
-        
+
         model = new ArrayList<Item<Integer>>();
         if (manager != null && analysis != null) {
             buf = new StringBuffer();

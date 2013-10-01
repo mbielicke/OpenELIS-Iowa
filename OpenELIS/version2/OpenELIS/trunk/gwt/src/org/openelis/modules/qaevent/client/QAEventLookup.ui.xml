@@ -15,26 +15,29 @@
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  <g:LayoutPanel>
+  <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="25px">
       <t:Table ui:field="table" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <t:Column label="A">
-          <t:CheckBoxCell />
-        </t:Column>
-        <t:Column label="B">
+        <t:Column width="120" label="{msg.gen_name}">
           <t:LabelCell />
+        </t:Column>
+        <t:Column width="180" label="{msg.gen_description}">
+          <t:LabelCell />
+        </t:Column>
+        <t:Column width="100" label="{msg.gen_type}">
+          <t:DropdownCell>
+            <w:Dropdown width="85px" ui:field="type" field="Integer" />
+          </t:DropdownCell>
+        </t:Column>
+        <t:Column width = "70" label="{msg.gen_billable}">
+          <t:CheckBoxCell />
         </t:Column>
       </t:Table>
     </g:layer>
-    <g:layer bottom="0px" height="25px">
-      <g:HorizontalPanel>
-        <w:Button ui:field="addResultButton" leftIcon="{res.style.addRowIcon}" text="{msg.gen_addRow}" />
-        <w:Button ui:field="removeResultButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />
-        <w:Button ui:field="checkAllButton" text="{msg.gen_checkAll}" />
-        <w:Button ui:field="uncheckAllButton" text="{msg.gen_uncheckAll}" />
-        <g:HTMLPanel>
-          <w:Label ui:field="overrideLabel" />
-        </g:HTMLPanel>
+    <g:layer bottom="0px" height="25px" right="35%" left="45%">
+      <g:HorizontalPanel horizontalAlignment="CENTER">
+        <w:Button ui:field="okButton" text="{msg.gen_ok}" />
+        <w:Button ui:field="cancelButton" text="{msg.gen_cancel}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>
