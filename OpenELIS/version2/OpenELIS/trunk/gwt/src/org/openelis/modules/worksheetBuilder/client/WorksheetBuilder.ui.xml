@@ -129,22 +129,22 @@
                   <ui:text from="{msg.worksheetNumber}:"/>
                 </td>
                 <td>
-                  <w:TextBox ui:field="worksheetId" width="100px" field="Integer"/>
+                  <w:TextBox ui:field="worksheetId" width="75px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.status}:"/>
                 </td>
                 <td colspan="2">
-                  <w:Dropdown ui:field="statusId" width="119px" field="Integer"/>
+                  <w:Dropdown ui:field="statusId" width="110px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.username}"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="systemUserId" width="166" case="LOWER">
+                  <w:AutoComplete ui:field="systemUserId" width="165" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
-                        <t:Column width="166" label="{msg.username}">
+                        <t:Column label="{msg.username}">
                           <t:LabelCell/>
                         </t:Column>
                       </t:Table>
@@ -157,13 +157,13 @@
                   <ui:text from="{msg.worksheetFormat}:"/>
                 </td>
                 <td>
-                  <w:Dropdown ui:field="formatId" width="130px" case="MIXED" field="Integer"/>
+                  <w:Dropdown ui:field="formatId" width="132px" dropWidth="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.relatedWorksheetNumber}:"/>
                 </td>
                 <td>
-                  <w:TextBox ui:field="relatedWorksheetId" width="100px" field="Integer"/>
+                  <w:TextBox ui:field="relatedWorksheetId" width="75px" field="Integer"/>
                 </td>
                 <td>
                   <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.style.fieldLookupIcon}"
@@ -173,7 +173,7 @@
                   <ui:text from="{msg.instrumentName}:"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="instrumentName" width="166" case="LOWER">
+                  <w:AutoComplete ui:field="instrumentName" width="165" dropWidth="765" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
                         <t:Column width="150" label="{msg.name}">
@@ -198,7 +198,7 @@
                   <ui:text from="{msg.created}:"/>
                 </td>
                 <td>
-                  <c:Calendar ui:field="createdDate" width="134px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+                  <c:Calendar ui:field="createdDate" width="135px" begin="0" end="4"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.description}:"/>

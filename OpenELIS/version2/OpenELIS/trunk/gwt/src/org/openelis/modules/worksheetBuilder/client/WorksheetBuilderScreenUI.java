@@ -1199,9 +1199,8 @@ public class WorksheetBuilderScreenUI extends Screen {
             setSystemUserId(null);
             setSystemUser(null);
         } else {
-            data = (SystemUserVO)row.getData();
-            setSystemUserId(data.getId());
-            setSystemUser(data.getLoginName());
+            setSystemUserId(row.getId());
+            setSystemUser(row.getDisplay());
         }
     }
     

@@ -440,7 +440,7 @@ public class WorksheetItemTabUI extends Screen {
         bus.addHandlerToSource(StateChangeEvent.getType(), parentScreen, new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 templateMap.clear();
-                loadTemplateMenu.clear();
+                loadTemplateMenu.clearItems();
                 manualAnalysisUids = null;
                 templateAnalysisUids = null;
                 qcChoices = null;
@@ -735,7 +735,7 @@ public class WorksheetItemTabUI extends Screen {
 
         win = new org.openelis.ui.widget.Window();
         win.setName(Messages.get().worksheetBuilderLookup());
-        win.setSize("1075px", "498px");
+        win.setSize("1060px", "498px");
         wbLookupScreen.setWindow(win);
         win.setContent(wbLookupScreen);
         try {
@@ -1007,7 +1007,7 @@ public class WorksheetItemTabUI extends Screen {
                 qcLookupScreen.enableMultiSelect(true);
             }
 
-            win = new ModalWindow();
+            win = new ModalWindow(false);
             win.setName(Messages.get().QCLookup());
             win.setSize("735px", "360px");
             qcLookupScreen.setWindow(win);
