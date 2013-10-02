@@ -67,6 +67,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
@@ -518,19 +519,26 @@ public class FinalReportSDWISScreen extends Screen {
 
         window.setBusy(Messages.get().retrSamples());
 
-        try {
-            list = FinalReportService.get().getSampleSDWISList(query);
-            if (list.size() > 0) {
-                loadDeck(list);
-                setResults(list);
-            } else {
-                window.setError(Messages.get().noSamplesFoundChangeSearch());
-                return;
+        FinalReportService.get().getSampleSDWISList(query, new AsyncCallback<ArrayList<FinalReportWebVO>>() {
+
+            @Override
+            public void onSuccess(ArrayList<FinalReportWebVO> result) {
+                if (result.size() > 0) {
+                    loadDeck(result);
+                    setResults(result);
+                } else {
+                    window.setError(Messages.get().noSamplesFoundChangeSearch());
+                }
+                window.clearStatus();
             }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
+
+            @Override
+            public void onFailure(Throwable caught) {
+                window.clearStatus();
+                Window.alert(caught.getMessage());
+            }
+        });
+
     }
 
     /**
@@ -608,18 +616,25 @@ public class FinalReportSDWISScreen extends Screen {
             window.setError(Messages.get().noSampleSelectedError());
             return;
         }
-        try {
-            window.setBusy(Messages.get().genReportMessage());
-            st = FinalReportService.get().runReportForWeb(query);
-            if (st.getStatus() == ReportStatus.Status.SAVED) {
-                url = "/openelisweb/openelisweb/report?file=" + st.getMessage();
-                Window.open(URL.encode(url), "FinalReport", null);
+
+        window.setBusy(Messages.get().genReportMessage());
+        FinalReportService.get().runReportForWeb(query,new AsyncCallback<ReportStatus>() {
+            @Override
+            public void onSuccess(ReportStatus result) {
+                if (result.getStatus() == ReportStatus.Status.SAVED) {
+                    String url = "/openelisweb/openelisweb/report?file=" + result.getMessage();
+                    Window.open(URL.encode(url), "FinalReport", null);
+                }
+                window.clearStatus();
             }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        
-        window.clearStatus();
+
+            @Override
+            public void onFailure(Throwable caught) {
+                window.clearStatus();
+                Window.alert(caught.getMessage());
+            }
+        });
+
     }
 
     private ArrayList<TableDataRow> getTableModel() {
