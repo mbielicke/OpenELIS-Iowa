@@ -53,7 +53,6 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
@@ -343,7 +342,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                     model = new ArrayList<Item<Integer>>();
                     users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (SystemUserVO user : users)
-                        model.add(new Item(user.getId(), user.getLoginName()));
+                        model.add(new Item<Integer>(user.getId(), user.getLoginName()));
                     systemUserId.showAutoMatches(model);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -667,6 +666,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     /*
      * basic button methods
      */
+    @SuppressWarnings("unused")
     @UiHandler("query")
     protected void query(ClickEvent event) {
         manager = null;
@@ -678,16 +678,19 @@ public class WorksheetBuilderScreenUI extends Screen {
         window.setDone(Messages.get().enterFieldsToQuery());
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("previous")
     protected void previous(ClickEvent event) {
         nav.previous();
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("next")
     protected void next(ClickEvent event) {
         nav.next();
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("add")
     protected void add(ClickEvent event) {
         sampleManagers.clear();
@@ -704,6 +707,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         window.setDone(Messages.get().enterInformationPressCommit());
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("update")
     protected void update(ClickEvent event) {
         window.setBusy(Messages.get().lockForUpdate());
@@ -722,6 +726,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         window.clearStatus();
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
         finishEditing();
@@ -793,6 +798,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         }
     }
     
+    @SuppressWarnings("unused")
     @UiHandler("abort")
     protected void abort(ClickEvent event) {
         finishEditing();
@@ -875,6 +881,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                   hist);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fields;
         ArrayList<SystemUserVO> userList;
@@ -995,6 +1002,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         return true;
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("lookupWorksheetButton")
     protected void openWorksheetLookup(ClickEvent event) {
         ModalWindow modal;
@@ -1192,7 +1200,6 @@ public class WorksheetBuilderScreenUI extends Screen {
 
     private void getSystemUserFromSelection() {
         AutoCompleteValue row;
-        SystemUserVO data;
         
         row = systemUserId.getValue();
         if (row == null || row.getId() == null) {
