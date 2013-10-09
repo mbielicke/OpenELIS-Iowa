@@ -230,7 +230,8 @@ public class WorksheetItemTabUI extends Screen {
                 } else if (event.getCol() == 6) {
                     data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
                                                                                                 .getData());
-                    if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
+                    if (data.getQcLotId() != null ||
+                        Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
                         Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId()))
                         event.cancel();
                 }
@@ -253,13 +254,19 @@ public class WorksheetItemTabUI extends Screen {
                 waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)row.getData());
                 switch (c) {
                     case 2:
-                        waVDO.setQcLotId(((AutoCompleteValue)val).getId());
+                        if (val != null)
+                            waVDO.setQcLotId(((AutoCompleteValue)val).getId());
+                        else
+                            waVDO.setQcLotId(null);
                         break;
                     case 3:
                         waVDO.setWorksheetAnalysisId((Integer)val);
                         break;
                     case 6:
-                        waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
+                        if (val != null)
+                            waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
+                        else
+                            waVDO.setUnitOfMeasureId(null);
                         break;
                 }
             }
@@ -585,7 +592,10 @@ public class WorksheetItemTabUI extends Screen {
                             waDO1 = displayedManager.analysis.get(wiDO1, a);
                             waDO2 = manager.analysis.get(wiDO2, a);
                             if (DataBaseUtil.isDifferent(waDO1.getAccessionNumber(), waDO2.getAccessionNumber()) ||
-                                DataBaseUtil.isDifferent(waDO1.getStatusId(), waDO2.getStatusId())) {
+                                DataBaseUtil.isDifferent(waDO1.getDescription(), waDO2.getDescription()) ||
+                                DataBaseUtil.isDifferent(waDO1.getWorksheetAnalysisId(), waDO2.getWorksheetAnalysisId()) ||
+                                DataBaseUtil.isDifferent(waDO1.getStatusId(), waDO2.getStatusId()) ||
+                                DataBaseUtil.isDifferent(waDO1.getUnitOfMeasureId(), waDO2.getUnitOfMeasureId())) {
                                 dataChanged = true;
                                 break items;
                             }
