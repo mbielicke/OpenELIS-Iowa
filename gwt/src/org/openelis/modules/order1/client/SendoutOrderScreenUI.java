@@ -1298,6 +1298,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected void duplicate() {
         try {
             manager = OrderService1.get().duplicate(manager.getOrder().getId());
+            //the screen is in add state, so we need the cache here
+            buildCache();
             setData();
             setState(ADD);
             fireDataChange();
