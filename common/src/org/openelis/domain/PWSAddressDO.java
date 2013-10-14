@@ -34,19 +34,21 @@ public class PWSAddressDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id,tinwsysIsNumber;
+    protected Integer         tinwslecIsNumber, tinlgentIsNumber, tinwsysIsNumber;
 
     protected String          typeCode, activeIndCd, name, addrLineOneTxt, addrLineTwoTxt,
-                              addressCityName, addressStateCode, addressZipCode, stateFipsCode, phoneNumber;
+                    addressCityName, addressStateCode, addressZipCode, stateFipsCode, phoneNumber;
 
     public PWSAddressDO() {
     }
 
-    public PWSAddressDO(Integer id, Integer tinwsysIsNumber, String typeCode, String activeIndCd,
-                        String name, String addrLineOneTxt, String addrLineTwoTxt,
-                        String addressCityName, String addressStateCode, String addressZipCode,
-                        String stateFipsCode, String phoneNumber) {
-        setId(id);
+    public PWSAddressDO(Integer tinwslecIsNumber, Integer tinlgentIsNumber,
+                        Integer tinwsysIsNumber, String typeCode, String activeIndCd, String name,
+                        String addrLineOneTxt, String addrLineTwoTxt, String addressCityName,
+                        String addressStateCode, String addressZipCode, String stateFipsCode,
+                        String phoneNumber) {
+        setTinwslecIsNumber(tinwslecIsNumber);
+        setTinlgentIsNumber(tinlgentIsNumber);
         setTinwsysIsNumber(tinwsysIsNumber);
         setTypeCode(typeCode);
         setActiveIndCd(activeIndCd);
@@ -61,12 +63,21 @@ public class PWSAddressDO extends DataObject {
         _changed = false;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getTinwslecIsNumber() {
+        return tinwslecIsNumber;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setTinwslecIsNumber(Integer tinwslecIsNumber) {
+        this.tinwslecIsNumber = tinwslecIsNumber;
+        _changed = true;
+    }
+
+    public Integer getTinlgentIsNumber() {
+        return tinlgentIsNumber;
+    }
+
+    public void setTinlgentIsNumber(Integer tinlgentIsNumber) {
+        this.tinlgentIsNumber = tinlgentIsNumber;
         _changed = true;
     }
 

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PWSDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -35,4 +36,7 @@ public interface PWSServiceIntAsync {
 
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
+    void importFiles(AsyncCallback<Void> callback);
+    
+    void getStatus(AsyncCallback<ReportStatus> callback);
 }

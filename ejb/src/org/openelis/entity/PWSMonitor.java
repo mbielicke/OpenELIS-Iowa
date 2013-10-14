@@ -9,9 +9,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -19,19 +18,29 @@ import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.utils.AuditUtil;
 
-@NamedQuery(name = "PWSMonitor.FetchByTinwsysIsNumber",
-           query = "select new org.openelis.domain.PWSMonitorDO(p.id, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name," +
-                   "p.tiaanlgpTiaanlytName, p.numberSamples, p.compBeginDate, p.compEndDate, p.frequencyName, p.periodName)"
-                 + " from PWSMonitor p where p.tinwsysIsNumber = :tinwsysIsNumber")
+@NamedQueries({
+               @NamedQuery(name = "PWSMonitor.FetchByTinwsysIsNumber",
+                           query = "select new org.openelis.domain.PWSMonitorDO(p.tiamrtaskIsNumber, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name,"
+                                   + "p.tiaanlgpTiaanlytName, p.numberSamples, p.compBeginDate, p.compEndDate, p.frequencyName, p.periodName)"
+                                   + " from PWSMonitor p where p.tinwsysIsNumber = :tinwsysIsNumber"),
+               @NamedQuery(name = "PWSMonitor.FetchByTiamrtaskIsNumber",
+                           query = "select new org.openelis.domain.PWSMonitorDO(p.tiamrtaskIsNumber, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name,"
+                                   + "p.tiaanlgpTiaanlytName, p.numberSamples, p.compBeginDate, p.compEndDate, p.frequencyName, p.periodName)"
+                                   + " from PWSMonitor p where p.tiamrtaskIsNumber = :tiamrtaskIsNumber"),
+               @NamedQuery(name = "PWSMonitor.FetchAll",
+                           query = "select new org.openelis.domain.PWSMonitorDO(p.tiamrtaskIsNumber, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name,"
+                                   + "p.tiaanlgpTiaanlytName, p.numberSamples, p.compBeginDate, p.compEndDate, p.frequencyName, p.periodName)"
+                                   + " from PWSMonitor p"),
+               @NamedQuery(name = "PWSMonitor.DeleteList",
+                           query = "delete from PWSMonitor p where p.tiamrtaskIsNumber in ( :deleteList )")})
 @Entity
 @Table(name = "pws_monitor")
 @EntityListeners({AuditUtil.class})
 public class PWSMonitor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    @Column(name = "tiamrtask_is_number")
+    private Integer tiamrtaskIsNumber;
 
     @Column(name = "tinwsys_is_number")
     private Integer tinwsysIsNumber;
@@ -60,13 +69,13 @@ public class PWSMonitor {
     @Column(name = "period_name")
     private String  periodName;
 
-    public Integer getId() {
-        return id;
+    public Integer getTiamrtaskIsNumber() {
+        return tiamrtaskIsNumber;
     }
 
-    protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id, this.id))
-            this.id = id;
+    public void setTiamrtaskIsNumber(Integer tiamrtaskIsNumber) {
+        if (DataBaseUtil.isDifferent(tiamrtaskIsNumber, this.tiamrtaskIsNumber))
+            this.tiamrtaskIsNumber = tiamrtaskIsNumber;
     }
 
     public Integer getTinwsysIsNumber() {
