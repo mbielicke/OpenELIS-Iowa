@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/akampoow/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -5108,6 +5108,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Group")
   @Key("gen.group")
   String gen_group();
+
+  /**
+   * Translated "Initializing...".
+   * 
+   * @return translated "Initializing..."
+   */
+  @DefaultMessage("Initializing...")
+  @Key("gen.initializing")
+  String gen_initializing();
 
   /**
    * Translated "Internal".

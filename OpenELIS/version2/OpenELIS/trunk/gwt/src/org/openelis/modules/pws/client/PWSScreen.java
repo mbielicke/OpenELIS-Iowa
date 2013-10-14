@@ -25,18 +25,15 @@
  */
 package org.openelis.modules.pws.client;
 
+import static org.openelis.modules.main.client.Logger.*;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -57,7 +54,14 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.PWSManager;
 import org.openelis.meta.PWSMeta;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.widget.WindowInt;
@@ -68,8 +72,10 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Action> {
 
@@ -77,38 +83,39 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
         SELECT
     };
 
-    private PWSManager       manager;
-    protected Tabs           tab;
-    private ModulePermission userPermission;
+    private PWSManager             manager;
+    protected Tabs                 tab;
+    private ModulePermission       userPermission;
 
-    private ScreenNavigator  nav;
+    private ScreenNavigator        nav;
 
-    private CalendarLookUp   effBeginDt, effEndDt;
-    private TextBox          number0, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
-                             dPwsStTypeCd, activityStatusCd;
-    private TextBox<Integer> dPopulationCount, startDay, startMonth, endDay, endMonth;
-    private TextArea         activityRsnTxt;
-    private AppButton        queryButton, previousButton, nextButton, commitButton, abortButton,
-                             selectButton;
-    private TabPanel         tabPanel;
-    private ButtonGroup      atoz;
-    private MonitorTab       monitorTab;
-    private FacilityTab      facilityTab;
-    private AddressTab       addressTab;
-    private String           pwsNumber0;
-    private MenuItem         parse;
+    private CalendarLookUp         effBeginDt, effEndDt;
+    private TextBox                number0, alternateStNum, name, dPrinCitySvdNm, dPrinCntySvdNm,
+                    dPwsStTypeCd, activityStatusCd;
+    private TextBox<Integer>       dPopulationCount, startDay, startMonth, endDay, endMonth;
+    private TextArea               activityRsnTxt;
+    private AppButton              queryButton, previousButton, nextButton, commitButton,
+                    abortButton, selectButton;
+    private TabPanel               tabPanel;
+    private ButtonGroup            atoz;
+    private MonitorTab             monitorTab;
+    private FacilityTab            facilityTab;
+    private AddressTab             addressTab;
+    private String                 pwsNumber0;
+    private MenuItem               parse;
+    private StatusBarPopupScreenUI statusScreen;
 
     private enum Tabs {
         FACILITY, ADDRESS, MONITOR
     };
 
     public PWSScreen(WindowInt window) throws Exception {
-        this(null,window);
+        this(null, window);
     }
 
-    public PWSScreen(String pwsNumber0,WindowInt window) throws Exception {
+    public PWSScreen(String pwsNumber0, WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(PWSDef.class));
-        
+
         setWindow(window);
 
         userPermission = UserCache.getPermission().getModule("pws");
@@ -194,11 +201,11 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             });
         } else
             selectButton.setVisible(false);
-                
+
         parse = (MenuItem)def.getWidget("parse");
         addScreenHandler(parse, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                //parse();
+                parse();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -565,7 +572,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
 
                 field = new QueryData();
                 field.setKey(PWSMeta.getName());
-                field.setQuery(((AppButton)event.getSource()).action);
+                field.setQuery( ((AppButton)event.getSource()).action);
                 field.setType(QueryData.Type.STRING);
 
                 query = new Query();
@@ -582,7 +589,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
                 }
             }
         });
-        
+
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
 
@@ -702,17 +709,72 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
                 break;
         }
     }
-    
-    /*
+
+    /**
+     * creates a popup that shows the progress of parsing the PWS files
+     */
     private void parse() {
-        try {
-            PWSService.get().parse();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
+        final PopupPanel statusPanel;
+
+        if (statusScreen == null)
+            statusScreen = new StatusBarPopupScreenUI();
+
+        /*
+         * initialize and show the popup screen
+         */
+        statusPanel = new PopupPanel();
+        statusPanel.setSize("450px", "125px");
+        statusPanel.setWidget(statusScreen);
+        statusPanel.setPopupPosition(this.getAbsoluteLeft(), this.getAbsoluteTop());
+        statusPanel.setModal(true);
+        statusPanel.show();
+        statusScreen.setStatus(null);
+
+        /*
+         * Read pws files and update database. Hide popup when database is
+         * updated successfully or error is thrown.
+         */
+        PWSService.get().importFiles(new AsyncCallback<Void>() {
+            public void onSuccess(Void result) {
+                statusPanel.hide();
+                statusScreen.setStatus(null);
+            }
+
+            public void onFailure(Throwable e) {
+                statusPanel.hide();
+                statusScreen.setStatus(null);
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        });
+
+        /*
+         * refresh the status of reading the files and updating the database
+         * every second, until the process successfully completes or is aborted
+         * because of an error
+         */
+        Timer timer = new Timer() {
+            public void run() {
+                ReportStatus status;
+                try {
+                    status = PWSService.get().getStatus();
+                    /*
+                     * the status only needs to be refreshed while the status
+                     * panel is showing because once the job is finished, the
+                     * panel is closed
+                     */
+                    if (statusPanel.isShowing()) {
+                        statusScreen.setStatus(status);
+                        this.schedule(1000);
+                    }
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+        };
+        timer.schedule(1000);
     }
-    */
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());

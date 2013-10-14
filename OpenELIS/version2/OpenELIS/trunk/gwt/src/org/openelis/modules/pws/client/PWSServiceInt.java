@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PWSDO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
@@ -27,9 +27,6 @@ public interface PWSServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> query(Query query) throws Exception;
 
-    //
-    // support for OrganizationContactManager and OrganizationParameterManager
-    //
     PWSFacilityManager fetchFacilityByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
 
     PWSAddressManager fetchAddressByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
@@ -38,4 +35,7 @@ public interface PWSServiceInt extends XsrfProtectedService {
 
     PWSDO fetchPwsByNumber0(String pwsNumber0) throws Exception;
 
+    void importFiles() throws Exception;
+
+    ReportStatus getStatus() throws Exception;
 }
