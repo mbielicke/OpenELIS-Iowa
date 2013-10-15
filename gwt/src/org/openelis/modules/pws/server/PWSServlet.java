@@ -145,6 +145,8 @@ public class PWSServlet extends RemoteServlet implements PWSServiceInt {
             pwsFileImport.importFiles();
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
+        } catch (Throwable th) {
+            throw serializeForGWT(th);
         }
     }
 

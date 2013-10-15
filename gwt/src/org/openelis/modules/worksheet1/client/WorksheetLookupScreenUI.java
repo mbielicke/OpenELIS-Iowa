@@ -26,6 +26,7 @@
 package org.openelis.modules.worksheet1.client;
 
 import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 
@@ -249,8 +250,11 @@ public class WorksheetLookupScreenUI extends Screen
     @UiHandler("search")
     protected void executeQuery(ClickEvent event) {
         Query query;
+        Validation validation;
 
-        if (!validate()) {
+        validation = validate();
+        
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }

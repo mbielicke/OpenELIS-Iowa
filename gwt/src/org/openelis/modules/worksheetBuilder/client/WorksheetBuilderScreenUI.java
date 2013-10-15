@@ -28,6 +28,7 @@ package org.openelis.modules.worksheetBuilder.client;
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
@@ -729,10 +731,14 @@ public class WorksheetBuilderScreenUI extends Screen {
     @SuppressWarnings("unused")
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
+        Validation validation;
+        
         finishEditing();
         clearErrors();
         
-        if (!validate()) {
+        validation = validate();
+        
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }

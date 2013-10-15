@@ -25,6 +25,8 @@
  */
 package org.openelis.modules.note.client;
 
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+
 import java.util.ArrayList;
 
 import org.openelis.cache.CategoryCache;
@@ -253,17 +255,19 @@ public abstract class EditNoteLookupUI extends Screen {
         return hasSubject;
     }
 
-    public boolean validate() {
+    public Validation validate() {
+        Validation valid = new Validation();
+        
         if (hasSubject) {
             if (DataBaseUtil.isEmpty(subject.getValue()) && !DataBaseUtil.isEmpty(text.getValue())) {
                 subject.addException(new FieldErrorException(Messages.get()
                                                                      .fieldRequiredException(), ""));
                 window.setError(Messages.get().correctErrors());
-                return false;
+                valid.setStatus(Validation.Status.ERRORS);
             }
         }
 
-        return true;
+        return valid;
     }
 
     /**
@@ -365,7 +369,7 @@ public abstract class EditNoteLookupUI extends Screen {
         String trimText;
 
         clearErrors();
-        if ( !validate())
+        if (validate().getStatus() != VALID)
             return;
 
         noteSubject = subject.getValue();

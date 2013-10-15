@@ -28,6 +28,7 @@ package org.openelis.modules.neonatalScreeningSampleLogin.client;
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1874,9 +1875,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
+        Validation validation;
+        
         finishEditing();
+        
+        validation = validate();
 
-        if ( !validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }
