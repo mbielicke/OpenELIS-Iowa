@@ -32,6 +32,7 @@ import static org.openelis.ui.screen.State.DEFAULT;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
 import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -636,10 +637,14 @@ public class InternalOrderScreenUI extends Screen {
     }
 
     private void commit(boolean ignoreWarning) {
+        Validation validation;
+        
         finishEditing();
         clearErrors();
+        
+        validation = validate();
 
-        if ( !validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().gen_correctErrors());
             return;
         }

@@ -50,8 +50,10 @@ import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
+import org.openelis.ui.screen.Screen.Validation.Status;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
+import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -406,17 +408,17 @@ public class StorageTabUI extends Screen {
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
-    public boolean validate() {
-        boolean isValid;
+    public Validation validate() {
         String uid;
         StorageViewDO data;
+        Validation validation;
 
-        isValid = true;
+        validation = new Validation();;
         /*
          * validate only if there's data loaded in the tab
          */
         if (displayedUid == null)
-            return isValid;
+            return validation;
 
         /*
          * validate the date range for each storage
@@ -430,11 +432,11 @@ public class StorageTabUI extends Screen {
                                    3,
                                    new Exception(Messages.get()
                                                          .storage_checkinDateAfterCheckoutDateException()));
-                isValid = false;
+                validation.setStatus(Status.ERRORS);
             }
         }
 
-        return isValid;
+        return validation;
     }
 
     @UiHandler("addStorageButton")

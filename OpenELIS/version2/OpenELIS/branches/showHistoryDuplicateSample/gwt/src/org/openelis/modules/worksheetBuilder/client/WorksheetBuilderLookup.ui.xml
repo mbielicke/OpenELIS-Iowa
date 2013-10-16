@@ -102,13 +102,13 @@ UIRF Software License are applicable instead of those above.
                   <ui:text from="{msg.status}:"/>
                 </td>
                 <td>
-                  <w:Dropdown ui:field="analysisStatusId" width="130px" case="MIXED" field="Integer"/>
+                  <w:Dropdown ui:field="analysisStatusId" width="132px" case="MIXED" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.sampleType}:"/>
                 </td>
                 <td>
-                  <w:Dropdown ui:field="typeOfSampleId" width="175px" case="MIXED" field="Integer"/>
+                  <w:Dropdown ui:field="typeOfSampleId" width="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td>
                   <w:Button ui:field="search" leftIcon="{res.style.findIcon}" text="{msg.search}"/>
@@ -119,13 +119,13 @@ UIRF Software License are applicable instead of those above.
                   <ui:text from="{msg.receivedDate}:"/>
                 </td>
         	  	<td>
-                  <c:Calendar ui:field="receivedDate" width="130px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+                  <c:Calendar ui:field="receivedDate" width="135px" begin="0" end="4"/>
                 </td>
       	  	    <td class="{res.style.Prompt}">
                   <ui:text from="{msg.enteredDate}:"/>
                 </td>
       	  	    <td>
-                  <c:Calendar ui:field="enteredDate" width="130px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+                  <c:Calendar ui:field="enteredDate" width="135px" begin="0" end="4"/>
                 </td>
               </tr>
             </table>
