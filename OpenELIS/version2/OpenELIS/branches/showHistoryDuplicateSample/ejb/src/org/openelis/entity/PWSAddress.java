@@ -4,32 +4,43 @@ package org.openelis.entity;
  * PWSAddress Entity POJO for database
  */
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 
-@NamedQuery(name = "PWSAddress.FetchByTinwsysIsNumber",
-           query = "select new org.openelis.domain.PWSAddressDO(p.id, p.tinwsysIsNumber," +
-                   "p.typeCode, p.activeIndCd,p.name, p.addrLineOneTxt, p.addrLineTwoTxt," +
-            	   "p.addressCityName, p.addressStateCode, p.addressZipCode,p.stateFipsCode, p.phoneNumber)"
-                 + " from PWSAddress p where p.tinwsysIsNumber = :tinwsysIsNumber")
+@NamedQueries({
+               @NamedQuery(name = "PWSAddress.FetchByTinwsysIsNumber",
+                           query = "select new org.openelis.domain.PWSAddressDO(p.pk.tinwslecIsNumber, p.pk.tinlgentIsNumber, p.tinwsysIsNumber,"
+                                   + "p.typeCode, p.activeIndCd,p.name, p.addrLineOneTxt, p.addrLineTwoTxt,"
+                                   + "p.addressCityName, p.addressStateCode, p.addressZipCode,p.stateFipsCode, p.phoneNumber)"
+                                   + " from PWSAddress p where p.tinwsysIsNumber = :tinwsysIsNumber"),
+               @NamedQuery(name = "PWSAddress.FetchByTinwslecIsNumberAndTinlgentIsNumber",
+                           query = "select new org.openelis.domain.PWSAddressDO(p.pk.tinwslecIsNumber, p.pk.tinlgentIsNumber, p.tinwsysIsNumber,"
+                                   + "p.typeCode, p.activeIndCd,p.name, p.addrLineOneTxt, p.addrLineTwoTxt,"
+                                   + "p.addressCityName, p.addressStateCode, p.addressZipCode,p.stateFipsCode, p.phoneNumber)"
+                                   + " from PWSAddress p where p.pk.tinwslecIsNumber = :tinwslecIsNumber and p.pk.tinlgentIsNumber = :tinlgentIsNumber"),
+               @NamedQuery(name = "PWSAddress.FetchAll",
+                           query = "select new org.openelis.domain.PWSAddressDO(p.pk.tinwslecIsNumber, p.pk.tinlgentIsNumber, p.tinwsysIsNumber,"
+                                   + "p.typeCode, p.activeIndCd,p.name, p.addrLineOneTxt, p.addrLineTwoTxt,"
+                                   + "p.addressCityName, p.addressStateCode, p.addressZipCode,p.stateFipsCode, p.phoneNumber)"
+                                   + " from PWSAddress p")})
 @Entity
 @Table(name = "pws_address")
 @EntityListeners({AuditUtil.class})
 public class PWSAddress {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Integer id;
+    @EmbeddedId
+    private PK      pk;
 
     @Column(name = "tinwsys_is_number")
     private Integer tinwsysIsNumber;
@@ -64,13 +75,38 @@ public class PWSAddress {
     @Column(name = "phone_number")
     private String  phoneNumber;
 
-    public Integer getId() {
-        return id;
+    public PK getPk() {
+        return pk;
     }
 
-    protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id, this.id))
-            this.id = id;
+    public void setPk(PK pk) {
+        this.pk = pk;
+    }
+
+    public Integer getTinwslecIsNumber() {
+        if (pk == null)
+            pk = new PK();
+        return pk.tinwslecIsNumber;
+    }
+
+    public void setTinwslecIsNumber(Integer tinwslecIsNumber) {
+        if (pk == null)
+            pk = new PK();
+        if (DataBaseUtil.isDifferent(tinwslecIsNumber, this.pk.tinwslecIsNumber))
+            this.pk.tinwslecIsNumber = tinwslecIsNumber;
+    }
+
+    public Integer getTinlgentIsNumber() {
+        if (pk == null)
+            pk = new PK();
+        return pk.tinlgentIsNumber;
+    }
+
+    public void setTinlgentIsNumber(Integer tinlgentIsNumber) {
+        if (pk == null)
+            pk = new PK();
+        if (DataBaseUtil.isDifferent(tinlgentIsNumber, this.pk.tinlgentIsNumber))
+            this.pk.tinlgentIsNumber = tinlgentIsNumber;
     }
 
     public Integer getTinwsysIsNumber() {
@@ -170,5 +206,51 @@ public class PWSAddress {
     public void setPhoneNumber(String phoneNumber) {
         if (DataBaseUtil.isDifferent(phoneNumber, this.phoneNumber))
             this.phoneNumber = phoneNumber;
+    }
+
+    @Embeddable
+    public static class PK implements Serializable {
+
+        @Column(name = "tinwslec_is_number")
+        private Integer           tinwslecIsNumber;
+
+        @Column(name = "tinlgent_is_number")
+        private Integer           tinlgentIsNumber;
+
+        private static final long serialVersionUID = 1L;
+
+        public PK() {
+        }
+
+        public PK(Integer tinwslecIsNumber, Integer tinlgentIsNumber) {
+            this.tinwslecIsNumber = tinwslecIsNumber;
+            this.tinlgentIsNumber = tinlgentIsNumber;
+        }
+
+        public Integer getTinwslecIsNumber() {
+            return tinwslecIsNumber;
+        }
+
+        public void setTinwslecIsNumber(Integer tinwslecIsNumber) {
+            this.tinwslecIsNumber = tinwslecIsNumber;
+        }
+
+        public Integer getTinlgentIsNumber() {
+            return tinlgentIsNumber;
+        }
+
+        public void setTinlgentIsNumber(Integer tinlgentIsNumber) {
+            this.tinlgentIsNumber = tinlgentIsNumber;
+        }
+
+        public int hashCode() {
+            return tinwslecIsNumber.hashCode() * 200 + tinlgentIsNumber.hashCode();
+        }
+
+        public boolean equals(Object arg) {
+            return (arg instanceof PK &&
+                    !DataBaseUtil.isDifferent( ((PK)arg).tinwslecIsNumber, tinwslecIsNumber) && !DataBaseUtil.isDifferent( ((PK)arg).tinlgentIsNumber,
+                                                                                                                          tinlgentIsNumber));
+        }
     }
 }
