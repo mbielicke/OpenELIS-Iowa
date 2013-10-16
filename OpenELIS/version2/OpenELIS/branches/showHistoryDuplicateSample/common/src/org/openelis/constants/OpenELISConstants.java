@@ -5128,6 +5128,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_history();
 
   /**
+   * Translated "Initializing...".
+   * 
+   * @return translated "Initializing..."
+   */
+  @DefaultMessage("Initializing...")
+  @Key("gen.initializing")
+  String gen_initializing();
+
+  /**
    * Translated "Internal".
    * 
    * @return translated "Internal"
