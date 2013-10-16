@@ -50,7 +50,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -82,7 +82,7 @@ public class SampleManager1 implements Serializable {
     protected SampleEnvironmentalDO               sampleEnvironmental;
     protected SampleSDWISViewDO                   sampleSDWIS;
     protected SamplePrivateWellViewDO             samplePrivateWell;
-    protected SampleNeonatalViewDO                sampleNeonatal;
+    protected SampleNeonatalDO                    sampleNeonatal;
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
@@ -142,7 +142,7 @@ public class SampleManager1 implements Serializable {
         return samplePrivateWell;
     }
 
-    public SampleNeonatalViewDO getSampleNeonatal() {
+    public SampleNeonatalDO getSampleNeonatal() {
         return sampleNeonatal;
     }
 
