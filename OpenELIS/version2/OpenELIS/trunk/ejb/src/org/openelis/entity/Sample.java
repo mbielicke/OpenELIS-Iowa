@@ -77,6 +77,12 @@ import org.openelis.utils.Auditable;
                         "receivedById, collectionDate, collectionTime, statusId, packageId," +
                         "clientReference, releasedDate)"
                       + " from Sample where accessionNumber = :accession"),                     
+    @NamedQuery( name = "Sample.FetchByAccessionNumbers",
+                query = "select new org.openelis.domain.SampleDO(id, nextItemSequence, domain," +
+                        "accessionNumber, revision, orderId, enteredDate, receivedDate," +
+                        "receivedById, collectionDate, collectionTime, statusId, packageId," +
+                        "clientReference, releasedDate)"
+                      + " from Sample where accessionNumber in (:accessions)"),                     
     @NamedQuery( name = "Sample.FetchSDWISByReleased",
                 query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
                         "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +

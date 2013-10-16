@@ -60,7 +60,15 @@ import org.openelis.utils.Auditable;
                         "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
                         "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
                         "p.address.country)"
-                      + " from Patient p where p.id = :id")})
+                      + " from Patient p where p.id = :id"),
+     @NamedQuery(name = "Patient.FetchByIds",
+                query = "select distinct new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName," +
+                        "p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
+                        "p.ethnicityId, p.address.multipleUnit, p.address.streetAddress," +
+                        "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
+                        "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
+                        "p.address.country)"
+                      + " from Patient p where p.id in (:ids)")})
 @Entity
 @Table(name = "patient")
 @EntityListeners( {AuditUtil.class})

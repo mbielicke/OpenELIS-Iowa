@@ -25,12 +25,12 @@
  */
 package org.openelis.bean;
 
+import static org.openelis.manager.SampleManager1Accessor.*;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -56,38 +56,25 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.PanelDO;
+import org.openelis.domain.PatientDO;
 import org.openelis.domain.ProjectViewDO;
+import org.openelis.domain.ProviderDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISDO;
-import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SectionDO;
-import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.domain.TestViewDO;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisQaEventManager;
-import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.AnalysisUserManager;
-import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.ExchangeCriteriaManager;
-import org.openelis.manager.ExchangeProfileManager;
-import org.openelis.manager.NoteManager;
-import org.openelis.manager.SampleEnvironmentalManager;
-import org.openelis.manager.SampleItemManager;
-import org.openelis.manager.SampleManager;
-import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.manager.SamplePrivateWellManager;
-import org.openelis.manager.SampleProjectManager;
-import org.openelis.manager.SampleQaEventManager;
-import org.openelis.manager.SampleSDWISManager;
+import org.openelis.manager.SampleManager1;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -125,6 +112,9 @@ public class DataExchangeXMLMapperBean {
     private QaEventBean              qaevent;
 
     @EJB
+    private TestBean                 test;
+
+    @EJB
     private AnalyteBean              analyte;
 
     @EJB
@@ -135,15 +125,13 @@ public class DataExchangeXMLMapperBean {
 
     @EJB
     private SectionCacheBean         sectionCache;
-    
+
     @EJB
     private PanelBean                panel;
 
+    private HashSet<Integer>         users, dicts, tests, methods, analytes, projects,
+                    organizations, qas, trailers, sections, panels;
     private static SimpleDateFormat  dateFormat, timeFormat;
-
-    private static final String      MESSAGE_TYPE = "result-out";
-
-    private static final Logger      log          = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -153,1587 +141,1122 @@ public class DataExchangeXMLMapperBean {
         }
     }
 
-    public Document getXML(SampleManager manager, ExchangeCriteriaManager exchangeCriteriaMan) throws Exception {
-        int i, j, k, l;
-        boolean sampleOverridden, analysisOverridden, showValue;
-        Integer typeId, dictId;
-        String testQuery[];
-        ArrayList<Integer> profileIds;
-        ArrayList<QueryData> fields;
-        HashSet<Integer> userIds, critTestIds, dictIds, testIds, methodIds, analyteIds,
-                         projIds, orgIds, qaIds, trailerIds, sectionIds, panelIds;
-        Document doc;
-        Element root, header, profiles, sampleNotes, anaNotes;
-        SystemUserVO user;
-        DictionaryDO dict;
-        ArrayList<AnalyteViewDO> analyteList;
-        ArrayList<ProjectViewDO> projList;
-        ArrayList<OrganizationViewDO> orgList;
-        ExchangeCriteriaViewDO criteria;
-        ExchangeProfileManager profileMan;
-        ExchangeProfileDO profile;
-        SampleDO sample;
-        SampleEnvironmentalDO env;
-        SamplePrivateWellViewDO well;
-        SampleSDWISViewDO sdwis;
-        PWSDO pwsDO;
-        SampleItemViewDO item;
-        SampleItemManager itemMan;
-        SampleProjectViewDO sampleProj;
-        SampleProjectManager projMan;
-        SampleOrganizationViewDO sampleOrg;
-        SampleOrganizationManager orgMan;
-        SampleQaEventManager sampleQaMan;
-        SampleQaEventViewDO sampleQa;
-        AuxDataManager auxDataMan;
-        AuxDataViewDO auxData;
-        NoteManager sampleNoteMan, anaNoteMan;
-        NoteViewDO note;
-        ArrayList<QaEventViewDO> qaList;
-        AnalysisViewDO analysis;
-        AnalysisManager anaMan;
-        TestViewDO testDO;
-        SectionViewDO sect;
-        ArrayList<TestTrailerDO> trailerList;
-        ArrayList<PanelDO> panelList;
-        ArrayList<MethodDO> methodList;
-        ResultViewDO result;
-        ArrayList<ResultViewDO> results;
-        AnalysisResultManager resultMan;
-        AnalysisUserManager anaUserMan;
-        AnalysisUserViewDO anaUser;
-        AnalysisQaEventManager anaQaMan;
-        AnalysisQaEventViewDO anaQa;
+    /**
+     * The method creates an XML doc from the sample manager information. The
+     * method uses several fields from the exchange criteria such as
+     * include-all-analyses, test-ids, etc. in creating the XML.
+     * 
+     * The produced XML segments such as analyses, tests, etc. are not nested
+     * inside their parent segments (no hierarchy), however the ids present in
+     * each segment can be used to nest the segments.
+     */
 
+    public Document getXML(SampleManager1 sm, ExchangeCriteriaManager cm) throws Exception {
+        Boolean sampleOverridden, showValue;
+        Document doc;
+        Element root, elm, elm1;
+        String testIds[];
+        ArrayList<Integer> profiles;
+        HashMap<Integer, Boolean> analyses;
+        HashSet<Integer> onlyTests;
+
+        /*
+         * bunch of lookup lists that we need through the code
+         */
+        profiles = new ArrayList<Integer>();
+        onlyTests = new HashSet<Integer>();
+        analyses = new HashMap<Integer, Boolean>();
+
+        /*
+         * this xml doc is for sending results
+         */
         doc = XMLUtil.createNew("message");
         root = doc.getDocumentElement();
-        root.setAttribute("type", MESSAGE_TYPE);
+        root.setAttribute("Type", "result-out");
 
-        profileIds = null;
-        critTestIds = null;
-        if (exchangeCriteriaMan != null) {
-            criteria = exchangeCriteriaMan.getExchangeCriteria();
-            header = getHeader(doc, criteria);
+        elm = createHeader(doc, cm.getExchangeCriteria());
+        root.appendChild(elm);
 
-            /*
-             * if all analyses are not to be included in the xml document then
-             * only the ones that have the test ids from the query defined in
-             * the exchange criteria are included
-             */
-            if ("N".equals(criteria.getIsAllAnalysesIncluded())) {
-                fields = criteria.getFields();
-                critTestIds = new HashSet<Integer>();
-                for (QueryData field : fields) {
-                    if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
-                        testQuery = field.getQuery().split(",");
-                        for (String tq : testQuery) {
-                            try {
-                                critTestIds.add(Integer.valueOf(tq));
-                            } catch (NumberFormatException e) {
-                                log.log(Level.SEVERE, "Invalid test id: " + tq, e);
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-
-            profileMan = exchangeCriteriaMan.getProfiles();
-
-            if (profileMan.count() > 0) {
-                profileIds = new ArrayList<Integer>();
-                profiles = doc.createElement("profiles");
-                for (i = 0; i < profileMan.count(); i++ ) {
-                    profile = profileMan.getProfileAt(i);
-                    profiles.appendChild(getProfile(doc, profile));
-                    profileIds.add(profile.getProfileId());
-                }
-                header.appendChild(profiles);
-            }
-
-            root.appendChild(header);
-        }
-
-        sample = manager.getSample();
-        root.appendChild(getSample(doc, sample));
-
-        userIds = new HashSet<Integer>();
-        userIds.add(sample.getReceivedById());
-
-        dictIds = new HashSet<Integer>();
-        dictIds.add(sample.getStatusId());
-
-        orgIds = new HashSet<Integer>();
         /*
-         * create element for the domain manager
+         * either export all the analyses or just the specified tests
          */
-        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(sample.getDomain())) {
-            env = ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental();
-            root.appendChild(getSampleEnviromental(doc, env));
-            if (env.getLocationAddress().getId() != null)
-                root.appendChild(getAddress(doc, env.getLocationAddress()));
-        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sample.getDomain())) {
-            well = ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell();
-            root.appendChild(getSamplePrivateWell(doc, well));
-
-            orgIds.add(well.getOrganizationId());
-
-            if (well.getReportToAddress().getId() != null)
-                root.appendChild(getAddress(doc, well.getReportToAddress()));
-
-            if (well.getLocationAddress().getId() != null)
-                root.appendChild(getAddress(doc, well.getLocationAddress()));
-        } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(sample.getDomain())) {
-            sdwis = ((SampleSDWISManager)manager.getDomainManager()).getSDWIS();
-            root.appendChild(getSampleSDWIS(doc, sdwis));
-            dictIds.add(sdwis.getSampleTypeId());
-            dictIds.add(sdwis.getSampleCategoryId());
-
-            pwsDO = pws.fetchById(sdwis.getPwsId());
-            root.appendChild(getPWS(doc, pwsDO));
+        if ("N".equals(cm.getExchangeCriteria().getIsAllAnalysesIncluded())) {
+            for (QueryData field : cm.getExchangeCriteria().getFields()) {
+                if (SampleMeta.getAnalysisTestId().equals(field.getKey())) {
+                    testIds = field.getQuery().split(",");
+                    for (String id : testIds)
+                        onlyTests.add(Integer.valueOf(id));
+                    break;
+                }
+            }
         }
 
-        sampleQaMan = manager.getQaEvents();
-        sampleOverridden = sampleQaMan.hasResultOverrideQA();
-        qaIds = new HashSet<Integer>();
-        for (i = 0; i < sampleQaMan.count(); i++ ) {
+        /*
+         * order of preference for translations
+         */
+        if (cm.getProfiles().count() > 0) {
+            elm1 = doc.createElement("profiles");
+            for (int i = 0; i < cm.getProfiles().count(); i++) {
+                elm1.appendChild(createProfile(doc, cm.getProfiles().getProfileAt(i)));
+                profiles.add(cm.getProfiles().getProfileAt(i).getProfileId());
+            }
+            elm.appendChild(elm1);
+        }
+
+        /*
+         * first level - sample, organizations, project ...
+         */
+        root.appendChild(createSample(doc, getSample(sm)));
+
+        if (getSampleEnvironmental(sm) != null) {
+            root.appendChild(createEnviromental(doc, getSampleEnvironmental(sm)));
+
+            if (getSampleEnvironmental(sm).getLocationAddress().getId() != null)
+                root.appendChild(createAddress(doc, getSampleEnvironmental(sm).getLocationAddress()));
+        } else if (getSamplePrivateWell(sm) != null) {
+            root.appendChild(createPrivateWell(doc, getSamplePrivateWell(sm)));
+
+            if (getSamplePrivateWell(sm).getReportToAddress().getId() != null)
+                root.appendChild(createAddress(doc, getSamplePrivateWell(sm).getReportToAddress()));
+
+            if (getSamplePrivateWell(sm).getLocationAddress().getId() != null)
+                root.appendChild(createAddress(doc, getSamplePrivateWell(sm).getLocationAddress()));
+        } else if (getSampleSDWIS(sm) != null) {
+            root.appendChild(createSDWIS(doc, getSampleSDWIS(sm)));
+            root.appendChild(createPWS(doc, pws.fetchById(getSampleSDWIS(sm).getPwsId())));
+        } else if (getSampleNeonatal(sm) != null) {
+            root.appendChild(createNeonatal(doc, getSampleNeonatal(sm)));
+
+            if (getSampleNeonatal(sm).getPatient() != null) {
+                root.appendChild(createPatient(doc, getSampleNeonatal(sm).getPatient()));
+
+                if (getSampleNeonatal(sm).getPatient().getAddress().getId() != null)
+                    root.appendChild(createAddress(doc, getSampleNeonatal(sm).getPatient()
+                                                                             .getAddress()));
+            }
+
+            if (getSampleNeonatal(sm).getNextOfKin() != null) {
+                root.appendChild(createPatient(doc, getSampleNeonatal(sm).getNextOfKin()));
+
+                if (getSampleNeonatal(sm).getNextOfKin().getAddress().getId() != null)
+                    root.appendChild(createAddress(doc, getSampleNeonatal(sm).getNextOfKin()
+                                                                             .getAddress()));
+            }
+
+            if (getSampleNeonatal(sm).getProviderId() != null)
+                root.appendChild(createProvider(doc, getSampleNeonatal(sm).getProvider()));
+        }
+
+        sampleOverridden = false;
+        if (getSampleQAs(sm) != null) {
+            for (SampleQaEventViewDO sq : getSampleQAs(sm)) {
+                root.appendChild(createSampleQaEvent(doc, sq));
+                if (Constants.dictionary().QAEVENT_OVERRIDE.equals(sq.getTypeId()))
+                    sampleOverridden = true;
+            }
+        }
+
+        if (getProjects(sm) != null) {
+            for (SampleProjectViewDO p : getProjects(sm))
+                root.appendChild(createSampleProject(doc, p));
+        }
+
+        if (getOrganizations(sm) != null) {
+            for (SampleOrganizationViewDO o : getOrganizations(sm))
+                root.appendChild(createSampleOrganization(doc, o));
+        }
+
+        if (getSampleExternalNote(sm) != null) {
             /*
-             * create elements for sample qa events
+             * put the sample note in its own group so it can be distinguished
+             * from analysis external notes
              */
-            sampleQa = sampleQaMan.getSampleQAAt(i);
-            root.appendChild(getSampleQaEvent(doc, sampleQa));
-
-            dictIds.add(sampleQa.getTypeId());
-            qaIds.add(sampleQa.getQaEventId());
+            elm = doc.createElement("sample_external_notes");
+            elm.appendChild(createNote(doc, getSampleExternalNote(sm)));
+            root.appendChild(elm);
         }
 
-        testIds = new HashSet<Integer>();
-        methodIds = new HashSet<Integer>();
-        analyteIds = new HashSet<Integer>();
-        trailerIds = new HashSet<Integer>();
-        sectionIds = new HashSet<Integer>();
-        panelIds = new HashSet<Integer>();
-        anaNotes = null;
+        if (getAuxilliary(sm) != null) {
+            for (AuxDataViewDO a : getAuxilliary(sm)) {
+                root.appendChild(createAuxData(doc, a));
+                if (Constants.dictionary().AUX_DICTIONARY.equals(a.getTypeId()) &&
+                    a.getValue() != null)
+                    root.appendChild(createLinkDictionary(doc,
+                                                          "aux_data_dictionary",
+                                                          a.getId(),
+                                                          Integer.valueOf(a.getValue())));
+            }
+        }
 
-        itemMan = manager.getSampleItems();
-        for (i = 0; i < itemMan.count(); i++ ) {
-            item = itemMan.getSampleItemAt(i);
-            root.appendChild(getSampleItem(doc, item));
+        /*
+         * second level - sample items
+         */
+        for (SampleItemViewDO item : getItems(sm))
+            root.appendChild(createItem(doc, item));
 
-            dictIds.add(item.getTypeOfSampleId());
-            if (item.getSourceOfSampleId() != null)
-                dictIds.add(item.getSourceOfSampleId());
-            if (item.getContainerId() != null)
-                dictIds.add(item.getContainerId());
-            if (item.getUnitOfMeasureId() != null)
-                dictIds.add(item.getUnitOfMeasureId());
-
-            anaMan = itemMan.getAnalysisAt(i);
-            for (j = 0; j < anaMan.count(); j++ ) {
-                analysis = anaMan.getAnalysisAt(j);
+        /*
+         * third level - analyses
+         */
+        if (getAnalyses(sm) != null) {
+            for (AnalysisViewDO a : getAnalyses(sm)) {
                 /*
-                 * the data for an analysis is not shown in the xml if it is
-                 * cancelled or its test id was not included in the query
-                 * defined in the exchange criteria, if the flag for not including
-                 * all analyses was true
+                 * skip cancelled and test id's that were in restricted list
                  */
-                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(analysis.getStatusId()) ||
-                    (critTestIds != null && !critTestIds.contains(analysis.getTestId())))
+                if (Constants.dictionary().ANALYSIS_CANCELLED.equals(a.getStatusId()) ||
+                    (!onlyTests.isEmpty() && !onlyTests.contains(a.getTestId())))
+                    continue;
+                root.appendChild(createAnalysis(doc, a));
+                analyses.put(a.getId(),
+                             Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()));
+            }
+        }
+
+        /*
+         * mark the analysis if it has overridden QA event
+         */
+        if (getAnalysisQAs(sm) != null) {
+            for (AnalysisQaEventViewDO aq : getAnalysisQAs(sm)) {
+                if (analyses.containsKey(aq.getAnalysisId())) {
+                    root.appendChild(createAnalysisQaEvent(doc, aq));
+                    if (Constants.dictionary().QAEVENT_OVERRIDE.equals(aq.getTypeId()))
+                        analyses.put(aq.getAnalysisId(), false);
+                }
+            }
+        }
+
+        /*
+         * fourth level - results
+         */
+        if (getResults(sm) != null) {
+            for (ResultViewDO r : getResults(sm)) {
+                /*
+                 * skip the results if analysis cancelled or we are not
+                 * reporting all the tests. don't show result value if analysis
+                 * is not released or overridden.
+                 */
+                showValue = analyses.get(r.getAnalysisId());
+                if (showValue == null)
                     continue;
 
-                anaQaMan = anaMan.getQAEventAt(j);
-                analysisOverridden = anaQaMan.hasResultOverrideQA();
-                for (k = 0; k < anaQaMan.count(); k++ ) {
-                    anaQa = anaQaMan.getAnalysisQAAt(k);
-                    root.appendChild(getAnalysisQaEvent(doc, anaQa));
-
-                    dictIds.add(anaQa.getTypeId());
-                    qaIds.add(anaQa.getQaEventId());
-                }
-
-                /*
-                 * create elements for analyses, tests and methods
-                 */
-
-                root.appendChild(getAnalysis(doc, analysis));
-
-                testDO = anaMan.getTestAt(j).getTest();
-                if ( !testIds.contains(testDO.getId())) {
-                    root.appendChild(getTest(doc, testDO));
-
-                    dictIds.add(testDO.getTestFormatId());
-                    if (testDO.getRevisionMethodId() != null)
-                        dictIds.add(testDO.getRevisionMethodId());
-                    dictIds.add(testDO.getReportingMethodId());
-                    dictIds.add(testDO.getSortingMethodId());
-
-                    if (testDO.getTestTrailerId() != null)
-                        trailerIds.add(testDO.getTestTrailerId());
-                }
-
-                testIds.add(analysis.getTestId());
-                methodIds.add(analysis.getMethodId());
-
-                if (analysis.getUnitOfMeasureId() != null)
-                    dictIds.add(analysis.getUnitOfMeasureId());
-                dictIds.add(analysis.getStatusId());
-
-                if (analysis.getSectionId() != null)
-                    sectionIds.add(analysis.getSectionId());
-                
-                if (analysis.getPanelId() != null)
-                    panelIds.add(analysis.getPanelId());
-
-                /*
-                 * create elements for results
-                 */
-                resultMan = anaMan.getAnalysisResultAt(j);
-                for (k = 0; k < resultMan.rowCount(); k++ ) {
-                    results = resultMan.getRowAt(k);
-                    for (l = 0; l < results.size(); l++ ) {
-                        result = results.get(l);
-
-                        /*
-                         * the values for those results are not shown, the
-                         * analysis for which has qa event(s) of type result
-                         * override or which belongs to a sample that has such
-                         * qa event(s) or the status is something other than
-                         * released
-                         */
-                        showValue = !sampleOverridden &&
-                                    !analysisOverridden &&
-                                    Constants.dictionary().ANALYSIS_RELEASED.equals(analysis.getStatusId());
-
-                        root.appendChild(getResult(doc, result, showValue));
-
-                        analyteIds.add(result.getAnalyteId());
-
-                        typeId = result.getTypeId();
-                        if (typeId != null)
-                            dictIds.add(typeId);
-
-                        if ( !showValue)
-                            continue;
-
-                        if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(typeId) &&
-                            result.getValue() != null) {
-                            dictId = Integer.valueOf(result.getValue());
-                            dictIds.add(dictId);
-                            /*
-                             * This element acts as the link between this result
-                             * and the dictionary entry that its value may be
-                             * the id of. Having this element makes it possible
-                             * to associate the value with its translation
-                             * without having to do look-ups involving the type
-                             * id and the dictionary id at the same time in the
-                             * xsl.
-                             */
-                            root.appendChild(getResultAuxDictionary(doc,
-                                                                    "result_dictionary",
-                                                                    result.getId(),
-                                                                    dictId));
-                        }
-                    }
-                }
-
-                /*
-                 * create elements for analysis users
-                 */
-                anaUserMan = anaMan.getAnalysisUserAt(j);
-                for (k = 0; k < anaUserMan.count(); k++ ) {
-                    anaUser = anaUserMan.getAnalysisUserAt(k);
-                    root.appendChild(getAnalysisUser(doc, anaUser));
-                    userIds.add(anaUser.getSystemUserId());
-                    if (anaUser.getActionId() != null)
-                        dictIds.add(anaUser.getActionId());
-                }
-
-                anaNoteMan = anaMan.getExternalNoteAt(j);
-                if (anaNoteMan.count() > 0) {
-                    if (anaNotes == null) {
-                        anaNotes = doc.createElement("analysis_external_notes");
-                        root.appendChild(anaNotes);
-                    }
-                    for (k = 0; k < anaNoteMan.count(); k++ ) {
-                        note = anaNoteMan.getNoteAt(k);
-                        anaNotes.appendChild(getNote(doc, note));
-                    }
+                root.appendChild(createResult(doc, r, showValue && !sampleOverridden));
+                if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(r.getTypeId()) &&
+                    r.getValue() != null && showValue && !sampleOverridden) {
+                    root.appendChild(createLinkDictionary(doc,
+                                                          "result_dictionary",
+                                                          r.getId(),
+                                                          Integer.valueOf(r.getValue())));
                 }
             }
         }
 
-        projMan = manager.getProjects();
-        projIds = new HashSet<Integer>();
-        for (i = 0; i < projMan.count(); i++ ) {
-            sampleProj = projMan.getProjectAt(i);
-            root.appendChild(getSampleProject(doc, sampleProj));
-            projIds.add(sampleProj.getProjectId());
-        }
-
-        orgMan = manager.getOrganizations();
-        for (i = 0; i < orgMan.count(); i++ ) {
-            sampleOrg = orgMan.getOrganizationAt(i);
-            root.appendChild(getSampleOrganization(doc, sampleOrg));
-            orgIds.add(sampleOrg.getOrganizationId());
-            dictIds.add(sampleOrg.getTypeId());
-        }
-
-        sampleNoteMan = manager.getExternalNote();
-        if (sampleNoteMan.count() > 0) {
-            sampleNotes = doc.createElement("sample_external_notes");
-            for (i = 0; i < sampleNoteMan.count(); i++ ) {
-                note = sampleNoteMan.getNoteAt(i);
-                sampleNotes.appendChild(getNote(doc, note));
-            }
-            root.appendChild(sampleNotes);
-        }
-
-        if (qaIds.size() > 0) {
-            try {
-                qaList = qaevent.fetchByIds(qaIds);
-                for (QaEventViewDO qa : qaList) {
-                    root.appendChild(getQaEvent(doc, qa));
-                    if (qa.getTestId() != null)
-                        testIds.add(qa.getTestId());
-                    dictIds.add(qa.getTypeId());
-                }
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch qa events", e);
+        if (getUsers(sm) != null) {
+            for (AnalysisUserViewDO u : getUsers(sm)) {
+                if (analyses.containsKey(u.getAnalysisId()))
+                    root.appendChild(createAnalysisUser(doc, u));
             }
         }
 
-        auxDataMan = manager.getAuxData();
-        for (i = 0; i < auxDataMan.count(); i++ ) {
-            auxData = auxDataMan.getAuxDataAt(i);
-            root.appendChild(getAuxData(doc, auxData));
-
-            dictIds.add(auxData.getTypeId());
-            analyteIds.add(auxData.getAnalyteId());
-
-            if (Constants.dictionary().AUX_DICTIONARY.equals(auxData.getTypeId()) &&
-                auxData.getValue() != null) {
-                dictId = Integer.valueOf(auxData.getValue());
-                dictIds.add(dictId);
-                /*
-                 * This element acts as the link between this aux data and the
-                 * dictionary entry that its value may be the id of. Having this
-                 * element makes it possible to associate the value with its
-                 * translation without having to do look-ups involving the type
-                 * id and the dictionary id at the same time in the xsl.
-                 */
-                root.appendChild(getResultAuxDictionary(doc,
-                                                        "aux_data_dictionary",
-                                                        auxData.getId(),
-                                                        dictId));
-            }
-        }
-
-        for (Integer id : dictIds) {
-            try {
-                dict = dictionaryCache.getById(id);
-                root.appendChild(getDictionary(doc, dict));
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch dictionary with id: " + id, e);
-            }
-        }
-
-        if (methodIds.size() > 0) {
-            try {
-                methodList = method.fetchByIds(methodIds);
-                for (MethodDO mtd : methodList)
-                    root.appendChild(getMethod(doc, mtd));
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch methods", e);
-            }
-        }
-
-        if (trailerIds.size() > 0) {
-            try {
-                trailerList = testTrailer.fetchByIds(trailerIds);
-                for (TestTrailerDO trailer : trailerList)
-                    root.appendChild(getTestTrailer(doc, trailer));
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch test trailers", e);
-            }
-        }
-
-        for (Integer id : sectionIds) {
-            try {
-                sect = sectionCache.getById(id);
-                root.appendChild(getSection(doc, sect));
-                if (sect.getOrganizationId() != null)
-                    orgIds.add(sect.getOrganizationId());
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch section with id: " + id, e);
-            }
-        }
-        
-        if (panelIds.size() > 0) {
-            try {
-                panelList = panel.fetchByIds(trailerIds);
-                for (PanelDO panel : panelList)
-                    root.appendChild(getPanel(doc, panel));
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch panels", e);
-            }
-        }
-
-        if (analyteIds.size() > 0) {
-            try {
-                analyteList = analyte.fetchByIds(analyteIds);
-                for (AnalyteViewDO ana : analyteList)
-                    root.appendChild(getAnalyte(doc, ana));
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch analytes", e);
-            }
-        }
-
-        if (projIds.size() > 0) {
-            try {
-                projList = project.fetchByIds(projIds);
-                for (ProjectViewDO proj : projList) {
-                    root.appendChild(getProject(doc, proj));
-                    userIds.add(proj.getOwnerId());
-                }
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch projects", e);
-            }
-        }
-
-        for (Integer id : userIds) {
-            try {
-                user = systemUserCache.getSystemUser(id);
-                root.appendChild(getSystemUser(doc, user));
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch system user with id: " + id, e);
-            }
-        }
-
-        if (orgIds.size() > 0) {
-            try {
-                orgList = organization.fetchByIds(orgIds);
-                for (OrganizationViewDO org : orgList) {
-                    root.appendChild(getOrganization(doc, org));
-                    root.appendChild(getAddress(doc, org.getAddress()));
-                }
-            } catch (Exception e) {
-                log.log(Level.SEVERE, "Could not fetch organizations", e);
-            }
-        }
-
-        if (profileIds != null && profileIds.size() > 0) {
+        if (getAnalysisExternalNotes(sm) != null) {
             /*
-             * add the translation mappings (external terms) for various
-             * reference tables
+             * put the analyses notes in its own group so it can be
+             * distinguished from sample external notes
              */
-            if (dictIds.size() > 0)
-                createTranslations(Constants.table().DICTIONARY,
-                                   profileIds,
-                                   dictIds,
-                                   "dictionary_translations",
-                                   doc,
-                                   root);
-
-            if (testIds.size() > 0)
-                createTranslations(Constants.table().TEST,
-                                   profileIds,
-                                   testIds,
-                                   "test_translations",
-                                   doc,
-                                   root);
-
-            if (methodIds.size() > 0)
-                createTranslations(Constants.table().METHOD,
-                                   profileIds,
-                                   methodIds,
-                                   "method_translations",
-                                   doc,
-                                   root);
-
-            if (analyteIds.size() > 0)
-                createTranslations(Constants.table().ANALYTE,
-                                   profileIds,
-                                   analyteIds,
-                                   "analyte_translations",
-                                   doc,
-                                   root);
-
-            if (orgIds.size() > 0)
-                createTranslations(Constants.table().ORGANIZATION,
-                                   profileIds,
-                                   orgIds,
-                                   "organization_translations",
-                                   doc,
-                                   root);
+            elm = null;
+            for (NoteViewDO n : getAnalysisExternalNotes(sm)) {
+                if (analyses.containsKey(n.getReferenceId())) {
+                    if (elm == null) {
+                        elm = doc.createElement("analysis_external_notes");
+                        root.appendChild(elm);
+                    }
+                    elm.appendChild(createNote(doc, n));
+                }
+            }
         }
 
+        /*
+         * lookup and output various referenced objects; order is important
+         */
+        if (projects != null) {
+            for (ProjectViewDO p : project.fetchByIds(projects))
+                root.appendChild(createProject(doc, p));
+        }
+
+        if (qas != null) {
+            for (QaEventViewDO qa : qaevent.fetchByIds(qas))
+                root.appendChild(createQaEvent(doc, qa));
+        }
+
+        if (tests != null) {
+            for (TestViewDO t : test.fetchByIds(tests))
+                root.appendChild(createTest(doc, t));
+        }
+
+        if (methods != null) {
+            for (MethodDO m : method.fetchByIds(methods))
+                root.appendChild(createMethod(doc, m));
+        }
+
+        if (trailers != null) {
+            for (TestTrailerDO t : testTrailer.fetchByIds(trailers))
+                root.appendChild(createTrailer(doc, t));
+        }
+
+        if (users != null) {
+            for (Integer id : users)
+                root.appendChild(createUser(doc, systemUserCache.getSystemUser(id)));
+        }
+
+        if (panels != null) {
+            for (PanelDO p : panel.fetchByIds(trailers))
+                root.appendChild(createPanel(doc, p));
+        }
+
+        if (sections != null) {
+            for (Integer id : sections)
+                root.appendChild(createSection(doc, sectionCache.getById(id)));
+        }
+
+        if (organizations != null) {
+            for (OrganizationViewDO org : organization.fetchByIds(organizations)) {
+                root.appendChild(createOrganization(doc, org));
+                root.appendChild(createAddress(doc, org.getAddress()));
+            }
+        }
+
+        if (analytes != null) {
+            for (AnalyteViewDO ana : analyte.fetchByIds(analytes))
+                root.appendChild(createAnalyte(doc, ana));
+        }
+
+        if (dicts != null) {
+            for (Integer id : dicts)
+                root.appendChild(createDictionary(doc, dictionaryCache.getById(id)));
+        }
+
+        /*
+         * add the translation mappings (external terms) for various reference
+         * tables
+         */
+        if (profiles != null && profiles.size() > 0) {
+            if (organizations.size() > 0) {
+                elm = createTranslations(Constants.table().ORGANIZATION,
+                                         organizations,
+                                         profiles,
+                                         "organization_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+
+            if (tests.size() > 0) {
+                elm = createTranslations(Constants.table().TEST,
+                                         tests,
+                                         profiles,
+                                         "test_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+
+            if (methods.size() > 0) {
+                elm = createTranslations(Constants.table().METHOD,
+                                         methods,
+                                         profiles,
+                                         "method_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+
+            if (analytes.size() > 0) {
+                elm = createTranslations(Constants.table().ANALYTE,
+                                         analytes,
+                                         profiles,
+                                         "analyte_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+
+            if (dicts.size() > 0) {
+                elm = createTranslations(Constants.table().DICTIONARY,
+                                         dicts,
+                                         profiles,
+                                         "dictionary_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+        }
         return doc;
     }
 
-    private Element getProfile(Document document, ExchangeProfileDO exchangeProfile) {
-        Element parent;
-        DictionaryDO dict;
+    /**
+     * creates and returns the following element: <header> <name></name>
+     * 
+     */
+    public Element createHeader(Document doc, ExchangeCriteriaViewDO criteria) throws Exception {
+        Element elm;
 
-        try {
-            dict = dictionaryCache.getById(exchangeProfile.getProfileId());
-            parent = document.createElement("profile");
-            parent.setTextContent(dict.getEntry());
-
-            return parent;
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Could not fetch dictionary with id: " +
-                                  exchangeProfile.getProfileId(), e);
-        }
-
-        return null;
-    }
-
-    public Element getSystemUser(Document document, SystemUserVO user) {
-        Element parent, child;
-
-        if (document == null || user == null)
+        if (criteria == null)
             return null;
 
-        parent = document.createElement("system_user");
-        parent.setAttribute("id", user.getId().toString());
+        elm = doc.createElement("header");
+        setAttribute(elm, "include_all_analyses", criteria.getIsAllAnalysesIncluded());
+        setText(doc, elm, "name", criteria.getName());
+        if (criteria.getEnvironmentId() != null)
+            setText(doc, elm, "environment", dictionaryCache.getById(criteria.getEnvironmentId())
+                                                            .getEntry());
 
-        if (user.getExternalId() != null) {
-            child = document.createElement("external_id");
-            child.setTextContent(user.getExternalId());
-            parent.appendChild(child);
-        }
-
-        child = document.createElement("login_name");
-        child.setTextContent(user.getLoginName());
-        parent.appendChild(child);
-
-        if (user.getLastName() != null) {
-            child = document.createElement("last_name");
-            child.setTextContent(user.getLastName());
-            parent.appendChild(child);
-        }
-
-        if (user.getFirstName() != null) {
-            child = document.createElement("first_name");
-            child.setTextContent(user.getFirstName());
-            parent.appendChild(child);
-        }
-
-        if (user.getInitials() != null) {
-            child = document.createElement("initials");
-            child.setTextContent(user.getInitials());
-            parent.appendChild(child);
-        }
-
-        return parent;
+        return elm;
     }
 
-    public Element getSample(Document document, SampleDO sample) {
-        Element parent, child;
+    public Element createProfile(Document doc, ExchangeProfileDO exchangeProfile) throws Exception {
+        Element elm;
 
-        if (document == null || sample == null)
-            return null;
+        elm = doc.createElement("profile");
+        if (exchangeProfile.getProfileId() != null)
+            elm.setTextContent(dictionaryCache.getById(exchangeProfile.getProfileId()).getEntry());
 
-        parent = document.createElement("sample");
-
-        parent.setAttribute("id", sample.getId().toString());
-        parent.setAttribute("domain", sample.getDomain());
-        parent.setAttribute("accession_number", sample.getAccessionNumber().toString());
-        parent.setAttribute("revision", sample.getRevision().toString());
-
-        if (sample.getOrderId() != null)
-            parent.setAttribute("order_id", sample.getOrderId().toString());
-
-        parent.setAttribute("entered_date", getDatetimeForSchema(sample.getEnteredDate()));
-        parent.setAttribute("received_date", getDatetimeForSchema(sample.getReceivedDate()));
-        parent.setAttribute("received_by_id", sample.getReceivedById().toString());
-
-        if (sample.getCollectionDate() != null)
-            parent.setAttribute("collection_date", getDatetimeForSchema(sample.getCollectionDate()));
-
-        parent.setAttribute("status_id", sample.getStatusId().toString());
-
-        if (sample.getCollectionTime() != null)
-            parent.setAttribute("collection_time", getDatetimeForSchema(sample.getCollectionTime()));
-
-        if (sample.getPackageId() != null)
-            parent.setAttribute("package_id", sample.getPackageId().toString());
-
-        if (sample.getClientReference() != null) {
-            child = document.createElement("client_reference");
-            child.setTextContent(sample.getClientReference());
-            parent.appendChild(child);
-        }
-
-        if (sample.getReleasedDate() != null)
-            parent.setAttribute("released_date", getDatetimeForSchema(sample.getReleasedDate()));
-
-        return parent;
+        return elm;
     }
 
-    public Element getSampleEnviromental(Document document, SampleEnvironmentalDO environmental) {
-        Element parent, child;
+    public Element createSample(Document doc, SampleDO sample) {
+        Element elm;
 
-        if (document == null || environmental == null)
-            return null;
+        elm = doc.createElement("sample");
+        setAttribute(elm, "id", sample.getId());
+        setAttribute(elm, "domain", sample.getDomain());
+        setAttribute(elm, "accession_number", sample.getAccessionNumber());
+        setAttribute(elm, "revision", sample.getRevision());
+        setAttribute(elm, "order_id", sample.getOrderId());
+        setAttribute(elm, "entered_date", sample.getEnteredDate());
+        setAttribute(elm, "received_date", sample.getReceivedDate());
+        setAttribute(elm, "received_by_id", sample.getReceivedById());
+        setAttribute(elm, "collection_date", sample.getCollectionDate());
+        setAttribute(elm, "status_id", sample.getStatusId());
+        setAttribute(elm, "collection_time", sample.getCollectionTime());
+        setAttribute(elm, "package_id", sample.getPackageId());
+        setText(doc, elm, "client_reference", sample.getClientReference());
+        setAttribute(elm, "released_date", sample.getReleasedDate());
 
-        parent = document.createElement("sample_environmental");
-        parent.setAttribute("id", environmental.getId().toString());
-        parent.setAttribute("sample_id", environmental.getSampleId().toString());
-        if (environmental.getIsHazardous() != null)
-            parent.setAttribute("is_hazardous", environmental.getIsHazardous());
-        if (environmental.getPriority() != null)
-            parent.setAttribute("priority", environmental.getPriority().toString());
-        if (environmental.getDescription() != null) {
-            child = document.createElement("description");
-            child.setTextContent(environmental.getDescription());
-            parent.appendChild(child);
-        }
-        if (environmental.getCollector() != null) {
-            child = document.createElement("collector");
-            child.setTextContent(environmental.getCollector());
-            parent.appendChild(child);
-        }
-        if (environmental.getCollectorPhone() != null) {
-            child = document.createElement("collector_phone");
-            child.setTextContent(environmental.getCollectorPhone());
-            parent.appendChild(child);
-        }
-        if (environmental.getLocation() != null) {
-            child = document.createElement("location");
-            child.setTextContent(environmental.getLocation());
-            parent.appendChild(child);
-        }
-        if (environmental.getLocationAddress().getId() != null)
-            parent.setAttribute("location_address_id", environmental.getLocationAddress()
-                                                                    .getId()
-                                                                    .toString());
+        addUser(sample.getReceivedById());
+        addDictionary(sample.getStatusId());
 
-        return parent;
+        return elm;
     }
 
-    public Element getSamplePrivateWell(Document document, SamplePrivateWellViewDO privateWell) {
-        Element parent, child;
+    public Element createEnviromental(Document doc, SampleEnvironmentalDO environmental) {
+        Element elm;
 
-        if (document == null || privateWell == null)
-            return null;
+        elm = doc.createElement("sample_environmental");
+        setAttribute(elm, "id", environmental.getId());
+        setAttribute(elm, "sample_id", environmental.getSampleId());
+        setAttribute(elm, "is_hazardous", environmental.getIsHazardous());
+        setAttribute(elm, "priority", environmental.getPriority());
+        setText(doc, elm, "description", environmental.getDescription());
+        setText(doc, elm, "collector", environmental.getCollector());
+        setText(doc, elm, "collector_phone", environmental.getCollectorPhone());
+        setText(doc, elm, "location", environmental.getLocation());
+        setAttribute(elm, "location_address_id", environmental.getLocationAddress().getId());
 
-        parent = document.createElement("sample_private_well");
-        parent.setAttribute("id", privateWell.getId().toString());
-        parent.setAttribute("sample_id", privateWell.getSampleId().toString());
-        if (privateWell.getOrganizationId() != null)
-            parent.setAttribute("organization_id", privateWell.getOrganizationId().toString());
-        if (privateWell.getReportToName() != null) {
-            child = document.createElement("report_to_name");
-            child.setTextContent(privateWell.getReportToName());
-            parent.appendChild(child);
-        }
-        if (privateWell.getReportToAttention() != null) {
-            child = document.createElement("report_to_attention");
-            child.setTextContent(privateWell.getReportToAttention());
-            parent.appendChild(child);
-        }
-        if (privateWell.getReportToAddress().getId() != null)
-            parent.setAttribute("report_to_address_id", privateWell.getReportToAddress()
-                                                                   .getId()
-                                                                   .toString());
-        if (privateWell.getLocation() != null) {
-            child = document.createElement("location");
-            child.setTextContent(privateWell.getLocation());
-            parent.appendChild(child);
-        }
-        if (privateWell.getLocationAddress().getId() != null)
-            parent.setAttribute("location_address_id", privateWell.getLocationAddress()
-                                                                  .getId()
-                                                                  .toString());
-        if (privateWell.getOwner() != null) {
-            child = document.createElement("owner");
-            child.setTextContent(privateWell.getOwner());
-            parent.appendChild(child);
-        }
-        if (privateWell.getCollector() != null) {
-            child = document.createElement("collector");
-            child.setTextContent(privateWell.getCollector());
-            parent.appendChild(child);
-        }
-        if (privateWell.getWellNumber() != null) {
-            child = document.createElement("well_number");
-            child.setTextContent(privateWell.getWellNumber().toString());
-            parent.appendChild(child);
-        }
-
-        return parent;
+        return elm;
     }
 
-    public Element getSampleSDWIS(Document document, SampleSDWISDO sdwis) {
-        Element parent, child;
+    public Element createPrivateWell(Document doc, SamplePrivateWellViewDO privateWell) {
+        Element elm;
 
-        if (document == null || sdwis == null)
-            return null;
+        elm = doc.createElement("sample_private_well");
+        setAttribute(elm, "id", privateWell.getId());
+        setAttribute(elm, "sample_id", privateWell.getSampleId());
+        setText(doc, elm, "location", privateWell.getLocation());
+        setAttribute(elm, "location_address_id", privateWell.getLocationAddress().getId());
+        setText(doc, elm, "owner", privateWell.getOwner());
+        setText(doc, elm, "collector", privateWell.getCollector());
+        setText(doc, elm, "well_number", privateWell.getWellNumber());
 
-        parent = document.createElement("sample_sdwis");
-        parent.setAttribute("id", sdwis.getId().toString());
-        parent.setAttribute("sample_id", sdwis.getSampleId().toString());
-        parent.setAttribute("pws_id", sdwis.getPwsId().toString());
-
-        if (sdwis.getStateLabId() != null)
-            parent.setAttribute("state_lab_id", sdwis.getStateLabId().toString());
-
-        if (sdwis.getFacilityId() != null) {
-            child = document.createElement("facility_id");
-            child.setTextContent(sdwis.getFacilityId());
-            parent.appendChild(child);
-        }
-
-        parent.setAttribute("sample_type_id", sdwis.getSampleTypeId().toString());
-        parent.setAttribute("sample_category_id", sdwis.getSampleCategoryId().toString());
-
-        child = document.createElement("sample_point_id");
-        child.setTextContent(sdwis.getSamplePointId());
-        parent.appendChild(child);
-
-        if (sdwis.getLocation() != null) {
-            child = document.createElement("location");
-            child.setTextContent(sdwis.getLocation());
-            parent.appendChild(child);
-        }
-        if (sdwis.getCollector() != null) {
-            child = document.createElement("collector");
-            child.setTextContent(sdwis.getCollector());
-            parent.appendChild(child);
-        }
-
-        return parent;
+        return elm;
     }
 
-    public Element getPWS(Document document, PWSDO pws) {
-        Element parent, child;
+    public Element createSDWIS(Document doc, SampleSDWISDO sdwis) {
+        Element elm;
 
-        if (document == null || pws == null)
-            return null;
+        elm = doc.createElement("sample_sdwis");
+        setAttribute(elm, "id", sdwis.getId());
+        setAttribute(elm, "sample_id", sdwis.getSampleId());
+        setAttribute(elm, "pws_id", sdwis.getPwsId());
+        setAttribute(elm, "state_lab_id", sdwis.getStateLabId());
+        setText(doc, elm, "facility_id", sdwis.getFacilityId());
+        setAttribute(elm, "sample_type_id", sdwis.getSampleTypeId());
+        setAttribute(elm, "sample_category_id", sdwis.getSampleCategoryId());
+        setText(doc, elm, "sample_point_id", sdwis.getSamplePointId());
+        setText(doc, elm, "location", sdwis.getLocation());
+        setText(doc, elm, "collector", sdwis.getCollector());
 
-        parent = document.createElement("pws");
-        parent.setAttribute("id", pws.getId().toString());
-        parent.setAttribute("tinwsys_is_number", pws.getTinwsysIsNumber().toString());
+        addDictionary(sdwis.getSampleTypeId());
+        addDictionary(sdwis.getSampleCategoryId());
 
-        child = document.createElement("number0");
-        child.setTextContent(pws.getNumber0());
-        parent.appendChild(child);
-
-        if (pws.getAlternateStNum() != null) {
-            child = document.createElement("alternate_st_num");
-            child.setTextContent(pws.getAlternateStNum());
-            parent.appendChild(child);
-        }
-        if (pws.getName() != null) {
-            child = document.createElement("name");
-            child.setTextContent(pws.getName());
-            parent.appendChild(child);
-        }
-        if (pws.getActivityStatusCd() != null) {
-            child = document.createElement("activity_status_cd");
-            child.setTextContent(pws.getActivityStatusCd());
-            parent.appendChild(child);
-        }
-        if (pws.getDPrinCitySvdNm() != null) {
-            child = document.createElement("d_prin_city_svd_nm");
-            child.setTextContent(pws.getDPrinCitySvdNm());
-            parent.appendChild(child);
-        }
-        if (pws.getDPrinCntySvdNm() != null) {
-            child = document.createElement("d_prin_cnty_svd_nm");
-            child.setTextContent(pws.getDPrinCntySvdNm());
-            parent.appendChild(child);
-        }
-        if (pws.getDPopulationCount() != null) {
-            child = document.createElement("d_population_count");
-            child.setTextContent(pws.getDPopulationCount().toString());
-            parent.appendChild(child);
-        }
-        if (pws.getDPwsStTypeCd() != null) {
-            child = document.createElement("d_pws_st_type_cd");
-            child.setTextContent(pws.getDPwsStTypeCd());
-            parent.appendChild(child);
-        }
-        if (pws.getActivityRsnTxt() != null) {
-            child = document.createElement("activity_rsn_txt");
-            child.setTextContent(pws.getActivityRsnTxt());
-            parent.appendChild(child);
-        }
-        if (pws.getActivityStatusCd() != null) {
-            child = document.createElement("activity_status_cd");
-            child.setTextContent(pws.getActivityStatusCd());
-            parent.appendChild(child);
-        }
-
-        return parent;
+        return elm;
     }
 
-    public Element getSampleItem(Document document, SampleItemViewDO sampleItem) {
-        Element parent, child;
+    public Element createPWS(Document doc, PWSDO pws) {
+        Element elm;
 
-        if (document == null || sampleItem == null)
-            return null;
+        elm = doc.createElement("pws");
+        setAttribute(elm, "id", pws.getId());
+        setAttribute(elm, "tinwsys_is_number", pws.getTinwsysIsNumber());
+        setText(doc, elm, "number0", pws.getNumber0());
+        setText(doc, elm, "alternate_st_num", pws.getAlternateStNum());
+        setText(doc, elm, "name", pws.getName());
+        setText(doc, elm, "activity_status_cd", pws.getActivityStatusCd());
+        setText(doc, elm, "d_prin_city_svd_nm", pws.getDPrinCitySvdNm());
+        setText(doc, elm, "d_prin_cnty_svd_nm", pws.getDPrinCntySvdNm());
+        setText(doc, elm, "d_population_count", pws.getDPopulationCount());
+        setText(doc, elm, "d_pws_st_type_cd", pws.getDPwsStTypeCd());
+        setText(doc, elm, "activity_rsn_txt", pws.getActivityRsnTxt());
+        setText(doc, elm, "activity_status_cd", pws.getActivityStatusCd());
 
-        parent = document.createElement("sample_item");
-        parent.setAttribute("id", sampleItem.getId().toString());
-        parent.setAttribute("sample_id", sampleItem.getSampleId().toString());
-        if (sampleItem.getSampleItemId() != null)
-            parent.setAttribute("sample_item_id", sampleItem.getSampleItemId().toString());
-        parent.setAttribute("item_sequence", sampleItem.getItemSequence().toString());
-        parent.setAttribute("type_of_sample_id", sampleItem.getTypeOfSampleId().toString());
-
-        if (sampleItem.getSourceOfSampleId() != null)
-            parent.setAttribute("source_of_sample_id", sampleItem.getSourceOfSampleId().toString());
-
-        if (sampleItem.getSourceOther() != null) {
-            child = document.createElement("source_other");
-            child.setTextContent(sampleItem.getSourceOther());
-        }
-
-        if (sampleItem.getContainerId() != null)
-            parent.setAttribute("container_id", sampleItem.getContainerId().toString());
-
-        if (sampleItem.getQuantity() != null)
-            parent.setAttribute("quantity", sampleItem.getQuantity().toString());
-
-        if (sampleItem.getUnitOfMeasureId() != null)
-            parent.setAttribute("unit_of_measure_id", sampleItem.getUnitOfMeasureId().toString());
-
-        return parent;
+        return elm;
     }
 
-    public Element getAnalysis(Document document, AnalysisViewDO analysis) {
-        Element parent;
+    public Element createNeonatal(Document doc, SampleNeonatalDO neonatal) {
+        Element elm;
 
-        if (document == null || analysis == null)
-            return null;
+        elm = doc.createElement("sample_neonatal");
+        setAttribute(elm, "id", neonatal.getId());
+        setAttribute(elm, "sample_id", neonatal.getSampleId());
+        setAttribute(elm, "patient_id", neonatal.getPatientId());
+        setAttribute(elm, "birth_order", neonatal.getBirthOrder());
+        setAttribute(elm, "gestational_age", neonatal.getGestationalAge());
+        setAttribute(elm, "next_of_kin_id", neonatal.getNextOfKinId());
+        setAttribute(elm, "next_of_kin_relation_id", neonatal.getNextOfKinRelationId());
+        setAttribute(elm, "is_repeat", neonatal.getIsRepeat());
+        setAttribute(elm, "is_nicu", neonatal.getIsNicu());
+        setAttribute(elm, "feeding_id", neonatal.getFeedingId());
+        setAttribute(elm, "weight_sign", neonatal.getWeightSign());
+        setAttribute(elm, "weight", neonatal.getWeight());
+        setAttribute(elm, "is_transfused", neonatal.getIsTransfused());
+        setAttribute(elm, "transfusion_date", neonatal.getTransfusionDate());
+        setAttribute(elm, "is_collection_valid", neonatal.getIsCollectionValid());
+        setAttribute(elm, "collection_age", neonatal.getCollectionAge());
+        setAttribute(elm, "provider_id", neonatal.getProviderId());
+        setText(doc, elm, "form_number", neonatal.getFormNumber());
 
-        parent = document.createElement("analysis");
-        parent.setAttribute("id", analysis.getId().toString());
-        parent.setAttribute("sample_item_id", analysis.getSampleItemId().toString());
-        parent.setAttribute("revision", analysis.getRevision().toString());
-        parent.setAttribute("test_id", analysis.getTestId().toString());
-        parent.setAttribute("section_id", analysis.getSectionId().toString());
+        addDictionary(neonatal.getNextOfKinRelationId());
+        addDictionary(neonatal.getFeedingId());
 
-        if (analysis.getPanelId() != null)
-            parent.setAttribute("panel_id", analysis.getPanelId().toString());
-        
-        if (analysis.getPreAnalysisId() != null)
-            parent.setAttribute("pre_analysis_id", analysis.getPreAnalysisId().toString());
-
-        if (analysis.getParentAnalysisId() != null)
-            parent.setAttribute("parent_analysis_id", analysis.getParentAnalysisId().toString());
-
-        if (analysis.getParentResultId() != null)
-            parent.setAttribute("parent_result_id", analysis.getParentResultId().toString());
-
-        if (analysis.getIsPreliminary() != null)
-            parent.setAttribute("is_preliminary", analysis.getIsPreliminary());
-
-        parent.setAttribute("is_reportable", analysis.getIsReportable());
-
-        if (analysis.getUnitOfMeasureId() != null)
-            parent.setAttribute("unit_of_measure_id", analysis.getUnitOfMeasureId().toString());
-
-        parent.setAttribute("status_id", analysis.getStatusId().toString());
-
-        if (analysis.getAvailableDate() != null)
-            parent.setAttribute("available_date", getDatetimeForSchema(analysis.getAvailableDate()));
-
-        if (analysis.getStartedDate() != null)
-            parent.setAttribute("started_date", getDatetimeForSchema(analysis.getStartedDate()));
-
-        if (analysis.getCompletedDate() != null)
-            parent.setAttribute("completed_date", getDatetimeForSchema(analysis.getCompletedDate()));
-
-        if (analysis.getReleasedDate() != null)
-            parent.setAttribute("released_date", getDatetimeForSchema(analysis.getReleasedDate()));
-
-        if (analysis.getPrintedDate() != null)
-            parent.setAttribute("printed_date", getDatetimeForSchema(analysis.getPrintedDate()));
-        
-        return parent;
+        return elm;
     }
 
-    public Element getTest(Document document, TestViewDO test) {
-        Element parent, child;
+    public Element createPatient(Document doc, PatientDO patient) {
+        Element elm;
 
-        if (document == null || test == null)
-            return null;
+        elm = doc.createElement("patient");
+        setAttribute(elm, "id", patient.getId());
+        setText(doc, elm, "last_name", patient.getLastName());
+        setText(doc, elm, "first_name", patient.getFirstName());
+        setText(doc, elm, "middle_name", patient.getMiddleName());
+        setAttribute(elm, "address_id", patient.getAddress().getId());
+        setAttribute(elm, "birth_date", patient.getBirthDate());
+        setAttribute(elm, "birth_time", patient.getBirthTime());
+        setAttribute(elm, "gender_id", patient.getGenderId());
+        setAttribute(elm, "race_id", patient.getRaceId());
+        setAttribute(elm, "ethnicity_id", patient.getRaceId());
 
-        parent = document.createElement("test");
-        parent.setAttribute("id", test.getId().toString());
+        addDictionary(patient.getGenderId());
+        addDictionary(patient.getRaceId());
+        addDictionary(patient.getEthnicityId());
 
-        child = document.createElement("name");
-        child.setTextContent(test.getName());
-        parent.appendChild(child);
-
-        child = document.createElement("description");
-        child.setTextContent(test.getDescription());
-        parent.appendChild(child);
-
-        child = document.createElement("reporting_description");
-        child.setTextContent(test.getReportingDescription());
-        parent.appendChild(child);
-
-        parent.setAttribute("method_id", test.getMethodId().toString());
-        parent.setAttribute("is_active", test.getIsActive());
-        parent.setAttribute("active_begin", getDatetimeForSchema(test.getActiveBegin()));
-        parent.setAttribute("active_end", getDatetimeForSchema(test.getActiveEnd()));
-        parent.setAttribute("is_reportable", test.getIsReportable());
-        parent.setAttribute("time_transit", test.getTimeTransit().toString());
-        parent.setAttribute("time_holding", test.getTimeHolding().toString());
-        parent.setAttribute("time_ta_average", test.getTimeTaAverage().toString());
-        parent.setAttribute("time_ta_warning", test.getTimeTaWarning().toString());
-        parent.setAttribute("time_ta_max", test.getTimeTaMax().toString());
-
-        if (test.getTestTrailerId() != null)
-            parent.setAttribute("test_trailer_id", test.getTestTrailerId().toString());
-
-        if (test.getTestFormatId() != null)
-            parent.setAttribute("test_format_id", test.getTestFormatId().toString());
-
-        if (test.getRevisionMethodId() != null)
-            parent.setAttribute("revision_method_id", test.getRevisionMethodId().toString());
-
-        if (test.getReportingMethodId() != null)
-            parent.setAttribute("reporting_method_id", test.getReportingMethodId().toString());
-
-        if (test.getSortingMethodId() != null)
-            parent.setAttribute("sorting_method_id", test.getSortingMethodId().toString());
-
-        if (test.getReportingSequence() != null)
-            parent.setAttribute("reporting_sequence", test.getReportingSequence().toString());
-
-        return parent;
+        return elm;
     }
 
-    public Element getMethod(Document document, MethodDO method) {
-        Element parent, child;
+    public Element createProvider(Document doc, ProviderDO provider) {
+        Element elm;
 
-        if (document == null || method == null)
-            return null;
+        elm = doc.createElement("provider");
+        setAttribute(elm, "id", provider.getId());
+        setText(doc, elm, "last_name", provider.getLastName());
+        setText(doc, elm, "first_name", provider.getFirstName());
+        setText(doc, elm, "middle_name", provider.getMiddleName());
+        setAttribute(elm, "type_id", provider.getTypeId());
+        setText(doc, elm, "npi", provider.getNpi());
 
-        parent = document.createElement("method");
-        parent.setAttribute("id", method.getId().toString());
+        addDictionary(provider.getTypeId());
 
-        child = document.createElement("name");
-        child.setTextContent(method.getName());
-        parent.appendChild(child);
-
-        child = document.createElement("description");
-        child.setTextContent(method.getDescription());
-        parent.appendChild(child);
-
-        child = document.createElement("reporting_description");
-        child.setTextContent(method.getReportingDescription());
-        parent.appendChild(child);
-
-        parent.setAttribute("is_active", method.getIsActive());
-        parent.setAttribute("active_begin", getDatetimeForSchema(method.getActiveBegin()));
-        parent.setAttribute("active_end", getDatetimeForSchema(method.getActiveEnd()));
-
-        return parent;
+        return elm;
     }
 
-    public Element getSection(Document document, SectionDO section) {
-        Element parent, child;
+    public Element createSampleProject(Document doc, SampleProjectViewDO sampleProject) {
+        Element elm;
 
-        if (document == null || section == null)
-            return null;
+        elm = doc.createElement("sample_project");
+        setAttribute(elm, "id", sampleProject.getId());
+        setAttribute(elm, "sample_id", sampleProject.getSampleId());
+        setAttribute(elm, "project_id", sampleProject.getProjectId());
+        setAttribute(elm, "is_permanent", sampleProject.getIsPermanent());
 
-        parent = document.createElement("section");
-        parent.setAttribute("id", section.getId().toString());
+        addProject(sampleProject.getProjectId());
 
-        child = document.createElement("name");
-        child.setTextContent(section.getName());
-        parent.appendChild(child);
-
-        child = document.createElement("description");
-        child.setTextContent(section.getDescription());
-        parent.appendChild(child);
-
-        if (section.getParentSectionId() != null)
-            parent.setAttribute("parent_section_id", section.getParentSectionId().toString());
-
-        parent.setAttribute("is_external", section.getIsExternal());
-
-        if (section.getOrganizationId() != null)
-            parent.setAttribute("organization_id", section.getOrganizationId().toString());
-
-        return parent;
-    }
-    
-    private Node getPanel(Document document, PanelDO panel) {
-        Element parent, child;
-
-        if (document == null || panel == null)
-            return null;
-        
-        parent = document.createElement("panel");
-        parent.setAttribute("id", panel.getId().toString());
-
-        child = document.createElement("name");
-        child.setTextContent(panel.getName());
-        parent.appendChild(child);
-
-        child = document.createElement("description");
-        child.setTextContent(panel.getDescription());
-        parent.appendChild(child);
-        
-        return parent;
+        return elm;
     }
 
-    private Node getTestTrailer(Document document, TestTrailerDO trailer) {
-        Element parent, child;
+    public Element createSampleOrganization(Document doc,
+                                            SampleOrganizationViewDO sampleOrganization) {
+        Element elm;
 
-        if (document == null || trailer == null)
-            return null;
+        elm = doc.createElement("sample_organization");
 
-        parent = document.createElement("test_trailer");
-        parent.setAttribute("id", trailer.getId().toString());
+        setAttribute(elm, "id", sampleOrganization.getId());
+        setAttribute(elm, "sample_id", sampleOrganization.getSampleId());
+        setAttribute(elm, "organization_id", sampleOrganization.getOrganizationId());
+        setText(doc, elm, "organization_attention", sampleOrganization.getOrganizationAttention());
+        setAttribute(elm, "type_id", sampleOrganization.getTypeId());
 
-        child = document.createElement("name");
-        child.setTextContent(trailer.getName());
-        parent.appendChild(child);
+        addOrganization(sampleOrganization.getOrganizationId());
+        addDictionary(sampleOrganization.getTypeId());
 
-        child = document.createElement("description");
-        child.setTextContent(trailer.getDescription());
-        parent.appendChild(child);
-
-        child = document.createElement("text");
-        child.setTextContent(trailer.getText());
-        parent.appendChild(child);
-
-        return parent;
+        return elm;
     }
 
-    public Element getAnalysisUser(Document document, AnalysisUserViewDO analysisUser) {
-        Element parent;
+    public Element createSampleQaEvent(Document doc, SampleQaEventViewDO sampleQa) {
+        Element elm;
 
-        if (document == null || analysisUser == null)
-            return null;
+        elm = doc.createElement("sample_qaevent");
+        setAttribute(elm, "id", sampleQa.getId());
+        setAttribute(elm, "sample_id", sampleQa.getSampleId());
+        setAttribute(elm, "qaevent_id", sampleQa.getQaEventId());
+        setAttribute(elm, "type_id", sampleQa.getTypeId());
+        setAttribute(elm, "is_billable", sampleQa.getIsBillable());
 
-        parent = document.createElement("analysis_user");
-        parent.setAttribute("id", analysisUser.getId().toString());
-        parent.setAttribute("analysis_id", analysisUser.getAnalysisId().toString());
-        parent.setAttribute("system_user_id", analysisUser.getSystemUserId().toString());
-        if (analysisUser.getActionId() != null)
-            parent.setAttribute("action_id", analysisUser.getActionId().toString());
+        addQa(sampleQa.getQaEventId());
+        addDictionary(sampleQa.getTypeId());
 
-        return parent;
+        return elm;
     }
 
-    public Element getSampleProject(Document document, SampleProjectViewDO sampleProject) {
-        Element parent;
+    public Element createAuxData(Document doc, AuxDataViewDO auxData) {
+        Element elm;
 
-        if (document == null || sampleProject == null)
-            return null;
+        elm = doc.createElement("aux_data");
+        setAttribute(elm, "id", auxData.getId());
+        setAttribute(elm, "sort_order", auxData.getSortOrder());
+        setAttribute(elm, "aux_field_id", auxData.getAuxFieldId());
+        setAttribute(elm, "reference_id", auxData.getReferenceId());
+        setAttribute(elm, "reference_table_id", auxData.getReferenceTableId());
+        setAttribute(elm, "is_reportable", auxData.getIsReportable());
+        setAttribute(elm, "analyte_id", auxData.getAnalyteId());
+        setAttribute(elm, "type_id", auxData.getTypeId());
+        setText(doc, elm, "value", auxData.getValue());
 
-        parent = document.createElement("sample_project");
-        parent.setAttribute("id", sampleProject.getId().toString());
-        parent.setAttribute("sample_id", sampleProject.getSampleId().toString());
-        parent.setAttribute("project_id", sampleProject.getProjectId().toString());
-        parent.setAttribute("is_permanent", sampleProject.getIsPermanent());
+        addDictionary(auxData.getTypeId());
+        addAnalyte(auxData.getAnalyteId());
 
-        return parent;
+        return elm;
     }
 
-    public Element getProject(Document document, ProjectViewDO project) {
-        Element parent, child;
+    public Element createItem(Document doc, SampleItemViewDO sampleItem) {
+        Element elm;
 
-        if (document == null || project == null)
-            return null;
+        elm = doc.createElement("sample_item");
+        setAttribute(elm, "id", sampleItem.getId());
+        setAttribute(elm, "sample_id", sampleItem.getSampleId());
+        setAttribute(elm, "sample_item_id", sampleItem.getSampleItemId());
+        setAttribute(elm, "item_sequence", sampleItem.getItemSequence());
+        setAttribute(elm, "type_of_sample_id", sampleItem.getTypeOfSampleId());
+        setAttribute(elm, "source_of_sample_id", sampleItem.getSourceOfSampleId());
+        setText(doc, elm, "source_other", sampleItem.getSourceOther());
+        setAttribute(elm, "container_id", sampleItem.getContainerId());
+        setAttribute(elm, "quantity", sampleItem.getQuantity());
+        setAttribute(elm, "unit_of_measure_id", sampleItem.getUnitOfMeasureId());
 
-        parent = document.createElement("project");
-        parent.setAttribute("id", project.getId().toString());
+        addDictionary(sampleItem.getTypeOfSampleId());
+        addDictionary(sampleItem.getSourceOfSampleId());
+        addDictionary(sampleItem.getContainerId());
+        addDictionary(sampleItem.getUnitOfMeasureId());
 
-        child = document.createElement("name");
-        child.setTextContent(project.getName());
-        parent.appendChild(child);
-
-        child = document.createElement("description");
-        child.setTextContent(project.getDescription());
-        parent.appendChild(child);
-
-        parent.setAttribute("started_date", getDatetimeForSchema(project.getStartedDate()));
-        parent.setAttribute("completed_date", getDatetimeForSchema(project.getCompletedDate()));
-        parent.setAttribute("is_active", project.getIsActive());
-
-        if (project.getReferenceTo() != null) {
-            child = document.createElement("reference_to");
-            child.setTextContent(project.getReferenceTo());
-            parent.appendChild(child);
-        }
-
-        if (project.getOwnerId() != null)
-            parent.setAttribute("owner_id", project.getOwnerId().toString());
-
-        return parent;
+        return elm;
     }
 
-    public Element getSampleOrganization(Document document,
-                                         SampleOrganizationViewDO sampleOrganization) {
-        Element parent, child;
+    public Element createAnalysis(Document doc, AnalysisViewDO analysis) {
+        Element elm;
 
-        if (document == null || sampleOrganization == null)
-            return null;
+        elm = doc.createElement("analysis");
+        setAttribute(elm, "id", analysis.getId());
+        setAttribute(elm, "sample_item_id", analysis.getSampleItemId());
+        setAttribute(elm, "revision", analysis.getRevision());
+        setAttribute(elm, "test_id", analysis.getTestId());
+        setAttribute(elm, "section_id", analysis.getSectionId());
+        setAttribute(elm, "panel_id", analysis.getPanelId());
+        setAttribute(elm, "pre_analysis_id", analysis.getPreAnalysisId());
+        setAttribute(elm, "parent_analysis_id", analysis.getParentAnalysisId());
+        setAttribute(elm, "parent_result_id", analysis.getParentResultId());
+        setAttribute(elm, "is_preliminary", analysis.getIsPreliminary());
+        setAttribute(elm, "is_reportable", analysis.getIsReportable());
+        setAttribute(elm, "unit_of_measure_id", analysis.getUnitOfMeasureId());
+        setAttribute(elm, "status_id", analysis.getStatusId());
+        setAttribute(elm, "available_date", analysis.getAvailableDate());
+        setAttribute(elm, "started_date", analysis.getStartedDate());
+        setAttribute(elm, "completed_date", analysis.getCompletedDate());
+        setAttribute(elm, "released_date", analysis.getReleasedDate());
+        setAttribute(elm, "printed_date", analysis.getPrintedDate());
 
-        parent = document.createElement("sample_organization");
+        addTest(analysis.getTestId());
+        addMethod(analysis.getMethodId());
+        addSection(analysis.getSectionId());
+        addPanel(analysis.getPanelId());
+        addDictionary(analysis.getStatusId());
+        addDictionary(analysis.getUnitOfMeasureId());
 
-        parent.setAttribute("id", sampleOrganization.getId().toString());
-        parent.setAttribute("sample_id", sampleOrganization.getSampleId().toString());
-        parent.setAttribute("organization_id", sampleOrganization.getOrganizationId().toString());
-        if (sampleOrganization.getOrganizationAttention() != null) {
-            child = document.createElement("organization_attention");
-            child.setTextContent(sampleOrganization.getOrganizationAttention());
-            parent.appendChild(child);
-        }
-        parent.setAttribute("type_id", sampleOrganization.getTypeId().toString());
-
-        return parent;
+        return elm;
     }
 
-    public Element getOrganization(Document document, OrganizationDO organization) {
-        Element parent, child;
+    public Element createTest(Document doc, TestViewDO test) {
+        Element elm;
 
-        if (document == null || organization == null)
-            return null;
+        elm = doc.createElement("test");
+        setAttribute(elm, "id", test.getId());
+        setText(doc, elm, "name", test.getName());
+        setText(doc, elm, "description", test.getDescription());
+        setText(doc, elm, "reporting_description", test.getReportingDescription());
+        setAttribute(elm, "method_id", test.getMethodId());
+        setAttribute(elm, "is_active", test.getIsActive());
+        setAttribute(elm, "active_begin", test.getActiveBegin());
+        setAttribute(elm, "active_end", test.getActiveEnd());
+        setAttribute(elm, "is_reportable", test.getIsReportable());
+        setAttribute(elm, "time_transit", test.getTimeTransit());
+        setAttribute(elm, "time_holding", test.getTimeHolding());
+        setAttribute(elm, "time_ta_average", test.getTimeTaAverage());
+        setAttribute(elm, "time_ta_warning", test.getTimeTaWarning());
+        setAttribute(elm, "time_ta_max", test.getTimeTaMax());
+        setAttribute(elm, "test_trailer_id", test.getTestTrailerId());
+        setAttribute(elm, "test_format_id", test.getTestFormatId());
+        setAttribute(elm, "revision_method_id", test.getRevisionMethodId());
+        setAttribute(elm, "reporting_method_id", test.getReportingMethodId());
+        setAttribute(elm, "sorting_method_id", test.getSortingMethodId());
+        setAttribute(elm, "reporting_sequence", test.getReportingSequence());
 
-        parent = document.createElement("organization");
+        addTrailer(test.getTestTrailerId());
+        addDictionary(test.getTestFormatId());
+        addDictionary(test.getTestFormatId());
+        addDictionary(test.getRevisionMethodId());
+        addDictionary(test.getReportingMethodId());
+        addDictionary(test.getSortingMethodId());
 
-        parent.setAttribute("id", organization.getId().toString());
-        if (organization.getParentOrganizationId() != null)
-            parent.setAttribute("parent_organization_id", organization.getParentOrganizationId()
-                                                                      .toString());
-
-        child = document.createElement("name");
-        child.setTextContent(organization.getName());
-        parent.appendChild(child);
-
-        parent.setAttribute("is_active", organization.getIsActive());
-        parent.setAttribute("address_id", organization.getAddress().getId().toString());
-
-        return parent;
+        return elm;
     }
 
-    public Element getDictionary(Document document, DictionaryDO dictionary) {
-        Element parent, child;
+    public Element createMethod(Document doc, MethodDO method) {
+        Element elm;
 
-        if (document == null || dictionary == null)
-            return null;
+        elm = doc.createElement("method");
+        setAttribute(elm, "id", method.getId());
+        setText(doc, elm, "name", method.getName());
+        setText(doc, elm, "description", method.getDescription());
+        setText(doc, elm, "reporting_description", method.getReportingDescription());
+        setAttribute(elm, "is_active", method.getIsActive());
+        setAttribute(elm, "active_begin", method.getActiveBegin());
+        setAttribute(elm, "active_end", method.getActiveEnd());
 
-        parent = document.createElement("dictionary");
-        parent.setAttribute("id", dictionary.getId().toString());
-
-        if (dictionary.getSystemName() != null) {
-            child = document.createElement("system_name");
-            child.setTextContent(dictionary.getSystemName());
-            parent.appendChild(child);
-        }
-
-        child = document.createElement("entry");
-        child.setTextContent(dictionary.getEntry());
-        parent.appendChild(child);
-
-        return parent;
+        return elm;
     }
 
-    public Element getAddress(Document document, AddressDO address) {
-        Element parent, child;
+    public Element createSection(Document doc, SectionDO section) {
+        Element elm;
 
-        if (document == null || address == null)
-            return null;
+        elm = doc.createElement("section");
+        setAttribute(elm, "id", section.getId());
+        setText(doc, elm, "name", section.getName());
+        setText(doc, elm, "description", section.getDescription());
+        setAttribute(elm, "parent_section_id", section.getParentSectionId());
+        setAttribute(elm, "is_external", section.getIsExternal());
+        setAttribute(elm, "organization_id", section.getOrganizationId());
 
-        parent = document.createElement("address");
+        addOrganization(section.getOrganizationId());
 
-        parent.setAttribute("id", address.getId().toString());
-        if (address.getMultipleUnit() != null) {
-            child = document.createElement("multiple_unit");
-            child.setTextContent(address.getMultipleUnit());
-            parent.appendChild(child);
-        }
-        if (address.getStreetAddress() != null) {
-            child = document.createElement("street_address");
-            child.setTextContent(address.getStreetAddress());
-            parent.appendChild(child);
-        }
-        if (address.getCity() != null) {
-            child = document.createElement("city");
-            child.setTextContent(address.getCity());
-            parent.appendChild(child);
-        }
-        if (address.getState() != null) {
-            child = document.createElement("state");
-            child.setTextContent(address.getState());
-            parent.appendChild(child);
-        }
-        if (address.getZipCode() != null) {
-            child = document.createElement("zip_code");
-            child.setTextContent(address.getZipCode());
-            parent.appendChild(child);
-        }
-        if (address.getWorkPhone() != null) {
-            child = document.createElement("work_phone");
-            child.setTextContent(address.getWorkPhone());
-            parent.appendChild(child);
-        }
-        if (address.getHomePhone() != null) {
-            child = document.createElement("home_phone");
-            child.setTextContent(address.getHomePhone());
-            parent.appendChild(child);
-        }
-        if (address.getCellPhone() != null) {
-            child = document.createElement("cell_phone");
-            child.setTextContent(address.getCellPhone());
-            parent.appendChild(child);
-        }
-        if (address.getFaxPhone() != null) {
-            child = document.createElement("fax_phone");
-            child.setTextContent(address.getFaxPhone());
-            parent.appendChild(child);
-        }
-        if (address.getEmail() != null) {
-            child = document.createElement("email");
-            child.setTextContent(address.getEmail());
-            parent.appendChild(child);
-        }
-        if (address.getCountry() != null) {
-            child = document.createElement("country");
-            child.setTextContent(address.getCountry());
-            parent.appendChild(child);
-        }
-        return parent;
+        return elm;
     }
 
-    public Element getSampleQaEvent(Document document, SampleQaEventViewDO sampleQaEvent) {
-        Element parent;
+    public Node createPanel(Document doc, PanelDO panel) {
+        Element elm;
 
-        if (document == null || sampleQaEvent == null)
-            return null;
+        elm = doc.createElement("panel");
+        setAttribute(elm, "id", panel.getId());
+        setText(doc, elm, "name", panel.getName());
+        setText(doc, elm, "description", panel.getDescription());
 
-        parent = document.createElement("sample_qaevent");
-
-        parent.setAttribute("id", sampleQaEvent.getId().toString());
-        parent.setAttribute("sample_id", sampleQaEvent.getSampleId().toString());
-        parent.setAttribute("qaevent_id", sampleQaEvent.getQaEventId().toString());
-        parent.setAttribute("type_id", sampleQaEvent.getTypeId().toString());
-        parent.setAttribute("is_billable", sampleQaEvent.getIsBillable());
-
-        return parent;
+        return elm;
     }
 
-    public Element getAuxData(Document document, AuxDataViewDO auxData) {
-        Element parent, child;
+    public Node createTrailer(Document doc, TestTrailerDO trailer) {
+        Element elm;
 
-        if (document == null || auxData == null)
-            return null;
+        elm = doc.createElement("test_trailer");
+        setAttribute(elm, "id", trailer.getId());
+        setText(doc, elm, "name", trailer.getName());
+        setText(doc, elm, "description", trailer.getDescription());
+        setText(doc, elm, "text", trailer.getText());
 
-        parent = document.createElement("aux_data");
-        parent.setAttribute("id", auxData.getId().toString());
-        parent.setAttribute("sort_order", auxData.getSortOrder().toString());
-        parent.setAttribute("aux_field_id", auxData.getAuxFieldId().toString());
-        parent.setAttribute("reference_id", auxData.getReferenceId().toString());
-        parent.setAttribute("reference_table_id", auxData.getReferenceTableId().toString());
-        parent.setAttribute("is_reportable", auxData.getIsReportable().toString());
-        parent.setAttribute("analyte_id", auxData.getAnalyteId().toString());
-        parent.setAttribute("type_id", auxData.getTypeId().toString());
-
-        if (auxData.getValue() != null) {
-            child = document.createElement("value");
-            child.setTextContent(auxData.getValue());
-            parent.appendChild(child);
-        }
-
-        return parent;
+        return elm;
     }
 
-    public Element getAnalysisQaEvent(Document document, AnalysisQaEventViewDO sampleQaEvent) {
-        Element parent;
+    public Element createAnalysisUser(Document doc, AnalysisUserViewDO analysisUser) {
+        Element elm;
 
-        if (document == null || sampleQaEvent == null)
-            return null;
+        elm = doc.createElement("analysis_user");
+        setAttribute(elm, "id", analysisUser.getId());
+        setAttribute(elm, "analysis_id", analysisUser.getAnalysisId());
+        setAttribute(elm, "system_user_id", analysisUser.getSystemUserId());
+        setAttribute(elm, "action_id", analysisUser.getActionId());
 
-        parent = document.createElement("analysis_qaevent");
+        addUser(analysisUser.getSystemUserId());
+        addDictionary(analysisUser.getActionId());
 
-        parent.setAttribute("id", sampleQaEvent.getId().toString());
-        parent.setAttribute("analysis_id", sampleQaEvent.getAnalysisId().toString());
-        parent.setAttribute("qaevent_id", sampleQaEvent.getQaEventId().toString());
-        parent.setAttribute("type_id", sampleQaEvent.getTypeId().toString());
-        parent.setAttribute("is_billable", sampleQaEvent.getIsBillable());
-
-        return parent;
+        return elm;
     }
 
-    public Element getQaEvent(Document document, QaEventViewDO qaEvent) {
-        Element parent, child;
+    public Element createProject(Document doc, ProjectViewDO project) {
+        Element elm;
 
-        if (document == null || qaEvent == null)
-            return null;
+        elm = doc.createElement("project");
+        setAttribute(elm, "id", project.getId());
+        setText(doc, elm, "name", project.getName());
+        setText(doc, elm, "description", project.getDescription());
+        setAttribute(elm, "started_date", project.getStartedDate());
+        setAttribute(elm, "completed_date", project.getCompletedDate());
+        setAttribute(elm, "is_active", project.getIsActive());
+        setText(doc, elm, "reference_to", project.getReferenceTo());
+        setAttribute(elm, "owner_id", project.getOwnerId());
 
-        parent = document.createElement("qaevent");
+        addUser(project.getOwnerId());
 
-        parent.setAttribute("id", qaEvent.getId().toString());
-
-        child = document.createElement("name");
-        child.setTextContent(qaEvent.getName());
-        parent.appendChild(child);
-
-        if (qaEvent.getDescription() != null) {
-            child = document.createElement("description");
-            child.setTextContent(qaEvent.getDescription());
-            parent.appendChild(child);
-        }
-
-        if (qaEvent.getTestId() != null)
-            parent.setAttribute("test_id", qaEvent.getTestId().toString());
-        parent.setAttribute("type_id", qaEvent.getTypeId().toString());
-        parent.setAttribute("is_billable", qaEvent.getIsBillable());
-        if (qaEvent.getReportingSequence() != null)
-            parent.setAttribute("reporting_sequence", qaEvent.getReportingSequence().toString());
-
-        child = document.createElement("reporting_text");
-        child.setTextContent(qaEvent.getReportingText());
-        parent.appendChild(child);
-
-        return parent;
+        return elm;
     }
 
-    public Element getAnalyte(Document document, AnalyteViewDO analyte) {
-        Element parent, child;
+    public Element createOrganization(Document doc, OrganizationDO organization) {
+        Element elm;
 
-        if (document == null || analyte == null)
-            return null;
+        elm = doc.createElement("organization");
+        setAttribute(elm, "id", organization.getId());
+        setAttribute(elm, "parent_organization_id", organization.getParentOrganizationId());
+        setText(doc, elm, "name", organization.getName());
+        setAttribute(elm, "is_active", organization.getIsActive());
+        setAttribute(elm, "address_id", organization.getAddress().getId());
 
-        parent = document.createElement("analyte");
-
-        parent.setAttribute("id", analyte.getId().toString());
-
-        child = document.createElement("name");
-        child.setTextContent(analyte.getName());
-        parent.appendChild(child);
-
-        parent.setAttribute("is_active", analyte.getIsActive());
-        if (analyte.getParentAnalyteId() != null)
-            parent.setAttribute("parent_analyte_id", analyte.getParentAnalyteId().toString());
-
-        if (analyte.getExternalId() != null) {
-            child = document.createElement("external_id");
-            child.setTextContent(analyte.getExternalId());
-            parent.appendChild(child);
-        }
-
-        return parent;
+        return elm;
     }
 
-    public Element getResult(Document document, ResultViewDO result, boolean showValue) {
-        Element parent, child;
+    public Element createDictionary(Document doc, DictionaryDO dictionary) {
+        Element elm;
 
-        if (document == null || result == null)
-            return null;
+        elm = doc.createElement("dictionary");
+        setAttribute(elm, "id", dictionary.getId());
+        setText(doc, elm, "system_name", dictionary.getSystemName());
+        setText(doc, elm, "entry", dictionary.getEntry());
 
-        parent = document.createElement("result");
+        return elm;
+    }
 
-        parent.setAttribute("id", result.getId().toString());
-        parent.setAttribute("analysis_id", result.getAnalysisId().toString());
-        parent.setAttribute("test_analyte_id", result.getTestAnalyteId().toString());
-        if (result.getTestResultId() != null)
-            parent.setAttribute("test_result_id", result.getTestResultId().toString());
-        parent.setAttribute("is_column", result.getIsColumn().toString());
-        parent.setAttribute("sort_order", result.getSortOrder().toString());
-        parent.setAttribute("is_reportable", result.getIsReportable().toString());
-        parent.setAttribute("analyte_id", result.getAnalyteId().toString());
+    public Element createAddress(Document doc, AddressDO address) {
+        Element elm;
 
-        if (result.getTypeId() != null)
-            parent.setAttribute("type_id", result.getTypeId().toString());
+        elm = doc.createElement("address");
+        setAttribute(elm, "id", address.getId());
+        setText(doc, elm, "multiple_unit", address.getMultipleUnit());
+        setText(doc, elm, "street_address", address.getStreetAddress());
+        setText(doc, elm, "city", address.getCity());
+        setText(doc, elm, "state", address.getState());
+        setText(doc, elm, "zip_code", address.getZipCode());
+        setText(doc, elm, "work_phone", address.getWorkPhone());
+        setText(doc, elm, "home_phone", address.getHomePhone());
+        setText(doc, elm, "cell_phone", address.getCellPhone());
+        setText(doc, elm, "fax_phone", address.getFaxPhone());
+        setText(doc, elm, "email", address.getEmail());
+        setText(doc, elm, "country", address.getCountry());
+
+        return elm;
+    }
+
+    public Element createAnalysisQaEvent(Document doc, AnalysisQaEventViewDO sampleQaEvent) {
+        Element elm;
+
+        elm = doc.createElement("analysis_qaevent");
+        setAttribute(elm, "id", sampleQaEvent.getId());
+        setAttribute(elm, "analysis_id", sampleQaEvent.getAnalysisId());
+        setAttribute(elm, "qaevent_id", sampleQaEvent.getQaEventId());
+        setAttribute(elm, "type_id", sampleQaEvent.getTypeId());
+        setAttribute(elm, "is_billable", sampleQaEvent.getIsBillable());
+
+        addQa(sampleQaEvent.getQaEventId());
+        addDictionary(sampleQaEvent.getTypeId());
+
+        return elm;
+    }
+
+    public Element createQaEvent(Document doc, QaEventViewDO qaEvent) {
+        Element elm;
+
+        elm = doc.createElement("qaevent");
+        setAttribute(elm, "id", qaEvent.getId());
+        setText(doc, elm, "name", qaEvent.getName());
+        setText(doc, elm, "description", qaEvent.getDescription());
+        setAttribute(elm, "test_id", qaEvent.getTestId());
+        setAttribute(elm, "type_id", qaEvent.getTypeId());
+        setAttribute(elm, "is_billable", qaEvent.getIsBillable());
+        setAttribute(elm, "reporting_sequence", qaEvent.getReportingSequence());
+        setText(doc, elm, "reporting_text", qaEvent.getReportingText());
+
+        addTest(qaEvent.getTestId());
+        addDictionary(qaEvent.getTypeId());
+
+        return elm;
+    }
+
+    public Element createAnalyte(Document doc, AnalyteViewDO analyte) {
+        Element elm;
+
+        elm = doc.createElement("analyte");
+        setAttribute(elm, "id", analyte.getId());
+        setText(doc, elm, "name", analyte.getName());
+        setAttribute(elm, "is_active", analyte.getIsActive());
+        setAttribute(elm, "parent_analyte_id", analyte.getParentAnalyteId());
+        setText(doc, elm, "external_id", analyte.getExternalId());
+
+        return elm;
+    }
+
+    public Element createNote(Document doc, NoteViewDO note) {
+        Element elm;
+
+        elm = doc.createElement("note");
+        setAttribute(elm, "id", note.getId());
+        setAttribute(elm, "reference_id", note.getReferenceId());
+        setAttribute(elm, "reference_table_id", note.getReferenceTableId());
+        setAttribute(elm, "timestamp", note.getTimestamp());
+        setAttribute(elm, "is_external", note.getIsExternal());
+        setAttribute(elm, "system_user_id", note.getSystemUserId());
+        setText(doc, elm, "subject", note.getSubject());
+        setText(doc, elm, "text", note.getText());
+
+        return elm;
+    }
+
+    public Element createResult(Document doc, ResultViewDO result, boolean showValue) {
+        Element elm;
+
+        elm = doc.createElement("result");
+        setAttribute(elm, "id", result.getId());
+        setAttribute(elm, "analysis_id", result.getAnalysisId());
+        setAttribute(elm, "test_analyte_id", result.getTestAnalyteId());
+        setAttribute(elm, "test_result_id", result.getTestResultId());
+        setAttribute(elm, "is_column", result.getIsColumn());
+        setAttribute(elm, "sort_order", result.getSortOrder());
+        setAttribute(elm, "is_reportable", result.getIsReportable());
+        setAttribute(elm, "analyte_id", result.getAnalyteId());
+        setAttribute(elm, "type_id", result.getTypeId());
 
         /*
-         * the values for those results are not shown, the analysis for which,
-         * has qa event(s) of type result override or which belongs to a sample
-         * that has such qa event(s)
+         * the values are not shown if result override qaevents or analysis not
+         * released
          */
-        if (showValue && result.getValue() != null) {
-            child = document.createElement("value");
-            child.setTextContent(result.getValue());
-            parent.appendChild(child);
-        }
+        if (showValue && result.getValue() != null)
+            setText(doc, elm, "value", result.getValue());
 
-        return parent;
+        addAnalyte(result.getAnalyteId());
+        addDictionary(result.getTypeId());
+
+        return elm;
     }
 
-    public Element getNote(Document document, NoteViewDO note) {
-        Element parent, child;
+    public Element createExternalTerm(Document doc, ExchangeExternalTermViewDO externalTerm) throws Exception {
+        Element elm;
 
-        if (document == null || note == null)
-            return null;
+        elm = doc.createElement("translation");
+        setAttribute(elm, "id", externalTerm.getId());
+        setAttribute(elm, "reference_id", externalTerm.getExchangeLocalTermReferenceId());
+        setAttribute(elm, "is_active", externalTerm.getIsActive());
+        setText(doc, elm, "profile", dictionaryCache.getById(externalTerm.getProfileId())
+                                                    .getEntry());
+        setText(doc, elm, "code", externalTerm.getExternalTerm());
+        setText(doc, elm, "description", externalTerm.getExternalDescription());
+        setText(doc, elm, "coding_system", externalTerm.getExternalCodingSystem());
+        setText(doc, elm, "version", externalTerm.getVersion());
 
-        parent = document.createElement("note");
-        parent.setAttribute("id", note.getId().toString());
-        parent.setAttribute("reference_id", note.getReferenceId().toString());
-        parent.setAttribute("reference_table_id", note.getReferenceTableId().toString());
-        parent.setAttribute("timestamp", getDatetimeForSchema(note.getTimestamp()));
-        parent.setAttribute("is_external", note.getIsExternal());
-        parent.setAttribute("system_user_id", note.getSystemUserId().toString());
-
-        if (note.getSubject() != null) {
-            child = document.createElement("subject");
-            child.setTextContent(note.getSubject());
-            parent.appendChild(child);
-        }
-
-        if (note.getText() != null) {
-            child = document.createElement("text");
-            child.setTextContent(note.getText());
-            parent.appendChild(child);
-        }
-
-        return parent;
+        return elm;
     }
 
-    public ArrayList<Element> getExternalTerms(Integer refTableId, HashSet<Integer> refIds,
-                                               ArrayList<Integer> profileIds, Document document) throws Exception {
-        ArrayList<Element> elements;
-        ArrayList<ExchangeExternalTermViewDO> externalTerms;
+    public Element createUser(Document doc, SystemUserVO user) {
+        Element elm;
 
-        if (document == null || refTableId == null || refIds == null || profileIds == null)
-            return null;
+        elm = doc.createElement("system_user");
+        setAttribute(elm, "id", user.getId());
+        setText(doc, elm, "external_id", user.getExternalId());
+        setText(doc, elm, "login_name", user.getLoginName());
+        setText(doc, elm, "last_name", user.getLastName());
+        setText(doc, elm, "first_name", user.getFirstName());
+        setText(doc, elm, "initials", user.getInitials());
 
+        return elm;
+    }
+
+    private Element createLinkDictionary(Document doc, String name, Integer resultId,
+                                         Integer dictionaryId) {
+        Element elm;
+
+        elm = doc.createElement(name);
+        setAttribute(elm, "id", resultId);
+        setAttribute(elm, "dictionary_id", dictionaryId);
+
+        addDictionary(dictionaryId);
+
+        return elm;
+    }
+
+    private Element createTranslations(int referenceTable, HashSet<Integer> referenceIds,
+                                       ArrayList<Integer> profiles, String nodeName, Document doc) throws Exception {
+        Element elm;
+        ArrayList<ExchangeExternalTermViewDO> terms;
+
+        elm = doc.createElement(nodeName);
         try {
-            externalTerms = exchangeExternalTerm.fetchByReferenceTableIdReferenceIdsProfileIds(refTableId,
-                                                                                               refIds,
-                                                                                               profileIds);
-            elements = new ArrayList<Element>();
-
-            for (ExchangeExternalTermViewDO extTerm : externalTerms)
-                elements.add(getExternalTerm(document, extTerm));
-
-            return elements;
+            terms = exchangeExternalTerm.fetchByReferenceTableIdReferenceIdsProfileIds(referenceTable,
+                                                                                       referenceIds,
+                                                                                       profiles);
+            for (ExchangeExternalTermViewDO term : terms)
+                elm.appendChild(createExternalTerm(doc, term));
         } catch (NotFoundException e) {
             return null;
         }
+
+        return elm;
     }
 
-    public Element getExternalTerm(Document document, ExchangeExternalTermViewDO externalTerm) {
-        Element parent, child;
-        DictionaryDO dict;
-
-        if (document == null || externalTerm == null)
-            return null;
-
-        parent = document.createElement("translation");
-        parent.setAttribute("id", externalTerm.getId().toString());
-        parent.setAttribute("reference_id", externalTerm.getExchangeLocalTermReferenceId()
-                                                        .toString());
-        parent.setAttribute("is_active", externalTerm.getIsActive());
-
-        try {
-            dict = dictionaryCache.getById(externalTerm.getProfileId());
-            child = document.createElement("profile");
-            child.setTextContent(dict.getEntry());
-            parent.appendChild(child);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Could not fetch dictionary with id: " +
-                                  externalTerm.getProfileId(), e);
-        }
-
-        child = document.createElement("code");
-        child.setTextContent(externalTerm.getExternalTerm());
-        parent.appendChild(child);
-
-        child = document.createElement("description");
-        child.setTextContent(externalTerm.getExternalDescription());
-        parent.appendChild(child);
-
-        child = document.createElement("coding_system");
-        child.setTextContent(externalTerm.getExternalCodingSystem());
-        parent.appendChild(child);
-
-        if (externalTerm.getVersion() != null) {
-            child = document.createElement("version");
-            child.setTextContent(externalTerm.getVersion());
-            parent.appendChild(child);
-        }
-
-        return parent;
-    }
-
-    private Element getResultAuxDictionary(Document document, String name, Integer resultId,
-                                           Integer dictionaryId) {
-        Element parent;
-
-        if (document == null || resultId == null || dictionaryId == null)
-            return null;
-
-        parent = document.createElement(name);
-        parent.setAttribute("id", resultId.toString());
-        parent.setAttribute("dictionary_id", dictionaryId.toString());
-
-        return parent;
-    }
-
-    private void createTranslations(int referenceTable, ArrayList<Integer> profileIds,
-                                    HashSet<Integer> referenceIds, String nodeName, Document doc,
-                                    Element root) throws Exception {
-        Element translations;
-        ArrayList<Element> externalTerms;
-
-        externalTerms = getExternalTerms(referenceTable, referenceIds, profileIds, doc);
-
-        if (externalTerms != null) {
-            translations = doc.createElement(nodeName);
-
-            for (Element e : externalTerms)
-                translations.appendChild(e);
-
-            root.appendChild(translations);
+    private void setAttribute(Element e, String name, Object value) {
+        if (value != null) {
+            if (value instanceof Datetime)
+                e.setAttribute(name, format((Datetime)value));
+            else
+                e.setAttribute(name, value.toString());
         }
     }
 
-    private Element getHeader(Document document, ExchangeCriteriaViewDO criteria) {
-        Element parent, child;
-        DictionaryDO dict;
+    private Element setText(Document doc, Element e, String name, Object value) {
+        Element e1;
 
-        if (document == null || criteria == null)
-            return null;
-
-        parent = document.createElement("header");
-
-        child = document.createElement("name");
-        child.setTextContent(criteria.getName());
-        parent.appendChild(child);
-
-        try {
-            dict = dictionaryCache.getById(criteria.getEnvironmentId());
-            child = document.createElement("environment");
-            child.setTextContent(dict.getEntry());
-            parent.appendChild(child);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, "Could not fetch dictionary with id: " +
-                                  criteria.getEnvironmentId(), e);
+        if (value != null) {
+            e1 = doc.createElement(name);
+            if (value instanceof Datetime)
+                e1.setTextContent(format((Datetime)value));
+            else
+                e1.setTextContent(value.toString());
+            e.appendChild(e1);
+        } else {
+            e1 = null;
         }
-
-        parent.setAttribute("include_all_analyses", criteria.getIsAllAnalysesIncluded());
-
-        return parent;
+        return e1;
     }
 
-    private String getDatetimeForSchema(Datetime dt) {
+    private void addProject(Integer id) {
+        if (id != null) {
+            if (projects == null)
+                projects = new HashSet<Integer>();
+            projects.add(id);
+        }
+    }
+
+    private void addOrganization(Integer id) {
+        if (id != null) {
+            if (organizations == null)
+                organizations = new HashSet<Integer>();
+            organizations.add(id);
+        }
+    }
+
+    private void addQa(Integer id) {
+        if (id != null) {
+            if (qas == null)
+                qas = new HashSet<Integer>();
+            qas.add(id);
+        }
+    }
+
+    private void addPanel(Integer id) {
+        if (id != null) {
+            if (panels == null)
+                panels = new HashSet<Integer>();
+            panels.add(id);
+        }
+    }
+
+    private void addTest(Integer id) {
+        if (id != null) {
+            if (tests == null)
+                tests = new HashSet<Integer>();
+            tests.add(id);
+        }
+    }
+
+    private void addMethod(Integer id) {
+        if (id != null) {
+            if (methods == null)
+                methods = new HashSet<Integer>();
+            methods.add(id);
+        }
+    }
+
+    private void addTrailer(Integer id) {
+        if (id != null) {
+            if (trailers == null)
+                trailers = new HashSet<Integer>();
+            trailers.add(id);
+        }
+    }
+
+    private void addSection(Integer id) {
+        if (id != null) {
+            if (sections == null)
+                sections = new HashSet<Integer>();
+            sections.add(id);
+        }
+    }
+
+    private void addUser(Integer id) {
+        // skip user 0 (system)
+        if (id != null && id != 0) {
+            if (users == null)
+                users = new HashSet<Integer>();
+            users.add(id);
+        }
+    }
+
+    private void addAnalyte(Integer id) {
+        if (id != null) {
+            if (analytes == null)
+                analytes = new HashSet<Integer>();
+            analytes.add(id);
+        }
+    }
+
+    private void addDictionary(Integer id) {
+        if (id != null) {
+            if (dicts == null)
+                dicts = new HashSet<Integer>();
+            dicts.add(id);
+        }
+    }
+
+    private String format(Datetime dt) {
         String ytod, htos;
-        Date d;
 
         if (dt == null)
             return null;
 
-        d = dt.getDate();
-
         ytod = null;
         if (dt.getStartCode() < Datetime.DAY)
-            ytod = dateFormat.format(d);
+            ytod = dateFormat.format(dt.getDate());
 
         htos = null;
         if (dt.getEndCode() > Datetime.DAY)
-            htos = timeFormat.format(d);
+            htos = timeFormat.format(dt.getDate());
 
         return DataBaseUtil.concatWithSeparator(ytod, "T", htos);
     }
