@@ -101,7 +101,9 @@ public class QAEventTabUI extends Screen {
 
     protected Screen                   parentScreen;
 
-    protected QAEventTabUI            screen;
+    protected QAEventTabUI             screen;
+    
+    protected EventBus                 parentBus;
 
     protected SampleManager1           manager, displayedManager;
 
@@ -113,9 +115,9 @@ public class QAEventTabUI extends Screen {
 
     protected QAEventLookupUI          qaEventLookup;
 
-    public QAEventTabUI(Screen parentScreen, EventBus bus) {
+    public QAEventTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -324,7 +326,7 @@ public class QAEventTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
+        parentBus.addHandlerToSource(StateChangeEvent.getType(),
                                parentScreen,
                                new StateChangeEvent.Handler() {
                                    public void onStateChange(StateChangeEvent event) {
@@ -333,7 +335,7 @@ public class QAEventTabUI extends Screen {
                                    }
                                });
 
-        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+        parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 int i, count1, count2;
                 String uid;
@@ -404,7 +406,7 @@ public class QAEventTabUI extends Screen {
             }
         });
 
-        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
+        parentBus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
                 if (AnalysisChangeEvent.Action.STATUS_CHANGED.equals(event.getAction()) ||
@@ -730,6 +732,6 @@ public class QAEventTabUI extends Screen {
             uid = null;
         else
             uid = manager.getAnalysisUid(analysisId);
-        bus.fireEvent(new QAEventChangeEvent(uid));
+        parentBus.fireEvent(new QAEventChangeEvent(uid));
     }
 }

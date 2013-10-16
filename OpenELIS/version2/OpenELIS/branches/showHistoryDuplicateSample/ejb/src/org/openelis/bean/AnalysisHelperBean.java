@@ -852,6 +852,9 @@ public class AnalysisHelperBean {
         ana = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(analysisId));
         accession = DataBaseUtil.toInteger(getSample(sm).getAccessionNumber());
 
+        /*
+         * can't change the prep test of a released or cancelled analysis
+         */
         if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) ||
             Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId())) {
             status = dictionaryCache.getById(ana.getStatusId()).getEntry();
@@ -888,8 +891,28 @@ public class AnalysisHelperBean {
         return sm;
     }
 
-    private ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO ana, TestAnalyteViewDO ta,
-                                      String reportable, ResultFormatter rf) {
+    /**
+     * Sets the second argument as the prep analysis of the first. If the prep
+     * analysis is completed or released then sets the status of the analytical
+     * analysis as logged-in and the available date as the current date-time,
+     * otherwise sets those fields to in-prep and null respectively.
+     */
+    public void setPrepAnalysis(AnalysisViewDO data, AnalysisViewDO prep) {
+        data.setPreAnalysisId(prep.getId());
+        data.setPreAnalysisTest(prep.getTestName());
+        data.setPreAnalysisMethod(prep.getMethodName());
+        if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) ||
+            Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
+            data.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
+            data.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        } else {
+            data.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
+            data.setAvailableDate(null);
+        }
+    }
+
+    protected ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO ana,
+                                        TestAnalyteViewDO ta, String reportable, ResultFormatter rf) {
         ResultViewDO r;
 
         r = new ResultViewDO();
@@ -913,7 +936,7 @@ public class AnalysisHelperBean {
      * sets it as the value; otherwise value is not changed. Sets the type to
      * null in both cases to force validation.
      */
-    private void setDefault(ResultViewDO r, Integer unitId, ResultFormatter rf) {
+    protected void setDefault(ResultViewDO r, Integer unitId, ResultFormatter rf) {
         String def;
 
         def = rf.getDefault(r.getResultGroup(), unitId);
@@ -922,7 +945,7 @@ public class AnalysisHelperBean {
         r.setTypeId(null);
     }
 
-    private void unlinkAnalyses(Integer analysisId, ArrayList<AnalysisViewDO> analyses) {
+    protected void unlinkAnalyses(Integer analysisId, ArrayList<AnalysisViewDO> analyses) {
         Datetime now;
 
         now = null;
@@ -947,27 +970,13 @@ public class AnalysisHelperBean {
         }
     }
 
-    private void unlinkPrepAnalysis(AnalysisViewDO ana) {
+    protected void unlinkPrepAnalysis(AnalysisViewDO ana) {
         ana.setPreAnalysisId(null);
         ana.setPreAnalysisTest(null);
         ana.setPreAnalysisMethod(null);
         if (Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId())) {
             ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
             ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        }
-    }
-
-    private void setPrepAnalysis(AnalysisViewDO ana, AnalysisViewDO prep) {
-        ana.setPreAnalysisId(prep.getId());
-        ana.setPreAnalysisTest(prep.getTestName());
-        ana.setPreAnalysisMethod(prep.getMethodName());
-        if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) ||
-            Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
-            ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
-            ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        } else {
-            ana.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
-            ana.setAvailableDate(null);
         }
     }
 }

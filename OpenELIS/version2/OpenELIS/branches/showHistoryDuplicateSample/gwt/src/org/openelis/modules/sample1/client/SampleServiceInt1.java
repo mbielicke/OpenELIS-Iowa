@@ -71,6 +71,8 @@ public interface SampleServiceInt1 extends RemoteService {
     
     public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception;
     
+    public SampleManager1 duplicate(Integer sampleId) throws Exception;
+    
     public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception;
     
     public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception;

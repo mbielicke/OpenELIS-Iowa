@@ -37,7 +37,6 @@ import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
-import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
@@ -106,6 +105,7 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.QueryFieldUtil;
@@ -172,12 +172,18 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, orderLookupButton, projectButton, reportToButton, birthHospitalButton;
+                    abort, optionsButton, orderLookupButton, projectButton, reportToButton,
+                    birthHospitalButton;
+
+    @UiField
+    protected Menu                                      optionsMenu, historyMenu;
 
     @UiField
     protected MenuItem                                  duplicate, historySample,
-                    historySampleProject, historySampleItem, historyAnalysis, historyCurrentResult,
-                    historyStorage, historySampleQA, historyAnalysisQA, historyAuxData;
+                    historySampleNeonatal, historyPatient, historyNextOfKin, historySampleProject,
+                    historySampleOrganization, historySampleItem, historyAnalysis,
+                    historyCurrentResult, historyStorage, historySampleQA, historyAnalysisQA,
+                    historyAuxData;
 
     @UiField
     protected TabLayoutPanel                            tabPanel;
@@ -204,7 +210,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected StorageTabUI                              storageTab;
 
     @UiField(provided = true)
-    protected QAEventTabUI                             qaEventTab;
+    protected QAEventTabUI                              qaEventTab;
 
     @UiField(provided = true)
     protected AuxDataTabUI                              auxDataTab;
@@ -218,8 +224,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected ModulePermission                          userPermission;
 
     protected NeonatalScreeningSampleLoginScreenUI      screen;
-
-    protected SampleHistoryUtility1                     historyUtility;
 
     protected HashMap<String, Object>                   cache;
 
@@ -264,16 +268,16 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             window.close();
         }
 
-        sampleItemAnalysisTreeTab = new SampleItemAnalysisTreeTabUI(this, bus);
-        sampleItemTab = new SampleItemTabUI(this, bus);
-        analysisTab = new AnalysisTabUI(this, bus);
-        resultTab = new ResultTabUI(this, bus);
-        analysisNotesTab = new AnalysisNotesTabUI(this, bus);
-        sampleNotesTab = new SampleNotesTabUI(this, bus);
-        storageTab = new StorageTabUI(this, bus);
-        qaEventTab = new QAEventTabUI(this, bus);
+        sampleItemAnalysisTreeTab = new SampleItemAnalysisTreeTabUI(this);
+        sampleItemTab = new SampleItemTabUI(this);
+        analysisTab = new AnalysisTabUI(this);
+        resultTab = new ResultTabUI(this);
+        analysisNotesTab = new AnalysisNotesTabUI(this);
+        sampleNotesTab = new SampleNotesTabUI(this);
+        storageTab = new StorageTabUI(this);
+        qaEventTab = new QAEventTabUI(this);
 
-        auxDataTab = new AuxDataTabUI(this, bus) {
+        auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
                 return manager != null &&
@@ -397,6 +401,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
         addShortcut(abort, 'o', CTRL);
 
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                optionsMenu.setEnabled(isState(DISPLAY));
+                optionsButton.setEnabled(isState(DISPLAY));
+                historyMenu.setEnabled(isState(DISPLAY));
+            }
+        });
+
         /*
          * option menu items
          */
@@ -408,7 +420,20 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         duplicate.addCommand(new Command() {
             public void execute() {
-
+                try {
+                    manager = SampleService1.get().duplicate(manager.getSample().getId());                    
+                    buildCache();
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    return;
+                }
+                evaluateEdit();
+                setData();
+                setState(ADD);
+                fireDataChange();
+                accessionNumber.setFocus(true);
+                window.setDone(Messages.get().gen_enterInformationPressCommit());
             }
         });
 
@@ -421,7 +446,46 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySample.addCommand(new Command() {
             @Override
             public void execute() {
-                historySample();
+                SampleHistoryUtility1.sample(manager, window);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                historySampleNeonatal.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        historySampleNeonatal.addCommand(new Command() {
+            @Override
+            public void execute() {
+                SampleHistoryUtility1.neonatal(manager, window);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                historyPatient.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        historyPatient.addCommand(new Command() {
+            @Override
+            public void execute() {
+                SampleHistoryUtility1.neonatalPatient(manager, window);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                historyNextOfKin.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        historyNextOfKin.addCommand(new Command() {
+            @Override
+            public void execute() {
+                SampleHistoryUtility1.neonatalNextOfKin(manager, window);
             }
         });
 
@@ -434,7 +498,20 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleProject.addCommand(new Command() {
             @Override
             public void execute() {
-                historySampleProject();
+                SampleHistoryUtility1.project(manager, window);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                historySampleOrganization.setEnabled(isState(DISPLAY));
+            }
+        });
+
+        historySampleOrganization.addCommand(new Command() {
+            @Override
+            public void execute() {
+                SampleHistoryUtility1.organization(manager, window);
             }
         });
 
@@ -447,7 +524,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleItem.addCommand(new Command() {
             @Override
             public void execute() {
-                historySampleItem();
+                SampleHistoryUtility1.item(manager, window);
             }
         });
 
@@ -460,7 +537,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyAnalysis.addCommand(new Command() {
             @Override
             public void execute() {
-                historyAnalysis();
+                SampleHistoryUtility1.analysis(manager, window);
             }
         });
 
@@ -473,7 +550,26 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyCurrentResult.addCommand(new Command() {
             @Override
             public void execute() {
-                historyCurrentResult();
+                String uid;
+                Object obj;
+
+                /*
+                 * Show the history of the results of the analysis selected in
+                 * the tree. Inform the user that they first need to select an
+                 * analysis if this is not the case.
+                 */
+                uid = sampleItemAnalysisTreeTab.getSelectedUid();
+                if (uid != null) {
+                    obj = manager.getObject(uid);
+                    if (obj instanceof AnalysisViewDO) {
+                        SampleHistoryUtility1.currentResult(manager,
+                                                            ((AnalysisViewDO)obj).getId(),
+                                                            window);
+                        return;
+                    }
+                }
+
+                window.setError(Messages.get().result_historyException());
             }
         });
 
@@ -485,7 +581,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyStorage.addCommand(new Command() {
             @Override
             public void execute() {
-                historyStorage();
+                SampleHistoryUtility1.storage(manager, window);
             }
         });
 
@@ -497,7 +593,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleQA.addCommand(new Command() {
             @Override
             public void execute() {
-                historySampleQA();
+                SampleHistoryUtility1.sampleQA(manager, window);
             }
         });
 
@@ -509,7 +605,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyAnalysisQA.addCommand(new Command() {
             @Override
             public void execute() {
-                historyAnalysisQA();
+                SampleHistoryUtility1.analysisQA(manager, window);
             }
         });
 
@@ -522,7 +618,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyAuxData.addCommand(new Command() {
             @Override
             public void execute() {
-                historyAuxData();
+                SampleHistoryUtility1.auxData(manager, window);
             }
         });
 
@@ -561,8 +657,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public void onStateChange(StateChangeEvent event) {
-                orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                orderId.setQueryMode(isState(QUERY));
+                /*
+                 * disabled until the functionality for the orders for this
+                 * domain has been implemented
+                 */
+                // orderId.setEnabled(isState(QUERY) || (canEdit && isState(ADD,
+                // UPDATE)));
+                // orderId.setQueryMode(isState(QUERY));
+                orderId.setEnabled(false);
             }
 
             public Widget onTab(boolean forward) {
@@ -572,7 +674,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                orderLookupButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+                /*
+                 * disabled until the functionality for the orders for this
+                 * domain has been implemented
+                 */
+                //orderLookupButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+                orderLookupButton.setEnabled(false);
             }
         });
 
@@ -1152,11 +1259,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(isNicu, SampleMeta.getNeoIsNicu(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isNicu.setValue(getNeonatalIsNicu());
+                isNicu.setValue(getIsNicu());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                setNeonatalIsNicu(event.getValue());
+                setIsNicu(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1167,11 +1274,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(birthOrder, SampleMeta.getNeoBirthOrder(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                birthOrder.setValue(getNeonatalBirthOrder());
+                birthOrder.setValue(getBirthOrder());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                setNeonatalBirthOrder(event.getValue());
+                setBirthOrder(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1184,11 +1291,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          SampleMeta.getNeoGestationalAge(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 gestationalAge.setValue(getNeonatalGestationalAge());
+                                 gestationalAge.setValue(getGestationalAge());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setNeonatalGestationalAge(event.getValue());
+                                 setGestationalAge(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1200,11 +1307,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(feedingId, SampleMeta.getNeoFeedingId(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                feedingId.setValue(getNeonatalFeedingId());
+                feedingId.setValue(getFeedingId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                setNeonatalFeedingId(event.getValue());
+                setFeedingId(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1215,11 +1322,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(weight, SampleMeta.getNeoWeight(), new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                weight.setValue(getNeonatalWeight());
+                weight.setValue(getWeight());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                setNeonatalWeight(event.getValue());
+                setWeight(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1232,11 +1339,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          SampleMeta.getNeoIsTransfused(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 isTransfused.setValue(getNeonatalIsTransfused());
+                                 isTransfused.setValue(getIsTransfused());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
-                                 setNeonatalIsTransfused(event.getValue());
+                                 setIsTransfused(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1250,11 +1357,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          SampleMeta.getNeoTransfusionDate(),
                          new ScreenHandler<Datetime>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 transfusionDate.setValue(getNeonatalTransfusionDate());
+                                 transfusionDate.setValue(getTransfusionDate());
                              }
 
                              public void onValueChange(ValueChangeEvent<Datetime> event) {
-                                 setNeonatalTransfusionDate(event.getValue());
+                                 setTransfusionDate(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1266,7 +1373,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(transfusionAge, "transfusionAge", new ScreenHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                transfusionAge.setValue(getNeonatalTransfusionAge());
+                transfusionAge.setValue(getTransfusionAge());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1277,11 +1384,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(isRepeat, SampleMeta.getNeoIsRepeat(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isRepeat.setValue(getNeonatalIsRepeat());
+                isRepeat.setValue(getIsRepeat());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                setNeonatalIsRepeat(event.getValue());
+                setIsRepeat(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1291,14 +1398,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         });
 
         addScreenHandler(collectionAge,
-                         SampleMeta.getNeoCollectionAge(),
+                         SampleMeta.getCollectionAge(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
                                  collectionAge.setValue(getNeonatalCollectionAge());
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setNeonatalCollectionAge(event.getValue());
+                                 setCollectionAge(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1312,11 +1419,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          SampleMeta.getNeoIsCollectionValid(),
                          new ScreenHandler<String>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 isCollectionValid.setValue(getNeonatalIsCollectionValid());
+                                 isCollectionValid.setValue(getIsCollectionValid());
                              }
 
                              public void onValueChange(ValueChangeEvent<String> event) {
-                                 setNeonatalIsCollectionValid(event.getValue());
+                                 setIsCollectionValid(event.getValue());
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -1330,10 +1437,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                          SampleMeta.getNeoProviderLastName(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
+                                 // TODO
                                  setProviderSelection();
                              }
 
                              public void onValueChange(ValueChangeEvent<Integer> event) {
+                                 // TODO
                                  getProviderFromSelection();
                              }
 
@@ -1346,7 +1455,34 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         providerLastName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                getProviderMatches(event);
+                ProviderDO data;
+                ArrayList<ProviderDO> list;
+                Item<Integer> row;
+                ArrayList<Item<Integer>> model;
+
+                window.setBusy();
+                try {
+                    list = ProviderService.get()
+                                          .fetchByLastName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new Item<Integer>(3);
+                        data = list.get(i);
+
+                        row.setKey(data.getId());
+                        row.setData(data);
+                        row.setCell(0, data.getLastName());
+                        row.setCell(1, data.getFirstName());
+                        row.setCell(2, data.getMiddleName());
+
+                        model.add(row);
+                    }
+                    providerLastName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                window.clearStatus();
             }
         });
 
@@ -1360,28 +1496,66 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                              public void onStateChange(StateChangeEvent event) {
                                  providerFirstName.setEnabled(isState(QUERY) ||
                                                               (canEdit && isState(ADD, UPDATE)));
-                                 providerLastName.setQueryMode(isState(QUERY));
+                                 providerFirstName.setQueryMode(isState(QUERY));
                              }
                          });
 
-        addScreenHandler(projectName, SampleMeta.getProjectName(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                setProjectSelection();
-            }
+        addScreenHandler(projectName,
+                         SampleMeta.getProjectName(),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 SampleProjectViewDO data;
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                getProjectFromSelection();
-            }
+                                 data = getFirstPermanentProject();
+                                 if (data != null)
+                                     projectName.setValue(data.getProjectId(),
+                                                          data.getProjectName());
+                                 else
+                                     projectName.setValue(null, "");
+                             }
 
-            public void onStateChange(StateChangeEvent event) {
-                projectName.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                projectName.setQueryMode(isState(QUERY));
-            }
-        });
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 ProjectDO data;
+
+                                 data = null;
+                                 if (event.getValue() != null)
+                                     data = (ProjectDO)event.getValue().getData();
+                                 setProject(data);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 projectName.setEnabled(isState(QUERY) ||
+                                                        (canEdit && isState(ADD, UPDATE)));
+                                 projectName.setQueryMode(isState(QUERY));
+                             }
+                         });
 
         projectName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                getProjectMatches(event);
+                Item<Integer> row;
+                ArrayList<ProjectDO> list;
+                ArrayList<Item<Integer>> model;
+
+                window.setBusy();
+                try {
+                    list = ProjectService.get()
+                                         .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<Item<Integer>>();
+                    for (ProjectDO p : list) {
+                        row = new Item<Integer>(4);
+
+                        row.setKey(p.getId());
+                        row.setCell(0, p.getName());
+                        row.setCell(1, p.getDescription());
+                        row.setData(p);
+                        model.add(row);
+                    }
+                    projectName.showAutoMatches(model);
+                } catch (Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+                window.clearStatus();
             }
         });
 
@@ -1391,24 +1565,40 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        addScreenHandler(reportToName, SampleMeta.getOrgName(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                setOrganizationSelection(reportToName, Constants.dictionary().ORG_REPORT_TO);
-            }
+        addScreenHandler(reportToName,
+                         SampleMeta.getOrgName(),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 SampleOrganizationViewDO data;
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                getOrganizationFromSelection(reportToName, Constants.dictionary().ORG_REPORT_TO);
-            }
+                                 data = getSampleOrganization(Constants.dictionary().ORG_REPORT_TO);
 
-            public void onStateChange(StateChangeEvent event) {
-                reportToName.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                reportToName.setQueryMode(isState(QUERY));
-            }
-        });
+                                 if (data != null)
+                                     reportToName.setValue(data.getOrganizationId(),
+                                                           data.getOrganizationName());
+                                 else 
+                                     reportToName.setValue(null, "");
+                             }
+
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 OrganizationDO data;
+
+                                 data = null;
+                                 if (event.getValue() != null)
+                                     data = (OrganizationDO)event.getValue().getData();
+                                 setOrganization(Constants.dictionary().ORG_REPORT_TO, data);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 reportToName.setEnabled(isState(QUERY) ||
+                                                         (canEdit && isState(ADD, UPDATE)));
+                                 reportToName.setQueryMode(isState(QUERY));
+                             }
+                         });
 
         reportToName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                getOrganizationMatches(event.getMatch(), reportToName);
+                showOrganizationMatches(event.getMatch(), reportToName);
             }
         });
 
@@ -1418,26 +1608,41 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        addScreenHandler(birthHospitalName, SampleMeta.getBillTo(), new ScreenHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                setOrganizationSelection(birthHospitalName,
-                                         Constants.dictionary().ORG_BIRTH_HOSPITAL);
-            }
+        addScreenHandler(birthHospitalName,
+                         SampleMeta.getBillTo(),
+                         new ScreenHandler<AutoCompleteValue>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 SampleOrganizationViewDO data;
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                getOrganizationFromSelection(birthHospitalName,
-                                             Constants.dictionary().ORG_BIRTH_HOSPITAL);
-            }
+                                 data = getSampleOrganization(Constants.dictionary().ORG_BIRTH_HOSPITAL);
 
-            public void onStateChange(StateChangeEvent event) {
-                birthHospitalName.setEnabled(isState(QUERY) || (canEdit && isState(ADD, UPDATE)));
-                birthHospitalName.setQueryMode(isState(QUERY));
-            }
-        });
+                                 if (data != null)
+                                     birthHospitalName.setValue(data.getOrganizationId(),
+                                                                data.getOrganizationName());
+                                 else 
+                                     birthHospitalName.setValue(null, "");
+                             }
+
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 OrganizationDO data;
+
+                                 data = null;
+                                 if (event.getValue() != null)
+                                     data = (OrganizationDO)event.getValue().getData();
+                                 setOrganization(Constants.dictionary().ORG_BIRTH_HOSPITAL, data);
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 birthHospitalName.setEnabled(isState(QUERY) ||
+                                                              (canEdit && isState(ADD, UPDATE)));
+                                 birthHospitalName.setQueryMode(isState(QUERY));
+                             }
+                         });
 
         birthHospitalName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                getOrganizationMatches(event.getMatch(), birthHospitalName);
+                // TODO
+                showOrganizationMatches(event.getMatch(), birthHospitalName);
             }
         });
 
@@ -1450,11 +1655,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(formNumber, SampleMeta.getNeoFormNumber(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                formNumber.setValue(getNeonatalFormNumber());
+                formNumber.setValue(getFormNumber());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                setNeonatalFormNumber(event.getValue());
+                setFormNumber(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -1463,98 +1668,39 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
-        /*
-         * tabs
-         */
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
+        /*
+         * add the handlers for the tabs, so that they can be treated like other
+         * widgets
+         */
         addScreenHandler(sampleItemAnalysisTreeTab,
                          "sampleItemAnalysisTreeTab",
                          new ScreenHandler<Object>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 /*
-                                  * ignore because the the tab gets refreshed
-                                  * only when some or no node in the tree is
-                                  * selected
-                                  */
-                             }
-
                              public Object getQuery() {
                                  return null;
                              }
                          });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                /*
-                 * ignore because the the tab gets refreshed only when some or
-                 * no node in the tree is selected
-                 */
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                /*
-                 * ignore because the tab has its own handler for this event
-                 */
-            }
-
             public Object getQuery() {
                 return sampleItemTab.getQueryFields();
             }
         });
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                /*
-                 * ignore because the the tab gets refreshed only when some or
-                 * no node in the tree is selected
-                 */
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                /*
-                 * ignore because the tab has its own handler for this event
-                 */
-            }
-
             public Object getQuery() {
                 return analysisTab.getQueryFields();
             }
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                /*
-                 * ignore because the the tab gets refreshed only when some or
-                 * no node in the tree is selected
-                 */
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                /*
-                 * ignore because the tab has its own handler for this event
-                 */
-            }
-
             public Object getQuery() {
                 return null;
             }
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                /*
-                 * ignore because the the tab gets refreshed only when some or
-                 * no node in the tree is selected
-                 */
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                /*
-                 * ignore because the tab has its own handler for this event
-                 */
-            }
-
             public Object getQuery() {
                 return null;
             }
@@ -1578,6 +1724,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         });
 
+        /*
+         * handlers for the events fired by the tabs
+         */
+
         bus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
@@ -1599,7 +1749,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     manager = SampleService1.get().removeAnalysis(manager, ana.getId());
                     setData();
                     setState(state);
-                    bus.fireEventFromSource(event, screen);
+                    bus.fireEventFromSource(new RemoveAnalysisEvent(event.getUid()), screen);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1610,7 +1760,62 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
-                analysisChanged(event);
+                AnalysisViewDO ana;
+                SampleTestReturnVO ret;
+
+                if (screen == event.getSource())
+                    return;
+
+                ana = (AnalysisViewDO)manager.getObject(event.getUid());
+                ret = null;
+
+                /*
+                 * based on the field in the analysis being changed, call a
+                 * specific service method
+                 */
+                try {
+                    switch (event.getAction()) {
+                        case METHOD_CHANGED:
+                            ret = SampleService1.get().changeAnalysisMethod(manager,
+                                                                            ana.getId(),
+                                                                            event.getChangeId());
+                            manager = ret.getManager();
+                            break;
+                        case STATUS_CHANGED:
+                            manager = SampleService1.get()
+                                                    .changeAnalysisStatus(manager,
+                                                                          ana.getId(),
+                                                                          event.getChangeId());
+                            break;
+                        case UNIT_CHANGED:
+                            manager = SampleService1.get().changeAnalysisUnit(manager,
+                                                                              ana.getId(),
+                                                                              event.getChangeId());
+                            break;
+                        case PREP_CHANGED:
+                            manager = SampleService1.get().changeAnalysisPrep(manager,
+                                                                              ana.getId(),
+                                                                              event.getChangeId());
+                            break;
+                    }
+
+                    setData();
+                    setState(state);
+
+                    /*
+                     * notify all tabs that need to refresh themselves because
+                     * of the change in the analysis
+                     */
+                    bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
+                                                                    event.getChangeId(),
+                                                                    event.getAction()), this);
+                    bus.fireEvent(new ResultChangeEvent());
+
+                    showErrorsOrTests(ret);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
         });
 
@@ -1637,11 +1842,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             public void onAddAuxGroup(AddAuxGroupEvent event) {
                 SampleTestReturnVO ret;
                 ArrayList<Integer> ids;
-                
+
                 if (screen == event.getSource())
-                    return; 
-                
-                ids = event.getGroupIds(); 
+                    return;
+
+                ids = event.getGroupIds();
                 if (ids != null && ids.size() > 0) {
                     try {
                         ret = SampleService1.get().addAuxGroups(manager, ids);
@@ -1649,10 +1854,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         setData();
                         setState(state);
                         bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
-                        if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                            showErrors(ret.getErrors());
-                        else
-                            window.clearStatus();
+                        showErrorsOrTests(ret);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1666,14 +1868,15 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
                     if (screen == event.getSource())
-                        return; 
-                    
+                        return;
+
                     try {
                         manager = SampleService1.get()
                                                 .removeAuxGroups(manager, event.getGroupIds());
                         setData();
                         setState(state);
-                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()), screen);
+                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()),
+                                                screen);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1771,6 +1974,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     /*
      * basic button methods
      */
+
+    /**
+     * puts the screen in query state, sets the manager to null and instantiates
+     * the cache so that it can be used by aux data tab
+     */
     @UiHandler("query")
     protected void query(ClickEvent event) {
         manager = null;
@@ -1783,9 +1991,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         setState(QUERY);
         fireDataChange();
         accessionNumber.setFocus(true);
-        window.setDone(Messages.get().enterFieldsToQuery());
+        window.setDone(Messages.get().gen_enterFieldsToQuery());
     }
 
+    // TODO make it like the other screens
     @UiHandler("previous")
     protected void previous(ClickEvent event) {
         if (queriedList == null || queryIndex - 1 < 0) {
@@ -1801,6 +2010,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         window.clearStatus();
     }
 
+    // TODO make it like the other screens
     @UiHandler("next")
     protected void next(ClickEvent event) {
         if (queriedList == null || queryIndex + 1 == queriedList.size()) {
@@ -1816,6 +2026,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         window.clearStatus();
     }
 
+    /**
+     * Puts the screen in add state and loads it with a new manager with some
+     * fields with default values.
+     */
     @UiHandler("add")
     protected void add(ClickEvent event) {
         /*
@@ -1836,9 +2050,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         setState(ADD);
         fireDataChange();
         accessionNumber.setFocus(true);
-        window.setDone(Messages.get().enterInformationPressCommit());
+        window.setDone(Messages.get().gen_enterInformationPressCommit());
     }
 
+    /**
+     * Puts the screen in update state and loads it with a locked manager.
+     * Builds the cache from the manager
+     */
     @UiHandler("update")
     protected void update(ClickEvent event) {
         /*
@@ -1860,7 +2078,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             buildCache();
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
             window.clearStatus();
             return;
         }
@@ -1872,6 +2090,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         window.clearStatus();
     }
 
+    /**
+     * Validates the data on the screen and based on the current state, executes
+     * various service operations to commit the data.
+     */
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
         finishEditing();
@@ -1894,6 +2116,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
     }
 
+    /**
+     * Creates query fields from the data on the screen and calls the service
+     * method for executing a query to return a list of samples. Loads the
+     * screen with the first sample's data if any samples were found otherwise
+     * notifies the user.
+     */
     protected void commitQuery() {
         queriedList = null;
         window.setBusy(Messages.get().querying());
@@ -1931,6 +2159,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         cache = null;
     }
 
+    /**
+     * Calls the service method to commit the data on the screen, to the
+     * database. Shows any errors/warnings encountered during the operation.
+     * Otherwise loads the screen with the committed data.
+     */
     protected void commitUpdate(boolean ignoreWarning) {
         if (state == ADD)
             window.setBusy(Messages.get().adding());
@@ -1944,11 +2177,17 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setState(DISPLAY);
             fireDataChange();
             window.clearStatus();
+
+            /*
+             * the cache is set to null only if the add/update succeeds because
+             * otherwise, it can't be used by any tabs if the user wants to
+             * change any data
+             */
             cache = null;
         } catch (ValidationErrorsList e) {
             showErrors(e);
             if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
-                showWarningsDialog(e);
+                showWarnings(e);
         } catch (Exception e) {
             if (state == ADD)
                 Window.alert("commitAdd(): " + e.getMessage());
@@ -1958,6 +2197,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
     }
 
+    /**
+     * Reverts any changes made to the data on the screen and disables editing
+     * of the widgets. If the sample was locked calls the service method to
+     * unlock it and loads the screen with that data.
+     */
     @UiHandler("abort")
     protected void abort(ClickEvent event) {
         finishEditing();
@@ -2075,6 +2319,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         return (T)obj;
     }
 
+    /**
+     * shows the popup for the sample's projects
+     */
     @UiHandler("projectButton")
     protected void project(ClickEvent event) {
         ModalWindow modal;
@@ -2083,20 +2330,25 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             sampleprojectLookUp = new SampleProjectLookupUI() {
                 @Override
                 public void ok() {
+                    SampleProjectViewDO data;
                     if (isState(ADD, UPDATE)) {
                         /*
                          * refresh the display of the autocomplete showing the
                          * project because the list of projects may have been
                          * changed through the popup
                          */
-                        setProjectSelection();
+                        data = getFirstPermanentProject();
+                        if (data != null)
+                            projectName.setValue(data.getProjectId(), data.getProjectName());
+                        else
+                            projectName.setValue(null, "");
                     }
                 }
             };
         }
 
         modal = new ModalWindow();
-        modal.setSize("530px", "400px");
+        modal.setSize("550px", "400px");
         modal.setName(Messages.get().sampleProject());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(sampleprojectLookUp);
@@ -2105,771 +2357,25 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         sampleprojectLookUp.setData(manager, state);
     }
 
+    /**
+     * shows the popup for the sample's organizations
+     */
     @UiHandler("reportToButton")
     protected void reportTo(ClickEvent event) {
         showOrganizationLookup();
     }
 
+    /**
+     * shows the popup for the sample's organizations
+     */
     @UiHandler("birthHospitalButton")
     protected void birthHospital(ClickEvent event) {
         showOrganizationLookup();
     }
 
-    private void historySample() {
-        historyUtility.setManager(manager);
-        historyUtility.historySampleProject();
-    }
-
-    private void historySampleProject() {
-        historyUtility.setManager(manager);
-        historyUtility.historySampleProject();
-    }
-
-    private void historySampleItem() {
-        historyUtility.setManager(manager);
-        historyUtility.historySampleItem();
-    }
-
-    private void historyAnalysis() {
-        historyUtility.setManager(manager);
-        historyUtility.historyAnalysis();
-    }
-
-    private void historyCurrentResult() {
-        historyUtility.setManager(manager);
-        /*
-         * Since the analyses shown on this screen are managed by
-         * SampleItemAnalysisTreeTab, this screen has no knowledge of the
-         * analysis selected by the user to see the history of its results. So
-         * an ActionEvent is fired so that SampleItemAnalysisTreeTab can find
-         * the desired analysis and show the history.
-         */
-        // ActionEvent.fire(screen, ResultTabUI.Action.RESULT_HISTORY, null);
-    }
-
-    private void historyStorage() {
-        historyUtility.setManager(manager);
-        historyUtility.historyStorage();
-    }
-
-    private void historySampleQA() {
-        historyUtility.setManager(manager);
-        historyUtility.historySampleQA();
-    }
-
-    private void historyAnalysisQA() {
-        historyUtility.setManager(manager);
-        historyUtility.historyAnalysisQA();
-    }
-
-    private void historyAuxData() {
-        historyUtility.setManager(manager);
-        historyUtility.historyAuxData();
-    }
-
     /*
-     * getters and setters
+     * methods used for operations that affect the entire screen
      */
-    private Integer getAccessionNumber() {
-        if (manager == null)
-            return null;
-        return manager.getSample().getAccessionNumber();
-    }
-
-    private void setAccessionNumber(Integer accNum) {
-        ValidationErrorsList errors;
-
-        if (accNum == null || accNum < 0) {
-            manager.getSample().setAccessionNumber(accNum);
-            window.setError(Messages.get()
-                                    .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accNum)));
-            return;
-        }
-
-        if (getAccessionNumber() != null) {
-            if ( !Window.confirm(Messages.get().accessionNumberEditConfirm())) {
-                accessionNumber.setValue(getAccessionNumber());
-                accessionNumber.setFocus(true);
-                return;
-            }
-        }
-
-        window.setBusy(Messages.get().fetching());
-        try {
-            manager = SampleService1.get().setAccessionNumber(manager, accNum);
-            setData();
-            fireDataChange();
-            window.clearStatus();
-        } catch (FormErrorException e) {
-            errors = new ValidationErrorsList();
-            errors.add(e);
-            showErrors(errors);
-            accessionNumber.setValue(getAccessionNumber());
-            accessionNumber.setFocus(true);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.clearStatus();
-        }
-    }
-
-    private Integer getOrderId() {
-        if (manager == null)
-            return null;
-        return manager.getSample().getOrderId();
-    }
-
-    private void setOrderId(Integer ordId) {
-        SampleTestReturnVO ret;
-
-        if (ordId == null) {
-            manager.getSample().setOrderId(ordId);
-            return;
-        }
-
-        if (getAccessionNumber() == null) {
-            Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
-            orderId.setValue(null);
-            return;
-        }
-
-        try {
-            window.setBusy(Messages.get().fetching());
-
-            ret = SampleService1.get().setOrderId(manager, ordId);
-            manager = ret.getManager();
-            setData();
-            fireDataChange();
-            if (ret.getErrors() != null && ret.getErrors().size() > 0) {
-                showErrors(ret.getErrors());
-            } else if (ret.getTests() != null && ret.getTests().size() > 0) {
-                showTestSelectionLookup(ret);
-                window.clearStatus();
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.clearStatus();
-        }
-    }
-
-    private void setProjectSelection() {
-        SampleProjectViewDO p;
-
-        p = getFirstPermanentProject();
-
-        if (p != null)
-            projectName.setValue(p.getProjectId(), p.getProjectName());
-        else
-            projectName.setValue(null, "");
-    }
-
-    private void getProjectFromSelection() {
-        AutoCompleteValue row;
-        SampleProjectViewDO sp;
-        ProjectDO data;
-
-        row = projectName.getValue();
-        if (row == null || row.getId() == null) {
-            /*
-             * if a project was not selected and if there were permanent
-             * projects present then the first permanent project is deleted and
-             * the next permanent project is set as the first one
-             */
-            sp = getFirstPermanentProject();
-            if (sp != null)
-                manager.project.remove(sp);
-            sp = getFirstPermanentProject();
-
-            if (sp != null)
-                projectName.setValue(sp.getProjectId(), sp.getProjectName());
-            else
-                projectName.setValue(null, "");
-
-        } else {
-            /*
-             * otherwise the first permanent project is modified or a new one is
-             * created if no project existed
-             */
-            sp = getFirstPermanentProject();
-            if (sp == null) {
-                sp = manager.project.add();
-                sp.setIsPermanent("Y");
-            }
-
-            data = (ProjectDO)row.getData();
-            sp.setProjectId((Integer)row.getId());
-            sp.setProjectName(data.getName());
-            sp.setProjectDescription(data.getDescription());
-        }
-    }
-
-    private void setOrganizationSelection(AutoComplete widget, Integer type) {
-        SampleOrganizationViewDO sorg;
-
-        sorg = getSampleOrganization(type);
-        if (sorg != null)
-            widget.setValue(sorg.getOrganizationId(), sorg.getOrganizationName());
-        else
-            widget.setValue(null, "");
-    }
-
-    private void getOrganizationFromSelection(AutoComplete widget, Integer type) {
-        AutoCompleteValue row;
-        OrganizationDO org;
-        SampleOrganizationViewDO sorg;
-
-        sorg = getSampleOrganization(type);
-        row = widget.getValue();
-        if (row == null || row.getId() == null) {
-            /*
-             * this method is called only when the report-to changes and if
-             * there isn't a report-to selected currently, then there must have
-             * been before, thus it needs to be removed from the manager
-             */
-            manager.organization.remove(sorg);
-            widget.setValue(null, "");
-        } else {
-            org = (OrganizationDO)row.getData();
-            if (sorg == null) {
-                /*
-                 * a report-to was selected by the user but there isn't one
-                 * present in the manager, thus it needs to be added
-                 */
-                sorg = manager.organization.add(org);
-                sorg.setTypeId(type);
-            } else {
-                /*
-                 * the organization was changed, thus the report-to needs to be
-                 * updated
-                 */
-                loadSampleOrganization(org, sorg);
-            }
-
-            widget.setValue(org.getId(), org.getName());
-            /*
-             * warn the user if samples from this organization are to held or
-             * refused
-             */
-            try {
-                showHoldRefuseWarning(org.getId(), org.getName());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-        }
-    }
-
-    private Datetime getCollectionDate() {
-        if (manager == null)
-            return null;
-        return manager.getSample().getCollectionDate();
-    }
-
-    private void setCollectionDate(Datetime date) {
-        manager.getSample().setCollectionDate(date);
-        transfusionAge.setValue(getNeonatalTransfusionAge());
-    }
-
-    private Datetime getCollectionTime() {
-        if (manager == null)
-            return null;
-        return manager.getSample().getCollectionTime();
-    }
-
-    private void setCollectionTime(Datetime time) {
-        manager.getSample().setCollectionTime(time);
-    }
-
-    private Datetime getReceivedDate() {
-        if (manager == null)
-            return null;
-        return manager.getSample().getReceivedDate();
-    }
-
-    private void setReceivedDate(Datetime date) {
-        manager.getSample().setReceivedDate(date);
-    }
-
-    private Integer getStatusId() {
-        if (manager == null)
-            return null;
-        return manager.getSample().getStatusId();
-    }
-
-    private void setStatusId(Integer statusId) {
-        manager.getSample().setStatusId(statusId);
-    }
-
-    private String getClientReference() {
-        if (manager == null)
-            return null;
-        return manager.getSample().getClientReference();
-    }
-
-    private void setClientReference(String clientReference) {
-        manager.getSample().setClientReference(clientReference);
-    }
-
-    private String getPatientLastName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getLastName();
-    }
-
-    private void setPatientLastName(String name) {
-        manager.getSampleNeonatal().getPatient().setLastName(name);
-    }
-
-    private String getPatientFirstName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getFirstName();
-    }
-
-    private void setPatientFirstName(String name) {
-        manager.getSampleNeonatal().getPatient().setFirstName(name);
-    }
-
-    private Integer getPatientGenderId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getGenderId();
-    }
-
-    private void setPatientGenderId(Integer genderId) {
-        manager.getSampleNeonatal().getPatient().setGenderId(genderId);
-    }
-
-    private Integer getPatientRaceId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getRaceId();
-    }
-
-    private void setPatientRaceId(Integer raceId) {
-        manager.getSampleNeonatal().getPatient().setRaceId(raceId);
-    }
-
-    private Integer getPatientEthnicityId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getEthnicityId();
-    }
-
-    private void setPatientEthnicityId(Integer ethnicityId) {
-        manager.getSampleNeonatal().getPatient().setEthnicityId(ethnicityId);
-    }
-
-    private Datetime getPatientBirthDate() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getBirthDate();
-    }
-
-    private void setPatientBirthDate(Datetime date) {
-        manager.getSampleNeonatal().getPatient().setBirthDate(date);
-    }
-
-    private Datetime getPatientBirthTime() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getBirthTime();
-    }
-
-    private void setPatientBirthTime(Datetime time) {
-        manager.getSampleNeonatal().getPatient().setBirthTime(time);
-    }
-
-    private String getPatientAddressMultipleUnit() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getAddress().getMultipleUnit();
-    }
-
-    private void setPatientAddressMultipleUnit(String multipleUnit) {
-        manager.getSampleNeonatal().getPatient().getAddress().setMultipleUnit(multipleUnit);
-    }
-
-    private String getPatientAddressStreetAddress() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getAddress().getStreetAddress();
-    }
-
-    private void setPatientAddressStreetAddress(String streetAddress) {
-        manager.getSampleNeonatal().getPatient().getAddress().setStreetAddress(streetAddress);
-    }
-
-    private String getPatientAddressCity() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getAddress().getCity();
-    }
-
-    private void setPatientAddressCity(String city) {
-        manager.getSampleNeonatal().getPatient().getAddress().setCity(city);
-    }
-
-    private String getPatientAddressState() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getAddress().getState();
-    }
-
-    private void setPatientAddressState(String state) {
-        manager.getSampleNeonatal().getPatient().getAddress().setState(state);
-    }
-
-    private String getPatientAddressZipCode() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getPatient().getAddress().getZipCode();
-    }
-
-    private void setPatientAddressZipCode(String zipCode) {
-        manager.getSampleNeonatal().getPatient().getAddress().setZipCode(zipCode);
-    }
-
-    private String getNextOfKinLastName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getLastName();
-    }
-
-    private void setNextOfKinLastName(String name) {
-        manager.getSampleNeonatal().getNextOfKin().setLastName(name);
-    }
-
-    private String getNextOfKinMiddleName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getMiddleName();
-    }
-
-    private void setNextOfKinMiddleName(String name) {
-        manager.getSampleNeonatal().getNextOfKin().setMiddleName(name);
-    }
-
-    private String getNextOfKinFirstName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getFirstName();
-    }
-
-    private void setNextOfKinFirstName(String name) {
-        manager.getSampleNeonatal().getNextOfKin().setFirstName(name);
-    }
-
-    private Integer getNeonatalNextOfKinRelationId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKinRelationId();
-    }
-
-    private void setNeonatalNextOfKinRelationId(Integer nextOfKinRelationId) {
-        manager.getSampleNeonatal().setNextOfKinRelationId(nextOfKinRelationId);
-    }
-
-    private Integer getNextOfKinGenderId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getGenderId();
-    }
-
-    private void setNextOfKinGenderId(Integer genderId) {
-        manager.getSampleNeonatal().getNextOfKin().setGenderId(genderId);
-    }
-
-    private Integer getNextOfKinRaceId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getRaceId();
-    }
-
-    private void setNextOfKinRaceId(Integer raceId) {
-        manager.getSampleNeonatal().getNextOfKin().setRaceId(raceId);
-    }
-
-    private Integer getNextOfKinEthnicityId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getEthnicityId();
-    }
-
-    private void setNextOfKinEthnicityId(Integer ethnicityId) {
-        manager.getSampleNeonatal().getNextOfKin().setEthnicityId(ethnicityId);
-    }
-
-    private Datetime getNextOfKinBirthDate() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getBirthDate();
-    }
-
-    private void setNextOfKinBirthDate(Datetime date) {
-        manager.getSampleNeonatal().getNextOfKin().setBirthDate(date);
-    }
-
-    private String getNextOfKinAddressHomePhone() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getAddress().getHomePhone();
-    }
-
-    private void setNextOfKinAddressHomePhone(String homePhone) {
-        manager.getSampleNeonatal().getNextOfKin().getAddress().setHomePhone(homePhone);
-    }
-
-    private String getNextOfKinAddressMultipleUnit() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getAddress().getMultipleUnit();
-    }
-
-    private void setNextOfKinAddressMultipleUnit(String multipleUnit) {
-        manager.getSampleNeonatal().getNextOfKin().getAddress().setMultipleUnit(multipleUnit);
-    }
-
-    private String getNextOfKinAddressStreetAddress() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getAddress().getStreetAddress();
-    }
-
-    private void setNextOfKinAddressStreetAddress(String streetAddress) {
-        manager.getSampleNeonatal().getNextOfKin().getAddress().setStreetAddress(streetAddress);
-    }
-
-    private String getNextOfKinAddressCity() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getAddress().getCity();
-    }
-
-    private void setNextOfKinAddressCity(String city) {
-        manager.getSampleNeonatal().getNextOfKin().getAddress().setCity(city);
-    }
-
-    private String getNextOfKinAddressState() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getAddress().getState();
-    }
-
-    private void setNextOfKinAddressState(String state) {
-        manager.getSampleNeonatal().getNextOfKin().getAddress().setState(state);
-    }
-
-    private String getNextOfKinAddressZipCode() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getNextOfKin().getAddress().getZipCode();
-    }
-
-    private void setNextOfKinAddressZipCode(String zipCode) {
-        manager.getSampleNeonatal().getNextOfKin().getAddress().setZipCode(zipCode);
-    }
-
-    private String getNeonatalIsNicu() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getIsNicu();
-    }
-
-    private void setNeonatalIsNicu(String isNicu) {
-        manager.getSampleNeonatal().setIsNicu(isNicu);
-    }
-
-    private Integer getNeonatalBirthOrder() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getBirthOrder();
-    }
-
-    private void setNeonatalBirthOrder(Integer birthOrder) {
-        manager.getSampleNeonatal().setBirthOrder(birthOrder);
-    }
-
-    private Integer getNeonatalGestationalAge() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getGestationalAge();
-    }
-
-    private void setNeonatalGestationalAge(Integer gestationalAge) {
-        manager.getSampleNeonatal().setGestationalAge(gestationalAge);
-    }
-
-    private Integer getNeonatalFeedingId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getFeedingId();
-    }
-
-    private void setNeonatalFeedingId(Integer feedingId) {
-        manager.getSampleNeonatal().setFeedingId(feedingId);
-    }
-
-    private Integer getNeonatalWeight() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getWeight();
-    }
-
-    private void setNeonatalWeight(Integer weight) {
-        manager.getSampleNeonatal().setWeight(weight);
-    }
-
-    private String getNeonatalIsTransfused() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getIsTransfused();
-    }
-
-    private void setNeonatalIsTransfused(String isTransfused) {
-        manager.getSampleNeonatal().setIsTransfused(isTransfused);
-    }
-
-    private Datetime getNeonatalTransfusionDate() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getTransfusionDate();
-    }
-
-    private void setNeonatalTransfusionDate(Datetime transfusionDate) {
-        manager.getSampleNeonatal().setTransfusionDate(transfusionDate);
-        transfusionAge.setValue(getNeonatalTransfusionAge());
-    }
-
-    private Integer getNeonatalTransfusionAge() {
-        Datetime cd, td;
-        Long diff, day;
-        Double numDays;
-
-        cd = getCollectionDate();
-        td = getNeonatalTransfusionDate();
-        if (cd == null || td == null)
-            return null;
-
-        diff = cd.getDate().getTime() - td.getDate().getTime();
-        day = 86400000L;
-        numDays = diff.doubleValue() / day.doubleValue();
-
-        return numDays.intValue();
-    }
-
-    private String getNeonatalIsRepeat() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getIsRepeat();
-    }
-
-    private void setNeonatalIsRepeat(String isRepeat) {
-        manager.getSampleNeonatal().setIsRepeat(isRepeat);
-    }
-
-    private Integer getNeonatalCollectionAge() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getCollectionAge();
-    }
-
-    private void setNeonatalCollectionAge(Integer collectionAge) {
-        manager.getSampleNeonatal().setCollectionAge(collectionAge);
-    }
-
-    private String getNeonatalIsCollectionValid() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getIsCollectionValid();
-    }
-
-    private void setNeonatalIsCollectionValid(String isCollectionValid) {
-        manager.getSampleNeonatal().setIsCollectionValid(isCollectionValid);
-    }
-
-    private Integer getNeonatalProviderId() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getProviderId();
-    }
-
-    private void setNeonatalProviderId(Integer providerId) {
-        manager.getSampleNeonatal().setProviderId(providerId);
-    }
-
-    private String getNeonatalProviderLastName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getProviderLastName();
-    }
-
-    private void setNeonatalProviderLastName(String providerlastName) {
-        manager.getSampleNeonatal().setProviderlastName(providerlastName);
-    }
-
-    private String getNeonatalProviderFirstName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getProviderFirstName();
-    }
-
-    private void setNeonatalProviderFirstName(String providerFirstName) {
-        manager.getSampleNeonatal().setProviderFirstName(providerFirstName);
-    }
-
-    private void setProviderSelection() {
-        if (manager == null) {
-            providerLastName.setValue(null, "");
-            return;
-        }
-
-        providerLastName.setValue(getNeonatalProviderId(), getNeonatalProviderLastName());
-        providerFirstName.setValue(getNeonatalProviderFirstName());
-    }
-
-    private void getProviderFromSelection() {
-        ProviderDO data;
-        AutoCompleteValue row;
-
-        row = providerLastName.getValue();
-        if (row == null || row.getId() == null) {
-            setNeonatalProviderId(null);
-            setProviderFirstName(null);
-            setNeonatalProviderLastName(null);
-
-            providerLastName.setValue(null, "");
-            providerFirstName.setValue("");
-            return;
-        } else {
-            data = (ProviderDO)row.getData();
-
-            setNeonatalProviderId(data.getId());
-            setNeonatalProviderFirstName(data.getFirstName());
-            setNeonatalProviderLastName(data.getLastName());
-
-            providerLastName.setValue(getNeonatalProviderId(), getNeonatalProviderLastName());
-            providerFirstName.setValue(getNeonatalProviderFirstName());
-        }
-    }
-
-    private void setProviderFirstName(String name) {
-        manager.getSampleNeonatal().setProviderFirstName(name);
-    }
-
-    private String getProviderFirstName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getProviderFirstName();
-    }
-
-    private String getNeonatalFormNumber() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getFormNumber();
-    }
-
-    private void setNeonatalFormNumber(String formNumber) {
-        manager.getSampleNeonatal().setFormNumber(formNumber);
-    }
 
     /**
      * Sets the latest manager in the tabs
@@ -2883,9 +2389,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         sampleNotesTab.setData(manager);
         storageTab.setData(manager);
         qaEventTab.setData(manager);
-         
     }
 
+    /**
+     * determines if the fields on the screen can be edited based on the data
+     */
     private void evaluateEdit() {
         canEdit = (manager != null && !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample()
                                                                                             .getStatusId()));
@@ -2946,20 +2454,1035 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * fills the sample organization with the organization's data
+     * shows the warnings and asks the user to confirm committing the data with
+     * warnings
      */
-    private void loadSampleOrganization(OrganizationDO org, SampleOrganizationViewDO data) {
-        AddressDO addr;
+    private void showWarnings(ValidationErrorsList warnings) {
+        StringBuilder b;
 
-        addr = org.getAddress();
-        data.setOrganizationId(org.getId());
-        data.setOrganizationName(org.getName());
-        data.setOrganizationMultipleUnit(addr.getMultipleUnit());
-        data.setOrganizationStreetAddress(addr.getStreetAddress());
-        data.setOrganizationCity(addr.getCity());
-        data.setOrganizationState(addr.getState());
-        data.setOrganizationZipCode(addr.getZipCode());
-        data.setOrganizationCountry(addr.getCountry());
+        b = new StringBuilder();
+        b.append(Messages.get().gen_warningDialogLine1()).append("\n");
+        for (Exception ex : warnings.getErrorList())
+            b.append(" * ").append(ex.getMessage()).append("\n");
+
+        b.append("\n").append(Messages.get().gen_warningDialogLastLine());
+        if (Window.confirm(b.toString()))
+            commitUpdate(true);
+    }
+
+    /*
+     * getters and setters for the fields at the sample or domain level
+     */
+
+    /**
+     * returns the accession number or null if the manager is null
+     */
+    private Integer getAccessionNumber() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getAccessionNumber();
+    }
+
+    /**
+     * Calls the service method to change the accession number, if the new
+     * number is not null or negative and the user confirms changing it. Loads
+     * the screen with the returned manager.
+     */
+    private void setAccessionNumber(Integer accNum) {
+        ValidationErrorsList errors;
+
+        if (accNum == null || accNum < 0) {
+            manager.getSample().setAccessionNumber(accNum);
+            window.setError(Messages.get()
+                                    .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accNum)));
+            return;
+        }
+
+        if (getAccessionNumber() != null) {
+            if ( !Window.confirm(Messages.get().accessionNumberEditConfirm())) {
+                accessionNumber.setValue(getAccessionNumber());
+                accessionNumber.setFocus(true);
+                return;
+            }
+        }
+
+        window.setBusy(Messages.get().fetching());
+        try {
+            manager = SampleService1.get().setAccessionNumber(manager, accNum);
+            setData();
+            fireDataChange();
+            window.clearStatus();
+        } catch (FormErrorException e) {
+            errors = new ValidationErrorsList();
+            errors.add(e);
+            showErrors(errors);
+            accessionNumber.setValue(getAccessionNumber());
+            accessionNumber.setFocus(true);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            window.clearStatus();
+        }
+    }
+
+    /**
+     * returns the order id or null if the manager is null
+     */
+    private Integer getOrderId() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getOrderId();
+    }
+
+    /**
+     * Calls the service method to load the sample from the order with the
+     * specified id, if the id and the accession number are not null. Loads the
+     * screen with the returned manager.
+     */
+    private void setOrderId(Integer ordId) {
+        SampleTestReturnVO ret;
+
+        if (ordId == null) {
+            manager.getSample().setOrderId(ordId);
+            return;
+        }
+
+        if (getAccessionNumber() == null) {
+            Window.alert(Messages.get().enterAccNumBeforeOrderLoad());
+            orderId.setValue(null);
+            return;
+        }
+
+        try {
+            window.setBusy(Messages.get().fetching());
+
+            ret = SampleService1.get().setOrderId(manager, ordId);
+            manager = ret.getManager();
+            setData();
+            fireDataChange();
+            window.clearStatus();
+            showErrorsOrTests(ret);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            window.clearStatus();
+        }
+    }
+
+    /**
+     * returns the collection date or null if the manager is null
+     */
+    private Datetime getCollectionDate() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getCollectionDate();
+    }
+
+    /**
+     * sets the collection date; also resets the transfusion age
+     */
+    private void setCollectionDate(Datetime date) {
+        manager.getSample().setCollectionDate(date);
+        transfusionAge.setValue(getTransfusionAge());
+    }
+
+    /**
+     * returns the collection time or null if the manager is null
+     */
+    private Datetime getCollectionTime() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getCollectionTime();
+    }
+
+    /**
+     * sets the collection time
+     */
+    private void setCollectionTime(Datetime time) {
+        manager.getSample().setCollectionTime(time);
+    }
+
+    /**
+     * returns the received date or null if the manager is null
+     */
+    private Datetime getReceivedDate() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getReceivedDate();
+    }
+
+    /**
+     * sets the received date
+     */
+    private void setReceivedDate(Datetime date) {
+        manager.getSample().setReceivedDate(date);
+    }
+
+    /**
+     * returns the status or null if the manager is null
+     */
+    private Integer getStatusId() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getStatusId();
+    }
+
+    /**
+     * sets the status id
+     */
+    private void setStatusId(Integer statusId) {
+        manager.getSample().setStatusId(statusId);
+    }
+
+    /**
+     * returns the client reference or null if the manager is null
+     */
+    private String getClientReference() {
+        if (manager == null)
+            return null;
+        return manager.getSample().getClientReference();
+    }
+
+    /**
+     * sets the client reference
+     */
+    private void setClientReference(String clientReference) {
+        manager.getSample().setClientReference(clientReference);
+    }
+
+    /**
+     * returns the patient's last name or null if either the manager or the
+     * patient DO is null
+     */
+    private String getPatientLastName() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getLastName();
+    }
+
+    /**
+     * sets the patient's last name
+     */
+    private void setPatientLastName(String name) {
+        manager.getSampleNeonatal().getPatient().setLastName(name);
+    }
+
+    /**
+     * returns the patient's first name or null if either the manager or the
+     * patient DO is null
+     */
+    private String getPatientFirstName() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getFirstName();
+    }
+
+    /**
+     * sets the patient's first name
+     */
+    private void setPatientFirstName(String name) {
+        manager.getSampleNeonatal().getPatient().setFirstName(name);
+    }
+
+    /**
+     * returns the patient's gender or null if either the manager or the patient
+     * DO is null
+     */
+    private Integer getPatientGenderId() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getGenderId();
+    }
+
+    /**
+     * sets the patient's gender
+     */
+    private void setPatientGenderId(Integer genderId) {
+        manager.getSampleNeonatal().getPatient().setGenderId(genderId);
+    }
+
+    /**
+     * returns the patient's race or null if either the manager or the patient
+     * DO is null
+     */
+    private Integer getPatientRaceId() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getRaceId();
+    }
+
+    /**
+     * sets the patient's race
+     */
+    private void setPatientRaceId(Integer raceId) {
+        manager.getSampleNeonatal().getPatient().setRaceId(raceId);
+    }
+
+    /**
+     * returns the patient's ethnicity or null if either the manager or the
+     * patient DO is null
+     */
+    private Integer getPatientEthnicityId() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getEthnicityId();
+    }
+
+    /**
+     * sets the patient's ethnicity
+     */
+    private void setPatientEthnicityId(Integer ethnicityId) {
+        manager.getSampleNeonatal().getPatient().setEthnicityId(ethnicityId);
+    }
+
+    /**
+     * returns the patient's birth date or null if either the manager or the
+     * patient DO is null
+     */
+    private Datetime getPatientBirthDate() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getBirthDate();
+    }
+
+    /**
+     * sets the patient's birth date
+     */
+    private void setPatientBirthDate(Datetime date) {
+        manager.getSampleNeonatal().getPatient().setBirthDate(date);
+    }
+
+    /**
+     * returns the patient's birth time or null if either the manager or the
+     * patient DO is null
+     */
+    private Datetime getPatientBirthTime() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getBirthTime();
+    }
+
+    /**
+     * sets the patient's birth time
+     */
+    private void setPatientBirthTime(Datetime time) {
+        manager.getSampleNeonatal().getPatient().setBirthTime(time);
+    }
+
+    /**
+     * returns the patient's multiple unit (apt/suite) or null if either the
+     * manager or the patient DO is null
+     */
+    private String getPatientAddressMultipleUnit() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getAddress().getMultipleUnit();
+    }
+
+    /**
+     * sets the patient's multiple unit (apt/suite)
+     */
+    private void setPatientAddressMultipleUnit(String multipleUnit) {
+        manager.getSampleNeonatal().getPatient().getAddress().setMultipleUnit(multipleUnit);
+    }
+
+    /**
+     * returns the patient's street address or null if either the manager or the
+     * patient DO is null
+     */
+    private String getPatientAddressStreetAddress() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getAddress().getStreetAddress();
+    }
+
+    /**
+     * sets the patient's street address
+     */
+    private void setPatientAddressStreetAddress(String streetAddress) {
+        manager.getSampleNeonatal().getPatient().getAddress().setStreetAddress(streetAddress);
+    }
+
+    /**
+     * returns the patient's city or null if either the manager or the patient
+     * DO is null
+     */
+    private String getPatientAddressCity() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getAddress().getCity();
+    }
+
+    /**
+     * sets the patient's city
+     */
+    private void setPatientAddressCity(String city) {
+        manager.getSampleNeonatal().getPatient().getAddress().setCity(city);
+    }
+
+    /**
+     * returns the patient's state or null if either the manager or the patient
+     * DO is null
+     */
+    private String getPatientAddressState() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getAddress().getState();
+    }
+
+    /**
+     * sets the patient's state
+     */
+    private void setPatientAddressState(String state) {
+        manager.getSampleNeonatal().getPatient().getAddress().setState(state);
+    }
+
+    /**
+     * returns the patient's zip code or null if either the manager or the
+     * patient DO is null
+     */
+    private String getPatientAddressZipCode() {
+        if (manager == null || manager.getSampleNeonatal().getPatient() == null)
+            return null;
+        return manager.getSampleNeonatal().getPatient().getAddress().getZipCode();
+    }
+
+    /**
+     * sets the patient's zip code
+     */
+    private void setPatientAddressZipCode(String zipCode) {
+        manager.getSampleNeonatal().getPatient().getAddress().setZipCode(zipCode);
+    }
+
+    /**
+     * returns next of kin's last name or null if either the manager or next of
+     * kin DO is null
+     */
+    private String getNextOfKinLastName() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getLastName();
+    }
+
+    /**
+     * sets next of kin's last name
+     */
+    private void setNextOfKinLastName(String name) {
+        manager.getSampleNeonatal().getNextOfKin().setLastName(name);
+    }
+
+    /**
+     * returns next of kin's middle name or null if either the manager or next
+     * of kin DO is null
+     */
+    private String getNextOfKinMiddleName() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getMiddleName();
+    }
+
+    /**
+     * returns next of kin's first name or null if either the manager or next of
+     * kin DO is null
+     */
+    private void setNextOfKinMiddleName(String name) {
+        manager.getSampleNeonatal().getNextOfKin().setMiddleName(name);
+    }
+
+    /**
+     * returns next of kin's first name or null if either the manager or next of
+     * kin DO is null
+     */
+    private String getNextOfKinFirstName() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getFirstName();
+    }
+
+    /**
+     * sets next of kin's first name
+     */
+    private void setNextOfKinFirstName(String name) {
+        manager.getSampleNeonatal().getNextOfKin().setFirstName(name);
+    }
+
+    /**
+     * returns next of kin relation or null if the manager is null
+     */
+    private Integer getNeonatalNextOfKinRelationId() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKinRelationId();
+    }
+
+    /**
+     * sets next of kin relation
+     */
+    private void setNeonatalNextOfKinRelationId(Integer nextOfKinRelationId) {
+        manager.getSampleNeonatal().setNextOfKinRelationId(nextOfKinRelationId);
+    }
+
+    /**
+     * returns next of kin's gender or null if either the manager or next of kin
+     * DO is null
+     */
+    private Integer getNextOfKinGenderId() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getGenderId();
+    }
+
+    /**
+     * sets next of kin's gender
+     */
+    private void setNextOfKinGenderId(Integer genderId) {
+        manager.getSampleNeonatal().getNextOfKin().setGenderId(genderId);
+    }
+
+    /**
+     * returns next of kin's race or null if either the manager or next of kin
+     * DO is null
+     */
+    private Integer getNextOfKinRaceId() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getRaceId();
+    }
+
+    /**
+     * sets next of kin's race
+     */
+    private void setNextOfKinRaceId(Integer raceId) {
+        manager.getSampleNeonatal().getNextOfKin().setRaceId(raceId);
+    }
+
+    /**
+     * returns next of kin's ethnicity or null if either the manager or next of
+     * kin DO is null
+     */
+    private Integer getNextOfKinEthnicityId() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getEthnicityId();
+    }
+
+    /**
+     * sets next of kin's ethnicity
+     */
+    private void setNextOfKinEthnicityId(Integer ethnicityId) {
+        manager.getSampleNeonatal().getNextOfKin().setEthnicityId(ethnicityId);
+    }
+
+    /**
+     * returns next of kin's birth date or null if either the manager or next of
+     * kin DO is null
+     */
+    private Datetime getNextOfKinBirthDate() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getBirthDate();
+    }
+
+    /**
+     * sets next of kin's birth date
+     */
+    private void setNextOfKinBirthDate(Datetime date) {
+        manager.getSampleNeonatal().getNextOfKin().setBirthDate(date);
+    }
+
+    /**
+     * returns next of kin's home phone or null if either the manager or next of
+     * kin DO is null
+     */
+    private String getNextOfKinAddressHomePhone() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getAddress().getHomePhone();
+    }
+
+    /**
+     * sets next of kin's home phone
+     */
+    private void setNextOfKinAddressHomePhone(String homePhone) {
+        manager.getSampleNeonatal().getNextOfKin().getAddress().setHomePhone(homePhone);
+    }
+
+    /**
+     * returns next of kin's multiple unit (apt/suite) or null if either the
+     * manager or next of kin DO is null
+     */
+    private String getNextOfKinAddressMultipleUnit() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getAddress().getMultipleUnit();
+    }
+
+    /**
+     * sets next of kin's multiple unit (apt/suite)
+     */
+    private void setNextOfKinAddressMultipleUnit(String multipleUnit) {
+        manager.getSampleNeonatal().getNextOfKin().getAddress().setMultipleUnit(multipleUnit);
+    }
+
+    /**
+     * returns next of kin's street address or null if either the manager or
+     * next of kin DO is null
+     */
+    private String getNextOfKinAddressStreetAddress() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getAddress().getStreetAddress();
+    }
+
+    /**
+     * sets next of kin's street address
+     */
+    private void setNextOfKinAddressStreetAddress(String streetAddress) {
+        manager.getSampleNeonatal().getNextOfKin().getAddress().setStreetAddress(streetAddress);
+    }
+
+    /**
+     * returns next of kin's city or null if either the manager or next of kin
+     * DO is null
+     */
+    private String getNextOfKinAddressCity() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getAddress().getCity();
+    }
+
+    /**
+     * sets next of kin's city
+     */
+    private void setNextOfKinAddressCity(String city) {
+        manager.getSampleNeonatal().getNextOfKin().getAddress().setCity(city);
+    }
+
+    /**
+     * returns next of kin's state or null if either the manager or next of kin
+     * DO is null
+     */
+    private String getNextOfKinAddressState() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getAddress().getState();
+    }
+
+    /**
+     * sets next of kin's state
+     */
+    private void setNextOfKinAddressState(String state) {
+        manager.getSampleNeonatal().getNextOfKin().getAddress().setState(state);
+    }
+
+    /**
+     * returns next of kin's zip code or null if either the manager or next of
+     * kin DO is null
+     */
+    private String getNextOfKinAddressZipCode() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getNextOfKin().getAddress().getZipCode();
+    }
+
+    /**
+     * sets next of kin's zip code
+     */
+    private void setNextOfKinAddressZipCode(String zipCode) {
+        manager.getSampleNeonatal().getNextOfKin().getAddress().setZipCode(zipCode);
+    }
+
+    /**
+     * returns next of kin's zip code or null if either the manager or next of
+     * kin DO is null
+     */
+    private String getIsNicu() {
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
+            return null;
+        return manager.getSampleNeonatal().getIsNicu();
+    }
+
+    private void setIsNicu(String isNicu) {
+        manager.getSampleNeonatal().setIsNicu(isNicu);
+    }
+
+    /**
+     * returns the birth order or null if the manager is null
+     */
+    private Integer getBirthOrder() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getBirthOrder();
+    }
+
+    /**
+     * sets the birth order
+     */
+    private void setBirthOrder(Integer birthOrder) {
+        manager.getSampleNeonatal().setBirthOrder(birthOrder);
+    }
+
+    /**
+     * returns the gestational age or null if the manager is null
+     */
+    private Integer getGestationalAge() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getGestationalAge();
+    }
+
+    /**
+     * sets the gestational age
+     */
+    private void setGestationalAge(Integer gestationalAge) {
+        manager.getSampleNeonatal().setGestationalAge(gestationalAge);
+    }
+
+    /**
+     * returns the type of feeding or null if the manager is null
+     */
+    private Integer getFeedingId() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getFeedingId();
+    }
+
+    /**
+     * sets the type of feeding
+     */
+    private void setFeedingId(Integer feedingId) {
+        manager.getSampleNeonatal().setFeedingId(feedingId);
+    }
+
+    /**
+     * returns the weight or null if the manager is null
+     */
+    private Integer getWeight() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getWeight();
+    }
+
+    /**
+     * sets the weight
+     */
+    private void setWeight(Integer weight) {
+        manager.getSampleNeonatal().setWeight(weight);
+    }
+
+    /**
+     * returns whether the sample is tranfused or null if the manager is null
+     */
+    private String getIsTransfused() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getIsTransfused();
+    }
+
+    /**
+     * sets whether the sample is tranfused
+     */
+    private void setIsTransfused(String isTransfused) {
+        manager.getSampleNeonatal().setIsTransfused(isTransfused);
+    }
+
+    /**
+     * returns the tranfusion date or null if the manager is null
+     */
+    private Datetime getTransfusionDate() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getTransfusionDate();
+    }
+
+    /**
+     * sets the tranfusion date
+     */
+    private void setTransfusionDate(Datetime transfusionDate) {
+        manager.getSampleNeonatal().setTransfusionDate(transfusionDate);
+        transfusionAge.setValue(getTransfusionAge());
+    }
+
+    /**
+     * returns the tranfusion age, calculated as the difference between the
+     * collection date and transfusion date, or null if the manager is null or
+     * any of the dates is null
+     */
+    private Integer getTransfusionAge() {
+        Datetime cd, td;
+        Long diff, day;
+        Double numDays;
+
+        cd = getCollectionDate();
+        td = getTransfusionDate();
+        if (cd == null || td == null)
+            return null;
+
+        diff = cd.getDate().getTime() - td.getDate().getTime();
+        day = 86400000L;
+        numDays = diff.doubleValue() / day.doubleValue();
+
+        return numDays.intValue();
+    }
+
+    /**
+     * returns the whether the sample is repeat sample or null if the manager is
+     * null
+     */
+    private String getIsRepeat() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getIsRepeat();
+    }
+
+    /**
+     * sets the whether the sample is repeat sample
+     */
+    private void setIsRepeat(String isRepeat) {
+        manager.getSampleNeonatal().setIsRepeat(isRepeat);
+    }
+
+    /**
+     * returns the collection age or null if the manager is null
+     */
+    private Integer getNeonatalCollectionAge() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getCollectionAge();
+    }
+
+    /**
+     * sets the collection age
+     */
+    private void setCollectionAge(Integer collectionAge) {
+        manager.getSampleNeonatal().setCollectionAge(collectionAge);
+    }
+
+    /**
+     * returns whether the collection is valid or null if the manager is null
+     */
+    private String getIsCollectionValid() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getIsCollectionValid();
+    }
+
+    /**
+     * sets whether the collection is valid
+     */
+    private void setIsCollectionValid(String isCollectionValid) {
+        manager.getSampleNeonatal().setIsCollectionValid(isCollectionValid);
+    }
+
+    private Integer getProviderId() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getProviderId();
+    }
+
+    private void setProviderId(Integer providerId) {
+        manager.getSampleNeonatal().setProviderId(providerId);
+    }
+
+    private String getNeonatalProviderLastName() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getProviderLastName();
+    }
+
+    private void setNeonatalProviderLastName(String providerlastName) {
+        manager.getSampleNeonatal().setProviderlastName(providerlastName);
+    }
+
+    private String getNeonatalProviderFirstName() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getProviderFirstName();
+    }
+
+    private void setNeonatalProviderFirstName(String providerFirstName) {
+        manager.getSampleNeonatal().setProviderFirstName(providerFirstName);
+    }
+
+    private void setProviderSelection() {
+        if (manager == null) {
+            providerLastName.setValue(null, "");
+            return;
+        }
+
+        providerLastName.setValue(getProviderId(), getNeonatalProviderLastName());
+        providerFirstName.setValue(getNeonatalProviderFirstName());
+    }
+
+    private void getProviderFromSelection() {
+        ProviderDO data;
+        AutoCompleteValue row;
+
+        row = providerLastName.getValue();
+        if (row == null || row.getId() == null) {
+            setProviderId(null);
+            setProviderFirstName(null);
+            setNeonatalProviderLastName(null);
+
+            providerLastName.setValue(null, "");
+            providerFirstName.setValue("");
+            return;
+        } else {
+            data = (ProviderDO)row.getData();
+
+            setProviderId(data.getId());
+            setNeonatalProviderFirstName(data.getFirstName());
+            setNeonatalProviderLastName(data.getLastName());
+
+            providerLastName.setValue(getProviderId(), getNeonatalProviderLastName());
+            providerFirstName.setValue(getNeonatalProviderFirstName());
+        }
+    }
+
+    private void setProviderFirstName(String name) {
+        manager.getSampleNeonatal().setProviderFirstName(name);
+    }
+
+    private String getProviderFirstName() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getProviderFirstName();
+    }
+
+    /**
+     * Adds or updates the first permanent project to the sample if the argument
+     * is not null, otherwise deletes the first permanent project. Also
+     * refreshes the display of the autocomplete.
+     */
+    private void setProject(ProjectDO proj) {
+        SampleProjectViewDO data;
+
+        data = getFirstPermanentProject();
+        if (proj == null) {
+            /*
+             * if a project was not selected and if there were permanent
+             * projects present then the first permanent project is deleted and
+             * the next permanent project is set as the first one
+             */
+            if (data != null)
+                manager.project.remove(data);
+        } else {
+            /*
+             * otherwise the first permanent project is modified or a new one is
+             * created if no project existed
+             */
+            if (data == null) {
+                data = manager.project.add();
+                data.setIsPermanent("Y");
+            }
+            data.setProjectId(proj.getId());
+            data.setProjectName(proj.getName());
+            data.setProjectDescription(proj.getDescription());
+        }
+
+        if (proj != null)
+            projectName.setValue(proj.getId(), proj.getName());
+        else
+            projectName.setValue(null, "");
+    }
+
+    /**
+     * returns the first permanent project from the manager, or null if the
+     * manager is null or it doesn't have any permanent projects
+     */
+    private SampleProjectViewDO getFirstPermanentProject() {
+        ArrayList<SampleProjectViewDO> p;
+
+        if (manager == null)
+            return null;
+
+        p = manager.project.getByType("Y");
+        if (p != null && p.size() > 0)
+            return p.get(0);
+        return null;
+    }
+
+    /**
+     * Adds or updates the sample organization of the specified type if the
+     * passed organization is not null, otherwise deletes the sample
+     * organization of this type. Also refreshes the display of the autocomplete
+     * showing the organization of this type.
+     */
+    private void setOrganization(Integer type, OrganizationDO org) {
+        Integer id;
+        String name;
+        SampleOrganizationViewDO data;
+
+        data = getSampleOrganization(type);
+        if (org == null) {
+            /*
+             * this method is called only when the organization changes and if
+             * there isn't a sample organization of this type selected
+             * currently, then there must have been before, thus it needs to be
+             * removed from the manager
+             */
+            manager.organization.remove(data);
+        } else {
+            if (data == null) {
+                /*
+                 * an organization was selected by the user but there isn't one
+                 * present in the manager, thus it needs to be added
+                 */
+                data = manager.organization.add(org);
+                data.setTypeId(type);
+            } else {
+                /*
+                 * the organization was changed, thus the sample organization
+                 * needs to be updated
+                 */
+                data.setOrganizationId(org.getId());
+                data.setOrganizationName(org.getName());
+                data.setOrganizationMultipleUnit(org.getAddress().getMultipleUnit());
+                data.setOrganizationStreetAddress(org.getAddress().getStreetAddress());
+                data.setOrganizationCity(org.getAddress().getCity());
+                data.setOrganizationState(org.getAddress().getState());
+                data.setOrganizationZipCode(org.getAddress().getZipCode());
+                data.setOrganizationCountry(org.getAddress().getCountry());
+            }
+
+            id = null;
+            name = null;
+            if (org != null) {
+                id = org.getId();
+                name = org.getName();
+                /*
+                 * warn the user if samples from this organization are to held
+                 * or refused
+                 */
+                try {
+                    showHoldRefuseWarning(id, name);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+
+            if (Constants.dictionary().ORG_REPORT_TO.equals(type))
+                reportToName.setValue(id, name);
+            else if (Constants.dictionary().ORG_BIRTH_HOSPITAL.equals(type))
+                birthHospitalName.setValue(id, name);
+        }
+    }
+
+    /**
+     * returns the form (barcode) number or null if the manager is null
+     */
+    private String getFormNumber() {
+        if (manager == null)
+            return null;
+        return manager.getSampleNeonatal().getFormNumber();
+    }
+
+    /**
+     * sets the form (barcode) number
+     */
+    private void setFormNumber(String formNumber) {
+        manager.getSampleNeonatal().setFormNumber(formNumber);
     }
 
     /**
@@ -2967,22 +3490,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      */
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
         if (SampleOrganizationUtility1.isHoldRefuseSampleForOrg(orgId))
-            Window.alert(Messages.get().orgMarkedAsHoldRefuseSample(name));
+            Window.alert(Messages.get().gen_orgMarkedAsHoldRefuseSample(name));
     }
 
-    private void showWarningsDialog(ValidationErrorsList warnings) {
-        StringBuffer txt;
-
-        txt = new StringBuffer();
-        txt.append(Messages.get().warningDialogLine1()).append("\n");
-        for (Exception ex : warnings.getErrorList())
-            txt.append(" * ").append(ex.getMessage()).append("\n");
-
-        txt.append("\n").append(Messages.get().warningDialogLastLine());
-        if (Window.confirm(txt.toString()))
-            commitUpdate(true);
-    }
-
+    /**
+     * shows the popup for this sample's organizations
+     */
     private void showOrganizationLookup() {
         ModalWindow modal;
 
@@ -2990,15 +3503,26 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             sampleOrganizationLookup = new SampleOrganizationLookupUI() {
                 @Override
                 public void ok() {
+                    SampleOrganizationViewDO data;
                     if (isState(ADD, UPDATE)) {
                         /*
                          * refresh the display of the autocompletes showing
                          * organizations because the list of organizations may
                          * have been changed through the popup
                          */
-                        setOrganizationSelection(reportToName, Constants.dictionary().ORG_REPORT_TO);
-                        setOrganizationSelection(birthHospitalName,
-                                                 Constants.dictionary().ORG_BIRTH_HOSPITAL);
+                        data = getSampleOrganization(Constants.dictionary().ORG_REPORT_TO);
+                        if (data != null)
+                            reportToName.setValue(data.getOrganizationId(),
+                                                  data.getOrganizationName());
+                        else
+                            reportToName.setValue(null, "");
+
+                        data = getSampleOrganization(Constants.dictionary().ORG_BIRTH_HOSPITAL);
+                        if (data != null)
+                            birthHospitalName.setValue(data.getOrganizationId(),
+                                                       data.getOrganizationName());
+                        else
+                            birthHospitalName.setValue(null, "");
                     }
                 }
             };
@@ -3014,77 +3538,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         sampleOrganizationLookup.setData(manager, state);
     }
 
-    private void getProviderMatches(GetMatchesEvent event) {
-        ProviderDO data;
-        ArrayList<ProviderDO> list;
-        Item<Integer> row;
-        ArrayList<Item<Integer>> model;
-
-        window.setBusy();
-        try {
-            list = ProviderService.get()
-                                  .fetchByLastName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-            model = new ArrayList<Item<Integer>>();
-            for (int i = 0; i < list.size(); i++ ) {
-                row = new Item<Integer>(3);
-                data = list.get(i);
-
-                row.setKey(data.getId());
-                row.setData(data);
-                row.setCell(0, data.getLastName());
-                row.setCell(1, data.getFirstName());
-                row.setCell(2, data.getMiddleName());
-
-                model.add(row);
-            }
-            providerLastName.showAutoMatches(model);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
-    }
-
-    private SampleProjectViewDO getFirstPermanentProject() {
-        ArrayList<SampleProjectViewDO> p;
-
-        if (manager == null)
-            return null;
-
-        p = manager.project.getByType("Y");
-        if (p != null && p.size() > 0)
-            return p.get(0);
-        return null;
-    }
-
-    private void getProjectMatches(GetMatchesEvent event) {
-        Item<Integer> row;
-        ArrayList<ProjectDO> list;
-        ArrayList<Item<Integer>> model;
-
-        window.setBusy();
-        try {
-            list = ProjectService.get()
-                                 .fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-            model = new ArrayList<Item<Integer>>();
-            for (ProjectDO p : list) {
-                row = new Item<Integer>(4);
-
-                row.setKey(p.getId());
-                row.setCell(0, p.getName());
-                row.setCell(1, p.getDescription());
-                row.setData(p);
-                model.add(row);
-            }
-            projectName.showAutoMatches(model);
-        } catch (Throwable e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-        window.clearStatus();
-    }
-
-    private void getOrganizationMatches(String match, AutoComplete widget) {
+    /**
+     * shows the organizations whose name or id matches the string
+     */
+    private void showOrganizationMatches(String match, AutoComplete widget) {
         Item<Integer> row;
         OrganizationDO data;
         ArrayList<OrganizationDO> list;
@@ -3117,7 +3574,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * returns the organization of the specified type from the manager
+     * returns the organization of the specified type from the manager or null
+     * if the manager is null or doesn't have an organization of this type
      */
     private SampleOrganizationViewDO getSampleOrganization(Integer type) {
         ArrayList<SampleOrganizationViewDO> orgs;
@@ -3132,6 +3590,12 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         return null;
     }
 
+    /**
+     * Calls the service method to add the tests/panels in the list, to the
+     * sample. If there were any errors during the operation then shows them or
+     * shows the popup for selecting prep/reflex tests for the added tests. Also
+     * notifies the tabs to reload themselves.
+     */
     private void addTests(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
 
@@ -3141,72 +3605,27 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             setData();
             setState(state);
             bus.fireEventFromSource(new AddTestEvent(tests), this);
-            if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                showErrors(ret.getErrors());
-            else if (ret.getTests() != null && ret.getTests().size() > 0)
-                showTestSelectionLookup(ret);
+            showErrorsOrTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
-    private void analysisChanged(AnalysisChangeEvent event) {
-        AnalysisViewDO ana;
-        SampleTestReturnVO ret;
-
-        if (screen == event.getSource())
+    /**
+     * Called whenever a service method like "addTests()" returns errors and/or
+     * a list of prep/reflex tests to be selected for the tests added/changed
+     * during the operation. Shows the errors or the popup for selecting the
+     * prep/reflex tests.
+     */
+    private void showErrorsOrTests(SampleTestReturnVO ret) {
+        if (ret == null)
             return;
 
-        ana = (AnalysisViewDO)manager.getObject(event.getUid());
-        ret = null;
-        try {
-            switch (event.getAction()) {
-                case METHOD_CHANGED:
-                    ret = SampleService1.get().changeAnalysisMethod(manager,
-                                                                    ana.getId(),
-                                                                    event.getChangeId());
-                    manager = ret.getManager();
-                    break;
-                case STATUS_CHANGED:
-                    manager = SampleService1.get().changeAnalysisStatus(manager,
-                                                                        ana.getId(),
-                                                                        event.getChangeId());
-                    break;
-                case UNIT_CHANGED:
-                    manager = SampleService1.get().changeAnalysisUnit(manager,
-                                                                      ana.getId(),
-                                                                      event.getChangeId());
-                    break;
-                case PREP_CHANGED:
-                    manager = SampleService1.get().changeAnalysisPrep(manager,
-                                                                      ana.getId(),
-                                                                      event.getChangeId());
-                    break;
-            }
-
-            setData();
-            setState(state);
-
-            /*
-             * notify all tabs that need to refresh themselves because of the
-             * change in the analysis
-             */
-            bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
-                                                            event.getChangeId(),
-                                                            event.getAction()), this);
-            bus.fireEvent(new ResultChangeEvent());
-
-            if (ret != null) {
-                if (ret.getErrors() != null && ret.getErrors().size() > 0)
-                    showErrors(ret.getErrors());
-                else if (ret.getTests() != null && ret.getTests().size() > 0)
-                    showTestSelectionLookup(ret);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
+        if (ret.getErrors() != null && ret.getErrors().size() > 0)
+            showErrors(ret.getErrors());
+        else if (ret.getTests() != null && ret.getTests().size() > 0)
+            showTestSelectionLookup(ret);
     }
 
     /**

@@ -131,7 +131,15 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-
+    
+    public SampleManager1 duplicate(Integer sampleId) throws Exception {
+        try {
+            return sampleManager1.duplicate(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
         try {
             return sampleManager1.addTest(sm, test);

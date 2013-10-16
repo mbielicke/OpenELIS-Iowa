@@ -106,6 +106,14 @@ public class ResultTabUI extends Screen {
     protected Screen                                    parentScreen;
 
     protected ResultTabUI                               screen;
+    
+    protected TestAnalyteLookupUI                       testAnalyteLookup;
+    
+    protected TestSelectionLookupUI                     testSelectionLookup;
+    
+    protected EventBus                                  parentBus; 
+    
+    protected TestReflexUtility1                        testReflexUtility;
 
     protected SampleManager1                            manager;
 
@@ -113,21 +121,15 @@ public class ResultTabUI extends Screen {
 
     protected String                                    displayedUid;
 
-    protected boolean                                   canEdit, isVisible, redraw;
-
-    protected TestReflexUtility1                        testReflexUtility;
-
-    protected TestSelectionLookupUI                     testSelectionLookup;
-
-    protected TestAnalyteLookupUI                       testAnalyteLookup;
+    protected boolean                                  canEdit, isVisible, redraw;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
     
-    protected static int                                averageCharWidth = 8, defaultNumChars = 10;
+    protected static int                               MEAN_CHAR_WIDTH = 8, DEFAULT_NUM_CHARS = 10;
 
-    public ResultTabUI(Screen parentScreen, EventBus bus) {
+    public ResultTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -399,7 +401,7 @@ public class ResultTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
+        parentBus.addHandlerToSource(StateChangeEvent.getType(),
                                parentScreen,
                                new StateChangeEvent.Handler() {
                                    public void onStateChange(StateChangeEvent event) {
@@ -408,7 +410,7 @@ public class ResultTabUI extends Screen {
                                    }
                                });
 
-        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+        parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 String uid;
 
@@ -430,7 +432,7 @@ public class ResultTabUI extends Screen {
             }
         });
 
-        bus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
+        parentBus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
                 if (AnalysisChangeEvent.Action.STATUS_CHANGED.equals(event.getAction()) ||
@@ -445,7 +447,7 @@ public class ResultTabUI extends Screen {
             }
         });
 
-        bus.addHandler(ResultChangeEvent.getType(), new ResultChangeEvent.Handler() {
+        parentBus.addHandler(ResultChangeEvent.getType(), new ResultChangeEvent.Handler() {
             @Override
             public void onResultChange(ResultChangeEvent event) {
                 redraw = true;
@@ -453,7 +455,7 @@ public class ResultTabUI extends Screen {
             }
         });
 
-        bus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
+        parentBus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
             @Override
             public void onQAEventChange(QAEventChangeEvent event) {
                 showResultOverride();
@@ -604,7 +606,7 @@ public class ResultTabUI extends Screen {
                 /*
                  * The position of the result rows after the deleted row changed
                  * in the manager. Reset the "data" of each table row to be the
-                 * new position of its corresponding result row.
+                 * new position of its corresponding result row in the manager.
                  */
                 for (i = r; i < table.getRowCount(); i++ ) {
                     index = table.getRowAt(i).getData();
@@ -666,11 +668,11 @@ public class ResultTabUI extends Screen {
          * the maximum number of characters for each column
          */
         maxChars = new int[table.getColumnCount()];
-        maxChars[0] = defaultNumChars;
+        maxChars[0] = DEFAULT_NUM_CHARS;
         resetMaxChars(maxChars, 1, Messages.get().gen_analyte());
         resetMaxChars(maxChars, 2, Messages.get().gen_value());
         for (i = 3; i < maxChars.length; i++ )
-            maxChars[i] = defaultNumChars;
+            maxChars[i] = DEFAULT_NUM_CHARS;
 
         dictIds = new ArrayList<Integer>();
         dictMap = new HashMap<Integer, HashSet<Integer>>();
@@ -788,7 +790,7 @@ public class ResultTabUI extends Screen {
              */
             for (i = 0; i < maxChars.length; i++ ) {
                 col = table.getColumnAt(i);
-                col.setWidth(maxChars[i] * averageCharWidth);
+                col.setWidth(maxChars[i] * MEAN_CHAR_WIDTH);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -866,7 +868,7 @@ public class ResultTabUI extends Screen {
 
                             tests = testSelectionLookup.getSelectedTests();
                             if (tests != null && tests.size() > 0)
-                                screen.getEventBus().fireEvent(new AddTestEvent(tests));
+                                parentBus.fireEvent(new AddTestEvent(tests));
                         }
                     };
                 }
@@ -910,7 +912,7 @@ public class ResultTabUI extends Screen {
         for (int i = 0; i < analytes.size(); i++ )
             indexes.add(index + i);
 
-        bus.fireEvent(new AddRowAnalytesEvent(analysis, analytes, indexes));
+        parentBus.fireEvent(new AddRowAnalytesEvent(analysis, analytes, indexes));
     }
 
     private void check(String val) {

@@ -31,429 +31,390 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisQaEventManager;
-import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.SampleEnvironmentalManager;
-import org.openelis.manager.SampleItemManager;
-import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.manager.SampleOrganizationManager;
-import org.openelis.manager.SamplePrivateWellManager;
-import org.openelis.manager.SampleProjectManager;
-import org.openelis.manager.SampleQaEventManager;
-import org.openelis.manager.SampleSDWISManager;
-import org.openelis.manager.StorageManager;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.ui.widget.WindowInt;
 
-import com.google.gwt.user.client.Window;
-
+/**
+ * This class is used to show the history of the various parts of the sample
+ * specified by the manager e.g. domain, organization, analysis, results etc.
+ * Note: The part whose history is to be shown must already be loaded in the
+ * manager, otherwise, the tree for history will be empty.
+ */
 public class SampleHistoryUtility1 {
 
-    private SampleManager1   manager;
-    private WindowInt window;
-
-    public SampleHistoryUtility1(WindowInt window) {
-        this.window = window;
-    }
-
-    public void historySample() {
+    /**
+     * shows the history of the sample
+     */
+    public static void sample(SampleManager1 manager, WindowInt window) {
         IdNameVO hist;
 
         window.setBusy();
         hist = new IdNameVO(manager.getSample().getId(), manager.getSample()
                                                                 .getAccessionNumber()
                                                                 .toString());
-        HistoryScreen.showHistory(Messages.get().historySample(),
-                                  Constants.table().SAMPLE,
+        HistoryScreen.showHistory(Messages.get().history_sample(), Constants.table().SAMPLE, hist);
+        window.clearStatus();
+    }
+
+    /**
+     * shows the history of sample environmental
+     */
+    public static void environmental(SampleManager1 manager, WindowInt window) {
+        IdNameVO hist;
+        SampleEnvironmentalDO data;
+
+        window.setBusy();
+        data = manager.getSampleEnvironmental();
+        hist = new IdNameVO(data.getId(), data.getLocation());
+        HistoryScreen.showHistory(Messages.get().history_sampleEnvironmental(),
+                                  Constants.table().SAMPLE_ENVIRONMENTAL,
                                   hist);
+
         window.clearStatus();
     }
 
-    public void historySampleEnvironmental() {
+    /**
+     * shows the history of sample private well
+     */
+    public static void privateWell(SampleManager1 manager, WindowInt window) {
         IdNameVO hist;
-        SampleEnvironmentalDO env;
+        SamplePrivateWellViewDO data;
 
         window.setBusy();
-        try {
-            env = manager.getSampleEnvironmental();
-            hist = new IdNameVO(env.getId(), env.getLocation());
-            HistoryScreen.showHistory(Messages.get().historySampleEnvironmental(),
-                                      Constants.table().SAMPLE_ENVIRONMENTAL,
-                                      hist);
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySampleEnvironmental: " + e.getMessage());
-        }
+        data = manager.getSamplePrivateWell();
+        hist = new IdNameVO(data.getId(), data.getLocation());
+        HistoryScreen.showHistory(Messages.get().history_samplePrivateWell(),
+                                  Constants.table().SAMPLE_PRIVATE_WELL,
+                                  hist);
 
         window.clearStatus();
     }
 
-    public void historySamplePrivateWell() {
+    /**
+     * shows the history of sample sdwis
+     */
+    public static void sdwis(SampleManager1 manager, WindowInt window) {
         IdNameVO hist;
-        SamplePrivateWellViewDO well;
+        SampleSDWISViewDO data;
 
         window.setBusy();
-        try {
-            well = manager.getSamplePrivateWell();
-            hist = new IdNameVO(well.getId(), well.getLocation());
-            HistoryScreen.showHistory(Messages.get().historySamplePrivateWell(),
-                                      Constants.table().SAMPLE_PRIVATE_WELL,
-                                      hist);
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySamplePrivateWell: " + e.getMessage());
-        }
+        data = manager.getSampleSDWIS();
+        hist = new IdNameVO(data.getId(), data.getLocation());
+        HistoryScreen.showHistory(Messages.get().history_sampleSDWIS(),
+                                  Constants.table().SAMPLE_SDWIS,
+                                  hist);
 
         window.clearStatus();
     }
-
-    public void historySampleSDWIS() {
+    
+    /**
+     * shows the history of sample neonatal
+     */
+    public static void neonatal(SampleManager1 manager, WindowInt window) {
         IdNameVO hist;
-        SampleSDWISViewDO sdwis;
+        SampleNeonatalDO data;
 
         window.setBusy();
-        try {
-            sdwis = manager.getSampleSDWIS();
-            hist = new IdNameVO(sdwis.getId(), sdwis.getLocation());
-            HistoryScreen.showHistory(Messages.get().historySampleSDWIS(),
-                                      Constants.table().SAMPLE_SDWIS,
-                                      hist);
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySampleSDWIS: " + e.getMessage());
-        }
+        data = manager.getSampleNeonatal();
+        hist = new IdNameVO(data.getId(), "");
+        HistoryScreen.showHistory(Messages.get().history_sampleNeonatal(),
+                                  Constants.table().SAMPLE_NEONATAL,
+                                  hist);
 
         window.clearStatus();
     }
+    
+    /**
+     * shows the history of sample neonatal's patient
+     */
+    public static void neonatalPatient(SampleManager1 manager, WindowInt window) {
+        IdNameVO hist;
+        SampleNeonatalDO data;
 
-    public void historySampleProject() {
-        int i, count;
-        IdNameVO refVoList[];
+        window.setBusy();
+        data = manager.getSampleNeonatal();
+        hist = new IdNameVO(data.getPatient().getId(), "");
+        HistoryScreen.showHistory(Messages.get().history_patient(),
+                                  Constants.table().PATIENT,
+                                  hist);
+
+        window.clearStatus();
+    }
+    
+    /**
+     * shows the history of sample neonatal's next of kin
+     */
+    public static void neonatalNextOfKin(SampleManager1 manager, WindowInt window) {
+        IdNameVO hist;
+        SampleNeonatalDO data;
+
+        window.setBusy();
+        data = manager.getSampleNeonatal();
+        hist = new IdNameVO(data.getNextOfKin().getId(), "");
+        HistoryScreen.showHistory(Messages.get().history_nextOfKin(),
+                                  Constants.table().PATIENT,
+                                  hist);
+
+        window.clearStatus();
+    }
+    
+    /**
+     * shows the history of sample projects
+     */
+    public static void project(SampleManager1 manager, WindowInt window) {
+        int i;
         SampleProjectViewDO data;
+        ArrayList<IdNameVO> list;
 
         window.setBusy();
-        try {
-            count = manager.project.count();
-            refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++ ) {
-                data = manager.project.get(i);
-                refVoList[i] = new IdNameVO(data.getId(), data.getProjectName());
-            }
-
-            HistoryScreen.showHistory(Messages.get().historySampleProject(),
-                                      Constants.table().SAMPLE_PROJECT,
-                                      refVoList);
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySampleProject: " + e.getMessage());
+        list = new ArrayList<IdNameVO>();
+        for (i = 0; i < manager.project.count(); i++ ) {
+            data = manager.project.get(i);
+            list.add(new IdNameVO(data.getId(), data.getProjectName()));
         }
+
+        HistoryScreen.showHistory(Messages.get().history_sampleProject(),
+                                  Constants.table().SAMPLE_PROJECT,
+                                  list);
 
         window.clearStatus();
     }
 
-    public void historySampleOrganization() {
-        int i, count;
-        IdNameVO refVoList[];
+    /**
+     * shows the history of sample organizations
+     */
+    public static void organization(SampleManager1 manager, WindowInt window) {
+        int i;
         SampleOrganizationViewDO data;
+        ArrayList<IdNameVO> list;
 
         window.setBusy();
-        try {
-            count = manager.organization.count();
-            refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++ ) {
-                data = manager.organization.get(i);
-                refVoList[i] = new IdNameVO(data.getId(), data.getOrganizationName());
-            }
 
-            HistoryScreen.showHistory(Messages.get().historySampleOrganization(),
-                                      Constants.table().SAMPLE_ORGANIZATION,
-                                      refVoList);
-            window.clearStatus();
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySampleProject: " + e.getMessage());
+        list = new ArrayList<IdNameVO>();
+        for (i = 0; i < manager.organization.count(); i++ ) {
+            data = manager.organization.get(i);
+            list.add(new IdNameVO(data.getId(), data.getOrganizationName()));
         }
+
+        HistoryScreen.showHistory(Messages.get().history_sampleOrganization(),
+                                  Constants.table().SAMPLE_ORGANIZATION,
+                                  list);
+
+        window.clearStatus();
     }
 
-    public void historySampleItem() {
-        int i, count;
-        IdNameVO refVoList[];
+    /**
+     * shows the history of sample items
+     */
+    public static void item(SampleManager1 manager, WindowInt window) {
+        int i;
+        StringBuilder sb;
         SampleItemViewDO data;
-        String container;
+        ArrayList<IdNameVO> list;
 
         window.setBusy();
-        try {
-            count = manager.item.count();
-            refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++ ) {
-                data = manager.item.get(i);
-                container = data.getContainer();
-                if (container == null)
-                    container = "";
-                else
-                    container += " - ";
-                refVoList[i] = new IdNameVO(data.getId(), data.getItemSequence() +
-                                                          container);
-            }
 
-            HistoryScreen.showHistory(Messages.get().historySampleItem(),
-                                      Constants.table().SAMPLE_ITEM,
-                                      refVoList);
-            window.clearStatus();
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySampleItem: " + e.getMessage());
+        list = new ArrayList<IdNameVO>();
+        sb = new StringBuilder();
+        for (i = 0; i < manager.item.count(); i++ ) {
+            data = manager.item.get(i);
+            sb.setLength(0);
+            sb.append(data.getItemSequence());
+            if (data.getContainer() != null) {
+                sb.append(" [");
+                sb.append(data.getContainer());
+                sb.append("]");
+            }
+            list.add(new IdNameVO(data.getId(), sb.toString()));
         }
+
+        HistoryScreen.showHistory(Messages.get().history_sampleItem(),
+                                  Constants.table().SAMPLE_ITEM,
+                                  list);
+        window.clearStatus();
     }
 
-    public void historyAnalysis() {
-        int i, j, k, listIndex, itemCount, anCount;
-        IdNameVO refVoList[];
+    /**
+     * shows the history of analyses
+     */
+    public static void analysis(SampleManager1 manager, WindowInt window) {
+        int i, j;
+        StringBuilder sb;
+        AnalysisViewDO data;
         SampleItemViewDO item;
-        AnalysisViewDO ana;
+        ArrayList<IdNameVO> list;
 
         window.setBusy();
-        try {
-            itemCount = manager.item.count();
 
-            // figure out total # of analyses
-            anCount = 0;
-            for (i = 0; i < itemCount; i++ )
-                anCount += manager.analysis.count(manager.item.get(i));
+        list = new ArrayList<IdNameVO>();
+        sb = new StringBuilder();
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
 
-            refVoList = new IdNameVO[anCount];
-            listIndex = 0;
-            for (j = 0; j < itemCount; j++ ) {
-                item = manager.item.get(i);
-                anCount = manager.analysis.count(item);
-
-                for (k = 0; k < anCount; k++ ) {
-                    ana = manager.analysis.get(item, k);
-                    refVoList[listIndex] = new IdNameVO(ana.getId(),
-                                                        ana.getTestName() +
-                                                                        " : " +
-                                                                        ana.getMethodName());
-                    listIndex++ ;
-                }
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                data = manager.analysis.get(item, j);
+                sb.setLength(0);
+                sb.append(data.getTestName());
+                sb.append(", ");
+                sb.append(data.getMethodName());
+                list.add(new IdNameVO(data.getId(), sb.toString()));
             }
-
-            HistoryScreen.showHistory(Messages.get().historyAnalysis(),
-                                      Constants.table().ANALYSIS,
-                                      refVoList);
-            window.clearStatus();
-        } catch (Exception e) {
-            Window.alert("historyAnalysis: " + e.getMessage());
-            window.clearStatus();
         }
+
+        HistoryScreen.showHistory(Messages.get().history_analysis(),
+                                  Constants.table().ANALYSIS,
+                                  list);
+
+        window.clearStatus();
     }
 
-    public void historyCurrentResult(int sampleItemIndex, int analysisIndex) {
-        int i, j, rowCount, count;
-        ArrayList<ResultViewDO> row;
+    /**
+     * shows the history of the specified analysis' results
+     */
+    public static void currentResult(SampleManager1 manager, Integer analysisId, WindowInt window) {
+        int i, j;
         ResultViewDO data;
-        ArrayList<IdNameVO> refVoArrayList;
-        IdNameVO[] refVoList;
-        AnalysisResultManager man;
+        AnalysisViewDO ana;
+        ArrayList<IdNameVO> list;
 
-        /*try {
-            man = manager.getSampleItems()
-                         .getAnalysisAt(sampleItemIndex)
-                         .getAnalysisResultAt(analysisIndex);
-            rowCount = man.rowCount();
-            refVoArrayList = new ArrayList<IdNameVO>();
-            for (i = 0; i < rowCount; i++ ) {
-                row = man.getRowAt(i);
-                count = row.size();
+        window.setBusy();
 
-                for (j = 0; j < count; j++ ) {
-                    data = row.get(j);
-                    refVoArrayList.add(new IdNameVO(data.getId(), data.getAnalyte()));
-                }
+        list = new ArrayList<IdNameVO>();
+        ana = (AnalysisViewDO)manager.getObject(manager.getAnalysisUid(analysisId));
+        for (i = 0; i < manager.result.count(ana); i++ ) {
+            for (j = 0; j < manager.result.count(ana, i); j++ ) {
+                data = manager.result.get(ana, i, j);
+                list.add(new IdNameVO(data.getId(), data.getAnalyte()));
             }
+        }
+        HistoryScreen.showHistory(Messages.get().history_currentResult(),
+                                  Constants.table().RESULT,
+                                  list);
 
-            refVoList = new IdNameVO[refVoArrayList.size()];
-            for (i = 0; i < refVoArrayList.size(); i++ )
-                refVoList[i] = refVoArrayList.get(i);
-
-            HistoryScreen.showHistory(Messages.get().historyCurrentResult(),
-                                      Constants.table().RESULT,
-                                      refVoList);
-            window.clearStatus();
-
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historyCurrentResult: " + e.getMessage());
-        }*/
+        window.clearStatus();
     }
 
-    public void historyStorage() {
-        int i, j, k, itemCount, anCount, storageCount;
-        ArrayList<IdNameVO> refVoArrayList;
-        IdNameVO[] refVoList;
-        SampleItemManager man;
-        AnalysisManager anMan;
-        StorageManager storageMan;
+    /**
+     * Shows the history of the storages for both sample items and analyses. For
+     * each sample item, first the history of its storages is shown and then the
+     * history of its analyses' storages.
+     */
+    public static void storage(SampleManager1 manager, WindowInt window) {
+        int i, j, k;
         StorageViewDO data;
+        AnalysisViewDO ana;
+        SampleItemViewDO item;
+        ArrayList<IdNameVO> list;
 
-        /*window.setBusy();
-        try {
-            man = manager.getSampleItems();
-            itemCount = man.count();
+        window.setBusy();
 
-            refVoArrayList = new ArrayList<IdNameVO>();
-            for (i = 0; i < itemCount; i++ ) {
-                anMan = man.getAnalysisAt(i);
-                anCount = anMan.count();
-                storageMan = man.getStorageAt(i);
-                storageCount = storageMan.count();
+        list = new ArrayList<IdNameVO>();
 
-                for (j = 0; j < storageCount; j++ ) {
-                    data = storageMan.getStorageAt(j);
-                    refVoArrayList.add(new IdNameVO(data.getId(),
-                                                    data.getStorageLocationName()));
-                }
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
 
-                for (j = 0; j < anCount; j++ ) {
-                    storageMan = anMan.getStorageAt(j);
-                    storageCount = storageMan.count();
-
-                    for (k = 0; k < storageCount; k++ ) {
-                        data = storageMan.getStorageAt(k);
-                        refVoArrayList.add(new IdNameVO(data.getId(),
-                                                        data.getStorageLocationName()));
-                    }
-                }
+            for (j = 0; j < manager.storage.count(item); j++ ) {
+                data = manager.storage.get(item, j);
+                list.add(new IdNameVO(data.getId(), data.getStorageLocationName()));
             }
 
-            refVoList = new IdNameVO[refVoArrayList.size()];
-            for (i = 0; i < refVoArrayList.size(); i++ )
-                refVoList[i] = refVoArrayList.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                for (k = 0; k < manager.storage.count(ana); k++ ) {
+                    data = manager.storage.get(ana, k);
+                    list.add(new IdNameVO(data.getId(), data.getStorageLocationName()));
+                }
+            }
+        }
 
-            HistoryScreen.showHistory(Messages.get().historyStorage(),
-                                      Constants.table().STORAGE,
-                                      refVoList);
-            window.clearStatus();
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historyStorage: " + e.getMessage());
-        }*/
+        HistoryScreen.showHistory(Messages.get().history_storage(), Constants.table().STORAGE, list);
+
+        window.clearStatus();
     }
 
-    public void historySampleQA() {
-        int i, count;
-        IdNameVO refVoList[];
-        SampleQaEventManager man;
+    /**
+     * shows the history of sample qa events
+     */
+    public static void sampleQA(SampleManager1 manager, WindowInt window) {
+        int i;
         SampleQaEventViewDO data;
+        ArrayList<IdNameVO> list;
 
-        /*window.setBusy();
-        try {
-            man = manager.getQaEvents();
-            count = manager.qaEvent.count();
-            refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++ ) {
-                data = man.getSampleQAAt(i);
-                refVoList[i] = new IdNameVO(data.getId(), data.getQaEventName());
-            }
+        window.setBusy();
 
-            HistoryScreen.showHistory(Messages.get().historySampleQA(),
-                                      Constants.table().SAMPLE_QAEVENT,
-                                      refVoList);
-            window.clearStatus();
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historySampleQA: " + e.getMessage());
-        }*/
+        list = new ArrayList<IdNameVO>();
+        for (i = 0; i < manager.qaEvent.count(); i++ ) {
+            data = manager.qaEvent.get(i);
+            list.add(new IdNameVO(data.getId(), data.getQaEventName()));
+        }
+
+        HistoryScreen.showHistory(Messages.get().history_sampleQA(),
+                                  Constants.table().SAMPLE_QAEVENT,
+                                  list);
+
+        window.clearStatus();
     }
 
-    public void historyAnalysisQA() {
-        int i, j, k, itemCount, anCount, qaCount;
-        ArrayList<IdNameVO> refVoArrayList;
-        IdNameVO[] refVoList;
-        SampleItemManager man;
-        AnalysisManager anMan;
-        AnalysisQaEventManager qaMan;
+    /**
+     * shows the history of all analysis qa events
+     */
+    public static void analysisQA(SampleManager1 manager, WindowInt window) {
+        int i, j, k;
+        AnalysisViewDO ana;
+        SampleItemViewDO item;
         AnalysisQaEventViewDO data;
+        ArrayList<IdNameVO> list;
 
-        /*window.setBusy();
-        try {
-            man = manager.getSampleItems();
-            itemCount = man.count();
+        window.setBusy();
 
-            refVoArrayList = new ArrayList<IdNameVO>();
-            for (i = 0; i < itemCount; i++ ) {
-                anMan = man.getAnalysisAt(i);
-                anCount = anMan.count();
-
-                for (j = 0; j < anCount; j++ ) {
-                    qaMan = anMan.getQAEventAt(j);
-                    qaCount = qaMan.count();
-
-                    for (k = 0; k < qaCount; k++ ) {
-                        data = qaMan.getAnalysisQAAt(k);
-                        refVoArrayList.add(new IdNameVO(data.getId(),
-                                                        data.getQaEventName()));
-                    }
+        list = new ArrayList<IdNameVO>();
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                for (k = 0; k < manager.qaEvent.count(ana); k++ ) {
+                    data = manager.qaEvent.get(ana, k);
+                    list.add(new IdNameVO(data.getId(), data.getQaEventName()));
                 }
             }
+        }
 
-            refVoList = new IdNameVO[refVoArrayList.size()];
-            for (i = 0; i < refVoArrayList.size(); i++ )
-                refVoList[i] = refVoArrayList.get(i);
-
-            HistoryScreen.showHistory(Messages.get().historyAnalysisQA(),
-                                      Constants.table().ANALYSIS_QAEVENT,
-                                      refVoList);
-            window.clearStatus();
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historyAnalysis: " + e.getMessage());
-        }*/
+        HistoryScreen.showHistory(Messages.get().history_analysisQA(),
+                                  Constants.table().ANALYSIS_QAEVENT,
+                                  list);
+        window.clearStatus();
     }
 
-    public void historyAuxData() {
-        int i, count;
-        IdNameVO refVoList[];
-        AuxDataManager man;
+    /**
+     * shows the history of auxiliary data
+     */
+    public static void auxData(SampleManager1 manager, WindowInt window) {
+        int i;
         AuxDataViewDO data;
-        AuxFieldViewDO fieldDO;
+        ArrayList<IdNameVO> list;
 
-        /*window.setBusy();
-        try {
-            man = manager.getAuxData();
-            count = man.count();
-            refVoList = new IdNameVO[count];
-            for (i = 0; i < count; i++ ) {
-                data = man.getAuxDataAt(i);
-                fieldDO = man.getAuxFieldAt(i);
-                refVoList[i] = new IdNameVO(data.getId(), fieldDO.getAnalyteName());
-            }
+        window.setBusy();
 
-            HistoryScreen.showHistory(Messages.get().historyAuxData(),
-                                      Constants.table().AUX_DATA,
-                                      refVoList);
-            window.clearStatus();
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historyAuxData: " + e.getMessage());
-        }*/
-    }
+        list = new ArrayList<IdNameVO>();
+        for (i = 0; i < manager.auxData.count(); i++ ) {
+            data = manager.auxData.get(i);
+            list.add(new IdNameVO(data.getId(), data.getAnalyteName()));
+        }
 
-    public void setManager(SampleManager1 manager) {
-        this.manager = manager;
+        HistoryScreen.showHistory(Messages.get().history_auxData(), Constants.table().AUX_DATA, list);
+        window.clearStatus();
     }
 }

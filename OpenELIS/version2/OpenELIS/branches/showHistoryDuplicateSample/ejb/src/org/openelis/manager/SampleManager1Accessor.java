@@ -85,7 +85,7 @@ public class SampleManager1Accessor {
         sm.samplePrivateWell = samplePrivateWell;
     }
     
-    public static SampleNeonatalDO getSampleNeonatal(SampleManager1 sm) {
+    public static SampleNeonatalViewDO getSampleNeonatal(SampleManager1 sm) {
         return sm.sampleNeonatal;
     }
     
