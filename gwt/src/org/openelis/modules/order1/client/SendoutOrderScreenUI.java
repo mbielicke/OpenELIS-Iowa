@@ -28,6 +28,7 @@ package org.openelis.modules.order1.client;
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1187,9 +1188,13 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     private void commit(boolean ignoreWarning) {
+        Validation validation;
+        
         finishEditing();
+        
+        validation = validate();
 
-        if ( !validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().gen_correctErrors());
             return;
         }
@@ -1298,6 +1303,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected void duplicate() {
         try {
             manager = OrderService1.get().duplicate(manager.getOrder().getId());
+            //the screen is in add state, so we need the cache here
             buildCache();
             setData();
             setState(ADD);

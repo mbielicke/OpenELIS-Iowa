@@ -27,6 +27,7 @@ package org.openelis.modules.sample1.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -803,12 +804,13 @@ public class AnalysisTabUI extends Screen {
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
-    public boolean validate() {
+    public Validation validate() {
         /*
          * validate only if there's data loaded in the tab
          */
         if (displayedUid == null)
-            return true;
+            return new Validation();
+        
         return super.validate();
     }
 
