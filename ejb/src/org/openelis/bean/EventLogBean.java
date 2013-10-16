@@ -38,7 +38,6 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.EventLogDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.entity.EventLog;
 import org.openelis.meta.EventLogMeta;
 import org.openelis.ui.common.DataBaseUtil;
@@ -57,7 +56,7 @@ public class EventLogBean {
     private EntityManager             manager;
 
     @EJB
-    private UserCacheBean            userCache;
+    private UserCacheBean             userCache;
 
     private static final EventLogMeta meta = new EventLogMeta();
 
@@ -77,33 +76,16 @@ public class EventLogBean {
         return data;
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<EventLogDO> fetchByRefTableIdRefId(Integer refTableId, Integer refId) throws Exception {
         Query query;
-        List list;
+        List<EventLogDO> list;
 
         query = manager.createNamedQuery("EventLog.FetchByRefTableIdRefId");
         query.setParameter("refTableId", refTableId);
         query.setParameter("refId", refId);
 
         list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
-    }
-
-    public ArrayList<EventLogDO> fetchByRefTableIdRefId(Integer refTableId,
-                                                        Integer refId, int max) throws Exception {
-        Query query;
-        List list;
-
-        query = manager.createNamedQuery("EventLog.FetchByRefTableIdRefId");
-        query.setParameter("refTableId", refTableId);
-        query.setParameter("refId", refId);
-        query.setMaxResults(max);
-
-        list = query.getResultList();
-
         if (list.isEmpty())
             throw new NotFoundException();
 
@@ -114,19 +96,16 @@ public class EventLogBean {
     public ArrayList<EventLogDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
-        List list;
+        List<EventLogDO> list;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("new org.openelis.domain.EventLogDO(" + EventLogMeta.getId() +
-                          ", " + EventLogMeta.getTypeId() + ", " +
-                          EventLogMeta.getSource() + ", " +
+        builder.setSelect("new org.openelis.domain.EventLogDO(" + EventLogMeta.getId() + ", " +
+                          EventLogMeta.getTypeId() + ", " + EventLogMeta.getSource() + ", " +
                           EventLogMeta.getReferenceTableId() + ", " +
-                          EventLogMeta.getReferenceId() + ", " +
-                          EventLogMeta.getLevelId() + ", " +
-                          EventLogMeta.getSystemUserId() + ", " +
-                          EventLogMeta.getTimeStamp() + ", " + EventLogMeta.getText() +
-                          ") ");
+                          EventLogMeta.getReferenceId() + ", " + EventLogMeta.getLevelId() + ", " +
+                          EventLogMeta.getSystemUserId() + ", " + EventLogMeta.getTimeStamp() +
+                          ", " + EventLogMeta.getText() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(EventLogMeta.getTimeStamp() + " DESC");
 
@@ -137,7 +116,7 @@ public class EventLogBean {
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        list = (ArrayList<IdNameVO>)DataBaseUtil.subList(list, first, max);
+        list = (ArrayList<EventLogDO>)DataBaseUtil.subList(list, first, max);
         if (list == null)
             throw new LastPageException();
 
@@ -148,6 +127,11 @@ public class EventLogBean {
         EventLog entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
+
+        if (data.getSystemUserId() == null)
+            data.setSystemUserId(userCache.getId());
+        if (data.getTimeStamp() == null)
+            data.setTimeStamp(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
 
         entity = new EventLog();
         entity.setTypeId(data.getTypeId());
@@ -165,23 +149,18 @@ public class EventLogBean {
         return data;
     }
 
-    public void add(Integer typeId, String source, Integer referenceTableId,
-                    Integer referenceId, Integer levelId, String text) throws Exception {
-        EventLog entity;
+    public EventLogDO add(Integer typeId, String source, Integer referenceTableId,
+                          Integer referenceId, Integer levelId, String text) throws Exception {
 
-        manager.setFlushMode(FlushModeType.COMMIT);
-
-        entity = new EventLog();
-        entity.setTypeId(typeId);
-        entity.setSource(source);
-        entity.setReferenceTableId(referenceTableId);
-        entity.setReferenceId(referenceId);
-        entity.setLevelId(levelId);
-        entity.setSystemUserId(userCache.getId());
-        entity.setTimeStamp(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        entity.setText(text);
-
-        manager.persist(entity);
+        return add(new EventLogDO(null,
+                                  typeId,
+                                  source,
+                                  referenceTableId,
+                                  referenceId,
+                                  levelId,
+                                  null,
+                                  null,
+                                  text));
     }
 
     public void delete(EventLogDO data) throws Exception {

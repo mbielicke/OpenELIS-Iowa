@@ -168,7 +168,7 @@ public class PWSImportHelperBean {
                 ut.commit();
             else
                 ut.rollback();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             ut.rollback();
             throw e;
         }

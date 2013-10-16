@@ -1,5 +1,8 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -13,6 +16,7 @@ import org.openelis.domain.PatientDO;
 import org.openelis.entity.Patient;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.ui.common.DataBaseUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -40,6 +44,19 @@ public class PatientBean {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<PatientDO> fetchByIds(Collection<Integer> ids) {
+        Query query;
+        
+        if (ids.size() == 0)
+            return new ArrayList<PatientDO>();
+        
+        query = manager.createNamedQuery("Patient.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     public PatientDO add(PatientDO data) throws Exception {

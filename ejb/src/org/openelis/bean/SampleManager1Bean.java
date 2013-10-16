@@ -57,7 +57,6 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalDO;
-import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -221,9 +220,9 @@ public class SampleManager1Bean {
 
             s.setDomain(domain);
         } else if (Constants.domain().NEONATAL.equals(domain)) {
-            SampleNeonatalViewDO snn;
+            SampleNeonatalDO snn;
 
-            snn = new SampleNeonatalViewDO();
+            snn = new SampleNeonatalDO();
             snn.setIsRepeat("N");
             snn.setIsNicu("N");
             snn.setIsTransfused("N");
@@ -308,7 +307,7 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
 
-        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }
@@ -506,7 +505,7 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
 
-        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }

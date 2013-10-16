@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -76,6 +77,20 @@ public class ProviderBean {
         return data;
     }
     
+    @SuppressWarnings("unchecked")
+    public ArrayList<ProviderDO> fetchByIds(Collection<Integer> ids) {
+        Query query;
+        
+        if (ids.size() == 0)
+            return new ArrayList<ProviderDO>();
+        
+        query = manager.createNamedQuery("Provider.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<ProviderDO> fetchByLastName(String providerLastName, int max) throws Exception {
         Query query;
 
