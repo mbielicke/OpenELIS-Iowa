@@ -46,21 +46,24 @@
               <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.options}"
                 rightIcon="{uiRes.buttonPanel.OptionsButtonImage}" />
             </w:display>
-            <w:MenuItem ui:field="duplicate" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}" /> <!-- display="{msg.btn_duplicateRecord}" -->
+            <w:MenuItem ui:field="duplicate" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}"
+              display="{msg.gen_duplicateRecord}" />
             <!-- <html>&lt;hr/&gt;</html> -->
-            <w:MenuItem ui:field="historySample" icon="historyIcon" display="{msg.historySample}" />
-            <w:MenuItem ui:field="historySampleEnvironmental" icon="historyIcon"
-              display="{msg.historySampleEnvironmental}" />
-            <w:MenuItem ui:field="historySampleProject" icon="historyIcon" display="{msg.historySampleProject}" />
-            <w:MenuItem ui:field="historySampleOrganization" icon="historyIcon"
-              display="{msg.historySampleOrganization}" />
-            <w:MenuItem ui:field="historySampleItem" icon="historyIcon" display="{msg.historySampleItem}" />
-            <w:MenuItem ui:field="historyAnalysis" icon="historyIcon" display="{msg.historyAnalysis}" />
-            <w:MenuItem ui:field="historyCurrentResult" icon="historyIcon" display="{msg.historyCurrentResult}" />
-            <w:MenuItem ui:field="historyStorage" icon="historyIcon" display="{msg.historyStorage}" />
-            <w:MenuItem ui:field="historySampleQA" icon="historyIcon" display="{msg.historySampleQA}" />
-            <w:MenuItem ui:field="historyAnalysisQA" icon="historyIcon" display="{msg.historyAnalysisQA}" />
-            <w:MenuItem ui:field="historyAuxData" icon="historyIcon" display="{msg.historyAuxData}" />
+            <w:Menu  icon="historyIcon" display="{msg.gen_history}" ui:field = "historyMenu" selfShow="true" showBelow="false">
+              <w:MenuItem ui:field="historySample" display="{msg.gen_sample}" />
+              <w:MenuItem ui:field="historySampleNeonatal" display="{msg.sample_neonatal}" />
+              <w:MenuItem ui:field="historyPatient" display="{msg.patient}" />
+              <w:MenuItem ui:field="historyNextOfKin" display="{msg.sample_nextOfKin}" />
+              <w:MenuItem ui:field="historySampleProject" display="{msg.sampleProject}" />
+              <w:MenuItem ui:field="historySampleOrganization" display="{msg.sampleOrganization}" />
+              <w:MenuItem ui:field="historySampleItem" display="{msg.sampleItem}" />
+              <w:MenuItem ui:field="historyAnalysis" display="{msg.analysis}" />
+              <w:MenuItem ui:field="historyCurrentResult" display="{msg.result_current}" />
+              <w:MenuItem ui:field="historyStorage" display="{msg.storage}" />
+              <w:MenuItem ui:field="historySampleQA" display="{msg.sample_qaEvents}" />
+              <w:MenuItem ui:field="historyAnalysisQA" display="{msg.analysis_qaEvents}" />
+              <w:MenuItem ui:field="historyAuxData" display="{msg.auxData}" />
+            </w:Menu>
           </w:Menu>
         </g:HorizontalPanel>
       </g:AbsolutePanel>
@@ -76,7 +79,8 @@
                   <ui:text from="{msg.accessionNum}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" required = "true"/>
+                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer"
+                    required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.orderNum}:" />
@@ -85,7 +89,7 @@
                   <g:HorizontalPanel>
                     <w:TextBox ui:field="orderId" width="75px" field="Integer" />
                     <g:AbsolutePanel>
-                      <w:Button ui:field="orderLookupButton" leftIcon = "{res.style.fieldLookupIcon}"/>
+                      <w:Button ui:field="orderLookupButton" leftIcon="{res.style.fieldLookupIcon}" />
                     </g:AbsolutePanel>
                   </g:HorizontalPanel>
                 </td>
@@ -182,8 +186,7 @@
                       <c:Calendar ui:field="patientBirthDate" width="90px" begin="0" end="2" />
                     </td>
                     <td colspan="3">
-                      <c:Calendar ui:field="patientBirthTime" width="60px"
-                         begin="3" end="4" />
+                      <c:Calendar ui:field="patientBirthTime" width="60px" begin="3" end="4" />
                     </td>
                   </tr>
                   <tr>
@@ -442,7 +445,7 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer top="320px" height="180px" left = "10px" width="100%">
+        <g:layer top="320px" height="180px" left="10px" width="100%">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" width="50%">
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
@@ -497,7 +500,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="projectButton" leftIcon = "{res.style.fieldLookupIcon}" />
+                          <w:Button ui:field="projectButton" leftIcon="{res.style.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -529,7 +532,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="reportToButton" leftIcon = "{res.style.fieldLookupIcon}"/>
+                          <w:Button ui:field="reportToButton" leftIcon="{res.style.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -561,7 +564,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="birthHospitalButton" leftIcon = "{res.style.fieldLookupIcon}"/>
+                          <w:Button ui:field="birthHospitalButton" leftIcon="{res.style.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>

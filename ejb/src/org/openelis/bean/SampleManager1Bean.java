@@ -180,18 +180,12 @@ public class SampleManager1Bean {
     public SampleManager1 getInstance(String domain) throws Exception {
         SampleManager1 sm;
         SampleDO s;
-        Datetime now;
 
         // sample
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         sm = new SampleManager1();
 
         s = new SampleDO();
-        s.setNextItemSequence(0);
-        s.setRevision(0);
-        s.setEnteredDate(now);
-        s.setReceivedById(userCache.getId());
-        s.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
+        setDefaults(s);
 
         setSample(sm, s);
 
@@ -1001,17 +995,21 @@ public class SampleManager1Bean {
                 /*
                  * add/update patient and next of kin
                  */
-                if (getSampleNeonatal(sm).getPatient().getId() == null)
-                    pat = patient.add(getSampleNeonatal(sm).getPatient());
-                else
-                    pat = patient.update(getSampleNeonatal(sm).getPatient());
-                getSampleNeonatal(sm).getPatient().setId(pat.getId());
+                if (getSampleNeonatal(sm).getPatient() != null) {
+                    if (getSampleNeonatal(sm).getPatient().getId() == null)
+                        pat = patient.add(getSampleNeonatal(sm).getPatient());
+                    else
+                        pat = patient.update(getSampleNeonatal(sm).getPatient());
+                    getSampleNeonatal(sm).getPatient().setId(pat.getId());
+                }
 
-                if (getSampleNeonatal(sm).getNextOfKin().getId() == null)
-                    pat = patient.add(getSampleNeonatal(sm).getNextOfKin());
-                else
-                    pat = patient.update(getSampleNeonatal(sm).getNextOfKin());
-                getSampleNeonatal(sm).getNextOfKin().setId(pat.getId());
+                if (getSampleNeonatal(sm).getNextOfKin() != null) {
+                    if (getSampleNeonatal(sm).getNextOfKin().getId() == null)
+                        pat = patient.add(getSampleNeonatal(sm).getNextOfKin());
+                    else
+                        pat = patient.update(getSampleNeonatal(sm).getNextOfKin());
+                    getSampleNeonatal(sm).getNextOfKin().setId(pat.getId());
+                }
 
                 if (getSampleNeonatal(sm).getId() == null) {
                     getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
@@ -1277,7 +1275,6 @@ public class SampleManager1Bean {
      * returned manager contains its data (quick-entered sample is locked).
      */
     public SampleManager1 setAccessionNumber(SampleManager1 sm, Integer accession) throws Exception {
-        String domain;
         SampleDO data, qdata;
         SampleManager1 qsm;
 
@@ -1292,12 +1289,16 @@ public class SampleManager1Bean {
                  * changed to quick-entered sample
                  */
                 if (data.getOrderId() != null)
-                    throw new FormErrorException(Messages.get().cantLoadQEIfOrderNumPresent());
+                    throw new FormErrorException(Messages.get()
+                                                         .sample_cantLoadQEOrderPresentException(accession));
 
                 qsm = fetchForUpdate(qdata.getId());
-                domain = data.getDomain();
-                duplicateManager(sm, qsm);
-                getSample(sm).setDomain(domain);
+                getSample(qsm).setDomain(data.getDomain());
+                setSampleEnvironmental(qsm, getSampleEnvironmental(sm));
+                setSamplePrivateWell(qsm, getSamplePrivateWell(sm));
+                setSampleSDWIS(qsm, getSampleSDWIS(sm));
+                setSampleNeonatal(qsm, getSampleNeonatal(sm));
+                return qsm;
             } else if (qdata.getId().equals(data.getId())) {
                 data.setAccessionNumber(accession);
             } else {
@@ -1329,13 +1330,219 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get().enterAccNumBeforeOrderLoad());
 
         e = new ValidationErrorsList();
-        
+
         if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
-                         Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
-                         Constants.domain().SDWIS.equals(data.getDomain()))         
+            Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
+            Constants.domain().SDWIS.equals(data.getDomain()))
             return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
-        else 
+        else
             return null;
+    }
+
+    /**
+     * Returns a manager filled with the data of the sample with the specified
+     * id. The ids in the returned manager are set to either null or negative
+     * numbers. Duplication is not allowed if any analysis is past logged-in
+     * status or if there are reflexed analyses. Cancelled analyses, storages
+     * and internal notes are not duplicated.
+     */
+    public SampleManager1 duplicate(Integer sampleId) throws Exception {
+        int i;
+        Integer oldId, accession, seq;
+        Datetime now;
+        SampleManager1 sm;
+        AnalysisViewDO ana;
+        HashMap<Integer, Integer> imap, amap;
+        ArrayList<AnalysisViewDO> analyses;
+
+        sm = fetchById(sampleId,
+                       SampleManager1.Load.ORGANIZATION,
+                       SampleManager1.Load.PROJECT,
+                       SampleManager1.Load.QA,
+                       SampleManager1.Load.AUXDATA,
+                       SampleManager1.Load.NOTE,
+                       SampleManager1.Load.RESULT);
+        
+        accession = getSample(sm).getAccessionNumber();
+        
+        /*
+         * can't duplicate a completed or released sample
+         */
+        if (Constants.dictionary().SAMPLE_COMPLETED.equals(getSample(sm).getStatusId()) || 
+                                          Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId() ))
+            throw new InconsistencyException(Messages.get().sample_cantDuplicateCompRelException(accession));
+
+        getSample(sm).setId(null);
+        getSample(sm).setAccessionNumber(null);
+        setDefaults(getSample(sm));
+
+        /*
+         * sample level data
+         */
+        if (getSampleEnvironmental(sm) != null) {
+            getSampleEnvironmental(sm).setId(null);
+            getSampleEnvironmental(sm).setSampleId(null);
+            if (getSampleEnvironmental(sm).getLocationAddress() != null)
+                getSampleEnvironmental(sm).getLocationAddress().setId(null);
+        } else if (getSamplePrivateWell(sm) != null) {
+            getSamplePrivateWell(sm).setId(null);
+            getSamplePrivateWell(sm).setSampleId(null);
+            if (getSamplePrivateWell(sm).getLocationAddress() != null)
+                getSamplePrivateWell(sm).getLocationAddress().setId(null);
+            if (getSamplePrivateWell(sm).getReportToAddress() != null)
+                getSamplePrivateWell(sm).getReportToAddress().setId(null);
+        } else if (getSampleSDWIS(sm) != null) {
+            getSampleSDWIS(sm).setId(null);
+            getSampleSDWIS(sm).setSampleId(null);
+        } else if (getSampleNeonatal(sm) != null) {
+            getSampleNeonatal(sm).setId(null);
+            getSampleNeonatal(sm).setSampleId(null);
+            if (getSampleNeonatal(sm).getPatient() != null) {
+                getSampleNeonatal(sm).getPatient().setId(null);
+                getSampleNeonatal(sm).getPatient().getAddress().setId(null);
+            }
+            if (getSampleNeonatal(sm).getNextOfKin() != null) {
+                getSampleNeonatal(sm).getNextOfKin().setId(null);
+                getSampleNeonatal(sm).getNextOfKin().getAddress().setId(null);
+            }
+        }
+
+        if (getOrganizations(sm) != null) {
+            for (SampleOrganizationViewDO data : getOrganizations(sm)) {
+                data.setId(null);
+                data.setSampleId(null);
+            }
+        }
+
+        if (getProjects(sm) != null) {
+            for (SampleProjectViewDO data : getProjects(sm)) {
+                data.setId(null);
+                data.setSampleId(null);
+            }
+        }
+
+        if (getSampleQAs(sm) != null) {
+            for (SampleQaEventViewDO data : getSampleQAs(sm)) {
+                data.setId(null);
+                data.setSampleId(null);
+            }
+        }
+
+        if (getAuxilliary(sm) != null) {
+            for (AuxDataViewDO data : getAuxilliary(sm)) {
+                data.setId(null);
+                data.setReferenceId(null);
+            }
+        }
+
+        /*
+         * duplicate only external note
+         */
+        if (getSampleExternalNote(sm) != null) {
+            getSampleExternalNote(sm).setId(sm.getNextUID());
+            getSampleExternalNote(sm).setReferenceId(null);
+            getSampleExternalNote(sm).setTimestamp(null);
+        }
+
+        setSampleInternalNotes(sm, null);
+
+        /*
+         * level 2, everything is based on item ids
+         */
+        imap = new HashMap<Integer, Integer>();
+        for (SampleItemViewDO data : getItems(sm)) {
+            oldId = data.getId();
+            data.setId(sm.getNextUID());
+            seq = getSample(sm).getNextItemSequence();
+            data.setItemSequence(seq);
+            getSample(sm).setNextItemSequence(seq + 1);
+            imap.put(oldId, data.getId());
+        }
+
+        /*
+         * level 3, everything is based on analysis ids
+         */
+        amap = new HashMap<Integer, Integer>();
+        analyses = getAnalyses(sm);
+        if (analyses != null) {
+            now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+            i = 0;
+            while (i < analyses.size()) {
+                ana = analyses.get(i);
+                if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()) || 
+                    Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()) || 
+                    Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(ana.getStatusId())) {
+                    if (ana.getParentAnalysisId() != null) {
+                        /*
+                         * don't allow duplication if any analysis has reflexed
+                         * analyses
+                         */
+                        throw new InconsistencyException(Messages.get()
+                                                                 .sample_cantDuplicateReflexAnaException(accession,
+                                                                                                         ana.getTestName(),
+                                                                                                         ana.getMethodName()));
+                    } else {
+                        oldId = ana.getId();
+                        ana.setId(sm.getNextUID());
+                        ana.setSampleItemId(imap.get(ana.getSampleItemId()));
+                        ana.setRevision(0);
+                        if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
+                            Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()))
+                            ana.setAvailableDate(now);
+                        amap.put(oldId, ana.getId());
+                        i++;
+                    }
+                } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId())) {
+                    /*
+                     * don't duplicate cancelled analyses
+                     */
+                    analyses.remove(i);
+                } else {
+                    /*
+                     * don't allow duplication if any analysis is past logged-in
+                     * status
+                     */
+                    throw new InconsistencyException(Messages.get()
+                                                             .sample_cantDuplicateAnaPastLoggedInException(accession));
+                }
+            }
+
+            /*
+             * resolve prep-analyses
+             */
+            for (AnalysisViewDO data : analyses)
+                data.setPreAnalysisId(amap.get(data.getPreAnalysisId()));
+        }
+
+        if (getResults(sm) != null) {
+            for (ResultViewDO data : getResults(sm)) {
+                data.setId(sm.getNextUID());
+                data.setAnalysisId(amap.get(data.getAnalysisId()));
+            }
+        }
+
+        /*
+         * duplicate only external notes
+         */
+        if (getAnalysisExternalNotes(sm) != null) {
+            for (NoteViewDO data : getAnalysisExternalNotes(sm)) {
+                data.setId(null);
+                data.setReferenceId(amap.get(data.getReferenceId()));
+                data.setTimestamp(null);
+            }
+        }
+
+        setAnalysisInternalNotes(sm, null);
+
+        if (getAnalysisQAs(sm) != null) {
+            for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
+                data.setId(sm.getNextUID());
+                data.setAnalysisId(amap.get(data.getAnalysisId()));
+            }
+        }
+
+        return sm;
     }
 
     /**
@@ -1466,15 +1673,8 @@ public class SampleManager1Bean {
                     prep.setPanelId(test.getPanelId());
                     anaById.put(prep.getId(), prep);
                 }
-                ana = anaById.get(test.getAnalysisId());
-                ana.setPreAnalysisId(prep.getId());
-                ana.setPreAnalysisTest(prep.getTestName());
-                ana.setPreAnalysisMethod(prep.getMethodName());
-                if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) &&
-                    !Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
-                    ana.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
-                    ana.setAvailableDate(null);
-                }
+
+                analysisHelper.setPrepAnalysis(anaById.get(test.getAnalysisId()), prep);
             }
         }
 
@@ -1627,6 +1827,17 @@ public class SampleManager1Bean {
     }
 
     /**
+     * Sets default values in the fields essential for a new sample
+     */
+    protected void setDefaults(SampleDO data) {
+        data.setNextItemSequence(0);
+        data.setRevision(0);
+        data.setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        data.setReceivedById(userCache.getId());
+        data.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
+    }
+
+    /**
      * Validates the sample manager for add or update. The routine throws a list
      * of exceptions/warnings listing all the problems for each sample.
      */
@@ -1759,10 +1970,11 @@ public class SampleManager1Bean {
                     if (qa.getTestId() != null && !qa.getTestId().equals(ana.getTestId())) {
                         e.add(new FormErrorException(Messages.get()
                                                              .analysis_qaEventInvalidException(getSample(sm).getAccessionNumber(),
-                                                                                               imap.get(ana.getSampleItemId()).getItemSequence(),
-                                                                                      ana.getTestName(),
-                                                                                      ana.getMethodName(),
-                                                                                      qa.getName())));
+                                                                                               imap.get(ana.getSampleItemId())
+                                                                                                   .getItemSequence(),
+                                                                                               ana.getTestName(),
+                                                                                               ana.getMethodName(),
+                                                                                               qa.getName())));
                     }
                 }
             }
@@ -1891,28 +2103,6 @@ public class SampleManager1Bean {
                                                                                            ana.getMethodName()));
             }
         }
-    }
-
-    /**
-     * copies all parts of fromsm to tosm e.g sample except the data for the
-     * domain
-     */
-    protected void duplicateManager(SampleManager1 tosm, SampleManager1 fromsm) {
-        setSample(tosm, getSample(fromsm));
-        setOrganizations(tosm, getOrganizations(fromsm));
-        setProjects(tosm, getProjects(fromsm));
-        setSampleQAs(tosm, getSampleQAs(fromsm));
-        setAuxilliary(tosm, getAuxilliary(fromsm));
-        setSampleExternalNote(tosm, getSampleExternalNote(fromsm));
-        setSampleInternalNotes(tosm, getSampleInternalNotes(fromsm));
-        setItems(tosm, getItems(fromsm));
-        setStorages(tosm, getStorages(fromsm));
-        setAnalyses(tosm, getAnalyses(fromsm));
-        setAnalysisQAs(tosm, getAnalysisQAs(fromsm));
-        setAnalysisExternalNotes(tosm, getAnalysisExternalNotes(fromsm));
-        setAnalysisInternalNotes(tosm, getAnalysisInternalNotes(fromsm));
-        setUsers(tosm, getUsers(fromsm));
-        setResults(tosm, getResults(fromsm));
     }
 
     /**

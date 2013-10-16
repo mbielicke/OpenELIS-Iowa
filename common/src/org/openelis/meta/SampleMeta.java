@@ -805,7 +805,7 @@ public class SampleMeta implements Meta, MetaMap {
         return NEO_IS_COLLECTION_VALID;
     }
 
-    public static String getNeoCollectionAge() {
+    public static String getCollectionAge() {
         return NEO_COLLECTION_AGE;
     }
 

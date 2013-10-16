@@ -265,7 +265,6 @@ public class SampleHistoryUtility {
             HistoryScreen.showHistory(Messages.get().historyAnalysis(),
                                       Constants.table().ANALYSIS,
                                       refVoList);
-            window.clearStatus();
         } catch (Exception e) {
             Window.alert("historyAnalysis: " + e.getMessage());
             window.clearStatus();

@@ -252,7 +252,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         recurrenceTab = new RecurrenceTabUI(this, bus);
         fillTab = new SendoutOrderFillTabUI(this, bus);
 
-        auxDataTab = new AuxDataTabUI(this, bus) {
+        auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
                 return manager != null;
@@ -1298,6 +1298,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected void duplicate() {
         try {
             manager = OrderService1.get().duplicate(manager.getOrder().getId());
+            buildCache();
             setData();
             setState(ADD);
             fireDataChange();
