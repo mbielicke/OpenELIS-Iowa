@@ -56,7 +56,7 @@
               <ui:text from="{msg.gen_status}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="status" width="150px" field="Integer" /> 
+              <w:Dropdown ui:field="analysisStatus" width="150px" field="Integer" /> 
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.analysis_preliminary}:" />
@@ -120,7 +120,7 @@
                     <t:Column width="130" label="{msg.gen_name}">
                       <t:LabelCell />
                     </t:Column>
-                    <t:Column width="130" label="{msg.gen_sampleType}">
+                    <t:Column width="130" label="{msg.sample_type}">
                       <t:LabelCell />
                     </t:Column>
                     <t:Column width="60" label="{msg.gen_sequence}">
@@ -140,11 +140,11 @@
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="140px" bottom="5px">
+    <g:layer top="130px" bottom="0px">
       <g:LayoutPanel>
         <g:layer width="64%" left="0px">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="20px">
+            <g:layer top="0px" bottom="25px">
               <t:Table ui:field="worksheetTable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
               >
@@ -160,7 +160,7 @@
                 </t:Column>
                 <t:Column width="115" label="{msg.gen_status}">
                   <t:DropdownCell>
-                    <w:Dropdown width="100" />
+                    <w:Dropdown width="100" ui:field = "worksheetStatus" field = "Integer"/>
                   </t:DropdownCell>
                 </t:Column>
                 <t:Column width="120" label="{msg.gen_user}">
@@ -168,7 +168,7 @@
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom="0px" height="20px">
+            <g:layer bottom="0px" height="25px">
               <g:HTMLPanel>
                 <w:Button ui:field="selectWkshtButton" text="{msg.gen_select}" />
               </g:HTMLPanel>
@@ -177,15 +177,15 @@
         </g:layer>
         <g:layer width="35%" right="0px">
           <g:LayoutPanel>
-            <g:layer top="0px" bottom="20px">
+            <g:layer top="0px" bottom="25px">
               <t:Table ui:field="userTable" verticalScroll="ALWAYS"
                 horizontalScroll="ALWAYS" header="true"  styleName="{uiRes.table.ScreenTableWithSides}"
               > 
                 <t:Column width="115" label="{msg.gen_user}">
                   <t:AutoCompleteCell>
-                    <w:AutoComplete case="LOWER" required="true">
+                    <w:AutoComplete ui:field = "user" case="LOWER" required="true">
                       <w:popup>
-                        <t:Table visibleRows="10" header="true">
+                        <t:Table visibleRows="10" header="false">
                           <t:Column width="100">
                             <t:LabelCell />
                           </t:Column>
@@ -196,12 +196,12 @@
                 </t:Column>
                 <t:Column width="114" label="{msg.analysis_action}">
                   <t:DropdownCell>
-                    <w:Dropdown width="100" />
+                    <w:Dropdown width="100" ui:field = "userAction" field = "Integer"/>
                   </t:DropdownCell>
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom="0px" height="20px">
+            <g:layer bottom="0px" height="25px">
               <g:HorizontalPanel> 
                 <w:Button ui:field="addActionButton" text="{msg.gen_addRow}" leftIcon="{res.style.addRowIcon}"/>
                 <w:Button ui:field="removeActionButton" text="{msg.gen_removeRow}" leftIcon="{res.style.removeRowIcon}"/>

@@ -253,7 +253,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         recurrenceTab = new RecurrenceTabUI(this, bus);
         fillTab = new SendoutOrderFillTabUI(this, bus);
 
-        auxDataTab = new AuxDataTabUI(this, bus) {
+        auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
                 return manager != null;

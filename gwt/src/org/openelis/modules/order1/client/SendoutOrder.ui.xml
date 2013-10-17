@@ -289,7 +289,7 @@
 						</w:tab>
 						<w:tab>
 							<w:customHeader>
-								<w:TabWidget text="{msg.gen_auxData}" />
+								<w:TabWidget text="{msg.aux_data}" />
 							</w:customHeader>
 							<g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
 								<g:layer>
@@ -359,7 +359,7 @@
 						</w:tab>
 						<w:tab>
 							<w:customHeader>
-								<w:TabWidget text="{msg.gen_sample}" />
+								<w:TabWidget text="{msg.sample_sample}" />
 							</w:customHeader>
 							<g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
 								<g:layer>

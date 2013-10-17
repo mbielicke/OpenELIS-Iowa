@@ -74,8 +74,10 @@ public class SampleItemTabUI extends Screen {
                     unitOfMeasure;
 
     protected Screen                     parentScreen;
-
+    
     protected SampleItemTabUI            screen;
+    
+    protected EventBus                   parentBus; 
 
     protected SampleManager1             manager;
 
@@ -85,9 +87,9 @@ public class SampleItemTabUI extends Screen {
 
     protected boolean                   canEdit, isVisible, redraw, hasReleasedAnalysis;
 
-    public SampleItemTabUI(Screen parentScreen, EventBus bus) {
+    public SampleItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -301,7 +303,7 @@ public class SampleItemTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
+        parentBus.addHandlerToSource(StateChangeEvent.getType(),
                                parentScreen,
                                new StateChangeEvent.Handler() {
                                    public void onStateChange(StateChangeEvent event) {
@@ -310,7 +312,7 @@ public class SampleItemTabUI extends Screen {
                                    }
                                });
 
-        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+        parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 String uid;
                 AnalysisDO a;
@@ -408,7 +410,7 @@ public class SampleItemTabUI extends Screen {
     private void setTypeOfSample(Integer typeId, String display) {
         sampleItem.setTypeOfSampleId(typeId);
         sampleItem.setTypeOfSample(display);
-        bus.fireEvent(new SampleItemChangeEvent(displayedUid,
+        parentBus.fireEvent(new SampleItemChangeEvent(displayedUid,
                                                 SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED));
     }
 
@@ -445,7 +447,7 @@ public class SampleItemTabUI extends Screen {
     private void setContainer(Integer containerId, String display) {
         sampleItem.setContainerId(containerId);
         sampleItem.setContainer(display);
-        bus.fireEvent(new SampleItemChangeEvent(displayedUid,
+        parentBus.fireEvent(new SampleItemChangeEvent(displayedUid,
                                                 SampleItemChangeEvent.Action.CONTAINER_CHANGED));
     }
 
