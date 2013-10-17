@@ -120,7 +120,7 @@
                     <t:Column width="130" label="{msg.gen_name}">
                       <t:LabelCell />
                     </t:Column>
-                    <t:Column width="130" label="{msg.gen_sampleType}">
+                    <t:Column width="130" label="{msg.sample_type}">
                       <t:LabelCell />
                     </t:Column>
                     <t:Column width="60" label="{msg.gen_sequence}">
