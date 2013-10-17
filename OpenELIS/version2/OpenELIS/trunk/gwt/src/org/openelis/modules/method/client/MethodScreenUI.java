@@ -82,9 +82,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-public class MethodScreen extends Screen {
+public class MethodScreenUI extends Screen {
     @UiTemplate("Method.ui.xml")
-    interface MethodUiBinder extends UiBinder<Widget, MethodScreen> {
+    interface MethodUiBinder extends UiBinder<Widget, MethodScreenUI> {
     };
 
     public static final MethodUiBinder uiBinder = GWT.create(MethodUiBinder.class);
@@ -114,7 +114,7 @@ public class MethodScreen extends Screen {
 
     private ScreenNavigator<IdNameVO>  nav;
 
-    public MethodScreen(WindowInt window) throws Exception {
+    public MethodScreenUI(WindowInt window) throws Exception {
         setWindow(window);
         
         initWidget(uiBinder.createAndBindUi(this));

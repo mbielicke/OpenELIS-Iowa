@@ -1329,13 +1329,18 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         addScreenHandler(providerLastName,
                          SampleMeta.getNeoProviderLastName(),
-                         new ScreenHandler<Integer>() {
+                         new ScreenHandler<AutoCompleteValue>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 setProviderSelection();
+                                 providerLastName.setValue(getProviderId(), getProviderLastName());
                              }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 getProviderFromSelection();
+                             public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
+                                 ProviderDO data;
+                                 
+                                 data = null;
+                                 if (event.getValue() != null)
+                                     data = (ProviderDO) event.getValue().getData();
+                                 setProvider(data);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2791,79 +2796,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager.getSampleNeonatal().setIsCollectionValid(isCollectionValid);
     }
 
-    private Integer getNeonatalProviderId() {
-        if (manager == null)
+    private Integer getProviderId() {
+        if (manager == null || manager.getSampleNeonatal().getProvider() == null)
             return null;
         return manager.getSampleNeonatal().getProviderId();
     }
-
-    private void setNeonatalProviderId(Integer providerId) {
-        manager.getSampleNeonatal().setProviderId(providerId);
-    }
-
-    private String getNeonatalProviderLastName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getProviderLastName();
-    }
-
-    private void setNeonatalProviderLastName(String providerlastName) {
-        manager.getSampleNeonatal().setProviderlastName(providerlastName);
-    }
-
-    private String getNeonatalProviderFirstName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getProviderFirstName();
-    }
-
-    private void setNeonatalProviderFirstName(String providerFirstName) {
-        manager.getSampleNeonatal().setProviderFirstName(providerFirstName);
-    }
-
-    private void setProviderSelection() {
-        if (manager == null) {
-            providerLastName.setValue(null, "");
-            return;
-        }
-
-        providerLastName.setValue(getNeonatalProviderId(), getNeonatalProviderLastName());
-        providerFirstName.setValue(getNeonatalProviderFirstName());
-    }
-
-    private void getProviderFromSelection() {
-        ProviderDO data;
-        AutoCompleteValue row;
-
-        row = providerLastName.getValue();
-        if (row == null || row.getId() == null) {
-            setNeonatalProviderId(null);
-            setProviderFirstName(null);
-            setNeonatalProviderLastName(null);
-
-            providerLastName.setValue(null, "");
-            providerFirstName.setValue("");
-            return;
-        } else {
-            data = (ProviderDO)row.getData();
-
-            setNeonatalProviderId(data.getId());
-            setNeonatalProviderFirstName(data.getFirstName());
-            setNeonatalProviderLastName(data.getLastName());
-
-            providerLastName.setValue(getNeonatalProviderId(), getNeonatalProviderLastName());
-            providerFirstName.setValue(getNeonatalProviderFirstName());
-        }
-    }
-
-    private void setProviderFirstName(String name) {
-        manager.getSampleNeonatal().setProviderFirstName(name);
-    }
-
-    private String getProviderFirstName() {
-        if (manager == null)
-            return null;
-        return manager.getSampleNeonatal().getProviderFirstName();
+    
+    private void setProviderId(Integer id) {
+        manager.getSampleNeonatal().setProviderId(id);
     }
 
     private String getNeonatalFormNumber() {
@@ -2874,6 +2814,28 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     private void setNeonatalFormNumber(String formNumber) {
         manager.getSampleNeonatal().setFormNumber(formNumber);
+    }
+
+    private void setProvider(ProviderDO data) {
+        if (data == null || data.getId() == null)
+            setProviderId(null);
+        else
+            setProviderId(data.getId());
+        manager.getSampleNeonatal().setProvider(data);
+        providerLastName.setValue(getProviderId(), getProviderLastName());
+        providerFirstName.setValue(getProviderFirstName());
+    }
+
+    private String getProviderLastName() {
+        if (manager == null || manager.getSampleNeonatal().getProvider() == null)
+            return null;
+        return manager.getSampleNeonatal().getProvider().getLastName();
+    }
+
+    private String getProviderFirstName() {
+        if (manager == null || manager.getSampleNeonatal().getProvider() == null)
+            return null;
+        return manager.getSampleNeonatal().getProvider().getFirstName();
     }
 
     /**
