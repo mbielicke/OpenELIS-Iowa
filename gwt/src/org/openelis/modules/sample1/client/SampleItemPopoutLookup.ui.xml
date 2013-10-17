@@ -21,7 +21,7 @@
       <g:LayoutPanel>
         <g:layer width="83%" left="0px">
           <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-            <r:Column width="40" label="#" />
+            <r:Column width="35" label="#" />
             <r:Column width="340" label="{msg.sample_itemAnalyses}" />
             <r:Leaf key="sampleItem">
               <r:LeafColumn>
@@ -33,7 +33,7 @@
             </r:Leaf>
             <r:Leaf key="analysis">
               <r:LeafColumn>
-                <t:CheckBoxCell />
+                <t:CheckBoxCell align = "left"/>
               </r:LeafColumn>
               <r:LeafColumn>
                 <t:LabelCell />

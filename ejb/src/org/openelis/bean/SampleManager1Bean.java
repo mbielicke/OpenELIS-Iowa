@@ -1348,7 +1348,7 @@ public class SampleManager1Bean {
      */
     public SampleManager1 duplicate(Integer sampleId) throws Exception {
         int i;
-        Integer oldId, accession, seq;
+        Integer tmpId, accession, seq;
         Datetime now;
         SampleManager1 sm;
         AnalysisViewDO ana;
@@ -1409,28 +1409,28 @@ public class SampleManager1Bean {
 
         if (getOrganizations(sm) != null) {
             for (SampleOrganizationViewDO data : getOrganizations(sm)) {
-                data.setId(null);
+                data.setId(sm.getNextUID());
                 data.setSampleId(null);
             }
         }
 
         if (getProjects(sm) != null) {
             for (SampleProjectViewDO data : getProjects(sm)) {
-                data.setId(null);
+                data.setId(sm.getNextUID());
                 data.setSampleId(null);
             }
         }
 
         if (getSampleQAs(sm) != null) {
             for (SampleQaEventViewDO data : getSampleQAs(sm)) {
-                data.setId(null);
+                data.setId(sm.getNextUID());
                 data.setSampleId(null);
             }
         }
 
         if (getAuxilliary(sm) != null) {
             for (AuxDataViewDO data : getAuxilliary(sm)) {
-                data.setId(null);
+                data.setId(sm.getNextUID());
                 data.setReferenceId(null);
             }
         }
@@ -1447,20 +1447,20 @@ public class SampleManager1Bean {
         setSampleInternalNotes(sm, null);
 
         /*
-         * level 2, everything is based on item ids
+         * level 2: everything is based on item ids
          */
         imap = new HashMap<Integer, Integer>();
+        seq = 0;
         for (SampleItemViewDO data : getItems(sm)) {
-            oldId = data.getId();
+            tmpId = data.getId();
             data.setId(sm.getNextUID());
-            seq = getSample(sm).getNextItemSequence();
-            data.setItemSequence(seq);
-            getSample(sm).setNextItemSequence(seq + 1);
-            imap.put(oldId, data.getId());
+            data.setItemSequence(seq++);
+            imap.put(tmpId, data.getId());
         }
+        getSample(sm).setNextItemSequence(seq);
 
         /*
-         * level 3, everything is based on analysis ids
+         * level 3: everything is based on analysis ids
          */
         amap = new HashMap<Integer, Integer>();
         analyses = getAnalyses(sm);
@@ -1483,14 +1483,14 @@ public class SampleManager1Bean {
                                                                                                          ana.getTestName(),
                                                                                                          ana.getMethodName()));
                     } else {
-                        oldId = ana.getId();
+                        tmpId = ana.getId();
                         ana.setId(sm.getNextUID());
                         ana.setSampleItemId(imap.get(ana.getSampleItemId()));
                         ana.setRevision(0);
                         if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
                             Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()))
                             ana.setAvailableDate(now);
-                        amap.put(oldId, ana.getId());
+                        amap.put(tmpId, ana.getId());
                         i++;
                     }
                 } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId())) {
@@ -1527,7 +1527,7 @@ public class SampleManager1Bean {
          */
         if (getAnalysisExternalNotes(sm) != null) {
             for (NoteViewDO data : getAnalysisExternalNotes(sm)) {
-                data.setId(null);
+                data.setId(sm.getNextUID());
                 data.setReferenceId(amap.get(data.getReferenceId()));
                 data.setTimestamp(null);
             }
