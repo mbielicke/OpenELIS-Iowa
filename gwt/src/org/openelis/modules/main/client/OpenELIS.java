@@ -50,7 +50,7 @@ import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.logging.client.LoggingScreen;
-import org.openelis.modules.method.client.MethodScreen;
+import org.openelis.modules.method.client.MethodScreenUI;
 import org.openelis.modules.neonatalScreeningSampleLogin.client.NeonatalScreeningSampleLoginScreenUI;
 import org.openelis.modules.order1.client.InternalOrderScreenUI;
 import org.openelis.modules.order1.client.SendoutOrderScreenUI;
@@ -1038,7 +1038,7 @@ public class OpenELIS extends Screen {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(true);
                             window.setName(msg.method());
                             window.setSize("862px", "432px");
-                            window.setContent(new MethodScreen(window));
+                            window.setContent(new MethodScreenUI(window));
                             browser.addWindow(window, "method");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);

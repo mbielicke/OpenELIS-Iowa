@@ -39,24 +39,10 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.ExchangeProfileDO;
-import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ReportStatus;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
-import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -74,7 +60,6 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -100,16 +85,25 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.modules.eventLog.client.EventLogService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.organization.client.OrganizationService;
-import org.openelis.modules.report.dataExchange.client.DataExchangeReportScreen;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -138,7 +132,6 @@ public class ExchangeDataSelectionScreen extends Screen {
     private CalendarLookUp              releasedDate;
     private int                         pageNum;
     private ExchangeDataSelectionScreen screen;
-    private DataExchangeReportScreen    dataExchangeReportScreen; 
     
     public ExchangeDataSelectionScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeDataSelectionDef.class));
@@ -1411,10 +1404,7 @@ public class ExchangeDataSelectionScreen extends Screen {
     }
     
     private void search() {        
-        Query query;
-        ArrayList<QueryData> fields;
-        ArrayList<IdAccessionVO> samples;
-        ArrayList<String> list;
+        ArrayList<Integer> accessions;
 
         if (reportToRowsEmpty()) {
             Window.alert(Messages.get().removeEmptyReportToRows());
@@ -1422,26 +1412,18 @@ public class ExchangeDataSelectionScreen extends Screen {
         }
         
         createSampleQueryFields();
-        
-        fields = manager.getExchangeCriteria().getFields();
-        if (fields.size() == 0) {
+        if (manager.getExchangeCriteria().getFields().size() == 0) {
             Window.alert(Messages.get().atleastOneFieldFilledException());
             return;
         }
         
-        query =  new Query();
-        query.setFields(fields);
         try {
             /*
-             * run the query, get the list of samples and show the accession numbers
+             * run the query, get the list of accessions and display
              */
             window.setBusy(Messages.get().fetching());
-            samples = ExchangeDataSelectionService.get().dataExchangeQuery(query);
-            list = new ArrayList<String>();
-            for (IdAccessionVO s : samples) 
-                list.add(s.getAccessionNumber().toString());
-            setQueryResults(DataBaseUtil.concatWithSeparator(list, ","));
-            
+            accessions = ExchangeDataSelectionService.get().getAccessions(manager);
+            setQueryResults(DataBaseUtil.concatWithSeparator(accessions, ","));
             /*
              * this is done so that after the accession numbers fetched from the 
              * back-end are set in the text-area, the user can select a row in the
@@ -1542,52 +1524,27 @@ public class ExchangeDataSelectionScreen extends Screen {
     }
     
     private void exportToLocation() {
-        String uri;
-        ExchangeCriteriaViewDO data;
-        Query query;
-        QueryData field;
+        String[] csv;
+        ArrayList<Integer> accs;
         
-        data = manager.getExchangeCriteria();
-        uri = data.getDestinationUri();
-        field = null;
-        if (data.getId() == null) {
-            if (uri == null) {
-                Window.alert(Messages.get().specifyDestURI());
-                return;
-            }
-        } else {
-            field = new QueryData();
-            field.setKey("EXCHANGE_CRITERIA_ID"); 
-            field.setQuery(data.getId().toString());
-            field.setType(QueryData.Type.STRING);
+        if (manager.getExchangeCriteria().getDestinationUri() == null) {
+            Window.alert(Messages.get().specifyDestURI());
+            return;
         }
-        
-        query = new Query();
-        if (field != null)
-            query.setFields(field);
-        
-        field = new QueryData();
-        field.setKey("ACCESSION_NUMBERS"); 
-        field.setQuery(queryResults.getText());
-        field.setType(QueryData.Type.STRING);
-        query.setFields(field);
-        
-        field = new QueryData();
-        field.setKey("DESTINATION_URI"); 
-        field.setQuery(uri);
-        field.setType(QueryData.Type.STRING);
-        query.setFields(field);
-        
+
         try {
-            if (dataExchangeReportScreen == null) 
-                dataExchangeReportScreen = new DataExchangeReportScreen("exportToLocation",window);  
-            else
-                dataExchangeReportScreen.setWindow(window);
+            window.setBusy(Messages.get().generatingReport());
             
-            dataExchangeReportScreen.runReport(query);
+            csv = queryResults.getText().split(",");
+            accs = new ArrayList<Integer>();
+            for (String acc : csv)
+                accs.add(Integer.parseInt(acc));
+            
+            ExchangeDataSelectionService.get().export(accs, manager);
+            window.setDone(Messages.get().gen_loadCompleteMessage());
         } catch (Exception e) {
+            window.setError(Messages.get().gen_failed());
             Window.alert(e.getMessage());
-            e.printStackTrace();
         }
     }
 }

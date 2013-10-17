@@ -30,16 +30,16 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.DataExchangeReportBean;
 import org.openelis.bean.ExchangeCriteriaBean;
 import org.openelis.bean.ExchangeCriteriaManagerBean;
-import org.openelis.bean.SampleBean;
-import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
 import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionServiceInt;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.server.RemoteServlet;
 
 /*
  * This class provides service for ExchangeCriteriaManager and ExchangeProfileManager.
@@ -56,7 +56,7 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
     ExchangeCriteriaBean        exchangeCriteria;
     
     @EJB
-    SampleBean                  sample;
+    DataExchangeReportBean      dataExchangeReport;
 
     public ExchangeCriteriaManager fetchById(Integer id) throws Exception {
         try {        
@@ -100,14 +100,6 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
         }
     }
     
-    public ArrayList<IdAccessionVO> dataExchangeQuery(Query query) throws Exception {          
-        try {        
-            return sample.dataExchangeQuery(query.getFields());
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
     public ExchangeCriteriaManager add(ExchangeCriteriaManager man) throws Exception {
         try {        
             return exchangeCriteriaManager.add(man);
@@ -153,8 +145,24 @@ public class ExchangeDataSelectionServlet extends RemoteServlet implements Excha
     }
 
     //
-    // support for ExchangeProfileManager
+    // support 
     //
+    public ArrayList<Integer> getAccessions(ExchangeCriteriaManager man) throws Exception {          
+        try {        
+            return dataExchangeReport.getSamples(man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager man) throws Exception {          
+        try {        
+            return dataExchangeReport.export(accessions, man);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public ExchangeProfileManager fetchProfileByExchangeCriteriaId(Integer id) throws Exception {
         try {        
             return exchangeCriteriaManager.fetchProfileByExchangeCriteriaId(id);

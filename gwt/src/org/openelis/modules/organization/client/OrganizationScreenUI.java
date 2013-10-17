@@ -27,13 +27,8 @@ package org.openelis.modules.organization.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.DEFAULT;
-import static org.openelis.ui.screen.State.DELETE;
-import static org.openelis.ui.screen.State.DISPLAY;
-import static org.openelis.ui.screen.State.QUERY;
-import static org.openelis.ui.screen.State.UPDATE;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 
