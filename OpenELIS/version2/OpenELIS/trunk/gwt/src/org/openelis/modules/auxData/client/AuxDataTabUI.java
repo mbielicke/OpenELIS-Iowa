@@ -105,14 +105,16 @@ public abstract class AuxDataTabUI extends Screen {
     protected AuxDataTabUI                              screen;
     
     protected AuxGroupLookupUI                          auxGroupLookup;
+    
+    protected EventBus                                  parentBus;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
     protected boolean                                   canEdit, isVisible, redraw;
 
-    public AuxDataTabUI(Screen parentScreen, EventBus bus) {
+    public AuxDataTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
     }
@@ -320,7 +322,7 @@ public abstract class AuxDataTabUI extends Screen {
             }
         });
 
-        bus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
+        parentBus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
                 if (screen != event.getSource()) {
@@ -330,7 +332,7 @@ public abstract class AuxDataTabUI extends Screen {
             }
         });
         
-        bus.addHandler(RemoveAuxGroupEvent.getType(), new RemoveAuxGroupEvent.Handler() {
+        parentBus.addHandler(RemoveAuxGroupEvent.getType(), new RemoveAuxGroupEvent.Handler() {
             @Override
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (screen != event.getSource()) {
@@ -363,7 +365,7 @@ public abstract class AuxDataTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
+        parentBus.addHandlerToSource(StateChangeEvent.getType(),
                                parentScreen,
                                new StateChangeEvent.Handler() {
                                    public void onStateChange(StateChangeEvent event) {
@@ -372,7 +374,7 @@ public abstract class AuxDataTabUI extends Screen {
                                    }
                                });
 
-        bus.addHandlerToSource(DataChangeEvent.getType(),
+        parentBus.addHandlerToSource(DataChangeEvent.getType(),
                                parentScreen,
                                new DataChangeEvent.Handler() {
                                    public void onDataChange(DataChangeEvent event) {
@@ -497,7 +499,7 @@ public abstract class AuxDataTabUI extends Screen {
                     
                     ids = auxGroupLookup.getGroupIds();
                     if (ids != null && ids.size() > 0)
-                        screen.getEventBus().fireEventFromSource(new AddAuxGroupEvent(ids), this);
+                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
                 }
 
                 @Override
@@ -530,7 +532,7 @@ public abstract class AuxDataTabUI extends Screen {
             data = (AuxDataViewDO)table.getRowAt(r).getData();
             ids = new ArrayList<Integer>(1);
             ids.add(data.getGroupId());
-            bus.fireEventFromSource(new RemoveAuxGroupEvent(ids), this);
+            parentBus.fireEventFromSource(new RemoveAuxGroupEvent(ids), this);
         }
         removeAuxButton.setEnabled(false);
     }

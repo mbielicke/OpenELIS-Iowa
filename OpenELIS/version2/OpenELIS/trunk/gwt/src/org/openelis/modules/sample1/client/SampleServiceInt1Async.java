@@ -74,6 +74,8 @@ public interface SampleServiceInt1Async {
 
     public void setOrderId(SampleManager1 sm, Integer orderId,
                            AsyncCallback<SampleTestReturnVO> callback) throws Exception;
+    
+    public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback) throws Exception;
 
     public void addTest(SampleManager1 sm, SampleTestRequestVO test,
                         AsyncCallback<SampleTestReturnVO> callback) throws Exception;

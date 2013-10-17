@@ -23,7 +23,7 @@
         <table class="{res.style.Form}">
           <tr>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_sampleType}:" />
+              <ui:text from="{msg.sample_type}:" />
             </td>
             <td>
               <w:Dropdown ui:field="typeOfSample" width="150px" field="Integer" />

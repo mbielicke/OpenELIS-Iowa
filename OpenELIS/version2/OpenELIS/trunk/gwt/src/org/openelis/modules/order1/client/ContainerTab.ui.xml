@@ -38,7 +38,7 @@
 						<w:Dropdown width="450" field="Integer" ui:field="container" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="231" label="{msg.gen_sampleType}">
+				<t:Column width="231" label="{msg.sample_type}">
 					<t:DropdownCell>
 						<w:Dropdown width="241" field="Integer" ui:field="sampleType" />
 					</t:DropdownCell>
