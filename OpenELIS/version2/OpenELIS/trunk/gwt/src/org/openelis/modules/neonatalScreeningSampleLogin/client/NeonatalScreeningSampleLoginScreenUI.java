@@ -2983,7 +2983,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * kin DO is null
      */
     private Datetime getNextOfKinBirthDate() {
-        if (manager == null)
+        if (manager == null || manager.getSampleNeonatal().getNextOfKin() == null)
             return null;
         return manager.getSampleNeonatal().getNextOfKin().getBirthDate();
     }
