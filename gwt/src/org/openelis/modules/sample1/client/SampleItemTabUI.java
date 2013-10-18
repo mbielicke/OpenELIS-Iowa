@@ -300,18 +300,6 @@ public class SampleItemTabUI extends Screen {
         }
         unitOfMeasure.setModel(model);
 
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 String uid;
@@ -356,6 +344,7 @@ public class SampleItemTabUI extends Screen {
     }
     
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
@@ -394,7 +383,7 @@ public class SampleItemTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            evaluateEdit();
+            //evaluateEdit();
             setState(state);
             fireDataChange();
         }

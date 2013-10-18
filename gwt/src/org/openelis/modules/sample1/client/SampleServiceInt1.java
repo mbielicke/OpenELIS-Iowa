@@ -28,11 +28,13 @@ package org.openelis.modules.sample1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -46,15 +48,19 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("sample1")
 public interface SampleServiceInt1 extends RemoteService {
     public SampleManager1 getInstance(String domain) throws Exception;
+    
+    public SampleManager1 fetchById(Integer sampleId, SampleManager1.Load... elements) throws Exception;
 
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
                                                 SampleManager1.Load... elements) throws Exception;
 
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception;
-
+    
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<IdAccessionVO> query(Query query) throws Exception;
 
     public SampleManager1 fetchForUpdate(Integer sampleId, Load... elements) throws Exception;
 
