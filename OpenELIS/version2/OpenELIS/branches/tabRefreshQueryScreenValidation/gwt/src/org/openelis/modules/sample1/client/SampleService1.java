@@ -29,12 +29,14 @@ package org.openelis.modules.sample1.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 
 import com.google.gwt.core.client.GWT;
@@ -74,8 +76,22 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
-    public void getInstance(String domain, AsyncCallback<SampleManager1> callback) throws Exception {
+    public void getInstance(String domain, AsyncCallback<SampleManager1> callback) {
         service.getInstance(domain, callback);
+    }
+
+    @Override
+    public SampleManager1 fetchById(Integer sampleId, Load... elements) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.fetchById(sampleId, elements, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchById(Integer sampleId, Load[] elements, AsyncCallback<SampleManager1> callback) {
+        service.fetchById(sampleId, elements, callback);
     }
 
     @Override
@@ -90,7 +106,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void fetchByIds(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
-                           AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+                           AsyncCallback<ArrayList<SampleManager1>> callback) {
         service.fetchByIds(sampleIds, elements, callback);
     }
 
@@ -107,10 +123,10 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     @Override
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                              SampleManager1.Load elements[],
-                             AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+                             AsyncCallback<ArrayList<SampleManager1>> callback) {
         service.fetchByQuery(fields, first, max, elements, callback);
     }
-
+    
     @Override
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
@@ -123,8 +139,22 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void fetchByAnalyses(ArrayList<Integer> analysisIds, Load elements[],
-                                AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+                                AsyncCallback<ArrayList<SampleManager1>> callback) {
         service.fetchByAnalyses(analysisIds, elements, callback);
+    }
+    
+    @Override
+    public ArrayList<IdAccessionVO> query(Query query) throws Exception {
+        Callback<ArrayList<IdAccessionVO>> callback;
+
+        callback = new Callback<ArrayList<IdAccessionVO>>();
+        service.query(query, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void query(Query query, AsyncCallback<ArrayList<IdAccessionVO>> callback) {
+        service.query(query, callback);
     }
 
     @Override
@@ -138,7 +168,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void fetchForUpdate(Integer sampleId, SampleManager1.Load elements[],
-                               AsyncCallback<SampleManager1> callback) throws Exception {
+                               AsyncCallback<SampleManager1> callback) {
         service.fetchForUpdate(sampleId, elements, callback);
     }
 
@@ -154,12 +184,12 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void fetchForUpdate(ArrayList<Integer> sampleIds, SampleManager1.Load elements[],
-                               AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+                               AsyncCallback<ArrayList<SampleManager1>> callback) {
         service.fetchForUpdate(sampleIds, elements, callback);
     }
 
     @Override
-    public void unlock(Integer sampleId, Load[] elements, AsyncCallback<SampleManager1> callback) throws Exception {
+    public void unlock(Integer sampleId, Load[] elements, AsyncCallback<SampleManager1> callback) {
         service.unlock(sampleId, elements, callback);
     }
 
@@ -174,7 +204,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void unlock(ArrayList<Integer> sampleIds, Load[] elements,
-                       AsyncCallback<ArrayList<SampleManager1>> callback) throws Exception {
+                       AsyncCallback<ArrayList<SampleManager1>> callback) {
         service.unlock(sampleIds, elements, callback);
     }
 
@@ -198,13 +228,13 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void update(SampleManager1 sm, boolean ignoreWarnings,
-                       AsyncCallback<SampleManager1> callback) throws Exception {
+                       AsyncCallback<SampleManager1> callback) {
         service.update(sm, ignoreWarnings, callback);
     }
 
     @Override
     public void setAccessionNumber(SampleManager1 sm, Integer accession,
-                                   AsyncCallback<SampleManager1> callback) throws Exception {
+                                   AsyncCallback<SampleManager1> callback) {
         service.setAccessionNumber(sm, accession, callback);
     }
 
@@ -219,7 +249,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void setOrderId(SampleManager1 sm, Integer orderId,
-                           AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+                           AsyncCallback<SampleTestReturnVO> callback) {
         service.setOrderId(sm, orderId, callback);
 
     }
@@ -234,7 +264,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
-    public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback) throws Exception {
+    public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback) {
         service.duplicate(sampleId, callback);
     }
 
@@ -249,7 +279,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void addTest(SampleManager1 sm, SampleTestRequestVO test,
-                        AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+                        AsyncCallback<SampleTestReturnVO> callback) {
         service.addTest(sm, test, callback);
 
     }
@@ -265,7 +295,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
-                         AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+                         AsyncCallback<SampleTestReturnVO> callback) {
         service.addTests(sm, tests, callback);
     }
 
@@ -281,7 +311,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void removeAnalysis(SampleManager1 sm, Integer analysisId,
-                               AsyncCallback<SampleManager1> callback) throws Exception {
+                               AsyncCallback<SampleManager1> callback) {
         service.removeAnalysis(sm, analysisId, callback);
     }
 
@@ -297,7 +327,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     @Override
     public void addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                ArrayList<TestAnalyteViewDO> analytes, ArrayList<Integer> indexes,
-                               AsyncCallback<SampleManager1> callback) throws Exception {
+                               AsyncCallback<SampleManager1> callback) {
         service.addRowAnalytes(sm, analysis, analytes, indexes, callback);
     }
 
@@ -314,7 +344,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer methodId,
-                                       AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+                                       AsyncCallback<SampleTestReturnVO> callback) {
         service.changeAnalysisMethod(sm, analysisId, methodId, callback);
     }
 
@@ -329,7 +359,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     
     @Override
     public void changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId,
-                                       AsyncCallback<SampleManager1> callback) throws Exception {
+                                       AsyncCallback<SampleManager1> callback) {
         service.changeAnalysisStatus(sm, analysisId, statusId, callback);
     }
 
@@ -345,7 +375,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     
     @Override
     public void changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId,
-                                       AsyncCallback<SampleManager1> callback) throws Exception {
+                                       AsyncCallback<SampleManager1> callback) {
         service.changeAnalysisUnit(sm, analysisId, unitId, callback);
     }
 
@@ -360,7 +390,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void changeAnalysisPrep(SampleManager1 sm, Integer analysisId, Integer preAnalysisId,
-                                   AsyncCallback<SampleManager1> callback) throws Exception  {
+                                   AsyncCallback<SampleManager1> callback) {
         service.changeAnalysisPrep(sm, analysisId, preAnalysisId, callback);
     }
 
@@ -377,7 +407,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
-                             AsyncCallback<SampleTestReturnVO> callback) throws Exception {
+                             AsyncCallback<SampleTestReturnVO> callback) {
         service.addAuxGroups(sm, groupIds, callback);
     }
 
@@ -392,7 +422,7 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
 
     @Override
     public void removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds,
-                                AsyncCallback<SampleManager1> callback) throws Exception {
+                                AsyncCallback<SampleManager1> callback) {
         service.removeAuxGroups(sm, groupIds, callback);
 
     }
