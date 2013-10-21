@@ -133,7 +133,7 @@ public class Project implements Auditable, Cloneable {
     private Scriptlet                    scriptlet;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", insertable = false, updatable = false)
     private Collection<ProjectParameter> projectParameter;
 
     @Transient

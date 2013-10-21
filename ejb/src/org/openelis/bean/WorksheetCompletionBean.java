@@ -1239,7 +1239,7 @@ public class WorksheetCompletionBean {
 
                     if (cellName != null && !cellName.isDeleted()) {
                         cell = getCellForName(sheet, cellName.getNameName());
-                        if (cell.getCellType() != Cell.CELL_TYPE_FORMULA && getCellValue(cell) != null) {
+                        if (cell.getCellType() != Cell.CELL_TYPE_FORMULA && getCellValue(cell) == null) {
                             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
                                 dDO = dictionaryCacheLocal.getById(Integer.valueOf(rVDO.getValue()));
                                 cell.setCellValue(dDO.getEntry());

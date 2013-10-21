@@ -97,7 +97,7 @@ public class Section implements Auditable, Cloneable {
     private Section                      parentSection;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id")
+    @JoinColumn(name = "section_id", insertable = false, updatable = false)
     private Collection<SectionParameter> sectionParameter;
 
     @Transient

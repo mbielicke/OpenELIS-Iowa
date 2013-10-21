@@ -96,11 +96,11 @@ public class Qc implements Auditable, Cloneable {
     private InventoryItem         inventoryItem;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qc_id")
+    @JoinColumn(name = "qc_id", insertable = false, updatable = false)
     private Collection<QcAnalyte> qcAnalyte;
     
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "qc_id")
+    @JoinColumn(name = "qc_id", insertable = false, updatable = false)
     private Collection<QcLot> qcLot;
 
     @Transient
