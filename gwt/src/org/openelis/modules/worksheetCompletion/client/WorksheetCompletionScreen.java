@@ -74,7 +74,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
@@ -140,7 +139,6 @@ public class WorksheetCompletionScreen extends Screen {
                                         userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
-    protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
     protected Dropdown<Integer>         statusId;
     protected EditNoteScreen            editNote;
     protected MenuItem                  worksheetHistory;
