@@ -147,6 +147,12 @@
           <w:MenuItem ui:field="undoManual" description="" enabled="false"
                       icon="{res.style.removeRowIcon}" display="Manual"/>
         </w:Menu>
+        <w:Button ui:field="duplicateRowButton" leftIcon="{uiRes.buttonPanel.DuplicateRowButtonImage}"
+                  text="{msg.gen_duplicateRecord}"/>
+        <w:Button ui:field="moveUpButton" leftIcon="{uiRes.buttonPanel.arrowUpButtonImage}"
+                  text="{msg.moveUp}"/>
+        <w:Button ui:field="moveDownButton" leftIcon="{uiRes.buttonPanel.arrowDownButtonImage}"
+                  text="{msg.moveDown}"/>
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>
