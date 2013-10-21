@@ -180,11 +180,11 @@ public class InventoryItem implements Auditable, Cloneable {
     private InventoryItem                  parentInventoryItem;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inventory_item_id")
+    @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
     private Collection<InventoryComponent> inventoryComponent;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "inventory_item_id")
+    @JoinColumn(name = "inventory_item_id", insertable = false, updatable = false)
     private Collection<InventoryLocation>  inventoryLocation;
 
     @Transient

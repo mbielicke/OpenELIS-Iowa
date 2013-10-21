@@ -67,7 +67,8 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisViewDO> fetchByWorksheetId(Integer id) throws Exception {
         int i;
-        List list, returnList;
+        List<WorksheetAnalysisViewDO> returnList;
+        List<WorksheetAnalysisViewVO> list;
         Query query;
         WorksheetAnalysisViewDO waVDO;
         WorksheetAnalysisViewVO waVVO;
@@ -93,7 +94,8 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisViewDO> fetchByWorksheetIds(ArrayList<Integer> ids) throws Exception {
         int i;
-        List list, returnList;
+        List<WorksheetAnalysisViewDO> returnList;
+        List<WorksheetAnalysisViewVO> list;
         Query query;
         WorksheetAnalysisViewDO waVDO;
         WorksheetAnalysisViewVO waVVO;
@@ -119,7 +121,7 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception {
         Query query;
-        List list;
+        List<WorksheetAnalysisDO> list;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemId");
         query.setParameter("id", id);
@@ -134,7 +136,7 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemIds(ArrayList<Integer> ids) throws Exception {
         Query query;
-        List list;
+        List<WorksheetAnalysisDO> list;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemIds");
         query.setParameter("ids", ids);
@@ -166,7 +168,7 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByQcLotId(Integer id) throws Exception {
         Query query;
-        List list;
+        List<WorksheetAnalysisDO> list;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByQcLotId");
         query.setParameter("id", id);
@@ -178,6 +180,7 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<ToDoWorksheetVO> fetchByWorking() throws Exception {
         Query query;
         List<ToDoWorksheetVO> list;
@@ -195,6 +198,7 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
     
+    @SuppressWarnings("unchecked")
     public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName, Integer qcLocation) throws Exception {
         Query query;
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByDateForQcChart");
@@ -206,6 +210,7 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    @SuppressWarnings("unchecked")
     public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName, Integer qcLocation) throws Exception {
         Integer id;
         Query query;
@@ -264,6 +269,7 @@ public class WorksheetAnalysisBean {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(WorksheetAnalysis.class, data.getId());
+        entity.setWorksheetItemId(data.getWorksheetItemId());
         entity.setAccessionNumber(data.getAccessionNumber());
         entity.setAnalysisId(data.getAnalysisId());
         entity.setQcLotId(data.getQcLotId());
@@ -279,7 +285,7 @@ public class WorksheetAnalysisBean {
         WorksheetAnalysis entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-
+        
         entity = manager.find(WorksheetAnalysis.class, data.getId());
         if (entity != null)
             manager.remove(entity);

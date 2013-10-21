@@ -368,7 +368,7 @@ public class WorksheetManager1Bean {
         int i, j, k, dep, ldep;
         boolean locked, nodep;
         AnalysisViewDO aVDO;
-        ArrayList<Integer> analyteIndexes, excludedIds;
+        ArrayList<Integer> analyteIndexes, excludedIds, sampleIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
         ArrayList<TestAnalyteViewDO> analytes;
@@ -391,7 +391,7 @@ public class WorksheetManager1Bean {
         WorksheetItemDO itemDO;
 
         validate(wm);
-        
+
         locked = false;
         if (getWorksheet(wm).getId() != null && getWorksheet(wm).getId() > 0) {
             lock.validateLock(Constants.table().WORKSHEET, getWorksheet(wm).getId());
@@ -412,18 +412,24 @@ public class WorksheetManager1Bean {
          */
         if (getRemoved(wm) != null) {
             for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetResultViewDO)
+                    wResult.delete((WorksheetResultViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetQcResultViewDO)
+                    wqResult.delete((WorksheetQcResultViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetAnalysisViewDO)
+                    analysis.delete((WorksheetAnalysisViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
                 if (data instanceof WorksheetItemDO)
                     item.delete((WorksheetItemDO)data);
-                else if (data instanceof WorksheetAnalysisViewDO)
-                    analysis.delete((WorksheetAnalysisViewDO)data);
-                else if (data instanceof WorksheetResultViewDO)
-                    wResult.delete((WorksheetResultViewDO)data);
-                else if (data instanceof WorksheetQcResultViewDO)
-                    wqResult.delete((WorksheetQcResultViewDO)data);
-                else if (data instanceof NoteViewDO)
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof NoteViewDO)
                     note.delete((NoteViewDO)data);
-                else
-                    throw new Exception("ERROR: DataObject passed for removal is of unknown type");
             }
         }
 
@@ -478,7 +484,7 @@ public class WorksheetManager1Bean {
             }
             imap.put(tmpid, data.getId());
         }
-        
+
         analysisIds = new HashSet<Integer>();
         initAnalysisIds = new HashSet<Integer>();
         updateAnalysisIds = new HashSet<Integer>();
@@ -514,7 +520,7 @@ public class WorksheetManager1Bean {
                 updateAnalysisIds.add(res.getAnalysisId());
             }
         }
-        
+
         if (!updateAnalysisIds.isEmpty()) {
             sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds), SampleManager1.Load.SINGLERESULT);
             for (SampleManager1 sMan : sMans) {
@@ -555,7 +561,15 @@ public class WorksheetManager1Bean {
                     }
                 }
             }
-            sampleMan.update(sMans, true);
+            
+            try {
+                sampleMan.update(sMans, true);
+            } catch (Exception anyE) {
+                sampleIds = new ArrayList<Integer>();
+                for (SampleManager1 sMan : sMans)
+                    sampleIds.add(sMan.getSample().getId());
+                sampleMan.unlock(sampleIds, SampleManager1.Load.SINGLERESULT);
+            }
         }
 
         sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
@@ -570,7 +584,7 @@ public class WorksheetManager1Bean {
                 }
             }
         }
-        
+
         /*
          * some worksheet analyses can be dependent on other worksheet analyses
          * for qc link. This code tries to resolve those dependencies by
@@ -654,7 +668,7 @@ public class WorksheetManager1Bean {
 
         if (dep > 0 && ldep == dep)
             throw new InconsistencyException(Messages.get().worksheetAnalysisLinkError());
-        
+
         // add/update results
         if (getResults(wm) != null) {
             for (WorksheetResultViewDO data : getResults(wm)) {
