@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/tschmidt/juno/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -3040,67 +3040,67 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String cut();
 
   /**
-   * Translated "Data Exchange: Failed to execute ''{0}'' ".
+   * Translated "Data Exchange ''{0}'': Successfully sent messages".
    * 
-   * @return translated "Data Exchange: Failed to execute ''{0}'' "
+   * @return translated "Data Exchange ''{0}'': Successfully sent messages"
    */
-  @DefaultMessage("Data Exchange: Failed to execute ''{0}'' ")
-  @Key("dataExchangeCouldNotExecuteCriteria")
-  String dataExchangeCouldNotExecuteCriteria(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Successfully sent messages")
+  @Key("dataExchange.executedCriteria")
+  String dataExchange_executedCriteria(String arg0);
 
   /**
-   * Translated "Data Exchange: Failed to fetch ''{0}''".
+   * Translated "Data Exchange ''{0}'': Could not find the last run date ".
    * 
-   * @return translated "Data Exchange: Failed to fetch ''{0}''"
+   * @return translated "Data Exchange ''{0}'': Could not find the last run date "
    */
-  @DefaultMessage("Data Exchange: Failed to fetch ''{0}''")
-  @Key("dataExchangeCriteriaFetchFailed")
-  String dataExchangeCriteriaFetchFailed(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Could not find the last run date ")
+  @Key("dataExchange.lastRunFetchException")
+  String dataExchange_lastRunFetchException(String arg0);
 
   /**
-   * Translated "Data Exchange: Criteria ''{0}'' not found".
+   * Translated "Data Exchange: You must specify 1 or more accession numbers to message".
    * 
-   * @return translated "Data Exchange: Criteria ''{0}'' not found"
+   * @return translated "Data Exchange: You must specify 1 or more accession numbers to message"
    */
-  @DefaultMessage("Data Exchange: Criteria ''{0}'' not found")
-  @Key("dataExchangeCriteriaNotFound")
-  String dataExchangeCriteriaNotFound(String arg0);
+  @DefaultMessage("Data Exchange: You must specify 1 or more accession numbers to message")
+  @Key("dataExchange.noAccessionException")
+  String dataExchange_noAccessionException();
 
   /**
-   * Translated "Data Exchange: Executed ''{0}''".
+   * Translated "Data Exchange ''{0}'': Could not find criteria".
    * 
-   * @return translated "Data Exchange: Executed ''{0}''"
+   * @return translated "Data Exchange ''{0}'': Could not find criteria"
    */
-  @DefaultMessage("Data Exchange: Executed ''{0}''")
-  @Key("dataExchangeExecutedCriteria")
-  String dataExchangeExecutedCriteria(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Could not find criteria")
+  @Key("dataExchange.noCriteriaFoundException")
+  String dataExchange_noCriteriaFoundException(String arg0);
 
   /**
-   * Translated "Data Exchange: Failed to fetch last run date for ''{0}''".
+   * Translated "Data Exchange ''{0}'': Query not specified".
    * 
-   * @return translated "Data Exchange: Failed to fetch last run date for ''{0}''"
+   * @return translated "Data Exchange ''{0}'': Query not specified"
    */
-  @DefaultMessage("Data Exchange: Failed to fetch last run date for ''{0}''")
-  @Key("dataExchangeLastRunDateFetchFailed")
-  String dataExchangeLastRunDateFetchFailed(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Query not specified")
+  @Key("dataExchange.noQueryException")
+  String dataExchange_noQueryException(String arg0);
 
   /**
-   * Translated "Data Exchange: No samples found for ''{0}''".
+   * Translated "Data Exchange ''{0}'': No samples found for messaging".
    * 
-   * @return translated "Data Exchange: No samples found for ''{0}''"
+   * @return translated "Data Exchange ''{0}'': No samples found for messaging"
    */
-  @DefaultMessage("Data Exchange: No samples found for ''{0}''")
-  @Key("dataExchangeNoSamplesFound")
-  String dataExchangeNoSamplesFound(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': No samples found for messaging")
+  @Key("dataExchange.noSamplesFound")
+  String dataExchange_noSamplesFound(String arg0);
 
   /**
-   * Translated "Data Exchange: Query not specified for ''{0}''".
+   * Translated "Data Exchange: You must specify a URI export location".
    * 
-   * @return translated "Data Exchange: Query not specified for ''{0}''"
+   * @return translated "Data Exchange: You must specify a URI export location"
    */
-  @DefaultMessage("Data Exchange: Query not specified for ''{0}''")
-  @Key("dataExchangeQueryNotSpecified")
-  String dataExchangeQueryNotSpecified(String arg0);
+  @DefaultMessage("Data Exchange: You must specify a URI export location")
+  @Key("dataExchange.noUriException")
+  String dataExchange_noUriException();
 
   /**
    * Translated "Data View".
@@ -5063,6 +5063,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("External")
   @Key("gen.external")
   String gen_external();
+
+  /**
+   * Translated "Failed".
+   * 
+   * @return translated "Failed"
+   */
+  @DefaultMessage("Failed")
+  @Key("gen.failed")
+  String gen_failed();
 
   /**
    * Translated "Error: Could not retrieve the record.".
