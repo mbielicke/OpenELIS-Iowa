@@ -42,7 +42,7 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <g:LayoutPanel>
-                <g:layer top="0px" bottom="27px">
+                <g:layer top="0px" bottom="26px">
                   <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
                            header="true" styleName="{uiRes.table.ScreenTableWithSides}">
                     <t:Column width="50" label="{msg.id}">
@@ -53,7 +53,7 @@
                     </t:Column>
                   </t:Table>
                 </g:layer>
-                <g:layer bottom="0px" height="28px">
+                <g:layer bottom="0px" height="26px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
                       <w:Button ui:field="atozPrev" leftIcon="{uiRes.atozButton.PreviousPageButtonImage}"
@@ -162,12 +162,11 @@
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.relatedWorksheetNumber}:"/>
                 </td>
-                <td>
-                  <w:TextBox ui:field="relatedWorksheetId" width="75px" field="Integer"/>
-                </td>
-                <td>
-                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.style.fieldLookupIcon}"
-                            text=""/>
+                <td colspan="2">
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="relatedWorksheetId" width="50px" field="Integer"/>
+                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.style.fieldLookupIcon}" text="" css="{uiRes.FormFieldButton}"/>
+                </g:HorizontalPanel>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.instrumentName}:"/>
@@ -210,7 +209,7 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="125px" bottom="0px">
+        <g:layer top="105px" bottom="0px">
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>
