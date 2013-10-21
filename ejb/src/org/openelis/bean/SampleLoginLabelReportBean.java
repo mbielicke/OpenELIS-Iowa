@@ -3,6 +3,7 @@ package org.openelis.bean;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,11 +15,11 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.Prompt;
@@ -80,9 +81,9 @@ public class SampleLoginLabelReportBean {
                                                               .setWidth(128)
                                                               .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                               .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                                                              .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
-                                                                                                    Datetime.MINUTE)
-                                                                                       .toString())
+                                                              .setDefaultValue(ReportUtil.toString(new Date(),
+                                                                                                   Messages.get()
+                                                                                                           .dateTimePattern()))
                                                               .setRequired(true));
 
             p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
@@ -204,7 +205,7 @@ public class SampleLoginLabelReportBean {
      * Returns the prompt for new setup accession login labels
      */
     public ArrayList<Prompt> getAdditionalPrompts() throws Exception {
-        ArrayList<OptionListItem> prn, l;
+        ArrayList<OptionListItem> prn;
         ArrayList<Prompt> p;
 
         try {

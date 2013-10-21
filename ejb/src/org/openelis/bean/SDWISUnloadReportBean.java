@@ -54,6 +54,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -161,7 +162,8 @@ public class SDWISUnloadReportBean {
                                                                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                                     .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                                     .setDefaultValue(ReportUtil.toString(fromDate.getTime(),
-                                                                                                         "yyyy-MM-dd HH:mm"))
+                                                                                                         Messages.get()
+                                                                                                                 .dateTimePattern()))
                                                                     .setRequired(true));
 
             p.add(new Prompt("END_RELEASED", Prompt.Type.DATETIME).setPrompt("End Released:")
@@ -169,7 +171,8 @@ public class SDWISUnloadReportBean {
                                                                   .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                                   .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                                   .setDefaultValue(ReportUtil.toString(toDate.getTime(),
-                                                                                                       "yyyy-MM-dd HH:mm"))
+                                                                                                       Messages.get()
+                                                                                                               .dateTimePattern()))
                                                                   .setRequired(true));
 
             prn = printers.getListByType("pdf");
@@ -958,6 +961,9 @@ public class SDWISUnloadReportBean {
         methodCodes.put("epa 905.0",             "905.0");
         methodCodes.put("epa 906.0",             "906.0");
         methodCodes.put("lac 10-107-06-1j",      "10-107-06-1J");
+        methodCodes.put("mtf mpn e coli",        "9221F-10");
+        methodCodes.put("mtf mpn fecal",         "9221E-10");
+        methodCodes.put("mtf mpn tot coliform",  "9221B-10");
         methodCodes.put("sm 2130 b",             "2130B");
         methodCodes.put("sm 2320 b",             "2320B");
         methodCodes.put("sm 2340 b,total hard",  "2340B");
