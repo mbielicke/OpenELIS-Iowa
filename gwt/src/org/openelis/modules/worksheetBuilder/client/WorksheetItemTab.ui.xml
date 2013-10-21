@@ -56,7 +56,7 @@
         </t:Column>
         <t:Column width="70" label="{msg.qcLink}">
           <t:DropdownCell>
-            <w:Dropdown ui:field="qcLink" width="70" field="Integer"/>
+            <w:Dropdown ui:field="qcLink" field="Integer"/>
           </t:DropdownCell>
         </t:Column>
         <t:Column width="100" label="{msg.test}">
@@ -67,7 +67,7 @@
         </t:Column>
         <t:Column width="100" label="{msg.unit}">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field="unitOfMeasureId" width="100" dropWidth="200" case="MIXED">
+            <w:AutoComplete ui:field="unitOfMeasureId" width="120" case="MIXED">
               <w:popup>
                 <t:Table visibleRows="10">
                   <t:Column>
@@ -107,7 +107,7 @@
       <g:HorizontalPanel>
         <w:Menu ui:field="addRowMenu" selfShow="true">
           <w:display>
-            <w:Button ui:field="addRowButton" text="{msg.addRow}" rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
+            <w:Button ui:field="addRowButton" text="{msg.addRow}" css="{uiRes.button}" rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
           </w:display>
           <w:MenuItem ui:field="insertAnalysisAbove" description=""
                       enabled="false" icon="{res.style.addRowIcon}"
