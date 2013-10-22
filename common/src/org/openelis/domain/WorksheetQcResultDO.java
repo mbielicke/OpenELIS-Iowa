@@ -132,6 +132,7 @@ public class WorksheetQcResultDO extends DataObject {
 
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
+        _changed = true;
     }
 
     public String getValueAt(int index) {
