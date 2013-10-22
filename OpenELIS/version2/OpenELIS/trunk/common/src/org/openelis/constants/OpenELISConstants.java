@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace-test/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -12893,15 +12893,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample type is required before adding test")
   @Key("sample.sampleItemTypeRequired")
   String sample_sampleItemTypeRequired();
-
-  /**
-   * Translated "SSN".
-   * 
-   * @return translated "SSN"
-   */
-  @DefaultMessage("SSN")
-  @Key("sample.ssn")
-  String sample_ssn();
 
   /**
    * Translated "Test Lookup".
