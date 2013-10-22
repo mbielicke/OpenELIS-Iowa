@@ -19,7 +19,7 @@
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
   <g:LayoutPanel>
     <g:layer top="0px" bottom="25px">
-      <t:Table ui:field="storageTable" verticalScroll="ALWAYS" visibleRows="8"
+      <t:Table ui:field="table" verticalScroll="ALWAYS" visibleRows="8"
         horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
       >
         <t:Column width="155" label="{msg.gen_user}">
@@ -29,7 +29,7 @@
         </t:Column>
         <t:Column width="259" label="{msg.gen_location}">
           <t:AutoCompleteCell>
-            <w:AutoComplete ui:field = "location" width="215" case="LOWER" required="true">
+            <w:AutoComplete ui:field = "location" width="215" case="LOWER" required="true" dropWidth = "430">
               <w:popup>
                 <t:Table visibleRows="10" header="true">
                   <t:Column width="140" label="{msg.gen_parent}">
@@ -53,7 +53,7 @@
         </t:Column>
         <t:Column width="136" label="{msg.gen_checkOut}">
           <t:CalendarCell>
-            <c:Calendar begin="0" end="4" required="true" />
+            <c:Calendar begin="0" end="4" />
           </t:CalendarCell>
         </t:Column>
       </t:Table>

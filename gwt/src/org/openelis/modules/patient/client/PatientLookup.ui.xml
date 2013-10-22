@@ -40,11 +40,11 @@ UIRF Software License are applicable instead of those above.
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
-			<td class="{res.style.Prompt}"><ui:text from="{msg.sample_last}:" /></td>
+			<td class="{res.style.Prompt}"><ui:text from="{msg.gen_lastName}:" /></td>
 			<td>
 			  <w:TextBox ui:field="lastName" width="100px" field="String" case="LOWER"/>
     	  	</td>
-            <td class="{res.style.Prompt}"><ui:text from="{msg.sample_first}:" /></td>
+            <td class="{res.style.Prompt}"><ui:text from="{msg.gen_firstName}:" /></td>
             <td>
               <w:TextBox ui:field="firstName" width="100px" field="String" case="LOWER"/>
             </td>
@@ -68,10 +68,10 @@ UIRF Software License are applicable instead of those above.
         <t:Column width="50" label="{msg.id}" sortable="true">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="125" label="{msg.sample_last}" sortable="true">
+        <t:Column width="125" label="{msg.gen_lastName}" sortable="true">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="125" label="{msg.sample_first}" sortable="true">
+        <t:Column width="125" label="{msg.gen_firstName}" sortable="true">
           <t:LabelCell />
         </t:Column>
         <t:Column width="75" label="{msg.birth}" sortable="true">
@@ -91,10 +91,10 @@ UIRF Software License are applicable instead of those above.
     </g:layer>
     <g:layer top="40px" height="37%" left="50%" right="5px">
       <t:Table ui:field="nextOfKinTable" horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <t:Column width="125" label="{msg.sample_last}" sortable="true">
+        <t:Column width="125" label="{msg.gen_lastName}" sortable="true">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="125" label="{msg.sample_first}" sortable="true">
+        <t:Column width="125" label="{msg.gen_firstName}" sortable="true">
           <t:LabelCell />
         </t:Column>
         <t:Column width="75" label="{msg.birth}" sortable="true">
@@ -102,7 +102,7 @@ UIRF Software License are applicable instead of those above.
             <c:Calendar width="75" begin="0" end="2" />
           </t:CalendarCell>
         </t:Column>
-        <t:Column width="75" label="{msg.sample_relation}" sortable="true">
+        <t:Column width="75" label="{msg.patient_relation}" sortable="true">
           <t:DropdownCell>
             <w:Dropdown ui:field="tableRelation" width="59" field="Integer"/>
           </t:DropdownCell>

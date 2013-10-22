@@ -82,7 +82,9 @@ public class UserCache {
                 perm = UserCacheService.get().getPermission();
         } catch (Exception e) {        
             e.printStackTrace();
-            perm = new SystemUserPermission();
+        } finally {
+            if (perm == null)
+                perm = new SystemUserPermission();
         }
         return perm;
     }

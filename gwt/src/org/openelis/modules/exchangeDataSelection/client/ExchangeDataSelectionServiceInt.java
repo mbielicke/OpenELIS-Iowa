@@ -2,13 +2,12 @@ package org.openelis.modules.exchangeDataSelection.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.data.Query;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
 
-import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
@@ -25,8 +24,6 @@ public interface ExchangeDataSelectionServiceInt extends XsrfProtectedService {
 
     ArrayList<IdNameVO> query(Query query) throws Exception;
 
-    ArrayList<IdAccessionVO> dataExchangeQuery(Query query) throws Exception;
-
     ExchangeCriteriaManager add(ExchangeCriteriaManager man) throws Exception;
 
     ExchangeCriteriaManager update(ExchangeCriteriaManager man) throws Exception;
@@ -39,9 +36,10 @@ public interface ExchangeDataSelectionServiceInt extends XsrfProtectedService {
 
     ExchangeCriteriaManager duplicate(Integer id) throws Exception;
 
-    //
-    // support for ExchangeProfileManager
-    //
+    ArrayList<Integer> getAccessions(ExchangeCriteriaManager man) throws Exception;
+    
+    ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager cm) throws Exception;
+
     ExchangeProfileManager fetchProfileByExchangeCriteriaId(Integer id) throws Exception;
 
 }

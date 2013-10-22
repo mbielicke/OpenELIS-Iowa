@@ -42,7 +42,7 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <g:LayoutPanel>
-                <g:layer top="0px" bottom="27px">
+                <g:layer top="0px" bottom="26px">
                   <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
                            header="true" styleName="{uiRes.table.ScreenTableWithSides}">
                     <t:Column width="50" label="{msg.id}">
@@ -53,7 +53,7 @@
                     </t:Column>
                   </t:Table>
                 </g:layer>
-                <g:layer bottom="0px" height="28px">
+                <g:layer bottom="0px" height="26px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
                       <w:Button ui:field="atozPrev" leftIcon="{uiRes.atozButton.PreviousPageButtonImage}"
@@ -129,22 +129,22 @@
                   <ui:text from="{msg.worksheetNumber}:"/>
                 </td>
                 <td>
-                  <w:TextBox ui:field="worksheetId" width="100px" field="Integer"/>
+                  <w:TextBox ui:field="worksheetId" width="75px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.status}:"/>
                 </td>
                 <td colspan="2">
-                  <w:Dropdown ui:field="statusId" width="119px" field="Integer"/>
+                  <w:Dropdown ui:field="statusId" width="110px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.username}"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="systemUserId" width="166" case="LOWER">
+                  <w:AutoComplete ui:field="systemUserId" width="165" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
-                        <t:Column width="166" label="{msg.username}">
+                        <t:Column label="{msg.username}">
                           <t:LabelCell/>
                         </t:Column>
                       </t:Table>
@@ -157,23 +157,22 @@
                   <ui:text from="{msg.worksheetFormat}:"/>
                 </td>
                 <td>
-                  <w:Dropdown ui:field="formatId" width="130px" case="MIXED" field="Integer"/>
+                  <w:Dropdown ui:field="formatId" width="132px" dropWidth="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.relatedWorksheetNumber}:"/>
                 </td>
-                <td>
-                  <w:TextBox ui:field="relatedWorksheetId" width="100px" field="Integer"/>
-                </td>
-                <td>
-                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.style.fieldLookupIcon}"
-                            text=""/>
+                <td colspan="2">
+                <g:HorizontalPanel>
+                  <w:TextBox ui:field="relatedWorksheetId" width="50px" field="Integer"/>
+                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.style.fieldLookupIcon}" text="" css="{uiRes.FormFieldButton}"/>
+                </g:HorizontalPanel>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.instrumentName}:"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="instrumentName" width="166" case="LOWER">
+                  <w:AutoComplete ui:field="instrumentName" width="165" dropWidth="765" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
                         <t:Column width="150" label="{msg.name}">
@@ -198,7 +197,7 @@
                   <ui:text from="{msg.created}:"/>
                 </td>
                 <td>
-                  <c:Calendar ui:field="createdDate" width="134px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+                  <c:Calendar ui:field="createdDate" width="135px" begin="0" end="4"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.description}:"/>
@@ -210,7 +209,7 @@
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="125px" bottom="0px">
+        <g:layer top="105px" bottom="0px">
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>

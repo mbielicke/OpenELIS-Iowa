@@ -2,13 +2,13 @@ package org.openelis.modules.exchangeDataSelection.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.services.TokenService;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.ExchangeCriteriaManager;
 import org.openelis.manager.ExchangeProfileManager;
+import org.openelis.ui.common.ReportStatus;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -43,8 +43,8 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
     }
 
     @Override
-    public void dataExchangeQuery(Query query, AsyncCallback<ArrayList<IdAccessionVO>> callback) {
-        service.dataExchangeQuery(query, callback);
+    public void getAccessions(ExchangeCriteriaManager man, AsyncCallback<ArrayList<Integer>> callback) {
+        service.getAccessions(man, callback);
     }
 
     @Override
@@ -55,6 +55,11 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
     @Override
     public void duplicate(Integer id, AsyncCallback<ExchangeCriteriaManager> callback) {
         service.duplicate(id, callback);
+    }
+
+    @Override
+    public void export(ArrayList<Integer> accessions, ExchangeCriteriaManager man, AsyncCallback<ReportStatus> callback) {
+        service.export(accessions, man, callback);
     }
 
     @Override
@@ -144,11 +149,11 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
     }
 
     @Override
-    public ArrayList<IdAccessionVO> dataExchangeQuery(Query query) throws Exception {
-        Callback<ArrayList<IdAccessionVO>> callback;
+    public ArrayList<Integer> getAccessions(ExchangeCriteriaManager man) throws Exception {
+        Callback<ArrayList<Integer>> callback;
         
-        callback = new Callback<ArrayList<IdAccessionVO>>();
-        service.dataExchangeQuery(query, callback);
+        callback = new Callback<ArrayList<Integer>>();
+        service.getAccessions(man, callback);
         return callback.getResult();
     }
 
@@ -177,6 +182,15 @@ public class ExchangeDataSelectionService implements ExchangeDataSelectionServic
         callback = new Callback<Void>();
         service.delete(man, callback);
         callback.getResult();
+    }
+
+    @Override
+    public ReportStatus export(ArrayList<Integer> accessions, ExchangeCriteriaManager man) throws Exception {
+        Callback<ReportStatus> callback;
+        
+        callback = new Callback<ReportStatus>();
+        service.export(accessions, man, callback);
+        return callback.getResult();
     }
 
     @Override
