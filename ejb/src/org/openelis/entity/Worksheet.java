@@ -75,7 +75,7 @@ public class Worksheet implements Auditable, Cloneable {
     private String                    description;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "worksheet_id")
+    @JoinColumn(name = "worksheet_id", insertable = false, updatable = false)
     private Collection<WorksheetItem> worksheetItem;
 
     @ManyToOne(fetch = FetchType.LAZY)

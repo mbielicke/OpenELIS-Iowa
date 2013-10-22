@@ -99,7 +99,7 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
     private Test                             test;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exchange_local_term_id")
+    @JoinColumn(name = "exchange_local_term_id", insertable = false, updatable = false)
     private Collection<ExchangeExternalTerm> exchangeExternalTerm;
 
     @Transient

@@ -64,15 +64,15 @@ public class MCLViolationReportBean {
     @EJB
     private SessionCacheBean     session;
     @EJB
-    private AnalysisBean          analysisBean;
+    private AnalysisBean         analysisBean;
     @EJB
-    private AnalysisQAEventBean   analysisQAEventBean;
+    private AnalysisQAEventBean  analysisQAEventBean;
     @EJB
-    private AnalyteBean           analyteBean;
+    private AnalyteBean          analyteBean;
     @EJB
-    private DictionaryCacheBean   dictionaryCache;
+    private DictionaryCacheBean  dictionaryCache;
     @EJB
-    private ResultBean            resultBean;
+    private ResultBean           resultBean;
     @EJB
     private SampleQAEventBean    sampleQAEventBean;
     @EJB
@@ -80,7 +80,7 @@ public class MCLViolationReportBean {
     @EJB
     private SystemVariableBean   sysVarBean;
 
-    private static final Logger   log = Logger.getLogger("openelis");
+    private static final Logger  log = Logger.getLogger("openelis");
 
     private HashMap<String, String> contaminantIds, methodCodes;
     private String                  dnrEmail;
@@ -223,11 +223,11 @@ public class MCLViolationReportBean {
                                ") is missing results.");
                     continue;
                 }
-                for (j = 0; j < results.size(); j++ ) {
+                for (j = 0; j < results.size(); j++) {
                     resultRow = results.get(j);
                     rowResult = resultRow.get(0);
-                    if ( !DataBaseUtil.isEmpty(rowResult.getValue())) {
-                        for (k = 1; k < resultRow.size(); k++ ) {
+                    if (!DataBaseUtil.isEmpty(rowResult.getValue())) {
+                        for (k = 1; k < resultRow.size(); k++) {
                             colResult = resultRow.get(k);
                             analyte = analyteBean.fetchById(colResult.getAnalyteId());
                             if ("mcl".equals(analyte.getExternalId()) &&
@@ -471,6 +471,9 @@ public class MCLViolationReportBean {
         methodCodes.put("epa 905.0",             "905.0");
         methodCodes.put("epa 906.0",             "906.0");
         methodCodes.put("lac 10-107-06-1j",      "10-107-06-1J");
+        methodCodes.put("mtf mpn e coli",        "9221F-10");
+        methodCodes.put("mtf mpn fecal",         "9221E-10");
+        methodCodes.put("mtf mpn tot coliform",  "9221B-10");
         methodCodes.put("sm 2130 b",             "2130B");
         methodCodes.put("sm 2320 b",             "2320B");
         methodCodes.put("sm 2340 b,total hard",  "2340B");

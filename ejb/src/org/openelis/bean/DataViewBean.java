@@ -2048,25 +2048,25 @@ public class DataViewBean {
         if ("Y".equals(data.getCollectionDate())) {
             cell = row.createCell(startCol++);
             if (colDateTime != null)
-                cell.setCellValue(colDateTime.toString());
+                cell.setCellValue(ReportUtil.toString(colDateTime, Messages.get().dateTimePattern()));
         }
         if ("Y".equals(data.getReceivedDate())) {
             cell = row.createCell(startCol++);
             dt = sample.getReceivedDate();
             if (dt != null)
-                cell.setCellValue(dt.toString());
+                cell.setCellValue(ReportUtil.toString(dt, Messages.get().dateTimePattern()));
         }
         if ("Y".equals(data.getEnteredDate())) {
             cell = row.createCell(startCol++);
             dt = sample.getEnteredDate();
             if (dt != null)
-                cell.setCellValue(dt.toString());
+                cell.setCellValue(ReportUtil.toString(dt, Messages.get().dateTimePattern()));
         }
         if ("Y".equals(data.getReleasedDate())) {
             cell = row.createCell(startCol++);
             dt = sample.getReleasedDate();
             if (dt != null)
-                cell.setCellValue(dt.toString());
+                cell.setCellValue(ReportUtil.toString(dt, Messages.get().dateTimePattern()));
         }
         if ("Y".equals(data.getStatusId())) {
             cell = row.createCell(startCol++);
@@ -2319,7 +2319,7 @@ public class DataViewBean {
             if (analysis != null) {
                 dt = analysis.getCompletedDate();
                 if (dt != null)
-                    cell.setCellValue(dt.toString());
+                    cell.setCellValue(ReportUtil.toString(dt, Messages.get().dateTimePattern()));
             }
         }
         if ("Y".equals(data.getAnalysisCompletedBy())) {
@@ -2332,7 +2332,7 @@ public class DataViewBean {
             if (analysis != null) {
                 dt = analysis.getReleasedDate();
                 if (dt != null)
-                    cell.setCellValue(dt.toString());
+                    cell.setCellValue(ReportUtil.toString(dt, Messages.get().dateTimePattern()));
             }
         }
         if ("Y".equals(data.getAnalysisReleasedBy())) {
@@ -2345,7 +2345,7 @@ public class DataViewBean {
             if (analysis != null) {
                 dt = analysis.getStartedDate();
                 if (dt != null)
-                    cell.setCellValue(dt.toString());
+                    cell.setCellValue(ReportUtil.toString(dt, Messages.get().dateTimePattern()));
             }
         }
         if ("Y".equals(data.getAnalysisPrintedDate())) {
@@ -2353,7 +2353,7 @@ public class DataViewBean {
             if (analysis != null) {
                 dt = analysis.getPrintedDate();
                 if (dt != null)
-                    cell.setCellValue(dt.toString());
+                    cell.setCellValue(ReportUtil.toString(dt, Messages.get().dateTimePattern()));
             }
         }
         if ("Y".equals(data.getAnalysisSectionName())) {

@@ -53,6 +53,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetDO;
@@ -364,10 +365,10 @@ public class WorksheetManager1Bean {
      * record if it has an id.
      */
     public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
-        int i, dep, ldep;
+        int i, j, k, dep, ldep;
         boolean locked, nodep;
         AnalysisViewDO aVDO;
-        ArrayList<Integer> analyteIndexes, excludedIds;
+        ArrayList<Integer> analyteIndexes, excludedIds, sampleIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
         ArrayList<TestAnalyteViewDO> analytes;
@@ -380,9 +381,9 @@ public class WorksheetManager1Bean {
         HashMap<Integer, SampleManager1> sMansByAnalysisId;
         HashMap<Integer, String> testMethodNames;
         HashMap<Integer, WorksheetAnalysisViewDO> updatedAnalyses;
-        HashSet<Integer> analysisIds;
-        HashSet<Integer> initAnalysisIds;
+        HashSet<Integer> analysisIds, initAnalysisIds, updateAnalysisIds;
         ResultViewDO rVDO;
+        SampleItemDO siDO;
         SampleManager1 sManager;
         StringBuffer description;
         TestAnalyteViewDO taVDO;
@@ -390,7 +391,7 @@ public class WorksheetManager1Bean {
         WorksheetItemDO itemDO;
 
         validate(wm);
-        
+
         locked = false;
         if (getWorksheet(wm).getId() != null && getWorksheet(wm).getId() > 0) {
             lock.validateLock(Constants.table().WORKSHEET, getWorksheet(wm).getId());
@@ -411,23 +412,29 @@ public class WorksheetManager1Bean {
          */
         if (getRemoved(wm) != null) {
             for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetResultViewDO)
+                    wResult.delete((WorksheetResultViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetQcResultViewDO)
+                    wqResult.delete((WorksheetQcResultViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetAnalysisViewDO)
+                    analysis.delete((WorksheetAnalysisViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
                 if (data instanceof WorksheetItemDO)
                     item.delete((WorksheetItemDO)data);
-                else if (data instanceof WorksheetAnalysisViewDO)
-                    analysis.delete((WorksheetAnalysisViewDO)data);
-                else if (data instanceof WorksheetResultViewDO)
-                    wResult.delete((WorksheetResultViewDO)data);
-                else if (data instanceof WorksheetQcResultViewDO)
-                    wqResult.delete((WorksheetQcResultViewDO)data);
-                else if (data instanceof NoteViewDO)
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof NoteViewDO)
                     note.delete((NoteViewDO)data);
-                else
-                    throw new Exception("ERROR: DataObject passed for removal is of unknown type");
             }
         }
 
         // add/update worksheet
-        if (getWorksheet(wm).getId() == null) {
+        if (getWorksheet(wm).getId() == null || getWorksheet(wm).getId() < 0) {
             //
             // If the description is blank, set it to the list of tests/methods
             //
@@ -478,6 +485,106 @@ public class WorksheetManager1Bean {
             imap.put(tmpid, data.getId());
         }
 
+        analysisIds = new HashSet<Integer>();
+        initAnalysisIds = new HashSet<Integer>();
+        updateAnalysisIds = new HashSet<Integer>();
+        updatedAnalyses = new HashMap<Integer, WorksheetAnalysisViewDO>();
+        for (WorksheetAnalysisViewDO data : getAnalyses(wm)) {
+            if (data.getAnalysisId() != null) {
+                if (data.getId() < 0 && "N".equals(data.getIsFromOther())) {
+                    initAnalysisIds.add(data.getAnalysisId());
+                    updateAnalysisIds.add(data.getAnalysisId());
+                } else if (data.isChanged() && !updatedAnalyses.containsKey(data.getAnalysisId())) {
+                    updatedAnalyses.put(data.getAnalysisId(), data);
+                    updateAnalysisIds.add(data.getAnalysisId());
+                }
+                analysisIds.add(data.getAnalysisId());
+            }
+        }
+
+        newResults = new HashMap<Integer, ArrayList<ResultViewDO>>();
+        updatedResults = new HashMap<Integer, ResultViewDO>();
+        for (ResultViewDO res : wm.getModifiedResults()) {
+            if (res.isChanged()) {
+                if (res.getId() == null) {
+                    results = newResults.get(res.getAnalysisId());
+                    if (results == null) {
+                        results = new ArrayList<ResultViewDO>();
+                        newResults.put(res.getAnalysisId(), results);
+                    }
+                    res.setId(wm.getNextUID());
+                    results.add(res);
+                } else {
+                    updatedResults.put(res.getId(), res);
+                }
+                updateAnalysisIds.add(res.getAnalysisId());
+            }
+        }
+
+        if (!updateAnalysisIds.isEmpty()) {
+            sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds), SampleManager1.Load.SINGLERESULT);
+            for (SampleManager1 sMan : sMans) {
+                for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
+                    if (initAnalysisIds.contains(ana.getId()))
+                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
+                    if (updatedAnalyses.containsKey(ana.getId())) {
+                        waVDO = updatedAnalyses.get(ana.getId());
+                        if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
+                                                     ana.getUnitOfMeasureId()))
+                            aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
+                        if (DataBaseUtil.isDifferent(waVDO.getStatusId(),
+                                                     ana.getStatusId()))
+                            aHelper.changeAnalysisStatus(sMan, ana.getId(), waVDO.getStatusId());
+                    }
+                    results = newResults.get(ana.getId());
+                    if (results != null && results.size() > 0) {
+                        analytes = new ArrayList<TestAnalyteViewDO>();
+                        analyteIndexes = new ArrayList<Integer>();
+                        for (ResultViewDO res : results) {
+                            taVDO = new TestAnalyteViewDO();
+                            taVDO.setId(res.getTestAnalyteId());
+                            taVDO.setRowGroup(res.getRowGroup());
+                            taVDO.setAnalyteId(res.getAnalyteId());
+                            taVDO.setIsReportable(res.getIsReportable());
+                            taVDO.setAnalyteName(res.getAnalyte());
+                            analytes.add(taVDO);
+                            analyteIndexes.add(res.getSortOrder());
+                        }
+                        aHelper.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
+                    }
+                }
+                for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
+                    if (updatedResults.containsKey(res.getId())) {
+                        rVDO = updatedResults.get(res.getId());
+                        if (DataBaseUtil.isDifferent(rVDO.getIsReportable(), res.getIsReportable()))
+                            res.setIsReportable(rVDO.getIsReportable());
+                    }
+                }
+            }
+            
+            try {
+                sampleMan.update(sMans, true);
+            } catch (Exception anyE) {
+                sampleIds = new ArrayList<Integer>();
+                for (SampleManager1 sMan : sMans)
+                    sampleIds.add(sMan.getSample().getId());
+                sampleMan.unlock(sampleIds, SampleManager1.Load.SINGLERESULT);
+            }
+        }
+
+        sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
+        sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(updateAnalysisIds), SampleManager1.Load.SINGLERESULT);
+        for (i = 0; i < sMans.size(); i++) {
+            sManager = sMans.get(i);
+            for (j = 0; j < sManager.item.count(); j++) {
+                siDO = sManager.item.get(j);
+                for (k = 0; k < sManager.analysis.count(siDO); k++) {
+                    aVDO = sManager.analysis.get(siDO, k);
+                    sMansByAnalysisId.put(aVDO.getId(), sManager);
+                }
+            }
+        }
+
         /*
          * some worksheet analyses can be dependent on other worksheet analyses
          * for qc link. This code tries to resolve those dependencies by
@@ -486,9 +593,9 @@ public class WorksheetManager1Bean {
          * by ensuring every iteration resolves some dependency
          */
         dep = ldep = 0;
-        analysisIds = new HashSet<Integer>();
-        initAnalysisIds = new HashSet<Integer>();
-        updatedAnalyses = new HashMap<Integer, WorksheetAnalysisViewDO>();
+        excludedMap = new HashMap<Integer, ArrayList<Integer>>();
+        results = new ArrayList<ResultViewDO>();
+        wResults = new ArrayList<WorksheetResultViewDO>();
         do {
             ldep = dep;
             dep = 0;
@@ -505,6 +612,31 @@ public class WorksheetManager1Bean {
                 }
 
                 if (nodep) {
+                    if (data.getAnalysisId() != null) {
+                        sManager = sMansByAnalysisId.get(data.getAnalysisId());
+                        if (sManager != null) {
+                            aVDO = (AnalysisViewDO)sManager.getObject(sManager.getAnalysisUid(data.getAnalysisId()));
+                            results.clear();
+                            wResults.clear();
+                            for (i = 0; i < sManager.result.count(aVDO); i++)
+                                results.add(sManager.result.get(aVDO, i, 0));
+                            for (i = 0; i < wm.result.count(data); i++)
+                                wResults.add(wm.result.get(data, i));
+
+                            excludedIds = excludedMap.get(aVDO.getTestId());
+                            if (excludedIds == null) {
+                                excludedIds = new ArrayList<Integer>();
+                                try {
+                                    for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(aVDO.getTestId()))
+                                        excludedIds.add(twaVDO.getTestAnalyteId());
+                                } catch (Exception anyE) {
+                                    throw new Exception("Error loading excluded analytes: " + anyE.getMessage());
+                                }
+                                excludedMap.put(aVDO.getTestId(), excludedIds);
+                            }
+                            synchronizeResults(wm, data, results, wResults, excludedIds);
+                        }
+                    }
                     if (data.getId() < 0) {
                         tmpid = data.getId();
                         data.setWorksheetItemId(imap.get(data.getWorksheetItemId()));
@@ -523,16 +655,7 @@ public class WorksheetManager1Bean {
                         analysis.add(data);
                         amap.put(tmpid, data.getId());
                         amap.put(data.getId(), data.getId());
-                        if (data.getAnalysisId() != null && "N".equals(data.getIsFromOther())) {
-                            initAnalysisIds.add(data.getAnalysisId());
-                            analysisIds.add(data.getAnalysisId());
-                        }
                     } else if (!amap.containsKey(data.getId())) {
-                        if (data.getAnalysisId() != null && data.isChanged() &&
-                            !updatedAnalyses.containsKey(data.getAnalysisId())) {
-                            updatedAnalyses.put(data.getAnalysisId(), data);
-                            analysisIds.add(data.getAnalysisId());
-                        }
                         tmpid = data.getId();
                         analysis.update(data);
                         amap.put(tmpid, data.getId());
@@ -545,100 +668,7 @@ public class WorksheetManager1Bean {
 
         if (dep > 0 && ldep == dep)
             throw new InconsistencyException(Messages.get().worksheetAnalysisLinkError());
-        
-        newResults = new HashMap<Integer, ArrayList<ResultViewDO>>();
-        updatedResults = new HashMap<Integer, ResultViewDO>();
-        for (ResultViewDO res : wm.getModifiedResults()) {
-            if (res.isChanged()) {
-                if (res.getId() == null) {
-                    results = newResults.get(res.getAnalysisId());
-                    if (results == null) {
-                        results = new ArrayList<ResultViewDO>();
-                        newResults.put(res.getAnalysisId(), results);
-                    }
-                    res.setId(wm.getNextUID());
-                    results.add(res);
-                } else {
-                    updatedResults.put(res.getId(), res);
-                }
-                analysisIds.add(res.getAnalysisId());
-            }
-        }
-        
-        sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
-        if (!analysisIds.isEmpty() || !initAnalysisIds.isEmpty() || !updatedAnalyses.isEmpty()) {
-            analysisIds.addAll(initAnalysisIds);
-            analysisIds.addAll(updatedAnalyses.keySet());
-            sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(analysisIds), SampleManager1.Load.SINGLERESULT);
-            for (SampleManager1 sMan : sMans) {
-                for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
-                    if (initAnalysisIds.contains(ana.getId()))
-                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
-                    if (updatedAnalyses.containsKey(ana.getId())) {
-                        waVDO = updatedAnalyses.get(ana.getId());
-                        if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
-                                                     ana.getUnitOfMeasureId()))
-                            aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
-                    }
-                    results = newResults.get(ana.getId());
-                    if (results != null && results.size() > 0) {
-                        analytes = new ArrayList<TestAnalyteViewDO>();
-                        analyteIndexes = new ArrayList<Integer>();
-                        for (ResultViewDO res : results) {
-                            taVDO = new TestAnalyteViewDO();
-                            taVDO.setId(res.getTestAnalyteId());
-                            taVDO.setRowGroup(res.getRowGroup());
-                            taVDO.setAnalyteId(res.getAnalyteId());
-                            taVDO.setIsReportable(res.getIsReportable());
-                            taVDO.setAnalyteName(res.getAnalyte());
-                            analytes.add(taVDO);
-                            analyteIndexes.add(res.getSortOrder());
-                        }
-                        aHelper.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
-                    }
-                    if (!sMansByAnalysisId.containsKey(ana.getId()))
-                        sMansByAnalysisId.put(ana.getId(), sMan);
-                }
-                for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
-                    if (updatedResults.containsKey(res.getId())) {
-                        rVDO = updatedResults.get(res.getId());
-                        if (DataBaseUtil.isDifferent(rVDO.getIsReportable(), res.getIsReportable()))
-                            res.setIsReportable(rVDO.getIsReportable());
-                    }
-                }
-            }
-            sampleMan.update(sMans, true);
-        }
 
-        excludedMap = new HashMap<Integer, ArrayList<Integer>>();
-        for (WorksheetAnalysisViewDO data : getAnalyses(wm)) {
-            if (data.getAnalysisId() != null) {
-                sManager = sMansByAnalysisId.get(data.getAnalysisId());
-                if (sManager != null) {
-                    aVDO = (AnalysisViewDO)sManager.getObject(sManager.getAnalysisUid(data.getAnalysisId()));
-                    results = new ArrayList<ResultViewDO>();
-                    wResults = new ArrayList<WorksheetResultViewDO>();
-                    for (i = 0; i < sManager.result.count(aVDO); i++)
-                        results.add(sManager.result.get(aVDO, i, 0));
-                    for (i = 0; i < wm.result.count(data); i++)
-                        wResults.add(wm.result.get(data, i));
-
-                    excludedIds = excludedMap.get(aVDO.getTestId());
-                    if (excludedIds == null) {
-                        excludedIds = new ArrayList<Integer>();
-                        try {
-                            for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(aVDO.getTestId()))
-                                excludedIds.add(twaVDO.getTestAnalyteId());
-                        } catch (Exception anyE) {
-                            throw new Exception("Error loading excluded analytes: " + anyE.getMessage());
-                        }
-                        excludedMap.put(aVDO.getTestId(), excludedIds);
-                    }
-                    synchronizeResults(wm, data, results, wResults, excludedIds);
-                }
-            }
-        }
-        
         // add/update results
         if (getResults(wm) != null) {
             for (WorksheetResultViewDO data : getResults(wm)) {

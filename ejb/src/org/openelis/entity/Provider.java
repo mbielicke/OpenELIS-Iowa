@@ -55,6 +55,9 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Provider.FetchById", 
                 query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
                       + " from Provider p where p.id = :id"),
+    @NamedQuery( name = "Provider.FetchByIds", 
+                query = "select distinct new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
+                      + " from Provider p where p.id in (:ids)"),
     @NamedQuery( name = "Provider.FetchByLastName", 
                 query = "select new org.openelis.domain.ProviderDO(p.id,p.lastName,p.firstName,p.middleName,p.typeId,p.npi)"                                                                                                  
                       + " from Provider p where p.lastName like :lastName")                  

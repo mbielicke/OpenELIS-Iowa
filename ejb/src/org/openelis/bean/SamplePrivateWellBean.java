@@ -48,15 +48,14 @@ import org.openelis.ui.common.NotFoundException;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class SamplePrivateWellBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
-    
+    private EntityManager    manager;
+
     @EJB
-    private AddressBean address;
-    
+    private AddressBean      address;
+
     @EJB
     private OrganizationBean organization;
 
@@ -78,10 +77,9 @@ public class SamplePrivateWellBean {
 
         return data;
     }
-    
+
     public ArrayList<SamplePrivateWellViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
         Query query;
-        Integer orgId;
         List<SamplePrivateWellViewDO> results;
         ArrayList<SamplePrivateWellViewDO> list;
         ArrayList<OrganizationViewDO> orgs;
@@ -89,29 +87,25 @@ public class SamplePrivateWellBean {
 
         query = manager.createNamedQuery("SamplePrivateWell.FetchBySampleIds");
         query.setParameter("ids", sampleIds);
-        
         results = query.getResultList();
 
-        map = new HashMap<Integer, ArrayList<SamplePrivateWellViewDO>>();
         /*
          * creating the following mapping allows us to fetch in one query all of
-         * the primary report to organizations linked to these private well records
-         * and put them in the appropriate SamplePrivateWellViewDOs
+         * the primary report to organizations linked to these private well
+         * records and put them in the appropriate SamplePrivateWellViewDOs
          */
+        map = new HashMap<Integer, ArrayList<SamplePrivateWellViewDO>>();
         for (SamplePrivateWellViewDO data : results) {
-            orgId = data.getOrganizationId();
-            
-            if (orgId == null)
-                continue;
-            
-            list = map.get(orgId);
-            if (map.get(orgId) == null) {
-                list = new ArrayList<SamplePrivateWellViewDO>();
-                map.put(orgId, list);
-            } 
-            list.add(data);
+            if (data.getOrganizationId() != null) {
+                list = map.get(data.getOrganizationId());
+                if (list == null) {
+                    list = new ArrayList<SamplePrivateWellViewDO>();
+                    map.put(data.getOrganizationId(), list);
+                }
+                list.add(data);
+            }
         }
-        
+
         if (map.size() > 0) {
             orgs = organization.fetchByIds(map.keySet());
 
@@ -119,15 +113,15 @@ public class SamplePrivateWellBean {
                 list = map.get(org.getId());
                 if (list != null) {
                     /*
-                     * set the OrganizationViewDOs for the primary report to in the 
-                     * SamplePrivateWellViewDOs that link to them
+                     * set the OrganizationViewDOs for the primary report to in
+                     * the SamplePrivateWellViewDOs that link to them
                      */
                     for (SamplePrivateWellViewDO well : list)
-                        well.setOrganization(org);                    
+                        well.setOrganization(org);
                 }
             }
         }
-        
+
         return DataBaseUtil.toArrayList(results);
     }
 
@@ -139,24 +133,24 @@ public class SamplePrivateWellBean {
         entity = new SamplePrivateWell();
 
         // add the location address and set the id
-        if (address.isEmpty(data.getLocationAddress())) 
+        if (address.isEmpty(data.getLocationAddress()))
             data.getLocationAddress().setId(null);
-        else 
-            address.add(data.getLocationAddress());        
-        
-        // only one of organization or report to address can be specified  
+        else
+            address.add(data.getLocationAddress());
+
+        // only one of organization or report to address can be specified
         if (data.getOrganizationId() == null) {
-            if (address.isEmpty(data.getReportToAddress())) 
+            if (address.isEmpty(data.getReportToAddress()))
                 data.getReportToAddress().setId(null);
-           else 
-                address.add(data.getReportToAddress());           
+            else
+                address.add(data.getReportToAddress());
         }
 
-        entity.setSampleId(data.getSampleId()); 
+        entity.setSampleId(data.getSampleId());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setReportToName(data.getReportToName());
         entity.setReportToAttention(data.getReportToAttention());
-        entity.setReportToAddressId(data.getReportToAddress().getId()); 
+        entity.setReportToAddressId(data.getReportToAddress().getId());
         entity.setLocation(data.getLocation());
         entity.setLocationAddressId(data.getLocationAddress().getId());
         entity.setOwner(data.getOwner());
@@ -173,7 +167,7 @@ public class SamplePrivateWellBean {
     public SamplePrivateWellDO update(SamplePrivateWellDO data) throws Exception {
         SamplePrivateWell entity;
 
-        if ( !data.isChanged() && !data.getLocationAddress().isChanged() &&
+        if (!data.isChanged() && !data.getLocationAddress().isChanged() &&
             !data.getReportToAddress().isChanged())
             return data;
 
@@ -183,7 +177,7 @@ public class SamplePrivateWellBean {
 
         if (address.isEmpty(data.getLocationAddress())) {
             if (data.getLocationAddress().getId() != null) {
-                address.delete(data.getLocationAddress());             
+                address.delete(data.getLocationAddress());
                 data.getLocationAddress().setId(null);
             }
         } else {
@@ -203,11 +197,11 @@ public class SamplePrivateWellBean {
             if (entity.getReportToAddressId() != null)
                 address.delete(entity.getReportToAddressId());
             data.setReportToName(null);
-            data.getReportToAddress().setId(null);            
+            data.getReportToAddress().setId(null);
         } else {
             if (address.isEmpty(data.getReportToAddress())) {
                 if (entity.getReportToAddressId() != null) {
-                    address.delete(entity.getReportToAddressId());             
+                    address.delete(entity.getReportToAddressId());
                     data.getReportToAddress().setId(null);
                 }
             } else {
@@ -220,11 +214,11 @@ public class SamplePrivateWellBean {
             }
         }
 
-        entity.setSampleId(data.getSampleId()); 
+        entity.setSampleId(data.getSampleId());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setReportToName(data.getReportToName());
         entity.setReportToAttention(data.getReportToAttention());
-        entity.setReportToAddressId(data.getReportToAddress().getId()); 
+        entity.setReportToAddressId(data.getReportToAddress().getId());
         entity.setLocation(data.getLocation());
         entity.setLocationAddressId(data.getLocationAddress().getId());
         entity.setOwner(data.getOwner());
@@ -238,15 +232,15 @@ public class SamplePrivateWellBean {
         SamplePrivateWell entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = manager.find(SamplePrivateWell.class, data.getId());
-        
+
         if (entity != null) {
             if (data.getLocationAddress().getId() != null)
                 address.delete(data.getLocationAddress());
             if (data.getReportToAddress().getId() != null)
                 address.delete(data.getReportToAddress());
             manager.remove(entity);
-        }              
+        }
     }
 }
