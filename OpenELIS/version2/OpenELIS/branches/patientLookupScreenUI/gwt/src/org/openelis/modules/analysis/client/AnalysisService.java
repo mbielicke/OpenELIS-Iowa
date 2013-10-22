@@ -1,6 +1,9 @@
 package org.openelis.modules.analysis.client;
 
+import java.util.ArrayList;
+
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.gwt.screen.Callback;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
@@ -39,6 +42,11 @@ public class AnalysisService implements AnalysisServiceInt, AnalysisServiceIntAs
     }
 
     @Override
+    public void fetchByPatientId(Integer patientId, AsyncCallback<ArrayList<AnalysisViewVO>> callback) {
+        service.fetchByPatientId(patientId, callback);
+    }
+
+    @Override
     public void fetchQaByAnalysisId(Integer analysisId,
                                     AsyncCallback<AnalysisQaEventManager> callback) {
         service.fetchQaByAnalysisId(analysisId, callback);
@@ -59,6 +67,15 @@ public class AnalysisService implements AnalysisServiceInt, AnalysisServiceIntAs
         
         callback = new Callback<AnalysisViewDO>();
         service.fetchById(analysisId, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
+        Callback<ArrayList<AnalysisViewVO>> callback;
+        
+        callback = new Callback<ArrayList<AnalysisViewVO>>();
+        service.fetchByPatientId(patientId, callback);
         return callback.getResult();
     }
 
