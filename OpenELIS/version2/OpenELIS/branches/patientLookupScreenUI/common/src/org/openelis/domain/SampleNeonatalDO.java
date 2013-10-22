@@ -39,10 +39,10 @@ public class SampleNeonatalDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, sampleId, birthOrder, gestationalAge, nextOfKinRelationId,
-                               feedingId, weight, collectionAge, providerId;
+                              feedingId, weight, collectionAge, providerId;
 
     protected String          isRepeat, isNicu, weightSign, isTransfused, isCollectionValid,
-                               formNumber;
+                              formNumber;
 
     protected Datetime        transfusionDate;
 
@@ -61,19 +61,20 @@ public class SampleNeonatalDO extends DataObject {
                             String formNumber, String patientLastName, String patientFirstName,
                             String patientMiddleName, Integer patientAddressId, 
                             Date patientBirthDate, Date patientBirthTime, Integer patientGenderId, 
-                            Integer patientRaceId, Integer patientEthnicityId, String patientMultipleUnit,
-                            String patientStreetAddress, String patientCity, String patientState, 
-                            String patientZipCode, String patientWorkPhone, String patientHomePhone,
-                            String patientCellPhone, String patientFaxPhone, String patientEmail, 
-                            String patientCountry, String nextOfKinLastName, String nextOfKinFirstName,
+                            Integer patientRaceId, Integer patientEthnicityId, String patientNationalId,
+                            String patientMultipleUnit, String patientStreetAddress,
+                            String patientCity, String patientState, String patientZipCode,
+                            String patientWorkPhone, String patientHomePhone, String patientCellPhone,
+                            String patientFaxPhone, String patientEmail, String patientCountry,
+                            String nextOfKinLastName, String nextOfKinFirstName,
                             String nextOfKinMiddleName, Integer nextOfKinAddressId, 
                             Date nextOfKinBirthDate, Date nextOfKinBirthTime, Integer nextOfKinGenderId, 
                             Integer nextOfKinRaceId, Integer nextOfKinEthnicityId,
-                            String nextOfKinMultipleUnit, String nextOfKinStreetAddress,
-                            String nextOfKinCity, String nextOfKinState, String nextOfKinZipCode,
-                            String nextOfKinWorkPhone, String nextOfKinHomePhone,
-                            String nextOfKinCellPhone, String nextOfKinFaxPhone,
-                            String nextOfKinEmail, String nextOfKinCountry) {
+                            String nextOfKinNationalId, String nextOfKinMultipleUnit,
+                            String nextOfKinStreetAddress, String nextOfKinCity,
+                            String nextOfKinState, String nextOfKinZipCode, String nextOfKinWorkPhone,
+                            String nextOfKinHomePhone, String nextOfKinCellPhone,
+                            String nextOfKinFaxPhone, String nextOfKinEmail, String nextOfKinCountry) {
         setId(id);
         setSampleId(sampleId);
         setBirthOrder(birthOrder);
@@ -93,19 +94,20 @@ public class SampleNeonatalDO extends DataObject {
         
         patient = new PatientDO(patientId, patientLastName, patientFirstName, patientMiddleName,
                                 patientAddressId, patientBirthDate, patientBirthTime, 
-                                patientGenderId, patientRaceId, patientEthnicityId, 
-                                patientMultipleUnit, patientStreetAddress, patientCity,
-                                patientState, patientZipCode, patientWorkPhone, 
+                                patientGenderId, patientRaceId, patientEthnicityId,
+                                patientNationalId, patientMultipleUnit, patientStreetAddress,
+                                patientCity, patientState, patientZipCode, patientWorkPhone, 
                                 patientHomePhone, patientCellPhone, patientFaxPhone, 
                                 patientEmail, patientCountry);
         
         nextOfKin = new PatientDO(nextOfKinId, nextOfKinLastName, nextOfKinFirstName, 
                                   nextOfKinMiddleName, nextOfKinAddressId, nextOfKinBirthDate,
                                   nextOfKinBirthTime, nextOfKinGenderId, nextOfKinRaceId,
-                                  nextOfKinEthnicityId, nextOfKinMultipleUnit, nextOfKinStreetAddress,
-                                  nextOfKinCity, nextOfKinState, nextOfKinZipCode,
-                                  nextOfKinWorkPhone, nextOfKinHomePhone, nextOfKinCellPhone,
-                                  nextOfKinFaxPhone, nextOfKinEmail, nextOfKinCountry);
+                                  nextOfKinEthnicityId, nextOfKinNationalId, nextOfKinMultipleUnit,
+                                  nextOfKinStreetAddress, nextOfKinCity, nextOfKinState,
+                                  nextOfKinZipCode, nextOfKinWorkPhone, nextOfKinHomePhone,
+                                  nextOfKinCellPhone, nextOfKinFaxPhone, nextOfKinEmail,
+                                  nextOfKinCountry);
         
         _changed = false;
     }
