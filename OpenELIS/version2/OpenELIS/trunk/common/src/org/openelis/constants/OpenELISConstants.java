@@ -8251,6 +8251,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String nameMethod();
 
   /**
+   * Translated "999-99-9999".
+   * 
+   * @return translated "999-99-9999"
+   */
+  @DefaultMessage("999-99-9999")
+  @Key("nationalIdPattern")
+  String nationalIdPattern();
+
+  /**
    * Translated "Needed In Days".
    * 
    * @return translated "Needed In Days"
@@ -12751,6 +12760,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_multipleReportToException(String arg0);
 
   /**
+   * Translated "National ID".
+   * 
+   * @return translated "National ID"
+   */
+  @DefaultMessage("National ID")
+  @Key("sample.nationalId")
+  String sample_nationalId();
+
+  /**
    * Translated "Sample Neonatal".
    * 
    * @return translated "Sample Neonatal"
@@ -12875,6 +12893,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample type is required before adding test")
   @Key("sample.sampleItemTypeRequired")
   String sample_sampleItemTypeRequired();
+
+  /**
+   * Translated "SSN".
+   * 
+   * @return translated "SSN"
+   */
+  @DefaultMessage("SSN")
+  @Key("sample.ssn")
+  String sample_ssn();
 
   /**
    * Translated "Test Lookup".

@@ -39,10 +39,10 @@ public class SampleNeonatalDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, sampleId, patientId, birthOrder, gestationalAge, nextOfKinId,
-                    nextOfKinRelationId, feedingId, weight, collectionAge, providerId;
+                              nextOfKinRelationId, feedingId, weight, collectionAge, providerId;
 
     protected String          isRepeat, isNicu, weightSign, isTransfused, isCollectionValid,
-                    formNumber;
+                              formNumber;
 
     protected Datetime        transfusionDate;
 
