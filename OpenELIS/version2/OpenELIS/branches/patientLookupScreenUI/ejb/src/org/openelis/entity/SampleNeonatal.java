@@ -59,10 +59,10 @@ import org.openelis.utils.Auditable;
                 		"s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused," +
                 		"s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber," +
                 		"p.lastName, p.firstName, p.middleName, p.addressId, p.birthDate, p.birthTime, " +
-                		"p.genderId, p.raceId, p.ethnicityId, pa.multipleUnit, pa.streetAddress, pa.city," +
+                		"p.genderId, p.raceId, p.ethnicityId, p.nationalId, pa.multipleUnit, pa.streetAddress, pa.city," +
                 		"pa.state, pa.zipCode, pa.workPhone, pa.homePhone, pa.cellPhone, pa.faxPhone, pa.email, pa.country," +
                 		"n.lastName, n.firstName, n.middleName, n.addressId, n.birthDate, n.birthTime, n.genderId, n.raceId," +
-                		"n.ethnicityId, na.multipleUnit, na.streetAddress, na.city, na.state, na.zipCode, na.workPhone, " +
+                		"n.ethnicityId, n.nationalId, na.multipleUnit, na.streetAddress, na.city, na.state, na.zipCode, na.workPhone, " +
                 		"na.homePhone, na.cellPhone, na.faxPhone, na.email, na.country, pr.lastName, pr.firstName)"
                       + " from SampleNeonatal s left join s.patient p left join p.address pa left join s.nextOfKin n left join n.address na"
                       + " left join s.provider pr where s.sampleId = :id"),
@@ -72,10 +72,10 @@ import org.openelis.utils.Auditable;
                         "s.isRepeat, s.isNicu, s.feedingId, s.weightSign, s.weight, s.isTransfused," +
                         "s.transfusionDate, s.isCollectionValid, s.collectionAge, s.providerId, s.formNumber," +
                         "p.lastName, p.firstName, p.middleName, p.addressId, p.birthDate, p.birthTime, " +
-                        "p.genderId, p.raceId, p.ethnicityId, pa.multipleUnit, pa.streetAddress, pa.city," +
+                        "p.genderId, p.raceId, p.ethnicityId, p.nationalId, pa.multipleUnit, pa.streetAddress, pa.city," +
                         "pa.state, pa.zipCode, pa.workPhone, pa.homePhone, pa.cellPhone, pa.faxPhone, pa.email, pa.country," +
                         "n.lastName, n.firstName, n.middleName, n.addressId, n.birthDate, n.birthTime, n.genderId, n.raceId," +
-                        "n.ethnicityId, na.multipleUnit, na.streetAddress, na.city, na.state, na.zipCode, na.workPhone," +
+                        "n.ethnicityId, n.nationalId, na.multipleUnit, na.streetAddress, na.city, na.state, na.zipCode, na.workPhone," +
                         "na.homePhone, na.cellPhone, na.faxPhone, na.email, na.country, pr.lastName, pr.firstName)"
                       + " from SampleNeonatal s left join s.patient p left join p.address pa left join s.nextOfKin n left join n.address na"
                       + " left join s.provider pr where s.sampleId in (:ids)")})
