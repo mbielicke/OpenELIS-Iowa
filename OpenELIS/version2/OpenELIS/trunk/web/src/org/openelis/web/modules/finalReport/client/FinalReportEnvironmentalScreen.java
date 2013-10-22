@@ -483,7 +483,6 @@ public class FinalReportEnvironmentalScreen extends Screen {
 
     protected void getSamples() {
         Query query;
-        ArrayList<FinalReportWebVO> list;
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
@@ -509,10 +508,10 @@ public class FinalReportEnvironmentalScreen extends Screen {
                 if (result.size() > 0) {
                     loadDeck(result);
                     setResults(result);                
+                    window.clearStatus();
                 } else {
                     window.setError(Messages.get().noSamplesFoundChangeSearch());
                 }
-                window.clearStatus();
             }
 
             @Override
@@ -570,8 +569,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
         String value;
         QueryData field;
         TableDataRow row;
-        ReportStatus st;
-        String url, val;
+        String val;
 
         query = new Query();
         field = new QueryData();
