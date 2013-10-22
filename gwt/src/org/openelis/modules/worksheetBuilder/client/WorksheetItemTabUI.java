@@ -58,8 +58,6 @@ import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcChoiceVO;
-import org.openelis.domain.WorksheetQcResultViewDO;
-import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetManager1;
@@ -573,6 +571,9 @@ public class WorksheetItemTabUI extends Screen {
                             enableLoadTemplateMenu(true);
                             templateMap.put(item, data.getTestId());
                         }
+                        
+                        if (manager.getWorksheet().getFormatId() == null)
+                            manager.getWorksheet().setFormatId(((AnalysisViewVO)row.getData()).getWorksheetFormatId());
                     }
                     
                     try {
@@ -1252,81 +1253,33 @@ public class WorksheetItemTabUI extends Screen {
 
         worksheetItemTable.finishEditing();
         index = worksheetItemTable.getSelectedRow();
-        dataRow = worksheetItemTable.getRowAt(index);
-        
-        wiDO = manager.item.get(index);
-        newWIDO = manager.item.add(index + 1);
-        newWIDO.setPosition(wiDO.getPosition() + 1);
-        
-        waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)dataRow.getData());
-        newWAVDO = manager.analysis.add(newWIDO);
-        duplicateWorksheetAnalysis(waVDO, newWAVDO);
-
-        fireDataChange();
+        manager.item.duplicate(index);
+        worksheetItemTable.setModel(getTableModel());
+        worksheetItemTable.selectRowAt(index + 1);
     }
         
     @SuppressWarnings("unused")
     @UiHandler("moveDownButton")
     protected void moveRowDown(ClickEvent event) {
-        int selectedRowIndex;
-        ArrayList<Row> model;
-        Integer tempPosition;
-        Row fromRow, toRow;
-        WorksheetItemDO wiDO1, wiDO2;
-        WorksheetAnalysisViewDO waVDO1, waVDO2;
+        int index;
 
         worksheetItemTable.finishEditing();
-        selectedRowIndex = worksheetItemTable.getSelectedRow();
-        
-        fromRow = worksheetItemTable.getRowAt(selectedRowIndex);
-        waVDO1 = (WorksheetAnalysisViewDO)manager.getObject((String)fromRow.getData());
-        wiDO1 = (WorksheetItemDO)manager.getObject(manager.getWorksheetItemUid(waVDO1.getWorksheetItemId()));
-
-        toRow = worksheetItemTable.getRowAt(selectedRowIndex + 1);
-        waVDO2 = (WorksheetAnalysisViewDO)manager.getObject((String)toRow.getData());
-        wiDO2 = (WorksheetItemDO)manager.getObject(manager.getWorksheetItemUid(waVDO2.getWorksheetItemId()));
-        
-        tempPosition = wiDO2.getPosition();
-        wiDO2.setPosition(wiDO1.getPosition());
-        toRow.setCell(0, wiDO1.getPosition());
-        wiDO1.setPosition(tempPosition);
-        fromRow.setCell(0, tempPosition);
-        
-        model = worksheetItemTable.getModel();
-        model.set(selectedRowIndex, toRow);
-        model.set(selectedRowIndex + 1, fromRow);
-        worksheetItemTable.setModel(model);
-        worksheetItemTable.selectRowAt(selectedRowIndex + 1);
+        index = worksheetItemTable.getSelectedRow();
+        manager.item.move(index, false);
+        worksheetItemTable.setModel(getTableModel());
+        worksheetItemTable.selectRowAt(index + 1);
     }
         
     @SuppressWarnings("unused")
     @UiHandler("moveUpButton")
     protected void moveRowUp(ClickEvent event) {
-        ArrayList<Row> model;
-        Integer tempPosition;
-        Row fromRow, toRow;
-        WorksheetItemDO wiDO1, wiDO2;
-        WorksheetAnalysisViewDO waVDO1, waVDO2;
+        int index;
 
         worksheetItemTable.finishEditing();
-        fromRow = worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow());
-        waVDO1 = (WorksheetAnalysisViewDO)manager.getObject((String)fromRow.getData());
-        wiDO1 = (WorksheetItemDO)manager.getObject(manager.getWorksheetItemUid(waVDO1.getWorksheetItemId()));
-
-        toRow = worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow() - 1);
-        waVDO2 = (WorksheetAnalysisViewDO)manager.getObject((String)toRow.getData());
-        wiDO2 = (WorksheetItemDO)manager.getObject(manager.getWorksheetItemUid(waVDO2.getWorksheetItemId()));
-        
-        tempPosition = wiDO2.getPosition();
-        wiDO2.setPosition(wiDO1.getPosition());
-        toRow.setCell(0, wiDO1.getPosition());
-        wiDO1.setPosition(tempPosition);
-        fromRow.setCell(0, tempPosition);
-        
-        model = worksheetItemTable.getModel();
-        model.set(worksheetItemTable.getSelectedRow(), toRow);
-        model.set(worksheetItemTable.getSelectedRow() - 1, fromRow);
-        worksheetItemTable.setModel(model);
+        index = worksheetItemTable.getSelectedRow();
+        manager.item.move(index, true);
+        worksheetItemTable.setModel(getTableModel());
+        worksheetItemTable.selectRowAt(index - 1);
     }
         
     private void enableAddRowMenu(boolean enable) {
@@ -1425,101 +1378,6 @@ public class WorksheetItemTabUI extends Screen {
         waVDO.setExpireDate(DataBaseUtil.getExpireDate(avVO.getCollectionDate(),
                                                        avVO.getCollectionTime(),
                                                        avVO.getTimeHolding()));
-    }
-    
-    private void duplicateWorksheetAnalysis(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
-        int i;
-
-        copyDO(fromDO, toDO);
-        toDO.setWorksheetId(fromDO.getWorksheetId());
-        toDO.setIsFromOther(fromDO.getIsFromOther());
-        
-        if (fromDO.getAnalysisId() != null) {
-            for (i = 0; i < manager.result.count(fromDO); i++)
-                duplicateWorksheetResult(manager.result.get(fromDO, i), manager.result.add(toDO));
-        } else if (fromDO.getQcLotId() != null) {
-            for (i = 0; i < manager.qcResult.count(fromDO); i++)
-                duplicateWorksheetQcResult(manager.qcResult.get(fromDO, i), manager.qcResult.add(toDO));
-        }
-    }
-    
-    private void duplicateWorksheetResult(WorksheetResultViewDO fromDO, WorksheetResultViewDO toDO) {
-        toDO.setTestAnalyteId(fromDO.getTestAnalyteId());
-        toDO.setTestResultId(fromDO.getTestResultId());
-        toDO.setResultRow(fromDO.getResultRow());
-        toDO.setAnalyteId(fromDO.getAnalyteId());
-        toDO.setTypeId(fromDO.getTypeId());
-        toDO.setValueAt(0, fromDO.getValueAt(0));
-        toDO.setValueAt(1, fromDO.getValueAt(1));
-        toDO.setValueAt(2, fromDO.getValueAt(2));
-        toDO.setValueAt(3, fromDO.getValueAt(3));
-        toDO.setValueAt(4, fromDO.getValueAt(4));
-        toDO.setValueAt(5, fromDO.getValueAt(5));
-        toDO.setValueAt(6, fromDO.getValueAt(6));
-        toDO.setValueAt(7, fromDO.getValueAt(7));
-        toDO.setValueAt(8, fromDO.getValueAt(8));
-        toDO.setValueAt(9, fromDO.getValueAt(9));
-        toDO.setValueAt(10, fromDO.getValueAt(10));
-        toDO.setValueAt(11, fromDO.getValueAt(11));
-        toDO.setValueAt(12, fromDO.getValueAt(12));
-        toDO.setValueAt(13, fromDO.getValueAt(13));
-        toDO.setValueAt(14, fromDO.getValueAt(14));
-        toDO.setValueAt(15, fromDO.getValueAt(15));
-        toDO.setValueAt(16, fromDO.getValueAt(16));
-        toDO.setValueAt(17, fromDO.getValueAt(17));
-        toDO.setValueAt(18, fromDO.getValueAt(18));
-        toDO.setValueAt(19, fromDO.getValueAt(19));
-        toDO.setValueAt(20, fromDO.getValueAt(20));
-        toDO.setValueAt(21, fromDO.getValueAt(21));
-        toDO.setValueAt(22, fromDO.getValueAt(22));
-        toDO.setValueAt(23, fromDO.getValueAt(23));
-        toDO.setValueAt(24, fromDO.getValueAt(24));
-        toDO.setValueAt(25, fromDO.getValueAt(25));
-        toDO.setValueAt(26, fromDO.getValueAt(26));
-        toDO.setValueAt(27, fromDO.getValueAt(27));
-        toDO.setValueAt(28, fromDO.getValueAt(28));
-        toDO.setValueAt(29, fromDO.getValueAt(29));
-        toDO.setAnalyteName(fromDO.getAnalyteName());
-        toDO.setAnalyteExternalId(fromDO.getAnalyteExternalId());
-        toDO.setResultGroup(fromDO.getResultGroup());
-    }
-    
-    private void duplicateWorksheetQcResult(WorksheetQcResultViewDO fromDO, WorksheetQcResultViewDO toDO) {
-        toDO.setSortOrder(fromDO.getSortOrder());
-        toDO.setQcAnalyteId(fromDO.getQcAnalyteId());
-        toDO.setTypeId(fromDO.getTypeId());
-        toDO.setValueAt(0, fromDO.getValueAt(0));
-        toDO.setValueAt(1, fromDO.getValueAt(1));
-        toDO.setValueAt(2, fromDO.getValueAt(2));
-        toDO.setValueAt(3, fromDO.getValueAt(3));
-        toDO.setValueAt(4, fromDO.getValueAt(4));
-        toDO.setValueAt(5, fromDO.getValueAt(5));
-        toDO.setValueAt(6, fromDO.getValueAt(6));
-        toDO.setValueAt(7, fromDO.getValueAt(7));
-        toDO.setValueAt(8, fromDO.getValueAt(8));
-        toDO.setValueAt(9, fromDO.getValueAt(9));
-        toDO.setValueAt(10, fromDO.getValueAt(10));
-        toDO.setValueAt(11, fromDO.getValueAt(11));
-        toDO.setValueAt(12, fromDO.getValueAt(12));
-        toDO.setValueAt(13, fromDO.getValueAt(13));
-        toDO.setValueAt(14, fromDO.getValueAt(14));
-        toDO.setValueAt(15, fromDO.getValueAt(15));
-        toDO.setValueAt(16, fromDO.getValueAt(16));
-        toDO.setValueAt(17, fromDO.getValueAt(17));
-        toDO.setValueAt(18, fromDO.getValueAt(18));
-        toDO.setValueAt(19, fromDO.getValueAt(19));
-        toDO.setValueAt(20, fromDO.getValueAt(20));
-        toDO.setValueAt(21, fromDO.getValueAt(21));
-        toDO.setValueAt(22, fromDO.getValueAt(22));
-        toDO.setValueAt(23, fromDO.getValueAt(23));
-        toDO.setValueAt(24, fromDO.getValueAt(24));
-        toDO.setValueAt(25, fromDO.getValueAt(25));
-        toDO.setValueAt(26, fromDO.getValueAt(26));
-        toDO.setValueAt(27, fromDO.getValueAt(27));
-        toDO.setValueAt(28, fromDO.getValueAt(28));
-        toDO.setValueAt(29, fromDO.getValueAt(29));
-        toDO.setAnalyteId(fromDO.getAnalyteId());
-        toDO.setAnalyteName(fromDO.getAnalyteName());
     }
     
     private HashMap<Integer, ArrayList<WorksheetAnalysisViewDO>> getQcLinkList() {
