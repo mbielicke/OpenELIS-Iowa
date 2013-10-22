@@ -29,99 +29,152 @@ package org.openelis.meta;
   * Patient META Data
   */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import org.openelis.ui.common.Meta;
+import org.openelis.ui.common.MetaMap;
 
-public class PatientMeta implements Meta {
-  	public String path = "";
-	private static final String entityName = "Patient";
-	
-	private static final String
-              ID					="id",
-              LAST_NAME					="lastName",
-              FIRST_NAME					="firstName",
-              MIDDLE_NAME					="middleName",
-              ADDRESS_ID					="addressId",
-              BIRTH_DATE					="birthDate",
-              BIRTH_TIME					="birthTime",
-              GENDER_ID					="genderId",
-              RACE_ID					="raceId",
-              ETHNICITY_ID					="ethnicityId";
-
-  	private static final String[] columnNames = {
-  	  ID,LAST_NAME,FIRST_NAME,MIDDLE_NAME,ADDRESS_ID,BIRTH_DATE,BIRTH_TIME,GENDER_ID,RACE_ID,ETHNICITY_ID};
-  	  
-	private HashSet<String> columnHashList;
+public class PatientMeta implements Meta, MetaMap {
     
-    private void init() {
-        columnHashList = new HashSet<String>(columnNames.length);
-        for(int i = 0; i < columnNames.length; i++){
-            columnHashList.add(path+columnNames[i]);
-        }
-    }
+    private static final String ID = "_patient.id",
+                                LAST_NAME = "_patient.lastName",
+                                FIRST_NAME = "_patient.firstName",
+                                MIDDLE_NAME = "_patient.middleName",
+                                ADDRESS_ID = "_patient.addressId",
+                                BIRTH_DATE = "_patient.birthDate",
+                                BIRTH_TIME = "_patient.birthTime",
+                                GENDER_ID = "_patient.genderId",
+                                RACE_ID = "_patient.raceId",
+                                ETHNICITY_ID = "_patient.ethnicityId",
+                                NATIONAL_ID = "_patient.nationalId",
+                                ADDR_ID = "_patient.address.id",
+                                ADDR_MULTIPLE_UNIT = "_patient.address.multipleUnit",
+                                ADDR_STREET_ADDRESS = "_patient.address.streetAddress",
+                                ADDR_CITY = "_patient.address.city",
+                                ADDR_STATE = "_patient.address.state",
+                                ADDR_ZIP_CODE = "_patient.address.zipCode",
+                                ADDR_WORK_PHONE = "_patient.address.workPhone",
+                                ADDR_HOME_PHONE = "_patient.address.homePhone",
+                                ADDR_CELL_PHONE = "_patient.address.cellPhone",
+                                ADDR_FAX_PHONE = "_patient.address.faxPhone",
+                                ADDR_EMAIL = "_patient.address.email",
+                                ADDR_COUNTRY = "_patient.address.country";
+
+	private static HashSet<String> names;
     
-    public PatientMeta() {
-		init();        
+    static {
+        names = new HashSet<String>(Arrays.asList(ID, LAST_NAME, FIRST_NAME, MIDDLE_NAME,
+                                                  ADDRESS_ID, BIRTH_DATE, BIRTH_TIME,
+                                                  GENDER_ID, RACE_ID, ETHNICITY_ID,
+                                                  NATIONAL_ID, ADDR_ID, ADDR_MULTIPLE_UNIT,
+                                                  ADDR_STREET_ADDRESS, ADDR_CITY,
+                                                  ADDR_STATE, ADDR_ZIP_CODE, ADDR_WORK_PHONE,
+                                                  ADDR_HOME_PHONE, ADDR_CELL_PHONE,
+                                                  ADDR_FAX_PHONE, ADDR_EMAIL, ADDR_COUNTRY));
     }
-    
-    public PatientMeta(String path) {
-        this.path = path;
-		init();        
+                                                 
+    public static String getId() {
+        return ID;
+    } 
+
+    public static String getLastName() {
+        return LAST_NAME;
+    } 
+
+    public static String getFirstName() {
+        return FIRST_NAME;
+    } 
+
+    public static String getMiddleName() {
+        return MIDDLE_NAME;
+    } 
+
+    public static String getAddressId() {
+        return ADDRESS_ID;
+    } 
+
+    public static String getBirthDate() {
+        return BIRTH_DATE;
+    } 
+
+    public static String getBirthTime() {
+        return BIRTH_TIME;
+    } 
+
+    public static String getGenderId() {
+        return GENDER_ID;
+    } 
+
+    public static String getRaceId() {
+        return RACE_ID;
+    } 
+
+    public static String getEthnicityId() {
+        return ETHNICITY_ID;
+    } 
+
+    public static String getNationalId() {
+        return NATIONAL_ID;
+    } 
+
+    public static String getAddressAddressAddressId() {
+        return ADDR_ID;
+    } 
+
+    public static String getAddressMultipleUnit() {
+        return ADDR_MULTIPLE_UNIT;
     }
 
-    public String[] getColumnList() {
-        return columnNames;
+    public static String getAddressStreetAddress() {
+        return ADDR_STREET_ADDRESS;
     }
 
-    public String getEntity() {
-        return entityName;
+    public static String getAddressCity() {
+        return ADDR_CITY;
+    }
+
+    public static String getAddressState() {
+        return ADDR_STATE;
+    }
+
+    public static String getAddressZipCode() {
+        return ADDR_ZIP_CODE;
+    }
+
+    public static String getAddressWorkPhone() {
+        return ADDR_WORK_PHONE;
+    }
+
+    public static String getAddressHomePhone() {
+        return ADDR_HOME_PHONE;
+    }
+
+    public static String getAddressCellPhone() {
+        return ADDR_CELL_PHONE;
+    }
+
+    public static String getAddressFaxPhone() {
+        return ADDR_FAX_PHONE;
+    }
+
+    public static String getAddressEmail() {
+        return ADDR_EMAIL;
+    }
+
+    public static String getAddressCountry() {
+        return ADDR_COUNTRY;
     }
 
     public boolean hasColumn(String columnName) {
-        return columnHashList.contains(columnName);
+        return names.contains(columnName);
     }
     
-    
-    public String getId() {
-        return path + ID;
-    } 
+    public String buildFrom(String where) {
+        String from;
+        
+        from = "Patient _patient ";
 
-    public String getLastName() {
-        return path + LAST_NAME;
-    } 
-
-    public String getFirstName() {
-        return path + FIRST_NAME;
-    } 
-
-    public String getMiddleName() {
-        return path + MIDDLE_NAME;
-    } 
-
-    public String getAddressId() {
-        return path + ADDRESS_ID;
-    } 
-
-    public String getBirthDate() {
-        return path + BIRTH_DATE;
-    } 
-
-    public String getBirthTime() {
-        return path + BIRTH_TIME;
-    } 
-
-    public String getGenderId() {
-        return path + GENDER_ID;
-    } 
-
-    public String getRaceId() {
-        return path + RACE_ID;
-    } 
-
-    public String getEthnicityId() {
-        return path + ETHNICITY_ID;
-    } 
-
-  
-}   
+        return from;
+    }
+}

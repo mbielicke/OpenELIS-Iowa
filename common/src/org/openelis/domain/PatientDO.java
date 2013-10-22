@@ -35,7 +35,7 @@ public class PatientDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, genderId, raceId, ethnicityId;
-    protected String          lastName, firstName, middleName;
+    protected String          lastName, firstName, middleName, nationalId;
     protected Datetime        birthDate, birthTime;
     protected AddressDO       address;
 
@@ -45,10 +45,10 @@ public class PatientDO extends DataObject {
 
     public PatientDO(Integer id, String lastName, String firstName, String middleName,
                      Integer addressId, Date birthDate, Date birthTime, Integer genderId,
-                     Integer raceId, Integer ethnicityId, String multipleUnit, String streetAddress,
-                     String city, String state, String zipCode, String workPhone,
-                     String homePhone, String cellPhone, String faxPhone, String email,
-                     String country) {
+                     Integer raceId, Integer ethnicityId, String nationalId, String multipleUnit,
+                     String streetAddress, String city, String state, String zipCode,
+                     String workPhone, String homePhone, String cellPhone, String faxPhone,
+                     String email, String country) {
         setId(id);
         setLastName(lastName);
         setFirstName(firstName);
@@ -58,6 +58,7 @@ public class PatientDO extends DataObject {
         setGenderId(genderId);
         setRaceId(raceId);
         setEthnicityId(ethnicityId);
+        setNationalId(nationalId);
         
         address = new AddressDO(addressId, multipleUnit, streetAddress, city, state, zipCode,
                                 workPhone, homePhone, cellPhone, faxPhone, email, country);
@@ -145,6 +146,15 @@ public class PatientDO extends DataObject {
         _changed = true;
     }
     
+    public String getNationalId() {
+        return nationalId;
+    }
+
+    public void setNationalId(String nationalId) {
+        this.nationalId = DataBaseUtil.trim(nationalId);
+        _changed = true;
+    }
+
     public AddressDO getAddress() {
         return address;
     }
