@@ -38,20 +38,20 @@ public class PWSMonitorDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, tinwsysIsNumber, numberSamples;
+    protected Integer         tiamrtaskIsNumber, tinwsfIsNumber, tinwsysIsNumber, numberSamples;
 
     protected String          stAsgnIdentCd, name, tiaanlgpTiaanlytName, frequencyName, periodName;
 
     protected Datetime        compBeginDate, compEndDate;
-    
-    public PWSMonitorDO() {     
+
+    public PWSMonitorDO() {
     }
 
-    public PWSMonitorDO(Integer id, Integer tinwsysIsNumber, String stAsgnIdentCd,
+    public PWSMonitorDO(Integer tiamrtaskIsNumber, Integer tinwsysIsNumber, String stAsgnIdentCd,
                         String name, String tiaanlgpTiaanlytName, Integer numberSamples,
-                        Date compBeginDate, Date compEndDate,
-                        String frequencyName, String periodName) {   
-        setId(id);
+                        Date compBeginDate, Date compEndDate, String frequencyName,
+                        String periodName) {
+        setTiamrtaskIsNumber(tiamrtaskIsNumber);
         setTinwsysIsNumber(tinwsysIsNumber);
         setStAsgnIdentCd(stAsgnIdentCd);
         setName(name);
@@ -59,17 +59,26 @@ public class PWSMonitorDO extends DataObject {
         setNumberSamples(numberSamples);
         setCompBeginDate(DataBaseUtil.toYD(compBeginDate));
         setCompEndDate(DataBaseUtil.toYD(compEndDate));
-        setFrequencyName(frequencyName); 
+        setFrequencyName(frequencyName);
         setPeriodName(periodName);
         _changed = false;
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getTiamrtaskIsNumber() {
+        return tiamrtaskIsNumber;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setTiamrtaskIsNumber(Integer tiamrtaskIsNumber) {
+        this.tiamrtaskIsNumber = tiamrtaskIsNumber;
+        _changed = true;
+    }
+
+    public Integer getTinwsfIsNumber() {
+        return tinwsfIsNumber;
+    }
+
+    public void setTinwsfIsNumber(Integer tinwsfIsNumber) {
+        this.tinwsfIsNumber = tinwsfIsNumber;
         _changed = true;
     }
 
@@ -81,7 +90,7 @@ public class PWSMonitorDO extends DataObject {
         this.tinwsysIsNumber = tinwsysIsNumber;
         _changed = true;
     }
-    
+
     public String getStAsgnIdentCd() {
         return stAsgnIdentCd;
     }
@@ -90,7 +99,7 @@ public class PWSMonitorDO extends DataObject {
         this.stAsgnIdentCd = DataBaseUtil.trim(stAsgnIdentCd);
         _changed = true;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -99,7 +108,7 @@ public class PWSMonitorDO extends DataObject {
         this.name = DataBaseUtil.trim(name);
         _changed = true;
     }
-    
+
     public String getTiaanlgpTiaanlytName() {
         return tiaanlgpTiaanlytName;
     }
@@ -117,7 +126,7 @@ public class PWSMonitorDO extends DataObject {
         this.numberSamples = numberSamples;
         _changed = true;
     }
-    
+
     public Datetime getCompBeginDate() {
         return compBeginDate;
     }

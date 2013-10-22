@@ -112,6 +112,7 @@ public class WorksheetDO extends DataObject {
 
     public void setSubsetCapacity(Integer subsetCapacity) {
         this.subsetCapacity = subsetCapacity;
+        _changed = true;
     }
 
     public Integer getRelatedWorksheetId() {

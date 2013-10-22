@@ -33,23 +33,25 @@ import org.openelis.ui.common.DataBaseUtil;
 
 public class PWSFacilityDO extends DataObject {
 
-    private static final long   serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    protected Integer           id, tinwsysIsNumber;
+    protected Integer         tinwsfIsNumber, tsasmpptIsNumber, tinwsysIsNumber;
 
-    protected String            name, typeCode, stAsgnIdentCd, activityStatusCd,
-                                waterTypeCode, availabilityCode, identificationCd,
-                                descriptionText, sourceTypeCode;
-    
+    protected String          name, typeCode, stAsgnIdentCd, activityStatusCd, waterTypeCode,
+                    availabilityCode, identificationCd, descriptionText, sourceTypeCode;
+
     public PWSFacilityDO() {
     }
 
-    public PWSFacilityDO(Integer id, Integer tinwsysIsNumber, String name, String typeCode, String stAsgnIdentCd,
-                         String activityStatusCd, String waterTypeCode,String availabilityCode,
-                         String identificationCd, String descriptionText, String sourceTypeCode) {
-        setId(id);
+    public PWSFacilityDO(Integer tinwsfIsNumber, Integer tinsasmpptIsNumber,
+                         Integer tinwsysIsNumber, String name, String typeCode,
+                         String stAsgnIdentCd, String activityStatusCd, String waterTypeCode,
+                         String availabilityCode, String identificationCd, String descriptionText,
+                         String sourceTypeCode) {
+        setTinwsfIsNumber(tinwsfIsNumber);
+        setTsasmpptIsNumber(tinsasmpptIsNumber);
         setTinwsysIsNumber(tinwsysIsNumber);
-        setName(name); 
+        setName(name);
         setTypeCode(typeCode);
         setStAsgnIdentCd(stAsgnIdentCd);
         setActivityStatusCd(activityStatusCd);
@@ -60,13 +62,22 @@ public class PWSFacilityDO extends DataObject {
         setSourceTypeCode(sourceTypeCode);
         _changed = false;
     }
-    
-    public Integer getId() {
-        return id;
+
+    public Integer getTinwsfIsNumber() {
+        return tinwsfIsNumber;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setTinwsfIsNumber(Integer tinwsfIsNumber) {
+        this.tinwsfIsNumber = tinwsfIsNumber;
+        _changed = true;
+    }
+
+    public Integer getTsasmpptIsNumber() {
+        return tsasmpptIsNumber;
+    }
+
+    public void setTsasmpptIsNumber(Integer tsasmpptIsNumber) {
+        this.tsasmpptIsNumber = tsasmpptIsNumber;
         _changed = true;
     }
 
@@ -95,7 +106,7 @@ public class PWSFacilityDO extends DataObject {
     public void setTypeCode(String typeCode) {
         this.typeCode = DataBaseUtil.trim(typeCode);
         _changed = true;
-    }    
+    }
 
     public String getStAsgnIdentCd() {
         return stAsgnIdentCd;

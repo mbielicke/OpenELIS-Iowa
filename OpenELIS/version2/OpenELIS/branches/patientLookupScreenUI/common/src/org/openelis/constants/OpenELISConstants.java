@@ -7,15 +7,6 @@ package org.openelis.constants;
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
   /**
-   * Translated "Order".
-   * 
-   * @return translated "Order"
-   */
-  @DefaultMessage("Order")
-  @Key("Birth")
-  String Birth();
-
-  /**
    * Translated "QA Event".
    * 
    * @return translated "QA Event"
@@ -502,6 +493,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String address_city();
 
   /**
+   * Translated "City, State, Zip".
+   * 
+   * @return translated "City, State, Zip"
+   */
+  @DefaultMessage("City, State, Zip")
+  @Key("address.cityStateZip")
+  String address_cityStateZip();
+
+  /**
    * Translated "Country".
    * 
    * @return translated "Country"
@@ -509,6 +509,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Country")
   @Key("address.country")
   String address_country();
+
+  /**
+   * Translated "Phone #".
+   * 
+   * @return translated "Phone #"
+   */
+  @DefaultMessage("Phone #")
+  @Key("address.phone")
+  String address_phone();
 
   /**
    * Translated "St".
@@ -700,6 +709,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cancelMessage();
 
   /**
+   * Translated "Analysis is released. You cannot add non-internal QA events.".
+   * 
+   * @return translated "Analysis is released. You cannot add non-internal QA events."
+   */
+  @DefaultMessage("Analysis is released. You cannot add non-internal QA events.")
+  @Key("analysis.cantAddQAEvent")
+  String analysis_cantAddQAEvent();
+
+  /**
    * Translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}".
    * 
    * @return translated "Accession # ''{0,number}'': Cannot cancel {1}, {2} - It is the prep analysis for the released analysis {3}, {4}"
@@ -763,6 +781,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantRemoveInUpdateException(Integer arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "Analysis has been released. You cannot remove non-internal QA events.".
+   * 
+   * @return translated "Analysis has been released. You cannot remove non-internal QA events."
+   */
+  @DefaultMessage("Analysis has been released. You cannot remove non-internal QA events.")
+  @Key("analysis.cantRemoveQAEvent")
+  String analysis_cantRemoveQAEvent();
+
+  /**
    * Translated "Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}".
    * 
    * @return translated "Accession # ''{0,number}'': Cannot set the cancelled analysis {1}, {2} as the prep analysis of {3}, {4}"
@@ -790,13 +817,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_completed();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1} - {2}, {3} - Completed date can''t be after released date")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Completed date can''t be after released date")
   @Key("analysis.completedDateInvalidException")
-  String analysis_completedDateInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3);
+  String analysis_completedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0,number}'': Insufficient privileges to add {1}, {2}".
@@ -880,6 +907,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_noReleasePermission(String arg0,  String arg1,  String arg2);
 
   /**
+   * Translated "A QA event has been added that makes this analysis not billable".
+   * 
+   * @return translated "A QA event has been added that makes this analysis not billable"
+   */
+  @DefaultMessage("A QA event has been added that makes this analysis not billable")
+  @Key("analysis.notBillable")
+  String analysis_notBillable();
+
+  /**
+   * Translated "Analysis Notes".
+   * 
+   * @return translated "Analysis Notes"
+   */
+  @DefaultMessage("Analysis Notes")
+  @Key("analysis.notes")
+  String analysis_notes();
+
+  /**
    * Translated "Preliminary".
    * 
    * @return translated "Preliminary"
@@ -896,6 +941,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Printed")
   @Key("analysis.printed")
   String analysis_printed();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Invalid QA Event ''{4}''")
+  @Key("analysis.qaEventInvalidException")
+  String analysis_qaEventInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "Analysis QA Events ".
@@ -961,13 +1015,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_started();
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1} - {2}, {3} - Started date can''t be after completed")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Started date can''t be after completed")
   @Key("analysis.startedDateInvalidException")
-  String analysis_startedDateInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3);
+  String analysis_startedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Accession # ''{0}'': Item {1} - One or more tests are missing".
@@ -995,6 +1049,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required")
   @Key("analysis.unitRequiredException")
   String analysis_unitRequiredException(String arg0,  String arg1,  String arg2,  String arg3);
+
+  /**
+   * Translated "You may not remove released user information".
+   * 
+   * @return translated "You may not remove released user information"
+   */
+  @DefaultMessage("You may not remove released user information")
+  @Key("analysis.userActionException")
+  String analysis_userActionException();
 
   /**
    * Translated "Analysis has already been completed".
@@ -1591,6 +1654,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String autoReorder();
 
   /**
+   * Translated "Aux Data".
+   * 
+   * @return translated "Aux Data"
+   */
+  @DefaultMessage("Aux Data")
+  @Key("aux.data")
+  String aux_data();
+
+  /**
    * Translated "No matching active auxiliary group found for ''{0}''".
    * 
    * @return translated "No matching active auxiliary group found for ''{0}''"
@@ -1897,11 +1969,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String backToSearch();
 
   /**
-   * Translated "Barcode             ".
+   * Translated "Barcode   ".
    * 
-   * @return translated "Barcode             "
+   * @return translated "Barcode   "
    */
-  @DefaultMessage("Barcode             ")
+  @DefaultMessage("Barcode   ")
   @Key("barcode")
   String barcode();
 
@@ -3004,67 +3076,67 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String cut();
 
   /**
-   * Translated "Data Exchange: Failed to execute ''{0}'' ".
+   * Translated "Data Exchange ''{0}'': Successfully sent messages".
    * 
-   * @return translated "Data Exchange: Failed to execute ''{0}'' "
+   * @return translated "Data Exchange ''{0}'': Successfully sent messages"
    */
-  @DefaultMessage("Data Exchange: Failed to execute ''{0}'' ")
-  @Key("dataExchangeCouldNotExecuteCriteria")
-  String dataExchangeCouldNotExecuteCriteria(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Successfully sent messages")
+  @Key("dataExchange.executedCriteria")
+  String dataExchange_executedCriteria(String arg0);
 
   /**
-   * Translated "Data Exchange: Failed to fetch ''{0}''".
+   * Translated "Data Exchange ''{0}'': Could not find the last run date ".
    * 
-   * @return translated "Data Exchange: Failed to fetch ''{0}''"
+   * @return translated "Data Exchange ''{0}'': Could not find the last run date "
    */
-  @DefaultMessage("Data Exchange: Failed to fetch ''{0}''")
-  @Key("dataExchangeCriteriaFetchFailed")
-  String dataExchangeCriteriaFetchFailed(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Could not find the last run date ")
+  @Key("dataExchange.lastRunFetchException")
+  String dataExchange_lastRunFetchException(String arg0);
 
   /**
-   * Translated "Data Exchange: Criteria ''{0}'' not found".
+   * Translated "Data Exchange: You must specify 1 or more accession numbers to message".
    * 
-   * @return translated "Data Exchange: Criteria ''{0}'' not found"
+   * @return translated "Data Exchange: You must specify 1 or more accession numbers to message"
    */
-  @DefaultMessage("Data Exchange: Criteria ''{0}'' not found")
-  @Key("dataExchangeCriteriaNotFound")
-  String dataExchangeCriteriaNotFound(String arg0);
+  @DefaultMessage("Data Exchange: You must specify 1 or more accession numbers to message")
+  @Key("dataExchange.noAccessionException")
+  String dataExchange_noAccessionException();
 
   /**
-   * Translated "Data Exchange: Executed ''{0}''".
+   * Translated "Data Exchange ''{0}'': Could not find criteria".
    * 
-   * @return translated "Data Exchange: Executed ''{0}''"
+   * @return translated "Data Exchange ''{0}'': Could not find criteria"
    */
-  @DefaultMessage("Data Exchange: Executed ''{0}''")
-  @Key("dataExchangeExecutedCriteria")
-  String dataExchangeExecutedCriteria(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Could not find criteria")
+  @Key("dataExchange.noCriteriaFoundException")
+  String dataExchange_noCriteriaFoundException(String arg0);
 
   /**
-   * Translated "Data Exchange: Failed to fetch last run date for ''{0}''".
+   * Translated "Data Exchange ''{0}'': Query not specified".
    * 
-   * @return translated "Data Exchange: Failed to fetch last run date for ''{0}''"
+   * @return translated "Data Exchange ''{0}'': Query not specified"
    */
-  @DefaultMessage("Data Exchange: Failed to fetch last run date for ''{0}''")
-  @Key("dataExchangeLastRunDateFetchFailed")
-  String dataExchangeLastRunDateFetchFailed(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': Query not specified")
+  @Key("dataExchange.noQueryException")
+  String dataExchange_noQueryException(String arg0);
 
   /**
-   * Translated "Data Exchange: No samples found for ''{0}''".
+   * Translated "Data Exchange ''{0}'': No samples found for messaging".
    * 
-   * @return translated "Data Exchange: No samples found for ''{0}''"
+   * @return translated "Data Exchange ''{0}'': No samples found for messaging"
    */
-  @DefaultMessage("Data Exchange: No samples found for ''{0}''")
-  @Key("dataExchangeNoSamplesFound")
-  String dataExchangeNoSamplesFound(String arg0);
+  @DefaultMessage("Data Exchange ''{0}'': No samples found for messaging")
+  @Key("dataExchange.noSamplesFound")
+  String dataExchange_noSamplesFound(String arg0);
 
   /**
-   * Translated "Data Exchange: Query not specified for ''{0}''".
+   * Translated "Data Exchange: You must specify a URI export location".
    * 
-   * @return translated "Data Exchange: Query not specified for ''{0}''"
+   * @return translated "Data Exchange: You must specify a URI export location"
    */
-  @DefaultMessage("Data Exchange: Query not specified for ''{0}''")
-  @Key("dataExchangeQueryNotSpecified")
-  String dataExchangeQueryNotSpecified(String arg0);
+  @DefaultMessage("Data Exchange: You must specify a URI export location")
+  @Key("dataExchange.noUriException")
+  String dataExchange_noUriException();
 
   /**
    * Translated "Data View".
@@ -4804,13 +4876,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_analyte();
 
   /**
-   * Translated "Aux Data".
+   * Translated "Barcode              ".
    * 
-   * @return translated "Aux Data"
+   * @return translated "Barcode              "
    */
-  @DefaultMessage("Aux Data")
-  @Key("gen.auxData")
-  String gen_auxData();
+  @DefaultMessage("Barcode              ")
+  @Key("gen.barcode")
+  String gen_barcode();
 
   /**
    * Translated "Begin Date".
@@ -5029,6 +5101,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_external();
 
   /**
+   * Translated "Failed".
+   * 
+   * @return translated "Failed"
+   */
+  @DefaultMessage("Failed")
+  @Key("gen.failed")
+  String gen_failed();
+
+  /**
    * Translated "Error: Could not retrieve the record.".
    * 
    * @return translated "Error: Could not retrieve the record."
@@ -5045,6 +5126,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Fetching ...")
   @Key("gen.fetching")
   String gen_fetching();
+
+  /**
+   * Translated "First".
+   * 
+   * @return translated "First"
+   */
+  @DefaultMessage("First")
+  @Key("gen.first")
+  String gen_first();
+
+  /**
+   * Translated "First Name".
+   * 
+   * @return translated "First Name"
+   */
+  @DefaultMessage("First Name")
+  @Key("gen.firstName")
+  String gen_firstName();
 
   /**
    * Translated "Frequency".
@@ -5074,6 +5173,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_group();
 
   /**
+   * Translated "History".
+   * 
+   * @return translated "History"
+   */
+  @DefaultMessage("History")
+  @Key("gen.history")
+  String gen_history();
+
+  /**
+   * Translated "Initializing...".
+   * 
+   * @return translated "Initializing..."
+   */
+  @DefaultMessage("Initializing...")
+  @Key("gen.initializing")
+  String gen_initializing();
+
+  /**
    * Translated "Internal".
    * 
    * @return translated "Internal"
@@ -5099,6 +5216,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Inventory Item")
   @Key("gen.inventoryItem")
   String gen_inventoryItem();
+
+  /**
+   * Translated "Item".
+   * 
+   * @return translated "Item"
+   */
+  @DefaultMessage("Item")
+  @Key("gen.item")
+  String gen_item();
+
+  /**
+   * Translated "Last".
+   * 
+   * @return translated "Last"
+   */
+  @DefaultMessage("Last")
+  @Key("gen.last")
+  String gen_last();
+
+  /**
+   * Translated "Last Name".
+   * 
+   * @return translated "Last Name"
+   */
+  @DefaultMessage("Last Name")
+  @Key("gen.lastName")
+  String gen_lastName();
 
   /**
    * Translated "Done".
@@ -5144,6 +5288,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Method")
   @Key("gen.method")
   String gen_method();
+
+  /**
+   * Translated "Middle Name".
+   * 
+   * @return translated "Middle Name"
+   */
+  @DefaultMessage("Middle Name")
+  @Key("gen.middleName")
+  String gen_middleName();
+
+  /**
+   * Translated "Move".
+   * 
+   * @return translated "Move"
+   */
+  @DefaultMessage("Move")
+  @Key("gen.move")
+  String gen_move();
 
   /**
    * Translated "Move Down".
@@ -5290,6 +5452,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_parent();
 
   /**
+   * Translated "Pop-out".
+   * 
+   * @return translated "Pop-out"
+   */
+  @DefaultMessage("Pop-out")
+  @Key("gen.popout")
+  String gen_popout();
+
+  /**
    * Translated "Previous".
    * 
    * @return translated "Previous"
@@ -5306,6 +5477,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Printer")
   @Key("gen.printer")
   String gen_printer();
+
+  /**
+   * Translated "Are you sure you want to change this?".
+   * 
+   * @return translated "Are you sure you want to change this?"
+   */
+  @DefaultMessage("Are you sure you want to change this?")
+  @Key("gen.qaEventEditConfirm")
+  String gen_qaEventEditConfirm();
 
   /**
    * Translated "QA Events".
@@ -5380,6 +5560,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_removeRow();
 
   /**
+   * Translated "Repeat".
+   * 
+   * @return translated "Repeat"
+   */
+  @DefaultMessage("Repeat")
+  @Key("gen.repeat")
+  String gen_repeat();
+
+  /**
    * Translated "Reportable".
    * 
    * @return translated "Reportable"
@@ -5387,24 +5576,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Reportable")
   @Key("gen.reportable")
   String gen_reportable();
-
-  /**
-   * Translated "Sample".
-   * 
-   * @return translated "Sample"
-   */
-  @DefaultMessage("Sample")
-  @Key("gen.sample")
-  String gen_sample();
-
-  /**
-   * Translated "Sample Type".
-   * 
-   * @return translated "Sample Type"
-   */
-  @DefaultMessage("Sample Type")
-  @Key("gen.sampleType")
-  String gen_sampleType();
 
   /**
    * Translated "You do not have permission to access {0}".
@@ -5488,6 +5659,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_test();
 
   /**
+   * Translated "Time".
+   * 
+   * @return translated "Time"
+   */
+  @DefaultMessage("Time")
+  @Key("gen.time")
+  String gen_time();
+
+  /**
    * Translated "Type".
    * 
    * @return translated "Type"
@@ -5558,6 +5738,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Value")
   @Key("gen.value")
   String gen_value();
+
+  /**
+   * Translated "Press Ok to commit anyway or cancel to fix these warnings.".
+   * 
+   * @return translated "Press Ok to commit anyway or cancel to fix these warnings."
+   */
+  @DefaultMessage("Press Ok to commit anyway or cancel to fix these warnings.")
+  @Key("gen.warningDialogLastLine")
+  String gen_warningDialogLastLine();
+
+  /**
+   * Translated "There are warnings on the screen:".
+   * 
+   * @return translated "There are warnings on the screen:"
+   */
+  @DefaultMessage("There are warnings on the screen:")
+  @Key("gen.warningDialogLine1")
+  String gen_warningDialogLine1();
 
   /**
    * Translated "Worksheet".
@@ -5711,6 +5909,150 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("History")
   @Key("history")
   String history();
+
+  /**
+   * Translated "History - Analysis".
+   * 
+   * @return translated "History - Analysis"
+   */
+  @DefaultMessage("History - Analysis")
+  @Key("history.analysis")
+  String history_analysis();
+
+  /**
+   * Translated "History - Analysis QA Event".
+   * 
+   * @return translated "History - Analysis QA Event"
+   */
+  @DefaultMessage("History - Analysis QA Event")
+  @Key("history.analysisQA")
+  String history_analysisQA();
+
+  /**
+   * Translated "History - Aux Data".
+   * 
+   * @return translated "History - Aux Data"
+   */
+  @DefaultMessage("History - Aux Data")
+  @Key("history.auxData")
+  String history_auxData();
+
+  /**
+   * Translated "History - Current Result".
+   * 
+   * @return translated "History - Current Result"
+   */
+  @DefaultMessage("History - Current Result")
+  @Key("history.currentResult")
+  String history_currentResult();
+
+  /**
+   * Translated "History - Next Of Kin".
+   * 
+   * @return translated "History - Next Of Kin"
+   */
+  @DefaultMessage("History - Next Of Kin")
+  @Key("history.nextOfKin")
+  String history_nextOfKin();
+
+  /**
+   * Translated "History - Patient".
+   * 
+   * @return translated "History - Patient"
+   */
+  @DefaultMessage("History - Patient")
+  @Key("history.patient")
+  String history_patient();
+
+  /**
+   * Translated "History - Sample".
+   * 
+   * @return translated "History - Sample"
+   */
+  @DefaultMessage("History - Sample")
+  @Key("history.sample")
+  String history_sample();
+
+  /**
+   * Translated "History - Sample Environmental".
+   * 
+   * @return translated "History - Sample Environmental"
+   */
+  @DefaultMessage("History - Sample Environmental")
+  @Key("history.sampleEnvironmental")
+  String history_sampleEnvironmental();
+
+  /**
+   * Translated "History - Sample Item".
+   * 
+   * @return translated "History - Sample Item"
+   */
+  @DefaultMessage("History - Sample Item")
+  @Key("history.sampleItem")
+  String history_sampleItem();
+
+  /**
+   * Translated "History - Sample Neonatal".
+   * 
+   * @return translated "History - Sample Neonatal"
+   */
+  @DefaultMessage("History - Sample Neonatal")
+  @Key("history.sampleNeonatal")
+  String history_sampleNeonatal();
+
+  /**
+   * Translated "History - Sample Organization".
+   * 
+   * @return translated "History - Sample Organization"
+   */
+  @DefaultMessage("History - Sample Organization")
+  @Key("history.sampleOrganization")
+  String history_sampleOrganization();
+
+  /**
+   * Translated "History - Private Well".
+   * 
+   * @return translated "History - Private Well"
+   */
+  @DefaultMessage("History - Private Well")
+  @Key("history.samplePrivateWell")
+  String history_samplePrivateWell();
+
+  /**
+   * Translated "History - Sample Project".
+   * 
+   * @return translated "History - Sample Project"
+   */
+  @DefaultMessage("History - Sample Project")
+  @Key("history.sampleProject")
+  String history_sampleProject();
+
+  /**
+   * Translated "History - Sample QA Event".
+   * 
+   * @return translated "History - Sample QA Event"
+   */
+  @DefaultMessage("History - Sample QA Event")
+  @Key("history.sampleQA")
+  String history_sampleQA();
+
+  /**
+   * Translated "History - Sample SDWIS".
+   * 
+   * @return translated "History - Sample SDWIS"
+   */
+  @DefaultMessage("History - Sample SDWIS")
+  @Key("history.sampleSDWIS")
+  String history_sampleSDWIS();
+
+  /**
+   * Translated "History - Storage".
+   * 
+   * @return translated "History - Storage"
+   */
+  @DefaultMessage("History - Storage")
+  @Key("history.storage")
+  String history_storage();
 
   /**
    * Translated "History - Analysis".
@@ -7936,6 +8278,96 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String neededNumDays();
 
   /**
+   * Translated "Birth Order".
+   * 
+   * @return translated "Birth Order"
+   */
+  @DefaultMessage("Birth Order")
+  @Key("neonatal.birthOrder")
+  String neonatal_birthOrder();
+
+  /**
+   * Translated "Collect Age".
+   * 
+   * @return translated "Collect Age"
+   */
+  @DefaultMessage("Collect Age")
+  @Key("neonatal.collectAge")
+  String neonatal_collectAge();
+
+  /**
+   * Translated "Collect Valid".
+   * 
+   * @return translated "Collect Valid"
+   */
+  @DefaultMessage("Collect Valid")
+  @Key("neonatal.collectValid")
+  String neonatal_collectValid();
+
+  /**
+   * Translated "Feeding".
+   * 
+   * @return translated "Feeding"
+   */
+  @DefaultMessage("Feeding")
+  @Key("neonatal.feeding")
+  String neonatal_feeding();
+
+  /**
+   * Translated "Gest Age".
+   * 
+   * @return translated "Gest Age"
+   */
+  @DefaultMessage("Gest Age")
+  @Key("neonatal.gestAge")
+  String neonatal_gestAge();
+
+  /**
+   * Translated "NICU".
+   * 
+   * @return translated "NICU"
+   */
+  @DefaultMessage("NICU")
+  @Key("neonatal.nicu")
+  String neonatal_nicu();
+
+  /**
+   * Translated "Trans Age".
+   * 
+   * @return translated "Trans Age"
+   */
+  @DefaultMessage("Trans Age")
+  @Key("neonatal.transAge")
+  String neonatal_transAge();
+
+  /**
+   * Translated "Trans Date".
+   * 
+   * @return translated "Trans Date"
+   */
+  @DefaultMessage("Trans Date")
+  @Key("neonatal.transDate")
+  String neonatal_transDate();
+
+  /**
+   * Translated "Transfused".
+   * 
+   * @return translated "Transfused"
+   */
+  @DefaultMessage("Transfused")
+  @Key("neonatal.transfused")
+  String neonatal_transfused();
+
+  /**
+   * Translated "Weight".
+   * 
+   * @return translated "Weight"
+   */
+  @DefaultMessage("Weight")
+  @Key("neonatal.weight")
+  String neonatal_weight();
+
+  /**
    * Translated "Neonatal Screening Sample Login".
    * 
    * @return translated "Neonatal Screening Sample Login"
@@ -9502,6 +9934,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String orderTestHistory();
 
   /**
+   * Translated "Birth Hospital".
+   * 
+   * @return translated "Birth Hospital"
+   */
+  @DefaultMessage("Birth Hospital")
+  @Key("org.birthHospital")
+  String org_birthHospital();
+
+  /**
+   * Translated "Report To".
+   * 
+   * @return translated "Report To"
+   */
+  @DefaultMessage("Report To")
+  @Key("org.reportTo")
+  String org_reportTo();
+
+  /**
    * Translated "History - Organization Address ".
    * 
    * @return translated "History - Organization Address "
@@ -9941,6 +10391,87 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Patient")
   @Key("patient")
   String patient();
+
+  /**
+   * Translated "Birth".
+   * 
+   * @return translated "Birth"
+   */
+  @DefaultMessage("Birth")
+  @Key("patient.birth")
+  String patient_birth();
+
+  /**
+   * Translated "Birth (D,T)".
+   * 
+   * @return translated "Birth (D,T)"
+   */
+  @DefaultMessage("Birth (D,T)")
+  @Key("patient.birthDT")
+  String patient_birthDT();
+
+  /**
+   * Translated "Ethnicity".
+   * 
+   * @return translated "Ethnicity"
+   */
+  @DefaultMessage("Ethnicity")
+  @Key("patient.ethnicity")
+  String patient_ethnicity();
+
+  /**
+   * Translated "Gender".
+   * 
+   * @return translated "Gender"
+   */
+  @DefaultMessage("Gender")
+  @Key("patient.gender")
+  String patient_gender();
+
+  /**
+   * Translated "Maiden".
+   * 
+   * @return translated "Maiden"
+   */
+  @DefaultMessage("Maiden")
+  @Key("patient.maiden")
+  String patient_maiden();
+
+  /**
+   * Translated "Next Of Kin".
+   * 
+   * @return translated "Next Of Kin"
+   */
+  @DefaultMessage("Next Of Kin")
+  @Key("patient.nextOfKin")
+  String patient_nextOfKin();
+
+  /**
+   * Translated "Patient".
+   * 
+   * @return translated "Patient"
+   */
+  @DefaultMessage("Patient")
+  @Key("patient.patient")
+  String patient_patient();
+
+  /**
+   * Translated "Race".
+   * 
+   * @return translated "Race"
+   */
+  @DefaultMessage("Race")
+  @Key("patient.race")
+  String patient_race();
+
+  /**
+   * Translated "Relation".
+   * 
+   * @return translated "Relation"
+   */
+  @DefaultMessage("Relation")
+  @Key("patient.relation")
+  String patient_relation();
 
   /**
    * Translated "Patient description".
@@ -10555,6 +11086,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String project();
 
   /**
+   * Translated "Project".
+   * 
+   * @return translated "Project"
+   */
+  @DefaultMessage("Project")
+  @Key("project.project")
+  String project_project();
+
+  /**
    * Translated "There is already an active project in the system with the same name ".
    * 
    * @return translated "There is already an active project in the system with the same name "
@@ -10616,6 +11156,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Provider")
   @Key("provider")
   String provider();
+
+  /**
+   * Translated "Provider (L,F)".
+   * 
+   * @return translated "Provider (L,F)"
+   */
+  @DefaultMessage("Provider (L,F)")
+  @Key("provider.lf")
+  String provider_lf();
 
   /**
    * Translated "Enter health care professionals and their contact information.".
@@ -11716,13 +12265,31 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result();
 
   /**
-   * Translated "A row group must have at least one result row".
+   * Translated "A row group must have at leat one result row".
    * 
-   * @return translated "A row group must have at least one result row"
+   * @return translated "A row group must have at leat one result row"
    */
-  @DefaultMessage("A row group must have at least one result row")
+  @DefaultMessage("A row group must have at leat one result row")
   @Key("result.atleastOneResultInRowGroup")
   String result_atleastOneResultInRowGroup();
+
+  /**
+   * Translated "Current Result".
+   * 
+   * @return translated "Current Result"
+   */
+  @DefaultMessage("Current Result")
+  @Key("result.current")
+  String result_current();
+
+  /**
+   * Translated "An analysis needs to be selected to view current result history".
+   * 
+   * @return translated "An analysis needs to be selected to view current result history"
+   */
+  @DefaultMessage("An analysis needs to be selected to view current result history")
+  @Key("result.historyException")
+  String result_historyException();
 
   /**
    * Translated "Result(s) Overridden".
@@ -11950,6 +12517,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample();
 
   /**
+   * Translated "Accession #".
+   * 
+   * @return translated "Accession #"
+   */
+  @DefaultMessage("Accession #")
+  @Key("sample.accessionNum")
+  String sample_accessionNum();
+
+  /**
    * Translated "Accession # ''{0,number}'': Number is already entered into the system".
    * 
    * @return translated "Accession # ''{0,number}'': Number is already entered into the system"
@@ -11977,31 +12553,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_accessionNumberNotValidException(Integer arg0);
 
   /**
-   * Translated "Birth (D,T)".
+   * Translated "Analysis".
    * 
-   * @return translated "Birth (D,T)"
+   * @return translated "Analysis"
    */
-  @DefaultMessage("Birth (D,T)")
-  @Key("sample.birthDT")
-  String sample_birthDT();
-
-  /**
-   * Translated "Birth Hospital".
-   * 
-   * @return translated "Birth Hospital"
-   */
-  @DefaultMessage("Birth Hospital")
-  @Key("sample.birthHospital")
-  String sample_birthHospital();
-
-  /**
-   * Translated "Birth Order".
-   * 
-   * @return translated "Birth Order"
-   */
-  @DefaultMessage("Birth Order")
-  @Key("sample.birthOrder")
-  String sample_birthOrder();
+  @DefaultMessage("Analysis")
+  @Key("sample.analysis")
+  String sample_analysis();
 
   /**
    * Translated "Accession # '{0}': Not allowed to add organization of this type to record".
@@ -12013,6 +12571,60 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_cantAddOrgTypeToDomainException();
 
   /**
+   * Translated "Sample is released. You cannot add non-internal QA events.".
+   * 
+   * @return translated "Sample is released. You cannot add non-internal QA events."
+   */
+  @DefaultMessage("Sample is released. You cannot add non-internal QA events.")
+  @Key("sample.cantAddQAEvent")
+  String sample_cantAddQAEvent();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot duplicate sample - One or more analyses have advanced beyond logged-in   ".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot duplicate sample - One or more analyses have advanced beyond logged-in   "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot duplicate sample - One or more analyses have advanced beyond logged-in   ")
+  @Key("sample.cantDuplicateAnaPastLoggedInException")
+  String sample_cantDuplicateAnaPastLoggedInException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot duplicate a completed or released sample".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot duplicate a completed or released sample"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot duplicate a completed or released sample")
+  @Key("sample.cantDuplicateCompRelException")
+  String sample_cantDuplicateCompRelException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Cannot duplicate sample - {1}, {2} has been reflexed by another analysis".
+   * 
+   * @return translated "Accession # ''{0,number}'': Cannot duplicate sample - {1}, {2} has been reflexed by another analysis"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Cannot duplicate sample - {1}, {2} has been reflexed by another analysis")
+  @Key("sample.cantDuplicateReflexAnaException")
+  String sample_cantDuplicateReflexAnaException(Integer arg0,  String arg1,  String arg2);
+
+  /**
+   * Translated "Accession # ''{0,number}'': A quick entered sample cannot be loaded if the order # is present ".
+   * 
+   * @return translated "Accession # ''{0,number}'': A quick entered sample cannot be loaded if the order # is present "
+   */
+  @DefaultMessage("Accession # ''{0,number}'': A quick entered sample cannot be loaded if the order # is present ")
+  @Key("sample.cantLoadQEOrderPresentException")
+  String sample_cantLoadQEOrderPresentException(Integer arg0);
+
+  /**
+   * Translated "One or more analysis have been released. You cannot remove non-internal sample QA events.".
+   * 
+   * @return translated "One or more analysis have been released. You cannot remove non-internal sample QA events."
+   */
+  @DefaultMessage("One or more analysis have been released. You cannot remove non-internal sample QA events.")
+  @Key("sample.cantRemoveQAEvent")
+  String sample_cantRemoveQAEvent();
+
+  /**
    * Translated "Please choose a test or panel".
    * 
    * @return translated "Please choose a test or panel"
@@ -12022,31 +12634,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_chooseTestOrPanel();
 
   /**
-   * Translated "City, State, Zip".
+   * Translated "Client Reference".
    * 
-   * @return translated "City, State, Zip"
+   * @return translated "Client Reference"
    */
-  @DefaultMessage("City, State, Zip")
-  @Key("sample.cityStateZip")
-  String sample_cityStateZip();
+  @DefaultMessage("Client Reference")
+  @Key("sample.clntRef")
+  String sample_clntRef();
 
   /**
-   * Translated "Collect Age".
+   * Translated "Collected".
    * 
-   * @return translated "Collect Age"
+   * @return translated "Collected"
    */
-  @DefaultMessage("Collect Age")
-  @Key("sample.collectAge")
-  String sample_collectAge();
-
-  /**
-   * Translated "Collect Valid".
-   * 
-   * @return translated "Collect Valid"
-   */
-  @DefaultMessage("Collect Valid")
-  @Key("sample.collectValid")
-  String sample_collectValid();
+  @DefaultMessage("Collected")
+  @Key("sample.collected")
+  String sample_collected();
 
   /**
    * Translated "Accession # ''{0,number}'': Collected date can''t be after received".
@@ -12085,42 +12688,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_enteredDateRequiredException(Integer arg0);
 
   /**
-   * Translated "Ethnicity".
-   * 
-   * @return translated "Ethnicity"
-   */
-  @DefaultMessage("Ethnicity")
-  @Key("sample.ethnicity")
-  String sample_ethnicity();
-
-  /**
-   * Translated "Feeding".
-   * 
-   * @return translated "Feeding"
-   */
-  @DefaultMessage("Feeding")
-  @Key("sample.feeding")
-  String sample_feeding();
-
-  /**
-   * Translated "First".
-   * 
-   * @return translated "First"
-   */
-  @DefaultMessage("First")
-  @Key("sample.first")
-  String sample_first();
-
-  /**
-   * Translated "Gest Age".
-   * 
-   * @return translated "Gest Age"
-   */
-  @DefaultMessage("Gest Age")
-  @Key("sample.gestAge")
-  String sample_gestAge();
-
-  /**
    * Translated "Is Perm".
    * 
    * @return translated "Is Perm"
@@ -12130,6 +12697,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_isPerm();
 
   /**
+   * Translated "Sample Item".
+   * 
+   * @return translated "Sample Item"
+   */
+  @DefaultMessage("Sample Item")
+  @Key("sample.item")
+  String sample_item();
+
+  /**
    * Translated "Items/Analyses".
    * 
    * @return translated "Items/Analyses"
@@ -12137,24 +12713,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Items/Analyses")
   @Key("sample.itemAnalyses")
   String sample_itemAnalyses();
-
-  /**
-   * Translated "Last".
-   * 
-   * @return translated "Last"
-   */
-  @DefaultMessage("Last")
-  @Key("sample.last")
-  String sample_last();
-
-  /**
-   * Translated "Maiden".
-   * 
-   * @return translated "Maiden"
-   */
-  @DefaultMessage("Maiden")
-  @Key("sample.maiden")
-  String sample_maiden();
 
   /**
    * Translated "Accession # ''{0,number}'': The sample must have at least one sample item".
@@ -12211,22 +12769,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_nationalId();
 
   /**
-   * Translated "Next Of Kin".
+   * Translated "Sample Neonatal".
    * 
-   * @return translated "Next Of Kin"
+   * @return translated "Sample Neonatal"
    */
-  @DefaultMessage("Next Of Kin")
-  @Key("sample.nextOfKin")
-  String sample_nextOfKin();
-
-  /**
-   * Translated "NICU".
-   * 
-   * @return translated "NICU"
-   */
-  @DefaultMessage("NICU")
-  @Key("sample.nicu")
-  String sample_nicu();
+  @DefaultMessage("Sample Neonatal")
+  @Key("sample.neonatal")
+  String sample_neonatal();
 
   /**
    * Translated "Accession # ''{0}'': Missing or undefined domain".
@@ -12238,6 +12787,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_noDomainException(String arg0);
 
   /**
+   * Translated "A QA event has been added that makes this sample and all its analyses not billable".
+   * 
+   * @return translated "A QA event has been added that makes this sample and all its analyses not billable"
+   */
+  @DefaultMessage("A QA event has been added that makes this sample and all its analyses not billable")
+  @Key("sample.notBillable")
+  String sample_notBillable();
+
+  /**
+   * Translated "Sample Notes".
+   * 
+   * @return translated "Sample Notes"
+   */
+  @DefaultMessage("Sample Notes")
+  @Key("sample.notes")
+  String sample_notes();
+
+  /**
    * Translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order".
    * 
    * @return translated "Accession # ''{0,number}'': Order # ''{1,number}'' must be the id of an existing Send-out order"
@@ -12247,13 +12814,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_orderIdInvalidException(Integer arg0,  Integer arg1);
 
   /**
-   * Translated "Provider (L,F)".
+   * Translated "Sample Organization".
    * 
-   * @return translated "Provider (L,F)"
+   * @return translated "Sample Organization"
    */
-  @DefaultMessage("Provider (L,F)")
-  @Key("sample.providerLF")
-  String sample_providerLF();
+  @DefaultMessage("Sample Organization")
+  @Key("sample.organization")
+  String sample_organization();
+
+  /**
+   * Translated "Sample Project".
+   * 
+   * @return translated "Sample Project"
+   */
+  @DefaultMessage("Sample Project")
+  @Key("sample.project")
+  String sample_project();
 
   /**
    * Translated "Sample QA Events".
@@ -12263,6 +12839,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample QA Events")
   @Key("sample.qaEvents")
   String sample_qaEvents();
+
+  /**
+   * Translated "Received".
+   * 
+   * @return translated "Received"
+   */
+  @DefaultMessage("Received")
+  @Key("sample.received")
+  String sample_received();
 
   /**
    * Translated "Accession # ''{0,number}'': Received date is required".
@@ -12283,13 +12868,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_receivedTooOldWarning(Integer arg0);
 
   /**
-   * Translated "Relation".
+   * Translated "Sample".
    * 
-   * @return translated "Relation"
+   * @return translated "Sample"
    */
-  @DefaultMessage("Relation")
-  @Key("sample.relation")
-  String sample_relation();
+  @DefaultMessage("Sample")
+  @Key("sample.sample")
+  String sample_sample();
 
   /**
    * Translated "An item must be selected to add an analysis".
@@ -12328,31 +12913,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_testLookup();
 
   /**
-   * Translated "Trans Age".
+   * Translated "Sample Type".
    * 
-   * @return translated "Trans Age"
+   * @return translated "Sample Type"
    */
-  @DefaultMessage("Trans Age")
-  @Key("sample.transAge")
-  String sample_transAge();
-
-  /**
-   * Translated "Trans Date".
-   * 
-   * @return translated "Trans Date"
-   */
-  @DefaultMessage("Trans Date")
-  @Key("sample.transDate")
-  String sample_transDate();
-
-  /**
-   * Translated "Transfused".
-   * 
-   * @return translated "Transfused"
-   */
-  @DefaultMessage("Transfused")
-  @Key("sample.transfused")
-  String sample_transfused();
+  @DefaultMessage("Sample Type")
+  @Key("sample.type")
+  String sample_type();
 
   /**
    * Translated "Type/Status".
@@ -12371,15 +12938,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0}'': You must add an internal note when sample/analysis is unreleased")
   @Key("sample.unreleaseNoNoteException")
   String sample_unreleaseNoNoteException(String arg0);
-
-  /**
-   * Translated "Weight".
-   * 
-   * @return translated "Weight"
-   */
-  @DefaultMessage("Weight")
-  @Key("sample.weight")
-  String sample_weight();
 
   /**
    * Translated "Sample Cat".
@@ -13777,6 +14335,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String storage();
 
   /**
+   * Translated "Check Out date must not be before Check In date.".
+   * 
+   * @return translated "Check Out date must not be before Check In date."
+   */
+  @DefaultMessage("Check Out date must not be before Check In date.")
+  @Key("storage.checkinDateAfterCheckoutDateException")
+  String storage_checkinDateAfterCheckoutDateException();
+
+  /**
+   * Translated "Storage".
+   * 
+   * @return translated "Storage"
+   */
+  @DefaultMessage("Storage")
+  @Key("storage.storage")
+  String storage_storage();
+
+  /**
    * Translated "Manage and track stored items in the laboratory by location.".
    * 
    * @return translated "Manage and track stored items in the laboratory by location."
@@ -14144,6 +14720,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("You must first select a table row before clicking add")
   @Key("test.noSelectedRow")
   String test_noSelectedRow();
+
+  /**
+   * Translated "Test Results".
+   * 
+   * @return translated "Test Results"
+   */
+  @DefaultMessage("Test Results")
+  @Key("test.results")
+  String test_results();
 
   /**
    * Translated "There is already an active test in the system with the same name and method".
