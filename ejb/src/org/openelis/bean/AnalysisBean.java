@@ -42,6 +42,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleItemDO;
@@ -142,6 +143,20 @@ public class AnalysisBean {
         if (list.isEmpty())
             throw new NotFoundException();
 
+        return DataBaseUtil.toArrayList(list);
+    }
+    
+    public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
+        List<AnalysisViewVO> list;
+        Query query;
+        
+        query = manager.createNamedQuery("AnalysisView.FetchByPatientId");
+        query.setParameter("patientId", patientId);
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
         return DataBaseUtil.toArrayList(list);
     }
 

@@ -56,7 +56,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery(name = "Patient.FetchById",
                 query = "select new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName," +
                 		"p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
-                		"p.ethnicityId, p.address.multipleUnit, p.address.streetAddress," +
+                		"p.ethnicityId, p.nationalId, p.address.multipleUnit, p.address.streetAddress," +
                         "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
                         "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
                         "p.address.country)"
@@ -64,11 +64,19 @@ import org.openelis.utils.Auditable;
      @NamedQuery(name = "Patient.FetchByIds",
                 query = "select distinct new org.openelis.domain.PatientDO(p.id, p.lastName, p.firstName," +
                         "p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
-                        "p.ethnicityId, p.address.multipleUnit, p.address.streetAddress," +
+                        "p.ethnicityId, p.nationalId, p.address.multipleUnit, p.address.streetAddress," +
                         "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
                         "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
                         "p.address.country)"
-                      + " from Patient p where p.id in (:ids)")})
+                      + " from Patient p where p.id in (:ids)"),
+    @NamedQuery(name = "Patient.FetchByRelatedPatientId",
+                query = "select new org.openelis.domain.PatientRelationVO(p.id, p.lastName, p.firstName," +
+                        "p.middleName, p.address.id, p.birthDate, p.birthTime, p.genderId, p.raceId," +
+                        "p.ethnicityId, p.nationalId, p.address.multipleUnit, p.address.streetAddress," +
+                        "p.address.city, p.address.state, p.address.zipCode, p.address.workPhone," +
+                        "p.address.homePhone, p.address.cellPhone, p.address.faxPhone, p.address.email," +
+                        "p.address.country, pr.relationId)"
+                      + " from Patient p, PatientRelation pr where pr.fromPatientId = p.id and pr.toPatientId = :patientId")})
 @Entity
 @Table(name = "patient")
 @EntityListeners( {AuditUtil.class})
@@ -105,6 +113,9 @@ public class Patient implements Auditable, Cloneable {
 
     @Column(name = "ethnicity_id")
     private Integer ethnicityId;
+    
+    @Column(name = "national_id")
+    private String nationalId;
     
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id", insertable = false, updatable = false)
@@ -203,6 +214,15 @@ public class Patient implements Auditable, Cloneable {
             this.ethnicityId = ethnicityId;
     }
     
+    public String getNationalId() {
+        return nationalId;
+    }
+
+    public void setNationalId(String nationalId) {
+        if (DataBaseUtil.isDifferent(nationalId, this.nationalId))
+            this.nationalId = nationalId;
+    }
+
     public Address getAddress() {
         return address;
     }
@@ -231,7 +251,8 @@ public class Patient implements Auditable, Cloneable {
                  .setField("birth_time", birthTime, original.birthTime)
                  .setField("gender_id", genderId, original.genderId, Constants.table().DICTIONARY)
                  .setField("race_id", raceId, original.raceId, Constants.table().DICTIONARY)
-                 .setField("ethnicity_id", ethnicityId, original.ethnicityId, Constants.table().DICTIONARY);
+                 .setField("ethnicity_id", ethnicityId, original.ethnicityId, Constants.table().DICTIONARY)
+                 .setField("nationalId", nationalId, nationalId);
 
         return audit;
     }
