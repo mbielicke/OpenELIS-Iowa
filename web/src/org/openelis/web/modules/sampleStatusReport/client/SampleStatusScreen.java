@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 
-import org.openelis.web.cache.DictionaryCache;
 import org.openelis.web.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
@@ -70,6 +69,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
@@ -371,7 +371,6 @@ public class SampleStatusScreen extends Screen {
 
     protected void getSamples() {
         Query query;
-        ArrayList<SampleStatusWebReportVO> list;
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
@@ -392,18 +391,23 @@ public class SampleStatusScreen extends Screen {
 
         window.setBusy(Messages.get().retrSamples());
 
-        try {
-            list = SampleStatusReportService.get().getSampleListForSampleStatusReport(query);
-            if (list.size() > 0) {
-                loadDeck(list);
-            } else {
-                window.setError(Messages.get().noSamplesFoundChangeSearch());
-                return;
+        SampleStatusReportService.get().getSampleListForSampleStatusReport(query, new AsyncCallback<ArrayList<SampleStatusWebReportVO>>() {
+            @Override
+            public void onSuccess(ArrayList<SampleStatusWebReportVO> list) {
+                if (list.size() > 0) {
+                    loadDeck(list);
+                    window.clearStatus();
+                } else {
+                    window.setError(Messages.get().noSamplesFoundChangeSearch());
+                }
             }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
+            
+            @Override
+            public void onFailure(Throwable caught) {
+                window.clearStatus();
+                Window.alert(caught.getMessage());
+            }
+        });
     }
 
     /**
