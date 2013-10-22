@@ -25,13 +25,24 @@
  */
 package org.openelis.modules.neonatalScreeningSampleLogin.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
@@ -43,6 +54,8 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.PatientDO;
+import org.openelis.domain.PatientRelationVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -61,6 +74,7 @@ import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.organization.client.OrganizationService;
+import org.openelis.modules.patient.client.PatientLookupScreenUI;
 import org.openelis.modules.project.client.ProjectService;
 import org.openelis.modules.provider.client.ProviderService;
 import org.openelis.modules.sample1.client.AddRowAnalytesEvent;
@@ -107,6 +121,7 @@ import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
+import org.openelis.ui.widget.Menu;
 import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.QueryFieldUtil;
@@ -114,17 +129,6 @@ import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
 
 public class NeonatalScreeningSampleLoginScreenUI extends Screen implements CacheProvider {
 
@@ -173,8 +177,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
     @UiField
     protected Button                                    query, previous, next, add, update, commit,
-                    abort, orderLookupButton, projectButton, reportToButton, birthHospitalButton;
+                    abort, orderLookupButton, projectButton, reportToButton, birthHospitalButton, optionsButton;
 
+    @UiField
+    Menu                                                optionsMenu;
+    
     @UiField
     protected MenuItem                                  duplicate, historySample,
                     historySampleProject, historySampleItem, historyAnalysis, historyCurrentResult,
@@ -229,6 +236,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     protected SampleProjectLookupUI                     sampleprojectLookUp;
 
     protected SampleOrganizationLookupUI                sampleOrganizationLookup;
+    
+    protected PatientLookupScreenUI                     pLookupScreen;
 
     /**
      * Check the permissions for this screen, intialize the tabs and widgets
@@ -401,6 +410,13 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         /*
          * option menu items
          */
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                optionsButton.setEnabled(isState(State.DISPLAY, State.ADD, State.UPDATE));
+                optionsMenu.setEnabled(isState(State.DISPLAY, State.ADD, State.UPDATE));
+            }
+        });
+
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 duplicate.setEnabled(isState(State.DISPLAY));
@@ -689,6 +705,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientLastName(event.getValue());
+                                 lookupPatient(true);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -707,6 +724,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<String> event) {
                                  setPatientFirstName(event.getValue());
+                                 lookupPatient(true);
                              }
 
                              public void onStateChange(StateChangeEvent event) {
@@ -2935,6 +2953,46 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             afgms = AuxiliaryService.get().fetchByIds(ids);
             for (AuxFieldGroupManager afgm : afgms)
                 cache.put("am:" + afgm.getGroup().getId(), afgm);
+        }
+    }
+    
+    private void lookupPatient(boolean fromField) {
+        ModalWindow modal;
+        PatientDO pat;
+        
+        try {
+            if (pLookupScreen == null) {
+                pLookupScreen = new PatientLookupScreenUI() {
+                    public void select() {
+                        PatientDO pDO;
+                        PatientRelationVO prVO;
+                        
+                        pDO = pLookupScreen.getSelectedPatient();
+                        prVO = pLookupScreen.getSelectedNextOfKin();
+                    }
+                    
+                    public void cancel() {
+                        // ignore
+                    }
+                };
+            }
+
+            pat = manager.getSampleNeonatal().getPatient();
+            if (fromField && (pat.getLastName() == null || pat.getFirstName() == null))
+                return;
+
+            modal = new ModalWindow();
+            modal.setName("Patient Lookup");
+            modal.setContent(pLookupScreen);
+            modal.setSize("880px", "355px");
+            pLookupScreen.setWindow(modal);
+            pLookupScreen.initialize();
+            if (fromField)
+                pLookupScreen.search(pat);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
         }
     }
 

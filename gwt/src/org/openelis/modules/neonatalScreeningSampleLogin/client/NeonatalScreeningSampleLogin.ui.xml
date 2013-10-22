@@ -47,6 +47,7 @@
                 rightIcon="{uiRes.buttonPanel.OptionsButtonImage}" />
             </w:display>
             <w:MenuItem ui:field="duplicate" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}" /> <!-- display="{msg.btn_duplicateRecord}" -->
+            <w:MenuItem ui:field="patientLookup" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}" /> <!-- display="{msg.btn_duplicateRecord}" -->
             <!-- <html>&lt;hr/&gt;</html> -->
             <w:MenuItem ui:field="historySample" icon="historyIcon" display="{msg.historySample}" />
             <w:MenuItem ui:field="historySampleEnvironmental" icon="historyIcon"
