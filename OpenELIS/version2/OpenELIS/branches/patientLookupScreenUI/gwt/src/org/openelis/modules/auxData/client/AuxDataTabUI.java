@@ -101,16 +101,20 @@ public abstract class AuxDataTabUI extends Screen {
     protected Dropdown<Integer>                         analyte;
 
     protected Screen                                    parentScreen;
-
+    
+    protected AuxDataTabUI                              screen;
+    
     protected AuxGroupLookupUI                          auxGroupLookup;
+    
+    protected EventBus                                  parentBus;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
-    protected boolean                                   canEdit, isVisible;
+    protected boolean                                   canEdit, isVisible, redraw;
 
-    public AuxDataTabUI(Screen parentScreen, EventBus bus) {
+    public AuxDataTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
     }
@@ -119,6 +123,8 @@ public abstract class AuxDataTabUI extends Screen {
         ArrayList<Item<Integer>> model;
         Item<Integer> row;
 
+        screen = this;
+        
         addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 table.setModel(getTableModel());
@@ -316,11 +322,23 @@ public abstract class AuxDataTabUI extends Screen {
             }
         });
 
-        bus.addHandler(AuxDataChangeEvent.getType(), new AuxDataChangeEvent.Handler() {
+        parentBus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
-            public void onAuxDataChange(AuxDataChangeEvent event) {
-                table.setModel(null);
-                displayAuxData();
+            public void onAddAuxGroup(AddAuxGroupEvent event) {
+                if (screen != event.getSource()) {
+                    redraw = true;
+                    displayAuxData();
+                }
+            }
+        });
+        
+        parentBus.addHandler(RemoveAuxGroupEvent.getType(), new RemoveAuxGroupEvent.Handler() {
+            @Override
+            public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
+                if (screen != event.getSource()) {
+                    redraw = true;
+                    displayAuxData();
+                }
             }
         });
 
@@ -347,7 +365,7 @@ public abstract class AuxDataTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
+        parentBus.addHandlerToSource(StateChangeEvent.getType(),
                                parentScreen,
                                new StateChangeEvent.Handler() {
                                    public void onStateChange(StateChangeEvent event) {
@@ -356,10 +374,37 @@ public abstract class AuxDataTabUI extends Screen {
                                    }
                                });
 
-        bus.addHandlerToSource(DataChangeEvent.getType(),
+        parentBus.addHandlerToSource(DataChangeEvent.getType(),
                                parentScreen,
                                new DataChangeEvent.Handler() {
                                    public void onDataChange(DataChangeEvent event) {
+                                       int count1, count2;
+                                       AuxDataViewDO aux1, aux2;
+                                       
+                                       count1 = table.getRowCount();
+                                       count2 = count();
+
+                                       /*
+                                        * find out if there's any difference between the aux data being
+                                        * displayed and the aux data to be displayed
+                                        */
+                                       if (count1 == count2) {
+                                           for (int i = 0; i < count1; i++ ) {
+                                               aux1 = table.getRowAt(i).getData();
+                                               aux2 = get(i);
+
+                                               if (DataBaseUtil.isDifferent(aux1.getTypeId(), aux2.getTypeId()) ||
+                                                   DataBaseUtil.isDifferent(aux1.getValue(), aux2.getValue()) ||
+                                                   DataBaseUtil.isDifferent(aux1.getAnalyteId(), aux2.getAnalyteId()) ||
+                                                   DataBaseUtil.isDifferent(aux1.getGroupId(), aux2.getGroupId())) {
+                                                   redraw = true;
+                                                   break;
+                                               }
+                                           }
+                                       } else {
+                                           redraw = true;
+                                       }
+                                       
                                        displayAuxData();
                                    }
                                });
@@ -450,7 +495,11 @@ public abstract class AuxDataTabUI extends Screen {
             auxGroupLookup = new AuxGroupLookupUI() {
                 @Override
                 public void ok() {
-                    addAuxGroups(auxGroupLookup.getGroupIds());
+                    ArrayList<Integer> ids;
+                    
+                    ids = auxGroupLookup.getGroupIds();
+                    if (ids != null && ids.size() > 0)
+                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
                 }
 
                 @Override
@@ -483,7 +532,7 @@ public abstract class AuxDataTabUI extends Screen {
             data = (AuxDataViewDO)table.getRowAt(r).getData();
             ids = new ArrayList<Integer>(1);
             ids.add(data.getGroupId());
-            bus.fireEvent(new RemoveAuxGroupEvent(ids));
+            parentBus.fireEventFromSource(new RemoveAuxGroupEvent(ids), this);
         }
         removeAuxButton.setEnabled(false);
     }
@@ -501,37 +550,8 @@ public abstract class AuxDataTabUI extends Screen {
     }
 
     private void displayAuxData() {
-        int count1, count2;
-        boolean dataChanged;
-        AuxDataViewDO aux1, aux2;
-
         if ( !isVisible)
             return;
-
-        count1 = table.getRowCount();
-        count2 = count();
-
-        /*
-         * find out if there's any difference between the aux data being
-         * displayed and the aux data to be displayed
-         */
-        if (count1 == count2) {
-            dataChanged = false;
-            for (int i = 0; i < count1; i++ ) {
-                aux1 = table.getRowAt(i).getData();
-                aux2 = get(i);
-
-                if (DataBaseUtil.isDifferent(aux1.getTypeId(), aux2.getTypeId()) ||
-                    DataBaseUtil.isDifferent(aux1.getValue(), aux2.getValue()) ||
-                    DataBaseUtil.isDifferent(aux1.getAnalyteId(), aux2.getAnalyteId()) ||
-                    DataBaseUtil.isDifferent(aux1.getGroupId(), aux2.getGroupId())) {
-                    dataChanged = true;
-                    break;
-                }
-            }
-        } else {
-            dataChanged = true;
-        }
 
         /*
          * Reset the table's view, so that if its model is changed, it shows its
@@ -540,7 +560,11 @@ public abstract class AuxDataTabUI extends Screen {
          */
         table.onResize();
 
-        if (dataChanged) {
+        if (redraw) {
+            /*
+             * don't redraw unless the data has changed
+             */
+            redraw = false;
             canEdit = evaluateEdit();
             setState(state);
             fireDataChange();
@@ -639,11 +663,6 @@ public abstract class AuxDataTabUI extends Screen {
             throw new Exception("Parent screen must implement " + CacheProvider.class.toString());
 
         return ((CacheProvider)parentScreen).get(groupId, AuxFieldGroupManager.class);
-    }
-
-    private void addAuxGroups(ArrayList<Integer> ids) {
-        if (ids != null && ids.size() > 0)
-            bus.fireEvent(new AddAuxGroupEvent(ids));
     }
 
     private void setDictionaryModel(int col, Integer groupId, Integer fieldId) throws Exception {

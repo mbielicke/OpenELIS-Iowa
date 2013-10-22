@@ -65,7 +65,10 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
             public void onUncaughtException(Throwable e) {
                 e.printStackTrace();
-                logger.log(Level.SEVERE, e.getMessage(), e);
+                if (e.getMessage() == null)
+                    logger.log(Level.SEVERE, "UNKNOWN", e);
+                else
+                    logger.log(Level.SEVERE, e.getMessage(), e);
                 Window.alert("Sorry, but an unexpected error has occurred.  Please contact IT support");
             }
         });
@@ -80,6 +83,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
                             RootLayoutPanel.get().add(new org.openelis.modules.main.client.OpenELIS());
                             SessionTimer.start();
                         } catch (Throwable e) {
+                            e.printStackTrace();
                             remote.log(Level.SEVERE,e.getMessage(),e);
                             Window.alert("Unable to start app : " + e.getMessage());
                         }
@@ -109,5 +113,4 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
             event.getNativeEvent().preventDefault();
 
     }
-
 }

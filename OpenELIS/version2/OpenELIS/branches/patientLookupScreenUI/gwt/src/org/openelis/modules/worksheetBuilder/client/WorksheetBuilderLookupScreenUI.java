@@ -27,6 +27,7 @@ package org.openelis.modules.worksheetBuilder.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -393,8 +394,11 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
     @UiHandler("search")
     protected void executeQuery(ClickEvent event) {
         Query query;
+        Validation validation;
+        
+        validation = validate();
 
-        if (!validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }

@@ -10,9 +10,7 @@
   may be used under the terms of a UIRF Software license ("UIRF Software License"), in which case the provisions 
   of a UIRF Software License are applicable instead of those above. -->
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui'
-  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:r='urn:import:org.openelis.ui.widget.tree'
-  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar"
-  xmlns:s="urn:import:org.openelis.modules.sample1.client"
+  xmlns:w='urn:import:org.openelis.ui.widget' xmlns:t='urn:import:org.openelis.ui.widget.table'
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
@@ -20,8 +18,8 @@
   <g:LayoutPanel>
     <g:layer top="0px" bottom="25px">
       <t:Table ui:field="table" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <t:Column label="A" >
-          <t:CheckBoxCell/>
+        <t:Column label="A">
+          <t:CheckBoxCell />
         </t:Column>
         <t:Column label="B">
           <t:LabelCell />
@@ -35,7 +33,7 @@
         <w:Button ui:field="checkAllButton" text="{msg.gen_checkAll}" />
         <w:Button ui:field="uncheckAllButton" text="{msg.gen_uncheckAll}" />
         <g:HTMLPanel>
-          <w:Label ui:field = "overrideLabel"/>
+          <w:Label ui:field="overrideLabel" />
         </g:HTMLPanel>
       </g:HorizontalPanel>
     </g:layer>

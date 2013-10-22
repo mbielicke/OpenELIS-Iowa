@@ -23,45 +23,47 @@
       <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonPanelContainer}" width="100%">
         <g:HorizontalPanel>
           <w:Button css="{uiRes.buttonPanel}" ui:field="query"
-            leftIcon="{uiRes.buttonPanel.QueryButtonImage}" text="{msg.query}" toggles="true" />
+            leftIcon="{uiRes.buttonPanel.QueryButtonImage}" text="{msg.gen_query}" toggles="true" />
           <w:Button css="{uiRes.buttonPanel}" ui:field="previous"
-            leftIcon="{uiRes.buttonPanel.PreviousButtonImage" text="{msg.previous}" />
+            leftIcon="{uiRes.buttonPanel.PreviousButtonImage}" text="{msg.gen_previous}" />
           <w:Button css="{uiRes.buttonPanel}" ui:field="next"
-            leftIcon="{uiRes.buttonPanel.NextButtonImage}" text="{msg.next}" />
+            leftIcon="{uiRes.buttonPanel.NextButtonImage}" text="{msg.gen_next}" />
           <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
           <w:Button css="{uiRes.buttonPanel}" ui:field="add" leftIcon="{uiRes.buttonPanel.AddButtonImage}"
-            text="{msg.add}" toggles="true" />
+            text="{msg.gen_add}" toggles="true" />
           <w:Button css="{uiRes.buttonPanel}" ui:field="update"
-            leftIcon="{uiRes.buttonPanel.UpdateButtonImage}" text="{msg.update}" toggles="true" />
-          <w:Button css="{uiRes.buttonPanel}" ui:field="delete"
-            leftIcon="{uiRes.buttonPanel.DeleteButtonImage}" text="{msg.delete}" />
+            leftIcon="{uiRes.buttonPanel.UpdateButtonImage}" text="{msg.gen_update}" toggles="true" />
           <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
           <w:Button css="{uiRes.buttonPanel}" ui:field="commit"
-            leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.commit}" />
+            leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.gen_commit}" />
           <w:Button css="{uiRes.buttonPanel}" ui:field="abort"
-            leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.abort}" />
+            leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.gen_abort}" />
           <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
           <w:Menu ui:field="optionsMenu" selfShow="true">
             <w:display>
-              <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.options}"
+              <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.gen_options}"
                 rightIcon="{uiRes.buttonPanel.OptionsButtonImage}" />
             </w:display>
-            <w:MenuItem ui:field="duplicate" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}" /> <!-- display="{msg.btn_duplicateRecord}" -->
-            <w:MenuItem ui:field="patientLookup" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}" /> <!-- display="{msg.btn_duplicateRecord}" -->
+            <w:MenuItem ui:field="duplicate" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}"
+              display="{msg.gen_duplicateRecord}" />
             <!-- <html>&lt;hr/&gt;</html> -->
-            <w:MenuItem ui:field="historySample" icon="historyIcon" display="{msg.historySample}" />
-            <w:MenuItem ui:field="historySampleEnvironmental" icon="historyIcon"
-              display="{msg.historySampleEnvironmental}" />
-            <w:MenuItem ui:field="historySampleProject" icon="historyIcon" display="{msg.historySampleProject}" />
-            <w:MenuItem ui:field="historySampleOrganization" icon="historyIcon"
-              display="{msg.historySampleOrganization}" />
-            <w:MenuItem ui:field="historySampleItem" icon="historyIcon" display="{msg.historySampleItem}" />
-            <w:MenuItem ui:field="historyAnalysis" icon="historyIcon" display="{msg.historyAnalysis}" />
-            <w:MenuItem ui:field="historyCurrentResult" icon="historyIcon" display="{msg.historyCurrentResult}" />
-            <w:MenuItem ui:field="historyStorage" icon="historyIcon" display="{msg.historyStorage}" />
-            <w:MenuItem ui:field="historySampleQA" icon="historyIcon" display="{msg.historySampleQA}" />
-            <w:MenuItem ui:field="historyAnalysisQA" icon="historyIcon" display="{msg.historyAnalysisQA}" />
-            <w:MenuItem ui:field="historyAuxData" icon="historyIcon" display="{msg.historyAuxData}" />
+            <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
+              selfShow="true" showBelow="false"
+            >
+              <w:MenuItem ui:field="historySample" display="{msg.sample_sample}" />
+              <w:MenuItem ui:field="historySampleNeonatal" display="{msg.sample_neonatal}" />
+              <w:MenuItem ui:field="historyPatient" display="{msg.patient_patient}" />
+              <w:MenuItem ui:field="historyNextOfKin" display="{msg.patient_nextOfKin}" />
+              <w:MenuItem ui:field="historySampleProject" display="{msg.sample_project}" />
+              <w:MenuItem ui:field="historySampleOrganization" display="{msg.sample_organization}" />
+              <w:MenuItem ui:field="historySampleItem" display="{msg.sample_item}" />
+              <w:MenuItem ui:field="historyAnalysis" display="{msg.sample_analysis}" />
+              <w:MenuItem ui:field="historyCurrentResult" display="{msg.result_current}" />
+              <w:MenuItem ui:field="historyStorage" display="{msg.storage_storage}" />
+              <w:MenuItem ui:field="historySampleQA" display="{msg.sample_qaEvents}" />
+              <w:MenuItem ui:field="historyAnalysisQA" display="{msg.analysis_qaEvents}" />
+              <w:MenuItem ui:field="historyAuxData" display="{msg.aux_data}" />
+            </w:Menu>
           </w:Menu>
         </g:HorizontalPanel>
       </g:AbsolutePanel>
@@ -74,30 +76,31 @@
             <table class="{res.style.Form}">
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.accessionNum}:" />
+                  <ui:text from="{msg.sample_accessionNum}:" />
                 </td>
                 <td>
-                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer" required = "true"/>
+                  <w:TextBox ui:field="accessionNumber" width="75px" field="Integer"
+                    required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.orderNum}:" />
+                  <ui:text from="{msg.order_orderNum}:" />
                 </td>
                 <td>
                   <g:HorizontalPanel>
                     <w:TextBox ui:field="orderId" width="75px" field="Integer" />
                     <g:AbsolutePanel>
-                      <w:Button ui:field="orderLookupButton" leftIcon = "{res.style.fieldLookupIcon}"/>
+                      <w:Button ui:field="orderLookupButton" leftIcon="{res.style.fieldLookupIcon}" />
                     </g:AbsolutePanel>
                   </g:HorizontalPanel>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.collected}:" />
+                  <ui:text from="{msg.sample_collected}:" />
                 </td>
                 <td>
                   <c:Calendar ui:field="collectionDate" width="90px" begin="0" end="2" />
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.time}:" />
+                  <ui:text from="{msg.gen_time}:" />
                 </td>
                 <td>
                   <c:Calendar ui:field="collectionTime" width="60px" begin="3" end="4" />
@@ -105,19 +108,19 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.received}:" />
+                  <ui:text from="{msg.sample_received}:" />
                 </td>
                 <td>
                   <c:Calendar ui:field="receivedDate" width="125px" begin="0" end="4" />
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.status}:" />
+                  <ui:text from="{msg.gen_status}:" />
                 </td>
                 <td>
-                  <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" /> <!-- popWidth="110" -->
+                  <w:Dropdown ui:field="status" width="110px" field="Integer" required="true" />
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.clntRef}:" />
+                  <ui:text from="{msg.sample_clntRef}:" />
                 </td>
                 <td colspan="3">
                   <w:TextBox ui:field="clientReference" width="196px" case="LOWER" field="String"
@@ -134,7 +137,7 @@
                 <table class="{res.style.Form}">
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_last}:" />
+                      <ui:text from="{msg.gen_last}:" />
                     </td>
                     <td colspan="3">
                       <w:TextBox ui:field="patientLastName" width="222px" case="LOWER"
@@ -143,7 +146,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_first}:" />
+                      <ui:text from="{msg.gen_first}:" />
                     </td>
                     <td colspan="3">
                       <w:TextBox ui:field="patientFirstName" width="222px" field="String"
@@ -152,14 +155,14 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.gender}:" />
+                      <ui:text from="{msg.patient_gender}:" />
                     </td>
                     <td>
                       <w:Dropdown ui:field="patientGenderId" width="60px" dropHeight="100px"
                         field="String" />
                     </td>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.race}:" />
+                      <ui:text from="{msg.patient_race}:" />
                     </td>
                     <td>
                       <w:Dropdown ui:field="patientRaceId" width="65px" dropWidth="200px"
@@ -168,7 +171,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_ethnicity}:" />
+                      <ui:text from="{msg.patient_ethnicity}:" />
                     </td>
                     <td>
                       <w:Dropdown ui:field="patientEthnicityId" width="80px" dropHeight="100px"
@@ -177,19 +180,18 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_birthDT}:" />
+                      <ui:text from="{msg.patient_birthDT}:" />
                     </td>
                     <td>
                       <c:Calendar ui:field="patientBirthDate" width="90px" begin="0" end="2" />
                     </td>
                     <td colspan="3">
-                      <c:Calendar ui:field="patientBirthTime" width="60px"
-                         begin="3" end="4" />
+                      <c:Calendar ui:field="patientBirthTime" width="60px" begin="3" end="4" />
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.aptSuite}:" />
+                      <ui:text from="{msg.address_aptSuite}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="patientAddrMultipleUnit" field="String" width="222px" />
@@ -197,7 +199,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address}:" />
+                      <ui:text from="{msg.address_address}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="patientAddrStreetAddress" width="222px" />
@@ -205,7 +207,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.city}:" />
+                      <ui:text from="{msg.address_city}:" />
                     </td>
                     <td colspan="3">
                       <w:TextBox ui:field="patientAddrCity" field="String" width="100px" />
@@ -213,7 +215,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.state}:" />
+                      <ui:text from="{msg.address_state}:" />
                     </td>
                     <td>
                       <w:Dropdown ui:field="patientAddrState" field="String" width="40px" />
@@ -221,7 +223,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.zipcode}:" />
+                      <ui:text from="{msg.address_zipcode}:" />
                     </td>
                     <td>
                       <w:TextBox ui:field="patientAddrZipCode" field="String" width="70px" />
@@ -236,7 +238,7 @@
                 <table class="{res.style.Form}">
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_last}:" />
+                      <ui:text from="{msg.gen_last}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinLastName" width="222px" case="LOWER"
@@ -245,7 +247,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_maiden}:" />
+                      <ui:text from="{msg.patient_maiden}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinMiddleName" width="222px" case="LOWER"
@@ -254,7 +256,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_first}:" />
+                      <ui:text from="{msg.gen_first}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinFirstName" width="222px" case="LOWER"
@@ -263,7 +265,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_relation}:" />
+                      <ui:text from="{msg.patient_relation}:" />
                     </td>
                     <td colspan="5">
                       <w:Dropdown ui:field="nextOfKinRelationId" width="80px" dropHeight="100px"
@@ -272,14 +274,14 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.gender}:" />
+                      <ui:text from="{msg.patient_gender}:" />
                     </td>
                     <td>
                       <w:Dropdown ui:field="nextOfKinGenderId" width="60px" dropHeight="100px"
                         field="Integer" />
                     </td>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.race}:" />
+                      <ui:text from="{msg.patient_race}:" />
                     </td>
                     <td colspan="2">
                       <w:Dropdown ui:field="nextOfKinRaceId" width="65px" dropWidth="200px"
@@ -288,14 +290,14 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_ethnicity}:" />
+                      <ui:text from="{msg.patient_ethnicity}:" />
                     </td>
                     <td>
                       <w:Dropdown ui:field="nextOfKinEthnicityId" width="65px"
                         dropHeight="75px" dropWidth="100px" field="Integer" />
                     </td>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.birth}:" />
+                      <ui:text from="{msg.patient_birth}:" />
                     </td>
                     <td colspan="5">
                       <c:Calendar ui:field="nextOfKinBirthDate" width="90px" begin="0"
@@ -304,7 +306,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.phone}:" />
+                      <ui:text from="{msg.address_phone}:" />
                     </td>
                     <td colspan="3">
                       <w:TextBox ui:field="nextOfKinAddrHomePhone" field="String" width="120px" />
@@ -312,7 +314,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.aptSuite}:" />
+                      <ui:text from="{msg.address_aptSuite}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinAddrMultipleUnit" field="String"
@@ -321,7 +323,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.address}:" />
+                      <ui:text from="{msg.address_address}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="nextOfKinAddrStreetAddress" field="String"
@@ -330,7 +332,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_cityStateZip}:" />
+                      <ui:text from="{msg.address_cityStateZip}:" />
                     </td>
                     <td colspan="2">
                       <w:TextBox ui:field="nextOfKinAddrCity" field="String" width="100px" />
@@ -351,7 +353,7 @@
                 <table class="{res.style.Form}">
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_nicu}:" />
+                      <ui:text from="{msg.neonatal_nicu}:" />
                     </td>
                     <td>
                       <w:CheckBox ui:field="isNicu" />
@@ -359,7 +361,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_birthOrder}:" />
+                      <ui:text from="{msg.neonatal_birthOrder}:" />
                     </td>
                     <td colspan="4">
                       <w:TextBox ui:field="birthOrder" field="Integer" width="35px" />
@@ -367,7 +369,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_gestAge}:" />
+                      <ui:text from="{msg.neonatal_gestAge}:" />
                     </td>
                     <td>
                       <w:TextBox ui:field="gestationalAge" field="Integer" width="25px" />
@@ -375,7 +377,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_feeding}:" />
+                      <ui:text from="{msg.neonatal_feeding}:" />
                     </td>
                     <td colspan="3">
                       <w:Dropdown ui:field="feedingId" field="Integer" width="75px"
@@ -384,7 +386,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_weight}:" />
+                      <ui:text from="{msg.neonatal_weight}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="weight" field="Integer" width="50px" />
@@ -392,7 +394,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_transfused}:" />
+                      <ui:text from="{msg.neonatal_transfused}:" />
                     </td>
                     <td>
                       <w:CheckBox ui:field="isTransfused" />
@@ -400,7 +402,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_transDate}:" />
+                      <ui:text from="{msg.neonatal_transDate}:" />
                     </td>
                     <td colspan="3">
                       <c:Calendar ui:field="transfusionDate" width="90px" begin="0" end="2" />
@@ -408,7 +410,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_transAge}:" />
+                      <ui:text from="{msg.neonatal_transAge}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox ui:field="transfusionAge" field="Integer" width="50px" />
@@ -416,7 +418,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.repeat}:" />
+                      <ui:text from="{msg.gen_repeat}:" />
                     </td>
                     <td>
                       <w:CheckBox ui:field="isRepeat" />
@@ -424,7 +426,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_collectAge}:" />
+                      <ui:text from="{msg.neonatal_collectAge}:" />
                     </td>
                     <td colspan="5">
                       <w:TextBox field="Integer" ui:field="collectionAge" width="50px" />
@@ -432,7 +434,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_collectValid}:" />
+                      <ui:text from="{msg.neonatal_collectValid}:" />
                     </td>
                     <td>
                       <w:CheckBox ui:field="isCollectionValid" />
@@ -443,7 +445,7 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <g:layer top="320px" height="180px" left = "10px" width="100%">
+        <g:layer top="320px" height="180px" left="10px" width="100%">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" width="50%">
               <s:SampleItemAnalysisTreeTabUI ui:field="sampleItemAnalysisTreeTab" />
@@ -454,19 +456,19 @@
                 <table class="{res.style.Form}">
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_providerLF}:" />
+                      <ui:text from="{msg.provider_lf}:" />
                     </td>
                     <td>
                       <w:AutoComplete ui:field="providerLastName" width="130" case="UPPER">
                         <w:popup>
                           <t:Table visibleRows="10" header="true">
-                            <t:Column width="150" label="{msg.lastName}">
+                            <t:Column width="150" label="{msg.gen_lastName}">
                               <t:LabelCell />
                             </t:Column>
-                            <t:Column width="150" label="{msg.firstName}">
+                            <t:Column width="150" label="{msg.gen_firstName}">
                               <t:LabelCell />
                             </t:Column>
-                            <t:Column width="150" label="{msg.middleName}">
+                            <t:Column width="150" label="{msg.gen_middleName}">
                               <t:LabelCell />
                             </t:Column>
                           </t:Table>
@@ -479,7 +481,7 @@
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.project}:" />
+                      <ui:text from="{msg.project_project}:" />
                     </td>
                     <td colspan="3">
                       <g:HorizontalPanel>
@@ -488,24 +490,24 @@
                         >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
-                              <t:Column width="150" label="{msg.name}">
+                              <t:Column width="150" label="{msg.gen_name}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="275" label="{msg.description}">
+                              <t:Column width="275" label="{msg.gen_description}">
                                 <t:LabelCell />
                               </t:Column>
                             </t:Table>
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="projectButton" leftIcon = "{res.style.fieldLookupIcon}" />
+                          <w:Button ui:field="projectButton" leftIcon="{res.style.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.reportTo}:" />
+                      <ui:text from="{msg.org_reportTo}:" />
                     </td>
                     <td colspan="3">
                       <g:HorizontalPanel>
@@ -514,30 +516,30 @@
                         >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
-                              <t:Column width="200" label="{msg.name}">
+                              <t:Column width="200" label="{msg.gen_name}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="130" label="{msg.street}">
+                              <t:Column width="130" label="{msg.address_street}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="120" label="{msg.city}">
+                              <t:Column width="120" label="{msg.address_city}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="20" label="{msg.st}">
+                              <t:Column width="20" label="{msg.address_st}">
                                 <t:LabelCell />
                               </t:Column>
                             </t:Table>
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="reportToButton" leftIcon = "{res.style.fieldLookupIcon}"/>
+                          <w:Button ui:field="reportToButton" leftIcon="{res.style.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.sample_birthHospital}:" />
+                      <ui:text from="{msg.org_birthHospital}:" />
                     </td>
                     <td colspan="3">
                       <g:HorizontalPanel>
@@ -546,30 +548,30 @@
                         >
                           <w:popup>
                             <t:Table visibleRows="10" header="true">
-                              <t:Column width="200" label="{msg.name}">
+                              <t:Column width="200" label="{msg.gen_name}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="130" label="{msg.street}">
+                              <t:Column width="130" label="{msg.address_street}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="120" label="{msg.city}">
+                              <t:Column width="120" label="{msg.address_city}">
                                 <t:LabelCell />
                               </t:Column>
-                              <t:Column width="20" label="{msg.st}">
+                              <t:Column width="20" label="{msg.address_st}">
                                 <t:LabelCell />
                               </t:Column>
                             </t:Table>
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="birthHospitalButton" leftIcon = "{res.style.fieldLookupIcon}"/>
+                          <w:Button ui:field="birthHospitalButton" leftIcon="{res.style.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
                   </tr>
                   <tr>
                     <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.barcode}:" />
+                      <ui:text from="{msg.gen_barcode}:" />
                     </td>
                     <td colspan="3">
                       <w:TextBox field="String" ui:field="formNumber" width="150px" />
@@ -586,7 +588,7 @@
       <w:TabLayoutPanel ui:field="tabPanel" barHeight="30" barUnit="PX" width="715px">
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sampleItem}" />
+            <w:TabWidget text="{msg.sample_item}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
@@ -596,7 +598,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.analysis}" />
+            <w:TabWidget text="{msg.sample_analysis}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
@@ -606,7 +608,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.testResults}" />
+            <w:TabWidget text="{msg.test_results}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
@@ -616,7 +618,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.analysisNotes}" />
+            <w:TabWidget text="{msg.analysis_notes}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
@@ -626,7 +628,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.sampleNotes}" />
+            <w:TabWidget text="{msg.sample_notes}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
@@ -636,7 +638,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.storage}" />
+            <w:TabWidget text="{msg.storage_storage}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
@@ -646,17 +648,17 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.qaEvents}" />
+            <w:TabWidget text="{msg.gen_qaEvents}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>
-              <s:QAEventsTabUI ui:field="qaEventTab" />
+              <s:QAEventTabUI ui:field="qaEventTab" />
             </g:layer>
           </g:LayoutPanel>
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.auxData}" />
+            <w:TabWidget text="{msg.aux_data}" />
           </w:customHeader>
           <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
             <g:layer>

@@ -28,6 +28,7 @@ package org.openelis.modules.order1.client;
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.Screen.ShortKeys.*;
 import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +57,6 @@ import org.openelis.manager.ShippingManager;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.auxData.client.AddAuxGroupEvent;
-import org.openelis.modules.auxData.client.AuxDataChangeEvent;
 import org.openelis.modules.auxData.client.AuxDataTabUI;
 import org.openelis.modules.auxData.client.RemoveAuxGroupEvent;
 import org.openelis.modules.auxiliary.client.AuxiliaryService;
@@ -204,6 +204,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected SendoutOrderFillTabUI          fillTab;
+    
+    protected SendoutOrderScreenUI           screen;
 
     private ShippingManager                  shippingManager;
 
@@ -251,7 +253,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         recurrenceTab = new RecurrenceTabUI(this, bus);
         fillTab = new SendoutOrderFillTabUI(this, bus);
 
-        auxDataTab = new AuxDataTabUI(this, bus) {
+        auxDataTab = new AuxDataTabUI(this) {
             @Override
             public boolean evaluateEdit() {
                 return manager != null;
@@ -302,6 +304,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         Item<Integer> row;
         Item<String> srow;
 
+        screen = this;
+        
         //
         // button panel buttons
         //
@@ -992,14 +996,19 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
                 OrderTestReturnVO ret;
+                ArrayList<Integer> ids;
 
-                if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+                if (screen == event.getSource())
+                    return; 
+                
+                ids = event.getGroupIds();
+                if (ids != null && ids.size() > 0) {
                     try {
-                        ret = OrderService1.get().addAuxGroups(manager, event.getGroupIds());
+                        ret = OrderService1.get().addAuxGroups(manager, ids);
                         manager = ret.getManager();
                         setData();
                         setState(state);
-                        bus.fireEvent(new AuxDataChangeEvent());
+                        bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
                         if (ret.getErrors() != null && ret.getErrors().size() > 0)
                             showErrors(ret.getErrors());
                         else
@@ -1016,11 +1025,14 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             @Override
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
+                    if (screen == event.getSource())
+                        return; 
+                    
                     try {
                         manager = OrderService1.get().removeAuxGroups(manager, event.getGroupIds());
                         setData();
                         setState(state);
-                        bus.fireEvent(new AuxDataChangeEvent());
+                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()), screen);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1176,9 +1188,13 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     }
 
     private void commit(boolean ignoreWarning) {
+        Validation validation;
+        
         finishEditing();
+        
+        validation = validate();
 
-        if ( !validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().gen_correctErrors());
             return;
         }
@@ -1287,6 +1303,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected void duplicate() {
         try {
             manager = OrderService1.get().duplicate(manager.getOrder().getId());
+            //the screen is in add state, so we need the cache here
+            buildCache();
             setData();
             setState(ADD);
             fireDataChange();

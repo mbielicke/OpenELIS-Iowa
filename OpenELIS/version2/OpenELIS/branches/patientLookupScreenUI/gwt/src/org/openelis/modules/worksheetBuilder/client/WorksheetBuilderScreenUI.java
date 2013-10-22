@@ -28,6 +28,7 @@ package org.openelis.modules.worksheetBuilder.client;
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,17 +54,13 @@ import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetAnalysisViewDO;
-import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.manager.AnalysisResultManager;
-import org.openelis.manager.SampleManager1;
 import org.openelis.manager.WorksheetManager1;
 import org.openelis.manager.WorksheetManager1.Load;
 import org.openelis.meta.WorksheetBuilderMeta;
@@ -72,7 +69,6 @@ import org.openelis.modules.instrument.client.InstrumentService;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.qc.client.QcService;
 import org.openelis.modules.result.client.ResultService;
-import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.SelectionEvent;
 import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
 import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
@@ -161,7 +157,6 @@ public class WorksheetBuilderScreenUI extends Screen {
     
     protected ArrayList<Integer>                        formatIds;
     protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
-    protected HashMap<Integer, SampleManager1>          sampleManagers;
     protected HashMap<Integer, ResultViewDO>            modifiedResults;
     protected HashMap<Integer, TestAnalyteViewDO>       addedAnalytes;
     protected HashMap<String, ArrayList<Row>>           analytesMap;
@@ -180,7 +175,6 @@ public class WorksheetBuilderScreenUI extends Screen {
         
         manager = null;
         formatIds = new ArrayList<Integer>();
-        sampleManagers = new HashMap<Integer, SampleManager1>();
         analytesMap = new HashMap<String, ArrayList<Row>>();
         modifiedResults = new HashMap<Integer, ResultViewDO>();
         addedAnalytes = new HashMap<Integer, TestAnalyteViewDO>();
@@ -343,7 +337,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                     model = new ArrayList<Item<Integer>>();
                     users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (SystemUserVO user : users)
-                        model.add(new Item(user.getId(), user.getLoginName()));
+                        model.add(new Item<Integer>(user.getId(), user.getLoginName()));
                     systemUserId.showAutoMatches(model);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -667,10 +661,10 @@ public class WorksheetBuilderScreenUI extends Screen {
     /*
      * basic button methods
      */
+    @SuppressWarnings("unused")
     @UiHandler("query")
     protected void query(ClickEvent event) {
         manager = null;
-        sampleManagers.clear();
         setData();
         setState(QUERY);
         fireDataChange();
@@ -678,19 +672,21 @@ public class WorksheetBuilderScreenUI extends Screen {
         window.setDone(Messages.get().enterFieldsToQuery());
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("previous")
     protected void previous(ClickEvent event) {
         nav.previous();
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("next")
     protected void next(ClickEvent event) {
         nav.next();
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("add")
     protected void add(ClickEvent event) {
-        sampleManagers.clear();
         try {
             manager = WorksheetService1.get().getInstance();
         } catch (Exception e) {
@@ -704,6 +700,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         window.setDone(Messages.get().enterInformationPressCommit());
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("update")
     protected void update(ClickEvent event) {
         window.setBusy(Messages.get().lockForUpdate());
@@ -722,12 +719,17 @@ public class WorksheetBuilderScreenUI extends Screen {
         window.clearStatus();
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
+        Validation validation;
+        
         finishEditing();
         clearErrors();
         
-        if (!validate()) {
+        validation = validate();
+        
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }
@@ -784,7 +786,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             setData();
             setState(DISPLAY);
             fireDataChange();
-            window.setDone(Messages.get().addingComplete());
+            window.setDone(Messages.get().updatingComplete());
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
@@ -793,6 +795,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         }
     }
     
+    @SuppressWarnings("unused")
     @UiHandler("abort")
     protected void abort(ClickEvent event) {
         finishEditing();
@@ -875,6 +878,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                                   hist);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fields;
         ArrayList<SystemUserVO> userList;
@@ -939,13 +943,6 @@ public class WorksheetBuilderScreenUI extends Screen {
     }
 
     protected boolean fetchById(Integer id) {
-        int i, j;
-        ArrayList<Integer> analysisIds;
-        ArrayList<SampleManager1> sMans;
-        WorksheetAnalysisDO waDO;
-        WorksheetItemDO wiDO;
-        
-        sampleManagers.clear();
         if (id == null) {
             manager = null;
             setData();
@@ -955,25 +952,6 @@ public class WorksheetBuilderScreenUI extends Screen {
             try {
                 manager = WorksheetService1.get().fetchById(id, WorksheetManager1.Load.DETAIL,
                                                             WorksheetManager1.Load.NOTE);
-                analysisIds = new ArrayList<Integer>();
-                for (i = 0; i < manager.item.count(); i++) {
-                    wiDO = manager.item.get(i);
-                    for (j = 0; j < manager.analysis.count(wiDO); j++) {
-                        waDO = manager.analysis.get(wiDO, j);
-                        if (waDO.getAnalysisId() != null) {
-                            if (!analysisIds.contains(waDO.getAnalysisId()))
-                                analysisIds.add(waDO.getAnalysisId());
-                        }
-                    }
-                }
-
-                if (analysisIds.size() > 0) {
-                    sMans = SampleService1.get().fetchByAnalyses(analysisIds, SampleManager1.Load.ORGANIZATION,
-                                                                 SampleManager1.Load.SINGLERESULT);
-                    for (SampleManager1 sManager : sMans)
-                        sampleManagers.put(sManager.getSample().getAccessionNumber(), sManager);
-                }
-                
                 setData();
                 setState(DISPLAY);
             } catch (NotFoundException e) {
@@ -982,7 +960,6 @@ public class WorksheetBuilderScreenUI extends Screen {
                 return false;
             } catch (Exception e) {
                 fetchById(null);
-                sampleManagers.clear();
                 e.printStackTrace();
                 Window.alert(Messages.get().fetchFailed() + e.getMessage());
                 return false;
@@ -995,6 +972,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         return true;
     }
 
+    @SuppressWarnings("unused")
     @UiHandler("lookupWorksheetButton")
     protected void openWorksheetLookup(ClickEvent event) {
         ModalWindow modal;
@@ -1192,16 +1170,14 @@ public class WorksheetBuilderScreenUI extends Screen {
 
     private void getSystemUserFromSelection() {
         AutoCompleteValue row;
-        SystemUserVO data;
         
         row = systemUserId.getValue();
         if (row == null || row.getId() == null) {
             setSystemUserId(null);
             setSystemUser(null);
         } else {
-            data = (SystemUserVO)row.getData();
-            setSystemUserId(data.getId());
-            setSystemUser(data.getLoginName());
+            setSystemUserId(row.getId());
+            setSystemUser(row.getDisplay());
         }
     }
     

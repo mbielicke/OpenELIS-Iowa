@@ -234,6 +234,20 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
+    public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback) throws Exception {
+        service.duplicate(sampleId, callback);
+    }
+
+    @Override
+    public SampleManager1 duplicate(Integer sampleId) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.duplicate(sampleId, callback);
+        return callback.getResult();
+    }
+
+    @Override
     public void addTest(SampleManager1 sm, SampleTestRequestVO test,
                         AsyncCallback<SampleTestReturnVO> callback) throws Exception {
         service.addTest(sm, test, callback);
@@ -391,5 +405,4 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
         service.removeAuxGroups(sm, groupIds, callback);
         return callback.getResult();
     }
-    
 }

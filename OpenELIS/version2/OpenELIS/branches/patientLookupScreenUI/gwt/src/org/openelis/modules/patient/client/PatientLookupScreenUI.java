@@ -27,6 +27,7 @@ package org.openelis.modules.patient.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 
@@ -322,7 +323,7 @@ public abstract class PatientLookupScreenUI extends Screen {
     private void executeQuery() {
         Query query;
 
-        if (!validate()) {
+        if (validate().getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }
