@@ -95,13 +95,15 @@ public class KitTrackingReportBean {
                                                                .setWidth(150)
                                                                .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                                .setDatetimeEndCode(Prompt.Datetime.DAY)
-                                                               .setRequired(true));
+                                                               .setRequired(true)
+                                                               .setDefaultValue(null));
 
             p.add(new Prompt("TO_DATE", Prompt.Type.DATETIME).setPrompt("Ending Sent Date:")
                                                              .setWidth(150)
                                                              .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                              .setDatetimeEndCode(Prompt.Datetime.DAY)
-                                                             .setRequired(true));
+                                                             .setRequired(true)
+                                                             .setDefaultValue(null));
 
             p.add(new Prompt(OrderMeta.getShipFromId(), Prompt.Type.ARRAY).setPrompt("Ship From:")
                                                                           .setWidth(150)

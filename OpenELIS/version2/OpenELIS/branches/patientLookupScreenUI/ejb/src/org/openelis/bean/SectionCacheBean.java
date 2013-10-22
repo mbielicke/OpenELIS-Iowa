@@ -100,17 +100,7 @@ public class SectionCacheBean {
         Element e;
         
         e = cache.get("orderedList");
-        /*
-         * It can happen that "cache" contains expired elements and one of
-         * those elements could be the one with the key "orderedList".
-         * If that's the case then getSize() will return a non-zero number
-         * because it takes into consideration both expired and alive elements.
-         * Thus we have to check to see if "orderedList" is alive before trying
-         * to call getValue() on it and if it's not (e == null), put a new 
-         * element with that key and the latest data from the database as the
-         * value in "cache".
-         */   
-        if (cache.getSize() == 0 || e == null) {
+        if (e == null) {
             list = EJBFactory.getSection().fetchList();
             for (SectionViewDO data : list) {
                 cache.put(new Element(data.getId(), data));

@@ -48,7 +48,6 @@ import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class WorksheetItemBean {
 
     @PersistenceContext(unitName = "openelis")
@@ -73,7 +72,7 @@ public class WorksheetItemBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetItemDO> fetchByWorksheetId(Integer id) throws Exception {
         Query query;
-        List list;
+        List<WorksheetItemDO> list;
 
         query = manager.createNamedQuery("WorksheetItem.FetchByWorksheetId");
         query.setParameter("id", id);
@@ -119,6 +118,7 @@ public class WorksheetItemBean {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(WorksheetItem.class, data.getId());
+        entity.setWorksheetId(data.getWorksheetId());
         entity.setPosition(data.getPosition());
 
         return data;
