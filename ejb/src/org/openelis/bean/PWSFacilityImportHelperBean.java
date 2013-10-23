@@ -94,7 +94,7 @@ public class PWSFacilityImportHelperBean {
         HashMap<Integer, PWSFacilityDO> childMap;
         ArrayList<PWSFacilityDO> deleteList;
 
-        ut = ctx.getUserTransaction();
+        ut = null;
         try {
             deleteList = new ArrayList<PWSFacilityDO>();
             status.setMessage("Reading file 2 of 4: PWS facility file");
@@ -113,6 +113,7 @@ public class PWSFacilityImportHelperBean {
             if (onePercent == 0)
                 onePercent = 12;
             i = 0;
+            ut = ctx.getUserTransaction();
             ut.begin();
             toCommit = false;
             for (PWSFacilityDO record : records) {
@@ -200,7 +201,8 @@ public class PWSFacilityImportHelperBean {
             else
                 ut.rollback();
         } catch (Exception e) {
-            ut.rollback();
+            if (ut != null)
+                ut.rollback();
             throw e;
         }
     }
