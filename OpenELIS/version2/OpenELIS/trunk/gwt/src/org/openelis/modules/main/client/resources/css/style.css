@@ -8,14 +8,10 @@
 }
 
 .Form {
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size: 11px;
 	margin: 4px 8px;
 }
 
 .FormTitle {
-	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
-    font-size:11px;    
     -moz-user-select: none;
     color:#486095;
     text-align:center;
@@ -24,13 +20,10 @@
 }
 
 .Prompt {
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size: 11px;
 	-moz-user-select: none;
 	color: gray;
 	padding: 2px 0 2px 2px;
 	text-align: right;
-	vertical-align: top;
 	test-justify: trim;
 	white-space: nowrap;
 }
