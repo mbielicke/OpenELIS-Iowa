@@ -92,8 +92,7 @@ public class PWSImportHelperBean {
         ArrayList<PWSDO> records;
         HashMap<Integer, PWSDO> pwsm;
 
-        ut = ctx.getUserTransaction();
-
+        ut = null;
         try {
             status.setMessage("Reading file 1 of 4: PWS file");
             session.setAttribute("PWSFileImport", status);
@@ -110,6 +109,7 @@ public class PWSImportHelperBean {
             if (onePercent == 0)
                 onePercent = 12;
             i = 0;
+            ut = ctx.getUserTransaction();
             ut.begin();
             toCommit = false;
             for (PWSDO record : records) {
@@ -169,7 +169,8 @@ public class PWSImportHelperBean {
             else
                 ut.rollback();
         } catch (Exception e) {
-            ut.rollback();
+            if (ut != null)
+                ut.rollback();
             throw e;
         }
     }

@@ -95,7 +95,7 @@ public class PWSMonitorImportHelperBean {
         ArrayList<Integer> deleteList;
         ArrayList<PWSMonitorDO> records;
 
-        ut = ctx.getUserTransaction();
+        ut = null;
         try {
             deleteList = new ArrayList<Integer>();
             status.setMessage("Reading file 4 of 4: PWS monitor file");
@@ -114,6 +114,7 @@ public class PWSMonitorImportHelperBean {
             if (onePercent == 0)
                 onePercent = 12;
             i = 0;
+            ut = ctx.getUserTransaction();
             ut.begin();
             toCommit = false;
             for (PWSMonitorDO record : records) {
@@ -187,7 +188,8 @@ public class PWSMonitorImportHelperBean {
             else
                 ut.rollback();
         } catch (Exception e) {
-            ut.rollback();
+            if (ut != null)
+                ut.rollback();
             throw e;
         }
     }

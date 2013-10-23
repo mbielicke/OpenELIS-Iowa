@@ -94,7 +94,7 @@ public class PWSAddressImportHelperBean {
         HashMap<Integer, PWSAddressDO> childMap;
         ArrayList<PWSAddressDO> deleteList;
 
-        ut = ctx.getUserTransaction();
+        ut = null;
         try {
             deleteList = new ArrayList<PWSAddressDO>();
             status.setMessage("Reading file 3 of 4: PWS address file");
@@ -113,6 +113,7 @@ public class PWSAddressImportHelperBean {
             if (onePercent == 0)
                 onePercent = 12;
             i = 0;
+            ut = ctx.getUserTransaction();
             ut.begin();
             toCommit = false;
             for (PWSAddressDO record : records) {
@@ -200,7 +201,8 @@ public class PWSAddressImportHelperBean {
             else
                 ut.rollback();
         } catch (Exception e) {
-            ut.rollback();
+            if (ut != null)
+                ut.rollback();
             throw e;
         }
     }
