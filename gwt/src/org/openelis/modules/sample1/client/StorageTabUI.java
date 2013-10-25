@@ -50,10 +50,8 @@ import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
-import org.openelis.ui.screen.Screen.Validation.Status;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.State;
-import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -157,7 +155,7 @@ public class StorageTabUI extends Screen {
 
                 val = table.getValueAt(r, c);
 
-                switch (c) {                    
+                switch (c) {
                     case 1:
                         sel = (AutoCompleteValue)val;
                         if (sel != null) {
@@ -217,7 +215,7 @@ public class StorageTabUI extends Screen {
                  * date
                  */
                 if (table.getRowCount() > 1) {
-                    uid = table.getRowAt(event.getIndex()-1).getData();
+                    uid = table.getRowAt(event.getIndex() - 1).getData();
                     prevData = (StorageViewDO)manager.getObject(uid);
                     if (prevData.getCheckout() == null)
                         prevData.setCheckout(date);
@@ -320,15 +318,6 @@ public class StorageTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                                     parentScreen,
-                                     new StateChangeEvent.Handler() {
-                                         public void onStateChange(StateChangeEvent event) {
-                                             evaluateEdit();
-                                             setState(event.getState());
-                                         }
-                                     });
-
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 int i, count;
@@ -341,40 +330,36 @@ public class StorageTabUI extends Screen {
                     uid = null;
 
                 if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
                     redraw = true;
-                } else {
-                    if (analysis != null) {
-                        /*
-                         * compare analysis storages
-                         */
-                        count = manager.storage.count(analysis);
-                        if (count == table.getRowCount()) {
-                            for (i = 0; i < count; i++ ) {
-                                if (isDifferent(manager.storage.get(analysis, i), table.getRowAt(i))) {
-                                    redraw = true;
-                                    break;
-                                }
+                } else if (analysis != null) {
+                    /*
+                     * compare analysis storages
+                     */
+                    count = manager != null ? manager.storage.count(analysis) : 0;
+                    if (count == table.getRowCount()) {
+                        for (i = 0; i < count; i++ ) {
+                            if (isDifferent(manager.storage.get(analysis, i), table.getRowAt(i))) {
+                                redraw = true;
+                                break;
                             }
-                        } else {
-                            redraw = true;
                         }
-                    } else if (sampleItem != null) {
-                        /*
-                         * compare sample item storages
-                         */
-                        count = manager.storage.count(sampleItem);
-                        if (count == table.getRowCount()) {
-                            for (i = 0; i < count; i++ ) {
-                                if (isDifferent(manager.storage.get(sampleItem, i),
-                                                table.getRowAt(i))) {
-                                    redraw = true;
-                                    break;
-                                }
+                    } else {
+                        redraw = true;
+                    }
+                } else if (sampleItem != null) {
+                    /*
+                     * compare sample item storages
+                     */
+                    count = manager != null ? manager.storage.count(sampleItem) : 0;
+                    if (count == table.getRowCount()) {
+                        for (i = 0; i < count; i++ ) {
+                            if (isDifferent(manager.storage.get(sampleItem, i), table.getRowAt(i))) {
+                                redraw = true;
+                                break;
                             }
-                        } else {
-                            redraw = true;
                         }
+                    } else {
+                        redraw = true;
                     }
                 }
 
@@ -391,7 +376,6 @@ public class StorageTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
-                    evaluateEdit();
                     setState(state);
                 }
             }
@@ -404,39 +388,9 @@ public class StorageTabUI extends Screen {
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
-
-    public Validation validate() {
-        String uid;
-        StorageViewDO data;
-        Validation validation;
-
-        validation = new Validation();;
-        /*
-         * validate only if there's data loaded in the tab
-         */
-        if (displayedUid == null)
-            return validation;
-
-        /*
-         * validate the date range for each storage
-         */
-        for (int i = 0; i < table.getRowCount(); i++ ) {
-            uid = table.getRowAt(i).getData();
-
-            data = (StorageViewDO)manager.getObject(uid);
-            if ( !isDateRangeValid(data)) {
-                table.addException(i,
-                                   3,
-                                   new Exception(Messages.get()
-                                                         .storage_checkinDateAfterCheckoutDateException()));
-                validation.setStatus(Status.ERRORS);
-            }
-        }
-
-        return validation;
     }
 
     @UiHandler("addStorageButton")
@@ -463,9 +417,9 @@ public class StorageTabUI extends Screen {
          * refresh the checkout date for the previous most recent storage
          */
         if (table.getRowCount() > 1) {
-            uid = table.getRowAt(n-1).getData();
+            uid = table.getRowAt(n - 1).getData();
             data = (StorageViewDO)manager.getObject(uid);
-            table.setValueAt(n-1, 3, data.getCheckout());
+            table.setValueAt(n - 1, 3, data.getCheckout());
         }
 
         table.scrollToVisible(table.getSelectedRow());
@@ -501,7 +455,7 @@ public class StorageTabUI extends Screen {
                               perm != null &&
                               (perm.hasAssignPermission() || perm.hasCompletePermission());
                 } catch (Exception e) {
-                    Window.alert("storageTab canEdit: " + e.getMessage());
+                    Window.alert("storageTab evaluateEdit: " + e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
             } else if (sampleItem != null) {
@@ -531,7 +485,7 @@ public class StorageTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            evaluateEdit();
+            displayedUid = uid;
             setState(state);
             fireDataChange();
         }
@@ -590,19 +544,19 @@ public class StorageTabUI extends Screen {
 
         sb = new StringBuilder();
 
-        if (!DataBaseUtil.isEmpty(name)) {
+        if ( !DataBaseUtil.isEmpty(name)) {
             sb.append(name);
             sb.append(", ");
-        } 
-        
-        if (!DataBaseUtil.isEmpty(description)) {
+        }
+
+        if ( !DataBaseUtil.isEmpty(description)) {
             sb.append(description);
             sb.append(" ");
         }
-        
-        if (!DataBaseUtil.isEmpty(location)) 
+
+        if ( !DataBaseUtil.isEmpty(location))
             sb.append(location);
-        
+
         return sb.toString();
     }
 

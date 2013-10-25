@@ -31,7 +31,7 @@
                 </t:Column>
                 <t:Column width="100" label="{msg.gen_type}">
                   <t:DropdownCell>
-                    <w:Dropdown ui:field="sampleQAType" field="Integer" dropWidth = "110"/>
+                    <w:Dropdown ui:field="sampleQAType" field="Integer" dropWidth = "110" required = "true"/>
                   </t:DropdownCell>
                 </t:Column>
                 <t:Column width="51" label="{msg.gen_billable}">
@@ -63,7 +63,7 @@
                 </t:Column>
                 <t:Column width="100" label="{msg.gen_type}">
                   <t:DropdownCell>
-                    <w:Dropdown ui:field="analysisQAType" field="Integer" dropWidth = "110"/>
+                    <w:Dropdown ui:field="analysisQAType" field="Integer" dropWidth = "110" required = "true"/>
                   </t:DropdownCell>
                 </t:Column>
                 <t:Column width="51" label="{msg.gen_billable}">

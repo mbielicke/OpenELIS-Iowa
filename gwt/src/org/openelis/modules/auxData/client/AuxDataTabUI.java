@@ -325,7 +325,7 @@ public abstract class AuxDataTabUI extends Screen {
         parentBus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
-                if (screen != event.getSource()) {
+                if (event.getSource() != screen) {
                     redraw = true;
                     displayAuxData();
                 }
@@ -335,7 +335,7 @@ public abstract class AuxDataTabUI extends Screen {
         parentBus.addHandler(RemoveAuxGroupEvent.getType(), new RemoveAuxGroupEvent.Handler() {
             @Override
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
-                if (screen != event.getSource()) {
+                if (event.getSource() != screen) {
                     redraw = true;
                     displayAuxData();
                 }
@@ -402,48 +402,56 @@ public abstract class AuxDataTabUI extends Screen {
      * if the data currently showing in the widgets is the same as the data in
      * the latest manager then the widgets are not refreshed
      */
-    public void refresh() {
-        String disp1, disp2;
-        int count1, count2;
+    public void onDataChange() {
+        int i, count1, count2;
+        String val;
         AuxDataViewDO aux;
         Row row;
-        Value val;
+        ResultCell.Value rv;
 
-        count1 = table.getRowCount();
-        count2 = count();
-
-        if (count1 != count2 || isState(State.QUERY)) {
+        if (isState(State.QUERY)) {
             /*
-             * The table is reloaded if the current number of rows is different
-             * than the number of aux data in the manager, but the query state
-             * is a special case in which the table is always reloaded to show
-             * one row to let the user specify the analyte and value to query
-             * by.
+             * In Query state, the table shows only one row but it's not in
+             * query mode, because the manager cache can't be used in query
+             * mode. In the row, a dropdown is shown for the analyte (aux field)
+             * and a dropdown or textbox is shown for the value. The widget for
+             * the value is determined using the analyte chosen and the cache.
+             * Thus the table needs to be reloaded to show that one row,
+             * regardless of the previous data.
              */
             redraw = true;
         } else {
-            /*
-             * find out if there's any difference between the aux data being
-             * displayed and the aux data in the manager
-             */
-            for (int i = 0; i < count1; i++ ) {                
-                aux = get(i);
-                disp1 = aux.getValue();                
-                
-                row = table.getRowAt(i);
-                val = row.getCell(2);
-                disp2 = null;
-                if (val.getDictId() != null)
-                    disp2 = val.getDictId();
-                else
-                    disp2 = val.getDisplay();
-                
-                if (DataBaseUtil.isDifferent(aux.getIsReportable(), row.getCell(0)) ||
-                    DataBaseUtil.isDifferent(aux.getAuxFieldId(), row.getCell(1)) ||
-                    DataBaseUtil.isDifferent(disp1, disp2)) {
-                    redraw = true;
-                    break;
+            count1 = table.getRowCount();
+            count2 = count();
+            if (count1 == count2) {
+                /*
+                 * find out if there's any difference between the aux data being
+                 * displayed and the aux data in the manager
+                 */
+                for (i = 0; i < count1; i++ ) {
+                    aux = get(i);
+
+                    row = table.getRowAt(i);
+                    rv = row.getCell(2);
+                    /*
+                     * for type dictionary, the value is stored as the dictId
+                     * and the dictionary entry is the display, for other types
+                     * the value is the display
+                     */
+                    if (rv.getDictId() != null)
+                        val = rv.getDictId();
+                    else
+                        val = rv.getDisplay();
+
+                    if (DataBaseUtil.isDifferent(aux.getIsReportable(), row.getCell(0)) ||
+                        DataBaseUtil.isDifferent(aux.getAuxFieldId(), row.getCell(1)) ||
+                        DataBaseUtil.isDifferent(aux.getValue(), val)) {
+                        redraw = true;
+                        break;
+                    }
                 }
+            } else {
+                redraw = true;
             }
         }
 
@@ -513,7 +521,7 @@ public abstract class AuxDataTabUI extends Screen {
 
                     ids = auxGroupLookup.getGroupIds();
                     if (ids != null && ids.size() > 0)
-                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
+                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);                    
                 }
 
                 @Override
@@ -542,7 +550,7 @@ public abstract class AuxDataTabUI extends Screen {
         r = table.getSelectedRow();
         if (r == -1)
             return;
-        if (Window.confirm(Messages.get().removeAuxMessage())) {
+        if (Window.confirm(Messages.get().aux_removeMessage())) {
             data = (AuxDataViewDO)table.getRowAt(r).getData();
             ids = new ArrayList<Integer>(1);
             ids.add(data.getGroupId());
@@ -581,7 +589,6 @@ public abstract class AuxDataTabUI extends Screen {
             redraw = false;
             setState(state);
             fireDataChange();
-            logger.log(Level.SEVERE, "aux tab redrawn");
         }
     }
 

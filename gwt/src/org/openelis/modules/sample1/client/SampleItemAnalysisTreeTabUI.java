@@ -58,6 +58,7 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -224,9 +225,9 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 uid = (String)row.getData();
 
                 /*
-                 * this code is only executed for sample items because analyses
-                 * are removed in the back-end and the tree has to be reloaded
-                 * in that case
+                 * only sample items are removed in the front-end; analyses are
+                 * removed in the back-end and the tree has to be reloaded in
+                 * that case
                  */
                 if (SAMPLE_ITEM_LEAF.equals(row.getType())) {
                     item = (SampleItemViewDO)manager.getObject(uid);
@@ -314,7 +315,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                         event.cancel();
                         /*
                          * Clear the text entered in the autocomplete. The value
-                         * need to be set to something not null to make sure
+                         * needs to be set to something not null to make sure
                          * that when the autocomplete compares the previous
                          * value, which is null in the case of scanning a
                          * barcode, with this one, the display gets refreshed.
@@ -427,30 +428,6 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                                     parentScreen,
-                                     new StateChangeEvent.Handler() {
-                                         public void onStateChange(StateChangeEvent event) {
-                                             evaluateEdit();
-                                             setState(event.getState());
-                                         }
-                                     });
-
-        parentBus.addHandlerToSource(DataChangeEvent.getType(),
-                                     parentScreen,
-                                     new DataChangeEvent.Handler() {
-                                         public void onDataChange(DataChangeEvent event) {
-                                             fireDataChange();
-                                             /*
-                                              * clear the tabs showing the data
-                                              * related to the nodes in the tree
-                                              * e.g. sample item, analysis or
-                                              * results
-                                              */
-                                             parentBus.fireEvent(new SelectionEvent(SelectedType.NONE,
-                                                                                    null));
-                                         }
-                                     });
 
         parentBus.addHandler(SampleItemChangeEvent.getType(), new SampleItemChangeEvent.Handler() {
             public void onSampleItemChange(SampleItemChangeEvent event) {
@@ -461,15 +438,8 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         parentBus.addHandler(AddTestEvent.getType(), new AddTestEvent.Handler() {
             @Override
             public void onAddTest(AddTestEvent event) {
-                if (event.getSource() == screen)
-                    return;
-
-                fireDataChange();
-                /*
-                 * clear the tabs showing the data related to the nodes in the
-                 * tree e.g. sample item, analysis or results
-                 */
-                parentBus.fireEvent(new SelectionEvent(SelectedType.NONE, null));
+                if (event.getSource() != screen)
+                    onDataChange();
             }
         });
 
@@ -482,14 +452,8 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         parentBus.addHandler(RemoveAnalysisEvent.getType(), new RemoveAnalysisEvent.Handler() {
             @Override
             public void onAnalysisRemove(RemoveAnalysisEvent event) {
-                if (event.getSource() != screen) {
-                    fireDataChange();
-                    /*
-                     * clear the tabs showing the data related to the nodes in
-                     * the tree e.g. sample item, analysis or results
-                     */
-                    parentBus.fireEvent(new SelectionEvent(SelectedType.NONE, null));
-                }
+                if (event.getSource() != screen)
+                    onDataChange();
             }
         });
     }
@@ -499,18 +463,33 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             this.manager = manager;
     }
 
+    public void setState(State state) {
+        evaluateEdit();
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
+        fireDataChange();
+        /*
+         * clear the tabs showing the data related to the nodes in the tree e.g.
+         * sample item, analysis or results
+         */
+        parentBus.fireEvent(new SelectionEvent(SelectedType.NONE, null));
+    }
+
     /**
      * if a node is selected in the tree then returns the uid of the record that
      * it is showing, otherwise returns null
      */
     public String getSelectedUid() {
         Node node;
-        
+
         if (tree.getSelectedNode() > -1) {
             node = tree.getNodeAt(tree.getSelectedNode());
             return (String)node.getData();
-        } 
-        
+        }
+
         return null;
     }
 
@@ -574,7 +553,9 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 cancelAnalysisConfirm.show();
             } else {
                 /*
-                 * remove this analysis as it is not an existing one
+                 * remove this analysis as it is not an existing one; isBusy is
+                 * not set here because it's only used for events fired when an
+                 * editable widget loses focus
                  */
                 parentBus.fireEventFromSource(new RemoveAnalysisEvent(uid), this);
             }
@@ -591,11 +572,10 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                 @Override
                 public void ok() {
                     /*
-                     * don't reload the tree if the data in the popup couldn't
-                     * be changed
+                     * reload the tree if its data could have changed
                      */
                     if (canEdit && isState(ADD, UPDATE))
-                        screen.fireDataChange();
+                        onDataChange();
                 }
             };
         }
@@ -608,6 +588,11 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
         treePopout.setWindow(modal);
         treePopout.setData(manager, state);
+    }
+
+    private void evaluateEdit() {
+        canEdit = manager != null &&
+                  !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
     }
 
     private Node getRoot() {
@@ -662,7 +647,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         return root;
     }
 
-    protected void addAnalysis(Integer addId, Integer methodId) {
+    private void addAnalysis(Integer addId, Integer methodId) {
         Node node;
         SampleItemViewDO item;
         SampleTestRequestVO test;
@@ -688,11 +673,6 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
         parentBus.fireEventFromSource(new AddTestEvent(tests), this);
     }
 
-    private void evaluateEdit() {
-        canEdit = manager != null &&
-                  !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
-    }
-
     private void sampleItemChanged(String itemUid, SampleItemChangeEvent.Action action) {
         int i;
         Node parent, node;
@@ -713,8 +693,8 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                     break;
 
                 /*
-                 * show an error in the nodes showing the analyses linked to
-                 * this sample item if the new sample type isn't valid for them
+                 * show a warning if the new sample type isn't valid for an
+                 * analysis linked to this sample item
                  */
                 for (i = 0; i < parent.getChildCount(); i++ ) {
                     node = parent.getChildAt(i);
@@ -769,7 +749,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     private void setItemDisplay(Node node, SampleItemViewDO item) {
         StringBuilder sb;
-        
+
         sb = new StringBuilder();
         sb.append(item.getItemSequence());
         if (item.getTypeOfSample() != null) {
@@ -786,7 +766,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     private void setAnalysisDisplay(Node node, AnalysisViewDO ana) {
         StringBuilder sb;
-        
+
         sb = new StringBuilder();
         sb.append(ana.getTestName());
         sb.append(", ");

@@ -106,13 +106,13 @@ public class ResultTabUI extends Screen {
     protected Screen                                    parentScreen;
 
     protected ResultTabUI                               screen;
-    
+
     protected TestAnalyteLookupUI                       testAnalyteLookup;
-    
+
     protected TestSelectionLookupUI                     testSelectionLookup;
-    
-    protected EventBus                                  parentBus; 
-    
+
+    protected EventBus                                  parentBus;
+
     protected TestReflexUtility1                        testReflexUtility;
 
     protected SampleManager1                            manager;
@@ -121,11 +121,12 @@ public class ResultTabUI extends Screen {
 
     protected String                                    displayedUid;
 
-    protected boolean                                  canEdit, isVisible, redraw;
+    protected boolean                                   canEdit, isVisible, redraw, isBusy;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
-    
-    protected static int                               MEAN_CHAR_WIDTH = 8, DEFAULT_NUM_CHARS = 10;
+
+    protected static int                                MEAN_CHAR_WIDTH = 8,
+                    DEFAULT_NUM_CHARS = 10;
 
     public ResultTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -401,14 +402,6 @@ public class ResultTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
 
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
@@ -423,10 +416,8 @@ public class ResultTabUI extends Screen {
                         break;
                 }
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
+                if (DataBaseUtil.isDifferent(displayedUid, uid))
                     redraw = true;
-                }
 
                 displayResults(uid);
             }
@@ -441,7 +432,6 @@ public class ResultTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
-                    evaluateEdit();
                     setState(state);
                 }
             }
@@ -452,6 +442,8 @@ public class ResultTabUI extends Screen {
             public void onResultChange(ResultChangeEvent event) {
                 redraw = true;
                 displayResults(manager.getAnalysisUid(analysis.getId()));
+                isBusy = false;
+                logger.log(Level.SEVERE, "result tab isBusy: "+ isBusy);
             }
         });
 
@@ -469,8 +461,17 @@ public class ResultTabUI extends Screen {
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+    
+    /**
+     * returns true if some operation performed by the tab needs to be completed
+     * before the data can be committed
+     */
+    public boolean getIsBusy() {
+        return isBusy;
     }
 
     private void evaluateEdit() {
@@ -527,7 +528,7 @@ public class ResultTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            evaluateEdit();
+            displayedUid = uid;
             setState(state);
             fireDataChange();
         }
@@ -853,8 +854,16 @@ public class ResultTabUI extends Screen {
         try {
             results = new ArrayList<ResultViewDO>(1);
             results.add(data);
+            /*
+             * find out if a reflex test needs to be added for this result
+             */
             tests = testReflexUtility.getReflexTests(manager, results);
             if (tests != null) {
+                isBusy = true;
+                logger.log(Level.SEVERE, "result tab isBusy: "+ isBusy);
+                /*
+                 * show the popup for selecting the reflex test
+                 */
                 if (testSelectionLookup == null) {
                     testSelectionLookup = new TestSelectionLookupUI() {
                         @Override
@@ -866,9 +875,17 @@ public class ResultTabUI extends Screen {
                         public void ok() {
                             ArrayList<SampleTestRequestVO> tests;
 
+                            /*
+                             * if a reflex test was selected on the popup then
+                             * notify the main screen of this and mark the tab
+                             * as busy
+                             */
                             tests = testSelectionLookup.getSelectedTests();
                             if (tests != null && tests.size() > 0)
                                 parentBus.fireEvent(new AddTestEvent(tests));
+                            else 
+                                isBusy = false;
+                            logger.log(Level.SEVERE, "result tab isBusy: "+ isBusy);
                         }
                     };
                 }
@@ -912,6 +929,7 @@ public class ResultTabUI extends Screen {
         for (int i = 0; i < analytes.size(); i++ )
             indexes.add(index + i);
 
+        isBusy = true;
         parentBus.fireEvent(new AddRowAnalytesEvent(analysis, analytes, indexes));
     }
 
@@ -931,9 +949,9 @@ public class ResultTabUI extends Screen {
     /**
      * keeps track of the longest string in the table column at the passed index
      */
-    private void resetMaxChars(int maxNumChars[], int col, String text) {
+    private void resetMaxChars(int maxNumChars[], int index, String text) {
         if ( !DataBaseUtil.isEmpty(text))
-            maxNumChars[col] = Math.max(text.length(), maxNumChars[col]);
+            maxNumChars[index] = Math.max(text.length(), maxNumChars[index]);
     }
 
     /**

@@ -146,17 +146,6 @@ public class AnalysisNotesTabUI extends Screen {
             }
         });
 
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                                     parentScreen,
-                                     new StateChangeEvent.Handler() {
-                                         public void onStateChange(StateChangeEvent event) {
-                                             evaluateEdit();
-                                             setState(event.getState());
-                                         }
-                                     });
 
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
@@ -172,11 +161,11 @@ public class AnalysisNotesTabUI extends Screen {
                         break;
                 }
 
-                redraw = DataBaseUtil.isDifferent(displayedUid, uid);
-
-                if ( !redraw && analysis != null) {
+                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                    redraw = true;
+                } else if (analysis != null) {
                     /*
-                     * compare external notes
+                     * compare external note
                      */
                     id1 = displayedExtNote != null ? displayedExtNote.getId() : null;
                     id2 = null;
@@ -210,7 +199,6 @@ public class AnalysisNotesTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
-                    evaluateEdit();
                     setState(state);
                 }
             }
@@ -223,6 +211,7 @@ public class AnalysisNotesTabUI extends Screen {
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
@@ -252,7 +241,6 @@ public class AnalysisNotesTabUI extends Screen {
              */
             redraw = false;
             displayedUid = uid;
-            evaluateEdit();
             setState(state);
             fireDataChange();
         }

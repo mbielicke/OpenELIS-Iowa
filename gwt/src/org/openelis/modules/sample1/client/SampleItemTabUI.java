@@ -70,14 +70,13 @@ public class SampleItemTabUI extends Screen {
     protected TextBox<Double>            quantity;
 
     @UiField
-    protected Dropdown<Integer>          typeOfSample, sourceOfSample, container,
-                    unitOfMeasure;
+    protected Dropdown<Integer>          typeOfSample, sourceOfSample, container, unitOfMeasure;
 
     protected Screen                     parentScreen;
-    
+
     protected SampleItemTabUI            screen;
-    
-    protected EventBus                   parentBus; 
+
+    protected EventBus                   parentBus;
 
     protected SampleManager1             manager;
 
@@ -116,7 +115,7 @@ public class SampleItemTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  typeOfSample.setEnabled(isState(QUERY) ||
-                                                           (isState(ADD, UPDATE) && canEdit && !hasReleasedAnalysis));
+                                                         (isState(ADD, UPDATE) && canEdit && !hasReleasedAnalysis));
                                  typeOfSample.setQueryMode(isState(QUERY));
                              }
 
@@ -138,7 +137,7 @@ public class SampleItemTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  sourceOfSample.setEnabled(isState(QUERY) ||
-                                                             (isState(ADD, UPDATE) && canEdit));
+                                                           (isState(ADD, UPDATE) && canEdit));
                                  sourceOfSample.setQueryMode(isState(QUERY));
                              }
 
@@ -166,27 +165,24 @@ public class SampleItemTabUI extends Screen {
             }
         });
 
-        addScreenHandler(container,
-                         SampleMeta.getItemContainerId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 container.setValue(getContainerId());
-                             }
+        addScreenHandler(container, SampleMeta.getItemContainerId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                container.setValue(getContainerId());
+            }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setContainer(event.getValue(), container.getDisplay());
-                             }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setContainer(event.getValue(), container.getDisplay());
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 container.setEnabled(isState(QUERY) ||
-                                                        (isState(ADD, UPDATE) && canEdit));
-                                 container.setQueryMode(isState(QUERY));
-                             }
+            public void onStateChange(StateChangeEvent event) {
+                container.setEnabled(isState(QUERY) || (isState(ADD, UPDATE) && canEdit));
+                container.setQueryMode(isState(QUERY));
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? containerReference : sourceOther;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? containerReference : sourceOther;
+            }
+        });
 
         addScreenHandler(containerReference,
                          SampleMeta.getItemContainerReference(),
@@ -242,7 +238,7 @@ public class SampleItemTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  unitOfMeasure.setEnabled(isState(QUERY) ||
-                                                            (isState(ADD, UPDATE) && canEdit));
+                                                          (isState(ADD, UPDATE) && canEdit));
                                  unitOfMeasure.setQueryMode(isState(QUERY));
                              }
 
@@ -318,17 +314,26 @@ public class SampleItemTabUI extends Screen {
                         break;
                 }
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
-                    redraw = true;
-                } else if (isState(QUERY)) {
+                if (isState(QUERY)) {
                     /*
-                     * No sample item is selected in the tree because it is
-                     * empty in query state, so the current uid is null. If
-                     * there was no sample item selected in the tree, before
-                     * going in query state, the previous (displayed) uid was
-                     * null too. This makes sure that the tab is redrawn for
-                     * query state even if both uids are null.
+                     * In query state the tree is empty, so no sample item is
+                     * selected in it and the current uid is null. If there was
+                     * no sample item selected in the tree before going in query
+                     * state, the previous (displayed) uid was null too. This
+                     * makes sure that the tab is redrawn for query state even
+                     * if both uids are null and thus not different.
+                     */
+                    redraw = true;
+                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                    /*
+                     * while the tab is not visible, the data in the sample item
+                     * linked by displayed uid may get changed e.g. if displayed
+                     * uid is negative and a different manager uses the same uid
+                     * or if the manager is fetched again and the data was
+                     * changed in the database; this makes sure that whenever
+                     * the tab is opened again, it shows the latest data for the
+                     * sample item, because when a new manager is loaded the uid
+                     * in this event is null
                      */
                     redraw = true;
                 }
@@ -342,7 +347,7 @@ public class SampleItemTabUI extends Screen {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
-    
+
     public void setState(State state) {
         evaluateEdit();
         this.state = state;
@@ -355,7 +360,7 @@ public class SampleItemTabUI extends Screen {
          */
         if (displayedUid == null)
             return new Validation();
-        
+
         return super.validate();
     }
 
@@ -383,7 +388,7 @@ public class SampleItemTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            //evaluateEdit();
+            displayedUid = uid;
             setState(state);
             fireDataChange();
         }
@@ -400,7 +405,7 @@ public class SampleItemTabUI extends Screen {
         sampleItem.setTypeOfSampleId(typeId);
         sampleItem.setTypeOfSample(display);
         parentBus.fireEvent(new SampleItemChangeEvent(displayedUid,
-                                                SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED));
+                                                      SampleItemChangeEvent.Action.SAMPLE_TYPE_CHANGED));
     }
 
     private Integer getSourceOfSampleId() {
@@ -437,7 +442,7 @@ public class SampleItemTabUI extends Screen {
         sampleItem.setContainerId(containerId);
         sampleItem.setContainer(display);
         parentBus.fireEvent(new SampleItemChangeEvent(displayedUid,
-                                                SampleItemChangeEvent.Action.CONTAINER_CHANGED));
+                                                      SampleItemChangeEvent.Action.CONTAINER_CHANGED));
     }
 
     private String getContainerReference() {
