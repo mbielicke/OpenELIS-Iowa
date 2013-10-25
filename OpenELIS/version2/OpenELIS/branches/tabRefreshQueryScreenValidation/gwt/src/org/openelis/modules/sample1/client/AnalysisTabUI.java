@@ -27,7 +27,6 @@ package org.openelis.modules.sample1.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -614,7 +613,7 @@ public class AnalysisTabUI extends Screen {
                         if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId())) {
                             userTable.setValueAt(r, c, data.getActionId());
                             parentScreen.getWindow()
-                                        .setError(Messages.get().analysis_userActionException());
+                                        .setError(Messages.get().analysisUser_actionException());
                         } else {
                             data.setActionId((Integer)val);
                         }
@@ -687,15 +686,6 @@ public class AnalysisTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                                     parentScreen,
-                                     new StateChangeEvent.Handler() {
-                                         public void onStateChange(StateChangeEvent event) {
-                                             evaluateEdit();
-                                             setState(event.getState());
-                                         }
-                                     });
-
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 String uid;
@@ -708,19 +698,18 @@ public class AnalysisTabUI extends Screen {
                         uid = null;
                         break;
                 }
-
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
-                    redraw = true;
-                } else if (isState(QUERY)) {
+                
+                if (isState(QUERY)) {
                     /*
-                     * No analysis is currently selected in the tree because it
-                     * is empty in query state, so the current uid is null. If
-                     * there was no analysis selected in the tree, before going
-                     * in query state, the previous (displayed) uid was null
-                     * too. This makes sure that the tab is redrawn for query
-                     * state even if both uids are null.
+                     * In query state the tree is empty, so no analysis is
+                     * selected in it and the current uid is null. If there was
+                     * no analysis selected in the tree before going in
+                     * query state, the previous (displayed) uid was null too.
+                     * This makes sure that the tab is redrawn for query state
+                     * even if both uids are null.
                      */
+                    redraw = true;
+                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
                     redraw = true;
                 }
 
@@ -800,9 +789,10 @@ public class AnalysisTabUI extends Screen {
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
-    }
+    }   
 
     public Validation validate() {
         /*
@@ -838,7 +828,7 @@ public class AnalysisTabUI extends Screen {
             if ( !Constants.dictionary().AN_USER_AC_RELEASED.equals(action))
                 userTable.removeRowAt(r);
             else
-                parentScreen.getWindow().setError(Messages.get().analysis_userActionException());
+                parentScreen.getWindow().setError(Messages.get().analysisUser_actionException());
         }
     }
 
@@ -859,7 +849,7 @@ public class AnalysisTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            evaluateEdit();
+            displayedUid = uid;
             setState(state);
             fireDataChange();
         }
@@ -913,7 +903,7 @@ public class AnalysisTabUI extends Screen {
         } else {
             /*
              * if the user blanks the field, selecting nothing, the previous
-             * methiod is put back in the autocomplete
+             * method is put back in the autocomplete
              */
             method.setValue(getMethodId(), getMethodName());
         }

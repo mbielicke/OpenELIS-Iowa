@@ -51,7 +51,6 @@ import org.openelis.ui.widget.NotesPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -74,8 +73,6 @@ public class SampleNotesTabUI extends Screen {
 
     protected Screen                      parentScreen;
 
-    protected EventBus                    parentBus;
-
     protected EditNoteLookupUI            editNoteLookup;
 
     protected SampleManager1              manager;
@@ -86,7 +83,6 @@ public class SampleNotesTabUI extends Screen {
 
     public SampleNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -144,7 +140,7 @@ public class SampleNotesTabUI extends Screen {
      * currently showing in the widgets is the same as the data in the latest
      * manager then the widgets are not refreshed
      */
-    public void refresh() {
+    public void onDataChange() {
         Integer id1, id2;
         String txt1, txt2;
 
