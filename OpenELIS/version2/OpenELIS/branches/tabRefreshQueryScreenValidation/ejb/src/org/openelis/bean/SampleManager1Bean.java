@@ -1276,46 +1276,42 @@ public class SampleManager1Bean {
      * an existing Quick Entry sample associated with this accession number, the
      * returned manager contains its data (quick-entered sample is locked).
      */
-    public SampleManager1 setAccessionNumber(SampleManager1 sm, Integer accession) throws Exception {
+    public SampleManager1 mergeQuickEntry(SampleManager1 sm, Integer accession) throws Exception {
         SampleDO data, qdata;
         SampleManager1 qsm;
 
         data = getSample(sm);
-        try {
-            qdata = sample.fetchByAccessionNumber(accession);
-
-            if (Constants.domain().QUICKENTRY.equals(qdata.getDomain()) && data.getId() == null) {
-                /*
-                 * there's a special condition that is not allowed; 1. the user
-                 * loads a sample from an order 2. the accession number is
-                 * changed to quick-entered sample
-                 */
-                if (data.getOrderId() != null)
-                    throw new FormErrorException(Messages.get()
-                                                         .sample_cantLoadQEOrderPresentException(accession));
-
-                qsm = fetchForUpdate(qdata.getId());
-                getSample(qsm).setDomain(data.getDomain());
-                setSampleEnvironmental(qsm, getSampleEnvironmental(sm));
-                setSamplePrivateWell(qsm, getSamplePrivateWell(sm));
-                setSampleSDWIS(qsm, getSampleSDWIS(sm));
-                setSampleNeonatal(qsm, getSampleNeonatal(sm));
-                return qsm;
-            } else if (qdata.getId().equals(data.getId())) {
-                data.setAccessionNumber(accession);
-            } else {
-                /*
-                 * the accession number belongs to some other sample
-                 */
-                throw new FormErrorException(Messages.get()
-                                                     .sample_accessionNumberDuplicate(accession));
-            }
-        } catch (NotFoundException ex) {
-            validateAccessionNumber(accession);
+        /*
+         * can't load the manager for an existing sample with another sample's
+         * data
+         */
+        if (data.getId() != null) {
             data.setAccessionNumber(accession);
+            return sm;
         }
 
-        return sm;
+        qdata = sample.fetchByAccessionNumber(accession);
+
+        if (Constants.domain().QUICKENTRY.equals(qdata.getDomain())) {
+            /*
+             * there's a special condition that is not allowed; 1. the user
+             * loads a sample from an order 2. the accession number is changed
+             * to quick-entered sample
+             */
+            if (data.getOrderId() != null)
+                throw new InconsistencyException(Messages.get()
+                                                         .sample_cantLoadQEOrderPresentException(accession));
+
+            qsm = fetchForUpdate(qdata.getId());
+            getSample(qsm).setDomain(data.getDomain());
+            setSampleEnvironmental(qsm, getSampleEnvironmental(sm));
+            setSamplePrivateWell(qsm, getSamplePrivateWell(sm));
+            setSampleSDWIS(qsm, getSampleSDWIS(sm));
+            setSampleNeonatal(qsm, getSampleNeonatal(sm));
+            return qsm;
+        } else {
+            throw new NotFoundException("A Quick entry sample not found for this number");
+        }
     }
 
     /**
@@ -1927,7 +1923,7 @@ public class SampleManager1Bean {
             if (cnt != 1 && !ignoreWarning)
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_moreThanOneReportToException(accession)));
-            
+
             /*
              * aux data must be valid for the aux field
              */
@@ -1945,7 +1941,7 @@ public class SampleManager1Bean {
                         }
                 }
             }
-            
+
             /*
              * type is required for each qa event
              */
@@ -2007,7 +2003,7 @@ public class SampleManager1Bean {
 
             /*
              * test specific analysis qa events must be valid for the analysis'
-             * test; also, type is required for each qa event 
+             * test; also, type is required for each qa event
              */
 
             if (getAnalysisQAs(sm) != null) {
@@ -2016,20 +2012,23 @@ public class SampleManager1Bean {
                     ana = amap.get(data.getAnalysisId());
                     if (data.isChanged())
                         try {
-                            analysisQA.validate(data, accession, imap.get(ana.getSampleItemId()).getItemSequence(), ana,
+                            analysisQA.validate(data,
+                                                accession,
+                                                imap.get(ana.getSampleItemId()).getItemSequence(),
+                                                ana,
                                                 ignoreWarning);
                         } catch (Exception err) {
                             DataBaseUtil.mergeException(e, err);
                         }
-                    
+
                     if (qa.getTestId() != null && !qa.getTestId().equals(ana.getTestId())) {
                         e.add(new FormErrorException(Messages.get()
                                                              .analysisQAEvent_invalidQAException(accession,
-                                                                                               imap.get(ana.getSampleItemId())
-                                                                                                   .getItemSequence(),
-                                                                                               ana.getTestName(),
-                                                                                               ana.getMethodName(),
-                                                                                               qa.getName())));
+                                                                                                 imap.get(ana.getSampleItemId())
+                                                                                                     .getItemSequence(),
+                                                                                                 ana.getTestName(),
+                                                                                                 ana.getMethodName(),
+                                                                                                 qa.getName())));
                     }
                 }
             }

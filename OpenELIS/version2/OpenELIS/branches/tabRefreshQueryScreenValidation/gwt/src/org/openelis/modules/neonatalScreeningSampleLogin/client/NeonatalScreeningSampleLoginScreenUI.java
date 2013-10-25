@@ -2322,7 +2322,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         validation = validate();
 
-        logger.log(Level.SEVERE, "main validation status: " + validation.getStatus());
         switch (validation.getStatus()) {
             case WARNINGS:
                 /*
@@ -2690,8 +2689,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
      * the screen with the returned manager.
      */
     private void setAccessionNumber(Integer accNum) {
-        ValidationErrorsList errors;
-
         if (accNum == null || accNum < 0) {
             manager.getSample().setAccessionNumber(accNum);
             window.setError(Messages.get()
@@ -2709,21 +2706,18 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         window.setBusy(Messages.get().fetching());
         try {
-            manager = SampleService1.get().setAccessionNumber(manager, accNum);
+            manager = SampleService1.get().mergeQuickEntry(manager, accNum);
             setData();
+            setState(state);
             fireDataChange();
-            window.clearStatus();
-        } catch (FormErrorException e) {
-            errors = new ValidationErrorsList();
-            errors.add(e);
-            showErrors(errors);
-            accessionNumber.setValue(getAccessionNumber());
-            accessionNumber.setFocus(true);
+        } catch (NotFoundException e) {            
+            manager.getSample().setAccessionNumber(accNum);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
         }
+        
+        window.clearStatus();
     }
 
     /**
