@@ -140,9 +140,9 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
-    public SampleManager1 setAccessionNumber(SampleManager1 sm, Integer accession) throws Exception {
+    public SampleManager1 mergeQuickEntry(SampleManager1 sm, Integer accession) throws Exception {
         try {
-            return sampleManager1.setAccessionNumber(sm, accession);
+            return sampleManager1.mergeQuickEntry(sm, accession);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

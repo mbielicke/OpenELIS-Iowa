@@ -233,17 +233,17 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
-    public void setAccessionNumber(SampleManager1 sm, Integer accession,
+    public void mergeQuickEntry(SampleManager1 sm, Integer accession,
                                    AsyncCallback<SampleManager1> callback) {
-        service.setAccessionNumber(sm, accession, callback);
+        service.mergeQuickEntry(sm, accession, callback);
     }
 
     @Override
-    public SampleManager1 setAccessionNumber(SampleManager1 sm, Integer accession) throws Exception {
+    public SampleManager1 mergeQuickEntry(SampleManager1 sm, Integer accession) throws Exception {
         Callback<SampleManager1> callback;
 
         callback = new Callback<SampleManager1>();
-        service.setAccessionNumber(sm, accession, callback);
+        service.mergeQuickEntry(sm, accession, callback);
         return callback.getResult();
     }
 
