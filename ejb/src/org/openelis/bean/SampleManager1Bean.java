@@ -184,7 +184,10 @@ public class SampleManager1Bean {
         sm = new SampleManager1();
 
         s = new SampleDO();
-        setDefaults(s);
+        /*
+         * set default values in fields like revision, entered date etc.
+         */
+        setDefaults(s, Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
 
         setSample(sm, s);
 
@@ -1351,8 +1354,10 @@ public class SampleManager1Bean {
         Datetime now;
         SampleManager1 sm;
         AnalysisViewDO ana;
+        ResultViewDO res;
         HashMap<Integer, Integer> imap, amap;
         ArrayList<AnalysisViewDO> analyses;
+        ArrayList<ResultViewDO> results;
 
         sm = fetchById(sampleId,
                        SampleManager1.Load.ORGANIZATION,
@@ -1361,19 +1366,24 @@ public class SampleManager1Bean {
                        SampleManager1.Load.AUXDATA,
                        SampleManager1.Load.NOTE,
                        SampleManager1.Load.RESULT);
-        
+
         accession = getSample(sm).getAccessionNumber();
-        
+
         /*
          * can't duplicate a completed or released sample
          */
-        if (Constants.dictionary().SAMPLE_COMPLETED.equals(getSample(sm).getStatusId()) || 
-                                          Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId() ))
-            throw new InconsistencyException(Messages.get().sample_cantDuplicateCompRelException(accession));
+        if (Constants.dictionary().SAMPLE_COMPLETED.equals(getSample(sm).getStatusId()) ||
+            Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId()))
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_cantDuplicateCompRelException(accession));
 
         getSample(sm).setId(null);
         getSample(sm).setAccessionNumber(null);
-        setDefaults(getSample(sm));
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+        /*
+         * set default values in fields like revision, entered date etc.
+         */
+        setDefaults(getSample(sm), now);
 
         /*
          * sample level data
@@ -1396,14 +1406,6 @@ public class SampleManager1Bean {
         } else if (getSampleNeonatal(sm) != null) {
             getSampleNeonatal(sm).setId(null);
             getSampleNeonatal(sm).setSampleId(null);
-            if (getSampleNeonatal(sm).getPatient() != null) {
-                getSampleNeonatal(sm).getPatient().setId(null);
-                getSampleNeonatal(sm).getPatient().getAddress().setId(null);
-            }
-            if (getSampleNeonatal(sm).getNextOfKin() != null) {
-                getSampleNeonatal(sm).getNextOfKin().setId(null);
-                getSampleNeonatal(sm).getNextOfKin().getAddress().setId(null);
-            }
         }
 
         if (getOrganizations(sm) != null) {
@@ -1453,7 +1455,7 @@ public class SampleManager1Bean {
         for (SampleItemViewDO data : getItems(sm)) {
             tmpId = data.getId();
             data.setId(sm.getNextUID());
-            data.setItemSequence(seq++);
+            data.setItemSequence(seq++ );
             imap.put(tmpId, data.getId());
         }
         getSample(sm).setNextItemSequence(seq);
@@ -1464,13 +1466,12 @@ public class SampleManager1Bean {
         amap = new HashMap<Integer, Integer>();
         analyses = getAnalyses(sm);
         if (analyses != null) {
-            now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
             i = 0;
             while (i < analyses.size()) {
                 ana = analyses.get(i);
                 if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
-                    Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()) || 
-                    Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()) || 
+                    Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()) ||
                     Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(ana.getStatusId())) {
                     if (ana.getParentAnalysisId() != null) {
                         /*
@@ -1490,7 +1491,7 @@ public class SampleManager1Bean {
                             Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()))
                             ana.setAvailableDate(now);
                         amap.put(tmpId, ana.getId());
-                        i++;
+                        i++ ;
                     }
                 } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId())) {
                     /*
@@ -1515,9 +1516,23 @@ public class SampleManager1Bean {
         }
 
         if (getResults(sm) != null) {
-            for (ResultViewDO data : getResults(sm)) {
-                data.setId(sm.getNextUID());
-                data.setAnalysisId(amap.get(data.getAnalysisId()));
+            /*
+             * remove the results whose analysis is no longer in the manager
+             * (cancelled analyses are removed); link the remaining results to
+             * their analysis using the negative ids
+             */
+            i = 0;
+            results = getResults(sm);
+            while (i < results.size()) {
+                res = results.get(i);
+                tmpId = amap.get(res.getAnalysisId());
+                if (tmpId != null) {
+                    res.setId(sm.getNextUID());
+                    res.setAnalysisId(tmpId);
+                    i++ ;
+                } else {
+                    results.remove(i);
+                }
             }
         }
 
@@ -1828,10 +1843,10 @@ public class SampleManager1Bean {
     /**
      * Sets default values in the fields essential for a new sample
      */
-    protected void setDefaults(SampleDO data) {
+    protected void setDefaults(SampleDO data, Datetime now) {
         data.setNextItemSequence(0);
         data.setRevision(0);
-        data.setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        data.setEnteredDate(now);
         data.setReceivedById(userCache.getId());
         data.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
     }
@@ -1912,6 +1927,39 @@ public class SampleManager1Bean {
             if (cnt != 1 && !ignoreWarning)
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_moreThanOneReportToException(accession)));
+            
+            /*
+             * aux data must be valid for the aux field
+             */
+
+            if (getAuxilliary(sm) != null) {
+                for (AuxDataViewDO data : getAuxilliary(sm)) {
+                    if (data.isChanged())
+                        try {
+                            auxData.validate(data,
+                                             ams.get(data.getGroupId()).getFormatter(),
+                                             accession,
+                                             ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
+            
+            /*
+             * type is required for each qa event
+             */
+
+            if (getSampleQAs(sm) != null) {
+                for (SampleQaEventViewDO data : getSampleQAs(sm)) {
+                    if (data.isChanged())
+                        try {
+                            sampleQA.validate(data, accession, ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
 
             /*
              * at least one sample item and items must have sample type
@@ -1958,17 +2006,25 @@ public class SampleManager1Bean {
             }
 
             /*
-             * test specific analysis qa events must be valid for the analysis's
-             * test
+             * test specific analysis qa events must be valid for the analysis'
+             * test; also, type is required for each qa event 
              */
 
             if (getAnalysisQAs(sm) != null) {
                 for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
                     qa = qamap.get(data.getQaEventId());
                     ana = amap.get(data.getAnalysisId());
+                    if (data.isChanged())
+                        try {
+                            analysisQA.validate(data, accession, imap.get(ana.getSampleItemId()).getItemSequence(), ana,
+                                                ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                    
                     if (qa.getTestId() != null && !qa.getTestId().equals(ana.getTestId())) {
                         e.add(new FormErrorException(Messages.get()
-                                                             .analysis_qaEventInvalidException(getSample(sm).getAccessionNumber(),
+                                                             .analysisQAEvent_invalidQAException(accession,
                                                                                                imap.get(ana.getSampleItemId())
                                                                                                    .getItemSequence(),
                                                                                                ana.getTestName(),
@@ -1992,24 +2048,6 @@ public class SampleManager1Bean {
                                             accession,
                                             amap.get(data.getAnalysisId()),
                                             ignoreWarning);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
-
-            /*
-             * aux data must be valid for the aux field
-             */
-
-            if (getAuxilliary(sm) != null) {
-                for (AuxDataViewDO data : getAuxilliary(sm)) {
-                    if (data.isChanged())
-                        try {
-                            auxData.validate(data,
-                                             ams.get(data.getGroupId()).getFormatter(),
-                                             accession,
-                                             ignoreWarning);
                         } catch (Exception err) {
                             DataBaseUtil.mergeException(e, err);
                         }
