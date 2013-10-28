@@ -697,7 +697,9 @@ public class WorksheetItemTabUI extends Screen {
                     row.setCell(0, wiDO.getPosition());
                     for (j = 0; j < manager.analysis.count(wiDO); j++) {
                         waDO = manager.analysis.get(wiDO, j);
-                        qcLinkModel.add(new Item<Integer>(waDO.getId(), waDO.getAccessionNumber()));
+                        qcLinkModel.add(new Item<Integer>(waDO.getId(), waDO.getAccessionNumber() +
+                                                                        " (" + wiDO.getPosition() +
+                                                                        ")"));
     
                         if (j > 0) {
                             row = new Row(13);
