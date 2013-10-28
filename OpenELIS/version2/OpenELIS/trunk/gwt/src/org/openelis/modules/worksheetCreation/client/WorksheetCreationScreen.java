@@ -1540,6 +1540,8 @@ public class WorksheetCreationScreen extends Screen {
             } else if (name != null) {
                 qcLookupScreen.clearFields();
                 qcLookupScreen.executeQuery(name);
+            } else {
+                qcLookupScreen.clearFields();
             }
         } catch (Exception e) {
             e.printStackTrace();
