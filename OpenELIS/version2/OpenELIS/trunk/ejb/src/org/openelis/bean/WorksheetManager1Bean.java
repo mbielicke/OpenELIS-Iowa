@@ -573,14 +573,16 @@ public class WorksheetManager1Bean {
         }
 
         sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
-        sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(updateAnalysisIds), SampleManager1.Load.SINGLERESULT);
-        for (i = 0; i < sMans.size(); i++) {
-            sManager = sMans.get(i);
-            for (j = 0; j < sManager.item.count(); j++) {
-                siDO = sManager.item.get(j);
-                for (k = 0; k < sManager.analysis.count(siDO); k++) {
-                    aVDO = sManager.analysis.get(siDO, k);
-                    sMansByAnalysisId.put(aVDO.getId(), sManager);
+        if (!analysisIds.isEmpty()) {
+            sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(analysisIds), SampleManager1.Load.SINGLERESULT);
+            for (i = 0; i < sMans.size(); i++) {
+                sManager = sMans.get(i);
+                for (j = 0; j < sManager.item.count(); j++) {
+                    siDO = sManager.item.get(j);
+                    for (k = 0; k < sManager.analysis.count(siDO); k++) {
+                        aVDO = sManager.analysis.get(siDO, k);
+                        sMansByAnalysisId.put(aVDO.getId(), sManager);
+                    }
                 }
             }
         }
@@ -1391,7 +1393,9 @@ public class WorksheetManager1Bean {
             wrList = wrMap.get(rVDO.getTestAnalyteId());
             if (wrList != null) {
                 wrVDO = wrList.get(0);
-                wrVDO.setResultRow(rowIndex++);
+                if (wrVDO.getResultRow() != rowIndex)
+                    wrVDO.setResultRow(rowIndex);
+                rowIndex++;
                 wrList.remove(0);
                 if (wrList.size() == 0)
                     wrMap.remove(wrList);
