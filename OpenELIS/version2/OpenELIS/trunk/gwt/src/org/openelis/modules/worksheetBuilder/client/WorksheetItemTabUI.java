@@ -1269,7 +1269,15 @@ public class WorksheetItemTabUI extends Screen {
         index = worksheetItemTable.getSelectedRow();
         manager.item.move(index, false);
         worksheetItemTable.setModel(getTableModel());
-        worksheetItemTable.selectRowAt(index + 1);
+        worksheetItemTable.selectRowAt(++index);
+        //
+        // Programmatically selecting the row doesn't fire selection events, so
+        // we need to enable/disable the move buttons accordingly
+        //
+        if (index >= worksheetItemTable.getRowCount() - 1)
+            moveDownButton.setEnabled(false);
+        if (!moveUpButton.isEnabled() && index > 0)
+            moveUpButton.setEnabled(true);
     }
         
     @SuppressWarnings("unused")
@@ -1281,7 +1289,15 @@ public class WorksheetItemTabUI extends Screen {
         index = worksheetItemTable.getSelectedRow();
         manager.item.move(index, true);
         worksheetItemTable.setModel(getTableModel());
-        worksheetItemTable.selectRowAt(index - 1);
+        worksheetItemTable.selectRowAt(--index);
+        //
+        // Programmatically selecting the row doesn't fire selection events, so
+        // we need to enable/disable the move buttons accordingly
+        //
+        if (!moveDownButton.isEnabled() && index < worksheetItemTable.getRowCount() - 1)
+            moveDownButton.setEnabled(true);
+        if (index <= 0)
+            moveUpButton.setEnabled(false);
     }
         
     private void enableAddRowMenu(boolean enable) {
