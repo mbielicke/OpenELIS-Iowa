@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
 import org.openelis.domain.NoteViewDO;
@@ -280,6 +281,20 @@ public class SampleManager1Accessor {
         if (sm.results == null)
             sm.results = new ArrayList<ResultViewDO>();
         sm.results.add(result);
+    }
+    
+    public static ArrayList<AnalysisWorksheetVO> getWorksheets(SampleManager1 sm) {
+        return sm.worksheets;
+    }
+    
+    public static void setWorksheets(SampleManager1 sm, ArrayList<AnalysisWorksheetVO> worksheets) {
+        sm.worksheets = worksheets;
+    }
+    
+    public static void addWorksheet(SampleManager1 sm, AnalysisWorksheetVO worksheet) {
+        if (sm.worksheets == null)
+            sm.worksheets = new ArrayList<AnalysisWorksheetVO>();
+        sm.worksheets.add(worksheet);
     }
     
     public static ArrayList<DataObject> getRemoved(SampleManager1 sm) {

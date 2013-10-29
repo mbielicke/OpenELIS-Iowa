@@ -223,7 +223,7 @@ public class AnalysisQAEventBean {
 
         if (data.getTypeId() == null) {
             e.add(new FormErrorException(Messages.get()
-                                                 .analysisQAEvent_typeRequiredException(DataBaseUtil.toInteger(accession),
+                                                 .analysisQAEvent_typeRequiredException(accession,
                                                                                         itemSequence,
                                                                                         analysis.getTestName(),
                                                                                         analysis.getMethodName(),

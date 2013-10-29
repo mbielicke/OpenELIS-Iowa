@@ -187,7 +187,7 @@ public class SampleQAEventBean  {
         e = new ValidationErrorsList();
         if (data.getTypeId() == null)
             e.add(new FormErrorException(Messages.get()
-                                         .sampleQAEvent_typeRequiredException(DataBaseUtil.toInteger(accession), data.getQaEventName())));
+                                         .sampleQAEvent_typeRequiredException(accession, data.getQaEventName())));
         
         
         if (e.size() > 0)
