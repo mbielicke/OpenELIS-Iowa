@@ -44,6 +44,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -169,6 +170,9 @@ public class SampleManager1Bean {
 
     @EJB
     private QaEventBean                  qaEvent;
+
+    @EJB
+    private WorksheetBean                worksheet;
 
     private static final Logger          log = Logger.getLogger("openelis");
 
@@ -421,6 +425,13 @@ public class SampleManager1Bean {
             }
         }
 
+        if (el.contains(SampleManager1.Load.WORKSHEET)) {
+            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids1)) {
+                sm = map1.get(data.getAnalysisId());
+                addWorksheet(sm, data);
+            }
+        }
+
         return sms;
     }
 
@@ -602,6 +613,13 @@ public class SampleManager1Bean {
             }
         }
 
+        if (el.contains(SampleManager1.Load.WORKSHEET)) {
+            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids1)) {
+                sm = map1.get(data.getAnalysisId());
+                addWorksheet(sm, data);
+            }
+        }
+
         return sms;
     }
 
@@ -736,6 +754,12 @@ public class SampleManager1Bean {
             setResults(sm, null);
             for (ResultViewDO data : result.fetchByAnalysisIds(ids))
                 addResult(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.WORKSHEET)) {
+            setWorksheets(sm, null);
+            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids))
+                addWorksheet(sm, data);
         }
 
         return sm;
@@ -1272,25 +1296,18 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Sets the specified accession number in the manager's sample. If there is
-     * an existing Quick Entry sample associated with this accession number, the
-     * returned manager contains its data (quick-entered sample is locked).
+     * Returns a manager loaded with the data of the quick-entered sample that
+     * has the same accession number as the passed manager. Also, locks the
+     * returned sample. Throws a NotFoundException if such a sample couldn't be
+     * found or if its domain is not quick-entry.
      */
-    public SampleManager1 mergeQuickEntry(SampleManager1 sm, Integer accession) throws Exception {
+    public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         SampleDO data, qdata;
         SampleManager1 qsm;
 
         data = getSample(sm);
-        /*
-         * can't load the manager for an existing sample with another sample's
-         * data
-         */
-        if (data.getId() != null) {
-            data.setAccessionNumber(accession);
-            return sm;
-        }
 
-        qdata = sample.fetchByAccessionNumber(accession);
+        qdata = sample.fetchByAccessionNumber(data.getAccessionNumber());
 
         if (Constants.domain().QUICKENTRY.equals(qdata.getDomain())) {
             /*
@@ -1300,7 +1317,7 @@ public class SampleManager1Bean {
              */
             if (data.getOrderId() != null)
                 throw new InconsistencyException(Messages.get()
-                                                         .sample_cantLoadQEOrderPresentException(accession));
+                                                         .sample_cantLoadQEOrderPresentException(data.getAccessionNumber()));
 
             qsm = fetchForUpdate(qdata.getId());
             getSample(qsm).setDomain(data.getDomain());
