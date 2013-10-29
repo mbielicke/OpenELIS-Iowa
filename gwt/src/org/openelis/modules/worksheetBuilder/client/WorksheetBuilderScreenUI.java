@@ -299,7 +299,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
-                statusId.setEnabled(isState(QUERY) || (isState(UPDATE) && canEdit()));
+                statusId.setEnabled(isState(QUERY, UPDATE));
                 statusId.setQueryMode(isState(QUERY));
             }
 
