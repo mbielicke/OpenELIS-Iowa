@@ -101,11 +101,11 @@ public abstract class AuxDataTabUI extends Screen {
     protected Dropdown<Integer>                         analyte;
 
     protected Screen                                    parentScreen;
-    
+
     protected AuxDataTabUI                              screen;
-    
+
     protected AuxGroupLookupUI                          auxGroupLookup;
-    
+
     protected EventBus                                  parentBus;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
@@ -124,14 +124,14 @@ public abstract class AuxDataTabUI extends Screen {
         Item<Integer> row;
 
         screen = this;
-        
+
         addScreenHandler(table, "table", new ScreenHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
                 table.setModel(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent event) {
-                table.setEnabled(isState(QUERY, DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+                table.setEnabled(true);
             }
         });
 
@@ -325,17 +325,17 @@ public abstract class AuxDataTabUI extends Screen {
         parentBus.addHandler(AddAuxGroupEvent.getType(), new AddAuxGroupEvent.Handler() {
             @Override
             public void onAddAuxGroup(AddAuxGroupEvent event) {
-                if (screen != event.getSource()) {
+                if (event.getSource() != screen) {
                     redraw = true;
                     displayAuxData();
                 }
             }
         });
-        
+
         parentBus.addHandler(RemoveAuxGroupEvent.getType(), new RemoveAuxGroupEvent.Handler() {
             @Override
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
-                if (screen != event.getSource()) {
+                if (event.getSource() != screen) {
                     redraw = true;
                     displayAuxData();
                 }
@@ -361,56 +361,10 @@ public abstract class AuxDataTabUI extends Screen {
             logger.log(Level.SEVERE, e.getMessage(), e);
             parentScreen.getWindow().close();
         }
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       canEdit = evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
-        parentBus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       int count1, count2;
-                                       AuxDataViewDO aux1, aux2;
-                                       
-                                       count1 = table.getRowCount();
-                                       count2 = count();
-
-                                       /*
-                                        * find out if there's any difference between the aux data being
-                                        * displayed and the aux data to be displayed
-                                        */
-                                       if (count1 == count2) {
-                                           for (int i = 0; i < count1; i++ ) {
-                                               aux1 = table.getRowAt(i).getData();
-                                               aux2 = get(i);
-
-                                               if (DataBaseUtil.isDifferent(aux1.getTypeId(), aux2.getTypeId()) ||
-                                                   DataBaseUtil.isDifferent(aux1.getValue(), aux2.getValue()) ||
-                                                   DataBaseUtil.isDifferent(aux1.getAnalyteId(), aux2.getAnalyteId()) ||
-                                                   DataBaseUtil.isDifferent(aux1.getGroupId(), aux2.getGroupId())) {
-                                                   redraw = true;
-                                                   break;
-                                               }
-                                           }
-                                       } else {
-                                           redraw = true;
-                                       }
-                                       
-                                       displayAuxData();
-                                   }
-                               });
     }
 
     public void setState(State state) {
+        canEdit = evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
@@ -443,6 +397,67 @@ public abstract class AuxDataTabUI extends Screen {
      */
     public abstract String getValueMetaKey();
 
+    /**
+     * notifies the tab that it may need to refresh the display in its widgets;
+     * if the data currently showing in the widgets is the same as the data in
+     * the latest manager then the widgets are not refreshed
+     */
+    public void onDataChange() {
+        int i, count1, count2;
+        String val;
+        AuxDataViewDO aux;
+        Row row;
+        ResultCell.Value rv;
+
+        if (isState(State.QUERY)) {
+            /*
+             * In Query state, the table shows only one row but it's not in
+             * query mode, because the manager cache can't be used in query
+             * mode. In the row, a dropdown is shown for the analyte (aux field)
+             * and a dropdown or textbox is shown for the value. The widget for
+             * the value is determined using the analyte chosen and the cache.
+             * Thus the table needs to be reloaded to show that one row,
+             * regardless of the previous data.
+             */
+            redraw = true;
+        } else {
+            count1 = table.getRowCount();
+            count2 = count();
+            if (count1 == count2) {
+                /*
+                 * find out if there's any difference between the aux data being
+                 * displayed and the aux data in the manager
+                 */
+                for (i = 0; i < count1; i++ ) {
+                    aux = get(i);
+
+                    row = table.getRowAt(i);
+                    rv = row.getCell(2);
+                    /*
+                     * for type dictionary, the value is stored as the dictId
+                     * and the entry is the display, for other types
+                     * the value is the display
+                     */
+                    if (rv.getDictId() != null)
+                        val = rv.getDictId();
+                    else
+                        val = rv.getDisplay();
+
+                    if (DataBaseUtil.isDifferent(aux.getIsReportable(), row.getCell(0)) ||
+                        DataBaseUtil.isDifferent(aux.getAuxFieldId(), row.getCell(1)) ||
+                        DataBaseUtil.isDifferent(aux.getValue(), val)) {
+                        redraw = true;
+                        break;
+                    }
+                }
+            } else {
+                redraw = true;
+            }
+        }
+
+        displayAuxData();
+    }
+
     public ArrayList<QueryData> getQueryFields() {
         String query;
         AuxFieldViewDO data;
@@ -450,6 +465,13 @@ public abstract class AuxDataTabUI extends Screen {
         QueryData field;
         ResultCell.Value value;
         ArrayList<QueryData> fields;
+
+        /*
+         * the table is not loaded if the tab was never opened (made visible)
+         * after going in query state
+         */
+        if (table.getRowCount() == 0)
+            return null;
 
         table.finishEditing();
         /*
@@ -496,10 +518,10 @@ public abstract class AuxDataTabUI extends Screen {
                 @Override
                 public void ok() {
                     ArrayList<Integer> ids;
-                    
+
                     ids = auxGroupLookup.getGroupIds();
                     if (ids != null && ids.size() > 0)
-                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
+                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);                    
                 }
 
                 @Override
@@ -528,7 +550,7 @@ public abstract class AuxDataTabUI extends Screen {
         r = table.getSelectedRow();
         if (r == -1)
             return;
-        if (Window.confirm(Messages.get().removeAuxMessage())) {
+        if (Window.confirm(Messages.get().aux_removeMessage())) {
             data = (AuxDataViewDO)table.getRowAt(r).getData();
             ids = new ArrayList<Integer>(1);
             ids.add(data.getGroupId());
@@ -555,8 +577,8 @@ public abstract class AuxDataTabUI extends Screen {
 
         /*
          * Reset the table's view, so that if its model is changed, it shows its
-         * headers and columns correctly. Otherwise, problems like widths of the
-         * columns not being correct or the headers not showing may happen.
+         * headers and columns correctly, so that, problems like widths of the
+         * columns not being correct or the headers not showing don't happen.
          */
         table.onResize();
 
@@ -565,7 +587,6 @@ public abstract class AuxDataTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            canEdit = evaluateEdit();
             setState(state);
             fireDataChange();
         }

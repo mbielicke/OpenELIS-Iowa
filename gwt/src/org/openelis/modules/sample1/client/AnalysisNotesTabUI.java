@@ -78,18 +78,18 @@ public class AnalysisNotesTabUI extends Screen {
     protected Button                        editNoteButton, addNoteButton;
 
     protected Screen                        parentScreen;
-    
-    protected EventBus                      parentBus; 
+
+    protected EventBus                      parentBus;
 
     protected EditNoteLookupUI              editNoteLookup;
 
-    protected SampleManager1                manager, displayedManager;
+    protected SampleManager1                manager;
 
     protected AnalysisViewDO                analysis;
-    
-    protected boolean                      canEdit, isVisible, redraw;
 
-    protected String                        displayedUid;
+    protected NoteViewDO                    displayedExtNote, displayedIntNote;
+
+    protected boolean                       canEdit, isVisible, redraw;
 
     public AnalysisNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -98,8 +98,8 @@ public class AnalysisNotesTabUI extends Screen {
         initialize();
 
         manager = null;
-        displayedManager = null;
-        displayedUid = null;
+        displayedExtNote = null;
+        displayedIntNote = null;
     }
 
     private void initialize() {
@@ -131,35 +131,15 @@ public class AnalysisNotesTabUI extends Screen {
 
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
-                String uid;
-
                 isVisible = event.isVisible();
-                if (analysis != null)
-                    uid = manager.getUid(analysis);
-                else
-                    uid = null;
-
-                displayNotes(uid);
+                displayNotes();
             }
         });
 
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
-                int count1, count2;
                 Integer id1, id2;
-                String uid;
+                String uid, txt1, txt2;
 
                 switch (event.getSelectedType()) {
                     case ANALYSIS:
@@ -170,50 +150,52 @@ public class AnalysisNotesTabUI extends Screen {
                         break;
                 }
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
-                    redraw = true;
-                } else if (analysis != null) {
-                    /*
-                     * compare external notes
-                     */
-                    id1 = null;
-                    id2 = null;
-                    if (displayedManager != null &&
-                        displayedManager.analysisExternalNote.get(analysis) != null)
-                        id1 = displayedManager.analysisExternalNote.get(analysis).getId();
+                if (uid != null)
+                    analysis = (AnalysisViewDO)manager.getObject(uid);
+                else
+                    analysis = null;
 
-                    if (manager != null && manager.analysisExternalNote.get(analysis) != null)
-                        id2 = manager.analysisExternalNote.get(analysis).getId();
-
-                    redraw = DataBaseUtil.isDifferent(id1, id2);
-
-                    if ( !redraw) {
-                        /*
-                         * compare internal notes
-                         */
-                        count1 = displayedManager == null ? 0
-                                                         : displayedManager.analysisInternalNote.count(analysis);
-                        count2 = manager == null ? 0 : manager.analysisInternalNote.count(analysis);
-
-                        if (count1 == count2) {
-                            if (count1 > 0)
-                                redraw = DataBaseUtil.isDifferent(displayedManager.analysisInternalNote.get(analysis,
-                                                                                                                 0)
-                                                                                                            .getId(),
-                                                                       manager.analysisInternalNote.get(analysis,
-                                                                                                        0)
-                                                                                                   .getId());
-                        } else {
-                            redraw = true;
-                        }
-                    }
+                /*
+                 * redraw only if the displayed data is different from the data
+                 * in the manager; compare external note
+                 */
+                id1 = null;
+                txt1 = null;
+                if (displayedExtNote != null) {
+                    id1 = displayedExtNote.getId();
+                    txt1 = displayedExtNote.getText();
                 }
-                
-                displayNotes(uid);
+
+                id2 = null;
+                txt2 = null;
+                if (manager != null && analysis != null &&
+                    manager.analysisExternalNote.get(analysis) != null) {
+                    id2 = manager.analysisExternalNote.get(analysis).getId();
+                    txt2 = manager.analysisExternalNote.get(analysis).getText();
+                }
+
+                /*
+                 * since the analysis only has one external note, its id won't
+                 * change but its text can
+                 */
+                redraw = DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2);
+
+                if ( !redraw) {
+                    /*
+                     * compare internal notes
+                     */
+                    id1 = displayedIntNote != null ? displayedIntNote.getId() : null;
+                    id2 = null;
+                    if (manager != null && analysis != null &&
+                        manager.analysisInternalNote.count(analysis) > 0)
+                        id2 = manager.analysisInternalNote.get(analysis, 0).getId();
+                    redraw = DataBaseUtil.isDifferent(id1, id2);
+                }
+
+                displayNotes();
             }
         });
-        
+
         parentBus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
             @Override
             public void onAnalysisChange(AnalysisChangeEvent event) {
@@ -223,7 +205,6 @@ public class AnalysisNotesTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
-                    evaluateEdit();
                     setState(state);
                 }
             }
@@ -231,13 +212,12 @@ public class AnalysisNotesTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
-            this.manager = manager;        
-        }
+        if (DataBaseUtil.isDifferent(this.manager, manager))
+            this.manager = manager;
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
@@ -252,12 +232,7 @@ public class AnalysisNotesTabUI extends Screen {
         showNoteLookup(false);
     }
 
-    private void displayNotes(String uid) {
-        if (uid != null)
-            analysis = (AnalysisViewDO)manager.getObject(uid);
-        else
-            analysis = null;
-
+    private void displayNotes() {
         if ( !isVisible)
             return;
 
@@ -266,8 +241,15 @@ public class AnalysisNotesTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            displayedManager = manager;
-            evaluateEdit();
+            if (manager != null && analysis != null) {
+                displayedExtNote = manager.analysisExternalNote.get(analysis);
+                if (manager.analysisInternalNote.count(analysis) > 0)
+                    displayedIntNote = manager.analysisInternalNote.get(analysis, 0);
+            } else {
+                displayedExtNote = null;
+                displayedIntNote = null;
+            }
+
             setState(state);
             fireDataChange();
         }
@@ -281,9 +263,9 @@ public class AnalysisNotesTabUI extends Screen {
             n = manager.analysisExternalNote.get(analysis);
             if (n != null)
                 externalNotePanel.addNote(n.getSubject(),
-                                             n.getSystemUser(),
-                                             n.getText(),
-                                             n.getTimestamp());
+                                          n.getSystemUser(),
+                                          n.getText(),
+                                          n.getTimestamp());
         }
     }
 
@@ -295,9 +277,9 @@ public class AnalysisNotesTabUI extends Screen {
             for (int i = 0; i < manager.analysisInternalNote.count(analysis); i++ ) {
                 n = manager.analysisInternalNote.get(analysis, i);
                 internalNotePanel.addNote(n.getSubject(),
-                                             n.getSystemUser(),
-                                             n.getText(),
-                                             n.getTimestamp());
+                                          n.getSystemUser(),
+                                          n.getText(),
+                                          n.getTimestamp());
             }
         }
     }
@@ -319,8 +301,8 @@ public class AnalysisNotesTabUI extends Screen {
                     perm = UserCache.getPermission().getSection(sect.getName());
                 }
                 canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
-                                    perm != null &&
-                                    (perm.hasAssignPermission() || perm.hasCompletePermission());
+                          perm != null &&
+                          (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception e) {
                 Window.alert("canEdit:" + e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
@@ -340,8 +322,8 @@ public class AnalysisNotesTabUI extends Screen {
                     /*
                      * isExternal is not used for this check because its value
                      * doesn't change in this inner class after the object is
-                     * created, even though different values for it may get passed
-                     * to showNoteLookup on subsequent calls
+                     * created, even though different values for it may get
+                     * passed to showNoteLookup on subsequent calls
                      */
                     if (editNoteLookup.getHasSubject()) {
                         setNoteFields(manager.analysisInternalNote.getEditing(analysis),

@@ -35,11 +35,14 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.entity.SampleQaevent;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.ValidationErrorsList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -176,5 +179,18 @@ public class SampleQAEventBean  {
 
         if (entity != null)
             manager.remove(entity);
+    }
+    
+    public void validate(SampleQaEventViewDO data, Integer accession, boolean ignoreWarning) throws Exception {
+        ValidationErrorsList e;
+        
+        e = new ValidationErrorsList();
+        if (data.getTypeId() == null)
+            e.add(new FormErrorException(Messages.get()
+                                         .sampleQAEvent_typeRequiredException(accession, data.getQaEventName())));
+        
+        
+        if (e.size() > 0)
+            throw e;
     }
 }

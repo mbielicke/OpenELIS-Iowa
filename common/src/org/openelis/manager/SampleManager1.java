@@ -36,6 +36,7 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -75,7 +76,7 @@ public class SampleManager1 implements Serializable {
      * Flags that specifies what optional data to load with the manager
      */
     public enum Load {
-        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT
+        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT, WORKSHEET
     };
 
     protected SampleDO                            sample;
@@ -96,6 +97,7 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<StorageViewDO>            storages;
     protected ArrayList<AnalysisUserViewDO>       users;
     protected ArrayList<ResultViewDO>             results;
+    protected ArrayList<AnalysisWorksheetVO>      worksheets;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID              = -1;
 
@@ -112,6 +114,7 @@ public class SampleManager1 implements Serializable {
     transient public final Storage                storage              = new Storage();
     transient public final AnalysisUser           analysisUser         = new AnalysisUser();
     transient public final Result                 result               = new Result();
+    transient public final Worksheet              worksheet            = new Worksheet();
     transient private HashMap<String, DataObject> uidMap;
 
     /**
@@ -1530,6 +1533,63 @@ public class SampleManager1 implements Serializable {
                     }
                     rl.add(data);
                 }
+            }
+        }
+    }
+    
+    /**
+     * Class to manage the worksheets associated with the sample's analyses
+     */
+    public class Worksheet {
+        transient protected HashMap<Integer, ArrayList<AnalysisWorksheetVO>> localmap = null;
+
+        /**
+         * Returns the worksheets for given analysis at specified index.
+         */
+        public AnalysisWorksheetVO get(AnalysisDO analysis, int i) {
+            localmapBuild();
+            return localmap.get(analysis.getId()).get(i);
+        }
+
+        /**
+         * Returns the number of worksheets associated with specified analysis
+         */
+        public int count(AnalysisDO analysis) {
+            ArrayList<AnalysisWorksheetVO> l;
+
+            if (worksheets != null) {
+                localmapBuild();
+                l = localmap.get(analysis.getId());
+                if (l != null)
+                    return l.size();
+            }
+            return 0;
+        }
+
+        /*
+         * create a hash map from worksheet list.
+         */
+        private void localmapBuild() {
+            if (localmap == null && worksheets != null) {
+                localmap = new HashMap<Integer, ArrayList<AnalysisWorksheetVO>>();
+                for (AnalysisWorksheetVO data : worksheets)
+                    localmapAdd(data);
+            }
+        }
+
+        /*
+         * adds a new worksheet to the hash map
+         */
+        private void localmapAdd(AnalysisWorksheetVO data) {
+            ArrayList<AnalysisWorksheetVO> l;
+
+            if (localmap != null) {
+                l = localmap.get(data.getAnalysisId());
+                if (l == null) {
+                    l = new ArrayList<AnalysisWorksheetVO>();
+                    localmap.put(data.getAnalysisId(), l);
+                }
+                l.add(data);
             }
         }
     }

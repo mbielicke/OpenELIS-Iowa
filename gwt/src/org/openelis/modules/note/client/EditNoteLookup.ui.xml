@@ -78,7 +78,7 @@
         </g:layer>
       </g:LayoutPanel>
     </g:layer>
-    <g:layer bottom="0px" height="25px" right="35%" left="45%">
+    <g:layer bottom="0px" height="25px" left="42%" right="35%">
       <g:HorizontalPanel horizontalAlignment="CENTER">
         <w:Button ui:field="okButton" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.gen_ok}" />
         <w:Button ui:field="cancelButton" leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.gen_cancel}" />

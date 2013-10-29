@@ -102,14 +102,15 @@ public class QAEventTabUI extends Screen {
     protected Screen                   parentScreen;
 
     protected QAEventTabUI             screen;
-    
+
     protected EventBus                 parentBus;
 
-    protected SampleManager1           manager, displayedManager;
+    protected SampleManager1           manager;
 
     protected AnalysisViewDO           analysis;
 
-    protected boolean                  sampleOrAnyAnaReleased, canEditAnalysisQA, isVisible, redraw;
+    protected boolean                  sampleOrAnyAnaReleased, canEditAnalysisQA, isVisible,
+                    redraw;
 
     protected String                   displayedUid;
 
@@ -122,7 +123,6 @@ public class QAEventTabUI extends Screen {
         initialize();
 
         manager = null;
-        displayedManager = null;
         displayedUid = null;
     }
 
@@ -311,36 +311,21 @@ public class QAEventTabUI extends Screen {
 
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
-                String uid;
-
                 isVisible = event.isVisible();
-                if (analysis != null)
-                    uid = manager.getUid(analysis);
-                else
-                    uid = null;
-
-                displayQAEvents(uid);
+                displayQAEvents();
             }
         });
 
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 int i, count1, count2;
                 String uid;
-                SampleQaEventViewDO sqa1, sqa2;
-                AnalysisQaEventViewDO aqa1, aqa2;
+                SampleQaEventViewDO sqa;
+                AnalysisQaEventViewDO aqa;
+                Row row;
 
                 switch (event.getSelectedType()) {
                     case ANALYSIS:
@@ -350,48 +335,48 @@ public class QAEventTabUI extends Screen {
                         uid = null;
                         break;
                 }
-                
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
-                    redraw = true;
-                } else {
-                    /*
-                     * compare sample qa events
-                     */
-                    count1 = displayedManager == null ? 0 : displayedManager.qaEvent.count();
-                    count2 = manager == null ? 0 : manager.qaEvent.count();
 
-                    if (count1 == count2) {
-                        for (i = 0; i < count1; i++ ) {
-                            sqa1 = displayedManager.qaEvent.get(i);
-                            sqa2 = manager.qaEvent.get(i);
-                            if (DataBaseUtil.isDifferent(sqa1.getId(), sqa2.getId()) ||
-                                DataBaseUtil.isDifferent(sqa1.getQaEventId(), sqa2.getQaEventId()) ||
-                                DataBaseUtil.isDifferent(sqa1.getTypeId(), sqa2.getTypeId()) ||
-                                DataBaseUtil.isDifferent(sqa1.getIsBillable(), sqa1.getIsBillable())) {
-                                redraw = true;
-                                break;
-                            }
+                if (uid != null)
+                    analysis = (AnalysisViewDO)manager.getObject(uid);
+                else
+                    analysis = null;
+
+                /*
+                 * compare sample qa events
+                 */
+                count1 = sampleQATable.getRowCount();
+                count2 = manager == null ? 0 : manager.qaEvent.count();
+
+                if (count1 == count2) {
+                    for (i = 0; i < count1; i++ ) {
+                        row = sampleQATable.getRowAt(i);
+                        sqa = manager.qaEvent.get(i);
+                        if (DataBaseUtil.isDifferent(sqa.getQaEventName(), row.getCell(0)) ||
+                            DataBaseUtil.isDifferent(sqa.getTypeId(), row.getCell(1)) ||
+                            DataBaseUtil.isDifferent(sqa.getIsBillable(), row.getCell(2))) {
+                            redraw = true;
+                            break;
                         }
-                    } else {
-                        redraw = true;
                     }
+                } else {
+                    redraw = true;
+                }
 
-                    if ( !redraw && analysis != null) {
+                if ( !redraw) {
+                    count1 = analysisQATable.getRowCount();
+                    if (analysis != null) {
                         /*
                          * compare analysis qa events
                          */
-                        count1 = displayedManager == null ? 0 : displayedManager.qaEvent.count(analysis);
-                        count2 = manager == null ? 0 : manager.qaEvent.count(analysis);
+                        count2 = manager.qaEvent.count(analysis);
 
                         if (count1 == count2) {
                             for (i = 0; i < count1; i++ ) {
-                                aqa1 = displayedManager.qaEvent.get(analysis, i);
-                                aqa2 = manager.qaEvent.get(analysis, i);
-                                if (DataBaseUtil.isDifferent(aqa1.getId(), aqa2.getId()) ||
-                                    DataBaseUtil.isDifferent(aqa1.getQaeventId(), aqa2.getQaeventId()) ||
-                                    DataBaseUtil.isDifferent(aqa1.getTypeId(), aqa2.getTypeId()) ||
-                                    DataBaseUtil.isDifferent(aqa1.getIsBillable(), aqa2.getIsBillable())) {
+                                row = analysisQATable.getRowAt(i);
+                                aqa = manager.qaEvent.get(analysis, i);
+                                if (DataBaseUtil.isDifferent(aqa.getQaeventId(), row.getCell(0)) ||
+                                    DataBaseUtil.isDifferent(aqa.getTypeId(), row.getCell(1)) ||
+                                    DataBaseUtil.isDifferent(aqa.getIsBillable(), row.getCell(2))) {
                                     redraw = true;
                                     break;
                                 }
@@ -399,10 +384,17 @@ public class QAEventTabUI extends Screen {
                         } else {
                             redraw = true;
                         }
+                    } else if (count1 > 0) {
+                        /*
+                         * if an analysis is not selected and the table for
+                         * analysis qa events has some data then remove that
+                         * data
+                         */
+                        redraw = true;
                     }
                 }
 
-                displayQAEvents(uid);
+                displayQAEvents();
             }
         });
 
@@ -415,7 +407,6 @@ public class QAEventTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
-                    evaluateEdit();
                     setState(state);
                 }
             }
@@ -435,13 +426,12 @@ public class QAEventTabUI extends Screen {
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
+        if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
-        }
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
@@ -478,12 +468,7 @@ public class QAEventTabUI extends Screen {
         }
     }
 
-    private void displayQAEvents(String uid) {
-        if (uid != null)
-            analysis = (AnalysisViewDO)manager.getObject(uid);
-        else
-            analysis = null;
-
+    private void displayQAEvents() {
         if ( !isVisible)
             return;
 
@@ -492,8 +477,6 @@ public class QAEventTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            displayedManager = manager;
-            evaluateEdit();
             setState(state);
             fireDataChange();
         }
