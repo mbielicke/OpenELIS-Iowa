@@ -988,7 +988,7 @@ public class WorksheetCreationScreen extends Screen {
                     }
 
                     qcRow = new TableDataRow(11);
-                    qcRow.cells.get(2).value = qcDO.getQcName();             // description
+                    qcRow.cells.get(2).value = qcDO.getQcName() + " (" + qcDO.getLotNumber() + ")";     // description
                     
                     dataList = new ArrayList<Object>();
                     dataList.add(twiDO);
@@ -1228,7 +1228,9 @@ public class WorksheetCreationScreen extends Screen {
         qcLinkModel.clear();
         qcLinkModel.add(new TableDataRow(null, ""));
         for (i = 0; i < items.size(); i++)
-            qcLinkModel.add(new TableDataRow(items.get(i).key,(String)items.get(i).cells.get(1).value));
+            qcLinkModel.add(new TableDataRow(items.get(i).key,
+                                             items.get(i).cells.get(1).value + " (" +
+                                             items.get(i).cells.get(0).value + ")"));
         ((Dropdown<Integer>)worksheetItemTable.getColumns().get(3).getColumnWidget()).setModel(qcLinkModel);
         
         worksheetItemTable.load(items);
@@ -1460,7 +1462,8 @@ public class WorksheetCreationScreen extends Screen {
                                     qcDO = list.get(0);
 
                                     qcRow = new TableDataRow(11);
-                                    qcRow.cells.get(2).value = qcDO.getQcName();             // description
+                                    qcRow.cells.get(2).value = qcDO.getQcName() + " (" +
+                                                               qcDO.getLotNumber() + ")";   // description
                                     
                                     dataList = new ArrayList<Object>();
                                     dataList.add(twiDO);
@@ -1500,7 +1503,8 @@ public class WorksheetCreationScreen extends Screen {
                                         twiDO.setQcName(qcDO.getQcName());
                                         
                                         qcRow = new TableDataRow(11);
-                                        qcRow.cells.get(2).value = qcDO.getQcName();          // description
+                                        qcRow.cells.get(2).value = qcDO.getQcName() + " (" +
+                                                                   qcDO.getLotNumber() + ")";   // description
                                         
                                         dataList = new ArrayList<Object>();
                                         dataList.add(twiDO);
