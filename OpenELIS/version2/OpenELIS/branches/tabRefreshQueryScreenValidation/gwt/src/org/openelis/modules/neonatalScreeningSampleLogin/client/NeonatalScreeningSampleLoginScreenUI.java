@@ -86,7 +86,6 @@ import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
@@ -105,7 +104,6 @@ import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
-import org.openelis.ui.screen.Screen.Validation;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -1750,15 +1748,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
 
             public void isValid(Validation validation) {
-                /*
-                 * don't validate if the tab has an operation left to be
-                 * completed before committing the data
-                 */
+                super.isValid(validation);
                 if (resultTab.getIsBusy())
                     validation.setStatus(FLAGGED);
-                else
-                    super.isValid(validation);
-                logger.log(Level.SEVERE, "result tab validation status: " + validation.getStatus());
             }
         });
 
@@ -2159,22 +2151,23 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         feedingId.setModel(model);
     }
-    
+
+    /**
+     * validates the screen and sets the status of validation to "Flagged" if
+     * some operation needs to be completed before committing
+     */
     public Validation validate() {
         Validation validation;
 
-        if (isBusy) {
-            validation = new Validation();
+        validation = super.validate();
+        if (isBusy)
             validation.setStatus(FLAGGED);
-        } else {
-            validation = super.validate();
-        }        
 
         return validation;
     }
 
     /**
-     * Returns from the cache, the object that has the specified key and is of
+     * returns from the cache, the object that has the specified key and is of
      * the specified class
      */
     @Override
@@ -2294,7 +2287,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                           SampleManager1.Load.PROJECT,
                                                           SampleManager1.Load.QA,
                                                           SampleManager1.Load.RESULT,
-                                                          SampleManager1.Load.STORAGE);
+                                                          SampleManager1.Load.STORAGE,
+                                                          SampleManager1.Load.WORKSHEET);
             buildCache();
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -2325,8 +2319,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         switch (validation.getStatus()) {
             case WARNINGS:
                 /*
-                 * show the warnings and ask the user if he/she still wants to
-                 * commit; commit only if the user says yes
+                 * show the warnings and ask the user if the data should still
+                 * be committed; commit only if the user says yes
                  */
                 if ( !Window.confirm(getWarnings(validation.getExceptions())))
                     return;
@@ -2354,7 +2348,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 break;
         }
     }
-    
+
     /**
      * Creates query fields from the data on the screen and calls the service
      * method for executing a query to return a list of samples. Loads the
@@ -2555,7 +2549,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                                          SampleManager1.Load.PROJECT,
                                                          SampleManager1.Load.QA,
                                                          SampleManager1.Load.RESULT,
-                                                         SampleManager1.Load.STORAGE);
+                                                         SampleManager1.Load.STORAGE,
+                                                         SampleManager1.Load.WORKSHEET);
                 setData();
                 setState(DISPLAY);
             } catch (NotFoundException e) {
@@ -2684,15 +2679,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * Calls the service method to change the accession number, if the new
-     * number is not null or negative and the user confirms changing it. Loads
-     * the screen with the returned manager.
+     * Calls the service method to merge a quick-entered sample that has this
+     * accession number with the sample on the screen, if the number is not
+     * null, the user confirms changing it and the sample on the screen is not
+     * an existing one. Otherwise, just sets the number in the manager.
      */
-    private void setAccessionNumber(Integer accNum) {
-        if (accNum == null || accNum < 0) {
-            manager.getSample().setAccessionNumber(accNum);
-            window.setError(Messages.get()
-                                    .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accNum)));
+    private void setAccessionNumber(Integer accession) {
+        if (accession == null) {
+            manager.getSample().setAccessionNumber(accession);
             return;
         }
 
@@ -2704,19 +2698,27 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             }
         }
 
+        manager.getSample().setAccessionNumber(accession);
+
+        /*
+         * existing samples can't be loaded with a quick-entered sample's data
+         */
+        if (manager.getSample().getId() != null)
+            return;
+
         window.setBusy(Messages.get().fetching());
         try {
-            manager = SampleService1.get().mergeQuickEntry(manager, accNum);
+            manager = SampleService1.get().mergeQuickEntry(manager);
             setData();
             setState(state);
             fireDataChange();
-        } catch (NotFoundException e) {            
-            manager.getSample().setAccessionNumber(accNum);
+        } catch (NotFoundException e) {
+            manager.getSample().setAccessionNumber(accession);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        
+
         window.clearStatus();
     }
 
@@ -3815,7 +3817,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * adding tests has completed
              */
             isBusy = true;
-            
+
             modal = new ModalWindow();
             modal.setSize("520px", "350px");
             modal.setName(Messages.get().testSelection_prepTestSelection());
