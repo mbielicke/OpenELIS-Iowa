@@ -73,7 +73,7 @@ public interface SampleServiceInt1 extends RemoteService {
 
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception;
 
-    public SampleManager1 mergeQuickEntry(SampleManager1 sm, Integer accession) throws Exception;
+    public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception;
     
     public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception;
     

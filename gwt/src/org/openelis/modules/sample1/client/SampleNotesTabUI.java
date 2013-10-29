@@ -208,7 +208,6 @@ public class SampleNotesTabUI extends Screen {
                 displayedExtNote = null;
                 displayedIntNote = null;
             }
-            // evaluateEdit();
             setState(state);
             fireDataChange();
             logger.log(Level.SEVERE, "redrawn");

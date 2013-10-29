@@ -263,6 +263,9 @@ public class ResultTabUI extends Screen {
                 TestManager tm;
                 ResultViewDO data;
                 ResultFormatter rf;
+                ModalWindow modal;
+                ArrayList<ResultViewDO> results;
+                ArrayList<SampleTestRequestVO> tests;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -339,11 +342,69 @@ public class ResultTabUI extends Screen {
 
                     table.setValueAt(r, c, value);
 
+                    if (data.getValue() == null)
+                        return;
+
+                    if (testReflexUtility == null) {
+                        testReflexUtility = new TestReflexUtility1() {
+                            @Override
+                            public TestManager getTestManager(Integer testId) throws Exception {
+                                return screen.getTestManager(testId);
+                            }
+                        };
+                    }
+
                     /*
-                     * check whether this result triggers reflex tests
+                     * find out if a reflex test needs to be added for this
+                     * value
                      */
-                    if (data.getValue() != null)
-                        checkReflex(data);
+                    try {
+                        results = new ArrayList<ResultViewDO>(1);
+                        results.add(data);
+                        tests = testReflexUtility.getReflexTests(manager, results);
+                        if (tests != null) {
+                            isBusy = true;
+                            /*
+                             * show the popup for selecting the reflex test
+                             */
+                            if (testSelectionLookup == null) {
+                                testSelectionLookup = new TestSelectionLookupUI() {
+                                    @Override
+                                    public TestManager getTestManager(Integer testId) throws Exception {
+                                        return screen.getTestManager(testId);
+                                    }
+
+                                    @Override
+                                    public void ok() {
+                                        ArrayList<SampleTestRequestVO> tests;
+
+                                        /*
+                                         * if a reflex test was selected on the
+                                         * popup then notify the main screen of
+                                         * this and mark the tab as busy
+                                         */
+                                        tests = testSelectionLookup.getSelectedTests();
+                                        if (tests != null && tests.size() > 0)
+                                            parentBus.fireEvent(new AddTestEvent(tests));
+                                        else
+                                            isBusy = false;
+                                    }
+                                };
+                            }
+
+                            modal = new ModalWindow();
+                            modal.setSize("520px", "350px");
+                            modal.setName(Messages.get().testSelection_reflexTestSelection());
+                            modal.setCSS(UIResources.INSTANCE.popupWindow());
+                            modal.setContent(testSelectionLookup);
+
+                            testSelectionLookup.setData(manager, tests);
+                            testSelectionLookup.setWindow(modal);
+                        }
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
                 }
             }
         });
@@ -416,6 +477,11 @@ public class ResultTabUI extends Screen {
                         break;
                 }
 
+                if (uid != null)
+                    analysis = (AnalysisViewDO)manager.getObject(uid);
+                else
+                    analysis = null;
+
                 if (DataBaseUtil.isDifferent(displayedUid, uid))
                     redraw = true;
 
@@ -443,7 +509,6 @@ public class ResultTabUI extends Screen {
                 redraw = true;
                 displayResults(manager.getAnalysisUid(analysis.getId()));
                 isBusy = false;
-                logger.log(Level.SEVERE, "result tab isBusy: "+ isBusy);
             }
         });
 
@@ -465,7 +530,7 @@ public class ResultTabUI extends Screen {
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
     /**
      * returns true if some operation performed by the tab needs to be completed
      * before the data can be committed
@@ -502,11 +567,6 @@ public class ResultTabUI extends Screen {
     }
 
     private void displayResults(String uid) {
-        if (uid != null)
-            analysis = (AnalysisViewDO)manager.getObject(uid);
-        else
-            analysis = null;
-
         if ( !isVisible)
             return;
 
@@ -835,74 +895,6 @@ public class ResultTabUI extends Screen {
             throw new Exception("Parent screen must implement " + CacheProvider.class.toString());
 
         return ((CacheProvider)parentScreen).get(testId, TestManager.class);
-    }
-
-    private void checkReflex(ResultViewDO data) {
-        ModalWindow modal;
-        ArrayList<ResultViewDO> results;
-        ArrayList<SampleTestRequestVO> tests;
-
-        if (testReflexUtility == null) {
-            testReflexUtility = new TestReflexUtility1() {
-                @Override
-                public TestManager getTestManager(Integer testId) throws Exception {
-                    return screen.getTestManager(testId);
-                }
-            };
-        }
-
-        try {
-            results = new ArrayList<ResultViewDO>(1);
-            results.add(data);
-            /*
-             * find out if a reflex test needs to be added for this result
-             */
-            tests = testReflexUtility.getReflexTests(manager, results);
-            if (tests != null) {
-                isBusy = true;
-                logger.log(Level.SEVERE, "result tab isBusy: "+ isBusy);
-                /*
-                 * show the popup for selecting the reflex test
-                 */
-                if (testSelectionLookup == null) {
-                    testSelectionLookup = new TestSelectionLookupUI() {
-                        @Override
-                        public TestManager getTestManager(Integer testId) throws Exception {
-                            return screen.getTestManager(testId);
-                        }
-
-                        @Override
-                        public void ok() {
-                            ArrayList<SampleTestRequestVO> tests;
-
-                            /*
-                             * if a reflex test was selected on the popup then
-                             * notify the main screen of this and mark the tab
-                             * as busy
-                             */
-                            tests = testSelectionLookup.getSelectedTests();
-                            if (tests != null && tests.size() > 0)
-                                parentBus.fireEvent(new AddTestEvent(tests));
-                            else 
-                                isBusy = false;
-                            logger.log(Level.SEVERE, "result tab isBusy: "+ isBusy);
-                        }
-                    };
-                }
-
-                modal = new ModalWindow();
-                modal.setSize("520px", "350px");
-                modal.setName(Messages.get().testSelection_reflexTestSelection());
-                modal.setCSS(UIResources.INSTANCE.popupWindow());
-                modal.setContent(testSelectionLookup);
-
-                testSelectionLookup.setData(manager, tests);
-                testSelectionLookup.setWindow(modal);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
     }
 
     private void addRowAnalytes(ArrayList<TestAnalyteViewDO> analytes) {

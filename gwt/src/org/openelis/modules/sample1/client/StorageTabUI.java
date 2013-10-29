@@ -108,8 +108,6 @@ public class StorageTabUI extends Screen {
 
     protected SampleItemViewDO        sampleItem;
 
-    protected String                  displayedUid;
-
     public StorageTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
@@ -117,7 +115,6 @@ public class StorageTabUI extends Screen {
         initialize();
 
         manager = null;
-        displayedUid = null;
     }
 
     private void initialize() {
@@ -177,7 +174,7 @@ public class StorageTabUI extends Screen {
                             table.addException(r,
                                                c,
                                                new Exception(Messages.get()
-                                                                     .storage_checkinDateAfterCheckoutDateException()));
+                                                                     .storage_invalidDateRangeException()));
                         break;
                     case 3:
                         data.setCheckout((Datetime)val);
@@ -185,7 +182,7 @@ public class StorageTabUI extends Screen {
                             table.addException(r,
                                                c,
                                                new Exception(Messages.get()
-                                                                     .storage_checkinDateAfterCheckoutDateException()));
+                                                                     .storage_invalidDateRangeException()));
                         break;
                 }
             }
@@ -301,17 +298,8 @@ public class StorageTabUI extends Screen {
 
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
-                String uid;
-
                 isVisible = event.isVisible();
-                if (analysis != null)
-                    uid = manager.getUid(analysis);
-                else if (sampleItem != null)
-                    uid = manager.getUid(sampleItem);
-                else
-                    uid = null;
-
-                displayStorages(uid);
+                displayStorages();
             }
         });
 
@@ -322,6 +310,7 @@ public class StorageTabUI extends Screen {
             public void onSelection(SelectionEvent event) {
                 int i, count;
                 String uid;
+                Object obj;
 
                 if (SelectedType.ANALYSIS.equals(event.getSelectedType()) ||
                     SelectedType.SAMPLE_ITEM.equals(event.getSelectedType()))
@@ -329,13 +318,21 @@ public class StorageTabUI extends Screen {
                 else
                     uid = null;
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    redraw = true;
-                } else if (analysis != null) {
+                analysis = null;
+                sampleItem = null;
+                if (uid != null) {
+                    obj = manager.getObject(uid);
+                    if (obj instanceof AnalysisViewDO)
+                        analysis = (AnalysisViewDO)obj;
+                    else if (obj instanceof SampleItemViewDO)
+                        sampleItem = (SampleItemViewDO)obj;
+                }
+
+                if (analysis != null) {
                     /*
                      * compare analysis storages
                      */
-                    count = manager != null ? manager.storage.count(analysis) : 0;
+                    count = manager.storage.count(analysis);
                     if (count == table.getRowCount()) {
                         for (i = 0; i < count; i++ ) {
                             if (isDifferent(manager.storage.get(analysis, i), table.getRowAt(i))) {
@@ -350,7 +347,7 @@ public class StorageTabUI extends Screen {
                     /*
                      * compare sample item storages
                      */
-                    count = manager != null ? manager.storage.count(sampleItem) : 0;
+                    count = manager.storage.count(sampleItem);
                     if (count == table.getRowCount()) {
                         for (i = 0; i < count; i++ ) {
                             if (isDifferent(manager.storage.get(sampleItem, i), table.getRowAt(i))) {
@@ -361,9 +358,15 @@ public class StorageTabUI extends Screen {
                     } else {
                         redraw = true;
                     }
+                } else if (table.getRowCount() > 0) {
+                    /*
+                     * if neither an analysis nor a sample item is selected and
+                     * the table has some data then remove that data
+                     */
+                    redraw = true;
                 }
 
-                displayStorages(uid);
+                displayStorages();
             }
         });
 
@@ -464,19 +467,7 @@ public class StorageTabUI extends Screen {
         }
     }
 
-    private void displayStorages(String uid) {
-        Object obj;
-
-        analysis = null;
-        sampleItem = null;
-        if (uid != null) {
-            obj = manager.getObject(uid);
-            if (obj instanceof AnalysisViewDO)
-                analysis = (AnalysisViewDO)obj;
-            else if (obj instanceof SampleItemViewDO)
-                sampleItem = (SampleItemViewDO)obj;
-        }
-
+    private void displayStorages() {
         if ( !isVisible)
             return;
 
@@ -485,7 +476,6 @@ public class StorageTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            displayedUid = uid;
             setState(state);
             fireDataChange();
         }

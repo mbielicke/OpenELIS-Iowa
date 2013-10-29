@@ -74,7 +74,7 @@ public interface SampleServiceInt1Async {
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback);
 
-    public void mergeQuickEntry(SampleManager1 sm, Integer accession,
+    public void mergeQuickEntry(SampleManager1 sm,
                                    AsyncCallback<SampleManager1> callback);
 
     public void setOrderId(SampleManager1 sm, Integer orderId,

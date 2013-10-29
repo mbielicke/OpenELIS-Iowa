@@ -435,7 +435,7 @@ public abstract class AuxDataTabUI extends Screen {
                     rv = row.getCell(2);
                     /*
                      * for type dictionary, the value is stored as the dictId
-                     * and the dictionary entry is the display, for other types
+                     * and the entry is the display, for other types
                      * the value is the display
                      */
                     if (rv.getDictId() != null)
