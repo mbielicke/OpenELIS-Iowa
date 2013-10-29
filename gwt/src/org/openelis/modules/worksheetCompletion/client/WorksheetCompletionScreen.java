@@ -1018,7 +1018,8 @@ public class WorksheetCompletionScreen extends Screen {
                 row.cells.get(0).value = wiDO.getPosition().toString();
                 for (j = 0; j < waManager.count(); j++) {
                     waDO = waManager.getWorksheetAnalysisAt(j);
-                    qcLinkMap.put(waDO.getId(), waDO.getAccessionNumber());
+                    qcLinkMap.put(waDO.getId(), waDO.getAccessionNumber() + " (" +
+                                                wiDO.getPosition() + ")");
 
                     if (j != 0)
                         row.cells.get(0).value = null;
@@ -1119,7 +1120,8 @@ public class WorksheetCompletionScreen extends Screen {
                     } else if (waDO.getQcLotId() != null) {
                         qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
 
-                        row.cells.get(2).value = qcLotVDO.getQcName();
+                        row.cells.get(2).value = qcLotVDO.getQcName() + " (" +
+                                                 qcLotVDO.getLotNumber() + ")";
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
                         row.cells.get(4).value = "";
                         row.cells.get(5).value = "";
