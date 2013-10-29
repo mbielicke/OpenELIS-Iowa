@@ -118,6 +118,7 @@ public class WorksheetResultDO extends DataObject {
 
     public void setTestAnalyteId(Integer testAnalyteId) {
         this.testAnalyteId = testAnalyteId;
+        _changed = true;
     }
 
     public Integer getTestResultId() {
@@ -126,6 +127,7 @@ public class WorksheetResultDO extends DataObject {
 
     public void setTestResultId(Integer testResultId) {
         this.testResultId = testResultId;
+        _changed = true;
     }
 
     public Integer getResultRow() {
@@ -152,6 +154,7 @@ public class WorksheetResultDO extends DataObject {
 
     public void setTypeId(Integer typeId) {
         this.typeId = typeId;
+        _changed = true;
     }
 
     public String getValueAt(int index) {
