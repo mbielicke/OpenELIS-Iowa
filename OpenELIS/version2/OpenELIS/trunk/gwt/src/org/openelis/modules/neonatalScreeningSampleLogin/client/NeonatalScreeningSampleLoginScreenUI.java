@@ -25,25 +25,14 @@
  */
 package org.openelis.modules.neonatalScreeningSampleLogin.client;
 
-import static org.openelis.modules.main.client.Logger.logger;
-import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.modules.main.client.Logger.*;
+import static org.openelis.ui.screen.Screen.ShortKeys.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.*;
 import static org.openelis.ui.screen.State.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Widget;
 
 import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
@@ -53,6 +42,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PatientDO;
 import org.openelis.domain.PatientRelationVO;
@@ -96,13 +86,13 @@ import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.StorageTabUI;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
 import org.openelis.modules.test.client.TestService;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
@@ -113,6 +103,7 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
@@ -129,6 +120,18 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.uibinder.client.UiTemplate;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Widget;
+
 public class NeonatalScreeningSampleLoginScreenUI extends Screen implements CacheProvider {
 
     @UiTemplate("NeonatalScreeningSampleLogin.ui.xml")
@@ -140,6 +143,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private static NeonatalScreeningSampleLoginUiBinder uiBinder = GWT.create(NeonatalScreeningSampleLoginUiBinder.class);
 
     protected SampleManager1                            manager;
+
+    protected ScreenNavigator<IdAccessionVO>            nav;
 
     @UiField
     protected Calendar                                  collectionDate, collectionTime,
@@ -219,11 +224,9 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     @UiField(provided = true)
     protected AuxDataTabUI                              auxDataTab;
 
-    protected ArrayList<SampleManager1>                 queriedList;
-
     protected int                                       queryIndex;
 
-    protected boolean                                   canEdit;
+    protected boolean                                   canEdit, isBusy;
 
     protected ModulePermission                          userPermission;
 
@@ -269,9 +272,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                            "unit_of_measure",
                                            "qaevent_type");
         } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
             window.close();
+            throw e;
         }
 
         sampleItemAnalysisTreeTab = new SampleItemAnalysisTreeTabUI(this);
@@ -427,7 +429,11 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         duplicate.addCommand(new Command() {
             public void execute() {
                 try {
-                    manager = SampleService1.get().duplicate(manager.getSample().getId());                    
+                    manager = SampleService1.get().duplicate(manager.getSample().getId());
+                    if (manager.getSampleNeonatal().getPatient() == null)
+                        manager.getSampleNeonatal().setPatient(new PatientDO());
+                    if (manager.getSampleNeonatal().getNextOfKin() == null)
+                        manager.getSampleNeonatal().setNextOfKin(new PatientDO());
                     buildCache();
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -452,7 +458,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySample.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.sample(manager, window);
+                SampleHistoryUtility1.sample(manager);
             }
         });
 
@@ -465,7 +471,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleNeonatal.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.neonatal(manager, window);
+                SampleHistoryUtility1.neonatal(manager);
             }
         });
 
@@ -478,7 +484,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyPatient.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.neonatalPatient(manager, window);
+                SampleHistoryUtility1.neonatalPatient(manager);
             }
         });
 
@@ -491,7 +497,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyNextOfKin.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.neonatalNextOfKin(manager, window);
+                SampleHistoryUtility1.neonatalNextOfKin(manager);
             }
         });
 
@@ -504,7 +510,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleProject.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.project(manager, window);
+                SampleHistoryUtility1.project(manager);
             }
         });
 
@@ -517,7 +523,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleOrganization.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.organization(manager, window);
+                SampleHistoryUtility1.organization(manager);
             }
         });
 
@@ -530,7 +536,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleItem.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.item(manager, window);
+                SampleHistoryUtility1.item(manager);
             }
         });
 
@@ -543,7 +549,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyAnalysis.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.analysis(manager, window);
+                SampleHistoryUtility1.analysis(manager);
             }
         });
 
@@ -568,9 +574,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                 if (uid != null) {
                     obj = manager.getObject(uid);
                     if (obj instanceof AnalysisViewDO) {
-                        SampleHistoryUtility1.currentResult(manager,
-                                                            ((AnalysisViewDO)obj).getId(),
-                                                            window);
+                        SampleHistoryUtility1.currentResult(manager, ((AnalysisViewDO)obj).getId());
                         return;
                     }
                 }
@@ -587,7 +591,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyStorage.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.storage(manager, window);
+                SampleHistoryUtility1.storage(manager);
             }
         });
 
@@ -599,7 +603,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historySampleQA.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.sampleQA(manager, window);
+                SampleHistoryUtility1.sampleQA(manager);
             }
         });
 
@@ -611,7 +615,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyAnalysisQA.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.analysisQA(manager, window);
+                SampleHistoryUtility1.analysisQA(manager);
             }
         });
 
@@ -624,7 +628,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         historyAuxData.addCommand(new Command() {
             @Override
             public void execute() {
-                SampleHistoryUtility1.auxData(manager, window);
+                SampleHistoryUtility1.auxData(manager);
             }
         });
 
@@ -684,7 +688,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * disabled until the functionality for the orders for this
                  * domain has been implemented
                  */
-                //orderLookupButton.setEnabled(isState(DISPLAY) || (canEdit && isState(ADD, UPDATE)));
+                // orderLookupButton.setEnabled(isState(DISPLAY) || (canEdit &&
+                // isState(ADD, UPDATE)));
                 orderLookupButton.setEnabled(false);
             }
         });
@@ -1450,10 +1455,10 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                              public void onValueChange(ValueChangeEvent<AutoCompleteValue> event) {
                                  ProviderDO data;
-                                 
+
                                  data = null;
                                  if (event.getValue() != null)
-                                     data = (ProviderDO) event.getValue().getData();
+                                     data = (ProviderDO)event.getValue().getData();
                                  setProvider(data);
                              }
 
@@ -1587,7 +1592,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  if (data != null)
                                      reportToName.setValue(data.getOrganizationId(),
                                                            data.getOrganizationName());
-                                 else 
+                                 else
                                      reportToName.setValue(null, "");
                              }
 
@@ -1630,7 +1635,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                                  if (data != null)
                                      birthHospitalName.setValue(data.getOrganizationId(),
                                                                 data.getOrganizationName());
-                                 else 
+                                 else
                                      birthHospitalName.setValue(null, "");
                              }
 
@@ -1687,52 +1692,212 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         addScreenHandler(sampleItemAnalysisTreeTab,
                          "sampleItemAnalysisTreeTab",
                          new ScreenHandler<Object>() {
+                             public void onDataChange(DataChangeEvent event) {
+                                 sampleItemAnalysisTreeTab.onDataChange();
+                             }
+
+                             public void onStateChange(StateChangeEvent event) {
+                                 sampleItemAnalysisTreeTab.setState(event.getState());
+                             }
+
                              public Object getQuery() {
                                  return null;
                              }
                          });
 
         addScreenHandler(sampleItemTab, "sampleItemTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the tree is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sampleItemTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return sampleItemTab.getQueryFields();
             }
         });
 
         addScreenHandler(analysisTab, "analysisTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the tree is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                analysisTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return analysisTab.getQueryFields();
             }
         });
 
         addScreenHandler(resultTab, "resultTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the tree is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                resultTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return null;
+            }
+
+            public void isValid(Validation validation) {
+                super.isValid(validation);
+                if (resultTab.getIsBusy())
+                    validation.setStatus(FLAGGED);
             }
         });
 
         addScreenHandler(analysisNotesTab, "analysisNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the tree is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                analysisNotesTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return null;
             }
         });
 
         addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sampleNotesTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(storageTab, "storageTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the tree is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                storageTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return null;
             }
         });
 
         addScreenHandler(qaEventTab, "qaEventTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * the tab is refreshed when a node in the tree is selected
+                 */
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                qaEventTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return null;
             }
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                auxDataTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                auxDataTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return auxDataTab.getQueryFields();
             }
         });
+
+        //
+        // navigation panel
+        //
+        nav = new ScreenNavigator<IdAccessionVO>(null, null, null) {
+            public void executeQuery(final Query query) {
+                QueryData field;
+
+                window.setBusy(Messages.get().gen_querying());
+
+                /*
+                 * only query for neonatal samples
+                 */
+                field = new QueryData(SampleMeta.getDomain(),
+                                      QueryData.Type.STRING,
+                                      Constants.domain().NEONATAL);
+                query.setFields(field);
+                query.setRowsPerPage(5);
+
+                SampleService1.get().query(query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
+                    public void onSuccess(ArrayList<IdAccessionVO> result) {
+                        setQueryResult(result);
+                    }
+
+                    public void onFailure(Throwable error) {
+                        setQueryResult(null);
+                        if (error instanceof NotFoundException) {
+                            window.setDone(Messages.get().gen_noRecordsFound());
+                            setState(DEFAULT);
+                        } else if (error instanceof LastPageException) {
+                            window.setError(Messages.get().gen_noMoreRecordInDir());
+                        } else {
+                            Window.alert("Error: Neonatal Login call query failed; " +
+                                         error.getMessage());
+                            window.setError(Messages.get().gen_queryFailed());
+                        }
+                    }
+                });
+
+            }
+
+            public boolean fetch(IdAccessionVO entry) {
+                return fetchById( (entry == null) ? null : entry.getId());
+            }
+
+            public ArrayList<Item<Integer>> getModel() {
+                ArrayList<IdAccessionVO> result;
+                ArrayList<Item<Integer>> model;
+                Item<Integer> row;
+
+                model = null;
+                result = nav.getQueryResult();
+                if (result != null) {
+                    model = new ArrayList<Item<Integer>>();
+                    for (IdAccessionVO entry : result) {
+                        row = new Item<Integer>(1);
+                        row.setKey(entry.getId());
+                        row.setCell(0, entry.getAccessionNumber());
+                        model.add(row);
+                    }
+                }
+                return model;
+            }
+        };
 
         /*
          * handlers for the events fired by the tabs
@@ -1755,6 +1920,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     return;
 
                 ana = (AnalysisViewDO)manager.getObject(event.getUid());
+                window.setBusy();
                 try {
                     manager = SampleService1.get().removeAnalysis(manager, ana.getId());
                     setData();
@@ -1764,6 +1930,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
+                window.clearStatus();
             }
         });
 
@@ -1783,6 +1950,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                  * based on the field in the analysis being changed, call a
                  * specific service method
                  */
+                window.setBusy();
                 try {
                     switch (event.getAction()) {
                         case METHOD_CHANGED:
@@ -1818,7 +1986,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                      */
                     bus.fireEventFromSource(new AnalysisChangeEvent(event.getUid(),
                                                                     event.getChangeId(),
-                                                                    event.getAction()), this);
+                                                                    event.getAction()), screen);
                     bus.fireEvent(new ResultChangeEvent());
 
                     showErrorsOrTests(ret);
@@ -1826,12 +1994,14 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
+                window.clearStatus();
             }
         });
 
         bus.addHandler(AddRowAnalytesEvent.getType(), new AddRowAnalytesEvent.Handler() {
             @Override
             public void onAddRowAnalytes(AddRowAnalytesEvent event) {
+                window.setBusy();
                 try {
                     manager = SampleService1.get().addRowAnalytes(manager,
                                                                   event.getAnalysis(),
@@ -1844,6 +2014,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     Window.alert(e.getMessage());
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
+                window.clearStatus();
             }
         });
 
@@ -1858,16 +2029,19 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
                 ids = event.getGroupIds();
                 if (ids != null && ids.size() > 0) {
+                    window.setBusy();
                     try {
                         ret = SampleService1.get().addAuxGroups(manager, ids);
                         manager = ret.getManager();
                         setData();
                         setState(state);
                         bus.fireEventFromSource(new AddAuxGroupEvent(ids), screen);
+                        window.clearStatus();
                         showErrorsOrTests(ret);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
+                        window.clearStatus();
                     }
                 }
             }
@@ -1880,6 +2054,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                     if (screen == event.getSource())
                         return;
 
+                    window.setBusy();
                     try {
                         manager = SampleService1.get()
                                                 .removeAuxGroups(manager, event.getGroupIds());
@@ -1891,6 +2066,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
                     }
+                    window.clearStatus();
                 }
             }
         });
@@ -1981,318 +2157,22 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         feedingId.setModel(model);
     }
 
-    /*
-     * basic button methods
-     */
-
     /**
-     * puts the screen in query state, sets the manager to null and instantiates
-     * the cache so that it can be used by aux data tab
+     * validates the screen and sets the status of validation to "Flagged" if
+     * some operation needs to be completed before committing
      */
-    @UiHandler("query")
-    protected void query(ClickEvent event) {
-        manager = null;
-        /*
-         * the tab for aux data uses the cache in query state
-         */
-        cache = new HashMap<String, Object>();
-        evaluateEdit();
-        setData();
-        setState(QUERY);
-        fireDataChange();
-        accessionNumber.setFocus(true);
-        window.setDone(Messages.get().gen_enterFieldsToQuery());
-    }
-
-    @UiHandler("previous")
-    protected void previous(ClickEvent event) {
-        if (queriedList == null || queryIndex - 1 < 0) {
-            window.setError(Messages.get().noMoreRecordInDir());
-            return;
-        }
-
-        manager = queriedList.get( --queryIndex);
-        evaluateEdit();
-        setData();
-        setState(DISPLAY);
-        fireDataChange();
-        window.clearStatus();
-    }
-
-    @UiHandler("next")
-    protected void next(ClickEvent event) {
-        if (queriedList == null || queryIndex + 1 == queriedList.size()) {
-            window.setError(Messages.get().noMoreRecordInDir());
-            return;
-        }
-
-        manager = queriedList.get( ++queryIndex);
-        evaluateEdit();
-        setData();
-        setState(DISPLAY);
-        fireDataChange();
-        window.clearStatus();
-    }
-
-    /**
-     * Puts the screen in add state and loads it with a new manager with some
-     * fields with default values.
-     */
-    @UiHandler("add")
-    protected void add(ClickEvent event) {
-        /*
-         * clear the query list
-         */
-        queriedList = null;
-
-        try {
-            manager = SampleService1.get().getInstance(Constants.domain().NEONATAL);
-            cache = new HashMap<String, Object>();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            return;
-        }
-        evaluateEdit();
-        setData();
-        setState(ADD);
-        fireDataChange();
-        accessionNumber.setFocus(true);
-        window.setDone(Messages.get().gen_enterInformationPressCommit());
-    }
-
-    /**
-     * Puts the screen in update state and loads it with a locked manager.
-     * Builds the cache from the manager
-     */
-    @UiHandler("update")
-    protected void update(ClickEvent event) {
-        /*
-         * clear the query list
-         */
-        queriedList = null;
-
-        window.setBusy(Messages.get().lockForUpdate());
-        try {
-            manager = SampleService1.get().fetchForUpdate(manager.getSample().getId(),
-                                                          SampleManager1.Load.ANALYSISUSER,
-                                                          SampleManager1.Load.AUXDATA,
-                                                          SampleManager1.Load.NOTE,
-                                                          SampleManager1.Load.ORGANIZATION,
-                                                          SampleManager1.Load.PROJECT,
-                                                          SampleManager1.Load.QA,
-                                                          SampleManager1.Load.RESULT,
-                                                          SampleManager1.Load.STORAGE);
-            buildCache();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
-            return;
-        }
-        evaluateEdit();
-        setData();
-        setState(UPDATE);
-        fireDataChange();
-        orderId.setFocus(true);
-        window.clearStatus();
-    }
-
-    /**
-     * Validates the data on the screen and based on the current state, executes
-     * various service operations to commit the data.
-     */
-    @UiHandler("commit")
-    protected void commit(ClickEvent event) {
+    public Validation validate() {
         Validation validation;
-        
-        finishEditing();
-        
-        validation = validate();
 
-        if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
-            return;
-        }
+        validation = super.validate();
+        if (isBusy)
+            validation.setStatus(FLAGGED);
 
-        switch (super.state) {
-            case QUERY:
-                commitQuery();
-                break;
-            case ADD:
-                commitUpdate(false);
-                break;
-            case UPDATE:
-                commitUpdate(false);
-                break;
-        }
+        return validation;
     }
 
     /**
-     * Creates query fields from the data on the screen and calls the service
-     * method for executing a query to return a list of samples. Loads the
-     * screen with the first sample's data if any samples were found otherwise
-     * notifies the user.
-     */
-    protected void commitQuery() {
-        queriedList = null;
-        window.setBusy(Messages.get().querying());
-        try {
-            queriedList = SampleService1.get().fetchByQuery(getQueryFields(),
-                                                            0,
-                                                            5,
-                                                            SampleManager1.Load.ANALYSISUSER,
-                                                            SampleManager1.Load.AUXDATA,
-                                                            SampleManager1.Load.NOTE,
-                                                            SampleManager1.Load.ORGANIZATION,
-                                                            SampleManager1.Load.PROJECT,
-                                                            SampleManager1.Load.QA,
-                                                            SampleManager1.Load.RESULT,
-                                                            SampleManager1.Load.STORAGE);
-            queryIndex = 0;
-            manager = queriedList.get(queryIndex);
-            evaluateEdit();
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.clearStatus();
-        } catch (NotFoundException e) {
-            manager = null;
-            evaluateEdit();
-            setData();
-            setState(State.DEFAULT);
-            fireDataChange();
-            window.setDone(Messages.get().noRecordsFound());
-        } catch (Exception e) {
-            Window.alert("Error: neonatalsample call query failed; " + e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            window.setError(Messages.get().queryFailed());
-        }
-        cache = null;
-    }
-
-    /**
-     * Calls the service method to commit the data on the screen, to the
-     * database. Shows any errors/warnings encountered during the operation.
-     * Otherwise loads the screen with the committed data.
-     */
-    protected void commitUpdate(boolean ignoreWarning) {
-        if (state == ADD)
-            window.setBusy(Messages.get().adding());
-        else
-            window.setBusy(Messages.get().updating());
-
-        try {
-            manager = SampleService1.get().update(manager, ignoreWarning);
-            evaluateEdit();
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.clearStatus();
-
-            /*
-             * the cache is set to null only if the add/update succeeds because
-             * otherwise, it can't be used by any tabs if the user wants to
-             * change any data
-             */
-            cache = null;
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-            if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
-                showWarnings(e);
-        } catch (Exception e) {
-            if (state == ADD)
-                Window.alert("commitAdd(): " + e.getMessage());
-            else
-                Window.alert("commitUpdate(): " + e.getMessage());
-            window.clearStatus();
-        }
-    }
-
-    /**
-     * Reverts any changes made to the data on the screen and disables editing
-     * of the widgets. If the sample was locked calls the service method to
-     * unlock it and loads the screen with that data.
-     */
-    @UiHandler("abort")
-    protected void abort(ClickEvent event) {
-        finishEditing();
-        clearErrors();
-        window.setBusy(Messages.get().cancelChanges());
-
-        if (state == QUERY) {
-            try {
-                manager = null;
-                evaluateEdit();
-                setData();
-                setState(DEFAULT);
-                fireDataChange();
-                window.setDone(Messages.get().queryAborted());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                window.clearStatus();
-            }
-        } else if (state == ADD) {
-            try {
-                if (manager.getSample().getId() != null) {
-                    /*
-                     * the screen was loaded from a Quick Entry sample which is
-                     * still locked, thus it needs to be unlocked here
-                     */
-                    SampleService1.get().unlock(manager.getSample().getId());
-                }
-                manager = null;
-                evaluateEdit();
-                setData();
-                setState(DEFAULT);
-                fireDataChange();
-                window.setDone(Messages.get().addAborted());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                window.clearStatus();
-            }
-        } else if (state == UPDATE) {
-            try {
-                manager = SampleService1.get().unlock(manager.getSample().getId(),
-                                                      SampleManager1.Load.ANALYSISUSER,
-                                                      SampleManager1.Load.AUXDATA,
-                                                      SampleManager1.Load.NOTE,
-                                                      SampleManager1.Load.ORGANIZATION,
-                                                      SampleManager1.Load.PROJECT,
-                                                      SampleManager1.Load.QA,
-                                                      SampleManager1.Load.RESULT,
-                                                      SampleManager1.Load.STORAGE);
-                evaluateEdit();
-                setData();
-                setState(DISPLAY);
-                fireDataChange();
-                window.setDone(Messages.get().updateAborted());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                window.clearStatus();
-            }
-        }
-        cache = null;
-    }
-
-    /**
-     * Overridden to customize the list of query fields
-     */
-    public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> fields;
-        QueryData field;
-
-        fields = super.getQueryFields();
-        field = new QueryData(SampleMeta.getDomain(),
-                              QueryData.Type.STRING,
-                              Constants.domain().NEONATAL);
-        fields.add(field);
-
-        return fields;
-    }
-
-    /**
-     * Returns from the cache, the object that has the specified key and is of
+     * returns from the cache, the object that has the specified key and is of
      * the specified class
      */
     @Override
@@ -2326,9 +2206,273 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
             cache.put(cacheKey, obj);
         } catch (Exception e) {
             Window.alert(e.getMessage());
-            logger.severe(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return (T)obj;
+    }
+
+    /*
+     * basic button methods
+     */
+
+    /**
+     * puts the screen in query state, sets the manager to null and instantiates
+     * the cache so that it can be used by aux data tab
+     */
+    @UiHandler("query")
+    protected void query(ClickEvent event) {
+        manager = null;
+        /*
+         * the tab for aux data uses the cache in query state
+         */
+        cache = new HashMap<String, Object>();
+        evaluateEdit();
+        setData();
+        setState(QUERY);
+        fireDataChange();
+        accessionNumber.setFocus(true);
+        window.setDone(Messages.get().gen_enterFieldsToQuery());
+    }
+
+    /**
+     * fetches the previous sample in the list returned by the latest query
+     */
+    @UiHandler("previous")
+    protected void previous(ClickEvent event) {
+        nav.previous();
+    }
+
+    /**
+     * fetches the next sample sample in the list returned by the latest query
+     */
+    @UiHandler("next")
+    protected void next(ClickEvent event) {
+        nav.next();
+    }
+
+    /**
+     * Puts the screen in add state and loads it with a new manager with some
+     * fields with default values.
+     */
+    @UiHandler("add")
+    protected void add(ClickEvent event) {
+
+        try {
+            manager = SampleService1.get().getInstance(Constants.domain().NEONATAL);
+            manager.getSampleNeonatal().setPatient(new PatientDO());
+            manager.getSampleNeonatal().setNextOfKin(new PatientDO());
+            cache = new HashMap<String, Object>();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return;
+        }
+        evaluateEdit();
+        setData();
+        setState(ADD);
+        fireDataChange();
+        accessionNumber.setFocus(true);
+        window.setDone(Messages.get().gen_enterInformationPressCommit());
+    }
+
+    /**
+     * Puts the screen in update state and loads it with a locked manager.
+     * Builds the cache from the manager
+     */
+    @UiHandler("update")
+    protected void update(ClickEvent event) {
+        window.setBusy(Messages.get().lockForUpdate());
+
+        try {
+            manager = SampleService1.get().fetchForUpdate(manager.getSample().getId(),
+                                                          SampleManager1.Load.ANALYSISUSER,
+                                                          SampleManager1.Load.AUXDATA,
+                                                          SampleManager1.Load.NOTE,
+                                                          SampleManager1.Load.ORGANIZATION,
+                                                          SampleManager1.Load.PROJECT,
+                                                          SampleManager1.Load.QA,
+                                                          SampleManager1.Load.RESULT,
+                                                          SampleManager1.Load.STORAGE,
+                                                          SampleManager1.Load.WORKSHEET);
+            buildCache();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            window.clearStatus();
+            return;
+        }
+        evaluateEdit();
+        setData();
+        setState(UPDATE);
+        fireDataChange();
+        orderId.setFocus(true);
+        window.clearStatus();
+    }
+
+    /**
+     * Validates the data on the screen and based on the current state, executes
+     * various service operations to commit the data.
+     */
+    @UiHandler("commit")
+    protected void commit(ClickEvent event) {
+        Validation validation;
+
+        finishEditing();
+
+        validation = validate();
+
+        switch (validation.getStatus()) {
+            case WARNINGS:
+                /*
+                 * show the warnings and ask the user if the data should still
+                 * be committed; commit only if the user says yes
+                 */
+                if ( !Window.confirm(getWarnings(validation.getExceptions())))
+                    return;
+                break;
+            case FLAGGED:
+                /*
+                 * some part of the screen has some operation that needs to be
+                 * completed before committing the data
+                 */
+                return;
+            case ERRORS:
+                window.setError(Messages.get().gen_correctErrors());
+                return;
+        }
+
+        switch (state) {
+            case QUERY:
+                commitQuery();
+                break;
+            case ADD:
+                commitUpdate(false);
+                break;
+            case UPDATE:
+                commitUpdate(false);
+                break;
+        }
+    }
+
+    /**
+     * Creates query fields from the data on the screen and calls the service
+     * method for executing a query to return a list of samples. Loads the
+     * screen with the first sample's data if any samples were found otherwise
+     * notifies the user.
+     */
+    protected void commitQuery() {
+        Query query;
+
+        query = new Query();
+        query.setFields(getQueryFields());
+        nav.setQuery(query);
+        cache = null;
+    }
+
+    /**
+     * Calls the service method to commit the data on the screen, to the
+     * database. Shows any errors/warnings encountered during the commit,
+     * otherwise loads the screen with the committed data.
+     */
+    protected void commitUpdate(boolean ignoreWarning) {
+        if (state == ADD)
+            window.setBusy(Messages.get().adding());
+        else
+            window.setBusy(Messages.get().updating());
+
+        try {
+            manager = SampleService1.get().update(manager, ignoreWarning);
+            evaluateEdit();
+            setData();
+            setState(DISPLAY);
+            fireDataChange();
+            window.clearStatus();
+
+            /*
+             * the cache is set to null only if the add/update succeeds because
+             * otherwise, it can't be used by any tabs if the user wants to
+             * change any data
+             */
+            cache = null;
+        } catch (ValidationErrorsList e) {
+            showErrors(e);
+            if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                if (Window.confirm(getWarnings(e.getErrorList())))
+                    commitUpdate(true);
+        } catch (Exception e) {
+            if (state == ADD)
+                Window.alert("commitAdd(): " + e.getMessage());
+            else
+                Window.alert("commitUpdate(): " + e.getMessage());
+            window.clearStatus();
+        }
+    }
+
+    /**
+     * Reverts any changes made to the data on the screen and disables editing
+     * of the widgets. If the sample was locked calls the service method to
+     * unlock it and loads the screen with that data.
+     */
+    @UiHandler("abort")
+    protected void abort(ClickEvent event) {
+        finishEditing();
+        clearErrors();
+        window.setBusy(Messages.get().gen_cancelChanges());
+
+        if (state == QUERY) {
+            try {
+                manager = null;
+                evaluateEdit();
+                setData();
+                setState(DEFAULT);
+                fireDataChange();
+                window.setDone(Messages.get().gen_queryAborted());
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                window.clearStatus();
+            }
+        } else if (state == ADD) {
+            try {
+                if (manager.getSample().getId() != null) {
+                    /*
+                     * the screen was loaded from a Quick Entry sample which is
+                     * still locked, thus it needs to be unlocked here
+                     */
+                    SampleService1.get().unlock(manager.getSample().getId());
+                }
+                manager = null;
+                evaluateEdit();
+                setData();
+                setState(DEFAULT);
+                fireDataChange();
+                window.setDone(Messages.get().gen_addAborted());
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
+                window.clearStatus();
+            }
+        } else if (state == UPDATE) {
+            try {
+                manager = SampleService1.get().unlock(manager.getSample().getId(),
+                                                      SampleManager1.Load.ANALYSISUSER,
+                                                      SampleManager1.Load.AUXDATA,
+                                                      SampleManager1.Load.NOTE,
+                                                      SampleManager1.Load.ORGANIZATION,
+                                                      SampleManager1.Load.PROJECT,
+                                                      SampleManager1.Load.QA,
+                                                      SampleManager1.Load.RESULT,
+                                                      SampleManager1.Load.STORAGE);
+                evaluateEdit();
+                setData();
+                setState(DISPLAY);
+                fireDataChange();
+                window.setDone(Messages.get().gen_updateAborted());
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                window.clearStatus();
+            }
+        }
+        cache = null;
     }
 
     /**
@@ -2388,6 +2532,48 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     /*
      * methods used for operations that affect the entire screen
      */
+
+    /**
+     * fetches the manager for the sample with this id, sets the manager to null
+     * if fetch fails or the id is null
+     */
+    private boolean fetchById(Integer id) {
+        if (id == null) {
+            manager = null;
+            setData();
+            setState(DEFAULT);
+        } else {
+            window.setBusy(Messages.get().gen_fetching());
+
+            try {
+                manager = SampleService1.get().fetchById(id,
+                                                         SampleManager1.Load.ANALYSISUSER,
+                                                         SampleManager1.Load.AUXDATA,
+                                                         SampleManager1.Load.NOTE,
+                                                         SampleManager1.Load.ORGANIZATION,
+                                                         SampleManager1.Load.PROJECT,
+                                                         SampleManager1.Load.QA,
+                                                         SampleManager1.Load.RESULT,
+                                                         SampleManager1.Load.STORAGE,
+                                                         SampleManager1.Load.WORKSHEET);
+                setData();
+                setState(DISPLAY);
+            } catch (NotFoundException e) {
+                fetchById(null);
+                window.setDone(Messages.get().gen_noRecordsFound());
+                return false;
+            } catch (Exception e) {
+                fetchById(null);
+                Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+                return false;
+            }
+        }
+        fireDataChange();
+        window.clearStatus();
+
+        return true;
+    }
 
     /**
      * Sets the latest manager in the tabs
@@ -2466,20 +2652,22 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * shows the warnings and asks the user to confirm committing the data with
-     * warnings
+     * creates a string containing the message that there are warnings on the
+     * screen, followed by all warning messages, followed by the question
+     * whether the data should be committed
      */
-    private void showWarnings(ValidationErrorsList warnings) {
+    private String getWarnings(ArrayList<Exception> warnings) {
         StringBuilder b;
 
         b = new StringBuilder();
         b.append(Messages.get().gen_warningDialogLine1()).append("\n");
-        for (Exception ex : warnings.getErrorList())
-            b.append(" * ").append(ex.getMessage()).append("\n");
-
+        if (warnings != null) {
+            for (Exception ex : warnings)
+                b.append(" * ").append(ex.getMessage()).append("\n");
+        }
         b.append("\n").append(Messages.get().gen_warningDialogLastLine());
-        if (Window.confirm(b.toString()))
-            commitUpdate(true);
+
+        return b.toString();
     }
 
     /*
@@ -2496,45 +2684,47 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     }
 
     /**
-     * Calls the service method to change the accession number, if the new
-     * number is not null or negative and the user confirms changing it. Loads
-     * the screen with the returned manager.
+     * Calls the service method to merge a quick-entered sample that has this
+     * accession number with the sample on the screen, if the number is not
+     * null, the user confirms changing it and the sample on the screen is not
+     * an existing one. Otherwise, just sets the number in the manager.
      */
-    private void setAccessionNumber(Integer accNum) {
-        ValidationErrorsList errors;
-
-        if (accNum == null || accNum < 0) {
-            manager.getSample().setAccessionNumber(accNum);
-            window.setError(Messages.get()
-                                    .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accNum)));
+    private void setAccessionNumber(Integer accession) {
+        if (accession == null) {
+            manager.getSample().setAccessionNumber(accession);
             return;
         }
 
         if (getAccessionNumber() != null) {
-            if ( !Window.confirm(Messages.get().accessionNumberEditConfirm())) {
+            if ( !Window.confirm(Messages.get().sample_accessionNumberEditConfirm())) {
                 accessionNumber.setValue(getAccessionNumber());
                 accessionNumber.setFocus(true);
                 return;
             }
         }
 
+        manager.getSample().setAccessionNumber(accession);
+
+        /*
+         * existing samples can't be loaded with a quick-entered sample's data
+         */
+        if (manager.getSample().getId() != null)
+            return;
+
         window.setBusy(Messages.get().fetching());
         try {
-            manager = SampleService1.get().setAccessionNumber(manager, accNum);
+            manager = SampleService1.get().mergeQuickEntry(manager);
             setData();
+            setState(state);
             fireDataChange();
-            window.clearStatus();
-        } catch (FormErrorException e) {
-            errors = new ValidationErrorsList();
-            errors.add(e);
-            showErrors(errors);
-            accessionNumber.setValue(getAccessionNumber());
-            accessionNumber.setFocus(true);
+        } catch (NotFoundException e) {
+            manager.getSample().setAccessionNumber(accession);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
         }
+
+        window.clearStatus();
     }
 
     /**
@@ -3296,17 +3486,6 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         manager.getSampleNeonatal().setProviderId(providerId);
     }
 
-
-    private void setProviderSelection() {
-        if (manager == null) {
-            providerLastName.setValue(null, "");
-            return;
-        }
-
-        providerLastName.setValue(getProviderId(), getProviderLastName());
-        providerFirstName.setValue(getProviderFirstName());
-    }
-
     private void setProvider(ProviderDO data) {
         if (data == null || data.getId() == null)
             setProviderId(null);
@@ -3351,10 +3530,8 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
              * otherwise the first permanent project is modified or a new one is
              * created if no project existed
              */
-            if (data == null) {
+            if (data == null)
                 data = manager.project.add();
-                data.setIsPermanent("Y");
-            }
             data.setProjectId(proj.getId());
             data.setProjectName(proj.getName());
             data.setProjectDescription(proj.getDescription());
@@ -3619,66 +3796,81 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
     private void addTests(ArrayList<SampleTestRequestVO> tests) {
         SampleTestReturnVO ret;
 
+        window.setBusy();
         try {
             ret = SampleService1.get().addTests(manager, tests);
             manager = ret.getManager();
             setData();
             setState(state);
+            /*
+             * notify the tabs that some new tests have been added
+             */
             bus.fireEventFromSource(new AddTestEvent(tests), this);
+            window.clearStatus();
             showErrorsOrTests(ret);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
+            window.clearStatus();
         }
     }
 
     /**
-     * Called whenever a service method like "addTests()" returns errors and/or
-     * a list of prep/reflex tests to be selected for the tests added/changed
-     * during the operation. Shows the errors or the popup for selecting the
-     * prep/reflex tests.
+     * Shows the errors in the VO or the popup for selecting the prep/reflex
+     * tests for the analyses in the VO because they were added/changed in the
+     * back-end.
      */
     private void showErrorsOrTests(SampleTestReturnVO ret) {
+        ModalWindow modal;
+
         if (ret == null)
             return;
 
-        if (ret.getErrors() != null && ret.getErrors().size() > 0)
+        if (ret.getErrors() != null && ret.getErrors().size() > 0) {
             showErrors(ret.getErrors());
-        else if (ret.getTests() != null && ret.getTests().size() > 0)
-            showTestSelectionLookup(ret);
-    }
+        } else if (ret.getTests() != null && ret.getTests().size() > 0) {
+            /*
+             * show the pop for selecting prep/reflex tests
+             */
+            if (testSelectionLookup == null) {
+                testSelectionLookup = new TestSelectionLookupUI() {
+                    @Override
+                    public TestManager getTestManager(Integer testId) {
+                        return screen.get(testId, TestManager.class);
+                    }
 
-    /**
-     * shows the pop up screen for prep/reflex tests loaded using the manager
-     */
-    private void showTestSelectionLookup(SampleTestReturnVO ret) {
-        ModalWindow modal;
+                    @Override
+                    public void ok() {
+                        ArrayList<SampleTestRequestVO> tests;
 
-        if (testSelectionLookup == null) {
-            testSelectionLookup = new TestSelectionLookupUI() {
-                @Override
-                public TestManager getTestManager(Integer testId) {
-                    return screen.get(testId, TestManager.class);
-                }
+                        tests = testSelectionLookup.getSelectedTests();
+                        /*
+                         * keep isBusy to be true if some tests were selected on
+                         * the popup because they need to be added to the
+                         * manager
+                         */
+                        if (tests != null && tests.size() > 0)
+                            addTests(tests);
+                        else
+                            isBusy = false;
+                    }
+                };
+            }
 
-                @Override
-                public void ok() {
-                    ArrayList<SampleTestRequestVO> tests;
+            /*
+             * make sure that the data can't be committed before the process of
+             * adding tests has completed
+             */
+            isBusy = true;
 
-                    tests = testSelectionLookup.getSelectedTests();
-                    if (tests != null && tests.size() > 0)
-                        addTests(tests);
-                }
-            };
+            modal = new ModalWindow();
+            modal.setSize("520px", "350px");
+            modal.setName(Messages.get().testSelection_prepTestSelection());
+            modal.setCSS(UIResources.INSTANCE.popupWindow());
+            modal.setContent(testSelectionLookup);
+
+            testSelectionLookup.setData(manager, ret.getTests());
+            testSelectionLookup.setWindow(modal);
         }
-
-        modal = new ModalWindow();
-        modal.setSize("520px", "350px");
-        modal.setName(Messages.get().testSelection_prepTestSelection());
-        modal.setCSS(UIResources.INSTANCE.popupWindow());
-        modal.setContent(testSelectionLookup);
-
-        testSelectionLookup.setData(manager, ret.getTests());
-        testSelectionLookup.setWindow(modal);
     }
 }

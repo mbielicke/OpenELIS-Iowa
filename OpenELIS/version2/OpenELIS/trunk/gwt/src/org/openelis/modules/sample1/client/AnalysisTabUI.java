@@ -27,7 +27,6 @@ package org.openelis.modules.sample1.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -40,6 +39,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PanelDO;
@@ -49,8 +49,8 @@ import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
-import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
@@ -58,7 +58,7 @@ import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.test.client.TestService;
-import org.openelis.modules.worksheet.client.WorksheetService;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.SectionPermission;
@@ -91,6 +91,7 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.event.shared.EventBus;
@@ -132,7 +133,7 @@ public class AnalysisTabUI extends Screen {
     protected Table                    worksheetTable, userTable;
 
     @UiField
-    protected Button                   selectWkshtButton, addActionButton, removeActionButton;
+    protected Button                   selectWorksheetButton, addActionButton, removeActionButton;
 
     protected Screen                   parentScreen;
 
@@ -151,7 +152,7 @@ public class AnalysisTabUI extends Screen {
     protected boolean                  canEdit, isVisible, redraw;
 
     protected ArrayList<Item<Integer>> allUnitsModel, allSectionsModel;
-
+    
     public AnalysisTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
@@ -555,10 +556,22 @@ public class AnalysisTabUI extends Screen {
                 return forward ? userTable : revision;
             }
         });
+        
+        worksheetTable.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
+                selectWorksheetButton.setEnabled(true);
+            }
+        });
 
-        addScreenHandler(selectWkshtButton, "selectWkshtButton", new ScreenHandler<Object>() {
+        worksheetTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();
+            }
+        });
+
+        addScreenHandler(selectWorksheetButton, "selectWkshtButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                selectWkshtButton.setEnabled(false);
+                selectWorksheetButton.setEnabled(false);
             }
         });
 
@@ -578,9 +591,8 @@ public class AnalysisTabUI extends Screen {
 
         userTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( !canEdit || !isState(ADD, UPDATE)) {
+                if ( !canEdit || !isState(ADD, UPDATE))
                     event.cancel();
-                }
             }
         });
 
@@ -614,7 +626,7 @@ public class AnalysisTabUI extends Screen {
                         if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId())) {
                             userTable.setValueAt(r, c, data.getActionId());
                             parentScreen.getWindow()
-                                        .setError(Messages.get().analysis_userActionException());
+                                        .setError(Messages.get().analysisUser_actionException());
                         } else {
                             data.setActionId((Integer)val);
                         }
@@ -687,18 +699,13 @@ public class AnalysisTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        parentBus.addHandlerToSource(StateChangeEvent.getType(),
-                                     parentScreen,
-                                     new StateChangeEvent.Handler() {
-                                         public void onStateChange(StateChangeEvent event) {
-                                             evaluateEdit();
-                                             setState(event.getState());
-                                         }
-                                     });
-
         parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
-                String uid;
+                int i, count1, count2;
+                String uid, name;
+                AnalysisWorksheetVO ws;
+                AnalysisUserViewDO user;
+                Row row;
 
                 switch (event.getSelectedType()) {
                     case ANALYSIS:
@@ -709,19 +716,79 @@ public class AnalysisTabUI extends Screen {
                         break;
                 }
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
-                    redraw = true;
-                } else if (isState(QUERY)) {
+                if (uid != null) {
+                    analysis = (AnalysisViewDO)manager.getObject(uid);
+                    sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
+                } else {
+                    analysis = null;
+                    sampleItem = null;
+                }
+                
+                if (isState(QUERY)) {
                     /*
-                     * No analysis is currently selected in the tree because it
-                     * is empty in query state, so the current uid is null. If
-                     * there was no analysis selected in the tree, before going
-                     * in query state, the previous (displayed) uid was null
-                     * too. This makes sure that the tab is redrawn for query
-                     * state even if both uids are null.
+                     * In query state the tab needs to be put in query mode, so
+                     * it's to be refreshedregardless of the previous data
                      */
                     redraw = true;
+                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                    /*
+                     * since the individual fields in the DOs for the previous
+                     * (displayed) and current analysis are not compared to
+                     * determine if they are different, the tab needs to be
+                     * refreshed if the current uid is different from the
+                     * displayed uid, even though the data in the tables may be
+                     * the same
+                     */
+                    redraw = true;
+                } else {
+                    /*
+                     * compare worksheets
+                     */
+                    count1 = worksheetTable.getRowCount();
+                    count2 = analysis != null ? manager.worksheet.count(analysis) : 0;
+
+                    if (count1 == count2) {
+                        for (i = 0; i < count1; i++ ) {
+                            ws = manager.worksheet.get(analysis, i);
+                            row = worksheetTable.getRowAt(i);
+
+                            if (DataBaseUtil.isDifferent(ws.getId(), row.getCell(0)) ||
+                                DataBaseUtil.isDifferent(ws.getCreatedDate(), row.getCell(1)) ||
+                                DataBaseUtil.isDifferent(ws.getStatusId(), row.getCell(2)) ||
+                                DataBaseUtil.isDifferent(ws.getSystemUser(), row.getCell(3))) {
+                                redraw = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        redraw = true;
+                    }
+
+                    /*
+                     * compare analysis users
+                     */
+                    count1 = userTable.getRowCount();
+                    count2 = analysis != null ? manager.analysisUser.count(analysis) : 0;
+
+                    if (count1 == count2) {
+                        for (i = 0; i < count1; i++ ) {
+                            user = manager.analysisUser.get(analysis, i);
+                            row = userTable.getRowAt(i);
+
+                            if (row.getCell(0) != null)
+                                name = ((AutoCompleteValue)row.getCell(0)).getDisplay();
+                            else
+                                name = null;
+
+                            if (DataBaseUtil.isDifferent(user.getSystemUser(), name) ||
+                                DataBaseUtil.isDifferent(user.getActionId(), row.getCell(1))) {
+                                redraw = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        redraw = true;
+                    }
                 }
 
                 displayAnalysis(uid);
@@ -800,6 +867,7 @@ public class AnalysisTabUI extends Screen {
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
@@ -810,8 +878,31 @@ public class AnalysisTabUI extends Screen {
          */
         if (displayedUid == null)
             return new Validation();
-        
+
         return super.validate();
+    }
+    
+    
+    @UiHandler("selectWorksheetButton")
+    protected void selectWorksheet(ClickEvent event) { 
+        ScreenWindow modal;
+        Row row;
+        WorksheetCompletionScreen worksheetScreen;
+        AnalysisWorksheetVO ws;        
+        
+        try {
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(Messages.get().worksheetCompletion());
+            
+            row = worksheetTable.getRowAt(worksheetTable.getSelectedRow());
+            ws = (AnalysisWorksheetVO)row.getData();
+            worksheetScreen = new WorksheetCompletionScreen(ws.getId() ,modal);
+            
+            modal.setContent(worksheetScreen);
+        } catch (Exception e) {
+            Window.alert("openCompletionScreen: " + e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
     }
 
     @UiHandler("addActionButton")
@@ -838,19 +929,11 @@ public class AnalysisTabUI extends Screen {
             if ( !Constants.dictionary().AN_USER_AC_RELEASED.equals(action))
                 userTable.removeRowAt(r);
             else
-                parentScreen.getWindow().setError(Messages.get().analysis_userActionException());
+                parentScreen.getWindow().setError(Messages.get().analysisUser_actionException());
         }
     }
 
     private void displayAnalysis(String uid) {
-        if (uid != null) {
-            analysis = (AnalysisViewDO)manager.getObject(uid);
-            sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
-        } else {
-            analysis = null;
-            sampleItem = null;
-        }
-
         if ( !isVisible)
             return;
 
@@ -859,7 +942,7 @@ public class AnalysisTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            evaluateEdit();
+            displayedUid = uid;
             setState(state);
             fireDataChange();
         }
@@ -913,7 +996,7 @@ public class AnalysisTabUI extends Screen {
         } else {
             /*
              * if the user blanks the field, selecting nothing, the previous
-             * methiod is put back in the autocomplete
+             * method is put back in the autocomplete
              */
             method.setValue(getMethodId(), getMethodName());
         }
@@ -1117,8 +1200,8 @@ public class AnalysisTabUI extends Screen {
     }
 
     /**
-     * Returns the model for units dropdown. In add, update, units specific to
-     * the sample item's sample type are returned.
+     * Returns the model for units dropdown. In add, update states units
+     * specific to the sample item's sample type are returned.
      */
     private ArrayList<Item<Integer>> getUnitsModel() {
         ArrayList<Item<Integer>> model;
@@ -1208,35 +1291,32 @@ public class AnalysisTabUI extends Screen {
     }
 
     private ArrayList<Row> getWorksheetTableModel() {
+        int i;
         ArrayList<Row> model;
-        ArrayList<WorksheetViewDO> ws;
+        AnalysisWorksheetVO ws;
         Row row;
 
         model = new ArrayList<Row>();
         if (analysis == null)
             return model;
 
-        if (analysis.getId() > 0) {
-            try {
-                ws = WorksheetService.get().fetchByAnalysisId(analysis.getId());
+        for (i = 0; i < manager.worksheet.count(analysis); i++ ) {
+            ws = manager.worksheet.get(analysis, i);
 
-                for (WorksheetViewDO w : ws) {
-                    row = new Row(4);
-                    row.setCell(0, w.getId());
-                    row.setCell(1, w.getCreatedDate());
-                    row.setCell(2, w.getStatusId());
-                    row.setCell(3, w.getSystemUser());
-                    model.add(row);
-                }
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
+            row = new Row(4);
+            row.setCell(0, ws.getId());
+            row.setCell(1, ws.getCreatedDate());
+            row.setCell(2, ws.getStatusId());
+            row.setCell(3, ws.getSystemUser());
+            row.setData(ws);
+            model.add(row);
         }
+
         return model;
     }
 
     private ArrayList<Row> getUserTableModel() {
+        int i;
         ArrayList<Row> model;
         AnalysisUserViewDO user;
         Row row;
@@ -1245,19 +1325,15 @@ public class AnalysisTabUI extends Screen {
         if (analysis == null)
             return model;
 
-        try {
-            for (int i = 0; i < manager.analysisUser.count(analysis); i++ ) {
-                user = manager.analysisUser.get(analysis, i);
+        for (i = 0; i < manager.analysisUser.count(analysis); i++ ) {
+            user = manager.analysisUser.get(analysis, i);
 
-                row = new Row(2);
-                row.setCell(0, new AutoCompleteValue(user.getSystemUserId(), user.getSystemUser()));
-                row.setCell(1, user.getActionId());
-                model.add(row);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            row = new Row(2);
+            row.setCell(0, new AutoCompleteValue(user.getSystemUserId(), user.getSystemUser()));
+            row.setCell(1, user.getActionId());
+            model.add(row);
         }
+
         return model;
     }
 }

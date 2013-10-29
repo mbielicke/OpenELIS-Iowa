@@ -54,7 +54,6 @@ import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultFormatter;
-import org.openelis.utilcommon.ResultFormatter.FormattedValue;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.RoundingMethod;
 import org.openelis.utilcommon.ResultValidator.Type;
