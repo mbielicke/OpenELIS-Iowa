@@ -233,6 +233,20 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
+    public void validateAccessionNumber(SampleManager1 sm,
+                                   AsyncCallback<Void> callback) {
+        service.validateAccessionNumber(sm, callback);
+    }
+
+    @Override
+    public void validateAccessionNumber(SampleManager1 sm) throws Exception {
+        Callback<Void> callback;
+
+        callback = new Callback<Void>();
+        service.validateAccessionNumber(sm, callback);
+    }
+    
+    @Override
     public void mergeQuickEntry(SampleManager1 sm,
                                    AsyncCallback<SampleManager1> callback) {
         service.mergeQuickEntry(sm, callback);
@@ -248,18 +262,18 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
-    public void setOrderId(SampleManager1 sm, Integer orderId,
+    public void importOrder(SampleManager1 sm, Integer orderId,
                            AsyncCallback<SampleTestReturnVO> callback) {
-        service.setOrderId(sm, orderId, callback);
+        service.importOrder(sm, orderId, callback);
 
     }
 
     @Override
-    public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception {
+    public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception {
         Callback<SampleTestReturnVO> callback;
 
         callback = new Callback<SampleTestReturnVO>();
-        service.setOrderId(sm, orderId, callback);
+        service.importOrder(sm, orderId, callback);
         return callback.getResult();
     }
 
@@ -278,33 +292,33 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
-    public void addTest(SampleManager1 sm, SampleTestRequestVO test,
+    public void addAnalysis(SampleManager1 sm, SampleTestRequestVO test,
                         AsyncCallback<SampleTestReturnVO> callback) {
-        service.addTest(sm, test, callback);
+        service.addAnalysis(sm, test, callback);
 
     }
 
     @Override
-    public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
+    public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
         Callback<SampleTestReturnVO> callback;
 
         callback = new Callback<SampleTestReturnVO>();
-        service.addTest(sm, test, callback);
+        service.addAnalysis(sm, test, callback);
         return callback.getResult();
     }
 
     @Override
-    public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
+    public void addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
                          AsyncCallback<SampleTestReturnVO> callback) {
-        service.addTests(sm, tests, callback);
+        service.addAnalyses(sm, tests, callback);
     }
 
     @Override
-    public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
+    public SampleTestReturnVO addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
         Callback<SampleTestReturnVO> callback;
 
         callback = new Callback<SampleTestReturnVO>();
-        service.addTests(sm, tests, callback);
+        service.addAnalyses(sm, tests, callback);
         return callback.getResult();
     }
     

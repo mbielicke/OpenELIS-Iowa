@@ -140,6 +140,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
+    public void validateAccessionNumber(SampleManager1 sm) throws Exception {
+        try {
+            sampleManager1.validateAccessionNumber(sm);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         try {
             return sampleManager1.mergeQuickEntry(sm);
@@ -148,9 +156,9 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
-    public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception {
+    public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception {
         try {
-            return sampleManager1.setOrderId(sm, orderId);
+            return sampleManager1.importOrder(sm, orderId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -164,17 +172,17 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
-    public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
+    public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
         try {
-            return sampleManager1.addTest(sm, test);
+            return sampleManager1.addAnalysis(sm, test);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
 
-    public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
+    public SampleTestReturnVO addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
         try {
-            return sampleManager1.addTests(sm, tests);
+            return sampleManager1.addAnalyses(sm, tests);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

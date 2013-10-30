@@ -53,6 +53,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
@@ -2704,24 +2705,32 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         }
 
         manager.getSample().setAccessionNumber(accession);
-
-        /*
-         * existing samples can't be loaded with a quick-entered sample's data
-         */
-        if (manager.getSample().getId() != null)
-            return;
-
         window.setBusy(Messages.get().fetching());
-        try {
-            manager = SampleService1.get().mergeQuickEntry(manager);
-            setData();
-            setState(state);
-            fireDataChange();
-        } catch (NotFoundException e) {
-            manager.getSample().setAccessionNumber(accession);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
+        if (isState(ADD)) {
+            try {
+                manager = SampleService1.get().mergeQuickEntry(manager);
+                setData();
+                setState(UPDATE);
+                fireDataChange();
+            } catch (NotFoundException e) {
+                manager.getSample().setAccessionNumber(accession);
+            } catch (InconsistencyException e) {
+                accessionNumber.addException(e);
+            } catch (Exception e) {
+                manager.getSample().setAccessionNumber(null);
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        } else if (isState(UPDATE)) {
+            try {
+                SampleService1.get().validateAccessionNumber(manager);
+            } catch (InconsistencyException e) {
+                accessionNumber.addException(e);
+            } catch (Exception e) {
+                manager.getSample().setAccessionNumber(null);
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
         }
 
         window.clearStatus();
@@ -2758,7 +2767,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
         try {
             window.setBusy(Messages.get().fetching());
 
-            ret = SampleService1.get().setOrderId(manager, ordId);
+            ret = SampleService1.get().importOrder(manager, ordId);
             manager = ret.getManager();
             setData();
             fireDataChange();
@@ -3798,7 +3807,7 @@ public class NeonatalScreeningSampleLoginScreenUI extends Screen implements Cach
 
         window.setBusy();
         try {
-            ret = SampleService1.get().addTests(manager, tests);
+            ret = SampleService1.get().addAnalyses(manager, tests);
             manager = ret.getManager();
             setData();
             setState(state);
