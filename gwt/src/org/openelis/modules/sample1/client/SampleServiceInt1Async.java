@@ -74,18 +74,21 @@ public interface SampleServiceInt1Async {
     public void update(SampleManager1 sm, boolean ignoreWarnings,
                        AsyncCallback<SampleManager1> callback);
 
+    public void validateAccessionNumber(SampleManager1 sm,
+                                AsyncCallback<Void> callback);
+
     public void mergeQuickEntry(SampleManager1 sm,
                                    AsyncCallback<SampleManager1> callback);
 
-    public void setOrderId(SampleManager1 sm, Integer orderId,
+    public void importOrder(SampleManager1 sm, Integer orderId,
                            AsyncCallback<SampleTestReturnVO> callback);
     
     public void duplicate(Integer sampleId, AsyncCallback<SampleManager1> callback);
 
-    public void addTest(SampleManager1 sm, SampleTestRequestVO test,
+    public void addAnalysis(SampleManager1 sm, SampleTestRequestVO test,
                         AsyncCallback<SampleTestReturnVO> callback);
 
-    public void addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
+    public void addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests,
                          AsyncCallback<SampleTestReturnVO> callback);
     
     public void removeAnalysis(SampleManager1 sm, Integer analysisId,

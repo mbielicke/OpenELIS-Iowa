@@ -73,15 +73,17 @@ public interface SampleServiceInt1 extends RemoteService {
 
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception;
 
+    public void validateAccessionNumber(SampleManager1 sm) throws Exception;
+    
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception;
     
-    public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception;
+    public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception;
     
     public SampleManager1 duplicate(Integer sampleId) throws Exception;
     
-    public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception;
+    public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception;
     
-    public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception;
+    public SampleTestReturnVO addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception;
     
     public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception;
     
