@@ -500,14 +500,14 @@ public class WorksheetBuilderScreenUI extends Screen {
                     public void onFailure(Throwable error) {
                         setQueryResult(null);
                         if (error instanceof NotFoundException) {
-                            window.setDone(Messages.get().noRecordsFound());
+                            window.setDone(Messages.get().gen_noRecordsFound());
                             setState(DEFAULT);
                         } else if (error instanceof LastPageException) {
-                            window.setError(Messages.get().noMoreRecordInDir());
+                            window.setError(Messages.get().gen_noMoreRecordInDir());
                         } else {
                             Window.alert("Error: Worksheet call query failed; " +
                                          error.getMessage());
-                            window.setError(Messages.get().queryFailed());
+                            window.setError(Messages.get().gen_queryFailed());
                         }
                     }
                 });
@@ -597,7 +597,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    window.setError(Messages.get().mustCommitOrAbort());
+                    window.setError(Messages.get().gen_mustCommitOrAbort());
                 } else {
                     tabPanel.close();
                 }
@@ -669,7 +669,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         setState(QUERY);
         fireDataChange();
         worksheetId.setFocus(true);
-        window.setDone(Messages.get().enterFieldsToQuery());
+        window.setDone(Messages.get().gen_enterFieldsToQuery());
     }
 
     @SuppressWarnings("unused")
@@ -697,7 +697,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         setData();
         setState(ADD);
         fireDataChange();
-        window.setDone(Messages.get().enterInformationPressCommit());
+        window.setDone(Messages.get().gen_enterInformationPressCommit());
     }
 
     @SuppressWarnings("unused")
@@ -730,7 +730,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         validation = validate();
         
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
+            window.setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -767,7 +767,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             setData();
             setState(DISPLAY);
             fireDataChange();
-            window.setDone(Messages.get().addingComplete());
+            window.setDone(Messages.get().gen_addingComplete());
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
@@ -786,7 +786,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             setData();
             setState(DISPLAY);
             fireDataChange();
-            window.setDone(Messages.get().updatingComplete());
+            window.setDone(Messages.get().gen_updatingComplete());
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
@@ -800,12 +800,12 @@ public class WorksheetBuilderScreenUI extends Screen {
     protected void abort(ClickEvent event) {
         finishEditing();
         clearErrors();
-        window.setBusy(Messages.get().cancelChanges());
+        window.setBusy(Messages.get().gen_cancelChanges());
 
         switch (state) {
             case QUERY:
                 fetchById(null);
-                window.setDone(Messages.get().queryAborted());
+                window.setDone(Messages.get().gen_queryAborted());
                 break;
                 
             case ADD:
@@ -838,7 +838,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         
         fetchById(null);
         
-        window.setDone(Messages.get().addAborted());
+        window.setDone(Messages.get().gen_addAborted());
     }
     
     private void abortUpdate() {
@@ -864,7 +864,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             Window.alert(e.getMessage());
             fetchById(null);
         }
-        window.setDone(Messages.get().updateAborted());
+        window.setDone(Messages.get().gen_updateAborted());
     }
 
     private void worksheetHistory() {
@@ -873,7 +873,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         hist = new IdNameVO(manager.getWorksheet().getId(), manager.getWorksheet()
                                                                    .getId()
                                                                    .toString());
-        HistoryScreen.showHistory(Messages.get().worksheetHistory(),
+        HistoryScreen.showHistory(Messages.get().worksheet_worksheetHistory(),
                                   Constants.table().WORKSHEET,
                                   hist);
     }
@@ -948,7 +948,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             setData();
             setState(DEFAULT);
         } else {
-            window.setBusy(Messages.get().fetching());
+            window.setBusy(Messages.get().gen_fetching());
             try {
                 manager = WorksheetService1.get().fetchById(id, WorksheetManager1.Load.DETAIL,
                                                             WorksheetManager1.Load.NOTE);
@@ -956,12 +956,12 @@ public class WorksheetBuilderScreenUI extends Screen {
                 setState(DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
-                window.setDone(Messages.get().noRecordsFound());
+                window.setDone(Messages.get().gen_noRecordsFound());
                 return false;
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();
-                Window.alert(Messages.get().fetchFailed() + e.getMessage());
+                Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
                 return false;
             }
 
@@ -999,7 +999,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
             
             modal = new ModalWindow();
-            modal.setName(Messages.get().worksheetLookup());
+            modal.setName(Messages.get().worksheet_worksheetLookup());
             modal.setContent(wLookupScreen);
             modal.setSize("636px", "482px");
             wLookupScreen.setWindow(modal);
@@ -1046,7 +1046,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                             public void onFailure(Throwable error) {
                                 analyteTable.setModel(null);
                                 if (error instanceof NotFoundException) {
-                                    window.setDone(Messages.get().noAnalytesFoundForRow());
+                                    window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                                 } else {
                                     Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
                                 }
@@ -1078,7 +1078,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                             public void onFailure(Throwable error) {
                                 analyteTable.setModel(null);
                                 if (error instanceof NotFoundException) {
-                                    window.setDone(Messages.get().noAnalytesFoundForRow());
+                                    window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                                 } else {
                                     Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
                                 }
@@ -1108,7 +1108,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                         public void onFailure(Throwable error) {
                             analyteTable.setModel(null);
                             if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().noAnalytesFoundForRow());
+                                window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                             } else {
                                 Window.alert("Error: WorksheetBuilder call showAnalytes failed; "+error.getMessage());
                             }

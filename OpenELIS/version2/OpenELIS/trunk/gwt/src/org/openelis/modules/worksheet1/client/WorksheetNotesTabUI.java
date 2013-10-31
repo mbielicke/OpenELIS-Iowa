@@ -206,7 +206,7 @@ public class WorksheetNotesTabUI extends Screen {
 
         modal = new ModalWindow();
         modal.setSize("620px", "550px");
-        modal.setName(Messages.get().noteEditor());
+        modal.setName(Messages.get().gen_noteEditor());
         modal.setCSS(UIResources.INSTANCE.popupWindow());
         modal.setContent(editNoteLookup);
 

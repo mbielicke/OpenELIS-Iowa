@@ -37,7 +37,7 @@
       <w:TabLayoutPanel barHeight="18" barUnit="PX">
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.worksheet}"/>
+            <w:TabWidget text="{msg.gen_worksheet}"/>
           </w:customHeader>
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
@@ -45,10 +45,10 @@
                 <g:layer top="0px" bottom="26px">
                   <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
                            header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-                    <t:Column width="50" label="{msg.id}">
+                    <t:Column width="50" label="{msg.gen_id}">
                       <t:LabelCell/>
                     </t:Column>
-                    <t:Column width="150" label="{msg.description}">
+                    <t:Column width="150" label="{msg.gen_description}">
                       <t:LabelCell/>
                     </t:Column>
                   </t:Table>
@@ -69,7 +69,7 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.analytes}"/>
+            <w:TabWidget text="{msg.gen_analytes}"/>
           </w:customHeader>
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
@@ -78,7 +78,7 @@
                 <t:Column width="20">
                   <t:CheckBoxCell/>
                 </t:Column>
-                <t:Column width="150" label="{msg.analytes}">
+                <t:Column width="150" label="{msg.gen_analytes}">
                   <t:LabelCell/>
                 </t:Column>
               </t:Table>
@@ -94,29 +94,29 @@
                            width="100%">
             <g:HorizontalPanel>
               <w:Button css="{uiRes.buttonPanel}" ui:field="query" leftIcon="{uiRes.buttonPanel.QueryButtonImage}"
-                        text="{msg.query}" toggles="true"/>
+                        text="{msg.gen_query}" toggles="true"/>
               <w:Button css="{uiRes.buttonPanel}" ui:field="previous" leftIcon="{uiRes.buttonPanel.PreviousButtonImage}"
-                        text="{msg.previous}"/>
+                        text="{msg.gen_previous}"/>
               <w:Button css="{uiRes.buttonPanel}" ui:field="next" leftIcon="{uiRes.buttonPanel.NextButtonImage}"
-                        text="{msg.next}"/>
+                        text="{msg.gen_next}"/>
               <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
               <w:Button css="{uiRes.buttonPanel}" ui:field="add" leftIcon="{uiRes.buttonPanel.AddButtonImage}"
-                        text="{msg.add}" toggles="true"/>
+                        text="{msg.gen_add}" toggles="true"/>
               <w:Button css="{uiRes.buttonPanel}" ui:field="update" leftIcon="{uiRes.buttonPanel.UpdateButtonImage}"
-                        text="{msg.update}" toggles="true"/>
+                        text="{msg.gen_update}" toggles="true"/>
               <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
               <w:Button css="{uiRes.buttonPanel}" ui:field="commit" leftIcon="{uiRes.buttonPanel.CommitButtonImage}"
-                        text="{msg.commit}"/>
+                        text="{msg.gen_commit}"/>
               <w:Button css="{uiRes.buttonPanel}" ui:field="abort" leftIcon="{uiRes.buttonPanel.AbortButtonImage}"
-                        text="{msg.abort}"/>
+                        text="{msg.gen_abort}"/>
               <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
               <w:Menu ui:field="optionsMenu" selfShow="true">
                 <w:display>
-                  <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.options}"
+                  <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.gen_options}"
                             rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
                 </w:display>
                 <w:MenuItem ui:field="worksheetHistory" description="" enabled="false"
-                            icon="{res.style.historyIcon}" display="{msg.worksheetHistory}"/>
+                            icon="{res.style.historyIcon}" display="{msg.worksheet_worksheetHistory}"/>
               </w:Menu>
             </g:HorizontalPanel>
           </g:AbsolutePanel>
@@ -126,25 +126,25 @@
             <table class="{res.style.Form}">
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.worksheetNumber}:"/>
+                  <ui:text from="{msg.worksheet_worksheetNumber}:"/>
                 </td>
                 <td>
                   <w:TextBox ui:field="worksheetId" width="75px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.status}:"/>
+                  <ui:text from="{msg.gen_status}:"/>
                 </td>
                 <td colspan="2">
                   <w:Dropdown ui:field="statusId" width="110px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.username}"/>
+                  <ui:text from="{msg.gen_username}"/>
                 </td>
                 <td>
                   <w:AutoComplete ui:field="systemUserId" width="165" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
-                        <t:Column label="{msg.username}">
+                        <t:Column label="{msg.gen_username}">
                           <t:LabelCell/>
                         </t:Column>
                       </t:Table>
@@ -154,13 +154,13 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.worksheetFormat}:"/>
+                  <ui:text from="{msg.worksheet_format}:"/>
                 </td>
                 <td>
                   <w:Dropdown ui:field="formatId" width="132px" dropWidth="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.relatedWorksheetNumber}:"/>
+                  <ui:text from="{msg.worksheet_relatedWorksheetNumber}:"/>
                 </td>
                 <td colspan="2">
                 <g:HorizontalPanel>
@@ -169,22 +169,22 @@
                 </g:HorizontalPanel>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.instrumentName}:"/>
+                  <ui:text from="{msg.worksheet_instrumentName}:"/>
                 </td>
                 <td>
                   <w:AutoComplete ui:field="instrumentName" width="165" dropWidth="765" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
-                        <t:Column width="150" label="{msg.name}">
+                        <t:Column width="150" label="{msg.gen_name}">
                           <t:LabelCell/>
                         </t:Column>
-                        <t:Column width="200" label="{msg.description}">
+                        <t:Column width="200" label="{msg.gen_description}">
                           <t:LabelCell/>
                         </t:Column>
-                        <t:Column width="200" label="{msg.type}">
+                        <t:Column width="200" label="{msg.gen_type}">
                           <t:LabelCell/>
                         </t:Column>
-                        <t:Column width="200" label="{msg.location}">
+                        <t:Column width="200" label="{msg.gen_location}">
                           <t:LabelCell/>
                         </t:Column>
                       </t:Table>
@@ -194,13 +194,13 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.created}:"/>
+                  <ui:text from="{msg.worksheet_createdDate}:"/>
                 </td>
                 <td>
                   <c:Calendar ui:field="createdDate" width="135px" begin="0" end="4"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.description}:"/>
+                  <ui:text from="{msg.gen_description}:"/>
                 </td>
                 <td colspan="4">
                   <w:TextBox ui:field="description" width="400px" case="LOWER" field="String"/>
@@ -213,7 +213,7 @@
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>
-                <w:TabWidget text="{msg.worksheet}"/>
+                <w:TabWidget text="{msg.gen_worksheet}"/>
               </w:customHeader>
               <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
                 <g:layer>
@@ -223,7 +223,7 @@
             </w:tab>
             <w:tab>
               <w:customHeader>
-                <w:TabWidget text="{msg.note}" />
+                <w:TabWidget text="{msg.gen_note}" />
               </w:customHeader>
               <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
                 <g:layer>

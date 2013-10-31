@@ -257,7 +257,7 @@ public class WorksheetLookupScreenUI extends Screen
         validation = validate();
         
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
+            window.setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -265,7 +265,7 @@ public class WorksheetLookupScreenUI extends Screen
         query.setFields(getQueryFields());
 
         if (query.getFields().size() > 0) {
-            window.setBusy(Messages.get().querying());
+            window.setBusy(Messages.get().gen_querying());
     
             query.setRowsPerPage(50);
             WorksheetService.get().query(query, new AsyncCallback<ArrayList<WorksheetViewDO>>() {
@@ -276,15 +276,15 @@ public class WorksheetLookupScreenUI extends Screen
                 public void onFailure(Throwable error) {
                     setQueryResult(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(Messages.get().noRecordsFound());
+                        window.setDone(Messages.get().gen_noRecordsFound());
                     } else {
                         Window.alert("Error: WorksheetLookup call query failed; "+error.getMessage());
-                        window.setError(Messages.get().queryFailed());
+                        window.setError(Messages.get().gen_queryFailed());
                     }
                 }
             });
         } else {
-            window.setDone(Messages.get().emptyQueryException());
+            window.setDone(Messages.get().gen_emptyQueryException());
         }
     }
 
@@ -294,7 +294,7 @@ public class WorksheetLookupScreenUI extends Screen
         
         model = new ArrayList<Item<Integer>>();
         if (list == null || list.size() == 0) {
-            window.setDone(Messages.get().noRecordsFound());
+            window.setDone(Messages.get().gen_noRecordsFound());
         } else {
             for (WorksheetViewDO worksheetRow : list) {
                 row = new Item<Integer>(5);
@@ -308,7 +308,7 @@ public class WorksheetLookupScreenUI extends Screen
                 model.add(row);
             }
 
-            window.setDone(Messages.get().queryingComplete());
+            window.setDone(Messages.get().gen_queryingComplete());
         }
 
         worksheetTable.setModel(model);

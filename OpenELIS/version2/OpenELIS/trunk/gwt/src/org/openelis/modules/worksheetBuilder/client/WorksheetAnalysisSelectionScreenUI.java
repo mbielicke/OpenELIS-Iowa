@@ -210,7 +210,7 @@ public class WorksheetAnalysisSelectionScreenUI extends Screen
             manager = WorksheetService1.get().fetchById(worksheetId, WorksheetManager1.Load.DETAIL);
             worksheetAnalysisTable.setModel(getTableModel());
         } catch (NotFoundException nfE) {
-            Window.alert(Messages.get().worksheetAnalysesNotFound(DataBaseUtil.toString(worksheetId)));
+            Window.alert(Messages.get().worksheet_worksheetAnalysesNotFound(DataBaseUtil.toString(worksheetId)));
         } catch (Exception anyE) {
             anyE.printStackTrace();
             Window.alert("setWorksheetId(): "+anyE.getMessage());
