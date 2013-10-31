@@ -48,16 +48,16 @@ UIRF Software License are applicable instead of those above.
             <td>
               <w:TextBox ui:field="firstName" width="100px" field="String" case="LOWER"/>
             </td>
-            <td class="{res.style.Prompt}"><ui:text from="{msg.birth}:" /></td>
+            <td class="{res.style.Prompt}"><ui:text from="{msg.patient_birth}:" /></td>
             <td>
               <c:Calendar ui:field="birthDate" width="134px" begin="0" end="2" />
             </td>
             <td class="{res.style.Prompt}"><ui:text from="{msg.sample_nationalId}:" /></td>
             <td>
-              <w:TextBox ui:field="nationalId" width="100px" field="String" mask="{msg.nationalIdPattern}"/>
+              <w:TextBox ui:field="nationalId" width="100px" field="String" mask="{msg.gen_nationalIdPattern}"/>
             </td>
             <td>
-              <w:Button ui:field="search" leftIcon="{res.style.findIcon}" text="{msg.search}" />
+              <w:Button ui:field="search" leftIcon="{res.style.findIcon}" text="{msg.gen_search}" />
             </td>
           </tr>
         </table>
@@ -65,7 +65,7 @@ UIRF Software License are applicable instead of those above.
     </g:layer>
     <g:layer top="40px" bottom="25px" left="5px" width="49%">
       <t:Table ui:field="patientTable" horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <t:Column width="50" label="{msg.id}" sortable="true">
+        <t:Column width="50" label="{msg.gen_id}" sortable="true">
           <t:LabelCell />
         </t:Column>
         <t:Column width="125" label="{msg.gen_lastName}" sortable="true">
@@ -74,12 +74,12 @@ UIRF Software License are applicable instead of those above.
         <t:Column width="125" label="{msg.gen_firstName}" sortable="true">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="75" label="{msg.birth}" sortable="true">
+        <t:Column width="75" label="{msg.patient_birth}" sortable="true">
           <t:CalendarCell>
             <c:Calendar width="75" begin="0" end="2" />
           </t:CalendarCell>
         </t:Column>
-        <t:Column width="75" label="{msg.gender}" sortable="true">
+        <t:Column width="75" label="{msg.patient_gender}" sortable="true">
           <t:DropdownCell>
             <w:Dropdown ui:field="tableGender" width="59" field="Integer"/>
           </t:DropdownCell>
@@ -97,7 +97,7 @@ UIRF Software License are applicable instead of those above.
         <t:Column width="125" label="{msg.gen_firstName}" sortable="true">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="75" label="{msg.birth}" sortable="true">
+        <t:Column width="75" label="{msg.patient_birth}" sortable="true">
           <t:CalendarCell>
             <c:Calendar width="75" begin="0" end="2" />
           </t:CalendarCell>
@@ -111,18 +111,18 @@ UIRF Software License are applicable instead of those above.
     </g:layer>
     <g:layer top="55%" bottom="25px" left="50%" right="5px">
       <t:Table ui:field="sampleTable" horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <t:Column width="100" label="{msg.accessionNum}" sortable="true">
+        <t:Column width="100" label="{msg.sample_accessionNum}" sortable="true">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="100" label="{msg.received}" sortable="true">
+        <t:Column width="100" label="{msg.sample_received}" sortable="true">
           <t:CalendarCell>
             <c:Calendar width="100px" begin="0" end="2" />
           </t:CalendarCell>
         </t:Column>
-        <t:Column width="100" label="{msg.test}" sortable="true">
+        <t:Column width="100" label="{msg.gen_test}" sortable="true">
           <t:LabelCell />
         </t:Column>
-        <t:Column width="100" label="{msg.method}" sortable="true">
+        <t:Column width="100" label="{msg.gen_method}" sortable="true">
           <t:LabelCell />
         </t:Column>
       </t:Table>
@@ -130,8 +130,8 @@ UIRF Software License are applicable instead of those above.
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel horizontalAlignment="center" width="100%">
         <g:HorizontalPanel>
-            <w:Button ui:field="select" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.select}" />
-            <w:Button ui:field="cancel" leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.cancel}" />
+            <w:Button ui:field="select" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.gen_select}" />
+            <w:Button ui:field="cancel" leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.gen_cancel}" />
         </g:HorizontalPanel>
       </g:HorizontalPanel>
     </g:layer>

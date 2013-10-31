@@ -123,7 +123,7 @@ public class WorksheetBean {
         query = manager.createNamedQuery("Worksheet.FetchByIds");
         query.setParameter("ids", ids);
         data = DataBaseUtil.toArrayList(query.getResultList());
-        for (i = 0; i < data.size(); i++ ) {
+        for (i = 0; i < data.size(); i++) {
             worksheet = data.get(i);
             if (worksheet.getSystemUserId() != null) {
                 user = userCache.getSystemUser(worksheet.getSystemUserId());
@@ -147,7 +147,7 @@ public class WorksheetBean {
         query.setParameter("id", id);
         try {
             data = (ArrayList<WorksheetViewDO>)query.getResultList();
-            for (i = 0; i < data.size(); i++ ) {
+            for (i = 0; i < data.size(); i++) {
                 worksheet = data.get(i);
                 if (worksheet.getSystemUserId() != null) {
                     user = userCache.getSystemUser(worksheet.getSystemUserId());
@@ -174,7 +174,7 @@ public class WorksheetBean {
         query = manager.createNamedQuery("Worksheet.FetchByAnalysisIds");
         query.setParameter("ids", ids);
         data = (ArrayList<AnalysisWorksheetVO>)query.getResultList();
-        for (i = 0; i < data.size(); i++ ) {
+        for (i = 0; i < data.size(); i++) {
             worksheet = data.get(i);
             if (worksheet.getSystemUserId() != null) {
                 user = userCache.getSystemUser(worksheet.getSystemUserId());
@@ -194,8 +194,9 @@ public class WorksheetBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + WorksheetMeta.getId() +
-                          ", " + WorksheetMeta.getDescription() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          WorksheetMeta.getId() + ", " +
+                          WorksheetMeta.getDescription() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetMeta.getId() + " desc");
 
@@ -215,8 +216,8 @@ public class WorksheetBean {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<AnalysisViewVO> fetchAnalysesByView(ArrayList<QueryData> fields, int first,
-                                                         int max) throws Exception {
+    public ArrayList<AnalysisViewVO> fetchAnalysesByView(ArrayList<QueryData> fields, 
+                                                         int first, int max) throws Exception {
         List list = null;
         Query query;
         QueryBuilderV2 builder;
@@ -224,8 +225,9 @@ public class WorksheetBean {
         builder = new QueryBuilderV2();
         builder.setMeta(avMeta);
         builder.setSelect("distinct new org.openelis.domain.AnalysisViewVO(" +
-                          AnalysisViewMeta.getSampleId() + ", " + AnalysisViewMeta.getDomain() +
-                          ", " + AnalysisViewMeta.getAccessionNumber() + ", " +
+                          AnalysisViewMeta.getSampleId() + ", " +
+                          AnalysisViewMeta.getDomain() + ", " +
+                          AnalysisViewMeta.getAccessionNumber() + ", " +
                           AnalysisViewMeta.getReceivedDate() + ", " +
                           AnalysisViewMeta.getCollectionDate() + ", " +
                           AnalysisViewMeta.getCollectionTime() + ", " +
@@ -233,8 +235,9 @@ public class WorksheetBean {
                           AnalysisViewMeta.getPrimaryOrganizationName() + ", " +
                           AnalysisViewMeta.getTodoDescription() + ", " +
                           AnalysisViewMeta.getWorksheetDescription() + ", " +
-                          AnalysisViewMeta.getPriority() + ", " + AnalysisViewMeta.getTestId() +
-                          ", " + AnalysisViewMeta.getTestName() + ", " +
+                          AnalysisViewMeta.getPriority() + ", " +
+                          AnalysisViewMeta.getTestId() + ", " +
+                          AnalysisViewMeta.getTestName() + ", " +
                           AnalysisViewMeta.getMethodName() + ", " +
                           AnalysisViewMeta.getTimeTaAverage() + ", " +
                           AnalysisViewMeta.getTimeHolding() + ", " +
@@ -301,13 +304,13 @@ public class WorksheetBean {
         InstrumentLogDO ilDO;
         Worksheet entity;
 
-        if ( !data.isChanged())
+        if (!data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Worksheet.class, data.getId());
 
-        if ( !DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
+        if (!DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
             if (data.getInstrumentId() != null) {
                 try {
                     ilDO = instrumentLog.fetchByInstrumentIdWorksheetId(entity.getInstrumentId(),
@@ -333,7 +336,7 @@ public class WorksheetBean {
             }
         } else {
             if (entity.getInstrumentId() == null) {
-                if ( !data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
+                if (!data.getStatusId().equals(Constants.dictionary().WORKSHEET_VOID)) {
                     ilEntity = new InstrumentLog();
                     ilEntity.setInstrumentId(data.getInstrumentId());
                     ilEntity.setWorksheetId(data.getId());
@@ -462,7 +465,7 @@ public class WorksheetBean {
             throw new Exception("Error loading workbook from template file: " + ioE.getMessage());
         }
 
-        for (i = 0; i < wb.getNumberOfNames(); i++ ) {
+        for (i = 0; i < wb.getNumberOfNames(); i++) {
             name = wb.getNameAt(i);
             if (name.getRefersToFormula() != null) {
                 aref = new AreaReference(name.getRefersToFormula());

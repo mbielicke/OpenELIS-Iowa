@@ -463,7 +463,7 @@ UIRF Software License are applicable instead of those above.
                           </appButton>
                         </row>
                       </TablePanel>
-                      <HorizontalPanel width="15" />
+                      <HorizontalPanel width="12" />
                       <TablePanel>
                         <row>
                           <text style="Prompt">

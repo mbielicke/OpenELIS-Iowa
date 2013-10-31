@@ -324,7 +324,7 @@ public abstract class PatientLookupScreenUI extends Screen {
         Query query;
 
         if (validate().getStatus() != VALID) {
-            window.setError(Messages.get().correctErrors());
+            window.setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -332,7 +332,7 @@ public abstract class PatientLookupScreenUI extends Screen {
         query.setFields(getQueryFields());
 
         if (query.getFields().size() > 0) {
-            window.setBusy(Messages.get().querying());
+            window.setBusy(Messages.get().gen_querying());
     
             query.setRowsPerPage(50);
             PatientService.get().query(query, new AsyncCallback<ArrayList<PatientDO>>() {
@@ -344,15 +344,15 @@ public abstract class PatientLookupScreenUI extends Screen {
                 public void onFailure(Throwable error) {
                     setQueryResult(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(Messages.get().noRecordsFound());
+                        window.setDone(Messages.get().gen_noRecordsFound());
                     } else {
                         Window.alert("Error: PatientLookup call query failed; "+error.getMessage());
-                        window.setError(Messages.get().queryFailed());
+                        window.setError(Messages.get().gen_queryFailed());
                     }
                 }
             });
         } else {
-            window.setDone(Messages.get().emptyQueryException());
+            window.setDone(Messages.get().gen_emptyQueryException());
         }
     }
 
@@ -362,7 +362,7 @@ public abstract class PatientLookupScreenUI extends Screen {
         
         model = new ArrayList<Row>();
         if (list == null || list.size() == 0) {
-            window.setDone(Messages.get().noRecordsFound());
+            window.setDone(Messages.get().gen_noRecordsFound());
         } else {
             for (PatientDO patientRow : list) {
                 row = new Row(6);
@@ -376,7 +376,7 @@ public abstract class PatientLookupScreenUI extends Screen {
                 model.add(row);
             }
 
-            window.setDone(Messages.get().queryingComplete());
+            window.setDone(Messages.get().gen_queryingComplete());
         }
 
         patientTable.setModel(model);
@@ -410,10 +410,10 @@ public abstract class PatientLookupScreenUI extends Screen {
                 public void onFailure(Throwable error) {
                     nextOfKinTable.setModel(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(Messages.get().noRecordsFound());
+                        window.setDone(Messages.get().gen_noRecordsFound());
                     } else {
                         Window.alert("Error: PatientRelationLookup call query failed; "+error.getMessage());
-                        window.setError(Messages.get().queryFailed());
+                        window.setError(Messages.get().gen_queryFailed());
                     }
                 }
             });
@@ -448,10 +448,10 @@ public abstract class PatientLookupScreenUI extends Screen {
                 public void onFailure(Throwable error) {
                     sampleTable.setModel(null);
                     if (error instanceof NotFoundException) {
-                        window.setDone(Messages.get().noRecordsFound());
+                        window.setDone(Messages.get().gen_noRecordsFound());
                     } else {
                         Window.alert("Error: PatientSampleLookup call query failed; "+error.getMessage());
-                        window.setError(Messages.get().queryFailed());
+                        window.setError(Messages.get().gen_queryFailed());
                     }
                 }
             });

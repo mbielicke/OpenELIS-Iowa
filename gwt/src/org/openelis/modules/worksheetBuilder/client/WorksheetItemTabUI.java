@@ -307,14 +307,16 @@ public class WorksheetItemTabUI extends Screen {
             sortAsc = new MenuItem(UIResources.INSTANCE.menuCss().Ascending(), org.openelis.ui.messages.Messages.get().header_ascending(), "");
             sortAsc.addCommand(new Command() {
                 public void execute() {
-                    sortItems(col, Table.SORT_ASCENDING);
+                    if (worksheetItemTable.getRowCount() > 1)
+                        sortItems(col, Table.SORT_ASCENDING);
                 }
             });
             column.addMenuItem(sortAsc);
             sortDesc = new MenuItem(UIResources.INSTANCE.menuCss().Descending(), org.openelis.ui.messages.Messages.get().header_descending(), "");
             sortDesc.addCommand(new Command() {
                 public void execute() {
-                    sortItems(col, Table.SORT_DESCENDING);
+                    if (worksheetItemTable.getRowCount() > 1)
+                        sortItems(col, Table.SORT_DESCENDING);
                 }
             });
             column.addMenuItem(sortDesc);
@@ -787,7 +789,7 @@ public class WorksheetItemTabUI extends Screen {
         }
 
         win = new org.openelis.ui.widget.Window();
-        win.setName(Messages.get().worksheetBuilderLookup());
+        win.setName(Messages.get().worksheet_worksheetBuilderLookup());
         win.setSize("1060px", "498px");
         wbLookupScreen.setWindow(win);
         win.setContent(wbLookupScreen);
@@ -873,7 +875,7 @@ public class WorksheetItemTabUI extends Screen {
         ModalWindow modal;
         
         if (manager.getWorksheet().getFormatId() == null) {
-            Window.alert(Messages.get().worksheetChooseFormatBeforeAddFromOther());
+            Window.alert(Messages.get().worksheet_chooseFormatBeforeAddFromOther());
             return;
         }
         
@@ -957,7 +959,7 @@ public class WorksheetItemTabUI extends Screen {
                                     }
                                     
                                     modal2 = new ModalWindow();
-                                    modal2.setName(Messages.get().worksheetAnalysisSelection() + " (#" + wVDO.getId().toString() + ")");
+                                    modal2.setName(Messages.get().worksheet_worksheetAnalysisSelection() + " (#" + wVDO.getId().toString() + ")");
                                     modal2.setContent(waSelectionScreen);
                                     modal2.setSize("502px", "365px");
                                     waSelectionScreen.setWindow(modal2);
@@ -975,7 +977,7 @@ public class WorksheetItemTabUI extends Screen {
             }
             
             modal = new ModalWindow();
-            modal.setName(Messages.get().worksheetLookup());
+            modal.setName(Messages.get().worksheet_worksheetLookup());
             modal.setContent(wLookupScreen);
             modal.setSize("636px", "482px");
             wLookupScreen.setWindow(modal);
@@ -1061,7 +1063,7 @@ public class WorksheetItemTabUI extends Screen {
             }
 
             win = new ModalWindow(false);
-            win.setName(Messages.get().QCLookup());
+            win.setName(Messages.get().qc_qcLookup());
             win.setSize("735px", "360px");
             qcLookupScreen.setWindow(win);
             win.setContent(qcLookupScreen);
@@ -1103,7 +1105,7 @@ public class WorksheetItemTabUI extends Screen {
                     if (data.getId().equals(tempData.getWorksheetAnalysisId())) {
                         if (buffer.length() > 0)
                             buffer.insert(0, "\n");
-                        buffer.insert(0, "Row " + (i + 1) + ": " + Messages.get().oneOrMoreQcLinkOnRemove());
+                        buffer.insert(0, "Row " + (i + 1) + ": " + Messages.get().worksheet_oneOrMoreQcLinkOnRemove());
                         continue ROW;
                     }
                 }
