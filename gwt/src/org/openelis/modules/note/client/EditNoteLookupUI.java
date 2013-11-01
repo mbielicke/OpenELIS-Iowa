@@ -99,6 +99,60 @@ public abstract class EditNoteLookupUI extends Screen {
     }
 
     private void initialize() {
+        addScreenHandler(subject, "subject", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                subject.setValue(noteSubject);
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                subject.setEnabled(hasSubject);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? text : find;
+            }
+        });
+
+        addScreenHandler(text, "text", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                text.setValue(noteText);
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                text.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? find : subject;
+            }
+        });
+
+        addScreenHandler(find, "find", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                find.setValue(null);
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                find.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? subject : text;
+            }
+        });
+
+        addScreenHandler(findButton, "findButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                findButton.setEnabled(true);
+            }
+        });
+
+        addScreenHandler(pasteButton, "pasteButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                pasteButton.setEnabled(false);
+            }
+        });
+        
         addScreenHandler(noteTree, "noteTree", new ScreenHandler<ArrayList<Node>>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -154,36 +208,6 @@ public abstract class EditNoteLookupUI extends Screen {
             }
         });
 
-        addScreenHandler(subject, "subject", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                subject.setValue(noteSubject);
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                subject.setEnabled(hasSubject);
-            }
-        });
-
-        addScreenHandler(text, "text", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                text.setValue(noteText);
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                text.setEnabled(true);
-            }
-        });
-
-        addScreenHandler(find, "find", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                find.setValue(null);
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                find.setEnabled(true);
-            }
-        });
-
         addScreenHandler(preview, "preview", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 preview.setValue(null);
@@ -195,18 +219,6 @@ public abstract class EditNoteLookupUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 preview.setEnabled(false);
-            }
-        });
-
-        addScreenHandler(pasteButton, "pasteButton", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                pasteButton.setEnabled(false);
-            }
-        });
-
-        addScreenHandler(findButton, "findButton", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                findButton.setEnabled(true);
             }
         });
 

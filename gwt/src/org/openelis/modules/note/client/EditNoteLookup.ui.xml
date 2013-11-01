@@ -28,7 +28,7 @@
             </td>
           </tr>
           <tr>
-            <td class="{res.style.Prompt}">
+            <td class="{res.style.Prompt}" valign = "top">
               <ui:text from="{msg.text}:" />
             </td>
             <td>
@@ -43,19 +43,19 @@
         <table class="{res.style.Form}">
           <tr>
             <td>
-              <w:TextBox ui:field="find" width="240px" />
+              <w:TextBox ui:field="find" width="215px" />
             </td>
             <td>
-              <w:Button ui:field="findButton" text="{msg.find}" />
+              <w:Button ui:field="findButton" leftIcon="{res.icon.findIcon}" text="{msg.find}"/>
             </td>
             <td>
-              <w:Button ui:field="pasteButton" text="{msg.paste}" />
+              <w:Button ui:field="pasteButton" text="{msg.paste}"/>
             </td>
           </tr>
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="230px" height="240px" left="20px" right="15px"> <!-- width="575px" -->
+    <g:layer top="230px" height="240px" left="20px" right="15px">
       <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
         <g:layer top="0px" bottom="10px" left="0px" width="49%">
           <r:Tree ui:field="noteTree" styleName="{res.table.ScreenTableWithSides}" header="true">
