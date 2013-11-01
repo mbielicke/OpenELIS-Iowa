@@ -32,7 +32,6 @@ UIRF Software License are applicable instead of those above.
              xmlns:c="urn:import:org.openelis.ui.widget.calendar">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
@@ -57,14 +56,14 @@ UIRF Software License are applicable instead of those above.
               <w:TextBox ui:field="nationalId" width="100px" field="String" mask="{msg.gen_nationalIdPattern}"/>
             </td>
             <td>
-              <w:Button ui:field="search" leftIcon="{res.style.findIcon}" text="{msg.gen_search}" />
+              <w:Button ui:field="search" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}" />
             </td>
           </tr>
         </table>
       </g:HTMLPanel>
     </g:layer>
     <g:layer top="40px" bottom="25px" left="5px" width="49%">
-      <t:Table ui:field="patientTable" horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+      <t:Table ui:field="patientTable" horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="50" label="{msg.gen_id}" sortable="true">
           <t:LabelCell />
         </t:Column>
@@ -90,7 +89,7 @@ UIRF Software License are applicable instead of those above.
       </t:Table>
     </g:layer>
     <g:layer top="40px" height="37%" left="50%" right="5px">
-      <t:Table ui:field="nextOfKinTable" horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+      <t:Table ui:field="nextOfKinTable" horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="125" label="{msg.gen_lastName}" sortable="true">
           <t:LabelCell />
         </t:Column>
@@ -110,7 +109,7 @@ UIRF Software License are applicable instead of those above.
       </t:Table>
     </g:layer>
     <g:layer top="55%" bottom="25px" left="50%" right="5px">
-      <t:Table ui:field="sampleTable" horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+      <t:Table ui:field="sampleTable" horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="100" label="{msg.sample_accessionNum}" sortable="true">
           <t:LabelCell />
         </t:Column>
@@ -130,8 +129,8 @@ UIRF Software License are applicable instead of those above.
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel horizontalAlignment="center" width="100%">
         <g:HorizontalPanel>
-            <w:Button ui:field="select" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.gen_select}" />
-            <w:Button ui:field="cancel" leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.gen_cancel}" />
+            <w:Button ui:field="select" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_select}" />
+            <w:Button ui:field="cancel" leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_cancel}" />
         </g:HorizontalPanel>
       </g:HorizontalPanel>
     </g:layer>

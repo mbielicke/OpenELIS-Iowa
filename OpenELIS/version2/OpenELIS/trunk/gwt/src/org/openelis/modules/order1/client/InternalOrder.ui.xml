@@ -17,18 +17,18 @@
 	xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:o="urn:import:org.openelis.modules.order1.client"
 	xmlns:s="urn:import:org.openelis.modules.auxData.client">
-	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
-	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
-		field="res" />
+	
+    <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  
 	<g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
 		<g:west size="250">
 			<g:LayoutPanel>
 				<g:layer top="0px" bottom="0px" left="2px" width="20px">
 					<w:ButtonGroup ui:field="atozButtons">
-						<g:AbsolutePanel styleName="{uiRes.atozButton.ButtonPanel}">
+						<g:AbsolutePanel styleName="{res.atozButton.ButtonPanel}">
 							<w:Button text="#" action=">0" enabled="true"
-								css="{uiRes.atozButton}" />
+								css="{res.atozButton}" />
 						</g:AbsolutePanel>
 					</w:ButtonGroup>
 				</g:layer>
@@ -37,7 +37,7 @@
 						<g:layer top="0px" bottom="27px">
 							<t:Table ui:field="atozTable" horizontalScroll="ALWAYS"
 								verticalScroll="ALWAYS" header="true"
-								styleName="{uiRes.table.ScreenTableWithSides}">
+								styleName="{res.table.ScreenTableWithSides}">
 								<t:Column width="75" label="{msg.order_orderNum}">
 									<t:LabelCell />
 								</t:Column>
@@ -51,11 +51,11 @@
 								width="100%">
 								<g:HorizontalPanel>
 									<w:Button ui:field="atozPrev"
-										leftIcon="{uiRes.atozButton.PreviousPageButtonImage}" enabled="false"
-										css="{uiRes.atozButton}" />
+										leftIcon="{res.atozButton.PreviousPageButtonImage}" enabled="false"
+										css="{res.atozButton}" />
 									<w:Button ui:field="atozNext"
-										leftIcon="{uiRes.atozButton.NextPageButtonImage}" enabled="false"
-										css="{uiRes.atozButton}" />
+										leftIcon="{res.atozButton.NextPageButtonImage}" enabled="false"
+										css="{res.atozButton}" />
 								</g:HorizontalPanel>
 							</g:HorizontalPanel>
 						</g:layer>
@@ -66,40 +66,40 @@
 		<g:center>
 			<g:LayoutPanel>
 				<g:layer top="0px" height="30px">
-					<g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonPanelContainer}"
+					<g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
 						width="100%">
 						<g:HorizontalPanel>
-							<w:Button css="{uiRes.buttonPanel}" ui:field="query"
-								leftIcon="{uiRes.buttonPanel.QueryButtonImage}" text="{msg.gen_query}"
+							<w:Button css="{res.buttonPanel}" ui:field="query"
+								leftIcon="{res.icon.QueryButtonImage}" text="{msg.gen_query}"
 								toggles="true" />
-							<w:Button css="{uiRes.buttonPanel}" ui:field="previous"
-								leftIcon="{uiRes.buttonPanel.PreviousButtonImage}" text="{msg.gen_previous}" />
-							<w:Button css="{uiRes.buttonPanel}" ui:field="next"
-								leftIcon="{uiRes.buttonPanel.NextButtonImage}" text="{msg.gen_next}" />
-							<g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
-							<w:Button css="{uiRes.buttonPanel}" ui:field="add"
-								leftIcon="{uiRes.buttonPanel.AddButtonImage}" text="{msg.gen_add}"
+							<w:Button css="{res.buttonPanel}" ui:field="previous"
+								leftIcon="{res.icon.PreviousButtonImage}" text="{msg.gen_previous}" />
+							<w:Button css="{res.buttonPanel}" ui:field="next"
+								leftIcon="{res.icon.NextButtonImage}" text="{msg.gen_next}" />
+							<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+							<w:Button css="{res.buttonPanel}" ui:field="add"
+								leftIcon="{res.icon.AddButtonImage}" text="{msg.gen_add}"
 								toggles="true" />
-							<w:Button css="{uiRes.buttonPanel}" ui:field="update"
-								leftIcon="{uiRes.buttonPanel.UpdateButtonImage}" text="{msg.gen_update}"
+							<w:Button css="{res.buttonPanel}" ui:field="update"
+								leftIcon="{res.icon.UpdateButtonImage}" text="{msg.gen_update}"
 								toggles="true" />
-							<g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
-							<w:Button css="{uiRes.buttonPanel}" ui:field="commit"
-								leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.gen_commit}" />
-							<w:Button css="{uiRes.buttonPanel}" ui:field="abort"
-								leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.gen_abort}" />
-							<g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
+							<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+							<w:Button css="{res.buttonPanel}" ui:field="commit"
+								leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_commit}" />
+							<w:Button css="{res.buttonPanel}" ui:field="abort"
+								leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_abort}" />
+							<g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
 							<w:Menu ui:field="optionsMenu" selfShow="true">
 								<w:display>
-									<w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}"
-										text="{msg.gen_options}" rightIcon="{uiRes.buttonPanel.OptionsButtonImage}" />
+									<w:Button ui:field="optionsButton" css="{res.buttonPanel}"
+										text="{msg.gen_options}" rightIcon="{res.icon.OptionsButtonImage}" />
 								</w:display>
 								<w:MenuItem ui:field="duplicate"
-									icon="{uiRes.buttonPanel.DuplicateRowButtonImage}" display="{msg.gen_duplicateRecord}" />
+									icon="{res.icon.DuplicateRowButtonImage}" display="{msg.gen_duplicateRecord}" />
 								<w:MenuItem ui:field="orderHistory" description=""
-									enabled="false" icon="{res.style.historyIcon}" display="{msg.order_orderHistory}" />
+									enabled="false" icon="{res.icon.historyIcon}" display="{msg.order_orderHistory}" />
 								<w:MenuItem ui:field="orderItemHistory" description=""
-									enabled="false" icon="{res.style.historyIcon}" display="{msg.order_orderItemHistory}" />
+									enabled="false" icon="{res.icon.historyIcon}" display="{msg.order_orderItemHistory}" />
 							</w:Menu>
 						</g:HorizontalPanel>
 					</g:AbsolutePanel>
@@ -166,7 +166,7 @@
 							<w:customHeader>
 								<w:TabWidget text="{msg.order_items}" />
 							</w:customHeader>
-							<g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+							<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 								<g:layer>
 									<o:InternalOrderItemTabUI ui:field="itemTab" />
 								</g:layer>
@@ -176,7 +176,7 @@
 							<w:customHeader>
 								<w:TabWidget text="{msg.order_filled}" />
 							</w:customHeader>
-							<g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+							<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 								<g:layer>
 									<o:InternalOrderFillTabUI ui:field="fillTab" />
 								</g:layer>
@@ -186,7 +186,7 @@
 							<w:customHeader>
 								<w:TabWidget text="{msg.order_orderShippingNotes}" />
 							</w:customHeader>
-							<g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+							<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 								<g:layer>
 									<o:ShippingNotesTabUI ui:field="shippingNotesTab" />
 								</g:layer>

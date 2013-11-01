@@ -9,7 +9,6 @@
   xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c="urn:import:org.openelis.ui.widget.calendar">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="libRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
@@ -21,7 +20,7 @@
         <g:layer top="0px" left="40px" bottom="0px" right="0px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="26px">
-              <t:Table ui:field="atozTable" header="true" styleName="{libRes.table.ScreenTableWithSides}">
+              <t:Table ui:field="atozTable" header="true" styleName="{res.table.ScreenTableWithSides}">
                 <t:Column width="175" label="{msg.method}">
                   <t:LabelCell />
                 </t:Column>
@@ -30,8 +29,8 @@
             <g:layer bottom="0px" height="26px">
               <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                 <g:HorizontalPanel>
-                  <w:Button ui:field="atozPrev" leftIcon="{libRes.atozButton.PreviousPageButtonImage}" enabled="false" css="{libRes.atozButton}" />
-                  <w:Button ui:field="atozNext" leftIcon="{libRes.atozButton.NextPageButtonImage}" enabled="false" css="{libRes.atozButton}" />
+                  <w:Button ui:field="atozPrev" leftIcon="{res.atozButton.PreviousPageButtonImage}" enabled="false" css="{res.atozButton}" />
+                  <w:Button ui:field="atozNext" leftIcon="{res.atozButton.NextPageButtonImage}" enabled="false" css="{res.atozButton}" />
                 </g:HorizontalPanel>
               </g:HorizontalPanel>
             </g:layer>
@@ -42,33 +41,33 @@
     <g:center>
       <g:LayoutPanel>
         <g:layer top="0px" height="30px">
-          <g:AbsolutePanel styleName="{libRes.buttonPanel.ButtonPanelContainer}" width="100%">
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
             <g:HorizontalPanel>
-              <w:Button css="{libRes.buttonPanel}" ui:field="query" leftIcon="{libRes.buttonPanel.QueryButtonImage}" text="{msg.query}"
+              <w:Button css="{res.buttonPanel}" ui:field="query" leftIcon="{res.icon.QueryButtonImage}" text="{msg.query}"
                 action="query" toggles="true" />
-              <w:Button css="{libRes.buttonPanel}" ui:field="previous" leftIcon="{libRes.buttonPanel.PreviousButtonImage}" text="{msg.previous}"
+              <w:Button css="{res.buttonPanel}" ui:field="previous" leftIcon="{res.icon.PreviousButtonImage}" text="{msg.previous}"
                 action="previous" />
-              <w:Button css="{libRes.buttonPanel}" ui:field="next" leftIcon="{libRes.buttonPanel.NextButtonImage}" text="{msg.next}"
+              <w:Button css="{res.buttonPanel}" ui:field="next" leftIcon="{res.icon.NextButtonImage}" text="{msg.next}"
                 action="next" />
-              <g:AbsolutePanel styleName="{libRes.buttonPanel.ButtonDivider}" />
-              <w:Button css="{libRes.buttonPanel}" ui:field="add" leftIcon="{libRes.buttonPanel.AddButtonImage}" text="{msg.add}"
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+              <w:Button css="{res.buttonPanel}" ui:field="add" leftIcon="{res.icon.AddButtonImage}" text="{msg.add}"
                 action="add" toggles="true" />
-              <w:Button css="{libRes.buttonPanel}" ui:field="update" leftIcon="{libRes.buttonPanel.UpdateButtonImage}" text="{msg.update}"
+              <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}" text="{msg.update}"
                 toggles="true" action="update" />
-              <w:Button css="{libRes.buttonPanel}" ui:field="delete" leftIcon="{libRes.buttonPanel.DeleteButtonImage}" text="{msg.delete}"
+              <w:Button css="{res.buttonPanel}" ui:field="delete" leftIcon="{res.icon.DeleteButtonImage}" text="{msg.delete}"
                 action="delete" />
-              <g:AbsolutePanel styleName="{libRes.buttonPanel.ButtonDivider}" />
-              <w:Button css="{libRes.buttonPanel}" ui:field="commit" leftIcon="{libRes.buttonPanel.CommitButtonImage}" text="{msg.commit}"
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+              <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}" text="{msg.commit}"
                 action="commit" />
-              <w:Button css="{libRes.buttonPanel}" ui:field="abort" leftIcon="{libRes.buttonPanel.AbortButtonImage}" text="{msg.abort}"
+              <w:Button css="{res.buttonPanel}" ui:field="abort" leftIcon="{res.icon.AbortButtonImage}" text="{msg.abort}"
                 action="abort" />
-              <g:AbsolutePanel styleName="{libRes.buttonPanel.ButtonDivider}" />
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
               <w:Menu ui:field="optionsMenu" selfShow="true">
                 <w:display>
-                  <w:Button ui:field="optionsButton" action="option" css="{libRes.buttonPanel}" text="{msg.options}"
-                    rightIcon="{libRes.buttonPanel.OptionsButtonImage}" />
+                  <w:Button ui:field="optionsButton" action="option" css="{res.buttonPanel}" text="{msg.options}"
+                    rightIcon="{res.icon.OptionsButtonImage}" />
                 </w:display>
-                <w:MenuItem ui:field="history" description="" enabled="false" icon="{res.style.historyIcon}" display="{msg.methodHistory}" />
+                <w:MenuItem ui:field="history" description="" enabled="false" icon="{res.icon.historyIcon}" display="{msg.methodHistory}" />
               </w:Menu>
             </g:HorizontalPanel>
           </g:AbsolutePanel>

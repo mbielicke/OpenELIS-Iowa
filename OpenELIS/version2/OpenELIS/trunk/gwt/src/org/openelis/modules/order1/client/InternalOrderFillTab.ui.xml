@@ -18,14 +18,12 @@
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
-	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
-		field="res" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
 	<g:LayoutPanel>
 		<g:layer top="0px" bottom="25px">
 			<t:Table ui:field="table" width="697px" header="true"
-				styleName="{uiRes.table.ScreenTableWithSides}">
+				styleName="{res.table.ScreenTableWithSides}">
 				<t:Column width="150" label="{msg.gen_inventoryItem}">
 					<t:TextBoxCell>
 						<w:TextBox

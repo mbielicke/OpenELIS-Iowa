@@ -16,35 +16,35 @@
   xmlns:a="urn:import:org.openelis.modules.auxData.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" height="30px">
-      <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonPanelContainer}" width="100%">
+      <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
         <g:HorizontalPanel>
-          <w:Button css="{uiRes.buttonPanel}" ui:field="query"
-            leftIcon="{uiRes.buttonPanel.QueryButtonImage}" text="{msg.gen_query}" toggles="true" />
-          <w:Button css="{uiRes.buttonPanel}" ui:field="previous"
-            leftIcon="{uiRes.buttonPanel.PreviousButtonImage}" text="{msg.gen_previous}" />
-          <w:Button css="{uiRes.buttonPanel}" ui:field="next"
-            leftIcon="{uiRes.buttonPanel.NextButtonImage}" text="{msg.gen_next}" />
-          <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
-          <w:Button css="{uiRes.buttonPanel}" ui:field="add" leftIcon="{uiRes.buttonPanel.AddButtonImage}"
+          <w:Button css="{res.buttonPanel}" ui:field="query"
+            leftIcon="{res.icon.QueryButtonImage}" text="{msg.gen_query}" toggles="true" />
+          <w:Button css="{res.buttonPanel}" ui:field="previous"
+            leftIcon="{res.icon.PreviousButtonImage}" text="{msg.gen_previous}" />
+          <w:Button css="{res.buttonPanel}" ui:field="next"
+            leftIcon="{res.icon.NextButtonImage}" text="{msg.gen_next}" />
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+          <w:Button css="{res.buttonPanel}" ui:field="add" leftIcon="{res.icon.AddButtonImage}"
             text="{msg.gen_add}" toggles="true" />
-          <w:Button css="{uiRes.buttonPanel}" ui:field="update"
-            leftIcon="{uiRes.buttonPanel.UpdateButtonImage}" text="{msg.gen_update}" toggles="true" />
-          <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
-          <w:Button css="{uiRes.buttonPanel}" ui:field="commit"
-            leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.gen_commit}" />
-          <w:Button css="{uiRes.buttonPanel}" ui:field="abort"
-            leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.gen_abort}" />
-          <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}" />
+          <w:Button css="{res.buttonPanel}" ui:field="update"
+            leftIcon="{res.icon.UpdateButtonImage}" text="{msg.gen_update}" toggles="true" />
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
+          <w:Button css="{res.buttonPanel}" ui:field="commit"
+            leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_commit}" />
+          <w:Button css="{res.buttonPanel}" ui:field="abort"
+            leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_abort}" />
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
           <w:Menu ui:field="optionsMenu" selfShow="true">
             <w:display>
-              <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.gen_options}"
-                rightIcon="{uiRes.buttonPanel.OptionsButtonImage}" />
+              <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
+                rightIcon="{res.icon.OptionsButtonImage}" />
             </w:display>
-            <w:MenuItem ui:field="duplicate" icon="{uiRes.buttonPanel.DuplicateRowButtonImage}"
+            <w:MenuItem ui:field="duplicate" icon="{res.icon.DuplicateRowButtonImage}"
               display="{msg.gen_duplicateRecord}" />
             <!-- <html>&lt;hr/&gt;</html> -->
             <w:Menu icon="historyIcon" display="{msg.gen_history}" ui:field="historyMenu"
@@ -89,7 +89,7 @@
                   <g:HorizontalPanel>
                     <w:TextBox ui:field="orderId" width="75px" field="Integer" />
                     <g:AbsolutePanel>
-                      <w:Button ui:field="orderLookupButton" leftIcon="{res.style.fieldLookupIcon}" />
+                      <w:Button ui:field="orderLookupButton" leftIcon="{res.icon.fieldLookupIcon}" />
                     </g:AbsolutePanel>
                   </g:HorizontalPanel>
                 </td>
@@ -500,7 +500,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="projectButton" leftIcon="{res.style.fieldLookupIcon}" />
+                          <w:Button ui:field="projectButton" leftIcon="{res.icon.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -532,7 +532,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="reportToButton" leftIcon="{res.style.fieldLookupIcon}" />
+                          <w:Button ui:field="reportToButton" leftIcon="{res.icon.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -564,7 +564,7 @@
                           </w:popup>
                         </w:AutoComplete>
                         <g:AbsolutePanel>
-                          <w:Button ui:field="birthHospitalButton" leftIcon="{res.style.fieldLookupIcon}" />
+                          <w:Button ui:field="birthHospitalButton" leftIcon="{res.icon.fieldLookupIcon}" />
                         </g:AbsolutePanel>
                       </g:HorizontalPanel>
                     </td>
@@ -590,7 +590,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.sample_item}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:SampleItemTabUI ui:field="sampleItemTab" />
             </g:layer>
@@ -600,7 +600,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.sample_analysis}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:AnalysisTabUI ui:field="analysisTab" />
             </g:layer>
@@ -610,7 +610,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.test_results}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:ResultTabUI ui:field="resultTab" />
             </g:layer>
@@ -620,7 +620,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.analysis_notes}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:AnalysisNotesTabUI ui:field="analysisNotesTab" />
             </g:layer>
@@ -630,7 +630,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.sample_notes}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:SampleNotesTabUI ui:field="sampleNotesTab" />
             </g:layer>
@@ -640,7 +640,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.storage_storage}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:StorageTabUI ui:field="storageTab" />
             </g:layer>
@@ -650,7 +650,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.gen_qaEvents}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <s:QAEventTabUI ui:field="qaEventTab" />
             </g:layer>
@@ -660,7 +660,7 @@
           <w:customHeader>
             <w:TabWidget text="{msg.aux_data}" />
           </w:customHeader>
-          <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+          <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
             <g:layer>
               <a:AuxDataTabUI ui:field="auxDataTab" />
             </g:layer>
