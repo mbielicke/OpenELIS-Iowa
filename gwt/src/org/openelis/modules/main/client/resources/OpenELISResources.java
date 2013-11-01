@@ -1,20 +1,20 @@
 package org.openelis.modules.main.client.resources;
 
-import org.openelis.ui.resources.ButtonCSS;
+import org.openelis.ui.resources.UIResources;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.resources.client.CssResource.Import;
 import com.google.gwt.resources.client.ImageResource.ImageOptions;
 import com.google.gwt.resources.client.ImageResource.RepeatStyle;
 
-public interface OpenELISResources extends ClientBundle {
+public interface OpenELISResources extends UIResources {
 	public static final OpenELISResources INSTANCE = GWT.create(OpenELISResources.class);
 	
 	@Source("css/style.css")
-	@Import(ButtonCSS.class)
 	Style style();
+	
+	@Source({"css/icon.css","org/openelis/ui/resources/css/icon.css"})
+	IconCSS icon();
 	
 	@Source("images/topmenubg.gif")
 	@ImageOptions(repeatStyle=RepeatStyle.Horizontal)

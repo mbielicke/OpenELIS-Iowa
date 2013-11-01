@@ -57,8 +57,8 @@
     </g:layer>
     <g:layer bottom="40px" height="25px">
       <g:HorizontalPanel>
-        <w:Button ui:field="removeAuxButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />       
-        <w:Button ui:field="addAuxButton" leftIcon = "{res.style.fieldLookupIcon}" text="{msg.auxGroups}" />
+        <w:Button ui:field="removeAuxButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />       
+        <w:Button ui:field="addAuxButton" leftIcon = "{res.icon.fieldLookupIcon}" text="{msg.auxGroups}" />
       </g:HorizontalPanel>
     </g:layer>
     <g:layer bottom="5px" height="30px">

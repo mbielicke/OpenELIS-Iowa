@@ -30,7 +30,6 @@ UIRF Software License are applicable instead of those above.
              xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:wb="urn:import:org.openelis.modules.worksheetBuilder.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes"/>
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
@@ -38,7 +37,7 @@ UIRF Software License are applicable instead of those above.
       <g:LayoutPanel>
         <g:layer top="0px" bottom="0px" left="0px" right="0px">
           <t:Table ui:field="analyteTable" horizontalScroll="ALWAYS"
-                   verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+                   verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
             <t:Column width="175" label="{msg.gen_analytes}">
               <t:LabelCell/>
             </t:Column>
@@ -111,7 +110,7 @@ UIRF Software License are applicable instead of those above.
                   <w:Dropdown ui:field="typeOfSampleId" width="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td>
-                  <w:Button ui:field="search" leftIcon="{res.style.findIcon}" text="{msg.gen_search}"/>
+                  <w:Button ui:field="search" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}"/>
                 </td>
               </tr>
               <tr>
@@ -132,7 +131,7 @@ UIRF Software License are applicable instead of those above.
           </g:HTMLPanel>
         </g:layer>
         <g:layer top="100px" bottom="25px">
-          <t:Table ui:field="analysesTable" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+          <t:Table ui:field="analysesTable" horizontalScroll="ALWAYS" verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
             <t:Column width="90" sortable="true" label="{msg.sample_accessionNum}">
               <t:LabelCell/>
             </t:Column>
@@ -185,8 +184,8 @@ UIRF Software License are applicable instead of those above.
         </g:layer>
         <g:layer bottom="0px" height="25px">
           <g:HorizontalPanel>
-            <w:Button ui:field="addRow" leftIcon="{res.style.addRowIcon}" text="{msg.gen_add}"/>
-            <w:Button ui:field="selectAll" leftIcon="{res.style.selectAllIcon}" text="{msg.gen_selectAll}"/>
+            <w:Button ui:field="addRow" leftIcon="{res.icon.addRowIcon}" text="{msg.gen_add}"/>
+            <w:Button ui:field="selectAll" leftIcon="{res.icon.selectAllIcon}" text="{msg.gen_selectAll}"/>
           </g:HorizontalPanel>
         </g:layer>
       </g:LayoutPanel>

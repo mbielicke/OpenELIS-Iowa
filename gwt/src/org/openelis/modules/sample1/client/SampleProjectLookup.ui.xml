@@ -14,11 +14,11 @@
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="60px">
-      <t:Table ui:field="table" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+      <t:Table ui:field="table" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="220" label="{msg.gen_name}">
           <t:AutoCompleteCell>
             <w:AutoComplete ui:field="project" case="LOWER" required="true"
@@ -46,13 +46,13 @@
     </g:layer>
     <g:layer bottom="35px" height="25px">
       <g:HorizontalPanel>
-        <w:Button ui:field="addProjectButton" leftIcon="{res.style.addRowIcon}" text="{msg.gen_addRow}" />
-        <w:Button ui:field="removeProjectButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />
+        <w:Button ui:field="addProjectButton" leftIcon="{res.icon.addRowIcon}" text="{msg.gen_addRow}" />
+        <w:Button ui:field="removeProjectButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />
       </g:HorizontalPanel>
     </g:layer>
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel width="100%" height="100%" horizontalAlignment="CENTER">
-        <w:Button ui:field="okButton" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.gen_ok}" />
+        <w:Button ui:field="okButton" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_ok}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

@@ -55,6 +55,7 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         // handlers.
         Event.addNativePreviewHandler(this);
         OpenELISResources.INSTANCE.style().ensureInjected();
+        OpenELISResources.INSTANCE.icon().ensureInjected();
         UIResources.INSTANCE.buttonPanel().ensureInjected();
         UIResources.INSTANCE.calendar().ensureInjected();
         UIResources.INSTANCE.collapse().ensureInjected();

@@ -14,7 +14,6 @@
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
  
   <g:LayoutPanel>
@@ -40,7 +39,7 @@
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>
-                <w:Button ui:field="editNoteButton" leftIcon="{res.style.standardNoteIcon}"
+                <w:Button ui:field="editNoteButton" leftIcon="{res.icon.standardNoteIcon}"
                   text="{msg.gen_editNote}" />
               </g:AbsolutePanel>
             </g:layer>
@@ -66,7 +65,7 @@
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>
-                <w:Button ui:field="addNoteButton" leftIcon="{res.style.standardNoteIcon}"
+                <w:Button ui:field="addNoteButton" leftIcon="{res.icon.standardNoteIcon}"
                   text="{msg.gen_addNote}" />
               </g:AbsolutePanel>
             </g:layer>

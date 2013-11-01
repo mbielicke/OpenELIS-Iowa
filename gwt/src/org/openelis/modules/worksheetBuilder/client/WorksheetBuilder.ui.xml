@@ -29,7 +29,6 @@
              xmlns:wb="urn:import:org.openelis.modules.worksheetBuilder.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes"/>
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
@@ -44,7 +43,7 @@
               <g:LayoutPanel>
                 <g:layer top="0px" bottom="26px">
                   <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
-                           header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+                           header="true" styleName="{res.table.ScreenTableWithSides}">
                     <t:Column width="50" label="{msg.gen_id}">
                       <t:LabelCell/>
                     </t:Column>
@@ -56,10 +55,10 @@
                 <g:layer bottom="0px" height="26px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
-                      <w:Button ui:field="atozPrev" leftIcon="{uiRes.atozButton.PreviousPageButtonImage}"
-                                enabled="false" css="{uiRes.atozButton}"/>
-                      <w:Button ui:field="atozNext" leftIcon="{uiRes.atozButton.NextPageButtonImage}"
-                                enabled="false" css="{uiRes.atozButton}"/>
+                      <w:Button ui:field="atozPrev" leftIcon="{res.atozButton.PreviousPageButtonImage}"
+                                enabled="false" css="{res.atozButton}"/>
+                      <w:Button ui:field="atozNext" leftIcon="{res.atozButton.NextPageButtonImage}"
+                                enabled="false" css="{res.atozButton}"/>
                     </g:HorizontalPanel>
                   </g:HorizontalPanel>
                 </g:layer>
@@ -74,7 +73,7 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <t:Table ui:field="analyteTable" horizontalScroll="ALWAYS"
-                       verticalScroll="ALWAYS" styleName="{uiRes.table.ScreenTableWithSides}">
+                       verticalScroll="ALWAYS" styleName="{res.table.ScreenTableWithSides}">
                 <t:Column width="20">
                   <t:CheckBoxCell/>
                 </t:Column>
@@ -90,33 +89,33 @@
     <g:center>
       <g:LayoutPanel>
         <g:layer top="0px" height="30px">
-          <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonPanelContainer}"
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
                            width="100%">
             <g:HorizontalPanel>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="query" leftIcon="{uiRes.buttonPanel.QueryButtonImage}"
+              <w:Button css="{res.buttonPanel}" ui:field="query" leftIcon="{res.icon.QueryButtonImage}"
                         text="{msg.gen_query}" toggles="true"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="previous" leftIcon="{uiRes.buttonPanel.PreviousButtonImage}"
+              <w:Button css="{res.buttonPanel}" ui:field="previous" leftIcon="{res.icon.PreviousButtonImage}"
                         text="{msg.gen_previous}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="next" leftIcon="{uiRes.buttonPanel.NextButtonImage}"
+              <w:Button css="{res.buttonPanel}" ui:field="next" leftIcon="{res.icon.NextButtonImage}"
                         text="{msg.gen_next}"/>
-              <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="add" leftIcon="{uiRes.buttonPanel.AddButtonImage}"
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="add" leftIcon="{res.icon.AddButtonImage}"
                         text="{msg.gen_add}" toggles="true"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="update" leftIcon="{uiRes.buttonPanel.UpdateButtonImage}"
+              <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}"
                         text="{msg.gen_update}" toggles="true"/>
-              <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="commit" leftIcon="{uiRes.buttonPanel.CommitButtonImage}"
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
                         text="{msg.gen_commit}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="abort" leftIcon="{uiRes.buttonPanel.AbortButtonImage}"
+              <w:Button css="{res.buttonPanel}" ui:field="abort" leftIcon="{res.icon.AbortButtonImage}"
                         text="{msg.gen_abort}"/>
-              <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
               <w:Menu ui:field="optionsMenu" selfShow="true">
                 <w:display>
-                  <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.gen_options}"
-                            rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
+                  <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
+                            rightIcon="{res.icon.OptionsButtonImage}"/>
                 </w:display>
                 <w:MenuItem ui:field="worksheetHistory" description="" enabled="false"
-                            icon="{res.style.historyIcon}" display="{msg.worksheet_worksheetHistory}"/>
+                            icon="{res.icon.historyIcon}" display="{msg.worksheet_worksheetHistory}"/>
               </w:Menu>
             </g:HorizontalPanel>
           </g:AbsolutePanel>
@@ -165,7 +164,7 @@
                 <td colspan="2">
                 <g:HorizontalPanel>
                   <w:TextBox ui:field="relatedWorksheetId" width="50px" field="Integer"/>
-                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.style.fieldLookupIcon}" text="" css="{uiRes.FormFieldButton}"/>
+                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
                 </g:HorizontalPanel>
                 </td>
                 <td class="{res.style.Prompt}">
@@ -215,7 +214,7 @@
               <w:customHeader>
                 <w:TabWidget text="{msg.gen_worksheet}"/>
               </w:customHeader>
-              <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <wb:WorksheetItemTabUI ui:field="worksheetItemTab" />
                 </g:layer>
@@ -225,7 +224,7 @@
               <w:customHeader>
                 <w:TabWidget text="{msg.gen_note}" />
               </w:customHeader>
-              <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <ws:WorksheetNotesTabUI ui:field="notesTab" />
                 </g:layer>
