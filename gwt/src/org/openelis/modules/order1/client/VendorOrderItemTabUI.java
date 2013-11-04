@@ -51,6 +51,7 @@ import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -72,7 +73,6 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -101,18 +101,17 @@ public class VendorOrderItemTabUI extends Screen {
 
     protected Screen                          parentScreen;
 
-    protected boolean                         isVisible, canEdit;
+    protected boolean                         isVisible, canEdit, redraw;
 
-    protected OrderManager1                   manager, displayedManager;
+    protected OrderManager1                   manager;
 
-    public VendorOrderItemTabUI(Screen parentScreen, EventBus bus) {
+    public VendorOrderItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        setEventBus(parentScreen.getEventBus());
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
     }
 
     private void initialize() {
@@ -260,26 +259,6 @@ public class VendorOrderItemTabUI extends Screen {
             }
         });
 
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayItems();
-                                   }
-                               });
-
         model = new ArrayList<Item<Integer>>();
         list = CategoryCache.getBySystemName("inventory_store");
         for (DictionaryDO data : list) {
@@ -298,14 +277,6 @@ public class VendorOrderItemTabUI extends Screen {
             model.add(item);
         }
         dispensedUnits.setModel(model);
-    }
-
-    public void setData(OrderManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
-            this.manager = manager;
-            evaluateEdit();
-        }
     }
 
     @UiHandler("addItemButton")
@@ -335,42 +306,62 @@ public class VendorOrderItemTabUI extends Screen {
         }
     }
 
-    private void displayItems() {
+    public void setData(OrderManager1 manager) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
+            this.manager = manager;
+            evaluateEdit();
+        }
+    }
+
+    public void setState(State state) {
+        evaluateEdit();
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
         int count1, count2;
-        boolean dataChanged;
-        OrderItemViewDO item1, item2;
+        String name;
+        OrderItemViewDO item;
+        Row r;
 
-        if ( !isVisible)
-            return;
-
-        count1 = displayedManager == null ? 0 : displayedManager.item.count();
+        count1 = table.getRowCount();
         count2 = manager == null ? 0 : manager.item.count();
 
         /*
-         * find out if there's any difference between the items of the two
-         * managers
+         * find out if there's any difference between the item being
+         * displayed and the item in the manager
          */
         if (count1 == count2) {
-            dataChanged = false;
             for (int i = 0; i < count1; i++ ) {
-                item1 = displayedManager.item.get(i);
-                item2 = manager.item.get(i);
-
-                if (DataBaseUtil.isDifferent(item1.getQuantity(), item2.getQuantity()) ||
-                    DataBaseUtil.isDifferent(item1.getInventoryItemId(), item2.getInventoryItemId()) ||
-                    DataBaseUtil.isDifferent(item1.getStoreId(), item2.getStoreId()) ||
-                    DataBaseUtil.isDifferent(item1.getUnitCost(), item2.getUnitCost()) ||
-                    DataBaseUtil.isDifferent(item1.getCatalogNumber(), item2.getCatalogNumber())) {
-                    dataChanged = true;
+                item = manager.item.get(i);
+                r = table.getRowAt(i);
+                if (r.getCell(1) != null)
+                    name = ((AutoCompleteValue)r.getCell(1)).getDisplay();
+                else
+                    name = null;
+                if (DataBaseUtil.isDifferent(item.getQuantity(), r.getCell(0)) ||
+                    DataBaseUtil.isDifferent(item.getInventoryItemName(), name) ||
+                    DataBaseUtil.isDifferent(item.getStoreId(), r.getCell(2)) ||
+                    DataBaseUtil.isDifferent(item.getUnitCost(), r.getCell(3)) ||
+                    DataBaseUtil.isDifferent(item.getCatalogNumber(), r.getCell(4))) {
+                    redraw = true;
                     break;
                 }
             }
         } else {
-            dataChanged = true;
+            redraw = true;
         }
 
-        if (dataChanged) {
-            displayedManager = manager;
+        displayItems();
+    }
+
+    private void displayItems() {
+        if ( !isVisible)
+            return;
+
+        if (redraw) {
+            redraw = false;
             evaluateEdit();
             setState(state);
             fireDataChange();

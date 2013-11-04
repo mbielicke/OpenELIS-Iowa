@@ -40,6 +40,7 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
@@ -72,18 +73,19 @@ public class CustomerNotesTabUI extends Screen {
 
     protected Screen                        parentScreen;
 
-    protected OrderManager1                 manager, displayedManager;
+    protected OrderManager1                 manager;
 
-    protected boolean                       isVisible;
+    protected NoteViewDO                    displayedCustomerNote;
 
-    public CustomerNotesTabUI(Screen parentScreen, EventBus bus) {
+    protected boolean                       isVisible, redraw;
+
+    public CustomerNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
+        displayedCustomerNote = null;
     }
 
     private void initialize() {
@@ -102,35 +104,50 @@ public class CustomerNotesTabUI extends Screen {
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
-                displayNotes();
+                displayNote();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayNotes();
-                                   }
-                               });
     }
 
     public void setData(OrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
             this.manager = manager;
         }
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
+        Integer id1, id2;
+        String txt1, txt2;
+
+        /*
+         * compare external notes
+         */
+        id1 = null;
+        txt1 = null;
+        if (displayedCustomerNote != null) {
+            id1 = displayedCustomerNote.getId();
+            txt1 = displayedCustomerNote.getText();
+        }
+
+        id2 = null;
+        txt2 = null;
+        if (manager != null && manager.customerNote.get() != null) {
+            id2 = manager.customerNote.get().getId();
+            txt2 = manager.customerNote.get().getText();
+        }
+
+        /*
+         * since the sample only has one external note, its id won't change but
+         * its text can
+         */
+        redraw = DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2);
+
+        displayNote();
     }
 
     @UiHandler("editNoteButton")
@@ -138,32 +155,16 @@ public class CustomerNotesTabUI extends Screen {
         showNoteLookup();
     }
 
-    private void displayNotes() {
-        int count1, count2;
-        Integer id1, id2;
-
+    private void displayNote() {
         if ( !isVisible)
             return;
 
-        /*
-         * compare customer notes
-         */
-        count1 = 0;
-        count2 = 0;
-        id1 = null;
-        id2 = null;
-        if (displayedManager != null && displayedManager.customerNote.get() != null) {
-            count1 = 1;
-            id1 = displayedManager.customerNote.get().getId();
-        }
-
-        if (manager != null && manager.customerNote.get() != null) {
-            count2 = 1;
-            id2 = manager.customerNote.get().getId();
-        }
-
-        if ( (count1 != count2) || DataBaseUtil.isDifferent(id1, id2)) {
-            displayedManager = manager;
+        if (redraw) {
+            redraw = false;
+            if (manager != null)
+                displayedCustomerNote = manager.customerNote.get();
+            else
+                displayedCustomerNote = null;
             setState(state);
             fireDataChange();
         }
