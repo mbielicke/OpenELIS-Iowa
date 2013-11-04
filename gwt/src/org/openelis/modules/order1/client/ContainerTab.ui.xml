@@ -18,14 +18,14 @@
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
 
 	<g:LayoutPanel>
 		<g:layer top="0px" bottom="25px">
 			<t:Table ui:field="table" visibleRows="11" horizontalScroll="ALWAYS"
 				verticalScroll="ALWAYS" width="697px" header="true"
-				styleName="{res.table.ScreenTableWithSides}"
-				allowMultipleSelection="true">
+				styleName="{res.table.ScreenTableWithSides}" allowMultipleSelection="true">
 				<t:Column width="45" label="{msg.order_itemNum}">
 					<t:TextBoxCell>
 						<w:TextBox field="Integer" />
@@ -49,9 +49,12 @@
 					text="{msg.gen_addRow}" />
 				<w:Button ui:field="removeContainerButton" leftIcon="{res.icon.removeRowIcon}"
 					text="{msg.gen_removeRow}" />
-				<w:Button ui:field="duplicateContainerButton" text="{msg.gen_duplicateRecord}" />
-				<w:Button ui:field="moveUpButton" text="{msg.gen_moveUp}" />
-				<w:Button ui:field="moveDownButton" text="{msg.gen_moveDown}" />
+				<w:Button ui:field="duplicateContainerButton" leftIcon="{res.icon.DuplicateRowButtonImage}"
+					text="{msg.gen_duplicateRecord}" />
+				<w:Button ui:field="moveUpButton" leftIcon="{res.icon.arrowUpButtonImage}"
+					text="{msg.gen_moveUp}" />
+				<w:Button ui:field="moveDownButton" leftIcon="{res.icon.arrowDownButtonImage}"
+					text="{msg.gen_moveDown}" />
 			</g:HorizontalPanel>
 		</g:layer>
 	</g:LayoutPanel>

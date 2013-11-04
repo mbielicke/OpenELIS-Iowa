@@ -18,13 +18,14 @@
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
 
 	<g:LayoutPanel>
 		<g:layer top="0px" bottom="35px">
 			<r:Tree ui:field="tree" header="true"
-				styleName="{res.table.ScreenTableWithSides}"
-				allowMultipleSelection="true" >
+				styleName="{res.table.ScreenTableWithSides}" allowMultipleSelection="true">
 				<r:Column width="55" label="{msg.order_itemNum}" />
 				<r:Column width="150" label="{msg.gen_test}" />
 				<r:Column width="150" label="{msg.gen_method}" />
@@ -115,8 +116,10 @@
 					<g:HorizontalPanel>
 						<w:Button ui:field="removeTestButton" leftIcon="{res.icon.removeRowIcon}"
 							text="{msg.order_removeTest}" />
-						<w:Button ui:field="checkAllButton" text="{msg.gen_checkAll}" />
-						<w:Button ui:field="uncheckAllButton" text="{msg.gen_uncheckAll}" />
+						<w:Button ui:field="checkAllButton" leftIcon="{uiRes.checkbox.Checked}"
+							text="{msg.gen_checkAll}" />
+						<w:Button ui:field="uncheckAllButton" leftIcon="{uiRes.checkbox.Unchecked}"
+							text="{msg.gen_uncheckAll}" />
 					</g:HorizontalPanel>
 				</g:layer>
 			</g:LayoutPanel>
