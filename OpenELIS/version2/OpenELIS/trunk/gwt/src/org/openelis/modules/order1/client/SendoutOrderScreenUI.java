@@ -204,7 +204,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     @UiField(provided = true)
     protected SendoutOrderFillTabUI          fillTab;
-    
+
     protected SendoutOrderScreenUI           screen;
 
     private ShippingManager                  shippingManager;
@@ -242,16 +242,16 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             window.close();
         }
 
-        organizationTab = new OrganizationTabUI(this, bus);
-        testTab = new TestTabUI(this, bus);
-        containerTab = new ContainerTabUI(this, bus);
-        itemTab = new SendoutOrderItemTabUI(this, bus);
-        shippingNotesTab = new ShippingNotesTabUI(this, bus);
-        customerNotesTab = new CustomerNotesTabUI(this, bus);
-        internalNotesTab = new InternalNotesTabUI(this, bus);
-        sampleNotesTab = new SampleNotesTabUI(this, bus);
-        recurrenceTab = new RecurrenceTabUI(this, bus);
-        fillTab = new SendoutOrderFillTabUI(this, bus);
+        organizationTab = new OrganizationTabUI(this);
+        testTab = new TestTabUI(this);
+        containerTab = new ContainerTabUI(this);
+        itemTab = new SendoutOrderItemTabUI(this);
+        shippingNotesTab = new ShippingNotesTabUI(this);
+        customerNotesTab = new CustomerNotesTabUI(this);
+        internalNotesTab = new InternalNotesTabUI(this);
+        sampleNotesTab = new SampleNotesTabUI(this);
+        recurrenceTab = new RecurrenceTabUI(this);
+        fillTab = new SendoutOrderFillTabUI(this);
 
         auxDataTab = new AuxDataTabUI(this) {
             @Override
@@ -305,7 +305,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         Item<String> srow;
 
         screen = this;
-        
+
         //
         // button panel buttons
         //
@@ -627,17 +627,12 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                     if (Constants.dictionary().ORDER_STATUS_PENDING.equals(item.getKey()) ||
                         Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(item.getKey()))
                         item.setEnabled(true);
-                    else if (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(item.getKey()))
+                    else if (Constants.dictionary().ORDER_STATUS_PROCESSED.equals(item.getKey()) ||
+                             Constants.dictionary().ORDER_STATUS_CANCELLED.equals(item.getKey()))
                         /*
-                         * the option for "Processed" is only enabled for an
-                         * existing order and only if it is pending
-                         */
-                        item.setEnabled(manager.getOrder().getId() != null &&
-                                        Constants.dictionary().ORDER_STATUS_PENDING.equals(statusId));
-                    else if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(item.getKey()))
-                        /*
-                         * the option for "Cancelled" is only enabled for an
-                         * existing order and only if it is pending or on hold
+                         * the options for "Processed" and "Cancelled" are only
+                         * enabled for an existing order and only if it is
+                         * pending or on hold
                          */
                         item.setEnabled(manager.getOrder().getId() != null &&
                                         (Constants.dictionary().ORDER_STATUS_PENDING.equals(statusId) || Constants.dictionary().ORDER_STATUS_ON_HOLD.equals(statusId)));
@@ -844,38 +839,152 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(organizationTab, "organizationTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                organizationTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                organizationTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return organizationTab.getQueryFields();
             }
         });
 
         addScreenHandler(auxDataTab, "auxDataTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                auxDataTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                auxDataTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return auxDataTab.getQueryFields();
             }
         });
 
         addScreenHandler(testTab, "testTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                testTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                testTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return testTab.getQueryFields();
             }
         });
 
         addScreenHandler(containerTab, "containerTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                containerTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                containerTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return containerTab.getQueryFields();
             }
         });
 
         addScreenHandler(itemTab, "itemTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                itemTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                itemTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return itemTab.getQueryFields();
             }
         });
 
+        addScreenHandler(shippingNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                shippingNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                shippingNotesTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(customerNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                customerNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                customerNotesTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(internalNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                internalNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                internalNotesTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
+        addScreenHandler(sampleNotesTab, "sampleNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                sampleNotesTab.setState(event.getState());
+            }
+
+            public Object getQuery() {
+                return null;
+            }
+        });
+
         addScreenHandler(recurrenceTab, "recurrenceTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                recurrenceTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                recurrenceTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return recurrenceTab.getQueryFields();
+            }
+        });
+
+        addScreenHandler(fillTab, "fillTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                fillTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                fillTab.setState(event.getState());
             }
         });
 
@@ -999,8 +1108,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 ArrayList<Integer> ids;
 
                 if (screen == event.getSource())
-                    return; 
-                
+                    return;
+
                 ids = event.getGroupIds();
                 if (ids != null && ids.size() > 0) {
                     try {
@@ -1026,13 +1135,14 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             public void onRemoveAuxGroup(RemoveAuxGroupEvent event) {
                 if (event.getGroupIds() != null && event.getGroupIds().size() > 0) {
                     if (screen == event.getSource())
-                        return; 
-                    
+                        return;
+
                     try {
                         manager = OrderService1.get().removeAuxGroups(manager, event.getGroupIds());
                         setData();
                         setState(state);
-                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()), screen);
+                        bus.fireEventFromSource(new RemoveAuxGroupEvent(event.getGroupIds()),
+                                                screen);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1189,9 +1299,9 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     private void commit(boolean ignoreWarning) {
         Validation validation;
-        
+
         finishEditing();
-        
+
         validation = validate();
 
         if (validation.getStatus() != VALID) {
@@ -1303,7 +1413,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected void duplicate() {
         try {
             manager = OrderService1.get().duplicate(manager.getOrder().getId());
-            //the screen is in add state, so we need the cache here
+            // the screen is in add state, so we need the cache here
             buildCache();
             setData();
             setState(ADD);

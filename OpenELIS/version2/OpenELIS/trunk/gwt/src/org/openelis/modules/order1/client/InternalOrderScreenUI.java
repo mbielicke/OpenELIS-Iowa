@@ -164,9 +164,9 @@ public class InternalOrderScreenUI extends Screen {
             window.close();
         }
 
-        itemTab = new InternalOrderItemTabUI(this, bus);
-        shippingNotesTab = new ShippingNotesTabUI(this, bus);
-        fillTab = new InternalOrderFillTabUI(this, bus);
+        itemTab = new InternalOrderItemTabUI(this);
+        shippingNotesTab = new ShippingNotesTabUI(this);
+        fillTab = new InternalOrderFillTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -424,8 +424,36 @@ public class InternalOrderScreenUI extends Screen {
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(itemTab, "itemTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                itemTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                itemTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return itemTab.getQueryFields();
+            }
+        });
+
+        addScreenHandler(shippingNotesTab, "shippingNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                shippingNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                shippingNotesTab.setState(event.getState());
+            }
+        });
+
+        addScreenHandler(fillTab, "fillTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                fillTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                fillTab.setState(event.getState());
             }
         });
 
@@ -638,10 +666,10 @@ public class InternalOrderScreenUI extends Screen {
 
     private void commit(boolean ignoreWarning) {
         Validation validation;
-        
+
         finishEditing();
         clearErrors();
-        
+
         validation = validate();
 
         if (validation.getStatus() != VALID) {
