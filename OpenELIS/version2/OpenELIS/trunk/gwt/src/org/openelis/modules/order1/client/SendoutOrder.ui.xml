@@ -19,8 +19,9 @@
 	xmlns:s="urn:import:org.openelis.modules.auxData.client">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-  
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
+		field="res" />
+
 	<g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
 		<g:west size="250">
 			<g:LayoutPanel>
@@ -98,7 +99,7 @@
 									icon="{res.icon.DuplicateRowButtonImage}" display="{msg.gen_duplicateRecord}" />
 								<!-- <html>&lt;hr/&gt;</html> -->
 								<w:MenuItem ui:field="shippingInfo" enabled="false"
-									display="{msg.order_shippingInfo}" />
+									icon="{res.icon.shippingIcon}" display="{msg.order_shippingInfo}" />
 								<w:MenuItem ui:field="orderRequestForm" description=""
 									enabled="false" display="{msg.gen_orderRequestForm}" />
 								<!-- <html>&lt;hr/&gt;</html> -->
@@ -148,8 +149,8 @@
 									<ui:text from="{msg.order_shipFrom}:" />
 								</td>
 								<td>
-									<w:Dropdown ui:field="shipFrom" width="203px"
-										field="Integer" required="true" />
+									<w:Dropdown ui:field="shipFrom" width="203px" field="Integer"
+										required="true" />
 								</td>
 								<td class="{res.style.Prompt}">
 									<ui:text from="{msg.order_shipTo}:" />
@@ -181,7 +182,8 @@
 									<ui:text from="{msg.gen_status}:" />
 								</td>
 								<td>
-									<w:Dropdown ui:field="status" width="100px" field="Integer" dropWidth="120px"/>
+									<w:Dropdown ui:field="status" width="100px" field="Integer"
+										dropWidth="120px" />
 								</td>
 								<td class="{res.style.Prompt}">
 									<ui:text from="{msg.order_attention}:" />
