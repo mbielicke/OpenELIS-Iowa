@@ -335,7 +335,7 @@ public class RecurrenceTabUI extends Screen {
         String act1, act2;
         Datetime ab1, ab2, ae1, ae2;
         OrderRecurrenceDO data1;
-        Integer id1, id2, freq1, freq2, unit1, unit2;
+        Integer id1, id2, freq1, freq2, unit1, unit2, poid1, poid2;
 
         id1 = null;
         act1 = null;
@@ -344,6 +344,7 @@ public class RecurrenceTabUI extends Screen {
         freq1 = null;
         unit1 = null;
         data1 = getRecurrence();
+        poid1 = getParentOrderId();
         if (data1 != null) {
             id1 = data1.getId();
             act1 = data1.getIsActive();
@@ -359,6 +360,7 @@ public class RecurrenceTabUI extends Screen {
         ae2 = null;
         freq2 = null;
         unit2 = null;
+        poid2 = parentOrderNum.getValue();
         if (displayedRecurrence != null) {
             id2 = displayedRecurrence.getId();
             act2 = displayedRecurrence.getIsActive();
@@ -373,7 +375,8 @@ public class RecurrenceTabUI extends Screen {
          */
         if (DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(act1, act2) ||
             DataBaseUtil.isDifferent(ab1, ab2) || DataBaseUtil.isDifferent(ae1, ae2) ||
-            DataBaseUtil.isDifferent(freq1, freq2) || DataBaseUtil.isDifferent(unit1, unit2))
+            DataBaseUtil.isDifferent(freq1, freq2) || DataBaseUtil.isDifferent(unit1, unit2) ||
+            DataBaseUtil.isDifferent(poid1, poid2))
             redraw = true;
         displayRecurrence();
     }
