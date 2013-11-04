@@ -48,7 +48,6 @@ import org.openelis.ui.widget.NotesPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -145,7 +144,8 @@ public class CustomerNotesTabUI extends Screen {
          * since the sample only has one external note, its id won't change but
          * its text can
          */
-        redraw = DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2);
+        if (DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2))
+            redraw = true;
 
         displayNote();
     }

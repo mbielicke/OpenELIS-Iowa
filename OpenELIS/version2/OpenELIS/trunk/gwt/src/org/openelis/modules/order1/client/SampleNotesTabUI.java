@@ -143,7 +143,8 @@ public class SampleNotesTabUI extends Screen {
          * since the sample only has one external note, its id won't change but
          * its text can
          */
-        redraw = DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2);
+        if (DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2))
+            redraw = true;
 
         displayNote();
     }

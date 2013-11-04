@@ -134,7 +134,8 @@ public class InternalNotesTabUI extends Screen {
         id2 = null;
         if (manager != null && manager.internalNote.count() > 0)
             id2 = manager.internalNote.get(0).getId();
-        redraw = DataBaseUtil.isDifferent(id1, id2);
+        if (DataBaseUtil.isDifferent(id1, id2))
+            redraw = true;
 
         displayNotes();
     }
@@ -207,9 +208,8 @@ public class InternalNotesTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            if (manager != null) {
-                if (manager.internalNote.count() > 0)
-                    displayedInternalNote = manager.internalNote.get(0);
+            if (manager != null && manager.internalNote.count() > 0) {
+                displayedInternalNote = manager.internalNote.get(0);
             } else {
                 displayedInternalNote = null;
             }
