@@ -34,6 +34,7 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ScriptletDO;
 import org.openelis.ui.common.DataBaseUtil;
 
 @Stateless
@@ -53,4 +54,9 @@ public class ScriptletBean  {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
+    public ScriptletDO fetchById(Integer id) {
+        Query  query = manager.createNamedQuery("Scriptlet.fetchById");
+        query.setParameter("id",id);
+        return (ScriptletDO)query.getSingleResult();
+    }
 }
