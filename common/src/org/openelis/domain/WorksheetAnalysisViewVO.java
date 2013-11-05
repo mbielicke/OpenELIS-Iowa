@@ -38,11 +38,10 @@ public class WorksheetAnalysisViewVO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  analysisId, dueDays, id, priority, qcLotId, qcSystemUserId,
-                       statusId, testId, timeHolding, timeTaAverage, unitOfMeasureId,
-                       worksheetAnalysisId, worksheetId, worksheetItemId;
-    protected String   accessionNumber, description, isFromOther, methodName, testName,
-                       unitOfMeasure;
+    protected Integer  analysisId, dueDays, id, fromOtherId, priority, qcLotId,
+                       qcSystemUserId, statusId, testId, timeHolding, timeTaAverage,
+                       unitOfMeasureId, worksheetAnalysisId, worksheetId, worksheetItemId;
+    protected String   accessionNumber, description, methodName, testName, unitOfMeasure;
     protected Datetime collectionDate, collectionTime, expireDate, qcStartedDate,
                        receivedDate;
     
@@ -52,7 +51,7 @@ public class WorksheetAnalysisViewVO extends DataObject {
     public WorksheetAnalysisViewVO(Integer id, Integer worksheetItemId, Integer worksheetId,
                                    String accessionNumber, Integer analysisId, Integer qcLotId,
                                    Integer worksheetAnalysisId, Integer qcSystemUserId,
-                                   Date qcStartedDate, String isFromOther, String description,
+                                   Date qcStartedDate, Integer fromOtherId, String description,
                                    Integer testId, String testName, String methodName,
                                    Integer timeTaAverage, Integer timeHolding, Integer unitOfMeasureId,
                                    String unitOfMeasure, Integer statusId, Date collectionDate,
@@ -65,7 +64,7 @@ public class WorksheetAnalysisViewVO extends DataObject {
         setWorksheetAnalysisId(worksheetAnalysisId);
         setQcSystemUserId(qcSystemUserId);
         setQcStartedDate(DataBaseUtil.toYM(qcStartedDate));
-        setIsFromOther(isFromOther);
+        setFromOtherId(fromOtherId);
         setWorksheetId(worksheetId);
         setDescription(description);
         setTestId(testId);
@@ -146,12 +145,12 @@ public class WorksheetAnalysisViewVO extends DataObject {
         this.qcStartedDate = DataBaseUtil.toYM(qcStartedDate);
     }
 
-    public String getIsFromOther() {
-        return isFromOther;
+    public Integer getFromOtherId() {
+        return fromOtherId;
     }
 
-    public void setIsFromOther(String isFromOther) {
-        this.isFromOther = DataBaseUtil.trim(isFromOther);
+    public void setFromOtherId(Integer fromOtherId) {
+        this.fromOtherId = fromOtherId;
     }
 
     public Integer getWorksheetId() {

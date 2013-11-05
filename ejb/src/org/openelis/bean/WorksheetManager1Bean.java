@@ -491,7 +491,7 @@ public class WorksheetManager1Bean {
         updatedAnalyses = new HashMap<Integer, WorksheetAnalysisViewDO>();
         for (WorksheetAnalysisViewDO data : getAnalyses(wm)) {
             if (data.getAnalysisId() != null) {
-                if (data.getId() < 0 && "N".equals(data.getIsFromOther())) {
+                if (data.getId() < 0 && data.getFromOtherId() == null) {
                     initAnalysisIds.add(data.getAnalysisId());
                     updateAnalysisIds.add(data.getAnalysisId());
                 } else if (data.isChanged() && !updatedAnalyses.containsKey(data.getAnalysisId())) {
@@ -982,7 +982,6 @@ public class WorksheetManager1Bean {
                 waVDO = new WorksheetAnalysisViewDO();
                 waVDO.setId(wm.getNextUID());
                 waVDO.setWorksheetItemId(wiDO.getId());
-                waVDO.setIsFromOther("N");
                 if (Constants.dictionary().POS_DUPLICATE.equals(twiDO.getTypeId())) {
                     waVDO1 = wm.analysis.get(newItems.get(i - 1), 0);
                     waVDO.setAccessionNumber("D" + waVDO1.getAccessionNumber());
@@ -1041,7 +1040,6 @@ public class WorksheetManager1Bean {
             waVDO.setId(wm.getNextUID());
             waVDO.setWorksheetItemId(wiDO.getId());
             waVDO.setAccessionNumber("X." + wiDO.getId());
-            waVDO.setIsFromOther("N");
 
             twiDO = qcTemplate[i];
             if (twiDO == null || !Constants.dictionary().POS_FIXED_ALWAYS.equals(twiDO.getTypeId())) {
@@ -1074,7 +1072,6 @@ public class WorksheetManager1Bean {
                 waVDO.setId(wm.getNextUID());
                 waVDO.setWorksheetItemId(wiDO.getId());
                 waVDO.setAccessionNumber("X." + wiDO.getId());
-                waVDO.setIsFromOther("N");
 
                 try {
                     loadQcForAnalysis(wm, twiDO, i, waVDO, prefs, wqcVO, qcMap);

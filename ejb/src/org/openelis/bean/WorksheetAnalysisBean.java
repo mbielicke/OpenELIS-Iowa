@@ -250,7 +250,7 @@ public class WorksheetAnalysisBean {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
-        entity.setIsFromOther(data.getIsFromOther());
+        entity.setFromOtherId(data.getFromOtherId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -274,7 +274,7 @@ public class WorksheetAnalysisBean {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
-        entity.setIsFromOther(data.getIsFromOther());
+        entity.setFromOtherId(data.getFromOtherId());
 
         return data;
     }
@@ -325,7 +325,7 @@ public class WorksheetAnalysisBean {
                                             waVVO.getWorksheetId(), waVVO.getAccessionNumber(),
                                             waVVO.getAnalysisId(), waVVO.getQcLotId(),
                                             waVVO.getWorksheetAnalysisId(), waVVO.getQcSystemUserId(),
-                                            qcStartedDate, waVVO.getIsFromOther(),
+                                            qcStartedDate, waVVO.getFromOtherId(),
                                             waVVO.getDescription(), waVVO.getTestId(),
                                             waVVO.getTestName(), waVVO.getMethodName(),
                                             waVVO.getUnitOfMeasureId(), waVVO.getUnitOfMeasure(),

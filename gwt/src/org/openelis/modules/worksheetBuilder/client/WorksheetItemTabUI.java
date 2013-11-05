@@ -935,7 +935,7 @@ public class WorksheetItemTabUI extends Screen {
                                                             data = manager.analysis.add(itemDO);
                                                             qcLinkMap.put(waDO.getId(), data.getId());
                                                             copyDO(waDO, data);
-                                                            data.setIsFromOther("Y");
+                                                            data.setFromOtherId(waDO.getId());
                                                             newData.add(data);
                                                             manualAnalysisUids.add(manager.getUid(data));
                                                         }
@@ -1040,7 +1040,6 @@ public class WorksheetItemTabUI extends Screen {
                                     data = manager.analysis.add(itemDO);
                                     data.setAccessionNumber("X." + itemDO.getId());
                                     data.setQcLotId(qcLotVDO.getQcId());
-                                    data.setIsFromOther("N");
                                     data.setDescription(qcLotVDO.getQcName() + " (" +
                                                         qcLotVDO.getLotNumber() + ")");
                                     newData.add(data);
@@ -1360,7 +1359,6 @@ public class WorksheetItemTabUI extends Screen {
         
         waVDO.setAccessionNumber(avVO.getAccessionNumber().toString());
         waVDO.setAnalysisId(avVO.getAnalysisId());
-        waVDO.setIsFromOther("N");
         waVDO.setDescription(avVO.getWorksheetDescription());
         waVDO.setTestId(avVO.getTestId());
         waVDO.setTestName(avVO.getTestName());
