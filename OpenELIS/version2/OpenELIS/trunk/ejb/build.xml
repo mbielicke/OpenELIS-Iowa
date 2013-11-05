@@ -46,6 +46,7 @@
 			<include name="org/openelis/constants/*" />
 			<include name="org/openelis/domain/*.class" />
 			<include name="org/openelis/exception/*.class" />
+			<include name="org/openelis/scriptlet/*.class" />
 			<!--<include name="org/openelis/manager/*.class" /> -->
 			<include name="org/openelis/messages/*.class" />
 			<include name="org/openelis/meta/*.class" />
