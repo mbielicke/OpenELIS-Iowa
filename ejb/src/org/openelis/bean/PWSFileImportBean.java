@@ -67,7 +67,7 @@ public class PWSFileImportBean {
     /**
      * parse all pws files and update the database with this data.
      */
-    public void importFiles() throws Exception {
+    public void importFiles() throws Exception, Throwable {
         ReportStatus status;
 
         status = new ReportStatus();

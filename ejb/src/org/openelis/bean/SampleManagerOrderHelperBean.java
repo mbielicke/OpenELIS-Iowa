@@ -617,7 +617,7 @@ public class SampleManagerOrderHelperBean {
                                               analyteIds));
         }
 
-        ret = sampleManager1.addTests(sm, tests);
+        ret = sampleManager1.addAnalyses(sm, tests);
         /*
          * add the errors found during importing the order to the ones found
          * while adding tests, because the object returned by the above method
