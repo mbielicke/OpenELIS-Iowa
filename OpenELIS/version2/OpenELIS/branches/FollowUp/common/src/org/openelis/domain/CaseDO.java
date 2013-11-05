@@ -1,28 +1,3 @@
-/**
- * Exhibit A - UIRF Open-source Based Public Software License.
- * 
- * The contents of this file are subject to the UIRF Open-source Based Public
- * Software License(the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * openelis.uhl.uiowa.edu
- * 
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- * the specific language governing rights and limitations under the License.
- * 
- * The Original Code is OpenELIS code.
- * 
- * The Initial Developer of the Original Code is The University of Iowa.
- * Portions created by The University of Iowa are Copyright 2006-2008. All
- * Rights Reserved.
- * 
- * Contributor(s): ______________________________________.
- * 
- * Alternatively, the contents of this file marked "Separately-Licensed" may be
- * used under the terms of a UIRF Software license ("UIRF Software License"), in
- * which case the provisions of a UIRF Software License are applicable instead
- * of those above.
- */
 package org.openelis.domain;
 
 import java.util.Date;
@@ -30,29 +5,28 @@ import java.util.Date;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
-public class PatientDO extends DataObject {
+public class CaseDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
-
-    protected Integer         id, genderId, raceId, ethnicityId;
-    protected String          lastName, firstName, middleName, nationalId;
-    protected Datetime        birthDate, birthTime;
+    
+    protected Integer         id, genderId, raceId, ethnicityId, patientId;
+    protected String          lastName, firstName, nationalId;
+    protected Datetime        created, birthDate, birthTime;
     protected AddressDO       address;
-
-    public PatientDO() {
+    
+    public CaseDO() {
         address = new AddressDO();
     }
-
-    public PatientDO(Integer id, String lastName, String firstName, String middleName,
-                     Integer addressId, Date birthDate, Date birthTime, Integer genderId,
-                     Integer raceId, Integer ethnicityId, String nationalId, String multipleUnit,
-                     String streetAddress, String city, String state, String zipCode,
-                     String workPhone, String homePhone, String cellPhone, String faxPhone,
-                     String email, String country) {
+    
+    public CaseDO(Integer id, Date created, Integer patientId, String lastName, String firstName, Integer addressId, 
+                  Date birthDate, Date birthTime, Integer genderId, Integer raceId, Integer enthnicityId, String nationalId,
+                  String multipleUnit, String streetAddress, String city, String state, String zipCode,
+                  String workPhone, String homePhone, String cellPhone, String faxPhone,
+                  String email, String country) {
         setId(id);
         setLastName(lastName);
         setFirstName(firstName);
-        setMiddleName(middleName);
+        setCreated(DataBaseUtil.toYM(created));
         setBirthDate(DataBaseUtil.toYD(birthDate));
         setBirthTime(DataBaseUtil.toHM(birthTime));
         setGenderId(genderId);
@@ -64,13 +38,22 @@ public class PatientDO extends DataObject {
                                 workPhone, homePhone, cellPhone, faxPhone, email, country);
         _changed = false;
     }
-
+    
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
+    }
+    
+    public Datetime getCreated() {
+        return created;
+    }
+    
+    public void setCreated(Datetime created) {
+        this.created = DataBaseUtil.toYM(created);
         _changed = true;
     }
 
@@ -89,15 +72,6 @@ public class PatientDO extends DataObject {
 
     public void setFirstName(String firstName) {
         this.firstName = DataBaseUtil.trim(firstName);
-        _changed = true;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = DataBaseUtil.trim(middleName);
         _changed = true;
     }
 
