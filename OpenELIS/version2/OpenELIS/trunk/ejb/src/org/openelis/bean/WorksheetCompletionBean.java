@@ -252,7 +252,7 @@ public class WorksheetCompletionBean {
 
                 cellNameIndex = i + "." + a;
                 if (waDO.getAnalysisId() != null) {
-                    isEditable = "N".equals(waDO.getIsFromOther());
+                    isEditable = waDO.getFromOtherId() == null;
                     bundle = waManager.getBundleAt(a);
                     sManager = bundle.getSampleManager();
                     sDomain = sManager.getDomainManager();
@@ -692,7 +692,7 @@ public class WorksheetCompletionBean {
                 waDO = waManager.getWorksheetAnalysisAt(a);
                 if (waDO.getAnalysisId() != null) {
                     anaModified = false;
-                    editLocked = "Y".equals(waDO.getIsFromOther());
+                    editLocked = waDO.getFromOtherId() != null;
 
                     bundle = waManager.getBundleAt(a);
                     newBundle = lockManagerIfNeeded(manager, waDO, bundle);
