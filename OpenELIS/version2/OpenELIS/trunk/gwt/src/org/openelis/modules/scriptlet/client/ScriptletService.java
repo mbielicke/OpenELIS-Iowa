@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.screen.Callback;
+import org.openelis.scriptlet.ScriptletObject;
 import org.openelis.ui.services.TokenService;
 
 import com.google.gwt.core.client.GWT;
@@ -39,6 +40,20 @@ public class ScriptletService implements ScriptletServiceInt, ScriptletServiceIn
         
         callback = new Callback<ArrayList<IdNameVO>>();
         service.fetchByName(search, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public void run(ScriptletObject so, AsyncCallback<ScriptletObject> callback) {
+        service.run(so,callback);
+    }
+
+    @Override
+    public ScriptletObject run(ScriptletObject so) throws Exception {
+        Callback<ScriptletObject> callback;
+        
+        callback = new Callback<ScriptletObject>();
+        service.run(so, callback);
         return callback.getResult();
     }
 

@@ -32,6 +32,8 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.ScriptletBean;
 import org.openelis.domain.IdNameVO;
+import org.openelis.scriptlet.ScriptletBeanInt;
+import org.openelis.scriptlet.ScriptletObject;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.modules.scriptlet.client.ScriptletServiceInt;
 
@@ -49,6 +51,19 @@ public class ScriptletServlet extends RemoteServlet implements ScriptletServiceI
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
+    }
+
+    @Override
+    public ScriptletObject run(ScriptletObject so) throws Exception {
+        ScriptletBeanInt scriptlet;
+        
+        scriptlet = (ScriptletBeanInt)getThreadLocalRequest().getSession().getAttribute("scriptlet"+so.getId());
+        
+        if(scriptlet == null) {
+            
+        }
+        
+        return scriptlet.run(so);
     }
 
 }
