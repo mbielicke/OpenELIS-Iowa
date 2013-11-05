@@ -53,7 +53,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "Scriptlet.fetchByName", 
                 query = "select distinct new org.openelis.domain.IdNameVO(script.id, script.name) from Scriptlet script  "
-                                                                  + "order by script.name where script.isActive != 'N'"),
+                                                                  + "order by script.name "),
     @NamedQuery( name = "Scriptlet.fetchById", query = "select distinct new org.openelis.domain.ScriptletDO(script.id, script.name, script.bean, script.isActive, script.activeBegin, script.activeEnd) from Scriptlet script  "
                                                                             + "where script.id = :id")})
 @Entity
