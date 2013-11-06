@@ -1366,7 +1366,7 @@ public class OpenELIS extends Screen {
                         PWSScreen screen;
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
-                            window.setName(msg.pwsName());
+                            window.setName(msg.pwsInformation());
                             screen = new PWSScreen(window);
                             window.setContent(screen);
                             screen.initialize();
