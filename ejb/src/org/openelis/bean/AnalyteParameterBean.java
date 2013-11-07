@@ -241,9 +241,9 @@ public class AnalyteParameterBean {
     public AnalyteParameterDO add(AnalyteParameterDO data) throws Exception {
         AnalyteParameter entity;
 
-        if (DataBaseUtil.isEmpty(data.getActiveBegin()) ||
-            DataBaseUtil.isEmpty(data.getActiveEnd()) ||
-            DataBaseUtil.isEmpty(data.getP1()))
+        if (data.getActiveBegin() == null ||
+            data.getActiveEnd() == null ||
+            (data.getP1() == null && data.getP2() == null && data.getP3() == null))
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
