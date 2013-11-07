@@ -54,8 +54,6 @@
                 action="add" toggles="true" />
               <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}" text="{msg.update}"
                 toggles="true" action="update" />
-              <w:Button css="{res.buttonPanel}" ui:field="delete" leftIcon="{res.icon.DeleteButtonImage}" text="{msg.delete}"
-                action="delete" />
               <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}" />
               <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}" text="{msg.commit}"
                 action="commit" />
