@@ -606,7 +606,7 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private void displayItemData() {
-        int i, a, count1, count2, count3, count4;
+        int i, a, count1, count2, count3, count4, count5, count6;
         boolean dataChanged;
         WorksheetAnalysisViewDO waDO1, waDO2;
         WorksheetItemDO wiDO1, wiDO2;
@@ -628,10 +628,10 @@ public class WorksheetItemTabUI extends Screen {
                 for (i = 0; i < count1; i++ ) {
                     wiDO1 = displayedManager.item.get(i);
                     wiDO2 = manager.item.get(i);
-                    count2 = displayedManager.analysis.count(wiDO1);
-                    count3 = manager.analysis.count(wiDO2);
-                    if (count2 == count3) {
-                        for (a = 0; a < count2; a++ ) {
+                    count3 = displayedManager.analysis.count(wiDO1);
+                    count4 = manager.analysis.count(wiDO2);
+                    if (count3 == count4) {
+                        for (a = 0; a < count3; a++ ) {
                             waDO1 = displayedManager.analysis.get(wiDO1, a);
                             waDO2 = manager.analysis.get(wiDO2, a);
                             if (DataBaseUtil.isDifferent(waDO1.getAccessionNumber(), waDO2.getAccessionNumber()) ||
@@ -642,16 +642,16 @@ public class WorksheetItemTabUI extends Screen {
                                 dataChanged = true;
                                 break items;
                             }
-                            count3 = displayedManager.result.count(waDO1);
-                            count4 = manager.result.count(waDO2);
-                            if (count3 == count4) {
+                            count5 = displayedManager.result.count(waDO1);
+                            count6 = manager.result.count(waDO2);
+                            if (count5 == count6) {
                             } else {
                                 dataChanged = true;
                                 break items;
                             }
-                            count3 = displayedManager.qcResult.count(waDO1);
-                            count4 = manager.qcResult.count(waDO2);
-                            if (count3 == count4) {
+                            count5 = displayedManager.qcResult.count(waDO1);
+                            count6 = manager.qcResult.count(waDO2);
+                            if (count5 == count6) {
                             } else {
                                 dataChanged = true;
                                 break items;

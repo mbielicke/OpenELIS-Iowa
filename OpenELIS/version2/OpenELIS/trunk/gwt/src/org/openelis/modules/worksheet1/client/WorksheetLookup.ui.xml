@@ -67,7 +67,7 @@ UIRF Software License are applicable instead of those above.
               <w:Dropdown ui:field="statusId" width="119px" field="Integer" />
             </td>
             <td>
-              <w:Button ui:field="search" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}"  css="{res.FormFieldButton}"/>
+              <w:Button ui:field="search" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}" css="{res.FormFieldButton}"/>
             </td>
           </tr>
           <tr>

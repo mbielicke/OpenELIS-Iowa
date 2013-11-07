@@ -133,17 +133,17 @@
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_status}:"/>
                 </td>
-                <td colspan="2">
+                <td>
                   <w:Dropdown ui:field="statusId" width="110px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.gen_username}"/>
+                  <ui:text from="{msg.gen_username}:"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="systemUserId" width="165" case="LOWER">
+                  <w:AutoComplete ui:field="systemUserId" width="165px" dropHeight="201px" case="LOWER">
                     <w:popup>
-                      <t:Table visibleRows="10" header="true">
-                        <t:Column label="{msg.gen_username}">
+                      <t:Table>
+                        <t:Column>
                           <t:LabelCell/>
                         </t:Column>
                       </t:Table>
@@ -156,16 +156,16 @@
                   <ui:text from="{msg.worksheet_format}:"/>
                 </td>
                 <td>
-                  <w:Dropdown ui:field="formatId" width="132px" dropWidth="150px" case="MIXED" field="Integer"/>
+                  <w:Dropdown ui:field="formatId" width="140px" dropWidth="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.worksheet_relatedWorksheetNumber}:"/>
                 </td>
-                <td colspan="2">
-                <g:HorizontalPanel>
-                  <w:TextBox ui:field="relatedWorksheetId" width="50px" field="Integer"/>
-                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
-                </g:HorizontalPanel>
+                <td>
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="relatedWorksheetId" width="72px" field="Integer"/>
+                    <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
+                  </g:HorizontalPanel>
                 </td>
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.worksheet_instrumentName}:"/>
@@ -201,14 +201,14 @@
                 <td class="{res.style.Prompt}">
                   <ui:text from="{msg.gen_description}:"/>
                 </td>
-                <td colspan="4">
-                  <w:TextBox ui:field="description" width="400px" case="LOWER" field="String"/>
+                <td colspan="3">
+                  <w:TextBox ui:field="description" width="410px" case="LOWER" maxLength="60" field="String"/>
                 </td>
               </tr>
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="105px" bottom="0px">
+        <g:layer top="110px" bottom="0px">
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>

@@ -32,9 +32,7 @@
 
     <g:LayoutPanel>
         <g:layer top="0px" bottom="30px">
-            <g:HTMLPanel styleName="{res.style.WhiteContentPanel}">
-                <w:NotesPanel ui:field="notesPanel"/>
-            </g:HTMLPanel>
+            <w:NotesPanel ui:field="notesPanel"/>
         </g:layer>
         <g:layer bottom="0px" height="25px">
             <g:AbsolutePanel>
