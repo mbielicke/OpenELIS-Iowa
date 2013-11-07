@@ -110,7 +110,7 @@ UIRF Software License are applicable instead of those above.
                   <w:Dropdown ui:field="typeOfSampleId" width="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td>
-                  <w:Button ui:field="search" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}"/>
+                  <w:Button ui:field="search" leftIcon="{res.icon.findIcon}" text="{msg.gen_search}" css="{res.FormFieldButton}"/>
                 </td>
               </tr>
               <tr>

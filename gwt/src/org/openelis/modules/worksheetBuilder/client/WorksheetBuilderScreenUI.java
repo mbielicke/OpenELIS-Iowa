@@ -491,7 +491,7 @@ public class WorksheetBuilderScreenUI extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(21);
+                query.setRowsPerPage(19);
                 WorksheetService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
@@ -858,6 +858,7 @@ public class WorksheetBuilderScreenUI extends Screen {
 
         try {
             manager = WorksheetService1.get().unlock(manager.getWorksheet().getId(), Load.DETAIL);
+            setData();
             setState(DISPLAY);
             fireDataChange();
         } catch (Exception e) {
