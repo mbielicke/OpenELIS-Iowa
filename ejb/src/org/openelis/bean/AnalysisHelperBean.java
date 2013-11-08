@@ -34,6 +34,7 @@ import java.util.HashSet;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.jboss.logging.FormatWith;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
@@ -84,22 +85,23 @@ public class AnalysisHelperBean {
 
     @EJB
     private DictionaryCacheBean  dictionaryCache;
-
-    private static final int[][] statuses = new int[][] { 
-                                                              {1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0},
-                                                              {1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0}, 
-                                                              {1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0},
-                                                              {0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1},
-                                                              {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-                                                              {1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0}, 
-                                                              {1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0},
-                                                              {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
-                                                              {1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0},
-                                                              {1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0}, 
-                                                              {0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0},
-                                                              {0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1}
-                                                            };
-
+    
+    // @formatter:off
+                                                       // L  P  I  C  R  H  Q  X  EL EP EI EC
+    private static final int[][] statuses = new int[][] {{1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0}, // Logged-in 
+                                                         {1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0}, // in-Prep
+                                                         {1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0}, // Initiated
+                                                         {0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1}, // Completed
+                                                         {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // Released
+                                                         {1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0}, // Onhold
+                                                         {1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0}, // reQueue
+                                                         {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}, // cancel X
+                                                         {1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0}, // Error-Logged-in
+                                                         {1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0}, // Error-in-Prep
+                                                         {0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0}, // Error-Initiated
+                                                         {0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1}};// Error-Completed
+    // @formatter:on
+    
     /**
      * Returns TestManagers for given test ids. For those tests that are not
      * active, the method looks for the active version of the same tests.
@@ -428,10 +430,10 @@ public class AnalysisHelperBean {
         ArrayList<AnalysisViewDO> prepAnas, rflxAnas;
         SystemUserPermission perm;
 
-        accession = getSample(sm).getAccessionNumber();
         /*
          * for display
          */
+        accession = getSample(sm).getAccessionNumber();
         if (accession == null)
             accession = 0;
 
@@ -464,14 +466,12 @@ public class AnalysisHelperBean {
             }
         }
 
-        perm = userCache.getPermission();
-
         /*
          * the row and column in the grid corresponding to the current status
          * and the future status, respectively
          */
-        fromStatus = getPosition(ana.getStatusId());
-        toStatus = getPosition(statusId);
+        fromStatus = getStatusIndex(ana.getStatusId());
+        toStatus = getStatusIndex(statusId);
 
         if (statuses[fromStatus][toStatus] == 0) {
             /*
@@ -487,6 +487,11 @@ public class AnalysisHelperBean {
                                                                                          fromName,
                                                                                          toName));
         }
+        
+        /*
+         *  
+         */
+        perm = userCache.getPermission();
 
         switch (toStatus) {
             case 0:
@@ -544,7 +549,6 @@ public class AnalysisHelperBean {
                 /*
                  * cancelled
                  */
-
                 if (ana.getId() < 0)
                     throw new InconsistencyException(Messages.get()
                                                              .analysis_cantCancelUncommitedException(accession,
@@ -1104,30 +1108,30 @@ public class AnalysisHelperBean {
     /**
      * Return the row or column for this status in the grid for statuses
      */
-    protected int getPosition(Integer statusId) {
+    protected int getStatusIndex(Integer statusId) {
         if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId))
             return 0;
-        else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId))
             return 1;
-        else if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId))
             return 2;
-        else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId))
             return 3;
-        else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId))
             return 4;
-        else if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusId))
             return 5;
-        else if (Constants.dictionary().ANALYSIS_REQUEUE.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_REQUEUE.equals(statusId))
             return 6;
-        else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
             return 7;
-        else if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId))
             return 8;
-        else if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(statusId))
             return 9;
-        else if (Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(statusId))
             return 10;
-        else if (Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(statusId))
+        if (Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(statusId))
             return 11;
 
         return -1;
