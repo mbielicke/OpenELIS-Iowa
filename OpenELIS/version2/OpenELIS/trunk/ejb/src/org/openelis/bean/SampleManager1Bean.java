@@ -76,6 +76,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SectionPermission;
@@ -833,7 +834,7 @@ public class SampleManager1Bean {
     @RolesAllowed({"sample-add", "sample-update"})
     public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
         ArrayList<SampleManager1> sms;
-    
+
         sms = new ArrayList<SampleManager1>(1);
         sms.add(sm);
         update(sms, ignoreWarnings);
@@ -857,7 +858,7 @@ public class SampleManager1Bean {
         NoteViewDO ext;
         PatientDO pat;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
-    
+
         /*
          * validation needs test and aux group manager. Build lists of analysis
          * test ids and aux group ids to fetch test and aux group managers.
@@ -872,7 +873,7 @@ public class SampleManager1Bean {
                     ids1.add(aux.getGroupId());
             }
         }
-    
+
         /*
          * build test map and aux map for easy access to a manager during
          * validation
@@ -880,20 +881,20 @@ public class SampleManager1Bean {
         tms = new HashMap<Integer, TestManager>();
         for (TestManager tm : testManager.fetchByIds(new ArrayList<Integer>(ids)))
             tms.put(tm.getTest().getId(), tm);
-    
+
         ams = null;
         if (ids1.size() > 0) {
             ams = new HashMap<Integer, AuxFieldGroupManager>();
             for (AuxFieldGroupManager am : auxFieldGroupManager.fetchByIds(new ArrayList<Integer>(ids1)))
                 ams.put(am.getGroup().getId(), am);
         }
-    
+
         validate(sms, tms, ams, ignoreWarnings);
-    
+
         ids1 = null;
         tms = null;
         ams = null;
-    
+
         /*
          * check all the locks
          */
@@ -909,7 +910,7 @@ public class SampleManager1Bean {
             locks = null;
         }
         ids = null;
-    
+
         /*
          * the front code uses negative ids (temporary ids) to link sample items
          * and analysis, analysis and results. The negative ids are mapped to
@@ -925,7 +926,7 @@ public class SampleManager1Bean {
             amap.clear();
             rmap.clear();
             seq.clear();
-    
+
             /*
              * go through remove list and delete all the unwanted records
              */
@@ -963,13 +964,13 @@ public class SampleManager1Bean {
                         throw new Exception("ERROR: DataObject passed for removal is of unknown type");
                 }
             }
-    
+
             // add/update sample
             if (getSample(sm).getId() == null)
                 sample.add(getSample(sm));
             else
                 sample.update(getSample(sm));
-    
+
             // add/update sample domain
             if (getSampleEnvironmental(sm) != null) {
                 if (getSampleEnvironmental(sm).getId() == null) {
@@ -1003,7 +1004,7 @@ public class SampleManager1Bean {
                         pat = patient.update(getSampleNeonatal(sm).getPatient());
                     getSampleNeonatal(sm).getPatient().setId(pat.getId());
                 }
-    
+
                 if (getSampleNeonatal(sm).getNextOfKin() != null) {
                     if (getSampleNeonatal(sm).getNextOfKin().getId() == null)
                         pat = patient.add(getSampleNeonatal(sm).getNextOfKin());
@@ -1011,7 +1012,7 @@ public class SampleManager1Bean {
                         pat = patient.update(getSampleNeonatal(sm).getNextOfKin());
                     getSampleNeonatal(sm).getNextOfKin().setId(pat.getId());
                 }
-    
+
                 if (getSampleNeonatal(sm).getId() == null) {
                     getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
                     sampleNeonatal.add(getSampleNeonatal(sm));
@@ -1019,7 +1020,7 @@ public class SampleManager1Bean {
                     sampleNeonatal.update(getSampleNeonatal(sm));
                 }
             }
-    
+
             if (getOrganizations(sm) != null) {
                 for (SampleOrganizationViewDO data : getOrganizations(sm)) {
                     if (data.getId() < 0) {
@@ -1030,7 +1031,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             if (getProjects(sm) != null) {
                 for (SampleProjectViewDO data : getProjects(sm)) {
                     if (data.getId() < 0) {
@@ -1041,7 +1042,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             if (getSampleQAs(sm) != null) {
                 for (SampleQaEventViewDO data : getSampleQAs(sm)) {
                     if (data.getId() < 0) {
@@ -1052,7 +1053,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             so = 0;
             if (getAuxilliary(sm) != null) {
                 for (AuxDataViewDO data : getAuxilliary(sm)) {
@@ -1068,7 +1069,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             if (getSampleExternalNote(sm) != null) {
                 ext = getSampleExternalNote(sm);
                 if (ext.getId() < 0) {
@@ -1079,7 +1080,7 @@ public class SampleManager1Bean {
                     note.update(ext);
                 }
             }
-    
+
             if (getSampleInternalNotes(sm) != null) {
                 for (NoteViewDO data : getSampleInternalNotes(sm)) {
                     if (data.getId() < 0) {
@@ -1091,7 +1092,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             // add/update sample items. keep track of all the keys (pos or neg)
             for (SampleItemViewDO data : getItems(sm)) {
                 if (data.getId() < 0) {
@@ -1104,7 +1105,7 @@ public class SampleManager1Bean {
                 }
                 imap.put(tmpid, data.getId());
             }
-    
+
             /*
              * some analysis can be dependent on other analysis for prep or for
              * reflex. Additionally an analysis maybe dependent on a result that
@@ -1121,7 +1122,7 @@ public class SampleManager1Bean {
                 // add/update analysis
                 for (AnalysisViewDO data : getAnalyses(sm)) {
                     nodep = true;
-    
+
                     if (data.getPreAnalysisId() != null && data.getPreAnalysisId() < 0) {
                         id = amap.get(data.getPreAnalysisId());
                         if (id != null)
@@ -1129,7 +1130,7 @@ public class SampleManager1Bean {
                         else
                             nodep = false;
                     }
-    
+
                     if (data.getParentAnalysisId() != null && data.getParentAnalysisId() < 0) {
                         id = amap.get(data.getParentAnalysisId());
                         if (id != null)
@@ -1137,7 +1138,7 @@ public class SampleManager1Bean {
                         else
                             nodep = false;
                     }
-    
+
                     if (data.getParentResultId() != null && data.getParentResultId() < 0) {
                         id = rmap.get(data.getParentResultId());
                         if (id != null)
@@ -1145,7 +1146,7 @@ public class SampleManager1Bean {
                         else
                             nodep = false;
                     }
-    
+
                     if (nodep) {
                         if (data.getId() < 0) {
                             tmpid = data.getId();
@@ -1162,7 +1163,7 @@ public class SampleManager1Bean {
                         dep++ ;
                     }
                 }
-    
+
                 // add/update results
                 if (getResults(sm) != null) {
                     for (ResultViewDO data : getResults(sm)) {
@@ -1181,7 +1182,7 @@ public class SampleManager1Bean {
                             else
                                 data.setSortOrder(so);
                             seq.put(id, so + 1);
-    
+
                             tmpid = data.getId();
                             if (tmpid < 0) {
                                 data.setAnalysisId(id);
@@ -1193,12 +1194,12 @@ public class SampleManager1Bean {
                         }
                     }
                 }
-    
+
             } while (dep > 0 && ldep != dep);
-    
+
             if (dep > 0 && ldep == dep)
                 throw new InconsistencyException(Messages.get().analysis_circularReference());
-    
+
             // add/update analysis notes
             if (getAnalysisInternalNotes(sm) != null) {
                 for (NoteViewDO data : getAnalysisInternalNotes(sm)) {
@@ -1211,7 +1212,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             if (getAnalysisExternalNotes(sm) != null) {
                 for (NoteViewDO data : getAnalysisExternalNotes(sm)) {
                     if (data.getId() < 0) {
@@ -1223,7 +1224,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             // add/update analysis qa events
             if (getAnalysisQAs(sm) != null) {
                 for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
@@ -1235,7 +1236,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             // add/update analysis users
             if (getUsers(sm) != null) {
                 for (AnalysisUserViewDO data : getUsers(sm)) {
@@ -1247,7 +1248,7 @@ public class SampleManager1Bean {
                     }
                 }
             }
-    
+
             // add/update storage
             if (getStorages(sm) != null) {
                 for (StorageViewDO data : getStorages(sm)) {
@@ -1263,10 +1264,10 @@ public class SampleManager1Bean {
                 }
             }
         }
-    
+
         if (locks != null)
             lock.unlock(Constants.table().SAMPLE, locks);
-    
+
         return sms;
     }
 
@@ -1297,38 +1298,39 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Check to see if 1) the accession number bas been issues by the login barcode
-     * process and 2) accession number has not been assigned to another sample.
+     * Check to see if 1) the accession number bas been issues by the login
+     * barcode process and 2) accession number has not been assigned to another
+     * sample.
      */
     @RolesAllowed({"sample-add", "sample-update"})
     public void validateAccessionNumber(SampleManager1 sm) throws Exception {
         Integer accession;
         SampleDO data;
         SystemVariableDO sys;
-    
+
         /*
          * accession number must be > 0, previously issued, and not duplicate
          */
         accession = getSample(sm).getAccessionNumber();
         if (accession == null || accession <= 0)
             throw new InconsistencyException(Messages.get()
-                                                 .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accession)));
-    
+                                                     .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accession)));
+
         try {
             sys = systemVariable.fetchByName("last_accession_number");
             if (accession.compareTo(Integer.valueOf(sys.getValue())) > 0)
                 throw new InconsistencyException(Messages.get()
-                                                     .sample_accessionNumberNotInUse(accession));
+                                                         .sample_accessionNumberNotInUse(accession));
         } catch (Exception any) {
             log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
             throw any;
         }
-        
+
         try {
             data = sample.fetchByAccessionNumber(accession);
-            if (! data.getId().equals(getSample(sm).getId()))
+            if ( !data.getId().equals(getSample(sm).getId()))
                 throw new InconsistencyException(Messages.get()
-                                                 .sample_accessionNumberDuplicate(accession));
+                                                         .sample_accessionNumberDuplicate(accession));
         } catch (NotFoundException nf) {
         }
     }
@@ -1337,8 +1339,8 @@ public class SampleManager1Bean {
      * Returns a manager loaded with the data of the quick-entered sample that
      * has the same accession number as the passed manager. Also, locks the
      * returned sample. Throws a NotFoundException if such a sample couldn't be
-     * found; InconsistancyException if domain is not quick-entry or if the sample
-     * was loaded from order.
+     * found; InconsistancyException if domain is not quick-entry or if the
+     * sample was loaded from order.
      */
     public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         SampleDO data, qdata;
@@ -1347,19 +1349,19 @@ public class SampleManager1Bean {
         data = getSample(sm);
         qdata = sample.fetchByAccessionNumber(data.getAccessionNumber());
 
-        if (! Constants.domain().QUICKENTRY.equals(qdata.getDomain()))
+        if ( !Constants.domain().QUICKENTRY.equals(qdata.getDomain()))
             throw new InconsistencyException(Messages.get()
-                                             .sample_notQuickEntryException(data.getAccessionNumber()));
-        
+                                                     .sample_notQuickEntryException(data.getAccessionNumber()));
+
         /*
-         * there's a special condition that is not allowed; 1. the user
-         * loads a sample from an order 2. the accession number is changed
-         * to quick-entered sample
+         * there's a special condition that is not allowed; 1. the user loads a
+         * sample from an order 2. the accession number is changed to
+         * quick-entered sample
          */
         if (data.getOrderId() != null)
             throw new InconsistencyException(Messages.get()
                                                      .sample_cantLoadQEOrderPresentException(data.getAccessionNumber()));
-        
+
         qsm = fetchForUpdate(qdata.getId());
         getSample(qsm).setDomain(data.getDomain());
         setSampleEnvironmental(qsm, getSampleEnvironmental(sm));
@@ -1618,20 +1620,20 @@ public class SampleManager1Bean {
         SampleTestReturnVO ret;
         ValidationErrorsList errors;
         ArrayList<AuxDataViewDO> auxiliary;
-    
+
         auxiliary = getAuxilliary(sm);
         if (auxiliary == null) {
             auxiliary = new ArrayList<AuxDataViewDO>();
             setAuxilliary(sm, auxiliary);
         }
-    
+
         ret = new SampleTestReturnVO();
         ret.setManager(sm);
         errors = new ValidationErrorsList();
         ret.setErrors(errors);
-    
+
         auxDataHelper.addAuxGroups(auxiliary, groupIds, errors);
-    
+
         /*
          * set negative ids in the newly added aux data
          */
@@ -1639,7 +1641,7 @@ public class SampleManager1Bean {
             if (aux.getId() == null)
                 aux.setId(sm.getNextUID());
         }
-    
+
         return ret;
     }
 
@@ -1648,9 +1650,9 @@ public class SampleManager1Bean {
      */
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
         ArrayList<AuxDataViewDO> removed;
-    
+
         removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), new HashSet<Integer>(groupIds));
-    
+
         if (removed != null && removed.size() > 0) {
             if (getRemoved(sm) == null)
                 setRemoved(sm, new ArrayList<DataObject>());
@@ -1821,8 +1823,8 @@ public class SampleManager1Bean {
      * status. It also updates any links between other analyses and this one, if
      * need be, because of the change in status.
      */
-    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
-        return analysisHelper.changeAnalysisStatus(sm, analysisId, unitId);
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId) throws Exception {
+        return analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
     }
 
     /**
@@ -1950,9 +1952,15 @@ public class SampleManager1Bean {
                     if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
                         cnt++ ;
             }
-            if (cnt != 1 && !ignoreWarning)
-                e.add(new FormErrorException(Messages.get()
-                                                     .sample_moreThanOneReportToException(accession)));
+
+            if ( !ignoreWarning) {
+                if (cnt == 0)
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_reportToMissingWarning(accession)));
+                else if (cnt != 1)
+                    e.add(new FormErrorException(Messages.get()
+                                                         .sample_moreThanOneReportToException(accession)));
+            }
 
             /*
              * aux data must be valid for the aux field
