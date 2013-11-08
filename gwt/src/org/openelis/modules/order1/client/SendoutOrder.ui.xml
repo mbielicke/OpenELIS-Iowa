@@ -103,18 +103,19 @@
 								<w:MenuItem ui:field="orderRequestForm" description=""
 									enabled="false" display="{msg.gen_orderRequestForm}" />
 								<!-- <html>&lt;hr/&gt;</html> -->
-								<w:MenuItem ui:field="orderHistory" description=""
-									enabled="false" icon="{res.icon.historyIcon}" display="{msg.order_orderHistory}" />
-								<w:MenuItem ui:field="orderOrganizationHistory"
-									description="" enabled="false" icon="{res.icon.historyIcon}"
-									display="{msg.order_orderOrganizationHistory}" />
-								<w:MenuItem ui:field="orderItemHistory" description=""
-									enabled="false" icon="{res.icon.historyIcon}" display="{msg.order_orderItemHistory}" />
-								<w:MenuItem ui:field="orderTestHistory" description=""
-									enabled="false" icon="{res.icon.historyIcon}" display="{msg.order_orderTestHistory}" />
-								<w:MenuItem ui:field="orderContainerHistory"
-									description="" enabled="false" icon="{res.icon.historyIcon}"
-									display="{msg.order_orderContainerHistory}" />
+								<w:Menu icon="{res.icon.historyIcon}" display="{msg.gen_history}"
+									ui:field="historyMenu" selfShow="true" showBelow="false">
+									<w:MenuItem ui:field="orderHistory" description=""
+										enabled="false" display="{msg.order_order}" />
+									<w:MenuItem ui:field="orderOrganizationHistory"
+										description="" enabled="false" display="{msg.gen_organization}" />
+									<w:MenuItem ui:field="orderItemHistory" description=""
+										enabled="false" display="{msg.gen_item}" />
+									<w:MenuItem ui:field="orderTestHistory" description=""
+										enabled="false" display="{msg.gen_test}" />
+									<w:MenuItem ui:field="orderContainerHistory"
+										description="" enabled="false" display="{msg.gen_container}" />
+								</w:Menu>
 							</w:Menu>
 						</g:HorizontalPanel>
 					</g:AbsolutePanel>
@@ -321,7 +322,7 @@
 						</w:tab>
 						<w:tab>
 							<w:customHeader>
-								<w:TabWidget text="{msg.order_items}" />
+								<w:TabWidget text="{msg.gen_item}" />
 							</w:customHeader>
 							<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 								<g:layer>
