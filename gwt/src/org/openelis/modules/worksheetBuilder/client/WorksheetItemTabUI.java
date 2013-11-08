@@ -1063,7 +1063,7 @@ public class WorksheetItemTabUI extends Screen {
 
             win = new ModalWindow(false);
             win.setName(Messages.get().qc_qcLookup());
-            win.setSize("735px", "360px");
+            win.setSize("729px", "360px");
             qcLookupScreen.setWindow(win);
             win.setContent(qcLookupScreen);
             qcLookupScreen.clearFields();

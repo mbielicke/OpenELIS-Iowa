@@ -93,7 +93,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
-        <VerticalPanel width="721px" spacing="0">
+        <VerticalPanel width="715px" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="okButton">
