@@ -246,7 +246,7 @@
 						barUnit="PX">
 						<w:tab>
 							<w:customHeader>
-								<w:TabWidget text="{msg.order_items}" />
+								<w:TabWidget text="{msg.gen_item}" />
 							</w:customHeader>
 							<g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
 								<g:layer>

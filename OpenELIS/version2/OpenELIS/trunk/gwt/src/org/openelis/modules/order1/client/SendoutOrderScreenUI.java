@@ -143,7 +143,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                     optionsButton, atozNext, atozPrev;
 
     @UiField
-    protected Menu                           optionsMenu;
+    protected Menu                           optionsMenu, historyMenu;
 
     @UiField
     protected MenuItem                       duplicate, shippingInfo, orderRequestForm,
@@ -382,6 +382,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             public void onStateChange(StateChangeEvent event) {
                 optionsMenu.setEnabled(isState(DISPLAY));
                 optionsButton.setEnabled(isState(DISPLAY));
+                historyMenu.setEnabled(isState(DISPLAY));
             }
         });
 
