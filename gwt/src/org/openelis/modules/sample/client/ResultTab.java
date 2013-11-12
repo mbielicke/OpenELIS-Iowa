@@ -622,7 +622,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     StateChangeEvent.fire(this, State.UPDATE);
             } else {
                 analysisMan = null;
-                dirty = (analysis == emptyAnalysis);
+                dirty = (analysis != emptyAnalysis);
                 analysis = emptyAnalysis;
                 StateChangeEvent.fire(this, State.DEFAULT);
                 /*
@@ -633,7 +633,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                  * the last time. We also don't want to clear the tab over and 
                  * over if it didn't get loaded and we don't want to incur the
                  * cost of creating empty DO every time we have to do so. This 
-                 * comparison (analysis == emptyAnalysis), along with having an 
+                 * comparison (analysis != emptyAnalysis), along with having an 
                  * empty global DO (emptyAnalysis) allows us to do all of this   
                  */
                 if (dirty)
