@@ -269,7 +269,7 @@ UIRF Software License are applicable instead of those above.
               </widget>
             </row>
               </TablePanel>
-              <TabPanel height="244" key="tabPanel" width="715">
+              <TabPanel height="244" key="tabPanel" width="720">
 <!-- Blank Default deck -->
                 <tab text="" visible="false">
                   <AbsolutePanel />
