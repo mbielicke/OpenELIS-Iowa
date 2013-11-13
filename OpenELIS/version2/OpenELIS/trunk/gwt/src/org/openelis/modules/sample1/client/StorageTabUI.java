@@ -379,6 +379,8 @@ public class StorageTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
+                    analysis = (AnalysisViewDO)manager.getObject(event.getUid());
+                    sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
                     setState(state);
                 }
             }

@@ -259,6 +259,57 @@ public class SampleItemTabUI extends Screen {
                 displaySampleItem(uid);
             }
         });
+        
+        parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+            public void onSelection(SelectionEvent event) {
+                String uid;
+                AnalysisDO a;
+
+                switch (event.getSelectedType()) {
+                    case SAMPLE_ITEM:
+                        uid = event.getUid();
+                        break;
+                    case ANALYSIS:
+                        a = (AnalysisDO)manager.getObject(event.getUid());
+                        uid = manager.getSampleItemUid(a.getSampleItemId());
+                        break;
+                    default:
+                        uid = null;
+                        break;
+                }
+                
+                if (uid != null)
+                    sampleItem = (SampleItemViewDO)manager.getObject(uid);
+                else
+                    sampleItem = null;
+
+                if (isState(QUERY)) {
+                    /*
+                     * In query state the tree is empty, so no sample item is
+                     * selected in it and the current uid is null. If there was
+                     * no sample item selected in the tree before going in query
+                     * state, the previous (displayed) uid was null too. This
+                     * makes sure that the tab is redrawn for query state even
+                     * if both uids are null and thus not different.
+                     */
+                    redraw = true;
+                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
+                    /*
+                     * while the tab is not visible, the data in the sample item
+                     * linked by displayed uid may get changed e.g. if displayed
+                     * uid is negative and a different manager uses the same uid
+                     * or if the manager is fetched again and the data was
+                     * changed in the database; this makes sure that whenever
+                     * the tab is opened again, it shows the latest data for the
+                     * sample item, because when a new manager is loaded the uid
+                     * in this event is null
+                     */
+                    redraw = true;
+                }
+
+                displaySampleItem(uid);
+            }
+        });
 
         // sample type dropdown
         model = new ArrayList<Item<Integer>>();
@@ -295,52 +346,6 @@ public class SampleItemTabUI extends Screen {
             model.add(row);
         }
         unitOfMeasure.setModel(model);
-
-        parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
-            public void onSelection(SelectionEvent event) {
-                String uid;
-                AnalysisDO a;
-
-                switch (event.getSelectedType()) {
-                    case SAMPLE_ITEM:
-                        uid = event.getUid();
-                        break;
-                    case ANALYSIS:
-                        a = (AnalysisDO)manager.getObject(event.getUid());
-                        uid = manager.getSampleItemUid(a.getSampleItemId());
-                        break;
-                    default:
-                        uid = null;
-                        break;
-                }
-
-                if (isState(QUERY)) {
-                    /*
-                     * In query state the tree is empty, so no sample item is
-                     * selected in it and the current uid is null. If there was
-                     * no sample item selected in the tree before going in query
-                     * state, the previous (displayed) uid was null too. This
-                     * makes sure that the tab is redrawn for query state even
-                     * if both uids are null and thus not different.
-                     */
-                    redraw = true;
-                } else if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    /*
-                     * while the tab is not visible, the data in the sample item
-                     * linked by displayed uid may get changed e.g. if displayed
-                     * uid is negative and a different manager uses the same uid
-                     * or if the manager is fetched again and the data was
-                     * changed in the database; this makes sure that whenever
-                     * the tab is opened again, it shows the latest data for the
-                     * sample item, because when a new manager is loaded the uid
-                     * in this event is null
-                     */
-                    redraw = true;
-                }
-
-                displaySampleItem(uid);
-            }
-        });
     }
 
     public void setData(SampleManager1 manager) {
@@ -375,11 +380,6 @@ public class SampleItemTabUI extends Screen {
     }
 
     private void displaySampleItem(String uid) {
-        if (uid != null)
-            sampleItem = (SampleItemViewDO)manager.getObject(uid);
-        else
-            sampleItem = null;
-
         if ( !isVisible)
             return;
 

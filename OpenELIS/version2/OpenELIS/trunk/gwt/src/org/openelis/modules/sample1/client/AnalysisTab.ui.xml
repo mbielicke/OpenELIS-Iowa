@@ -31,7 +31,7 @@
               <ui:text from="{msg.gen_method}:" />
             </td>
             <td colspan="3">
-              <w:AutoComplete ui:field="method" width="150px" case="LOWER" dropWidth = "450px">
+              <w:AutoComplete ui:field="method" width="140px" case="LOWER" dropHeight = "100px" dropWidth = "450px">
                 <w:popup>
                   <t:Table visibleRows="10" header="true">
                     <t:Column width="150" label="{msg.gen_method}">
@@ -56,7 +56,7 @@
               <ui:text from="{msg.gen_status}:" />
             </td>
             <td>
-              <w:Dropdown ui:field="analysisStatus" width="150px" field="Integer" /> 
+              <w:Dropdown ui:field="status" width="150px" field="Integer" /> 
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.analysis_preliminary}:" />
@@ -88,7 +88,7 @@
               <ui:text from="{msg.gen_unit}:" />
             </td>
             <td colspan="3">
-              <w:Dropdown ui:field="unitOfMeasure" width="150px" field="Integer" />
+              <w:Dropdown ui:field="unitOfMeasure" width="145px" field="Integer" />
             </td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.analysis_released}:" />
@@ -101,7 +101,7 @@
             <ui:text from="{msg.gen_panel}:" />
           </td>
           <td colspan="5">
-            <w:Dropdown ui:field="panel" width="365x" field="Integer" />            
+            <w:Dropdown ui:field="panel" width="367x" field="Integer" />            
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.analysis_printed}:" />
             </td>
@@ -114,7 +114,7 @@
               <ui:text from="{msg.analysis_samplePrep}:" />
             </td>
             <td colspan="5">
-               <w:Dropdown ui:field="samplePrep" width="365px" field="Integer">
+               <w:Dropdown ui:field="samplePrep" width="367px" field="Integer">
                 <w:popup>
                   <t:Table header="true">
                     <t:Column width="130" label="{msg.gen_name}">
