@@ -40,6 +40,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventDO;
+import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.manager.SampleManager1;
@@ -407,6 +408,7 @@ public class QAEventTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
+                    analysis = (AnalysisViewDO)manager.getObject(event.getUid());
                     setState(state);
                 }
             }

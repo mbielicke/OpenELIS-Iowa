@@ -31,13 +31,16 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * This class is used to notify the handler that the results of a sample were
  * changed due to some action by the user e.g. changing the unit of an analysis
- * or row analytes being added etc.
+ * or row analytes being added etc. The unique identifier for the analysis is
+ * specified through uid.
  */
 public class ResultChangeEvent extends GwtEvent<ResultChangeEvent.Handler> {
 
     private static Type<ResultChangeEvent.Handler> TYPE;
-    
-    public ResultChangeEvent() {
+    private String                                   uid;
+
+    public ResultChangeEvent(String uid) {
+        this.uid = uid;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -51,10 +54,14 @@ public class ResultChangeEvent extends GwtEvent<ResultChangeEvent.Handler> {
             TYPE = new Type<ResultChangeEvent.Handler>();
         }
         return TYPE;
-    }    
+    }
 
     public static interface Handler extends EventHandler {
         public void onResultChange(ResultChangeEvent event);
+    }
+    
+    public String getUid() {
+        return uid;
     }
 
     @Override

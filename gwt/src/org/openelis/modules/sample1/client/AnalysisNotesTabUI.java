@@ -205,6 +205,7 @@ public class AnalysisNotesTabUI extends Screen {
                      * reevaluate the permissions for this section or status to
                      * enable or disable the widgets in the tab
                      */
+                    analysis = (AnalysisViewDO)manager.getObject(event.getUid());
                     setState(state);
                 }
             }

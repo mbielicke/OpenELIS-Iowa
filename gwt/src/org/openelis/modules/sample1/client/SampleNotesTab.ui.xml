@@ -16,27 +16,20 @@
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
-
   <g:LayoutPanel>
     <g:layer top="0px" bottom="0px">
       <g:LayoutPanel>
         <g:layer width="50%" left="0px" top="0px" bottom="30px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="30px">
-              <g:HTMLPanel>
-                <table class="{res.style.Form}">
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.gen_external}:" />
-                    </td>
-                   </tr> 
-                   <tr>
-                    <td>
-                      <w:NotesPanel ui:field="externalNotePanel" />
-                    </td>                    
-                  </tr>
-                </table>
-              </g:HTMLPanel>
+              <g:LayoutPanel>
+                <g:layer top="0px" height="15px">
+                  <g:Label text="{msg.gen_external}:" />
+                </g:layer>
+                <g:layer top="15px" bottom="0px">
+                  <w:NotesPanel ui:field="externalNotePanel" />
+                </g:layer>
+              </g:LayoutPanel>
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>
@@ -46,24 +39,17 @@
             </g:layer>
           </g:LayoutPanel>
         </g:layer>
-        <!--<AbsolutePanel style="Divider" /> -->
         <g:layer width="50%" right="0px" top="0px" bottom="30px">
           <g:LayoutPanel>
             <g:layer top="0px" bottom="30px">
-              <g:HTMLPanel>
-                <table class="{res.style.Form}">
-                  <tr>
-                    <td class="{res.style.Prompt}">
-                      <ui:text from="{msg.gen_internal}:" />
-                    </td>
-                   </tr> 
-                   <tr>
-                    <td>
-                      <w:NotesPanel ui:field="internalNotePanel" />
-                    </td>
-                  </tr>
-                </table>
-              </g:HTMLPanel>
+              <g:LayoutPanel>
+                <g:layer top="0px" height="15px">
+                  <g:Label text="{msg.gen_internal}:" />
+                </g:layer>
+                <g:layer top="15px" bottom="0px">
+                  <w:NotesPanel ui:field="internalNotePanel" />
+                </g:layer>
+              </g:LayoutPanel>
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:AbsolutePanel>

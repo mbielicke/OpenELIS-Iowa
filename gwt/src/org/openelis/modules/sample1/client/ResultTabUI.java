@@ -507,7 +507,8 @@ public class ResultTabUI extends Screen {
             @Override
             public void onResultChange(ResultChangeEvent event) {
                 redraw = true;
-                displayResults(manager.getAnalysisUid(analysis.getId()));
+                analysis = (AnalysisViewDO)manager.getObject(event.getUid());
+                displayResults(event.getUid());
                 isBusy = false;
             }
         });
@@ -570,19 +571,13 @@ public class ResultTabUI extends Screen {
         if ( !isVisible)
             return;
 
-        if (analysis != null) {
-            table.setVisible(true);
-            /*
-             * Reset the table's view, so that if its model is changed, it shows
-             * its headers and columns correctly. Otherwise, problems like
-             * widths of the columns not being correct or the headers not
-             * showing may happen.
-             */
-            table.onResize();
-        } else {
-            table.setVisible(false);
-        }
-
+        /*
+         * Reset the table's view, so that if its model is changed, it shows its
+         * headers and columns correctly, so that, problems like widths of the
+         * columns not being correct or the headers not showing don't happen.
+         */
+        table.onResize();
+        
         if (redraw) {
             /*
              * don't redraw unless the data has changed
@@ -702,7 +697,7 @@ public class ResultTabUI extends Screen {
     }
 
     private ArrayList<Row> getTableModel() {
-        int i, j, maxChars[];
+        int i, j, maxTextLength[];
         boolean validateResults;
         String entry;
         Integer dictId;
@@ -726,14 +721,15 @@ public class ResultTabUI extends Screen {
         resetColumns();
 
         /*
-         * the maximum number of characters for each column
+         * the array to keep track of the length of the longest text in each
+         * column
          */
-        maxChars = new int[table.getColumnCount()];
-        maxChars[0] = DEFAULT_NUM_CHARS;
-        resetMaxChars(maxChars, 1, Messages.get().gen_analyte());
-        resetMaxChars(maxChars, 2, Messages.get().gen_value());
-        for (i = 3; i < maxChars.length; i++ )
-            maxChars[i] = DEFAULT_NUM_CHARS;
+        maxTextLength = new int[table.getColumnCount()];
+        maxTextLength[0] = DEFAULT_NUM_CHARS;
+        setMaxTextLength(maxTextLength, 1, Messages.get().gen_analyte());
+        setMaxTextLength(maxTextLength, 2, Messages.get().gen_value());
+        for (i = 3; i < maxTextLength.length; i++ )
+            maxTextLength[i] = DEFAULT_NUM_CHARS;
 
         dictIds = new ArrayList<Integer>();
         dictMap = new HashMap<Integer, HashSet<Integer>>();
@@ -759,7 +755,7 @@ public class ResultTabUI extends Screen {
                     for (j = 1; j < manager.result.count(analysis, i); j++ ) {
                         data = manager.result.get(analysis, i, j);
                         row.setCell(j + 2, data.getAnalyte());
-                        resetMaxChars(maxChars, j + 2, data.getAnalyte());
+                        setMaxTextLength(maxTextLength, j + 2, data.getAnalyte());
                     }
                     row.setData(i);
                     model.add(row);
@@ -774,7 +770,7 @@ public class ResultTabUI extends Screen {
                     if (j == 0) {
                         row.setCell(0, data.getIsReportable());
                         row.setCell(1, data.getAnalyte());
-                        resetMaxChars(maxChars, 1, data.getAnalyte());
+                        setMaxTextLength(maxTextLength, 1, data.getAnalyte());
                     }
 
                     if (validateResults && data.getValue() != null && data.getTypeId() == null) {
@@ -815,7 +811,7 @@ public class ResultTabUI extends Screen {
                         value = new ResultCell.Value(null, data.getValue());
                     } else {
                         value = new ResultCell.Value(data.getValue(), null);
-                        resetMaxChars(maxChars, j + 2, data.getValue());
+                        setMaxTextLength(maxTextLength, j + 2, data.getValue());
                     }
 
                     row.setCell(j + 2, value);
@@ -824,13 +820,12 @@ public class ResultTabUI extends Screen {
                 model.add(row);
             }
 
-            /*
-             * For type dictionary, the displayed text is looked up from the
-             * cache. The following is done to fetch and put the dictionary
-             * records needed for the results, in the cache, all at once so that
-             * they won't have to be fetched one at a time.
-             */
             if (dictIds.size() > 0) {
+                /*
+                 * For type dictionary, the displayed text is looked up from the
+                 * cache. The following is done to fetch and put the dictionary
+                 * records needed for the results, in the cache, all at once.
+                 */
                 DictionaryCache.getByIds(dictIds);
 
                 /*
@@ -841,17 +836,17 @@ public class ResultTabUI extends Screen {
                     entry = DictionaryCache.getById(id).getEntry();
                     cols = dictMap.get(id);
                     for (int c : cols)
-                        resetMaxChars(maxChars, c, entry);
+                        setMaxTextLength(maxTextLength, c, entry);
                 }
             }
 
             /*
-             * set the width of a column in pixels based on the number of
-             * letters showing in it
+             * set the width of a column in pixels based on the longest text
+             * showing in it
              */
-            for (i = 0; i < maxChars.length; i++ ) {
+            for (i = 0; i < maxTextLength.length; i++ ) {
                 col = table.getColumnAt(i);
-                col.setWidth(maxChars[i] * MEAN_CHAR_WIDTH);
+                col.setWidth(maxTextLength[i] * MEAN_CHAR_WIDTH);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -875,14 +870,20 @@ public class ResultTabUI extends Screen {
             return;
 
         /*
-         * adds columns to the table if it has less columns than needed to show
+         * add columns to the table if it has less columns than needed to show
          * all column analytes, otherwise removes columns
          */
         if (reqNumCols > currNumCols) {
             for (int i = currNumCols; i < reqNumCols; i++ ) {
-                col = table.addColumn(null, Messages.get().gen_alphabet().substring(i, i + 1));
-                if (i > 1)
-                    col.setCellRenderer(new ResultCell());
+                /*
+                 * set the letter from the alphabet, corresponding to the
+                 * column's index, as its header
+                 */
+                if (i > 2)
+                    col = table.addColumn(null, Messages.get().gen_alphabet().substring(i, i + 1));
+                else 
+                    col = table.getColumnAt(i);
+                col.setCellRenderer(new ResultCell());
             }
         } else {
             for (int i = currNumCols; i > reqNumCols; i-- )
@@ -939,11 +940,12 @@ public class ResultTabUI extends Screen {
     }
 
     /**
-     * keeps track of the longest string in the table column at the passed index
+     * keeps track of the length of the longest string in the table column at
+     * the passed index
      */
-    private void resetMaxChars(int maxNumChars[], int index, String text) {
+    private void setMaxTextLength(int maxTextLength[], int index, String text) {
         if ( !DataBaseUtil.isEmpty(text))
-            maxNumChars[index] = Math.max(text.length(), maxNumChars[index]);
+            maxTextLength[index] = Math.max(text.length(), maxTextLength[index]);
     }
 
     /**
