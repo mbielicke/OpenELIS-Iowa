@@ -136,7 +136,7 @@ public class HistoryScreen extends Screen {
                          * opening or closing the node, so that the history
                          * isn't tried to be loaded again
                          */
-                        if (item.getItems().size() == 0) {
+                        if (items.size() == 0) {
                             item.checkForChildren(false);
                             historyTree.refresh(true);
                             window.setStatus(Messages.get().noRecordsFound(), "");
