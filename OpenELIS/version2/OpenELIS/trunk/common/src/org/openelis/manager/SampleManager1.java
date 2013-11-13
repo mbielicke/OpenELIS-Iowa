@@ -76,7 +76,8 @@ public class SampleManager1 implements Serializable {
      * Flags that specifies what optional data to load with the manager
      */
     public enum Load {
-        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT, WORKSHEET
+        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT,
+        WORKSHEET
     };
 
     protected SampleDO                            sample;
@@ -1012,6 +1013,23 @@ public class SampleManager1 implements Serializable {
      */
     public class Analysis {
         transient protected HashMap<Integer, ArrayList<AnalysisViewDO>> localmap = null;
+        // @formatter:off
+                                                                     //L  P  I  C  R  H  Q  X  EL EP EI EC
+        transient protected final int[][] statuses = new int[][] {
+                                                                      {0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0}, // Logged-in 
+                                                                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // in-Prep
+                                                                      {1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0}, // Initiated
+                                                                      {0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0}, // Completed
+                                                                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Released
+                                                                      {1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0}, // Onhold
+                                                                      {1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0}, // reQueue
+                                                                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // cancel X
+                                                                      {0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0}, // Error-Logged-in
+                                                                      {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // Error-in-Prep
+                                                                      {1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0}, // Error-Initiated
+                                                                      {0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0}  // Error-Completed
+                                                                      };
+        // @formatter:on
 
         /**
          * Returns the sample item's analysis at specified index.
@@ -1046,7 +1064,7 @@ public class SampleManager1 implements Serializable {
                         return true;
                 }
             }
-            
+
             return false;
         }
 
@@ -1088,6 +1106,10 @@ public class SampleManager1 implements Serializable {
             }
         }
 
+        /**
+         * Removes the analysis with the specified id from the manager, if the
+         * analysis is not a committed one
+         */
         public void removeAnalysis(Integer analysisId) {
             AnalysisViewDO data, ana;
 
@@ -1106,6 +1128,18 @@ public class SampleManager1 implements Serializable {
             }
             analyses.remove(data);
             localmap = null;
+        }
+
+        /**
+         * Returns true if an analysis' status can be changed from the first
+         * argument to the second, directly by the user, e.g. through the
+         * dropdown on analysis tab. Not used in the back-end, where it's
+         * assumed that the status is changed only under the right conditions.
+         */
+        public boolean canChangeStatus(Integer fromStatusId, Integer toStatusId) {
+            assert fromStatusId != null && toStatusId != null : "statuses cannot be null";
+
+            return statuses[getStatusIndex(fromStatusId)][getStatusIndex(toStatusId)] == 1;
         }
 
         /*
@@ -1133,6 +1167,38 @@ public class SampleManager1 implements Serializable {
                 }
                 l.add(data);
             }
+        }
+
+        /*
+         * Return the row or column for this status in the grid for statuses
+         */
+        private int getStatusIndex(Integer statusId) {
+            if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId))
+                return 0;
+            if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId))
+                return 1;
+            if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId))
+                return 2;
+            if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId))
+                return 3;
+            if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId))
+                return 4;
+            if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusId))
+                return 5;
+            if (Constants.dictionary().ANALYSIS_REQUEUE.equals(statusId))
+                return 6;
+            if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
+                return 7;
+            if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId))
+                return 8;
+            if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(statusId))
+                return 9;
+            if (Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(statusId))
+                return 10;
+            if (Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(statusId))
+                return 11;
+
+            return -1;
         }
     }
 
@@ -1536,7 +1602,7 @@ public class SampleManager1 implements Serializable {
             }
         }
     }
-    
+
     /**
      * Class to manage the worksheets associated with the sample's analyses
      */
