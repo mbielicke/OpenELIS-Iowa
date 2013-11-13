@@ -72,4 +72,8 @@ UIRF Software License are applicable instead of those above.
     
     <set-configuration-property name="CssResource.style" value="pretty"/>
     
+    <servlet class="org.openelis.server.UserCacheServletTest" path="/userCache"/>
+    <servlet class="org.openelis.server.XsrfTokenServiceServlet" path="/xsrf"/>
+   
+    
 </module>

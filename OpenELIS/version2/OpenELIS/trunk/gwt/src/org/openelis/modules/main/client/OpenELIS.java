@@ -87,6 +87,7 @@ import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSi
 import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
+import org.openelis.modules.scriptlet.client.ScriptletScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.standardnote.client.StandardNoteScreen;
@@ -1332,7 +1333,25 @@ public class OpenELIS extends Screen {
 
         addCommand(scriptlet, "scriptlet", new Command() {
             public void execute() {
-                // browser.addScreen(new )
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                       try {
+                           org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
+                           window.setName(msg.scriptlet());
+                           window.setSize("862px", "432px");
+                           window.setContent(new ScriptletScreen(window));
+                           browser.addWindow(window,"scriptlet");
+                       }catch(Exception e) {
+                           remote().log(Level.SEVERE, e.getMessage(), e);
+                           Window.alert(e.getMessage());
+                       }
+                    }
+                    
+                    public void onFailure(Throwable caught) {
+                       remote().log(Level.SEVERE, caught.getMessage(), caught);
+                       Window.alert(caught.getMessage());
+                    }
+                });
             }
         });
 
