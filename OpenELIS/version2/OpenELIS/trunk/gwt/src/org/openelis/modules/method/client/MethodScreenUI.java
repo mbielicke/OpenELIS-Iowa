@@ -44,9 +44,7 @@ import org.openelis.domain.MethodDO;
 import org.openelis.meta.MethodMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.Query;
@@ -68,6 +66,7 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
+import org.openelis.ui.screen.AsyncCallbackUI;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -79,7 +78,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
 public class MethodScreenUI extends Screen {
@@ -113,6 +111,8 @@ public class MethodScreenUI extends Screen {
     protected Table                    atozTable;
 
     private ScreenNavigator<IdNameVO>  nav;
+    
+    private AsyncCallbackUI<MethodDO>  fetchForUpdateCall,addCall,updateCall, abortCall, fetchCall;
 
     public MethodScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -324,7 +324,7 @@ public class MethodScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 activeEnd.setEnabled(isState(QUERY, ADD, UPDATE));
                 activeEnd.setQueryMode(isState(QUERY));
-            }
+            }     
 
             public Widget onTab(boolean forward) {
                 return forward ? name : activeBegin;
@@ -339,28 +339,32 @@ public class MethodScreenUI extends Screen {
                 window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(16);
-                MethodService.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                    public void onSuccess(ArrayList<IdNameVO> result) {
+                MethodService.get().query(query, new AsyncCallbackUI<ArrayList<IdNameVO>>() {
+                    public void success(ArrayList<IdNameVO> result) {
                         setQueryResult(result);
                     }
 
-                    public void onFailure(Throwable error) {
+                    public void failure(Throwable error) {
                         setQueryResult(null);
-                        if (error instanceof NotFoundException) {
-                            window.setDone(Messages.get().noRecordsFound());
-                            setState(DEFAULT);
-                        } else if (error instanceof LastPageException) {
-                            window.setError(Messages.get().noMoreRecordInDir());
-                        } else {
-                            Window.alert("Error: Method call query failed; " + error.getMessage());
-                            window.setError("Query Failed");//Messages.get().queryFailed());
-                        }
+                        Window.alert("Error: Method call query failed; " + error.getMessage());
+                        window.setError("Query Failed");//Messages.get().queryFailed());
                     }
+                    
+                    public void notFound() {
+                        window.setDone(Messages.get().noRecordsFound());
+                        setState(DEFAULT);
+                    }
+                     
+                    public void lastPage() {
+                        window.setError(Messages.get().noMoreRecordInDir());
+                    }
+
                 });
             }
 
             public boolean fetch(IdNameVO entry) {
-                return fetchById( (entry == null) ? null : entry.getId());
+                fetchById( (entry == null) ? null : entry.getId());
+                return true;
             }
 
             public ArrayList<Item<Integer>> getModel() {
@@ -447,16 +451,26 @@ public class MethodScreenUI extends Screen {
     protected void update(ClickEvent event) {
         window.setBusy(Messages.get().lockForUpdate());
 
-        try {
-            data = MethodService.get().fetchForUpdate(data.getId());
-
-            setState(UPDATE);
-            fireDataChange();
-            name.setFocus(true);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
+        if(fetchForUpdateCall == null) {
+            fetchForUpdateCall = new AsyncCallbackUI<MethodDO>() {
+                public void success(MethodDO result) {
+                    data = result;
+                    setState(UPDATE);
+                    fireDataChange();
+                    name.setFocus(true);
+                }
+        
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                }
+            
+                public void finish() {
+                    window.clearStatus();
+                }
+            };
         }
-        window.clearStatus();
+        
+        MethodService.get().fetchForUpdate(data.getId(),fetchForUpdateCall); 
     }
 
     @UiHandler("commit")
@@ -482,33 +496,47 @@ public class MethodScreenUI extends Screen {
                 break;
             case ADD:
                 window.setBusy(Messages.get().adding());
-                try {
-                    data = MethodService.get().add(data);
-
-                    setState(DISPLAY);
-                    fireDataChange();
-                    window.setDone(Messages.get().addingComplete());
-                } catch (ValidationErrorsList e) {
-                    showErrors(e);
-                } catch (Exception e) {
-                    Window.alert("commitAdd(): " + e.getMessage());
-                    window.clearStatus();
+                if(addCall == null) {
+                    addCall = new AsyncCallbackUI<MethodDO>() {
+                        public void success(MethodDO result) {
+                            data = result;
+                            setState(DISPLAY);
+                            fireDataChange();
+                            window.setDone(Messages.get().addingComplete());
+                        }
+                        public void validationErrors(ValidationErrorsList e) {
+                            showErrors(e);
+                        }
+                        public void failure(Throwable caught) {
+                            Window.alert("commitAdd(): " + caught.getMessage());
+                            window.clearStatus();
+                        }
+                    };
                 }
+                MethodService.get().add(data, addCall);
                 break;
             case UPDATE:
                 window.setBusy(Messages.get().updating());
-                try {
-                    data = MethodService.get().update(data);
-
-                    setState(DISPLAY);
-                    fireDataChange();
-                    window.setDone(Messages.get().updatingComplete());
-                } catch (ValidationErrorsList e) {
-                    showErrors(e);
-                } catch (Exception e) {
-                    Window.alert("commitUpdate(): " + e.getMessage());
-                    window.clearStatus();
+                if(updateCall == null) {
+                    updateCall = new AsyncCallbackUI<MethodDO>() {
+                        public void success(MethodDO result) {
+                            data = result;
+                            setState(DISPLAY);
+                            fireDataChange();
+                            window.setDone(Messages.get().updatingComplete());
+                        }
+                
+                        public void validationErrors(ValidationErrorsList e) {
+                            showErrors(e);
+                        }
+                    
+                        public void failure(Throwable e) {
+                            Window.alert("commitUpdate(): " + e.getMessage());
+                            window.clearStatus();
+                        }
+                    };
                 }
+                MethodService.get().update(data, updateCall);
             default :
                 window.clearStatus();
         }
@@ -530,15 +558,25 @@ public class MethodScreenUI extends Screen {
                 window.setDone(Messages.get().addAborted());
                 break;
             case UPDATE:
-                try {
-                    data = MethodService.get().abortUpdate(data.getId());
-                    setState(DISPLAY);
-                    fireDataChange();
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    fetchById(null);
+                if(abortCall == null) {
+                    abortCall =  new AsyncCallbackUI<MethodDO>() {
+                        public void success(MethodDO result) {
+                            data = result;
+                            setState(DISPLAY);
+                            fireDataChange();
+                        }
+                    
+                        public void failure(Throwable e) {
+                            Window.alert(e.getMessage());
+                            fetchById(null);
+                        }
+                    
+                        public void finish() {
+                            window.setDone(Messages.get().updateAborted());
+                        }
+                    };
                 }
-                window.setDone(Messages.get().updateAborted());
+                MethodService.get().abortUpdate(data.getId(),abortCall);
                 break;
             default:
                 window.clearStatus();
@@ -552,30 +590,41 @@ public class MethodScreenUI extends Screen {
         HistoryScreen.showHistory(Messages.get().methodHistory(), Constants.table().METHOD, hist);
     }
 
-    protected boolean fetchById(Integer id) {
+    protected void fetchById(Integer id) {
         if (id == null) {
             data = new MethodDO();
             setState(DEFAULT);
         } else {
             window.setBusy(Messages.get().fetching());
-            try {
-                data = MethodService.get().fetchById(id);
-                setState(DISPLAY);
-            } catch (NotFoundException e) {
-                fetchById(null);
-                window.setDone(Messages.get().noRecordsFound());
-                return false;
-            } catch (Exception e) {
-                fetchById(null);
-                e.printStackTrace();
-                Window.alert(Messages.get().fetchFailed() + e.getMessage());
-                return false;
+            if(fetchCall == null) {
+                fetchCall = new AsyncCallbackUI<MethodDO>() {
+                    public void success(MethodDO result) {
+                        data = result;
+                        setState(DISPLAY);
+                    }
+            
+                    public void notFound() {
+                        fetchById(null);
+                        window.setDone(Messages.get().noRecordsFound());
+                        nav.clearSelection();
+                    }
+                
+                    public void failure(Throwable e) {
+                        fetchById(null);
+                        e.printStackTrace();
+                        Window.alert(Messages.get().fetchFailed() + e.getMessage());
+                        nav.clearSelection();
+                    }
+                
+                    public void finish() {
+                        fireDataChange();
+                        window.clearStatus();
+                    }
+                };
             }
+            MethodService.get().fetchById(id, fetchCall);
         }
-        fireDataChange();
-        window.clearStatus();
 
-        return true;
     }
 
 }
