@@ -113,6 +113,8 @@ public class MethodScreenUI extends Screen {
     private ScreenNavigator<IdNameVO>  nav;
     
     private AsyncCallbackUI<MethodDO>  fetchForUpdateCall,addCall,updateCall, abortCall, fetchCall;
+    
+    private AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
 
     public MethodScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -339,27 +341,31 @@ public class MethodScreenUI extends Screen {
                 window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(16);
-                MethodService.get().query(query, new AsyncCallbackUI<ArrayList<IdNameVO>>() {
-                    public void success(ArrayList<IdNameVO> result) {
-                        setQueryResult(result);
-                    }
+                
+                if(queryCall == null) {
+                    queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
+                        public void success(ArrayList<IdNameVO> result) {
+                            setQueryResult(result);
+                        }
 
-                    public void failure(Throwable error) {
-                        setQueryResult(null);
-                        Window.alert("Error: Method call query failed; " + error.getMessage());
-                        window.setError("Query Failed");//Messages.get().queryFailed());
-                    }
+                        public void failure(Throwable error) {
+                            setQueryResult(null);
+                            Window.alert("Error: Method call query failed; " + error.getMessage());
+                            window.setError("Query Failed");//Messages.get().queryFailed());
+                        }
                     
-                    public void notFound() {
-                        window.setDone(Messages.get().noRecordsFound());
-                        setState(DEFAULT);
-                    }
+                        public void notFound() {
+                            window.setDone(Messages.get().noRecordsFound());
+                            setState(DEFAULT);
+                        }
                      
-                    public void lastPage() {
-                        window.setError(Messages.get().noMoreRecordInDir());
-                    }
-
-                });
+                        public void lastPage() {
+                            window.setError(Messages.get().noMoreRecordInDir());
+                        }
+                    };
+                }
+                
+                MethodService.get().query(query,queryCall);
             }
 
             public boolean fetch(IdNameVO entry) {
