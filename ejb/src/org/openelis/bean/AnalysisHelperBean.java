@@ -34,7 +34,6 @@ import java.util.HashSet;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.jboss.logging.FormatWith;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
@@ -56,7 +55,6 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.manager.TestSectionManager;
-import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
@@ -75,33 +73,17 @@ import org.openelis.utilcommon.ResultFormatter;
 public class AnalysisHelperBean {
 
     @EJB
-    private TestManagerBean      testManager;
+    private TestManagerBean     testManager;
 
     @EJB
-    private UserCacheBean        userCache;
+    private UserCacheBean       userCache;
 
     @EJB
-    private MethodBean           method;
+    private MethodBean          method;
 
     @EJB
-    private DictionaryCacheBean  dictionaryCache;
-    
-    // @formatter:off
-                                                       // L  P  I  C  R  H  Q  X  EL EP EI EC
-    private static final int[][] statuses = new int[][] {{1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0}, // Logged-in 
-                                                         {1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0}, // in-Prep
-                                                         {1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 0}, // Initiated
-                                                         {0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 1}, // Completed
-                                                         {0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // Released
-                                                         {1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0}, // Onhold
-                                                         {1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0}, // reQueue
-                                                         {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}, // cancel X
-                                                         {1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0}, // Error-Logged-in
-                                                         {1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0}, // Error-in-Prep
-                                                         {0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0}, // Error-Initiated
-                                                         {0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1}};// Error-Completed
-    // @formatter:on
-    
+    private DictionaryCacheBean dictionaryCache;
+
     /**
      * Returns TestManagers for given test ids. For those tests that are not
      * active, the method looks for the active version of the same tests.
@@ -148,6 +130,7 @@ public class AnalysisHelperBean {
      */
     public AnalysisViewDO addAnalysis(SampleManager1 sm, Integer sampleItemId, TestManager tm,
                                       Integer sectionId, ValidationErrorsList e) throws Exception {
+        Integer accession;
         AnalysisViewDO ana;
         TestViewDO t;
         TestSectionViewDO ts;
@@ -173,11 +156,18 @@ public class AnalysisHelperBean {
         }
 
         /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
+        /*
          * find out if this user has permission to add this test
          */
         if (ts == null || !tm.canAssignThisSection(ts)) {
             e.add(new FormErrorWarning(Messages.get()
-                                               .analysis_insufficientPrivilegesAddTestWarning(getSample(sm).getAccessionNumber(),
+                                               .analysis_insufficientPrivilegesAddTestWarning(accession,
                                                                                               t.getName(),
                                                                                               t.getMethodName())));
         }
@@ -230,7 +220,7 @@ public class AnalysisHelperBean {
     public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
                                                    Integer methodId) throws Exception {
         int i;
-        Integer rowAnaId;
+        Integer accession, rowAnaId;
         TestViewDO t;
         MethodDO m;
         AnalysisViewDO ana;
@@ -283,9 +273,16 @@ public class AnalysisHelperBean {
         tsm = tm.getTestSections();
         ts = tsm.getDefaultSection();
 
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
         if (ts == null || !tm.canAssignThisSection(ts)) {
             e.add(new FormErrorWarning(Messages.get()
-                                               .analysis_insufficientPrivilegesAddTestWarning(getSample(sm).getAccessionNumber(),
+                                               .analysis_insufficientPrivilegesAddTestWarning(accession,
                                                                                               t.getName(),
                                                                                               t.getMethodName())));
         }
@@ -344,7 +341,7 @@ public class AnalysisHelperBean {
          * find and set the prep needed for the new test from the sample or
          * create a list of prep tests
          */
-        prepIds = setPrepForAnalysis(ana, anaByTest, tm);
+        prepIds = setPrepForAnalysis(sm, ana, anaByTest, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
                 ret.addTest(ana.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
@@ -418,24 +415,15 @@ public class AnalysisHelperBean {
     /**
      * This method sets the specified status in the analysis. It also updates
      * any links between other analyses and this one, if need be, because of the
-     * change in status.
+     * change in status. Does not check the analysis' current status to make
+     * sure that it can be changed to the specified one.
      */
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
                                                Integer statusId) throws Exception {
-        int fromStatus, toStatus;
         Integer accession;
-        String fromName, toName;
         AnalysisViewDO ana;
-        SampleItemViewDO item;
         ArrayList<AnalysisViewDO> prepAnas, rflxAnas;
         SystemUserPermission perm;
-
-        /*
-         * for display
-         */
-        accession = getSample(sm).getAccessionNumber();
-        if (accession == null)
-            accession = 0;
 
         ana = null;
         prepAnas = new ArrayList<AnalysisViewDO>();
@@ -456,173 +444,101 @@ public class AnalysisHelperBean {
         }
 
         /*
-         * find the sample item that the analysis is linked to
+         * for display
          */
-        item = null;
-        for (SampleItemViewDO i : getItems(sm)) {
-            if (i.getId().equals(ana.getSampleItemId())) {
-                item = i;
-                break;
-            }
-        }
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
 
-        /*
-         * the row and column in the grid corresponding to the current status
-         * and the future status, respectively
-         */
-        fromStatus = getStatusIndex(ana.getStatusId());
-        toStatus = getStatusIndex(statusId);
-
-        if (statuses[fromStatus][toStatus] == 0) {
-            /*
-             * the status can't be changed
-             */
-            fromName = dictionaryCache.getById(ana.getStatusId()).getEntry();
-            toName = dictionaryCache.getById(statusId).getEntry();
-            throw new InconsistencyException(Messages.get()
-                                                     .analysis_cantChangeStatusException(accession,
-                                                                                         item.getItemSequence(),
-                                                                                         ana.getTestName(),
-                                                                                         ana.getMethodName(),
-                                                                                         fromName,
-                                                                                         toName));
-        }
-        
-        /*
-         *  
-         */
         perm = userCache.getPermission();
 
-        switch (toStatus) {
-            case 0:
+        /*
+         * change the status to the specified value after performing any
+         * necessary checks
+         */
+        if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId)) {
+            if (ana.getAvailableDate() == null)
+                ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            else if (ana.getStartedDate() != null)
+                ana.setStartedDate(null);
+            ana.setStatusId(statusId);
+        } else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId)) {
+            ana.setStatusId(statusId);
+            ana.setAvailableDate(null);
+        } else if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId)) {
+            if (ana.getSectionName() == null ||
+                !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_insufficientPrivilegesInitiateException(accession,
+                                                                                                           ana.getTestName(),
+                                                                                                           ana.getMethodName()));
+            }
+
+            if (ana.getStartedDate() == null)
+                ana.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+
+            ana.setStatusId(statusId);
+        } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
+
+        } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
+
+        } else if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusId) ||
+                   Constants.dictionary().ANALYSIS_REQUEUE.equals(statusId) ||
+                   Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId) ||
+                   Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(statusId) ||
+                   Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(statusId) ||
+                   Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(statusId)) {
+            ana.setStatusId(statusId);
+        } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) {
+            if (ana.getId() < 0)
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_cantCancelUncommitedException(accession,
+                                                                                                 ana.getTestName(),
+                                                                                                 ana.getMethodName()));
+
+            if (ana.getSectionName() == null ||
+                !perm.getSection(ana.getSectionName()).hasCancelPermission()) {
+                throw new InconsistencyException(Messages.get()
+                                                         .analysis_insufficientPrivilegesCancelException(accession,
+                                                                                                         ana.getTestName(),
+                                                                                                         ana.getMethodName()));
+            }
+
+            /*
+             * if the analysis to be cancelled is prep analysis of or was
+             * reflexed by any analyses then remove those links
+             */
+            for (AnalysisViewDO a : prepAnas) {
                 /*
-                 * logged-in
+                 * the analysis can't be cancelled if it's the prep for any
+                 * released analysis
                  */
-                ana.setStatusId(statusId);
-                break;
-            case 1:
-                /*
-                 * in-prep
-                 */
-                break;
-            case 2:
-                /*
-                 * initiate the analysis
-                 */
-                if (ana.getSectionName() == null ||
-                    !perm.getSection(ana.getSectionName()).hasCompletePermission()) {
+                if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId())) {
                     throw new InconsistencyException(Messages.get()
-                                                             .analysis_insufficientPrivilegesInitiateException(accession,
-                                                                                                               ana.getTestName(),
-                                                                                                               ana.getMethodName()));
+                                                             .analysis_cantCancelPrepWithReleasedTest(accession,
+                                                                                                      ana.getTestName(),
+                                                                                                      ana.getMethodName(),
+                                                                                                      a.getTestName(),
+                                                                                                      a.getMethodName()));
                 }
+                unlinkFromPrep(sm, a);
+            }
 
-                ana.setStatusId(statusId);
+            for (AnalysisViewDO a : rflxAnas) {
+                a.setParentAnalysisId(null);
+                a.setParentResultId(null);
+            }
 
-                if (ana.getStartedDate() == null)
-                    ana.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                break;
-            case 3:
-                /*
-                 * completed
-                 */
-                break;
-
-            case 4:
-                /*
-                 * released
-                 */
-                break;
-            case 5:
-                /*
-                 * on-hold
-                 */
-                ana.setStatusId(statusId);
-                break;
-            case 6:
-                /*
-                 * requeue
-                 */
-                ana.setStatusId(statusId);
-                break;
-            case 7:
-                /*
-                 * cancelled
-                 */
-                if (ana.getId() < 0)
-                    throw new InconsistencyException(Messages.get()
-                                                             .analysis_cantCancelUncommitedException(accession,
-                                                                                                     ana.getTestName(),
-                                                                                                     ana.getMethodName()));
-
-                if (ana.getSectionName() == null ||
-                    !perm.getSection(ana.getSectionName()).hasCancelPermission()) {
-                    throw new InconsistencyException(Messages.get()
-                                                             .analysis_insufficientPrivilegesCancelException(accession,
-                                                                                                             ana.getTestName(),
-                                                                                                             ana.getMethodName()));
-                }
-
-                /*
-                 * if the analysis to be cancelled is prep analysis of or was
-                 * reflexed by any analyses then remove those links
-                 */
-                for (AnalysisViewDO a : prepAnas) {
-                    /*
-                     * the analysis can't be cancelled if it's the prep for any
-                     * released analysis
-                     */
-                    if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId())) {
-                        throw new InconsistencyException(Messages.get()
-                                                                 .analysis_cantCancelPrepWithReleasedTest(accession,
-                                                                                                          ana.getTestName(),
-                                                                                                          ana.getMethodName(),
-                                                                                                          a.getTestName(),
-                                                                                                          a.getMethodName()));
-                    }
-                    unlinkFromPrep(a);
-                }
-
-                for (AnalysisViewDO a : rflxAnas) {
-                    a.setParentAnalysisId(null);
-                    a.setParentResultId(null);
-                }
-
-                /*
-                 * if any other analysis is this analysis' prep or was reflexed
-                 * by it then remove those links
-                 */
-                ana.setPreAnalysisId(null);
-                ana.setPreAnalysisTest(null);
-                ana.setPreAnalysisMethod(null);
-                ana.setParentAnalysisId(null);
-                ana.setParentResultId(null);
-                ana.setStatusId(statusId);
-                break;
-            case 8:
-                /*
-                 * error-logged-in
-                 */
-                break;
-
-            case 9:
-                /*
-                 * error-in-prep
-                 */
-                break;
-
-            case 10:
-                /*
-                 * error-initiated
-                 */
-                break;
-
-            case 11:
-                /*
-                 * error-completed
-                 */
-                break;
-
+            /*
+             * if any other analysis is this analysis' prep or was reflexed by
+             * it then remove those links
+             */
+            ana.setPreAnalysisId(null);
+            ana.setPreAnalysisTest(null);
+            ana.setPreAnalysisMethod(null);
+            ana.setParentAnalysisId(null);
+            ana.setParentResultId(null);
+            ana.setStatusId(statusId);
         }
 
         return sm;
@@ -699,7 +615,13 @@ public class AnalysisHelperBean {
                 break;
             }
         }
-        accession = DataBaseUtil.toInteger(getSample(sm).getAccessionNumber());
+
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
 
         /*
          * can't change the prep test of a released or cancelled analysis
@@ -719,7 +641,7 @@ public class AnalysisHelperBean {
             /*
              * remove the link to the prep analysis
              */
-            unlinkFromPrep(ana);
+            unlinkFromPrep(sm, ana);
         } else {
             prep = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(preAnalysisId));
             if (Constants.dictionary().ANALYSIS_CANCELLED.equals(prep.getStatusId())) {
@@ -734,7 +656,7 @@ public class AnalysisHelperBean {
             /*
              * create the link to the prep analysis
              */
-            setPrepAnalysis(ana, prep);
+            setPrepAnalysis(sm, ana, prep);
         }
 
         return sm;
@@ -751,7 +673,7 @@ public class AnalysisHelperBean {
         AnalysisViewDO ana;
         NoteViewDO note;
         StorageViewDO st;
-        ArrayList<AnalysisViewDO> analyses, prepAnas, rflxAnas;
+        ArrayList<AnalysisViewDO> prepAnas, rflxAnas;
         ArrayList<ResultViewDO> results;
         ArrayList<AnalysisQaEventViewDO> qas;
         ArrayList<NoteViewDO> notes;
@@ -782,20 +704,21 @@ public class AnalysisHelperBean {
             }
         }
 
+        /*
+         * can't remove a previously committed analysis
+         */
         if (ana.getId() > 0)
             throw new InconsistencyException(Messages.get()
-                                                     .analysis_cantRemoveCommitedException(DataBaseUtil.toInteger(getSample(sm).getAccessionNumber()),
+                                                     .analysis_cantRemoveCommitedException(accession,
                                                                                            ana.getTestName(),
                                                                                            ana.getMethodName()));
-
-        analyses = getAnalyses(sm);
 
         /*
          * if the analysis to be removed is the prep analysis of or was reflexed
          * by any analyses then remove those links
          */
         for (AnalysisViewDO a : prepAnas)
-            unlinkFromPrep(a);
+            unlinkFromPrep(sm, a);
 
         for (AnalysisViewDO a : rflxAnas) {
             a.setParentAnalysisId(null);
@@ -805,7 +728,7 @@ public class AnalysisHelperBean {
         /*
          * remove the analysis and the child data linked to it
          */
-        analyses.remove(ana);
+        getAnalyses(sm).remove(ana);
 
         results = getResults(sm);
         if (results != null) {
@@ -882,7 +805,7 @@ public class AnalysisHelperBean {
      * existing analysis is not found, the method returns list of prep tests
      * that could be added to satisfy the prep requirement.
      */
-    public ArrayList<Integer> setPrepForAnalysis(AnalysisViewDO ana,
+    public ArrayList<Integer> setPrepForAnalysis(SampleManager1 sm, AnalysisViewDO ana,
                                                  HashMap<Integer, AnalysisViewDO> analyses,
                                                  TestManager tm) throws Exception {
         int i;
@@ -892,14 +815,14 @@ public class AnalysisHelperBean {
 
         /*
          * if this test requires prep tests, first look in the list of existing
-         * analyses otherwise add the prep test to the list shown to the user to
-         * choose a prep test
+         * analyses, otherwise add the prep test to the list shown to the user
+         * to choose a prep test
          */
         tpm = tm.getPrepTests();
         for (i = 0; i < tpm.count(); i++ ) {
             prep = analyses.get(tpm.getPrepAt(i).getPrepTestId());
             if (prep != null) {
-                setPrepAnalysis(ana, prep);
+                setPrepAnalysis(sm, ana, prep);
                 return null;
             }
         }
@@ -919,18 +842,15 @@ public class AnalysisHelperBean {
      * as logged-in and the available date as the current date-time, otherwise
      * sets those fields to in-prep and null respectively.
      */
-    public void setPrepAnalysis(AnalysisViewDO ana, AnalysisViewDO prep) {
+    public void setPrepAnalysis(SampleManager1 sm, AnalysisViewDO ana, AnalysisViewDO prep) throws Exception {
         ana.setPreAnalysisId(prep.getId());
         ana.setPreAnalysisTest(prep.getTestName());
         ana.setPreAnalysisMethod(prep.getMethodName());
         if (Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) ||
-            Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
-            ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
-            ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        } else {
-            ana.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
-            ana.setAvailableDate(null);
-        }
+            Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId()))
+            changeAnalysisStatus(sm, ana.getId(), Constants.dictionary().ANALYSIS_LOGGED_IN);
+        else
+            changeAnalysisStatus(sm, ana.getId(), Constants.dictionary().ANALYSIS_INPREP);
     }
 
     /**
@@ -1095,54 +1015,20 @@ public class AnalysisHelperBean {
      * Unlinks the passed analysis from its prep analysis and moves it to
      * logged-in status if it's still in in-prep status
      */
-    protected void unlinkFromPrep(AnalysisViewDO ana) {
+    private void unlinkFromPrep(SampleManager1 sm, AnalysisViewDO ana) throws Exception {
         ana.setPreAnalysisId(null);
         ana.setPreAnalysisTest(null);
         ana.setPreAnalysisMethod(null);
-        if (Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId())) {
-            ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
-            ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        }
-    }
-
-    /**
-     * Return the row or column for this status in the grid for statuses
-     */
-    protected int getStatusIndex(Integer statusId) {
-        if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(statusId))
-            return 0;
-        if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId))
-            return 1;
-        if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId))
-            return 2;
-        if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId))
-            return 3;
-        if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId))
-            return 4;
-        if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusId))
-            return 5;
-        if (Constants.dictionary().ANALYSIS_REQUEUE.equals(statusId))
-            return 6;
-        if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId))
-            return 7;
-        if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId))
-            return 8;
-        if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(statusId))
-            return 9;
-        if (Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(statusId))
-            return 10;
-        if (Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(statusId))
-            return 11;
-
-        return -1;
+        if (Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()))
+            changeAnalysisStatus(sm, ana.getId(), Constants.dictionary().ANALYSIS_LOGGED_IN);
     }
 
     /**
      * Creates a new result, links it to the analysis and sets its value as the
      * defaults defined for its test analyte
      */
-    protected ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO ana,
-                                        TestAnalyteViewDO ta, String reportable, ResultFormatter rf) {
+    private ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO ana, TestAnalyteViewDO ta,
+                                      String reportable, ResultFormatter rf) {
         ResultViewDO r;
 
         r = new ResultViewDO();
@@ -1166,7 +1052,7 @@ public class AnalysisHelperBean {
      * sets it as the value; otherwise value is not changed. Sets the type to
      * null in both cases to force validation.
      */
-    protected void setDefault(ResultViewDO r, Integer unitId, ResultFormatter rf) {
+    private void setDefault(ResultViewDO r, Integer unitId, ResultFormatter rf) {
         String def;
 
         def = rf.getDefault(r.getResultGroup(), unitId);
@@ -1174,5 +1060,4 @@ public class AnalysisHelperBean {
             r.setValue(def);
         r.setTypeId(null);
     }
-
 }

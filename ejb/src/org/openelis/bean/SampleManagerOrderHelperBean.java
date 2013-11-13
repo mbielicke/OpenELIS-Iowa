@@ -142,7 +142,7 @@ public class SampleManagerOrderHelperBean {
      */
     public SampleTestReturnVO importSendoutOrder(SampleManager1 sm, Integer orderId,
                                                  ValidationErrorsList e) throws Exception {
-        Integer domainGrpId;
+        Integer accession, domainGrpId;
         SampleDO data;
         OrderManager om;
         AuxDataViewDO aux;
@@ -153,16 +153,22 @@ public class SampleManagerOrderHelperBean {
         HashMap<Integer, HashMap<Integer, AuxDataViewDO>> auxGrps;
 
         data = getSample(sm);
+        /*
+         * for display
+         */
+        accession = data.getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
         try {
             om = OrderManager.fetchById(orderId);
             if ( !Constants.order().SEND_OUT.equals(om.getOrder().getType()))
                 throw new FormErrorException(Messages.get()
-                                                     .sample_orderIdInvalidException(data.getAccessionNumber(),
+                                                     .sample_orderIdInvalidException(accession,
                                                                                      orderId));
         } catch (NotFoundException ex) {
-            throw new FormErrorException(Messages.get()
-                                                 .sample_orderIdInvalidException(data.getAccessionNumber(),
-                                                                                 orderId));
+            throw new FormErrorException(Messages.get().sample_orderIdInvalidException(accession,
+                                                                                       orderId));
         }
 
         data.setOrderId(orderId);
@@ -189,16 +195,19 @@ public class SampleManagerOrderHelperBean {
          */
         auxGrp = auxGrps.get(domainGrpId);
         if (auxGrp != null) {
-            copyGeneralFields(sm, auxGrp, e);
+            copyGeneralFields(sm, accession, auxGrp, e);
             if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
                 copyEnvironmentalFields(getSampleEnvironmental(sm),
-                                        data.getAccessionNumber(),
+                                        accession,
                                         auxGrp,
                                         e);
             else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-                copyPrivateWellFields(getSamplePrivateWell(sm), data.getAccessionNumber(), auxGrp, e);
+                copyPrivateWellFields(getSamplePrivateWell(sm),
+                                      accession,
+                                      auxGrp,
+                                      e);
             else if (Constants.domain().SDWIS.equals(data.getDomain()))
-                copySDWISFields(getSampleSDWIS(sm), data.getAccessionNumber(), auxGrp, e);
+                copySDWISFields(getSampleSDWIS(sm), accession, auxGrp, e);
             auxGrps.remove(domainGrpId);
         }
 
@@ -215,7 +224,7 @@ public class SampleManagerOrderHelperBean {
      * Sets values of fields independent of domain from the corresponding aux
      * data in the list. Adds warnings or throws exception for invalid data.
      */
-    private void copyGeneralFields(SampleManager1 sm, HashMap<Integer, AuxDataViewDO> grp,
+    private void copyGeneralFields(SampleManager1 sm, Integer accession, HashMap<Integer, AuxDataViewDO> grp,
                                    ValidationErrorsList e) throws Exception {
         String extId;
         SampleDO sample;
@@ -224,6 +233,12 @@ public class SampleManagerOrderHelperBean {
         ArrayList<ProjectDO> projects;
 
         sample = getSample(sm);
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
         for (AuxDataViewDO data : grp.values()) {
             extId = data.getAnalyteExternalId();
             if (SMPL_COLLECTED_DATE.equals(extId)) {
@@ -246,7 +261,7 @@ public class SampleManagerOrderHelperBean {
                         addProject(sm, sproj);
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
-                                                           .sample_orderImportException(DataBaseUtil.toInteger(getSample(sm).getAccessionNumber()),
+                                                           .sample_orderImportException(accession,
                                                                                         "project",
                                                                                         data.getValue())));
                     }
@@ -338,8 +353,9 @@ public class SampleManagerOrderHelperBean {
                     well.setWellNumber(w);
                 } catch (Exception ex) {
                     e.add(new FormErrorWarning(Messages.get()
-                                               .sample_orderImportException(accession,"well number",
-                                                                               data.getValue())));
+                                                       .sample_orderImportException(accession,
+                                                                                    "well number",
+                                                                                    data.getValue())));
                 }
             } else {
                 copyAddressFields(data, accession, e, extId, well.getLocationAddress());
@@ -351,8 +367,8 @@ public class SampleManagerOrderHelperBean {
      * Sets values of SDWIS fields from the corresponding aux data in the list.
      * Adds warnings or throws exception for invalid data.
      */
-    private void copySDWISFields(SampleSDWISViewDO sdwis, Integer accession, HashMap<Integer, AuxDataViewDO> grp,
-                                 ValidationErrorsList e) throws Exception {
+    private void copySDWISFields(SampleSDWISViewDO sdwis, Integer accession,
+                                 HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
         Integer dictId;
         String extId;
         PWSDO pwsDO;
@@ -367,8 +383,9 @@ public class SampleManagerOrderHelperBean {
                     sdwis.setPwsNumber0(pwsDO.getNumber0());
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
-                                               .sample_orderImportException(accession,"pws id",
-                                                                               data.getValue())));
+                                                       .sample_orderImportException(accession,
+                                                                                    "pws id",
+                                                                                    data.getValue())));
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Missing/invalid pws id '" + data.getValue() + "'", ex);
                     throw ex;
@@ -389,8 +406,9 @@ public class SampleManagerOrderHelperBean {
                     }
                     if ( !isInCategory(SDWIS_SAMPLE_TYPE, dictId))
                         e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_orderImportException(accession,"sample type",
-                                                                                   data.getValue())));
+                                                           .sample_orderImportException(accession,
+                                                                                        "sample type",
+                                                                                        data.getValue())));
                 }
                 sdwis.setSampleTypeId(dictId);
             } else if (SAMPLE_CAT.equals(extId)) {
@@ -405,8 +423,9 @@ public class SampleManagerOrderHelperBean {
                     }
                     if ( !isInCategory(SDWIS_SAMPLE_CATEGORY, dictId))
                         e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_orderImportException(accession, "sample category",
-                                                                             data.getValue())));
+                                                           .sample_orderImportException(accession,
+                                                                                        "sample category",
+                                                                                        data.getValue())));
                 }
                 sdwis.setSampleCategoryId(dictId);
             } else if (SAMPLE_PT_ID.equals(extId)) {
@@ -423,8 +442,8 @@ public class SampleManagerOrderHelperBean {
      * Sets values of address fields from the aux data. Adds warnings for
      * invalid data.
      */
-    private void copyAddressFields(AuxDataViewDO data, Integer accession, ValidationErrorsList e, String extId,
-                                   AddressDO addr) throws Exception {
+    private void copyAddressFields(AuxDataViewDO data, Integer accession, ValidationErrorsList e,
+                                   String extId, AddressDO addr) throws Exception {
         if (LOC_MULT_UNIT.equals(extId)) {
             addr.setMultipleUnit(data.getValue());
         } else if (LOC_STREET_ADDRESS.equals(extId)) {
@@ -436,7 +455,9 @@ public class SampleManagerOrderHelperBean {
                 addr.setState(data.getValue());
             else
                 e.add(new FormErrorWarning(Messages.get()
-                                           .sample_orderImportException(accession, STATE, data.getValue())));
+                                                   .sample_orderImportException(accession,
+                                                                                STATE,
+                                                                                data.getValue())));
         } else if (LOC_ZIP_CODE.equals(extId)) {
             addr.setZipCode(data.getValue());
         } else if (LOC_COUNTRY.equals(extId) && data.getValue() != null) {
@@ -444,7 +465,9 @@ public class SampleManagerOrderHelperBean {
                 addr.setCountry(data.getValue());
             else
                 e.add(new FormErrorWarning(Messages.get()
-                                           .sample_orderImportException(accession, COUNTRY, data.getValue())));
+                                                   .sample_orderImportException(accession,
+                                                                                COUNTRY,
+                                                                                data.getValue())));
         }
     }
 
@@ -526,14 +549,16 @@ public class SampleManagerOrderHelperBean {
                         item.setContainerId(oc.getContainerId());
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_orderImportException(getSample(sm).getAccessionNumber(), "container",
-                                                                                   dict.getEntry())));
+                                                           .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                                                        "container",
+                                                                                        dict.getEntry())));
                     }
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
-                                               .sample_orderImportException(getSample(sm).getAccessionNumber(), "container id = ",
-                                                                               oc.getContainerId()
-                                                                                 .toString())));
+                                                       .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                                                    "container id = ",
+                                                                                    oc.getContainerId()
+                                                                                      .toString())));
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Missing/invalid dictionary id '" + oc.getContainerId() +
                                           "'", ex);
@@ -549,14 +574,16 @@ public class SampleManagerOrderHelperBean {
                         item.setTypeOfSample(dict.getEntry());
                     } else {
                         e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_orderImportException(getSample(sm).getAccessionNumber(), "sample type",
-                                                                                   dict.getEntry())));
+                                                           .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                                                        "sample type",
+                                                                                        dict.getEntry())));
                     }
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
-                                               .sample_orderImportException(getSample(sm).getAccessionNumber(), "sample type id = ",
-                                                                         oc.getTypeOfSampleId()
-                                                                           .toString())));
+                                                       .sample_orderImportException(getSample(sm).getAccessionNumber(),
+                                                                                    "sample type id = ",
+                                                                                    oc.getTypeOfSampleId()
+                                                                                      .toString())));
                 } catch (Exception ex) {
                     log.log(Level.SEVERE, "Missing/invalid dictionary id '" +
                                           oc.getTypeOfSampleId() + "'", ex);

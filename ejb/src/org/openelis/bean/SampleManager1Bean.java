@@ -1304,6 +1304,7 @@ public class SampleManager1Bean {
      */
     @RolesAllowed({"sample-add", "sample-update"})
     public void validateAccessionNumber(SampleManager1 sm) throws Exception {
+        boolean isPositive;
         Integer accession;
         SampleDO data;
         SystemVariableDO sys;
@@ -1312,9 +1313,20 @@ public class SampleManager1Bean {
          * accession number must be > 0, previously issued, and not duplicate
          */
         accession = getSample(sm).getAccessionNumber();
-        if (accession == null || accession <= 0)
+        isPositive = true;
+        if (accession == null) {
+            /*
+             * for display
+             */
+            accession = 0;
+            isPositive = false;
+        } else if (accession <= 0) {
+            isPositive = false;
+        }
+
+        if (!isPositive)
             throw new InconsistencyException(Messages.get()
-                                                     .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accession)));
+                                                     .sample_accessionNumberNotValidException(accession));
 
         try {
             sys = systemVariable.fetchByName("last_accession_number");
@@ -1793,7 +1805,7 @@ public class SampleManager1Bean {
                     anaById.put(prep.getId(), prep);
                 }
 
-                analysisHelper.setPrepAnalysis(anaById.get(test.getAnalysisId()), prep);
+                analysisHelper.setPrepAnalysis(sm, anaById.get(test.getAnalysisId()), prep);
             }
         }
 
@@ -1823,7 +1835,8 @@ public class SampleManager1Bean {
      * status. It also updates any links between other analyses and this one, if
      * need be, because of the change in status.
      */
-    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId) throws Exception {
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
+                                               Integer statusId) throws Exception {
         return analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
     }
 
@@ -2149,7 +2162,13 @@ public class SampleManager1Bean {
         if (getRemoved(sm) == null)
             return;
 
-        accession = DataBaseUtil.toInteger(getSample(sm).getAccessionNumber());
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
         for (DataObject data : getRemoved(sm)) {
             if (data instanceof SampleItemViewDO) {
                 item = (SampleItemViewDO)data;
@@ -2195,7 +2214,7 @@ public class SampleManager1Bean {
                                          tm,
                                          test.getSectionId(),
                                          ret.getErrors());
-        prepIds = analysisHelper.setPrepForAnalysis(ana, analyses, tm);
+        prepIds = analysisHelper.setPrepForAnalysis(ret.getManager(), ana, analyses, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
                 ret.addTest(test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);
