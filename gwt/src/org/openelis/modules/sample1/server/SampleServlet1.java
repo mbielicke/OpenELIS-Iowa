@@ -70,15 +70,6 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
-
-    public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
-                                                  SampleManager1.Load... elements) throws Exception {
-        try {
-            return sampleManager1.fetchByQuery(fields, first, max, elements);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
     
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
@@ -89,11 +80,10 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
     
-    public ArrayList<IdAccessionVO> query(Query query) throws Exception {
+    public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
+                                                  SampleManager1.Load... elements) throws Exception {
         try {
-            return sample.query(query.getFields(),
-                               query.getPage() * query.getRowsPerPage(),
-                               query.getRowsPerPage());
+            return sampleManager1.fetchByQuery(fields, first, max, elements);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -114,6 +104,24 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
             throw serializeForGWT(anyE);
         }
     }
+    
+    public ArrayList<IdAccessionVO> query(Query query) throws Exception {
+        try {
+            return sample.query(query.getFields(),
+                               query.getPage() * query.getRowsPerPage(),
+                               query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
+        try {
+            return sampleManager1.update(sm, ignoreWarnings);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
 
     public SampleManager1 unlock(Integer sampleId, Load... elements) throws Exception {
         try {
@@ -127,14 +135,6 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
         try {
             return sampleManager1.unlock(sampleIds, elements);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
-    public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
-        try {
-            return sampleManager1.update(sm, ignoreWarnings);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -172,6 +172,22 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
+    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        try {
+            return sampleManager1.addAuxGroups(sm, groupIds);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        try {
+            return sampleManager1.removeAuxGroups(sm, groupIds);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
         try {
             return sampleManager1.addAnalysis(sm, test);
@@ -188,24 +204,6 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
-    public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
-        try {
-            return sampleManager1.removeAnalysis(sm, analysisId);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
-    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
-                                         ArrayList<TestAnalyteViewDO> analytes,
-                                         ArrayList<Integer> indexes) throws Exception {
-        try {
-            return sampleManager1.addRowAnalytes(sm, analysis, analytes, indexes);
-        } catch (Exception anyE) {
-            throw serializeForGWT(anyE);
-        }
-    }
-
     public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
                                                    Integer methodId) throws Exception {
         try {
@@ -216,9 +214,9 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
     }
 
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
-                                               Integer methodId) throws Exception {
+                                               Integer statusId) throws Exception {
         try {
-            return sampleManager1.changeAnalysisStatus(sm, analysisId, methodId);
+            return sampleManager1.changeAnalysisStatus(sm, analysisId, statusId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -241,17 +239,19 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
 
-    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+    public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
         try {
-            return sampleManager1.addAuxGroups(sm, groupIds);
+            return sampleManager1.removeAnalysis(sm, analysisId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
     }
 
-    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+    public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
+                                         ArrayList<TestAnalyteViewDO> analytes,
+                                         ArrayList<Integer> indexes) throws Exception {
         try {
-            return sampleManager1.removeAuxGroups(sm, groupIds);
+            return sampleManager1.addRowAnalytes(sm, analysis, analytes, indexes);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
