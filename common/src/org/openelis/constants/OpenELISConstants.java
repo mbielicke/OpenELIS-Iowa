@@ -736,22 +736,22 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantCancelUncommitedException(Integer arg0,  String arg1,  String arg2);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in ''{3}'' status".
+   * Translated "Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in {3} status".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in ''{3}'' status"
+   * @return translated "Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in {3} status"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in ''{3}'' status")
+  @DefaultMessage("Accession # ''{0,number}'': Cannot change the prep analysis of {1}, {2} - It is in {3} status")
   @Key("analysis.cantChangePrepException")
   String analysis_cantChangePrepException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} - It is in ''{3}'' status".
+   * Translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} - It is in ''{3}'' status"
+   * @return translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot change the status of {1}, {2} - It is in ''{3}'' status")
+  @DefaultMessage("Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}")
   @Key("analysis.cantChangeStatusException")
-  String analysis_cantChangeStatusException(Integer arg0,  String arg1,  String arg2,  String arg3);
+  String analysis_cantChangeStatusException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "Cannot copy blank section".
@@ -862,11 +862,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_invalidPositionForAnalyteException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in ''{3}'' status".
+   * Translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in {3} status".
    * 
-   * @return translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in ''{3}'' status"
+   * @return translated "Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in {3} status"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in ''{3}'' status")
+  @DefaultMessage("Accession # ''{0,number}'': Cannot initiate {1}, {2} - It is in {3} status")
   @Key("analysis.invalidStatusForInitiateException")
   String analysis_invalidStatusForInitiateException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
@@ -5488,6 +5488,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_noteEditor();
 
   /**
+   * Translated "Considering {0} cases.".
+   * 
+   * @return translated "Considering {0} cases."
+   */
+  @DefaultMessage("Considering {0} cases.")
+  @Key("gen.numberCases")
+  String gen_numberCases(String arg0);
+
+  /**
    * Translated "OK".
    * 
    * @return translated "OK"
@@ -9655,6 +9664,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String order_numFormsRequiredException(String arg0);
 
   /**
+   * Translated "Order".
+   * 
+   * @return translated "Order"
+   */
+  @DefaultMessage("Order")
+  @Key("order.order")
+  String order_order();
+
+  /**
    * Translated "History - Container".
    * 
    * @return translated "History - Container"
@@ -13003,6 +13021,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_orderIdInvalidException(Integer arg0,  Integer arg1);
 
   /**
+   * Translated "Accession # ''{0,number}'': {1} ''{2}'' is invalid and couldn''t be imported".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1} ''{2}'' is invalid and couldn''t be imported"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1} ''{2}'' is invalid and couldn''t be imported")
+  @Key("sample.orderImportException")
+  String sample_orderImportException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "Sample Organization".
    * 
    * @return translated "Sample Organization"
@@ -13055,6 +13082,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Accession # ''{0,number}'': Received date shouldn''t be more than 180 days before entered date ")
   @Key("sample.receivedTooOldWarning")
   String sample_receivedTooOldWarning(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': Sample must have a report to".
+   * 
+   * @return translated "Accession # ''{0,number}'': Sample must have a report to"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Sample must have a report to")
+  @Key("sample.reportToMissingWarning")
+  String sample_reportToMissingWarning(Integer arg0);
 
   /**
    * Translated "Sample".

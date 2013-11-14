@@ -438,7 +438,7 @@ public class WorksheetManager1 implements Serializable {
             toDO.setWorksheetAnalysisId(fromDO.getWorksheetAnalysisId());
             toDO.setQcSystemUserId(fromDO.getQcSystemUserId());
             toDO.setQcStartedDate(fromDO.getQcStartedDate());
-            toDO.setIsFromOther(fromDO.getIsFromOther());
+            toDO.setFromOtherId(fromDO.getFromOtherId());
             toDO.setWorksheetId(fromDO.getWorksheetId());
             toDO.setDescription(fromDO.getDescription());
             toDO.setTestId(fromDO.getTestId());

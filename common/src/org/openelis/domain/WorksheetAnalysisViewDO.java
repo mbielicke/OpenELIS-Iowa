@@ -48,13 +48,13 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
     public WorksheetAnalysisViewDO(Integer id, Integer worksheetItemId, Integer worksheetId,
                                    String accessionNumber, Integer analysisId, Integer qcLotId,
                                    Integer worksheetAnalysisId, Integer qcSystemUserId,
-                                   Date qcStartedDate, String isFromOther, String description,
+                                   Date qcStartedDate, Integer fromOtherId, String description,
                                    Integer testId, String testName, String methodName,
                                    Integer unitOfMeasureId, String unitOfMeasure,
                                    Integer statusId, Date collectionDate, Date receivedDate,
                                    Integer dueDays, Date expireDate) {
         super(id, worksheetItemId, accessionNumber, analysisId, qcLotId, worksheetAnalysisId,
-              qcSystemUserId, qcStartedDate, isFromOther);
+              qcSystemUserId, qcStartedDate, fromOtherId);
         setWorksheetId(worksheetId);
         setDescription(description);
         setTestId(testId);
