@@ -45,14 +45,14 @@ import org.openelis.ui.common.Datetime;
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetId",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId," +
                         "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.worksheetAnalysisId, wav.qcSystemUserId, wav.qcStartedDate," +
-                        "wav.isFromOther, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
+                        "wav.fromOtherId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
                         "wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, wav.receivedDate, "+
                         "wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId = :worksheetId order by wav.worksheetItemId, wav.id"),
     @NamedQuery( name = "WorksheetAnalysisView.FetchByWorksheetIds",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisViewVO(wav.id, wav.worksheetItemId, wav.worksheetId," +
                         "wav.accessionNumber, wav.analysisId, wav.qcLotId, wav.worksheetAnalysisId, wav.qcSystemUserId, wav.qcStartedDate," +
-                        "wav.isFromOther, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
+                        "wav.fromOtherId, wav.description, wav.testId, wav.testName, wav.methodName, wav.timeTaAverage, wav.timeHolding, "+
                         "wav.unitOfMeasureId, wav.unitOfMeasure, wav.statusId, wav.collectionDate, wav.collectionTime, wav.receivedDate, "+
                         "wav.priority)"
                       + " from WorksheetAnalysisView wav where wav.worksheetId in (:worksheetIds) order by wav.worksheetId, wav.worksheetItemId, wav.id")})
@@ -88,8 +88,8 @@ public class WorksheetAnalysisView  {
     @Column(name = "qc_started_date")
     private Date                        qcStartedDate;
     
-    @Column(name = "is_from_other")
-    private String                      isFromOther;
+    @Column(name = "from_other_id")
+    private Integer                     fromOtherId;
 
     @Column(name = "description")
     private String                      description;
@@ -166,8 +166,8 @@ public class WorksheetAnalysisView  {
         return DataBaseUtil.toYM(qcStartedDate);
     }
     
-    public String getIsFromOther() {
-        return isFromOther;
+    public Integer getFromOtherId() {
+        return fromOtherId;
     }
 
     public String getDescription() {
