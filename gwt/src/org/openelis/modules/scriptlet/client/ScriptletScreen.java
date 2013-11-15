@@ -18,7 +18,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ScriptletDO;
 import org.openelis.meta.ScriptletMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.method.client.MethodService;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
 import org.openelis.ui.common.PermissionException;
