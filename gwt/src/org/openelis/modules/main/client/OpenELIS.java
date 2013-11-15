@@ -777,7 +777,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.internalOrder());
-                            window.setSize("880px", "538px");
+                            window.setSize("880px", "588px");
                             window.setContent(new InternalOrderScreenUI(window));
                             browser.addWindow(window, "internalOrder");
                         } catch (Throwable e) {
@@ -801,7 +801,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.vendorOrder());
-                            window.setSize("880px", "580px");
+                            window.setSize("880px", "588px");
                             window.setContent(new VendorOrderScreenUI(window));
                             browser.addWindow(window, "vendorOrder");
                         } catch (Throwable e) {
@@ -825,7 +825,7 @@ public class OpenELIS extends Screen {
                         try {
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.sendoutOrder());
-                            window.setSize("1020px", "601px");
+                            window.setSize("1020px", "588px");
                             window.setContent(new SendoutOrderScreenUI(window));
                             browser.addWindow(window, "sendoutOrder");
                         } catch (Throwable e) {
