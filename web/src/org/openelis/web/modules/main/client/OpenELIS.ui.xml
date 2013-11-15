@@ -12,13 +12,59 @@
   <ui:with type="org.openelis.ui.resources.UIResources" field="libRes" />
   <ui:with type="org.openelis.web.modules.main.client.resources.Resources" field="res"/>
 
-  <g:LayoutPanel styleName="AppBackground">
+  <g:LayoutPanel styleName="{res.style.AppBackground}">
     <g:layer top="0px" height="128px">
-      <g:HorizontalPanel ui:field="header" styleName="header-nav" width="100%">
-        <g:AbsolutePanel>
-          <w:Label ui:field="logo" styleName="header-logo"/>
-        </g:AbsolutePanel>
-      </g:HorizontalPanel>
+      <g:LayoutPanel ui:field="header" styleName="{res.style.header_nav}">
+        <g:layer left="0px" width="230px">
+          <g:AbsolutePanel>
+            <w:Label ui:field="logo" styleName="{res.style.header_logo}"/>
+          </g:AbsolutePanel>
+        </g:layer>
+        <g:layer left="230px" right="0px" top="10px" bottom="0px">
+          <g:TabLayoutPanel barHeight="20" barUnit="PX">
+            <g:tab>
+              <g:customHeader>
+                <w:TabWidget text="Result Reports"></w:TabWidget>
+              </g:customHeader>
+              <g:LayoutPanel>
+                <g:layer>
+                  <g:FlowPanel styleName="{res.style.header_section}" ui:field="resultSection"/>
+                </g:layer>
+              </g:LayoutPanel>
+            </g:tab>
+            <g:tab>
+              <g:customHeader>
+                <w:TabWidget text="Status Reports"/>
+              </g:customHeader>
+              <g:LayoutPanel>
+                <g:layer>
+                  <g:FlowPanel styleName="{res.style.header_section}" ui:field="statusSection"/>
+                </g:layer>
+              </g:LayoutPanel>
+            </g:tab>
+            <g:tab>
+              <g:customHeader>
+                <w:TabWidget text="Follow Up"/>
+              </g:customHeader>
+              <g:LayoutPanel>
+                <g:layer>
+                  <g:FlowPanel styleName="{res.style.header_section}" ui:field="followupSection"/>
+                </g:layer>
+              </g:LayoutPanel>
+            </g:tab>
+            <g:tab>
+              <g:customHeader>
+                <w:TabWidget text="Account"/>
+              </g:customHeader>
+              <g:LayoutPanel>
+                <g:layer>
+                  <g:FlowPanel styleName="{res.style.header_section}" ui:field="accountSection"/>
+                </g:layer>
+              </g:LayoutPanel>
+            </g:tab>
+          </g:TabLayoutPanel> 
+        </g:layer>  
+      </g:LayoutPanel>
     </g:layer>
     <g:layer top="128px" bottom="8px" right="8px" left="0px">
       <wb:WebWindow ui:field="window"/>

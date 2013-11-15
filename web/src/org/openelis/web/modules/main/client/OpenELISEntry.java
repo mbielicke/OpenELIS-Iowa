@@ -26,6 +26,7 @@
 package org.openelis.web.modules.main.client;
 
 
+import org.openelis.ui.resources.UIResources;
 import org.openelis.web.modules.main.client.resources.Resources;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -49,6 +50,12 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         // handlers.
         Event.addNativePreviewHandler(this);
         Resources.INSTANCE.style().ensureInjected();
+        UIResources.INSTANCE.buttonPanel().ensureInjected();
+        UIResources.INSTANCE.calendar().ensureInjected();
+        UIResources.INSTANCE.collapse().ensureInjected();
+        UIResources.INSTANCE.text().ensureInjected();
+        UIResources.INSTANCE.dragDrop().ensureInjected();
+        UIResources.INSTANCE.general().ensureInjected();
         try {
             RootPanel.get("main").clear();
             RootLayoutPanel.get().add(new OpenELIS());

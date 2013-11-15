@@ -1,0 +1,28 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder' xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+  xmlns:t='urn:import:org.openelis.ui.widget.table' xmlns:c='urn:import:org.openelis.ui.widget.calendar' xmlns:r='urn:import:org.openelis.ui.widget.tree'
+  xmlns:l='urn:import:org.openelis.ui.widget.columnar' xmlns:f='urn:import:org.openelis.web.modules.followup.client'>
+
+
+  <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
+  <ui:with type="org.openelis.web.modules.main.client.resources.Resources" field="res" />
+
+  <g:LayoutPanel>
+    <g:layer>
+    <t:Table header="true" ui:field="table" styleName="{uiRes.table.ScreenTableWithSides}">
+      <t:Column width="100" label="">
+        <t:CalendarCell>
+          <c:Calendar begin="0" end="4" />
+        </t:CalendarCell>
+      </t:Column>
+      <t:Column width="200" label="">
+        <f:EncounterCell/>
+      </t:Column>
+      <t:Column width="250" label="">
+        <t:LabelCell/>
+      </t:Column>
+    </t:Table>
+    </g:layer>
+  </g:LayoutPanel>
+
+</ui:UiBinder>
