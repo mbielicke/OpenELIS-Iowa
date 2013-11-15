@@ -13,5 +13,9 @@ public interface Style extends CssResource {
     String section_label();
     String label();
     String link();
-    String link_hover();    
+    String link_hover();
+    String ContentPanel();
+    String Form();
+    String FormTitle();
+    String Prompt();
 }

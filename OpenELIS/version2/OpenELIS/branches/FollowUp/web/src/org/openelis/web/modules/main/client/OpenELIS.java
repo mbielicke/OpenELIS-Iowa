@@ -38,7 +38,9 @@ import com.google.gwt.uibinder.client.UiTemplate;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -54,8 +56,11 @@ import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScree
 import org.openelis.web.modules.finalReport.client.FinalReportPrivateWellScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportSDWISScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
+import org.openelis.web.modules.main.client.resources.Resources;
+import org.openelis.web.modules.main.client.resources.Style;
 import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceScreen;
 import org.openelis.web.modules.sampleStatusReport.client.SampleStatusScreen;
+import org.openelis.web.modules.followup.client.CasesScreen;
 
 /**
  * 
@@ -80,7 +85,10 @@ public class OpenELIS extends ResizeComposite {
     protected Label<String>               logo;
 
     @UiField
-    protected HorizontalPanel             header;
+    protected LayoutPanel             header;
+    
+    @UiField
+    protected FlowPanel                   resultSection,statusSection,followupSection,accountSection;
 
     /**
      * Static window used to display status messages
@@ -88,6 +96,7 @@ public class OpenELIS extends ResizeComposite {
     @UiField
     protected WebWindow                   window;
 
+    protected Style                       css;
     /**
      * No-arg Constructor
      * 
@@ -95,6 +104,9 @@ public class OpenELIS extends ResizeComposite {
      */
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
+        
+        css = Resources.INSTANCE.style();
+        css.ensureInjected();
 
         try {
             rpc = OpenELISWebService.get().initialData();
@@ -117,7 +129,6 @@ public class OpenELIS extends ResizeComposite {
      * Menu screen into the content panel.
      */
     protected void initialize() {
-        Section section;
         Label<String> link;
 
         //
@@ -136,13 +147,10 @@ public class OpenELIS extends ResizeComposite {
             });
         }
 
-        //
-        // section: RESULT REPORT
-        // final reports & result by analyte
-        section = new Section("RESULT REPORTS");
-
+       
         if (showMenu("w_final_environmental")) {
-            link = section.addLink("ENVIRONMENTAL FINAL REPORT");
+            link = createLink("ENVIRONMENTAL FINAL REPORT");
+            resultSection.add(link);
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
@@ -158,7 +166,8 @@ public class OpenELIS extends ResizeComposite {
         }
 
         if (showMenu("w_final_privatewell")) {
-            link = section.addLink("PRIVATE WELL FINAL REPORT");
+            link = createLink("PRIVATE WELL FINAL REPORT");
+            resultSection.add(link);
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
@@ -174,7 +183,8 @@ public class OpenELIS extends ResizeComposite {
         }
 
         if (showMenu("w_final_sdwis")) {
-            link = section.addLink("SDWIS FINAL REPORT");
+            link = createLink("SDWIS FINAL REPORT");
+            resultSection.add(link);
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
@@ -190,7 +200,8 @@ public class OpenELIS extends ResizeComposite {
         }
 
         if (showMenu("w_dataview_environmental")) {
-            link = section.addLink("ENVIRONMENTAL RESULT BY ANALYTE");
+            link = createLink("ENVIRONMENTAL RESULT BY ANALYTE");
+            resultSection.add(link);
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
@@ -205,13 +216,10 @@ public class OpenELIS extends ResizeComposite {
             });
         }
 
-        //
-        // section: SAMPLE
-        //
-        section = new Section("STATUS REPORTS");
 
         if (showMenu("w_status")) {
-            link = section.addLink("STATUS OF SAMPLES RECEIVED");
+            link = createLink("STATUS OF SAMPLES RECEIVED");
+            statusSection.add(link);
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
@@ -226,14 +234,12 @@ public class OpenELIS extends ResizeComposite {
             });
         }
 
-        // section: ACCOUNT
-        // username, change password, logout is always enabled so add them first
-        section = new Section("ACCOUNT");
 
-        section.addLabel(UserCache.getPermission().getLoginName());
+        accountSection.add(new Label<String>(UserCache.getPermission().getLoginName()));
 
         if (showMenu("w_notify")) {
-            link = section.addLink("SAMPLE EMAIL NOTIFICATION");
+            link = createLink("SAMPLE EMAIL NOTIFICATION");
+            accountSection.add(link);
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
@@ -247,8 +253,23 @@ public class OpenELIS extends ResizeComposite {
                 }
             });
         }
+        
+        link = createLink("Cases");
+        followupSection.add(link);
+        link.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                try {
+                    setScreen(new CasesScreen(window), "Cases", "cases");
+                }catch(Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
 
-        link = section.addLink("CHANGE PASSWORD");
+        link = createLink("CHANGE PASSWORD");
+        accountSection.add(link);
         link.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
@@ -260,7 +281,8 @@ public class OpenELIS extends ResizeComposite {
             }
         });
 
-        link = section.addLink("LOGOUT");
+        link = createLink("LOGOUT");
+        accountSection.add(link);
         link.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
@@ -304,79 +326,25 @@ public class OpenELIS extends ResizeComposite {
         perm = UserCache.getPermission().getModule(module);
         return perm != null && perm.hasSelectPermission();
     }
+    
+    private Label<String> createLink(String text) {
+        final Label<String> l;
 
-    /*
-     * Section subclass manages section header and link items
-     */
-
-    private class Section {
-        int             count;
-        boolean         first;
-        String          title;
-        HorizontalPanel section;
-        VerticalPanel   current;
-
-        public Section(String sectionTitle) {
-            title = sectionTitle;
-            first = true;
-            count = 0;
-            current = null;
-        }
-
-        public void addLabel(String text) {
-            add(text, "label");
-        }
-
-        public Label<String> addLink(String text) {
-            final Label<String> l;
-
-            l = add(text, "link");
-            l.addMouseOverHandler(new MouseOverHandler() {
-                public void onMouseOver(MouseOverEvent event) {
-                    l.setStyleName("link-hover");
-                }
-            });
-            l.addMouseOutHandler(new MouseOutHandler() {
-                public void onMouseOut(MouseOutEvent event) {
-                    l.setStyleName("link");
-                }
-            });
-
-            return l;
-        }
-
-        public Label<String> add(String text, String style) {
-            //
-            // since the menus are based on user permission, we will delay
-            // adding a
-            // menu section until the user has a menu item for that section.
-            //
-            if (first) {
-                first = false;
-                section = new HorizontalPanel();
-                section.addStyleName("header-section");
-                header.add(section);
+        l = new Label<String>();
+        l.setText(text);
+        l.setStyleName(css.link());
+        
+        l.addMouseOverHandler(new MouseOverHandler() {
+            public void onMouseOver(MouseOverEvent event) {
+                l.setStyleName(css.link_hover());
             }
-            if (current == null || count % 4 == 0) {
-                current = new VerticalPanel();
-                current.addStyleName("header-subsection");
-                section.add(current);
-                addLabel( (count == 0) ? title : "", "section-label");
+        });
+        l.addMouseOutHandler(new MouseOutHandler() {
+            public void onMouseOut(MouseOutEvent event) {
+                l.setStyleName(css.link());
             }
+        });
 
-            count++;
-            return addLabel(text, style);
-        }
-
-        private Label<String> addLabel(String text, String style) {
-            Label<String> l;
-
-            l = new Label<String>();
-            l.setText(text);
-            l.setStyleName(style);
-            current.add(l);
-
-            return l;
-        }
+        return l;
     }
 }
