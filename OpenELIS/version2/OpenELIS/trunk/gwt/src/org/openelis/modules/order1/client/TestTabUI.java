@@ -36,7 +36,6 @@ import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.constants.Messages;
-import org.openelis.domain.Constants;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestMethodVO;
@@ -97,7 +96,7 @@ public class TestTabUI extends Screen {
 
     protected Screen               parentScreen;
 
-    protected boolean              isVisible, canEdit, redraw;
+    protected boolean              isVisible, redraw;
 
     protected OrderManager1        manager;
 
@@ -155,7 +154,7 @@ public class TestTabUI extends Screen {
 
         tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if (event.getCol() > 0 || !isState(ADD, UPDATE) || !canEdit)
+                if (event.getCol() > 0 || !isState(ADD, UPDATE))
                     event.cancel();
             }
         });
@@ -343,7 +342,6 @@ public class TestTabUI extends Screen {
     }
 
     public void setState(State state) {
-        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
@@ -353,7 +351,6 @@ public class TestTabUI extends Screen {
         OrderTestViewDO test;
         Node n;
 
-        evaluateEdit();
         count1 = tree.getRoot() == null ? 0 : tree.getRoot().getChildCount();
         count2 = manager == null ? 0 : manager.test.count();
 
@@ -419,12 +416,6 @@ public class TestTabUI extends Screen {
         }
 
         return root;
-    }
-
-    private void evaluateEdit() {
-        canEdit = manager != null &&
-                  !Constants.dictionary().ORDER_STATUS_PROCESSED.equals(manager.getOrder()
-                                                                               .getStatusId());
     }
 
     private void displayTests() {
