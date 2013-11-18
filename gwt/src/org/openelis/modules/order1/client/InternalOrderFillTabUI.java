@@ -42,6 +42,7 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -59,13 +60,15 @@ public class InternalOrderFillTabUI extends Screen {
 
     protected Screen                            parentScreen;
 
+    protected EventBus                          parentBus;
+
     protected boolean                           isVisible, redraw;
 
     protected OrderManager1                     manager;
 
     public InternalOrderFillTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(parentScreen.getEventBus());
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -120,7 +123,7 @@ public class InternalOrderFillTabUI extends Screen {
         count2 = manager == null ? 0 : manager.fill.count();
         names = new ArrayList<String>();
         buf = new StringBuffer();
-        
+
         /*
          * find out if there's any difference between the fill data being
          * displayed and the fill data in the manager
@@ -200,7 +203,6 @@ public class InternalOrderFillTabUI extends Screen {
         return model;
     }
 
-    // TODO move code to where it is used
     private String concat(ArrayList<String> list, StringBuffer buf) {
         for (String i : list) {
             if (i != null)
