@@ -293,6 +293,44 @@ public class WorksheetManager1 implements Serializable {
                 return items.size();
             return 0;
         }
+        
+        /**
+         * Moves the worksheet item at the specified index up/down by one position
+         */
+        public void move(int index, boolean up) {
+            Integer tempPosition;
+            WorksheetItemDO wiDO1, wiDO2;
+            
+            wiDO1 = items.get(index);
+            if (up) {
+                wiDO2 = items.get(index - 1);
+                items.set(index, wiDO2);
+                items.set(index - 1, wiDO1);
+            } else {
+                wiDO2 = items.get(index + 1);
+                items.set(index, wiDO2);
+                items.set(index + 1, wiDO1);
+            }
+            
+            tempPosition = wiDO2.getPosition();
+            wiDO2.setPosition(wiDO1.getPosition());
+            wiDO1.setPosition(tempPosition);
+        }
+        
+        /**
+         * Duplicates the worksheet item, and all its children, at the specified
+         * index into the next position, moving down any items after it 
+         */
+        public void duplicate(int index) {
+            WorksheetAnalysisViewDO waVDO, newWAVDO;
+            WorksheetItemDO wiDO, newWIDO;
+
+            wiDO = get(index);
+            newWIDO = item.add(index + 1);
+            newWIDO.setPosition(wiDO.getPosition() + 1);
+            
+            analysis.duplicate(wiDO, newWIDO);
+        }
     }
 
     /**
@@ -377,7 +415,44 @@ public class WorksheetManager1 implements Serializable {
             }
             return 0;
         }
+        
+        public void duplicate(WorksheetItemDO fromDO, WorksheetItemDO toDO) {
+            int i;
+            WorksheetAnalysisViewDO waVDO, newWAVDO;
 
+            for (i = 0; i < count(fromDO); i++) {
+                waVDO = get(fromDO, i);
+                newWAVDO = analysis.add(toDO);
+                copyDO(waVDO, newWAVDO);
+                if (waVDO.getAnalysisId() != null)
+                    result.duplicate(waVDO, newWAVDO);
+                else if (waVDO.getQcLotId() != null)
+                    qcResult.duplicate(waVDO, newWAVDO);
+            }
+        }
+
+        private void copyDO(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
+            toDO.setAccessionNumber(fromDO.getAccessionNumber().toString());
+            toDO.setAnalysisId(fromDO.getAnalysisId());
+            toDO.setQcLotId(fromDO.getQcLotId());
+            toDO.setWorksheetAnalysisId(fromDO.getWorksheetAnalysisId());
+            toDO.setQcSystemUserId(fromDO.getQcSystemUserId());
+            toDO.setQcStartedDate(fromDO.getQcStartedDate());
+            toDO.setFromOtherId(fromDO.getFromOtherId());
+            toDO.setWorksheetId(fromDO.getWorksheetId());
+            toDO.setDescription(fromDO.getDescription());
+            toDO.setTestId(fromDO.getTestId());
+            toDO.setTestName(fromDO.getTestName());
+            toDO.setMethodName(fromDO.getMethodName());
+            toDO.setUnitOfMeasureId(fromDO.getUnitOfMeasureId());
+            toDO.setUnitOfMeasure(fromDO.getUnitOfMeasure());
+            toDO.setStatusId(fromDO.getStatusId());
+            toDO.setCollectionDate(fromDO.getCollectionDate());
+            toDO.setReceivedDate(fromDO.getReceivedDate());
+            toDO.setDueDays(fromDO.getDueDays());
+            toDO.setExpireDate(fromDO.getExpireDate());
+        }
+        
         /*
          * create a hash localMap from analyses list
          */
@@ -488,6 +563,58 @@ public class WorksheetManager1 implements Serializable {
             return 0;
         }
 
+        public void duplicate(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
+            int i;
+            WorksheetResultViewDO wrVDO, newWRVDO;
+
+            for (i = 0; i < count(fromDO); i++) {
+                wrVDO = get(fromDO, i);
+                newWRVDO = result.add(toDO);
+                copyDO(wrVDO, newWRVDO);
+            }
+        }
+
+        private void copyDO(WorksheetResultViewDO fromDO, WorksheetResultViewDO toDO) {
+            toDO.setTestAnalyteId(fromDO.getTestAnalyteId());
+            toDO.setTestResultId(fromDO.getTestResultId());
+            toDO.setResultRow(fromDO.getResultRow());
+            toDO.setAnalyteId(fromDO.getAnalyteId());
+            toDO.setTypeId(fromDO.getTypeId());
+            toDO.setValueAt(0, fromDO.getValueAt(0));
+            toDO.setValueAt(1, fromDO.getValueAt(1));
+            toDO.setValueAt(2, fromDO.getValueAt(2));
+            toDO.setValueAt(3, fromDO.getValueAt(3));
+            toDO.setValueAt(4, fromDO.getValueAt(4));
+            toDO.setValueAt(5, fromDO.getValueAt(5));
+            toDO.setValueAt(6, fromDO.getValueAt(6));
+            toDO.setValueAt(7, fromDO.getValueAt(7));
+            toDO.setValueAt(8, fromDO.getValueAt(8));
+            toDO.setValueAt(9, fromDO.getValueAt(9));
+            toDO.setValueAt(10, fromDO.getValueAt(10));
+            toDO.setValueAt(11, fromDO.getValueAt(11));
+            toDO.setValueAt(12, fromDO.getValueAt(12));
+            toDO.setValueAt(13, fromDO.getValueAt(13));
+            toDO.setValueAt(14, fromDO.getValueAt(14));
+            toDO.setValueAt(15, fromDO.getValueAt(15));
+            toDO.setValueAt(16, fromDO.getValueAt(16));
+            toDO.setValueAt(17, fromDO.getValueAt(17));
+            toDO.setValueAt(18, fromDO.getValueAt(18));
+            toDO.setValueAt(19, fromDO.getValueAt(19));
+            toDO.setValueAt(20, fromDO.getValueAt(20));
+            toDO.setValueAt(21, fromDO.getValueAt(21));
+            toDO.setValueAt(22, fromDO.getValueAt(22));
+            toDO.setValueAt(23, fromDO.getValueAt(23));
+            toDO.setValueAt(24, fromDO.getValueAt(24));
+            toDO.setValueAt(25, fromDO.getValueAt(25));
+            toDO.setValueAt(26, fromDO.getValueAt(26));
+            toDO.setValueAt(27, fromDO.getValueAt(27));
+            toDO.setValueAt(28, fromDO.getValueAt(28));
+            toDO.setValueAt(29, fromDO.getValueAt(29));
+            toDO.setAnalyteName(fromDO.getAnalyteName());
+            toDO.setAnalyteExternalId(fromDO.getAnalyteExternalId());
+            toDO.setResultGroup(fromDO.getResultGroup());
+        }
+        
         /*
          * create a hash localMap from worksheet results list
          */
@@ -598,6 +725,55 @@ public class WorksheetManager1 implements Serializable {
             return 0;
         }
 
+        public void duplicate(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
+            int i;
+            WorksheetQcResultViewDO wqrVDO, newWQRVDO;
+
+            for (i = 0; i < count(fromDO); i++) {
+                wqrVDO = get(fromDO, i);
+                newWQRVDO = qcResult.add(toDO);
+                copyDO(wqrVDO, newWQRVDO);
+            }
+        }
+
+        private void copyDO(WorksheetQcResultViewDO fromDO, WorksheetQcResultViewDO toDO) {
+            toDO.setSortOrder(fromDO.getSortOrder());
+            toDO.setQcAnalyteId(fromDO.getQcAnalyteId());
+            toDO.setTypeId(fromDO.getTypeId());
+            toDO.setValueAt(0, fromDO.getValueAt(0));
+            toDO.setValueAt(1, fromDO.getValueAt(1));
+            toDO.setValueAt(2, fromDO.getValueAt(2));
+            toDO.setValueAt(3, fromDO.getValueAt(3));
+            toDO.setValueAt(4, fromDO.getValueAt(4));
+            toDO.setValueAt(5, fromDO.getValueAt(5));
+            toDO.setValueAt(6, fromDO.getValueAt(6));
+            toDO.setValueAt(7, fromDO.getValueAt(7));
+            toDO.setValueAt(8, fromDO.getValueAt(8));
+            toDO.setValueAt(9, fromDO.getValueAt(9));
+            toDO.setValueAt(10, fromDO.getValueAt(10));
+            toDO.setValueAt(11, fromDO.getValueAt(11));
+            toDO.setValueAt(12, fromDO.getValueAt(12));
+            toDO.setValueAt(13, fromDO.getValueAt(13));
+            toDO.setValueAt(14, fromDO.getValueAt(14));
+            toDO.setValueAt(15, fromDO.getValueAt(15));
+            toDO.setValueAt(16, fromDO.getValueAt(16));
+            toDO.setValueAt(17, fromDO.getValueAt(17));
+            toDO.setValueAt(18, fromDO.getValueAt(18));
+            toDO.setValueAt(19, fromDO.getValueAt(19));
+            toDO.setValueAt(20, fromDO.getValueAt(20));
+            toDO.setValueAt(21, fromDO.getValueAt(21));
+            toDO.setValueAt(22, fromDO.getValueAt(22));
+            toDO.setValueAt(23, fromDO.getValueAt(23));
+            toDO.setValueAt(24, fromDO.getValueAt(24));
+            toDO.setValueAt(25, fromDO.getValueAt(25));
+            toDO.setValueAt(26, fromDO.getValueAt(26));
+            toDO.setValueAt(27, fromDO.getValueAt(27));
+            toDO.setValueAt(28, fromDO.getValueAt(28));
+            toDO.setValueAt(29, fromDO.getValueAt(29));
+            toDO.setAnalyteId(fromDO.getAnalyteId());
+            toDO.setAnalyteName(fromDO.getAnalyteName());
+        }
+        
         /*
          * create a hash localMap from worksheet qc results list
          */

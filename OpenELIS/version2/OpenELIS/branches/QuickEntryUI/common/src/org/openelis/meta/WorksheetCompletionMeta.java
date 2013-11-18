@@ -58,7 +58,7 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 ANALYSIS_WORKSHEET_ANALYSIS_ID = "_worksheetAnalysis.worksheetAnalysisId",
                                 ANALYSIS_QC_SYSTEM_USER_ID     = "_worksheetAnalysis.qcSystemUserId",
                                 ANALYSIS_QC_STARTED_DATE       = "_worksheetAnalysis.qcStartedDate",
-                                ANALYSIS_IS_FROM_OTHER         = "_worksheetAnalysis.isFromOther",
+                                ANALYSIS_FROM_OTHER_ID         = "_worksheetAnalysis.fromOtherId",
 
                                 RESULT_ID                    = "_worksheetResult.id",
                                 RESULT_WORKSHEET_ANALYSIS_ID = "_worksheetResult.worksheetAnalysisId",
@@ -123,7 +123,7 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                     ANALYSIS_ID, ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_ACCESSION_NUMBER,
                                     ANALYSIS_ANALYSIS_ID, ANALYSIS_QC_LOT_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
                                     ANALYSIS_QC_SYSTEM_USER_ID, ANALYSIS_QC_STARTED_DATE,
-                                    ANALYSIS_IS_FROM_OTHER,
+                                    ANALYSIS_FROM_OTHER_ID,
                                     RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID, RESULT_TEST_ANALYTE_ID,
                                     RESULT_TEST_RESULT_ID, RESULT_RESULT_ROW, RESULT_ANALYTE_ID,
                                     RESULT_TYPE_ID, RESULT_VALUE_1, RESULT_VALUE_2,
@@ -222,8 +222,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
         return ANALYSIS_QC_STARTED_DATE;
     }
 
-    public static String getWorksheetAnalysisIsFromOther() {
-        return ANALYSIS_IS_FROM_OTHER;
+    public static String getWorksheetAnalysisFromOtherId() {
+        return ANALYSIS_FROM_OTHER_ID;
     }
 
     public static String getWorksheetResultId() {

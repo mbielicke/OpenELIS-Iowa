@@ -39,8 +39,8 @@ public class WorksheetAnalysisDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer  id, worksheetItemId, worksheetAnalysisId, analysisId, qcLotId,
-                       qcSystemUserId;
-    protected String   accessionNumber, isFromOther;
+                       qcSystemUserId, fromOtherId;
+    protected String   accessionNumber;
     protected Datetime qcStartedDate;
     
     public WorksheetAnalysisDO() {
@@ -48,7 +48,7 @@ public class WorksheetAnalysisDO extends DataObject {
 
     public WorksheetAnalysisDO(Integer id, Integer worksheetItemId, String accessionNumber,
                                Integer analysisId, Integer qcLotId, Integer worksheetAnalysisId,
-                               Integer qcSystemUserId, Date qcStartedDate, String isFromOther) {
+                               Integer qcSystemUserId, Date qcStartedDate, Integer fromOtherId) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setAccessionNumber(accessionNumber);
@@ -57,7 +57,7 @@ public class WorksheetAnalysisDO extends DataObject {
         setWorksheetAnalysisId(worksheetAnalysisId);
         setQcSystemUserId(qcSystemUserId);
         setQcStartedDate(DataBaseUtil.toYM(qcStartedDate));
-        setIsFromOther(isFromOther);
+        setFromOtherId(fromOtherId);
         _changed = false;
     }
 
@@ -133,12 +133,12 @@ public class WorksheetAnalysisDO extends DataObject {
         _changed = true;
     }
 
-    public String getIsFromOther() {
-        return isFromOther;
+    public Integer getFromOtherId() {
+        return fromOtherId;
     }
 
-    public void setIsFromOther(String isFromOther) {
-        this.isFromOther = DataBaseUtil.trim(isFromOther);
+    public void setFromOtherId(Integer fromOtherId) {
+        this.fromOtherId = fromOtherId;
         _changed = true;
     }
 }

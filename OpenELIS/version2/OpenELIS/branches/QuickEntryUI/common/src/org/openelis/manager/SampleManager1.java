@@ -36,6 +36,7 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -50,7 +51,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.domain.SampleNeonatalViewDO;
+import org.openelis.domain.SampleNeonatalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -75,14 +76,14 @@ public class SampleManager1 implements Serializable {
      * Flags that specifies what optional data to load with the manager
      */
     public enum Load {
-        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT
+        ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT, WORKSHEET
     };
 
     protected SampleDO                            sample;
     protected SampleEnvironmentalDO               sampleEnvironmental;
     protected SampleSDWISViewDO                   sampleSDWIS;
     protected SamplePrivateWellViewDO             samplePrivateWell;
-    protected SampleNeonatalViewDO                sampleNeonatal;
+    protected SampleNeonatalDO                    sampleNeonatal;
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
@@ -96,6 +97,7 @@ public class SampleManager1 implements Serializable {
     protected ArrayList<StorageViewDO>            storages;
     protected ArrayList<AnalysisUserViewDO>       users;
     protected ArrayList<ResultViewDO>             results;
+    protected ArrayList<AnalysisWorksheetVO>      worksheets;
     protected ArrayList<DataObject>               removed;
     protected int                                 nextUID              = -1;
 
@@ -112,6 +114,7 @@ public class SampleManager1 implements Serializable {
     transient public final Storage                storage              = new Storage();
     transient public final AnalysisUser           analysisUser         = new AnalysisUser();
     transient public final Result                 result               = new Result();
+    transient public final Worksheet              worksheet            = new Worksheet();
     transient private HashMap<String, DataObject> uidMap;
 
     /**
@@ -142,7 +145,7 @@ public class SampleManager1 implements Serializable {
         return samplePrivateWell;
     }
 
-    public SampleNeonatalViewDO getSampleNeonatal() {
+    public SampleNeonatalDO getSampleNeonatal() {
         return sampleNeonatal;
     }
 
@@ -480,6 +483,7 @@ public class SampleManager1 implements Serializable {
             data.setId(getNextUID());
             if (event != null) {
                 data.setQaEventId(event.getId());
+                data.setQaEventName(event.getName());
                 data.setTypeId(event.getTypeId());
                 data.setIsBillable(event.getIsBillable());
             }
@@ -503,6 +507,7 @@ public class SampleManager1 implements Serializable {
             data.setAnalysisId(analysis.getId());
             if (event != null) {
                 data.setQaEventId(event.getId());
+                data.setQaEventName(event.getName());
                 data.setTypeId(event.getTypeId());
                 data.setIsBillable(event.getIsBillable());
             }
@@ -845,10 +850,10 @@ public class SampleManager1 implements Serializable {
          */
         public void remove(int i) {
             SampleItemViewDO data;
-            
+
             data = items.get(i);
             assert analysis.count(data) == 0 : "one or more analyses are linked to the sample item";
-            
+
             items.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(getSampleItemUid(data.getId()));
@@ -856,11 +861,11 @@ public class SampleManager1 implements Serializable {
 
         public void remove(SampleItemViewDO data) {
             assert analysis.count(data) == 0 : "one or more analyses are linked to the sample item";
-            
+
             items.remove(data);
             dataObjectRemove(data.getId(), data);
             uidMapRemove(getSampleItemUid(data.getId()));
-        }                
+        }
 
         /**
          * Returns the number of items associated with this sample
@@ -1035,12 +1040,32 @@ public class SampleManager1 implements Serializable {
          * Returns true if the sample has at least one released analysis
          */
         public boolean hasReleasedAnalysis() {
-            if (analyses == null)
-                return false;
+            if (analyses != null) {
+                for (AnalysisViewDO a : analyses) {
+                    if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
+                        return true;
+                }
+            }
+            
+            return false;
+        }
 
-            for (AnalysisViewDO a : analyses) {
-                if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
-                    return true;
+        /**
+         * Returns true if at least one released analysis is linked to the
+         * sample item
+         */
+        public boolean hasReleasedAnalysis(SampleItemViewDO item) {
+            ArrayList<AnalysisViewDO> l;
+
+            if (analyses != null) {
+                localmapBuild();
+                l = localmap.get(item.getId());
+                if (l != null) {
+                    for (AnalysisViewDO a : l) {
+                        if (Constants.dictionary().ANALYSIS_RELEASED.equals(a.getStatusId()))
+                            return true;
+                    }
+                }
             }
 
             return false;
@@ -1055,21 +1080,21 @@ public class SampleManager1 implements Serializable {
             AnalysisViewDO data;
 
             data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
-            if (!sampleItemId.equals(data.getSampleItemId()) &&
+            if ( !sampleItemId.equals(data.getSampleItemId()) &&
                 !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
                 !Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
                 data.setSampleItemId(sampleItemId);
                 localmap = null;
             }
         }
-        
+
         public void removeAnalysis(Integer analysisId) {
             AnalysisViewDO data, ana;
 
             assert analysisId > 0 : "an existing analysis cannot be removed";
-            
+
             data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
-            for (int i = 0; i < analyses.size(); i++) {
+            for (int i = 0; i < analyses.size(); i++ ) {
                 ana = analyses.get(i);
                 if (analysisId.equals(ana.getPreAnalysisId())) {
                     ana.setPreAnalysisId(null);
@@ -1078,8 +1103,8 @@ public class SampleManager1 implements Serializable {
                     ana.setStatusId(Constants.dictionary().ANALYSIS_LOGGED_IN);
                     ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                 }
-            }                
-            analyses.remove(data);            
+            }
+            analyses.remove(data);
             localmap = null;
         }
 
@@ -1508,6 +1533,63 @@ public class SampleManager1 implements Serializable {
                     }
                     rl.add(data);
                 }
+            }
+        }
+    }
+    
+    /**
+     * Class to manage the worksheets associated with the sample's analyses
+     */
+    public class Worksheet {
+        transient protected HashMap<Integer, ArrayList<AnalysisWorksheetVO>> localmap = null;
+
+        /**
+         * Returns the worksheets for given analysis at specified index.
+         */
+        public AnalysisWorksheetVO get(AnalysisDO analysis, int i) {
+            localmapBuild();
+            return localmap.get(analysis.getId()).get(i);
+        }
+
+        /**
+         * Returns the number of worksheets associated with specified analysis
+         */
+        public int count(AnalysisDO analysis) {
+            ArrayList<AnalysisWorksheetVO> l;
+
+            if (worksheets != null) {
+                localmapBuild();
+                l = localmap.get(analysis.getId());
+                if (l != null)
+                    return l.size();
+            }
+            return 0;
+        }
+
+        /*
+         * create a hash map from worksheet list.
+         */
+        private void localmapBuild() {
+            if (localmap == null && worksheets != null) {
+                localmap = new HashMap<Integer, ArrayList<AnalysisWorksheetVO>>();
+                for (AnalysisWorksheetVO data : worksheets)
+                    localmapAdd(data);
+            }
+        }
+
+        /*
+         * adds a new worksheet to the hash map
+         */
+        private void localmapAdd(AnalysisWorksheetVO data) {
+            ArrayList<AnalysisWorksheetVO> l;
+
+            if (localmap != null) {
+                l = localmap.get(data.getAnalysisId());
+                if (l == null) {
+                    l = new ArrayList<AnalysisWorksheetVO>();
+                    localmap.put(data.getAnalysisId(), l);
+                }
+                l.add(data);
             }
         }
     }

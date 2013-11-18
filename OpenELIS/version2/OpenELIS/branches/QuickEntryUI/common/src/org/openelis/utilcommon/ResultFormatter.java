@@ -109,7 +109,7 @@ public class ResultFormatter implements Serializable {
      * rule list. Otherwise the general rules (null unit) are used to
      * format/validate the value.
      */
-    public FormattedValue format(Integer group, Integer unitId, String value, String entry) {
+    public FormattedValue format(Integer group, Integer unitId, String value) {
         Unit u;
         FormattedValue ri;
 
@@ -130,7 +130,7 @@ public class ResultFormatter implements Serializable {
                         ri.display = ((NumericItem)item).format(value);
                         return ri;
                     } else if (isTypeDictionary(item.type)) {
-                        ri.display = ((DictionaryItem)item).format(value, entry);
+                        ri.display = ((DictionaryItem)item).format(value);
                         if (ri.display != null)
                             return ri;
                     } else if (isTypeAlphaMixed(item.type)) {
@@ -160,6 +160,67 @@ public class ResultFormatter implements Serializable {
     }
 
     /**
+     * This method is used in the EJB to validate the result value against the
+     * specified result rule.
+     * 
+     * @param id
+     *        specifies the rule/format id (test_result.id) to use for
+     *        validation. In case of null value, the method searches through all
+     *        the rules for match.
+     * @param group
+     *        specifies the is the rule/format group (test_result.result_group).
+     * @param unitId
+     *        specifies the unit of measure for this rule/format.
+     * @param value
+     *        depending on type, this could be the min,max for number, titer,
+     *        dictionary id, ...
+     */
+    public void isValid(Integer id, Integer group, Integer unitId, String value) throws Exception {
+        Unit u;
+        String fv;
+
+        if (value == null || value.length() == 0 || value.trim().length() == 0)
+            return;
+
+        fv = null;
+        u = getMap(group, unitId);
+        if (u != null && u.items != null) {
+            for (Item item : u.items) {
+                /*
+                 * results have the id of the rule but aux data does not. for
+                 * results, we check only the specified rule while for aux data,
+                 * we run through all the rules until one succeeds.
+                 */
+                if (id == null || item.id == id) {
+                    try {
+                        if (isTypeNumeric(item.type))
+                            fv = ((NumericItem)item).format(value);
+                        else if (isTypeDictionary(item.type))
+                            fv = ((DictionaryItem)item).formatById(value);
+                        else if (isTypeAlphaMixed(item.type))
+                            fv = value;
+                        else if (isTypeAlphaUpper(item.type))
+                            fv = value.toUpperCase();
+                        else if (isTypeAlphaLower(item.type))
+                            fv = value.toLowerCase();
+                        else if (isTypeTiter(item.type))
+                            fv = ((TiterItem)item).format(value);
+                        else if (isTypeDate(item.type) || isTypeTime(item.type) ||
+                                   isTypeDateTime(item.type))
+                            fv = ((DateTimeItem)item).format(value);
+                    } catch (Exception e) {
+                        fv = null;
+                    }
+                    if (id != null || fv != null)
+                        break;
+                }
+            }
+        }
+        if (! value.equals(fv))
+            throw new InconsistencyException(Messages.get().gen_invalidValueException());
+}
+    
+    /**
      * Returns the "default" for specified group and unit. If no unit default
      * has been defined, the general rules (null unit) default is returned if
      * any.
@@ -187,7 +248,7 @@ public class ResultFormatter implements Serializable {
             l = new ArrayList<FormattedValue>();
             for (Item item : u.items) {
                 if (isTypeDictionary(item.type))
-                    l.add(new FormattedValue( ((DictionaryItem)item).dictId,
+                    l.add(new FormattedValue( ((DictionaryItem)item).id,
                                              item.type,
                                              ((DictionaryItem)item).text));
             }
@@ -532,7 +593,7 @@ public class ResultFormatter implements Serializable {
      * Dictionary Item
      */
     static class DictionaryItem extends Item {
-        int    dictId;
+        int id;
         String text;
 
         /**
@@ -540,21 +601,31 @@ public class ResultFormatter implements Serializable {
          * matching while the id is stored in value
          */
         public DictionaryItem(String id, String text) {
-            this.dictId = Integer.valueOf(id);
+            this.id = Integer.parseInt(id);
             this.text = text;
         }
 
         /**
-         * Returns the id if the value matches the id or the entry matches the
-         * dictionary text
+         * Returns the dictionary id if the entered value matches the dictionary
+         * text
          */
-        public String format(String value, String entry) {
-            String d;
+        public String format(String value) {
+            if (value.equals(text))
+                return String.valueOf(id);
 
-            d = String.valueOf(dictId);
-            if ( (value != null && value.equals(d)) || text.equals(entry))
-                return d;
+            return null;
+        }
+        
+        /**
+         * This method is used in the validation routine to verify that the specified
+         * dictionary id is valid
+         */
+        public String formatById(String value) {
+            String id;
 
+            id = String.valueOf(this.id);
+            if (value.equals(id))
+                return id;
             return null;
         }
     }
