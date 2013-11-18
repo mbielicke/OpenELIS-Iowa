@@ -73,11 +73,19 @@ public class SampleManager1 implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Flags that specifies what optional data to load with the manager
+     * Flags that specify what optional data to load with the manager
      */
     public enum Load {
         ORGANIZATION, PROJECT, QA, AUXDATA, STORAGE, NOTE, ANALYSISUSER, RESULT, SINGLERESULT,
         WORKSHEET
+    };
+
+    /**
+     * Flags that specify what operations need to be performed for the sample,
+     * after update
+     */
+    public enum PostProcessing {
+        ESAVE, UNRELEASE
     };
 
     protected SampleDO                            sample;
