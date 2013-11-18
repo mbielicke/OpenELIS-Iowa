@@ -27,6 +27,7 @@ package org.openelis.modules.worksheetBuilder.client;
 
 import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -393,8 +394,11 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
     @UiHandler("search")
     protected void executeQuery(ClickEvent event) {
         Query query;
+        Validation validation;
+        
+        validation = validate();
 
-        if (!validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }
@@ -482,7 +486,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         }
         
         if (message.length() > 0)
-            Window.alert(Messages.get().worksheetItemsNotAdded()+":\n\n"+message.toString());
+            Window.alert(Messages.get().worksheet_itemsNotAdded()+":\n\n"+message.toString());
         if (selections.size() > 0)
             bus.fireEventFromSource(new RowsAddedEvent(selections), this);
     }
@@ -501,7 +505,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
         
         model = new ArrayList<Item<Integer>>();
         if (list == null || list.size() == 0) {
-            window.setDone(Messages.get().noRecordsFound());
+            window.setDone(Messages.get().gen_noRecordsFound());
         } else {
             for (AnalysisViewVO analysisRow : list) {
                 row = new Item<Integer>(12);
@@ -532,7 +536,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                 model.add(row);
             }
 
-            window.setDone(Messages.get().queryingComplete());
+            window.setDone(Messages.get().gen_queryingComplete());
         }
 
         analysesTable.setModel(model);
@@ -600,7 +604,7 @@ public class WorksheetBuilderLookupScreenUI extends Screen {
                         public void onFailure(Throwable error) {
                             analyteTable.setModel(null);
                             if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().noAnalytesFoundForRow());
+                                window.setDone(Messages.get().worksheet_noAnalytesFoundForRow());
                             } else {
                                 Window.alert("Error: WorksheetCreationLookup call showAnalytes failed; "+error.getMessage());
                             }

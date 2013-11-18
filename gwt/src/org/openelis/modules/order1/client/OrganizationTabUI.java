@@ -49,6 +49,7 @@ import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -70,7 +71,6 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -103,18 +103,17 @@ public class OrganizationTabUI extends Screen {
 
     protected Screen                       parentScreen;
 
-    protected boolean                      isVisible;
+    protected boolean                      isVisible, redraw;
 
-    protected OrderManager1                manager, displayedManager;
+    protected OrderManager1                manager;
 
-    public OrganizationTabUI(Screen parentScreen, EventBus bus) {
+    public OrganizationTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        setEventBus(parentScreen.getEventBus());
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
     }
 
     private void initialize() {
@@ -251,13 +250,15 @@ public class OrganizationTabUI extends Screen {
         table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 OrderOrganizationViewDO data;
-                
+
                 /*
-                 * When the fields of the order organizations are updated in the handler for cellEditedEvent,
-                 * the index of the row can't be used to access the organization that corresponds to a given
-                 * row, because that organization may be of type ship to. In order to keep track of the
-                 * organization corresponding to this row, we set it as the data of the row that caused it to 
-                 * be added to the manager.
+                 * When the fields of the order organizations are updated in the
+                 * handler for cellEditedEvent, the index of the row can't be
+                 * used to access the organization that corresponds to a given
+                 * row, because that organization may be of type ship to. In
+                 * order to keep track of the organization corresponding to this
+                 * row, we set it as the data of the row that caused it to be
+                 * added to the manager.
                  */
                 data = manager.organization.add();
                 event.getRow().setData(data);
@@ -267,7 +268,7 @@ public class OrganizationTabUI extends Screen {
         table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
                 OrderOrganizationViewDO data;
-                
+
                 data = event.getRow().getData();
                 manager.organization.remove(data);
             }
@@ -298,27 +299,7 @@ public class OrganizationTabUI extends Screen {
             }
         });
 
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayOrganizations();
-                                   }
-                               });
-
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("organization_type");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -328,30 +309,23 @@ public class OrganizationTabUI extends Screen {
         type.setModel(model);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("state");
         for (DictionaryDO data : list) {
-            if ("Y".equals(data.getIsActive()))
-                smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
+            item = new Item<Integer>(data.getId(), data.getEntry());
+            item.setEnabled( ("Y".equals(data.getIsActive())));
+            smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
         }
         orgState.setModel(smodel);
 
         smodel = new ArrayList<Item<String>>();
-        smodel.add(new Item<String>(null, ""));
         list = CategoryCache.getBySystemName("country");
         for (DictionaryDO data : list) {
-            if ("Y".equals(data.getIsActive()))
-                smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
+            item = new Item<Integer>(data.getId(), data.getEntry());
+            item.setEnabled( ("Y".equals(data.getIsActive())));
+            smodel.add(new Item<String>(data.getEntry(), data.getEntry()));
         }
         orgCountry.setModel(smodel);
 
-    }
-
-    public void setData(OrderManager1 manager) {
-        if ( DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
-            this.manager = manager;
-        }
     }
 
     @UiHandler("removeOrganizationButton")
@@ -373,42 +347,66 @@ public class OrganizationTabUI extends Screen {
         table.scrollToVisible(table.getSelectedRow());
         table.startEditing(n, 0);
     }
-    
-    private void displayOrganizations() {
+
+    public void setData(OrderManager1 manager) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
+            this.manager = manager;
+        }
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
         int count1, count2;
-        boolean dataChanged;
-        OrderOrganizationViewDO org1, org2;
+        String name;
+        OrderOrganizationViewDO org;
+        Row r;
 
-        if ( !isVisible)
-            return;
-
-        count1 = displayedManager == null ? 0 : displayedManager.organization.count();
+        count1 = table.getRowCount();
         count2 = manager == null ? 0 : manager.organization.count();
 
         /*
-         * find out if there's any difference between the organizations of the
-         * two managers
+         * find out if there's any difference between the organization being
+         * displayed and the organization in the manager
          */
         if (count1 == count2) {
-            dataChanged = false;
             for (int i = 0; i < count1; i++ ) {
-                org1 = displayedManager.organization.get(i);
-                org2 = manager.organization.get(i);
-
-                if (DataBaseUtil.isDifferent(org1.getTypeId(), org2.getTypeId()) ||
-                    DataBaseUtil.isDifferent(org1.getOrganizationAttention(),
-                                             org2.getOrganizationAttention()) ||
-                    DataBaseUtil.isDifferent(org1.getOrganizationId(), org2.getOrganizationId())) {
-                    dataChanged = true;
+                r = table.getRowAt(i);
+                org = manager.organization.get(i);
+                if (r.getCell(1) != null)
+                    name = ((AutoCompleteValue)r.getCell(2)).getDisplay();
+                else
+                    name = null;
+                if (DataBaseUtil.isDifferent(org.getTypeId(), r.getCell(0)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAttention(), r.getCell(1)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationName(), name) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressMultipleUnit(), r.getCell(3)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressStreetAddress(),
+                                             r.getCell(4)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressCity(), r.getCell(5)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressState(), r.getCell(6)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressZipCode(), r.getCell(7)) ||
+                    DataBaseUtil.isDifferent(org.getOrganizationAddressCountry(), r.getCell(8))) {
+                    redraw = true;
                     break;
                 }
             }
         } else {
-            dataChanged = true;
+            redraw = true;
         }
 
-        if (dataChanged) {
-            displayedManager = manager;
+        displayOrganizations();
+    }
+
+    private void displayOrganizations() {
+        if ( !isVisible)
+            return;
+
+        if (redraw) {
+            redraw = false;
             setState(state);
             fireDataChange();
         }

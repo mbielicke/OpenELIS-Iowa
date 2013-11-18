@@ -23,41 +23,47 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.auxData.client;
+package org.openelis.modules.worksheetBuilder.client;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
- * This class is used to notify the handler that the aux data of a sample were
- * changed due to some action by the user e.g. adding or removing aux group(s)
+ * The event used to inform the handler that the format field needs to be enabled/disabled
+ * due to the prescence/abscence of analyses from another worksheet
  */
-public class AuxDataChangeEvent extends GwtEvent<AuxDataChangeEvent.Handler> {
+public class FormatSetEnabledEvent extends GwtEvent<FormatSetEnabledEvent.Handler> {
 
-    private static Type<AuxDataChangeEvent.Handler> TYPE;
-    
-    public AuxDataChangeEvent() {
+    private static Type<FormatSetEnabledEvent.Handler> TYPE;
+    private boolean                                    enable;
+
+    public FormatSetEnabledEvent(boolean enable) {
+        this.enable = enable;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
-    public Type<AuxDataChangeEvent.Handler> getAssociatedType() {
+    public Type<FormatSetEnabledEvent.Handler> getAssociatedType() {
         return (Type)TYPE;
     }
 
-    public static Type<AuxDataChangeEvent.Handler> getType() {
+    public static Type<FormatSetEnabledEvent.Handler> getType() {
         if (TYPE == null) {
-            TYPE = new Type<AuxDataChangeEvent.Handler>();
+            TYPE = new Type<FormatSetEnabledEvent.Handler>();
         }
         return TYPE;
     }
 
-    public static interface Handler extends EventHandler {
-        public void onAuxDataChange(AuxDataChangeEvent event);
-    }
-
     @Override
     protected void dispatch(Handler handler) {
-        handler.onAuxDataChange(this);
+        handler.onFormatSetEnabled(this);
+    }
+
+    public static interface Handler extends EventHandler {
+        public void onFormatSetEnabled(FormatSetEnabledEvent event);
+    }
+
+    public boolean getEnable() {
+        return enable;
     }
 }

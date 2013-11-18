@@ -28,14 +28,13 @@
              xmlns:c="urn:import:org.openelis.ui.widget.calendar">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes"/>
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" height="30px">
-      <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonPanelContainer}" width="100%">
+      <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}" width="100%">
         <g:HorizontalPanel>
-          <w:Button css="{uiRes.buttonPanel}" ui:field="commit" leftIcon="{uiRes.buttonPanel.CommitButtonImage}"
+          <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
                     text="{msg.commit}"/>
         </g:HorizontalPanel>
       </g:AbsolutePanel>
@@ -62,11 +61,27 @@
             <td>
               <w:TextBox ui:field="tubeNumber" width="75px" case="UPPER" field="String"/>
             </td>
+          </tr>
+          <tr>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.received}:"/>
             </td>
             <td>
               <c:Calendar ui:field="receivedDate" width="134px" begin="0" end="4"/>
+            </td>
+            <td class="{res.style.Prompt}">
+              <ui:text from="{msg.gen_username}:"/>
+            </td>
+            <td>
+              <w:AutoComplete ui:field="systemUserId" width="165px" dropHeight="201px" case="LOWER">
+                <w:popup>
+                  <t:Table>
+                    <t:Column>
+                      <t:LabelCell/>
+                    </t:Column>
+                  </t:Table>
+                </w:popup>
+              </w:AutoComplete>
             </td>
           </tr>
           <tr>
@@ -112,7 +127,7 @@
       </g:HTMLPanel>
     </g:layer>
     <g:layer top="135px" bottom="25px" left="5px" width="99%">
-      <t:Table ui:field="quickEntryTable" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+      <t:Table ui:field="quickEntryTable" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="90" label="{msg.accessionNum}">
           <t:LabelCell/>
         </t:Column>
@@ -137,7 +152,7 @@
     </g:layer>
     <g:layer bottom="0px" height="25px" left="5px" width="99%">
       <g:HorizontalPanel>
-        <w:Button ui:field="removeRowButton" leftIcon="{res.style.removeRowIcon}"
+        <w:Button ui:field="removeRowButton" leftIcon="{res.icon.removeRowIcon}"
                   text="{msg.removeRow}"/>
       </g:HorizontalPanel>
     </g:layer>

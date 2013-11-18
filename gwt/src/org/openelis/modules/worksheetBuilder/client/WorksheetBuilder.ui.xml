@@ -29,7 +29,6 @@
              xmlns:wb="urn:import:org.openelis.modules.worksheetBuilder.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes"/>
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
@@ -37,29 +36,29 @@
       <w:TabLayoutPanel barHeight="18" barUnit="PX">
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="A to Z"/>
+            <w:TabWidget text="{msg.gen_worksheet}"/>
           </w:customHeader>
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <g:LayoutPanel>
-                <g:layer top="0px" bottom="27px">
+                <g:layer top="0px" bottom="26px">
                   <t:Table ui:field="atozTable" horizontalScroll="ALWAYS" width="100%"
-                           header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-                    <t:Column width="50" label="{msg.id}">
+                           header="true" styleName="{res.table.ScreenTableWithSides}">
+                    <t:Column width="50" label="{msg.gen_id}">
                       <t:LabelCell/>
                     </t:Column>
-                    <t:Column width="150" label="{msg.description}">
+                    <t:Column width="150" label="{msg.gen_description}">
                       <t:LabelCell/>
                     </t:Column>
                   </t:Table>
                 </g:layer>
-                <g:layer bottom="0px" height="28px">
+                <g:layer bottom="0px" height="26px">
                   <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
                     <g:HorizontalPanel>
-                      <w:Button ui:field="atozPrev" leftIcon="{uiRes.atozButton.PreviousPageButtonImage}"
-                                enabled="false" css="{uiRes.atozButton}"/>
-                      <w:Button ui:field="atozNext" leftIcon="{uiRes.atozButton.NextPageButtonImage}"
-                                enabled="false" css="{uiRes.atozButton}"/>
+                      <w:Button ui:field="atozPrev" leftIcon="{res.atozButton.PreviousPageButtonImage}"
+                                enabled="false" css="{res.atozButton}"/>
+                      <w:Button ui:field="atozNext" leftIcon="{res.atozButton.NextPageButtonImage}"
+                                enabled="false" css="{res.atozButton}"/>
                     </g:HorizontalPanel>
                   </g:HorizontalPanel>
                 </g:layer>
@@ -69,16 +68,16 @@
         </w:tab>
         <w:tab>
           <w:customHeader>
-            <w:TabWidget text="{msg.analytes}"/>
+            <w:TabWidget text="{msg.gen_analytes}"/>
           </w:customHeader>
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
               <t:Table ui:field="analyteTable" horizontalScroll="ALWAYS"
-                       verticalScroll="ALWAYS" styleName="{uiRes.table.ScreenTableWithSides}">
+                       verticalScroll="ALWAYS" styleName="{res.table.ScreenTableWithSides}">
                 <t:Column width="20">
                   <t:CheckBoxCell/>
                 </t:Column>
-                <t:Column width="150" label="{msg.analytes}">
+                <t:Column width="150" label="{msg.gen_analytes}">
                   <t:LabelCell/>
                 </t:Column>
               </t:Table>
@@ -90,33 +89,33 @@
     <g:center>
       <g:LayoutPanel>
         <g:layer top="0px" height="30px">
-          <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonPanelContainer}"
+          <g:AbsolutePanel styleName="{res.buttonPanel.ButtonPanelContainer}"
                            width="100%">
             <g:HorizontalPanel>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="query" leftIcon="{uiRes.buttonPanel.QueryButtonImage}"
-                        text="{msg.query}" toggles="true"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="previous" leftIcon="{uiRes.buttonPanel.PreviousButtonImage}"
-                        text="{msg.previous}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="next" leftIcon="{uiRes.buttonPanel.NextButtonImage}"
-                        text="{msg.next}"/>
-              <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="add" leftIcon="{uiRes.buttonPanel.AddButtonImage}"
-                        text="{msg.add}" toggles="true"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="update" leftIcon="{uiRes.buttonPanel.UpdateButtonImage}"
-                        text="{msg.update}" toggles="true"/>
-              <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="commit" leftIcon="{uiRes.buttonPanel.CommitButtonImage}"
-                        text="{msg.commit}"/>
-              <w:Button css="{uiRes.buttonPanel}" ui:field="abort" leftIcon="{uiRes.buttonPanel.AbortButtonImage}"
-                        text="{msg.abort}"/>
-              <g:AbsolutePanel styleName="{uiRes.buttonPanel.ButtonDivider}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="query" leftIcon="{res.icon.QueryButtonImage}"
+                        text="{msg.gen_query}" toggles="true"/>
+              <w:Button css="{res.buttonPanel}" ui:field="previous" leftIcon="{res.icon.PreviousButtonImage}"
+                        text="{msg.gen_previous}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="next" leftIcon="{res.icon.NextButtonImage}"
+                        text="{msg.gen_next}"/>
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="add" leftIcon="{res.icon.AddButtonImage}"
+                        text="{msg.gen_add}" toggles="true"/>
+              <w:Button css="{res.buttonPanel}" ui:field="update" leftIcon="{res.icon.UpdateButtonImage}"
+                        text="{msg.gen_update}" toggles="true"/>
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="commit" leftIcon="{res.icon.CommitButtonImage}"
+                        text="{msg.gen_commit}"/>
+              <w:Button css="{res.buttonPanel}" ui:field="abort" leftIcon="{res.icon.AbortButtonImage}"
+                        text="{msg.gen_abort}"/>
+              <g:AbsolutePanel styleName="{res.buttonPanel.ButtonDivider}"/>
               <w:Menu ui:field="optionsMenu" selfShow="true">
                 <w:display>
-                  <w:Button ui:field="optionsButton" css="{uiRes.buttonPanel}" text="{msg.options}"
-                            rightIcon="{uiRes.buttonPanel.OptionsButtonImage}"/>
+                  <w:Button ui:field="optionsButton" css="{res.buttonPanel}" text="{msg.gen_options}"
+                            rightIcon="{res.icon.OptionsButtonImage}"/>
                 </w:display>
                 <w:MenuItem ui:field="worksheetHistory" description="" enabled="false"
-                            icon="{res.style.historyIcon}" display="{msg.worksheetHistory}"/>
+                            icon="{res.icon.historyIcon}" display="{msg.worksheet_worksheetHistory}"/>
               </w:Menu>
             </g:HorizontalPanel>
           </g:AbsolutePanel>
@@ -126,25 +125,25 @@
             <table class="{res.style.Form}">
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.worksheetNumber}:"/>
+                  <ui:text from="{msg.worksheet_worksheetNumber}:"/>
                 </td>
                 <td>
-                  <w:TextBox ui:field="worksheetId" width="100px" field="Integer"/>
+                  <w:TextBox ui:field="worksheetId" width="75px" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.status}:"/>
-                </td>
-                <td colspan="2">
-                  <w:Dropdown ui:field="statusId" width="119px" field="Integer"/>
-                </td>
-                <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.username}"/>
+                  <ui:text from="{msg.gen_status}:"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="systemUserId" width="166" case="LOWER">
+                  <w:Dropdown ui:field="statusId" width="110px" field="Integer"/>
+                </td>
+                <td class="{res.style.Prompt}">
+                  <ui:text from="{msg.gen_username}:"/>
+                </td>
+                <td>
+                  <w:AutoComplete ui:field="systemUserId" width="165px" dropHeight="201px" case="LOWER">
                     <w:popup>
-                      <t:Table visibleRows="10" header="true">
-                        <t:Column width="166" label="{msg.username}">
+                      <t:Table>
+                        <t:Column>
                           <t:LabelCell/>
                         </t:Column>
                       </t:Table>
@@ -154,38 +153,37 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.worksheetFormat}:"/>
+                  <ui:text from="{msg.worksheet_format}:"/>
                 </td>
                 <td>
-                  <w:Dropdown ui:field="formatId" width="130px" case="MIXED" field="Integer"/>
+                  <w:Dropdown ui:field="formatId" width="140px" dropWidth="150px" case="MIXED" field="Integer"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.relatedWorksheetNumber}:"/>
+                  <ui:text from="{msg.worksheet_relatedWorksheetNumber}:"/>
                 </td>
                 <td>
-                  <w:TextBox ui:field="relatedWorksheetId" width="100px" field="Integer"/>
-                </td>
-                <td>
-                  <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.style.fieldLookupIcon}"
-                            text=""/>
+                  <g:HorizontalPanel>
+                    <w:TextBox ui:field="relatedWorksheetId" width="72px" field="Integer"/>
+                    <w:Button ui:field="lookupWorksheetButton" leftIcon="{res.icon.fieldLookupIcon}" text="" css="{res.FormFieldButton}"/>
+                  </g:HorizontalPanel>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.instrumentName}:"/>
+                  <ui:text from="{msg.worksheet_instrumentName}:"/>
                 </td>
                 <td>
-                  <w:AutoComplete ui:field="instrumentName" width="166" case="LOWER">
+                  <w:AutoComplete ui:field="instrumentName" width="165" dropWidth="765" case="LOWER">
                     <w:popup>
                       <t:Table visibleRows="10" header="true">
-                        <t:Column width="150" label="{msg.name}">
+                        <t:Column width="150" label="{msg.gen_name}">
                           <t:LabelCell/>
                         </t:Column>
-                        <t:Column width="200" label="{msg.description}">
+                        <t:Column width="200" label="{msg.gen_description}">
                           <t:LabelCell/>
                         </t:Column>
-                        <t:Column width="200" label="{msg.type}">
+                        <t:Column width="200" label="{msg.gen_type}">
                           <t:LabelCell/>
                         </t:Column>
-                        <t:Column width="200" label="{msg.location}">
+                        <t:Column width="200" label="{msg.gen_location}">
                           <t:LabelCell/>
                         </t:Column>
                       </t:Table>
@@ -195,28 +193,28 @@
               </tr>
               <tr>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.created}:"/>
+                  <ui:text from="{msg.worksheet_createdDate}:"/>
                 </td>
                 <td>
-                  <c:Calendar ui:field="createdDate" width="134px" begin="0" end="4"/> <!-- pattern="{msg.dateTimePattern}" maxValue="0" -->
+                  <c:Calendar ui:field="createdDate" width="135px" begin="0" end="4"/>
                 </td>
                 <td class="{res.style.Prompt}">
-                  <ui:text from="{msg.description}:"/>
+                  <ui:text from="{msg.gen_description}:"/>
                 </td>
-                <td colspan="4">
-                  <w:TextBox ui:field="description" width="400px" case="LOWER" field="String"/>
+                <td colspan="3">
+                  <w:TextBox ui:field="description" width="410px" case="LOWER" maxLength="60" field="String"/>
                 </td>
               </tr>
             </table>
           </g:HTMLPanel>
         </g:layer>
-        <g:layer top="125px" bottom="0px">
+        <g:layer top="110px" bottom="0px">
           <w:TabLayoutPanel ui:field="tabPanel" barHeight="18" barUnit="PX">
             <w:tab>
               <w:customHeader>
-                <w:TabWidget text="{msg.worksheet}"/>
+                <w:TabWidget text="{msg.gen_worksheet}"/>
               </w:customHeader>
-              <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <wb:WorksheetItemTabUI ui:field="worksheetItemTab" />
                 </g:layer>
@@ -224,9 +222,9 @@
             </w:tab>
             <w:tab>
               <w:customHeader>
-                <w:TabWidget text="{msg.note}" />
+                <w:TabWidget text="{msg.gen_note}" />
               </w:customHeader>
-              <g:LayoutPanel styleName="{uiRes.tabpanel.TabContainer}">
+              <g:LayoutPanel styleName="{res.tabpanel.TabContainer}">
                 <g:layer>
                   <ws:WorksheetNotesTabUI ui:field="notesTab" />
                 </g:layer>

@@ -25,8 +25,7 @@
 	<g:LayoutPanel>
 		<g:layer top="0px" bottom="35px">
 			<r:Tree ui:field="tree" header="true"
-				styleName="{uiRes.table.ScreenTableWithSides}"
-				allowMultipleSelection="true" >
+				styleName="{res.table.ScreenTableWithSides}" allowMultipleSelection="true">
 				<r:Column width="55" label="{msg.order_itemNum}" />
 				<r:Column width="150" label="{msg.gen_test}" />
 				<r:Column width="150" label="{msg.gen_method}" />
@@ -115,10 +114,12 @@
 				</g:layer>
 				<g:layer bottom="0px" top="0px" width="50%" left="250px">
 					<g:HorizontalPanel>
-						<w:Button ui:field="removeTestButton" leftIcon="{res.style.removeRowIcon}"
+						<w:Button ui:field="removeTestButton" leftIcon="{res.icon.removeRowIcon}"
 							text="{msg.order_removeTest}" />
-						<w:Button ui:field="checkAllButton" text="{msg.gen_checkAll}" />
-						<w:Button ui:field="uncheckAllButton" text="{msg.gen_uncheckAll}" />
+						<w:Button ui:field="checkAllButton" leftIcon="{uiRes.checkbox.Checked}"
+							text="{msg.gen_checkAll}" />
+						<w:Button ui:field="uncheckAllButton" leftIcon="{uiRes.checkbox.Unchecked}"
+							text="{msg.gen_uncheckAll}" />
 					</g:HorizontalPanel>
 				</g:layer>
 			</g:LayoutPanel>

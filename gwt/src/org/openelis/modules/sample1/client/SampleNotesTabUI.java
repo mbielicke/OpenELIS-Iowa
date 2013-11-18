@@ -25,7 +25,10 @@
  */
 package org.openelis.modules.sample1.client;
 
+import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
+
+import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
@@ -48,7 +51,6 @@ import org.openelis.ui.widget.NotesPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -69,22 +71,24 @@ public class SampleNotesTabUI extends Screen {
     @UiField
     protected Button                      editNoteButton, addNoteButton;
 
-    protected EditNoteLookupUI            editNoteLookup;
-
     protected Screen                      parentScreen;
 
-    protected SampleManager1              manager, displayedManager;
+    protected EditNoteLookupUI            editNoteLookup;
 
-    protected boolean                     canEdit, isVisible;
+    protected SampleManager1              manager;
 
-    public SampleNotesTabUI(Screen parentScreen, EventBus bus) {
+    protected NoteViewDO                  displayedExtNote, displayedIntNote;
+
+    protected boolean                     canEdit, isVisible, redraw;
+
+    public SampleNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
+        displayedExtNote = null;
+        displayedIntNote = null;
     }
 
     private void initialize() {
@@ -118,38 +122,63 @@ public class SampleNotesTabUI extends Screen {
                 displayNotes();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayNotes();
-                                   }
-                               });
     }
 
     public void setData(SampleManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
-            this.manager = manager;        
-        }
+        if (DataBaseUtil.isDifferent(this.manager, manager))
+            this.manager = manager;
     }
 
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    /**
+     * notifies the tab that it may need to refresh its widgets; if the data
+     * currently showing in the widgets is the same as the data in the latest
+     * manager then the widgets are not refreshed
+     */
+    public void onDataChange() {
+        Integer id1, id2;
+        String txt1, txt2;
+
+        /*
+         * compare external note
+         */
+        id1 = null;
+        txt1 = null;
+        if (displayedExtNote != null) {
+            id1 = displayedExtNote.getId();
+            txt1 = displayedExtNote.getText();
+        }
+
+        id2 = null;
+        txt2 = null;
+        if (manager != null && manager.sampleExternalNote.get() != null) {
+            id2 = manager.sampleExternalNote.get().getId();
+            txt2 = manager.sampleExternalNote.get().getText();
+        }
+
+        /*
+         * since the sample only has one external note, its id won't change but
+         * its text can
+         */
+        redraw = DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2);
+
+        if ( !redraw) {
+            /*
+             * compare internal notes
+             */
+            id1 = displayedIntNote != null ? displayedIntNote.getId() : null;
+            id2 = null;
+            if (manager != null && manager.sampleInternalNote.count() > 0)
+                id2 = manager.sampleInternalNote.get(0).getId();
+            redraw = DataBaseUtil.isDifferent(id1, id2);
+        }
+
+        displayNotes();
     }
 
     @UiHandler("editNoteButton")
@@ -163,49 +192,25 @@ public class SampleNotesTabUI extends Screen {
     }
 
     private void displayNotes() {
-        int count1, count2;
-        Integer id1, id2;
-        boolean dataChanged;
-
         if ( !isVisible)
             return;
 
-        /*
-         * compare external notes
-         */
-        id1 = null;
-        id2 = null;
-        if (displayedManager != null && displayedManager.sampleExternalNote.get() != null)
-            id1 = displayedManager.sampleExternalNote.get().getId();
-
-        if (manager != null && manager.sampleExternalNote.get() != null)
-            id2 = manager.sampleExternalNote.get().getId();
-
-        dataChanged = DataBaseUtil.isDifferent(id1, id2);
-
-        if ( !dataChanged) {
+        if (redraw) {
             /*
-             * compare internal notes
+             * don't redraw unless the data has changed
              */
-            count1 = displayedManager == null ? 0 : displayedManager.sampleInternalNote.count();
-            count2 = manager == null ? 0 : manager.sampleInternalNote.count();
-
-            if (count1 == count2) {
-                if (count1 > 0)
-                    dataChanged = DataBaseUtil.isDifferent(displayedManager.sampleInternalNote.get(0)
-                                                                                              .getId(),
-                                                           manager.sampleInternalNote.get(0)
-                                                                                     .getId());
+            redraw = false;
+            if (manager != null) {
+                displayedExtNote = manager.sampleExternalNote.get();
+                if (manager.sampleInternalNote.count() > 0)
+                    displayedIntNote = manager.sampleInternalNote.get(0);
             } else {
-                dataChanged = true;
+                displayedExtNote = null;
+                displayedIntNote = null;
             }
-        }
-
-        if (dataChanged) {
-            displayedManager = manager;
-            evaluateEdit();
             setState(state);
             fireDataChange();
+            logger.log(Level.SEVERE, "redrawn");
         }
     }
 
@@ -257,23 +262,23 @@ public class SampleNotesTabUI extends Screen {
                      * isExternal is not used for this check because its value
                      * doesn't change in this inner class after the lookup is
                      * created, even though subsequent calls to showNoteLookup
-                     * may have different values passed to it 
+                     * may have different values passed to it
                      */
                     if (editNoteLookup.getHasSubject()) {
-                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) 
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
                             manager.sampleInternalNote.removeEditing();
-                        else 
+                        else
                             setNoteFields(manager.sampleInternalNote.getEditing(),
                                           editNoteLookup.getSubject(),
                                           editNoteLookup.getText());
                         drawInternalNotes();
                     } else {
-                        if (DataBaseUtil.isEmpty(editNoteLookup.getText())) 
+                        if (DataBaseUtil.isEmpty(editNoteLookup.getText()))
                             manager.sampleExternalNote.removeEditing();
-                        else 
+                        else
                             setNoteFields(manager.sampleExternalNote.getEditing(),
-                                      null,
-                                      editNoteLookup.getText());
+                                          null,
+                                          editNoteLookup.getText());
                         drawExternalNote();
                     }
                 }

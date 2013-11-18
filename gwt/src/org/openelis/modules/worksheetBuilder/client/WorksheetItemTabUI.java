@@ -112,8 +112,10 @@ public class WorksheetItemTabUI extends Screen {
     @UiField
     protected AutoComplete                              description, unitOfMeasureId;
     @UiField
-    protected Button                                    addRowButton, loadTemplateButton,
-                                                        removeRowButton, undoQcsButton;
+    protected Button                                    addRowButton, duplicateRowButton,
+                                                        loadTemplateButton, moveDownButton,
+                                                        moveUpButton, removeRowButton,
+                                                        undoQcsButton;
     @UiField
     protected Dropdown<Integer>                         analysisStatusId, qcLink;
     @UiField
@@ -200,12 +202,30 @@ public class WorksheetItemTabUI extends Screen {
                 SelectionEvent selEvent;
                 
                 if (worksheetItemTable.getSelectedRow() != -1) {
-                    if (isState(ADD, UPDATE) && canEdit)
+                    if (isState(ADD, UPDATE) && canEdit) {
                         removeRowButton.setEnabled(true);
+                        if (worksheetItemTable.getSelectedRows().length == 1)
+                            duplicateRowButton.setEnabled(true);
+                        else
+                            duplicateRowButton.setEnabled(false);
+                        if (worksheetItemTable.getSelectedRow() != 0 &&
+                            worksheetItemTable.getSelectedRows().length == 1)
+                            moveUpButton.setEnabled(true);
+                        else
+                            moveUpButton.setEnabled(false);
+                        if (worksheetItemTable.getSelectedRow() != worksheetItemTable.getRowCount() - 1 &&
+                            worksheetItemTable.getSelectedRows().length == 1)
+                            moveDownButton.setEnabled(true);
+                        else
+                            moveDownButton.setEnabled(false);
+                    }
                     row = worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow());
                     selEvent = new SelectionEvent(SelectedType.ANALYSIS, (String)row.getData());
                 } else {
                     removeRowButton.setEnabled(false);
+                    duplicateRowButton.setEnabled(true);
+                    moveUpButton.setEnabled(true);
+                    moveDownButton.setEnabled(true);
                     selEvent = new SelectionEvent(SelectedType.ANALYSIS, null);
                 }
                 
@@ -230,7 +250,8 @@ public class WorksheetItemTabUI extends Screen {
                 } else if (event.getCol() == 6) {
                     data = (WorksheetAnalysisViewDO)manager.getObject((String)worksheetItemTable.getRowAt(worksheetItemTable.getSelectedRow())
                                                                                                 .getData());
-                    if (Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
+                    if (data.getQcLotId() != null ||
+                        Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
                         Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId()))
                         event.cancel();
                 }
@@ -253,13 +274,19 @@ public class WorksheetItemTabUI extends Screen {
                 waVDO = (WorksheetAnalysisViewDO)manager.getObject((String)row.getData());
                 switch (c) {
                     case 2:
-                        waVDO.setQcLotId(((AutoCompleteValue)val).getId());
+                        if (val != null)
+                            waVDO.setQcLotId(((AutoCompleteValue)val).getId());
+                        else
+                            waVDO.setQcLotId(null);
                         break;
                     case 3:
                         waVDO.setWorksheetAnalysisId((Integer)val);
                         break;
                     case 6:
-                        waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
+                        if (val != null)
+                            waVDO.setUnitOfMeasureId(((AutoCompleteValue)val).getId());
+                        else
+                            waVDO.setUnitOfMeasureId(null);
                         break;
                 }
             }
@@ -280,14 +307,16 @@ public class WorksheetItemTabUI extends Screen {
             sortAsc = new MenuItem(UIResources.INSTANCE.menuCss().Ascending(), org.openelis.ui.messages.Messages.get().header_ascending(), "");
             sortAsc.addCommand(new Command() {
                 public void execute() {
-                    sortItems(col, Table.SORT_ASCENDING);
+                    if (worksheetItemTable.getRowCount() > 1)
+                        sortItems(col, Table.SORT_ASCENDING);
                 }
             });
             column.addMenuItem(sortAsc);
             sortDesc = new MenuItem(UIResources.INSTANCE.menuCss().Descending(), org.openelis.ui.messages.Messages.get().header_descending(), "");
             sortDesc.addCommand(new Command() {
                 public void execute() {
-                    sortItems(col, Table.SORT_DESCENDING);
+                    if (worksheetItemTable.getRowCount() > 1)
+                        sortItems(col, Table.SORT_DESCENDING);
                 }
             });
             column.addMenuItem(sortDesc);
@@ -406,6 +435,24 @@ public class WorksheetItemTabUI extends Screen {
             }
         });
 
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                duplicateRowButton.setEnabled(false);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                moveDownButton.setEnabled(false);
+            }
+        });
+
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                moveUpButton.setEnabled(false);
+            }
+        });
+
         undoAll.addCommand(new Command() {
             @Override
             public void execute() {
@@ -440,7 +487,7 @@ public class WorksheetItemTabUI extends Screen {
         bus.addHandlerToSource(StateChangeEvent.getType(), parentScreen, new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 templateMap.clear();
-                loadTemplateMenu.clear();
+                loadTemplateMenu.clearItems();
                 manualAnalysisUids = null;
                 templateAnalysisUids = null;
                 qcChoices = null;
@@ -526,6 +573,9 @@ public class WorksheetItemTabUI extends Screen {
                             enableLoadTemplateMenu(true);
                             templateMap.put(item, data.getTestId());
                         }
+                        
+                        if (manager.getWorksheet().getFormatId() == null)
+                            manager.getWorksheet().setFormatId(((AnalysisViewVO)row.getData()).getWorksheetFormatId());
                     }
                     
                     try {
@@ -556,7 +606,7 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private void displayItemData() {
-        int i, a, count1, count2, count3, count4;
+        int i, a, count1, count2, count3, count4, count5, count6;
         boolean dataChanged;
         WorksheetAnalysisViewDO waDO1, waDO2;
         WorksheetItemDO wiDO1, wiDO2;
@@ -578,27 +628,30 @@ public class WorksheetItemTabUI extends Screen {
                 for (i = 0; i < count1; i++ ) {
                     wiDO1 = displayedManager.item.get(i);
                     wiDO2 = manager.item.get(i);
-                    count2 = displayedManager.analysis.count(wiDO1);
-                    count3 = manager.analysis.count(wiDO2);
-                    if (count2 == count3) {
-                        for (a = 0; a < count2; a++ ) {
+                    count3 = displayedManager.analysis.count(wiDO1);
+                    count4 = manager.analysis.count(wiDO2);
+                    if (count3 == count4) {
+                        for (a = 0; a < count3; a++ ) {
                             waDO1 = displayedManager.analysis.get(wiDO1, a);
                             waDO2 = manager.analysis.get(wiDO2, a);
                             if (DataBaseUtil.isDifferent(waDO1.getAccessionNumber(), waDO2.getAccessionNumber()) ||
-                                DataBaseUtil.isDifferent(waDO1.getStatusId(), waDO2.getStatusId())) {
+                                DataBaseUtil.isDifferent(waDO1.getDescription(), waDO2.getDescription()) ||
+                                DataBaseUtil.isDifferent(waDO1.getWorksheetAnalysisId(), waDO2.getWorksheetAnalysisId()) ||
+                                DataBaseUtil.isDifferent(waDO1.getStatusId(), waDO2.getStatusId()) ||
+                                DataBaseUtil.isDifferent(waDO1.getUnitOfMeasureId(), waDO2.getUnitOfMeasureId())) {
                                 dataChanged = true;
                                 break items;
                             }
-                            count3 = displayedManager.result.count(waDO1);
-                            count4 = manager.result.count(waDO2);
-                            if (count3 == count4) {
+                            count5 = displayedManager.result.count(waDO1);
+                            count6 = manager.result.count(waDO2);
+                            if (count5 == count6) {
                             } else {
                                 dataChanged = true;
                                 break items;
                             }
-                            count3 = displayedManager.qcResult.count(waDO1);
-                            count4 = manager.qcResult.count(waDO2);
-                            if (count3 == count4) {
+                            count5 = displayedManager.qcResult.count(waDO1);
+                            count6 = manager.qcResult.count(waDO2);
+                            if (count5 == count6) {
                             } else {
                                 dataChanged = true;
                                 break items;
@@ -623,6 +676,7 @@ public class WorksheetItemTabUI extends Screen {
     }
 
     private ArrayList<Row> getTableModel() {
+        boolean hasOther;
         int i, j;
         ArrayList<Row> model;
         Row row;
@@ -633,6 +687,7 @@ public class WorksheetItemTabUI extends Screen {
         qcLinkModel.clear();
         qcLinkModel.add(new Item<Integer>(null, ""));
 
+        hasOther = false;
         model = new ArrayList<Row>();
         multiQcMessages = new ValidationErrorsList();
         if (manager != null) {
@@ -644,7 +699,9 @@ public class WorksheetItemTabUI extends Screen {
                     row.setCell(0, wiDO.getPosition());
                     for (j = 0; j < manager.analysis.count(wiDO); j++) {
                         waDO = manager.analysis.get(wiDO, j);
-                        qcLinkModel.add(new Item<Integer>(waDO.getId(), waDO.getAccessionNumber()));
+                        qcLinkModel.add(new Item<Integer>(waDO.getId(), waDO.getAccessionNumber() +
+                                                                        " (" + wiDO.getPosition() +
+                                                                        ")"));
     
                         if (j > 0) {
                             row = new Row(13);
@@ -697,6 +754,9 @@ public class WorksheetItemTabUI extends Screen {
             }
         }        
 
+        if (isState(ADD))
+            bus.fireEventFromSource(new FormatSetEnabledEvent(!hasOther), screen);
+        
         /*
          * Reload the model for the QC Link column
          */
@@ -729,8 +789,8 @@ public class WorksheetItemTabUI extends Screen {
         }
 
         win = new org.openelis.ui.widget.Window();
-        win.setName(Messages.get().worksheetBuilderLookup());
-        win.setSize("1075px", "498px");
+        win.setName(Messages.get().worksheet_worksheetBuilderLookup());
+        win.setSize("1060px", "498px");
         wbLookupScreen.setWindow(win);
         win.setContent(wbLookupScreen);
         try {
@@ -815,7 +875,7 @@ public class WorksheetItemTabUI extends Screen {
         ModalWindow modal;
         
         if (manager.getWorksheet().getFormatId() == null) {
-            Window.alert(Messages.get().worksheetChooseFormatBeforeAddFromOther());
+            Window.alert(Messages.get().worksheet_chooseFormatBeforeAddFromOther());
             return;
         }
         
@@ -875,7 +935,7 @@ public class WorksheetItemTabUI extends Screen {
                                                             data = manager.analysis.add(itemDO);
                                                             qcLinkMap.put(waDO.getId(), data.getId());
                                                             copyDO(waDO, data);
-                                                            data.setIsFromOther("Y");
+                                                            data.setFromOtherId(waDO.getId());
                                                             newData.add(data);
                                                             manualAnalysisUids.add(manager.getUid(data));
                                                         }
@@ -899,7 +959,7 @@ public class WorksheetItemTabUI extends Screen {
                                     }
                                     
                                     modal2 = new ModalWindow();
-                                    modal2.setName(Messages.get().worksheetNumber()+wVDO.getId().toString());
+                                    modal2.setName(Messages.get().worksheet_worksheetAnalysisSelection() + " (#" + wVDO.getId().toString() + ")");
                                     modal2.setContent(waSelectionScreen);
                                     modal2.setSize("502px", "365px");
                                     waSelectionScreen.setWindow(modal2);
@@ -917,7 +977,7 @@ public class WorksheetItemTabUI extends Screen {
             }
             
             modal = new ModalWindow();
-            modal.setName(Messages.get().worksheetLookup());
+            modal.setName(Messages.get().worksheet_worksheetLookup());
             modal.setContent(wLookupScreen);
             modal.setSize("636px", "482px");
             wLookupScreen.setWindow(modal);
@@ -980,7 +1040,6 @@ public class WorksheetItemTabUI extends Screen {
                                     data = manager.analysis.add(itemDO);
                                     data.setAccessionNumber("X." + itemDO.getId());
                                     data.setQcLotId(qcLotVDO.getQcId());
-                                    data.setIsFromOther("N");
                                     data.setDescription(qcLotVDO.getQcName() + " (" +
                                                         qcLotVDO.getLotNumber() + ")");
                                     newData.add(data);
@@ -1002,9 +1061,9 @@ public class WorksheetItemTabUI extends Screen {
                 qcLookupScreen.enableMultiSelect(true);
             }
 
-            win = new ModalWindow();
-            win.setName(Messages.get().QCLookup());
-            win.setSize("735px", "360px");
+            win = new ModalWindow(false);
+            win.setName(Messages.get().qc_qcLookup());
+            win.setSize("729px", "360px");
             qcLookupScreen.setWindow(win);
             win.setContent(qcLookupScreen);
             qcLookupScreen.clearFields();
@@ -1045,7 +1104,7 @@ public class WorksheetItemTabUI extends Screen {
                     if (data.getId().equals(tempData.getWorksheetAnalysisId())) {
                         if (buffer.length() > 0)
                             buffer.insert(0, "\n");
-                        buffer.insert(0, "Row " + (i + 1) + ": " + Messages.get().oneOrMoreQcLinkOnRemove());
+                        buffer.insert(0, "Row " + (i + 1) + ": " + Messages.get().worksheet_oneOrMoreQcLinkOnRemove());
                         continue ROW;
                     }
                 }
@@ -1187,6 +1246,61 @@ public class WorksheetItemTabUI extends Screen {
         fireDataChange();
     }
 
+    @SuppressWarnings("unused")
+    @UiHandler("duplicateRowButton")
+    protected void duplicateRow(ClickEvent event) {
+        int index;
+        Row dataRow;
+        WorksheetAnalysisViewDO waVDO, newWAVDO;
+        WorksheetItemDO wiDO, newWIDO;
+
+        worksheetItemTable.finishEditing();
+        index = worksheetItemTable.getSelectedRow();
+        manager.item.duplicate(index);
+        worksheetItemTable.setModel(getTableModel());
+        worksheetItemTable.selectRowAt(index + 1);
+    }
+        
+    @SuppressWarnings("unused")
+    @UiHandler("moveDownButton")
+    protected void moveRowDown(ClickEvent event) {
+        int index;
+
+        worksheetItemTable.finishEditing();
+        index = worksheetItemTable.getSelectedRow();
+        manager.item.move(index, false);
+        worksheetItemTable.setModel(getTableModel());
+        worksheetItemTable.selectRowAt(++index);
+        //
+        // Programmatically selecting the row doesn't fire selection events, so
+        // we need to enable/disable the move buttons accordingly
+        //
+        if (index >= worksheetItemTable.getRowCount() - 1)
+            moveDownButton.setEnabled(false);
+        if (!moveUpButton.isEnabled() && index > 0)
+            moveUpButton.setEnabled(true);
+    }
+        
+    @SuppressWarnings("unused")
+    @UiHandler("moveUpButton")
+    protected void moveRowUp(ClickEvent event) {
+        int index;
+
+        worksheetItemTable.finishEditing();
+        index = worksheetItemTable.getSelectedRow();
+        manager.item.move(index, true);
+        worksheetItemTable.setModel(getTableModel());
+        worksheetItemTable.selectRowAt(--index);
+        //
+        // Programmatically selecting the row doesn't fire selection events, so
+        // we need to enable/disable the move buttons accordingly
+        //
+        if (!moveDownButton.isEnabled() && index < worksheetItemTable.getRowCount() - 1)
+            moveDownButton.setEnabled(true);
+        if (index <= 0)
+            moveUpButton.setEnabled(false);
+    }
+        
     private void enableAddRowMenu(boolean enable) {
         addRowMenu.setEnabled(enable);
         addRowButton.setEnabled(enable);
@@ -1245,7 +1359,6 @@ public class WorksheetItemTabUI extends Screen {
         
         waVDO.setAccessionNumber(avVO.getAccessionNumber().toString());
         waVDO.setAnalysisId(avVO.getAnalysisId());
-        waVDO.setIsFromOther("N");
         waVDO.setDescription(avVO.getWorksheetDescription());
         waVDO.setTestId(avVO.getTestId());
         waVDO.setTestName(avVO.getTestName());
@@ -1306,16 +1419,9 @@ public class WorksheetItemTabUI extends Screen {
         return qcLinks;
     }
     
-    private void sortItems(int col, int direction) {
-        int i;
-        ArrayList<Object> keys;
-        
-        keys = new ArrayList<Object>();
-        for (i = 0; i < worksheetItemTable.getRowCount(); i++) 
-            keys.add(worksheetItemTable.getRowAt(i).getCell(col));
-        
+    private void sortItems(int col, int dir) {
         try {
-            manager = WorksheetBuilderService.get().sortItems(manager, keys, direction);
+            manager = WorksheetBuilderService.get().sortItems(manager, col, dir);
             bus.fireEventFromSource(new WorksheetManagerModifiedEvent(manager), screen);
         } catch (Exception anyE) {
             anyE.printStackTrace();

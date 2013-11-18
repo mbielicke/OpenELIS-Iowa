@@ -32,6 +32,7 @@ import static org.openelis.ui.screen.State.DELETE;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
 import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 
@@ -81,9 +82,9 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
-public class MethodScreen extends Screen {
+public class MethodScreenUI extends Screen {
     @UiTemplate("Method.ui.xml")
-    interface MethodUiBinder extends UiBinder<Widget, MethodScreen> {
+    interface MethodUiBinder extends UiBinder<Widget, MethodScreenUI> {
     };
 
     public static final MethodUiBinder uiBinder = GWT.create(MethodUiBinder.class);
@@ -113,7 +114,7 @@ public class MethodScreen extends Screen {
 
     private ScreenNavigator<IdNameVO>  nav;
 
-    public MethodScreen(WindowInt window) throws Exception {
+    public MethodScreenUI(WindowInt window) throws Exception {
         setWindow(window);
         
         initWidget(uiBinder.createAndBindUi(this));
@@ -460,9 +461,13 @@ public class MethodScreen extends Screen {
 
     @UiHandler("commit")
     protected void commit(ClickEvent event) {
+        Validation validation;
+        
         finishEditing();
+        
+        validation = validate();
 
-        if ( !validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }

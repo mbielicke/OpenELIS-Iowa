@@ -52,6 +52,7 @@ import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.AutoComplete;
 import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
@@ -70,7 +71,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -97,20 +97,19 @@ public class TestTabUI extends Screen {
 
     protected Screen               parentScreen;
 
-    protected boolean              isVisible, canEdit;
+    protected boolean              isVisible, canEdit, redraw;
 
-    protected OrderManager1        manager, displayedManager;
+    protected OrderManager1        manager;
 
     private static final String    TEST_LEAF = "test", ANALYTE_LEAF = "analyte";
 
-    public TestTabUI(Screen parentScreen, EventBus bus) {
+    public TestTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        setEventBus(parentScreen.getEventBus());
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
     }
 
     private void initialize() {
@@ -156,7 +155,7 @@ public class TestTabUI extends Screen {
 
         tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if (event.getCol() > 0 || !isState(ADD, UPDATE))
+                if (event.getCol() > 0 || !isState(ADD, UPDATE) || !canEdit)
                     event.cancel();
             }
         });
@@ -272,34 +271,6 @@ public class TestTabUI extends Screen {
                 displayTests();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       evaluateEdit();
-                                       displayTests();
-                                   }
-                               });
-    }
-
-    public void setData(OrderManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
-            this.manager = manager;
-        }
     }
 
     @UiHandler("removeTestButton")
@@ -365,6 +336,51 @@ public class TestTabUI extends Screen {
         }
     }
 
+    public void setData(OrderManager1 manager) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
+            this.manager = manager;
+        }
+    }
+
+    public void setState(State state) {
+        evaluateEdit();
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
+        int count1, count2;
+        OrderTestViewDO test;
+        Node n;
+
+        evaluateEdit();
+        count1 = tree.getRoot() == null ? 0 : tree.getRoot().getChildCount();
+        count2 = manager == null ? 0 : manager.test.count();
+
+        /*
+         * find out if there's any difference between the item being displayed
+         * and the item in the manager
+         */
+        if (count1 == count2) {
+            for (int i = 0; i < count1; i++ ) {
+                n = tree.getRoot().getChildAt(i);
+                test = manager.test.get(i);
+
+                if (DataBaseUtil.isDifferent(test.getItemSequence(), n.getCell(0)) ||
+                    DataBaseUtil.isDifferent(test.getTestName(), n.getCell(1)) ||
+                    DataBaseUtil.isDifferent(test.getMethodName(), n.getCell(2)) ||
+                    DataBaseUtil.isDifferent(test.getDescription(), n.getCell(3))) {
+                    redraw = true;
+                    break;
+                }
+            }
+        } else {
+            redraw = true;
+        }
+
+        displayTests();
+    }
+
     private Node getRoot() {
         int i, j;
         Node root, tnode, anode;
@@ -412,39 +428,12 @@ public class TestTabUI extends Screen {
     }
 
     private void displayTests() {
-        int count1, count2;
-        boolean dataChanged;
-        OrderTestViewDO org1, org2;
 
         if ( !isVisible)
             return;
 
-        count1 = displayedManager == null ? 0 : displayedManager.test.count();
-        count2 = manager == null ? 0 : manager.test.count();
-
-        /*
-         * find out if there's any difference between the tests of the two
-         * managers
-         */
-        if (count1 == count2) {
-            dataChanged = false;
-            for (int i = 0; i < count1; i++ ) {
-                org1 = displayedManager.test.get(i);
-                org2 = manager.test.get(i);
-
-                if (DataBaseUtil.isDifferent(org1.getTestId(), org2.getTestId()) ||
-                    DataBaseUtil.isDifferent(org1.getMethodId(), org2.getMethodId()) ||
-                    DataBaseUtil.isDifferent(org1.getItemSequence(), org2.getItemSequence())) {
-                    dataChanged = true;
-                    break;
-                }
-            }
-        } else {
-            dataChanged = true;
-        }
-
-        if (dataChanged) {
-            displayedManager = manager;
+        if (redraw) {
+            redraw = false;
             setState(state);
             fireDataChange();
             testName.setFocus(testName.isEnabled());

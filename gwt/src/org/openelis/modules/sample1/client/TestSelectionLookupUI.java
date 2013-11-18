@@ -38,6 +38,7 @@ import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
@@ -105,7 +106,6 @@ public abstract class TestSelectionLookupUI extends Screen {
     }
 
     private void initialize() {
-
         addScreenHandler(tree, "tree", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 tree.setRoot(getRoot());
@@ -225,7 +225,7 @@ public abstract class TestSelectionLookupUI extends Screen {
     }
 
     /**
-     * returns the list of nodes showing selected prep tests
+     * returns the list of selected prep / reflex tests
      */
     public ArrayList<SampleTestRequestVO> getSelectedTests() {
         return selectedTests;
@@ -241,7 +241,7 @@ public abstract class TestSelectionLookupUI extends Screen {
      */
     public abstract void ok();
 
-    public Node getRoot() {
+    private Node getRoot() {
         int i;
         boolean isPrep;
         Integer anaId;
@@ -389,9 +389,9 @@ public abstract class TestSelectionLookupUI extends Screen {
     @UiHandler("okButton")
     protected void ok(ClickEvent event) {
         int i, j;
-        String name;
         Node parent, child;
         ValidationErrorsList errors;
+        TestViewDO t;
         TestData td;
 
         if (selectedTests == null)
@@ -402,8 +402,9 @@ public abstract class TestSelectionLookupUI extends Screen {
         errors = new ValidationErrorsList();
 
         /*
-         * create the list of prep/reflex test(s) selected by the user; show
-         * error(s) if section is not selected for some test(s)
+         * create the list of prep/reflex test(s) checked by the user; show an
+         * error if the section is not selected for some test checked by the
+         * user
          */
         for (i = 0; i < tree.getRoot().getChildCount(); i++ ) {
             parent = tree.getRoot().getChildAt(i);
@@ -411,15 +412,21 @@ public abstract class TestSelectionLookupUI extends Screen {
             for (j = 0; j < parent.getChildCount(); j++ ) {
                 child = parent.getChildAt(j);
                 td = child.getData();
+
+                if ( !"Y".equals(child.getCell(2)))
+                    continue;
+
                 if (td.test.getSectionId() == null) {
-                    name = td.testManager.getTest().getName();
+                    t = td.testManager.getTest();
                     if (td.test.getResultId() == null)
                         errors.add(new FormErrorException(Messages.get()
-                                                                  .testSelection_prepTestNeedsSection(name)));
+                                                                  .testSelection_prepTestNeedsSection(t.getName(),
+                                                                                                      t.getMethodName())));
                     else
                         errors.add(new FormErrorException(Messages.get()
-                                                                  .testSelection_reflexTestNeedsSection(name)));
-                } else if ("Y".equals(child.getCell(2))) {
+                                                                  .testSelection_reflexTestNeedsSection(t.getName(),
+                                                                                                        t.getMethodName())));
+                } else {
                     selectedTests.add(td.test);
                 }
             }
@@ -535,6 +542,10 @@ public abstract class TestSelectionLookupUI extends Screen {
         return null;
     }
 
+    /**
+     * This class is used to keep track of the data associated with each prep or
+     * reflex test that can be chosen for an analysis in the tree
+     */
     private static class TestData {
         boolean             isOptional;
         TestManager         testManager;

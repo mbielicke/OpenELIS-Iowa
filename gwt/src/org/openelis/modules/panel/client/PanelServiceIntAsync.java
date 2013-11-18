@@ -38,8 +38,9 @@ public interface PanelServiceIntAsync {
 
     void fetchWithItems(Integer id, AsyncCallback<PanelManager> callback);
 
+    void fetchAll(AsyncCallback<ArrayList<PanelDO>> callback);
+
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void update(PanelManager man, AsyncCallback<PanelManager> callback);
-
 }

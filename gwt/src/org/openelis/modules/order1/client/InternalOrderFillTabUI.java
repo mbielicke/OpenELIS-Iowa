@@ -34,6 +34,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
@@ -41,7 +42,6 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -55,22 +55,21 @@ public class InternalOrderFillTabUI extends Screen {
     private static InternalOrderFillTabUiBinder uiBinder = GWT.create(InternalOrderFillTabUiBinder.class);
 
     @UiField
-    protected Table                            table;
+    protected Table                             table;
 
-    protected Screen                           parentScreen;
+    protected Screen                            parentScreen;
 
-    protected boolean                          isVisible;
+    protected boolean                           isVisible, redraw;
 
-    protected OrderManager1                    manager, displayedManager;
+    protected OrderManager1                     manager;
 
-    public InternalOrderFillTabUI(Screen parentScreen, EventBus bus) {
+    public InternalOrderFillTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        setEventBus(parentScreen.getEventBus());
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
     }
 
     private void initialize() {
@@ -97,70 +96,69 @@ public class InternalOrderFillTabUI extends Screen {
                 displayFills();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayFills();
-                                   }
-                               });
     }
 
     public void setData(OrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
             this.manager = manager;
         }
     }
 
-    private void displayFills() {
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
         int count1, count2;
-        boolean dataChanged;
-        InventoryXUseViewDO fill1, fill2;
+        InventoryXUseViewDO fill;
+        Row r;
+        StringBuffer buf;
+        ArrayList<String> names;
 
-        if ( !isVisible)
-            return;
-
-        count1 = displayedManager == null ? 0 : displayedManager.fill.count();
+        count1 = table.getRowCount();
         count2 = manager == null ? 0 : manager.fill.count();
-
+        names = new ArrayList<String>();
+        buf = new StringBuffer();
+        
         /*
-         * find out if there's any difference between the fills of the two
-         * managers
+         * find out if there's any difference between the fill data being
+         * displayed and the fill data in the manager
          */
         if (count1 == count2) {
-            dataChanged = false;
             for (int i = 0; i < count1; i++ ) {
-                fill1 = displayedManager.fill.get(i);
-                fill2 = manager.fill.get(i);
-                if (DataBaseUtil.isDifferent(fill1.getInventoryItemId(), fill2.getInventoryItemId()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryItemName(), fill2.getInventoryItemName()) ||
-                    DataBaseUtil.isDifferent(fill1.getStorageLocationName(), fill2.getStorageLocationName()) ||
-                    DataBaseUtil.isDifferent(fill1.getQuantity(), fill2.getQuantity()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryLocationLotNumber(), fill2.getInventoryLocationLotNumber()) ||
-                    DataBaseUtil.isDifferent(fill1.getInventoryLocationExpirationDate(), fill2.getInventoryLocationExpirationDate())) {
-                    dataChanged = true;
+                fill = manager.fill.get(i);
+                r = table.getRowAt(i);
+                names.clear();
+                names.add(fill.getStorageLocationName());
+                names.add(", ");
+                names.add(fill.getStorageLocationUnitDescription());
+                names.add(" ");
+                names.add(fill.getStorageLocationLocation());
+                buf.setLength(0);
+                if (DataBaseUtil.isDifferent(fill.getInventoryItemName(), r.getCell(0)) ||
+                    DataBaseUtil.isDifferent(concat(names, buf), r.getCell(1)) ||
+                    DataBaseUtil.isDifferent(fill.getQuantity(), r.getCell(2)) ||
+                    DataBaseUtil.isDifferent(fill.getInventoryLocationLotNumber(), r.getCell(3)) ||
+                    DataBaseUtil.isDifferent(fill.getInventoryLocationExpirationDate(),
+                                             r.getCell(4))) {
+                    redraw = true;
                     break;
                 }
             }
         } else {
-            dataChanged = true;
+            redraw = true;
         }
 
-        if (dataChanged) {
-            displayedManager = manager;
+        displayFills();
+    }
+
+    private void displayFills() {
+        if ( !isVisible)
+            return;
+
+        if (redraw) {
+            redraw = false;
             setState(state);
             fireDataChange();
         }
@@ -179,7 +177,7 @@ public class InternalOrderFillTabUI extends Screen {
 
         names = new ArrayList<String>();
         buf = new StringBuffer();
-        
+
         for (int i = 0; i < manager.fill.count(); i++ ) {
             fillData = manager.fill.get(i);
             row = new Row(5);
@@ -201,7 +199,8 @@ public class InternalOrderFillTabUI extends Screen {
 
         return model;
     }
-    
+
+    // TODO move code to where it is used
     private String concat(ArrayList<String> list, StringBuffer buf) {
         for (String i : list) {
             if (i != null)

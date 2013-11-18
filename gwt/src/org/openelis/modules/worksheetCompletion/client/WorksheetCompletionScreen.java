@@ -74,7 +74,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
@@ -140,7 +139,6 @@ public class WorksheetCompletionScreen extends Screen {
                                         userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
-    protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
     protected Dropdown<Integer>         statusId;
     protected EditNoteScreen            editNote;
     protected MenuItem                  worksheetHistory;
@@ -154,7 +152,9 @@ public class WorksheetCompletionScreen extends Screen {
     };
 
     public WorksheetCompletionScreen(final Integer worksheetId, WindowInt window) throws Exception {
-        this(window);
+        super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
+        
+        preInitialize(window);
         isPopup = true;
         Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
             public void execute() {
@@ -166,11 +166,16 @@ public class WorksheetCompletionScreen extends Screen {
     public WorksheetCompletionScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
         
+        preInitialize(window);
+        isPopup = false;
+        openLookupWindow();
+    }
+
+    private void preInitialize(WindowInt window) throws Exception {
         ArrayList<SystemVariableDO> list;
 
         setWindow(window);
-
-        isPopup = false;
+        
         successfulLoad = false;
 
         userPermission = UserCache.getPermission().getModule("worksheet");
@@ -207,8 +212,6 @@ public class WorksheetCompletionScreen extends Screen {
         initialize();
 
         setState(State.DEFAULT);
-        if (!isPopup)
-            openLookupWindow();
         initializeDropdowns();
     }
 
@@ -1015,7 +1018,8 @@ public class WorksheetCompletionScreen extends Screen {
                 row.cells.get(0).value = wiDO.getPosition().toString();
                 for (j = 0; j < waManager.count(); j++) {
                     waDO = waManager.getWorksheetAnalysisAt(j);
-                    qcLinkMap.put(waDO.getId(), waDO.getAccessionNumber());
+                    qcLinkMap.put(waDO.getId(), waDO.getAccessionNumber() + " (" +
+                                                wiDO.getPosition() + ")");
 
                     if (j != 0)
                         row.cells.get(0).value = null;
@@ -1116,7 +1120,8 @@ public class WorksheetCompletionScreen extends Screen {
                     } else if (waDO.getQcLotId() != null) {
                         qcLotVDO = QcService.get().fetchLotById(waDO.getQcLotId());
 
-                        row.cells.get(2).value = qcLotVDO.getQcName();
+                        row.cells.get(2).value = qcLotVDO.getQcName() + " (" +
+                                                 qcLotVDO.getLotNumber() + ")";
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
                         row.cells.get(4).value = "";
                         row.cells.get(5).value = "";

@@ -16,6 +16,8 @@ public interface QAEventServiceIntAsync {
     void add(QaEventViewDO data, AsyncCallback<QaEventViewDO> callback);
 
     void fetchByCommon(AsyncCallback<ArrayList<QaEventDO>> callback);
+    
+    void fetchAll(AsyncCallback<ArrayList<QaEventDO>> callback);
 
     void fetchById(Integer id, AsyncCallback<QaEventViewDO> callback);
 
@@ -26,5 +28,4 @@ public interface QAEventServiceIntAsync {
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
     void update(QaEventViewDO data, AsyncCallback<QaEventViewDO> callback);
-
 }

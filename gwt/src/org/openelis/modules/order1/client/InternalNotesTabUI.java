@@ -40,6 +40,7 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
@@ -47,7 +48,6 @@ import org.openelis.ui.widget.NotesPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -72,18 +72,19 @@ public class InternalNotesTabUI extends Screen {
 
     protected Screen                             parentScreen;
 
-    protected OrderManager1                      manager, displayedManager;
+    protected OrderManager1                      manager;
 
-    protected boolean                            isVisible;
+    protected NoteViewDO                         displayedInternalNote;
 
-    public InternalNotesTabUI(Screen parentScreen, EventBus bus) {
+    protected boolean                            isVisible, redraw;
+
+    public InternalNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
+        displayedInternalNote = null;
     }
 
     private void initialize() {
@@ -105,32 +106,38 @@ public class InternalNotesTabUI extends Screen {
                 displayNotes();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayNotes();
-                                   }
-                               });
     }
 
     public void setData(OrderManager1 manager) {
-        if ( DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
             this.manager = manager;
         }
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    /**
+     * notifies the tab that it may need to refresh its widgets; if the data
+     * currently showing in the widgets is the same as the data in the latest
+     * manager then the widgets are not refreshed
+     */
+    public void onDataChange() {
+        Integer id1, id2;
+
+        /*
+         * compare internal notes
+         */
+        id1 = displayedInternalNote != null ? displayedInternalNote.getId() : null;
+        id2 = null;
+        if (manager != null && manager.internalNote.count() > 0)
+            id2 = manager.internalNote.get(0).getId();
+        if (DataBaseUtil.isDifferent(id1, id2))
+            redraw = true;
+
+        displayNotes();
     }
 
     @UiHandler("addNoteButton")
@@ -143,9 +150,9 @@ public class InternalNotesTabUI extends Screen {
             editNoteLookup = new EditNoteLookupUI() {
                 public void ok() {
                     NoteViewDO note;
-                    if (DataBaseUtil.isEmpty(editNoteLookup.getText())){
+                    if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                         manager.internalNote.removeEditing();
-                    }else{
+                    } else {
                         note = manager.internalNote.getEditing();
                         note.setSubject(editNoteLookup.getSubject());
                         note.setText(editNoteLookup.getText());
@@ -193,29 +200,19 @@ public class InternalNotesTabUI extends Screen {
     }
 
     private void displayNotes() {
-        int count1, count2;
-        boolean dataChanged;
-
         if ( !isVisible)
             return;
 
-        /*
-         * compare internal notes
-         */
-        count1 = displayedManager == null ? 0 : displayedManager.internalNote.count();
-        count2 = manager == null ? 0 : manager.internalNote.count();
-
-        dataChanged = false;
-        if (count1 == count2) {
-            if (count1 > 0)
-                dataChanged = DataBaseUtil.isDifferent(displayedManager.internalNote.get(0).getId(),
-                                                       manager.internalNote.get(0).getId());
-        } else {
-            dataChanged = true;
-        }
-
-        if (dataChanged) {
-            displayedManager = manager;
+        if (redraw) {
+            /*
+             * don't redraw unless the data has changed
+             */
+            redraw = false;
+            if (manager != null && manager.internalNote.count() > 0) {
+                displayedInternalNote = manager.internalNote.get(0);
+            } else {
+                displayedInternalNote = null;
+            }
             setState(state);
             fireDataChange();
         }

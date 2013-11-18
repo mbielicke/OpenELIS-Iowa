@@ -25,6 +25,8 @@
  */
 package org.openelis.modules.analysis.server;
 
+import java.util.ArrayList;
+
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
@@ -32,6 +34,7 @@ import org.openelis.bean.AnalysisBean;
 import org.openelis.bean.AnalysisManagerBean;
 import org.openelis.bean.AnalysisQAEventManagerBean;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
@@ -63,6 +66,14 @@ public class AnalysisServlet extends RemoteServlet implements AnalysisServiceInt
     public AnalysisViewDO fetchById(Integer analysisId) throws Exception {
         try {        
             return analysis.fetchById(analysisId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
+        try {
+            return analysis.fetchByPatientId(patientId);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

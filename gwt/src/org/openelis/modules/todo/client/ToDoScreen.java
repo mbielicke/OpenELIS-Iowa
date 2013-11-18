@@ -375,10 +375,10 @@ public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.A
     }
         
     private void showCompletionScreen(Integer id) throws Exception {
-        ModalWindow modal;    
+        ScreenWindow modal;    
         WorksheetCompletionScreen wcScreen;
         
-        modal = new ModalWindow();
+        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
         modal.setName(Messages.get().worksheetCompletion());
         wcScreen = new WorksheetCompletionScreen(id,modal);
         modal.setContent(wcScreen);

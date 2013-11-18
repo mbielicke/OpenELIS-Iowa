@@ -229,6 +229,7 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
     
     public void clearFields() {
         findTextBox.setText(null);
+        qcTable.clear();
     }
 
     public void executeQuery(String pattern) {

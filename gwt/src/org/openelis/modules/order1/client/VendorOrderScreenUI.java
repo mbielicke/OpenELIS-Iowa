@@ -32,6 +32,7 @@ import static org.openelis.ui.screen.State.DEFAULT;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
 import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -120,7 +121,7 @@ public class VendorOrderScreenUI extends Screen {
 
     @UiField
     protected Button                        query, previous, next, add, update, commit, abort,
-                    atozNext, atozPrev;
+                    optionsButton, atozNext, atozPrev;
 
     @UiField
     protected Menu                          optionsMenu;
@@ -182,9 +183,9 @@ public class VendorOrderScreenUI extends Screen {
             window.close();
         }
 
-        itemTab = new VendorOrderItemTabUI(this, bus);
-        shippingNotesTab = new ShippingNotesTabUI(this, bus);
-        fillTab = new VendorOrderFillTabUI(this, bus);
+        itemTab = new VendorOrderItemTabUI(this);
+        shippingNotesTab = new ShippingNotesTabUI(this);
+        fillTab = new VendorOrderFillTabUI(this);
 
         initWidget(uiBinder.createAndBindUi(this));
 
@@ -282,7 +283,8 @@ public class VendorOrderScreenUI extends Screen {
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                optionsMenu.setEnabled(true);
+                optionsMenu.setEnabled(isState(DISPLAY));
+                optionsButton.setEnabled(isState(DISPLAY));
             }
         });
 
@@ -593,8 +595,36 @@ public class VendorOrderScreenUI extends Screen {
         tabPanel.setPopoutBrowser(OpenELIS.getBrowser());
 
         addScreenHandler(itemTab, "itemTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                itemTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                itemTab.setState(event.getState());
+            }
+
             public Object getQuery() {
                 return itemTab.getQueryFields();
+            }
+        });
+
+        addScreenHandler(shippingNotesTab, "shippingNotesTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                shippingNotesTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                shippingNotesTab.setState(event.getState());
+            }
+        });
+
+        addScreenHandler(fillTab, "fillTab", new ScreenHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                fillTab.onDataChange();
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                fillTab.setState(event.getState());
             }
         });
 
@@ -709,7 +739,6 @@ public class VendorOrderScreenUI extends Screen {
 
         // order status dropdown
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -720,7 +749,6 @@ public class VendorOrderScreenUI extends Screen {
         status.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("cost_centers");
         for (DictionaryDO d : list) {
             row = new Item<Integer>(d.getId(), d.getEntry());
@@ -819,10 +847,14 @@ public class VendorOrderScreenUI extends Screen {
     }
 
     private void commit(boolean ignoreWarning) {
+        Validation validation;
+
         finishEditing();
         clearErrors();
 
-        if ( !validate()) {
+        validation = validate();
+
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().gen_correctErrors());
             return;
         }

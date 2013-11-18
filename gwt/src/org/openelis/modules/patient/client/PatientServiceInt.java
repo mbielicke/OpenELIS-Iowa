@@ -23,10 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sample1.client;
+package org.openelis.modules.patient.client;
 
-import org.openelis.gwt.screen.ScreenDefInt;
+import java.util.ArrayList;
 
-public interface SampleItemsPopoutTreeDef1 extends ScreenDefInt {
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import com.google.gwt.user.client.rpc.XsrfProtectedService;
 
+import org.openelis.domain.PatientDO;
+import org.openelis.domain.PatientRelationVO;
+import org.openelis.ui.common.data.Query;
+
+@RemoteServiceRelativePath("patient")
+public interface PatientServiceInt extends XsrfProtectedService {
+    public ArrayList<PatientDO> query(Query query) throws Exception;
+    public ArrayList<PatientRelationVO> fetchByRelatedPatientId(Integer patientId) throws Exception;
 }
