@@ -45,6 +45,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
@@ -63,7 +64,6 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -90,18 +90,17 @@ public class ContainerTabUI extends Screen {
 
     protected Screen                    parentScreen;
 
-    protected boolean                   isVisible;
+    protected boolean                   isVisible, redraw;
 
-    protected OrderManager1             manager, displayedManager;
+    protected OrderManager1             manager;
 
-    public ContainerTabUI(Screen parentScreen, EventBus bus) {
+    public ContainerTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        setEventBus(parentScreen.getEventBus());
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
     }
 
     private void initialize() {
@@ -239,27 +238,7 @@ public class ContainerTabUI extends Screen {
             }
         });
 
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayContainers();
-                                   }
-                               });
-
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("sample_container");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -269,7 +248,6 @@ public class ContainerTabUI extends Screen {
         container.setModel(model);
 
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("type_of_sample");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -277,12 +255,6 @@ public class ContainerTabUI extends Screen {
             model.add(item);
         }
         sampleType.setModel(model);
-    }
-
-    public void setData(OrderManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager))
-            displayedManager = this.manager;
-        this.manager = manager;
     }
 
     @UiHandler("addContainerButton")
@@ -305,7 +277,7 @@ public class ContainerTabUI extends Screen {
         table.scrollToVisible(table.getSelectedRow());
         table.startEditing(n, 1);
     }
-    
+
     @UiHandler("removeContainerButton")
     protected void removeContainer(ClickEvent event) {
         int r;
@@ -319,8 +291,6 @@ public class ContainerTabUI extends Screen {
                 table.removeRowAt(r);
         }
     }
-
-    
 
     @UiHandler("duplicateContainerButton")
     protected void duplicateContainer(ClickEvent event) {
@@ -403,40 +373,53 @@ public class ContainerTabUI extends Screen {
         table.startEditing(r + 1, 1);
     }
 
-    private void displayContainers() {
+    public void setData(OrderManager1 manager) {
+        if (DataBaseUtil.isDifferent(this.manager, manager))
+            this.manager = manager;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
         int count1, count2;
-        boolean dataChanged;
-        OrderContainerDO data1, data2;
+        OrderContainerDO data;
+        Row r;
 
-        if ( !isVisible)
-            return;
-
-        count1 = displayedManager == null ? 0 : displayedManager.container.count();
+        count1 = table.getRowCount();
         count2 = manager == null ? 0 : manager.container.count();
 
         /*
-         * find out if there's any difference between the containers of the two
-         * managers
+         * find out if there's any difference between the container being
+         * displayed and the container in the manager
          */
         if (count1 == count2) {
-            dataChanged = false;
             for (int i = 0; i < count1; i++ ) {
-                data1 = displayedManager.container.get(i);
-                data2 = manager.container.get(i);
+                r = table.getRowAt(i);
+                data = manager.container.get(i);
 
-                if (DataBaseUtil.isDifferent(data1.getItemSequence(), data2.getItemSequence()) ||
-                    DataBaseUtil.isDifferent(data1.getContainerId(), data2.getContainerId()) ||
-                    DataBaseUtil.isDifferent(data1.getTypeOfSampleId(), data2.getTypeOfSampleId())) {
-                    dataChanged = true;
+                if (DataBaseUtil.isDifferent(data.getItemSequence(), r.getCell(0)) ||
+                    DataBaseUtil.isDifferent(data.getContainerId(), r.getCell(1)) ||
+                    DataBaseUtil.isDifferent(data.getTypeOfSampleId(), r.getCell(2))) {
+                    redraw = true;
                     break;
                 }
             }
         } else {
-            dataChanged = true;
+            redraw = true;
         }
 
-        if (dataChanged) {
-            displayedManager = manager;
+        displayContainers();
+    }
+
+    private void displayContainers() {
+        if ( !isVisible)
+            return;
+
+        if (redraw) {
+            redraw = false;
             setState(state);
             fireDataChange();
         }

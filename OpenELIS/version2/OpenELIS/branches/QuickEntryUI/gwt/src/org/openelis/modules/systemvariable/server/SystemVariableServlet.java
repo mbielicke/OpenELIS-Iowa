@@ -62,6 +62,14 @@ public class SystemVariableServlet extends RemoteServlet implements SystemVariab
         }
     }
 
+    public SystemVariableDO fetchByExactName(String name) throws Exception {
+        try {        
+            return systemVariable.fetchByName(name);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {        
             return systemVariable.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());

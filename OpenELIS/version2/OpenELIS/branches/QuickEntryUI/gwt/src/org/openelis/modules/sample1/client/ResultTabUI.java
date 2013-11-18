@@ -106,28 +106,31 @@ public class ResultTabUI extends Screen {
     protected Screen                                    parentScreen;
 
     protected ResultTabUI                               screen;
-    
-    protected SampleManager1                            manager;
-    
-    protected AnalysisViewDO                            analysis;
 
-    protected String                                    displayedUid;
-    
-    protected boolean                                  canEdit, isVisible, redraw;
-    
-    protected int                                       averageCharWidth = 8, defaultNumChars = 10;
+    protected TestAnalyteLookupUI                       testAnalyteLookup;
+
+    protected TestSelectionLookupUI                     testSelectionLookup;
+
+    protected EventBus                                  parentBus;
 
     protected TestReflexUtility1                        testReflexUtility;
 
-    protected TestSelectionLookupUI                     testSelectionLookup;
-    
-    protected TestAnalyteLookupUI                       testAnalyteLookup;
+    protected SampleManager1                            manager;
+
+    protected AnalysisViewDO                            analysis;
+
+    protected String                                    displayedUid;
+
+    protected boolean                                   canEdit, isVisible, redraw, isBusy;
 
     protected HashMap<String, ArrayList<Item<Integer>>> dictionaryModel;
 
-    public ResultTabUI(Screen parentScreen, EventBus bus) {
+    protected static int                                MEAN_CHAR_WIDTH = 8,
+                    DEFAULT_NUM_CHARS = 10;
+
+    public ResultTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -260,6 +263,9 @@ public class ResultTabUI extends Screen {
                 TestManager tm;
                 ResultViewDO data;
                 ResultFormatter rf;
+                ModalWindow modal;
+                ArrayList<ResultViewDO> results;
+                ArrayList<SampleTestRequestVO> tests;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -311,6 +317,7 @@ public class ResultTabUI extends Screen {
                              * the value is not valid
                              */
                             table.addException(r, c, e);
+                            data.setValue(value.getDisplay());
                             data.setTypeId(null);
                             data.setTestResultId(null);
                             return;
@@ -335,11 +342,69 @@ public class ResultTabUI extends Screen {
 
                     table.setValueAt(r, c, value);
 
+                    if (data.getValue() == null)
+                        return;
+
+                    if (testReflexUtility == null) {
+                        testReflexUtility = new TestReflexUtility1() {
+                            @Override
+                            public TestManager getTestManager(Integer testId) throws Exception {
+                                return screen.getTestManager(testId);
+                            }
+                        };
+                    }
+
                     /*
-                     * check whether this result triggers reflex tests
+                     * find out if a reflex test needs to be added for this
+                     * value
                      */
-                    if (data.getValue() != null)
-                        checkReflex(data);
+                    try {
+                        results = new ArrayList<ResultViewDO>(1);
+                        results.add(data);
+                        tests = testReflexUtility.getReflexTests(manager, results);
+                        if (tests != null) {
+                            isBusy = true;
+                            /*
+                             * show the popup for selecting the reflex test
+                             */
+                            if (testSelectionLookup == null) {
+                                testSelectionLookup = new TestSelectionLookupUI() {
+                                    @Override
+                                    public TestManager getTestManager(Integer testId) throws Exception {
+                                        return screen.getTestManager(testId);
+                                    }
+
+                                    @Override
+                                    public void ok() {
+                                        ArrayList<SampleTestRequestVO> tests;
+
+                                        /*
+                                         * if a reflex test was selected on the
+                                         * popup then notify the main screen of
+                                         * this and mark the tab as busy
+                                         */
+                                        tests = testSelectionLookup.getSelectedTests();
+                                        if (tests != null && tests.size() > 0)
+                                            parentBus.fireEvent(new AddTestEvent(tests));
+                                        else
+                                            isBusy = false;
+                                    }
+                                };
+                            }
+
+                            modal = new ModalWindow();
+                            modal.setSize("520px", "350px");
+                            modal.setName(Messages.get().testSelection_reflexTestSelection());
+                            modal.setCSS(UIResources.INSTANCE.popupWindow());
+                            modal.setContent(testSelectionLookup);
+
+                            testSelectionLookup.setData(manager, tests);
+                            testSelectionLookup.setWindow(modal);
+                        }
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
                 }
             }
         });
@@ -398,16 +463,8 @@ public class ResultTabUI extends Screen {
         /*
          * handlers for the events fired by the screen containing this tab
          */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
 
-        bus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
+        parentBus.addHandler(SelectionEvent.getType(), new SelectionEvent.Handler() {
             public void onSelection(SelectionEvent event) {
                 String uid;
 
@@ -420,20 +477,45 @@ public class ResultTabUI extends Screen {
                         break;
                 }
 
-                if (DataBaseUtil.isDifferent(displayedUid, uid)) {
-                    displayedUid = uid;
-                    redraw = true;                
-                }
-                
+                if (uid != null)
+                    analysis = (AnalysisViewDO)manager.getObject(uid);
+                else
+                    analysis = null;
+
+                if (DataBaseUtil.isDifferent(displayedUid, uid))
+                    redraw = true;
+
                 displayResults(uid);
             }
         });
 
-        bus.addHandler(ResultChangeEvent.getType(), new ResultChangeEvent.Handler() {
+        parentBus.addHandler(AnalysisChangeEvent.getType(), new AnalysisChangeEvent.Handler() {
+            @Override
+            public void onAnalysisChange(AnalysisChangeEvent event) {
+                if (AnalysisChangeEvent.Action.STATUS_CHANGED.equals(event.getAction()) ||
+                    AnalysisChangeEvent.Action.SECTION_CHANGED.equals(event.getAction())) {
+                    /*
+                     * reevaluate the permissions for this section or status to
+                     * enable or disable the widgets in the tab
+                     */
+                    setState(state);
+                }
+            }
+        });
+
+        parentBus.addHandler(ResultChangeEvent.getType(), new ResultChangeEvent.Handler() {
             @Override
             public void onResultChange(ResultChangeEvent event) {
                 redraw = true;
                 displayResults(manager.getAnalysisUid(analysis.getId()));
+                isBusy = false;
+            }
+        });
+
+        parentBus.addHandler(QAEventChangeEvent.getType(), new QAEventChangeEvent.Handler() {
+            @Override
+            public void onQAEventChange(QAEventChangeEvent event) {
+                showResultOverride();
             }
         });
     }
@@ -442,12 +524,21 @@ public class ResultTabUI extends Screen {
         if (DataBaseUtil.isDifferent(this.manager, manager))
             this.manager = manager;
     }
-    
+
     public void setState(State state) {
+        evaluateEdit();
         this.state = state;
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
-    
+
+    /**
+     * returns true if some operation performed by the tab needs to be completed
+     * before the data can be committed
+     */
+    public boolean getIsBusy() {
+        return isBusy;
+    }
+
     private void evaluateEdit() {
         Integer sectId, statId;
         SectionPermission perm;
@@ -455,16 +546,15 @@ public class ResultTabUI extends Screen {
 
         canEdit = false;
         if (manager != null) {
+            perm = null;
             sectId = getSectionId();
             statId = getStatusId();
 
-            if (sectId == null) {
-                canEdit = true;
-                return;
-            }
             try {
-                sect = SectionCache.getById(getSectionId());
-                perm = UserCache.getPermission().getSection(sect.getName());
+                if (sectId != null) {
+                    sect = SectionCache.getById(sectId);
+                    perm = UserCache.getPermission().getSection(sect.getName());
+                }
                 canEdit = !Constants.dictionary().ANALYSIS_CANCELLED.equals(statId) &&
                           !Constants.dictionary().ANALYSIS_RELEASED.equals(statId) &&
                           perm != null &&
@@ -475,13 +565,8 @@ public class ResultTabUI extends Screen {
             }
         }
     }
-    
-    private void displayResults(String uid) {
-        if (uid != null)
-            analysis = (AnalysisViewDO)manager.getObject(uid);
-        else
-            analysis = null;
 
+    private void displayResults(String uid) {
         if ( !isVisible)
             return;
 
@@ -503,7 +588,7 @@ public class ResultTabUI extends Screen {
              * don't redraw unless the data has changed
              */
             redraw = false;
-            evaluateEdit();
+            displayedUid = uid;
             setState(state);
             fireDataChange();
         }
@@ -582,7 +667,7 @@ public class ResultTabUI extends Screen {
                 /*
                  * The position of the result rows after the deleted row changed
                  * in the manager. Reset the "data" of each table row to be the
-                 * new position of its corresponding result row.
+                 * new position of its corresponding result row in the manager.
                  */
                 for (i = r; i < table.getRowCount(); i++ ) {
                     index = table.getRowAt(i).getData();
@@ -601,7 +686,7 @@ public class ResultTabUI extends Screen {
     protected void uncheckAll(ClickEvent event) {
         check("N");
     }
-    
+
     private Integer getSectionId() {
         if (analysis != null)
             return analysis.getSectionId();
@@ -634,7 +719,7 @@ public class ResultTabUI extends Screen {
 
         model = new ArrayList<Row>();
         table.clearExceptions();
-        
+
         if (analysis == null || manager.result.count(analysis) == 0)
             return model;
 
@@ -644,18 +729,18 @@ public class ResultTabUI extends Screen {
          * the maximum number of characters for each column
          */
         maxChars = new int[table.getColumnCount()];
-        maxChars[0] = defaultNumChars;
+        maxChars[0] = DEFAULT_NUM_CHARS;
         resetMaxChars(maxChars, 1, Messages.get().gen_analyte());
         resetMaxChars(maxChars, 2, Messages.get().gen_value());
         for (i = 3; i < maxChars.length; i++ )
-            maxChars[i] = defaultNumChars;
+            maxChars[i] = DEFAULT_NUM_CHARS;
 
         dictIds = new ArrayList<Integer>();
         dictMap = new HashMap<Integer, HashSet<Integer>>();
 
         validateResults = canEdit && isState(ADD, UPDATE);
         rf = null;
-        
+
         try {
             if (validateResults) {
                 tm = getTestManager(analysis.getTestId());
@@ -692,8 +777,7 @@ public class ResultTabUI extends Screen {
                         resetMaxChars(maxChars, 1, data.getAnalyte());
                     }
 
-                    if (validateResults && data.getValue() != null &&
-                                    data.getTypeId() == null) {
+                    if (validateResults && data.getValue() != null && data.getTypeId() == null) {
                         /*
                          * Since the type is not set, the value was either not
                          * validated and formatted before or the validation
@@ -706,7 +790,7 @@ public class ResultTabUI extends Screen {
                                                      analysis.getUnitOfMeasureId(),
                                                      rf);
 
-                        } catch (Exception e) {                            
+                        } catch (Exception e) {
                             table.addException(row, j + 2, e);
                         }
                     }
@@ -767,7 +851,7 @@ public class ResultTabUI extends Screen {
              */
             for (i = 0; i < maxChars.length; i++ ) {
                 col = table.getColumnAt(i);
-                col.setWidth(maxChars[i] * averageCharWidth);
+                col.setWidth(maxChars[i] * MEAN_CHAR_WIDTH);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -813,58 +897,6 @@ public class ResultTabUI extends Screen {
         return ((CacheProvider)parentScreen).get(testId, TestManager.class);
     }
 
-    private void checkReflex(ResultViewDO data) {
-        ModalWindow modal;
-        ArrayList<ResultViewDO> results;
-        ArrayList<SampleTestRequestVO> tests;
-
-        if (testReflexUtility == null) {
-            testReflexUtility = new TestReflexUtility1() {
-                @Override
-                public TestManager getTestManager(Integer testId) throws Exception {
-                    return screen.getTestManager(testId);
-                }
-            };
-        }
-
-        try {
-            results = new ArrayList<ResultViewDO>(1);
-            results.add(data);
-            tests = testReflexUtility.getReflexTests(manager, results);
-            if (tests != null) {
-                if (testSelectionLookup == null) {
-                    testSelectionLookup = new TestSelectionLookupUI() {
-                        @Override
-                        public TestManager getTestManager(Integer testId) throws Exception {
-                            return screen.getTestManager(testId);
-                        }
-
-                        @Override
-                        public void ok() {
-                            ArrayList<SampleTestRequestVO> tests;
-
-                            tests = testSelectionLookup.getSelectedTests();
-                            if (tests != null && tests.size() > 0)
-                                screen.getEventBus().fireEvent(new AddTestEvent(tests));
-                        }
-                    };
-                }
-
-                modal = new ModalWindow();
-                modal.setSize("520px", "350px");
-                modal.setName(Messages.get().testSelection_reflexTestSelection());
-                modal.setCSS(UIResources.INSTANCE.popupWindow());
-                modal.setContent(testSelectionLookup);
-
-                testSelectionLookup.setData(manager, tests);
-                testSelectionLookup.setWindow(modal);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-    }
-
     private void addRowAnalytes(ArrayList<TestAnalyteViewDO> analytes) {
         Integer index;
         Row row;
@@ -889,7 +921,8 @@ public class ResultTabUI extends Screen {
         for (int i = 0; i < analytes.size(); i++ )
             indexes.add(index + i);
 
-        bus.fireEvent(new AddRowAnalytesEvent(analysis, analytes, indexes));
+        isBusy = true;
+        parentBus.fireEvent(new AddRowAnalytesEvent(analysis, analytes, indexes));
     }
 
     private void check(String val) {
@@ -908,9 +941,9 @@ public class ResultTabUI extends Screen {
     /**
      * keeps track of the longest string in the table column at the passed index
      */
-    private void resetMaxChars(int maxNumChars[], int col, String text) {
+    private void resetMaxChars(int maxNumChars[], int index, String text) {
         if ( !DataBaseUtil.isEmpty(text))
-            maxNumChars[col] = Math.max(text.length(), maxNumChars[col]);
+            maxNumChars[index] = Math.max(text.length(), maxNumChars[index]);
     }
 
     /**
@@ -924,8 +957,8 @@ public class ResultTabUI extends Screen {
         typeId = Constants.dictionary().QAEVENT_OVERRIDE;
         label = null;
 
-        if (manager != null && analysis != null && manager.qaEvent.hasType(typeId) &&
-            manager.qaEvent.hasType(analysis, typeId))
+        if (manager != null && analysis != null &&
+            (manager.qaEvent.hasType(typeId) || manager.qaEvent.hasType(analysis, typeId)))
             label = Messages.get().result_overridden();
         overrideLabel.setText(label);
     }

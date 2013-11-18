@@ -26,6 +26,7 @@
 package org.openelis.modules.sample1.client;
 
 import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 
@@ -274,9 +275,13 @@ public abstract class SampleProjectLookupUI extends Screen {
 
     @UiHandler("okButton")
     protected void ok(ClickEvent event) {        
+        Validation validation;
+        
         table.finishEditing();
+        
+        validation = validate();
 
-        if (!validate()) {
+        if (validation.getStatus() != VALID) {
             window.setError(Messages.get().correctErrors());
             return;
         }

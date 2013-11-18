@@ -30,26 +30,25 @@ UIRF Software License are applicable instead of those above.
              xmlns:b="urn:import:org.openelis.modules.worksheetBuilder.client">
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
 
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="25px">
       <t:Table ui:field="worksheetAnalysisTable" horizontalScroll="ALWAYS"
-               verticalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-        <t:Column width="50" label="{msg.position}">
+              verticalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}">
+        <t:Column width="50" label="{msg.worksheet_position}">
           <t:LabelCell/>
         </t:Column>
-        <t:Column width="90" sortable="true" label="{msg.accessionNum}">
+        <t:Column width="90" sortable="true" label="{msg.sample_accessionNum}">
           <t:LabelCell/>
         </t:Column>
-        <t:Column width="110" sortable="true" label="{msg.description}">
+        <t:Column width="110" sortable="true" label="{msg.gen_description}">
           <t:LabelCell/>
         </t:Column>
-        <t:Column width="110" sortable="true" label="{msg.test}">
+        <t:Column width="110" sortable="true" label="{msg.gen_test}">
           <t:LabelCell/>
         </t:Column>
-        <t:Column width="110" sortable="true" label="{msg.method}">
+        <t:Column width="110" sortable="true" label="{msg.gen_method}">
           <t:LabelCell/>
         </t:Column>
       </t:Table>
@@ -57,8 +56,8 @@ UIRF Software License are applicable instead of those above.
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
         <g:HorizontalPanel>
-          <w:Button ui:field="select" leftIcon="{uiRes.buttonPanel.CommitButtonImage}" text="{msg.select}" />
-          <w:Button ui:field="cancel" leftIcon="{uiRes.buttonPanel.AbortButtonImage}" text="{msg.cancel}" />
+          <w:Button ui:field="select" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_select}" />
+          <w:Button ui:field="cancel" leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_cancel}" />
         </g:HorizontalPanel>
       </g:HorizontalPanel>
     </g:layer>

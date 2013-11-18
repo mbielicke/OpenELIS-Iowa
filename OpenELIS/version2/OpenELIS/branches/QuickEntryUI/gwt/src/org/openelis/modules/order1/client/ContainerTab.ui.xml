@@ -18,7 +18,6 @@
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
 		field="res" />
 
@@ -26,8 +25,7 @@
 		<g:layer top="0px" bottom="25px">
 			<t:Table ui:field="table" visibleRows="11" horizontalScroll="ALWAYS"
 				verticalScroll="ALWAYS" width="697px" header="true"
-				styleName="{uiRes.table.ScreenTableWithSides}"
-				allowMultipleSelection="true">
+				styleName="{res.table.ScreenTableWithSides}" allowMultipleSelection="true">
 				<t:Column width="45" label="{msg.order_itemNum}">
 					<t:TextBoxCell>
 						<w:TextBox field="Integer" />
@@ -38,7 +36,7 @@
 						<w:Dropdown width="450" field="Integer" ui:field="container" />
 					</t:DropdownCell>
 				</t:Column>
-				<t:Column width="231" label="{msg.gen_sampleType}">
+				<t:Column width="231" label="{msg.sample_type}">
 					<t:DropdownCell>
 						<w:Dropdown width="241" field="Integer" ui:field="sampleType" />
 					</t:DropdownCell>
@@ -47,13 +45,16 @@
 		</g:layer>
 		<g:layer bottom="0px" height="25px">
 			<g:HorizontalPanel>
-				<w:Button ui:field="addContainerButton" leftIcon="{res.style.addRowIcon}"
+				<w:Button ui:field="addContainerButton" leftIcon="{res.icon.addRowIcon}"
 					text="{msg.gen_addRow}" />
-				<w:Button ui:field="removeContainerButton" leftIcon="{res.style.removeRowIcon}"
+				<w:Button ui:field="removeContainerButton" leftIcon="{res.icon.removeRowIcon}"
 					text="{msg.gen_removeRow}" />
-				<w:Button ui:field="duplicateContainerButton" text="{msg.gen_duplicateRecord}" />
-				<w:Button ui:field="moveUpButton" text="{msg.gen_moveUp}" />
-				<w:Button ui:field="moveDownButton" text="{msg.gen_moveDown}" />
+				<w:Button ui:field="duplicateContainerButton" leftIcon="{res.icon.DuplicateRowButtonImage}"
+					text="{msg.gen_duplicateRecord}" />
+				<w:Button ui:field="moveUpButton" leftIcon="{res.icon.arrowUpButtonImage}"
+					text="{msg.gen_moveUp}" />
+				<w:Button ui:field="moveDownButton" leftIcon="{res.icon.arrowDownButtonImage}"
+					text="{msg.gen_moveDown}" />
 			</g:HorizontalPanel>
 		</g:layer>
 	</g:LayoutPanel>

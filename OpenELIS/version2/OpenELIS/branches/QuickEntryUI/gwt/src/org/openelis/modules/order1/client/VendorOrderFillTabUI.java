@@ -36,6 +36,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
@@ -43,7 +44,6 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -61,18 +61,17 @@ public class VendorOrderFillTabUI extends Screen {
 
     protected Screen                          parentScreen;
 
-    protected boolean                         isVisible;
+    protected boolean                         isVisible, redraw;
 
-    protected OrderManager1                   manager, displayedManager;
+    protected OrderManager1                   manager;
 
-    public VendorOrderFillTabUI(Screen parentScreen, EventBus bus) {
+    public VendorOrderFillTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        setEventBus(parentScreen.getEventBus());
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
     }
 
     private void initialize() {
@@ -99,87 +98,74 @@ public class VendorOrderFillTabUI extends Screen {
                 displayFills();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayFills();
-                                   }
-                               });
     }
 
     public void setData(OrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
             this.manager = manager;
         }
     }
 
-    private void displayFills() {
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
         int count1, count2;
-        boolean dataChanged;
-        InventoryLocationViewDO loc1, loc2;
-        InventoryXPutViewDO receipt1, receipt2;
+        InventoryLocationViewDO loc;
+        InventoryXPutViewDO receipt;
+        Row r;
+        StringBuffer buf;
+        ArrayList<String> names;
 
-        if ( !isVisible)
-            return;
-
-        count1 = displayedManager == null ? 0 : displayedManager.receipt.count();
+        count1 = table.getRowCount();
         count2 = manager == null ? 0 : manager.receipt.count();
+        names = new ArrayList<String>();
+        buf = new StringBuffer();
 
         /*
-         * find out if there's any difference between the receipts of the two
-         * managers
+         * find out if there's any difference between the fill data being
+         * displayed and the fill data in the manager
          */
         if (count1 == count2) {
-            dataChanged = false;
             for (int i = 0; i < count1; i++ ) {
-                receipt1 = displayedManager.receipt.get(i);
-                receipt2 = manager.receipt.get(i);
-                loc1 = receipt1.getInventoryLocation();
-                loc2 = receipt2.getInventoryLocation();
-                if (DataBaseUtil.isDifferent(receipt1.getId(), receipt1.getId()) ||
-                    DataBaseUtil.isDifferent(loc1.getInventoryItemName(),
-                                             loc2.getInventoryItemName()) ||
-                    DataBaseUtil.isDifferent(loc1.getStorageLocationName(),
-                                             loc2.getStorageLocationName()) ||
-                    DataBaseUtil.isDifferent(loc1.getStorageLocationUnitDescription(),
-                                             loc2.getStorageLocationUnitDescription()) ||
-                    DataBaseUtil.isDifferent(loc1.getStorageLocationLocation(),
-                                             loc2.getStorageLocationLocation()) ||
-                    DataBaseUtil.isDifferent(receipt1.getQuantity(), receipt2.getQuantity()) ||
-                    DataBaseUtil.isDifferent(loc1.getLotNumber(), loc2.getLotNumber()) ||
-                    DataBaseUtil.isDifferent(loc1.getExpirationDate(), loc2.getExpirationDate()) ||
-                    DataBaseUtil.isDifferent(loc1.getStorageLocationLocation(),
-                                             loc2.getStorageLocationLocation()) ||
-                    DataBaseUtil.isDifferent(receipt1.getInventoryReceiptReceivedDate(),
-                                             receipt2.getInventoryReceiptReceivedDate()) ||
-                    DataBaseUtil.isDifferent(receipt1.getInventoryReceiptUnitCost(),
-                                             receipt2.getInventoryReceiptUnitCost()) ||
-                    DataBaseUtil.isDifferent(receipt1.getExternalReference(),
-                                             receipt2.getExternalReference())) {
-                    dataChanged = true;
+                r = table.getRowAt(i);
+                receipt = manager.receipt.get(i);
+                loc = receipt.getInventoryLocation();
+                names.clear();
+                names.add(loc.getStorageLocationName());
+                names.add(", ");
+                names.add(loc.getStorageLocationUnitDescription());
+                names.add(" ");
+                names.add(loc.getStorageLocationLocation());
+                buf.setLength(0);
+                if (DataBaseUtil.isDifferent(loc.getInventoryItemName(), r.getCell(0)) ||
+                    DataBaseUtil.isDifferent(concat(names, buf), r.getCell(1)) ||
+                    DataBaseUtil.isDifferent(receipt.getQuantity(), r.getCell(2)) ||
+                    DataBaseUtil.isDifferent(loc.getLotNumber(), r.getCell(3)) ||
+                    DataBaseUtil.isDifferent(loc.getExpirationDate(), r.getCell(4)) ||
+                    DataBaseUtil.isDifferent(receipt.getInventoryReceiptReceivedDate(),
+                                             r.getCell(5)) ||
+                    DataBaseUtil.isDifferent(receipt.getInventoryReceiptUnitCost(), r.getCell(6)) ||
+                    DataBaseUtil.isDifferent(receipt.getExternalReference(), r.getCell(7))) {
+                    redraw = true;
                     break;
                 }
             }
         } else {
-            dataChanged = true;
+            redraw = true;
         }
 
-        if (dataChanged) {
-            displayedManager = manager;
+        displayFills();
+    }
+
+    private void displayFills() {
+        if ( !isVisible)
+            return;
+
+        if (redraw) {
+            redraw = false;
             setState(state);
             fireDataChange();
         }

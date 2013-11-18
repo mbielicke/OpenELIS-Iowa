@@ -24,8 +24,8 @@
   xmlns:s="urn:import:org.openelis.modules.sample1.client"
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+  
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="60px">
       <t:Table ui:field="table" header="true">
@@ -46,8 +46,8 @@
     </g:layer>
     <g:layer bottom="0px" height="25px" right="35%" left="45%">
       <g:HorizontalPanel horizontalAlignment="CENTER">
-        <w:Button ui:field="okButton" text="{msg.gen_ok}" />
-        <w:Button ui:field="cancelButton" text="{msg.gen_cancel}" />
+        <w:Button ui:field="okButton" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_ok}" />
+        <w:Button ui:field="cancelButton" leftIcon="{res.icon.AbortButtonImage}" text="{msg.gen_cancel}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

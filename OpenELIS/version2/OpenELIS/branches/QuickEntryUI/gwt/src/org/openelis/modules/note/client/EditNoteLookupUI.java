@@ -25,6 +25,8 @@
  */
 package org.openelis.modules.note.client;
 
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+
 import java.util.ArrayList;
 
 import org.openelis.cache.CategoryCache;
@@ -97,6 +99,60 @@ public abstract class EditNoteLookupUI extends Screen {
     }
 
     private void initialize() {
+        addScreenHandler(subject, "subject", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                subject.setValue(noteSubject);
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                subject.setEnabled(hasSubject);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? text : find;
+            }
+        });
+
+        addScreenHandler(text, "text", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                text.setValue(noteText);
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                text.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? find : subject;
+            }
+        });
+
+        addScreenHandler(find, "find", new ScreenHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                find.setValue(null);
+            }
+
+            public void onStateChange(StateChangeEvent event) {
+                find.setEnabled(true);
+            }
+            
+            public Widget onTab(boolean forward) {
+                return forward ? subject : text;
+            }
+        });
+
+        addScreenHandler(findButton, "findButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                findButton.setEnabled(true);
+            }
+        });
+
+        addScreenHandler(pasteButton, "pasteButton", new ScreenHandler<Object>() {
+            public void onStateChange(StateChangeEvent event) {
+                pasteButton.setEnabled(false);
+            }
+        });
+        
         addScreenHandler(noteTree, "noteTree", new ScreenHandler<ArrayList<Node>>() {
             public void onDataChange(DataChangeEvent event) {
                 /*
@@ -152,36 +208,6 @@ public abstract class EditNoteLookupUI extends Screen {
             }
         });
 
-        addScreenHandler(subject, "subject", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                subject.setValue(noteSubject);
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                subject.setEnabled(hasSubject);
-            }
-        });
-
-        addScreenHandler(text, "text", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                text.setValue(noteText);
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                text.setEnabled(true);
-            }
-        });
-
-        addScreenHandler(find, "find", new ScreenHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                find.setValue(null);
-            }
-
-            public void onStateChange(StateChangeEvent event) {
-                find.setEnabled(true);
-            }
-        });
-
         addScreenHandler(preview, "preview", new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 preview.setValue(null);
@@ -193,18 +219,6 @@ public abstract class EditNoteLookupUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 preview.setEnabled(false);
-            }
-        });
-
-        addScreenHandler(pasteButton, "pasteButton", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                pasteButton.setEnabled(false);
-            }
-        });
-
-        addScreenHandler(findButton, "findButton", new ScreenHandler<Object>() {
-            public void onStateChange(StateChangeEvent event) {
-                findButton.setEnabled(true);
             }
         });
 
@@ -253,17 +267,19 @@ public abstract class EditNoteLookupUI extends Screen {
         return hasSubject;
     }
 
-    public boolean validate() {
+    public Validation validate() {
+        Validation valid = new Validation();
+        
         if (hasSubject) {
             if (DataBaseUtil.isEmpty(subject.getValue()) && !DataBaseUtil.isEmpty(text.getValue())) {
                 subject.addException(new FieldErrorException(Messages.get()
                                                                      .fieldRequiredException(), ""));
                 window.setError(Messages.get().correctErrors());
-                return false;
+                valid.setStatus(Validation.Status.ERRORS);
             }
         }
 
-        return true;
+        return valid;
     }
 
     /**
@@ -365,7 +381,7 @@ public abstract class EditNoteLookupUI extends Screen {
         String trimText;
 
         clearErrors();
-        if ( !validate())
+        if (validate().getStatus() != VALID)
             return;
 
         noteSubject = subject.getValue();

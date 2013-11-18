@@ -236,13 +236,14 @@ public class LoggedInTab extends Screen {
                 secName = data.getSectionName();
                 if (sectOnly && perm.getSection(secName) == null)
                     continue;
-                row = new TableDataRow(12);
+                row = new TableDataRow(13);
                 accNum = data.getAccessionNumber();
                 row.cells.get(0).setValue(accNum);
-                row.cells.get(1).setValue(data.getDomain());
-                row.cells.get(2).setValue(secName);
-                row.cells.get(3).setValue(data.getTestName());
-                row.cells.get(4).setValue(data.getMethodName());
+                row.cells.get(1).setValue(data.getPriority());
+                row.cells.get(2).setValue(data.getDomain());
+                row.cells.get(3).setValue(secName);
+                row.cells.get(4).setValue(data.getTestName());
+                row.cells.get(5).setValue(data.getMethodName());
 
                 if ( !accNum.equals(prevAccNum)) {
                     scd = data.getCollectionDate();
@@ -262,16 +263,16 @@ public class LoggedInTab extends Screen {
                     }
                 }
 
-                row.cells.get(5).setValue(scdt);
-                row.cells.get(6).setValue(data.getReceivedDate());
-                row.cells.get(7).setValue(data.getAnalysisResultOverride());
-                row.cells.get(8).setValue(DataBaseUtil.getPercentHoldingUsed(data.getStartedDate(), data.getCollectionDate(),
+                row.cells.get(6).setValue(scdt);
+                row.cells.get(7).setValue(data.getReceivedDate());
+                row.cells.get(8).setValue(data.getAnalysisResultOverride());
+                row.cells.get(9).setValue(DataBaseUtil.getPercentHoldingUsed(data.getStartedDate(), data.getCollectionDate(),
                                                                              data.getCollectionTime(), data.getTimeHolding()));
-                row.cells.get(9).setValue(DataBaseUtil.getPercentExpectedCompletion(data.getCollectionDate(), data.getCollectionTime(),
+                row.cells.get(10).setValue(DataBaseUtil.getPercentExpectedCompletion(data.getCollectionDate(), data.getCollectionTime(),
                                                                     data.getReceivedDate(), data.getPriority(),
                                                                     data.getTimeTaAverage()));
-                row.cells.get(10).setValue(data.getToDoDescription());
-                row.cells.get(11).setValue(data.getPrimaryOrganizationName());
+                row.cells.get(11).setValue(data.getToDoDescription());
+                row.cells.get(12).setValue(data.getPrimaryOrganizationName());
                 row.data = data;
                 model.add(row);
 

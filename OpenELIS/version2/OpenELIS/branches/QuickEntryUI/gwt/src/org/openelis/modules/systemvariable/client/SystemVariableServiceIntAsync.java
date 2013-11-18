@@ -20,6 +20,8 @@ public interface SystemVariableServiceIntAsync {
 
     void fetchByName(String name, AsyncCallback<ArrayList<SystemVariableDO>> callback);
 
+    void fetchByExactName(String name, AsyncCallback<SystemVariableDO> callback);
+
     void fetchForUpdate(Integer id, AsyncCallback<SystemVariableDO> callback);
 
     void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);

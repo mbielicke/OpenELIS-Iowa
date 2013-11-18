@@ -147,10 +147,10 @@ UIRF Software License are applicable instead of those above.
             </appButton>
           </HorizontalPanel>
 <!-- TAB PANEL -->
-          <TabPanel key="tabPanel" width="850" height="285">
+          <TabPanel key="tabPanel" width="850" height="291">
 <!-- TAB 1 -->
             <tab key="worksheetItemTab" tab="worksheetItemTable,worksheetItemTable" text="{resource:getString($constants,'worksheet')}">
-              <table key="worksheetItemTable" width="832" maxRows="11" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
+              <table key="worksheetItemTable" width="832" maxRows="12" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
                 <col width="50" header="A">
                   <label field="String" />
                 </col>
@@ -274,7 +274,7 @@ UIRF Software License are applicable instead of those above.
             <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
               <xsl:call-template name="InternalNoteTab">
           	    <xsl:with-param name="width">850</xsl:with-param>
-          		  <xsl:with-param name="height">247</xsl:with-param>
+          		  <xsl:with-param name="height">264</xsl:with-param>
               </xsl:call-template>
             </tab>
           </TabPanel>

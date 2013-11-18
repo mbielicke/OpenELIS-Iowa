@@ -46,6 +46,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Dropdown;
@@ -61,7 +62,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -97,18 +97,20 @@ public class RecurrenceTabUI extends Screen {
 
     protected Screen                     parentScreen;
 
-    protected boolean                    isVisible, canEdit;
+    protected boolean                    isVisible, canEdit, redraw;
 
-    protected OrderManager1              manager, displayedManager;
+    protected OrderManager1              manager;
 
-    public RecurrenceTabUI(Screen parentScreen, EventBus bus) {
+    protected OrderRecurrenceDO          displayedRecurrence;
+
+    public RecurrenceTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
+        setEventBus(parentScreen.getEventBus());
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
+        displayedRecurrence = null;
     }
 
     private void initialize() {
@@ -273,28 +275,7 @@ public class RecurrenceTabUI extends Screen {
             }
         });
 
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       evaluateEdit();
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayRecurrence();
-                                   }
-                               });
-
         model = new ArrayList<Item<Integer>>();
-        model.add(new Item<Integer>(null, ""));
         list = CategoryCache.getBySystemName("order_recurrence_unit");
         for (DictionaryDO data : list) {
             item = new Item<Integer>(data.getId(), data.getEntry());
@@ -302,13 +283,6 @@ public class RecurrenceTabUI extends Screen {
             model.add(item);
         }
         unit.setModel(model);
-    }
-
-    public void setData(OrderManager1 manager) {
-        if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
-            this.manager = manager;
-        }
     }
 
     @UiHandler("showDatesButton")
@@ -345,15 +319,23 @@ public class RecurrenceTabUI extends Screen {
 
     }
 
-    private void displayRecurrence() {
+    public void setData(OrderManager1 manager) {
+        if (DataBaseUtil.isDifferent(this.manager, manager)) {
+            this.manager = manager;
+        }
+    }
+
+    public void setState(State state) {
+        evaluateEdit();
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
         String act1, act2;
         Datetime ab1, ab2, ae1, ae2;
-        OrderRecurrenceDO data1, data2;
-        Integer id1, id2, freq1, freq2, unit1, unit2;
-        boolean dataChanged;
-
-        if ( !isVisible)
-            return;
+        OrderRecurrenceDO data1;
+        Integer id1, id2, freq1, freq2, unit1, unit2, poid1, poid2;
 
         id1 = null;
         act1 = null;
@@ -362,6 +344,7 @@ public class RecurrenceTabUI extends Screen {
         freq1 = null;
         unit1 = null;
         data1 = getRecurrence();
+        poid1 = getParentOrderId();
         if (data1 != null) {
             id1 = data1.getId();
             act1 = data1.getIsActive();
@@ -377,23 +360,37 @@ public class RecurrenceTabUI extends Screen {
         ae2 = null;
         freq2 = null;
         unit2 = null;
-        data2 = null;
-        if (displayedManager != null && displayedManager.getRecurrence() != null) {
-            data2 = displayedManager.getRecurrence();
-            id2 = data2.getId();
-            act2 = data2.getIsActive();
-            ab2 = data2.getActiveBegin();
-            ae2 = data2.getActiveEnd();
-            freq2 = data2.getFrequency();
-            unit2 = data2.getUnitId();
+        poid2 = parentOrderNum.getValue();
+        if (displayedRecurrence != null) {
+            id2 = displayedRecurrence.getId();
+            act2 = displayedRecurrence.getIsActive();
+            ab2 = displayedRecurrence.getActiveBegin();
+            ae2 = displayedRecurrence.getActiveEnd();
+            freq2 = displayedRecurrence.getFrequency();
+            unit2 = displayedRecurrence.getUnitId();
         }
-        dataChanged = DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(act1, act2) ||
-                      DataBaseUtil.isDifferent(ab1, ab2) || DataBaseUtil.isDifferent(ae1, ae2) ||
-                      DataBaseUtil.isDifferent(freq1, freq2) ||
-                      DataBaseUtil.isDifferent(unit1, unit2);
+        /*
+         * find out if there's any difference between the recurrence data being
+         * displayed and the recurrence data in the manager
+         */
+        if (DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(act1, act2) ||
+            DataBaseUtil.isDifferent(ab1, ab2) || DataBaseUtil.isDifferent(ae1, ae2) ||
+            DataBaseUtil.isDifferent(freq1, freq2) || DataBaseUtil.isDifferent(unit1, unit2) ||
+            DataBaseUtil.isDifferent(poid1, poid2))
+            redraw = true;
+        displayRecurrence();
+    }
 
-        if (dataChanged) {
-            displayedManager = manager;
+    private void displayRecurrence() {
+        if ( !isVisible)
+            return;
+
+        if (redraw) {
+            redraw = false;
+            if (manager != null)
+                displayedRecurrence = manager.getRecurrence();
+            else
+                displayedRecurrence = null;
             evaluateEdit();
             setState(state);
             fireDataChange();

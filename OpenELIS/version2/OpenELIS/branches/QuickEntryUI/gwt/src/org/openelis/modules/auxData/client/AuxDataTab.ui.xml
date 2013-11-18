@@ -29,7 +29,7 @@
       <t:Table ui:field="table" verticalScroll="ALWAYS"
         horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
       > 
-        <t:Column width="85" label="{msg.reportable}">
+        <t:Column width="85" label="{msg.gen_reportable}">
           <t:CheckBoxCell>
             <w:Check />
           </t:CheckBoxCell>
@@ -42,7 +42,7 @@
                   <t:Column width="130" label="{msg.gen_analyte}">
                     <t:LabelCell />
                   </t:Column>
-                  <t:Column width="130" label="{msg.group}">
+                  <t:Column width="130" label="{msg.gen_group}">
                     <t:LabelCell />
                   </t:Column>
                 </t:Table>
@@ -50,15 +50,15 @@
             </w:Dropdown>
           </t:DropdownCell>
         </t:Column>
-        <t:Column width="130" label="{msg.value}">
+        <t:Column width="130" label="{msg.gen_value}">
           <s:ResultCell />
         </t:Column>
       </t:Table>
     </g:layer>
     <g:layer bottom="40px" height="25px">
       <g:HorizontalPanel>
-        <w:Button ui:field="removeAuxButton" leftIcon="{res.style.removeRowIcon}" text="{msg.gen_removeRow}" />       
-        <w:Button ui:field="addAuxButton" leftIcon = "{res.style.fieldLookupIcon}" text="{msg.auxGroups}" />
+        <w:Button ui:field="removeAuxButton" leftIcon="{res.icon.removeRowIcon}" text="{msg.gen_removeRow}" />       
+        <w:Button ui:field="addAuxButton" leftIcon = "{res.icon.fieldLookupIcon}" text="{msg.auxGroups}" />
       </g:HorizontalPanel>
     </g:layer>
     <g:layer bottom="5px" height="30px">

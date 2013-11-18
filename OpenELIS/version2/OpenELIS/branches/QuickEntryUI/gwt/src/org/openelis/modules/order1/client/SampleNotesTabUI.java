@@ -25,8 +25,7 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.ui.screen.State.ADD;
-import static org.openelis.ui.screen.State.UPDATE;
+import static org.openelis.ui.screen.State.*;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
@@ -40,6 +39,7 @@ import org.openelis.ui.event.StateChangeEvent;
 import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
+import org.openelis.ui.screen.State;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
@@ -47,7 +47,6 @@ import org.openelis.ui.widget.NotesPanel;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
-import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -72,18 +71,19 @@ public class SampleNotesTabUI extends Screen {
 
     protected Screen                      parentScreen;
 
-    protected OrderManager1               manager, displayedManager;
+    protected OrderManager1               manager;
 
-    protected boolean                     isVisible;
+    protected NoteViewDO                  displayedSampleNote;
 
-    public SampleNotesTabUI(Screen parentScreen, EventBus bus) {
+    protected boolean                     isVisible, redraw;
+
+    public SampleNotesTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(bus);
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
         manager = null;
-        displayedManager = null;
+        displayedSampleNote = null;
     }
 
     private void initialize() {
@@ -102,35 +102,51 @@ public class SampleNotesTabUI extends Screen {
         addVisibleHandler(new VisibleEvent.Handler() {
             public void onVisibleOrInvisible(VisibleEvent event) {
                 isVisible = event.isVisible();
-                displayNotes();
+                displayNote();
             }
         });
-
-        /*
-         * handlers for the events fired by the screen containing this tab
-         */
-        bus.addHandlerToSource(StateChangeEvent.getType(),
-                               parentScreen,
-                               new StateChangeEvent.Handler() {
-                                   public void onStateChange(StateChangeEvent event) {
-                                       setState(event.getState());
-                                   }
-                               });
-
-        bus.addHandlerToSource(DataChangeEvent.getType(),
-                               parentScreen,
-                               new DataChangeEvent.Handler() {
-                                   public void onDataChange(DataChangeEvent event) {
-                                       displayNotes();
-                                   }
-                               });
     }
 
     public void setData(OrderManager1 manager) {
         if (DataBaseUtil.isDifferent(this.manager, manager)) {
-            displayedManager = this.manager;
             this.manager = manager;
         }
+    }
+
+    public void setState(State state) {
+        this.state = state;
+        bus.fireEventFromSource(new StateChangeEvent(state), this);
+    }
+
+    public void onDataChange() {
+        Integer id1, id2;
+        String txt1, txt2;
+
+        /*
+         * compare external notes
+         */
+        id1 = null;
+        txt1 = null;
+        if (displayedSampleNote != null) {
+            id1 = displayedSampleNote.getId();
+            txt1 = displayedSampleNote.getText();
+        }
+
+        id2 = null;
+        txt2 = null;
+        if (manager != null && manager.sampleNote.get() != null) {
+            id2 = manager.sampleNote.get().getId();
+            txt2 = manager.sampleNote.get().getText();
+        }
+
+        /*
+         * since the sample only has one external note, its id won't change but
+         * its text can
+         */
+        if (DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(txt1, txt2))
+            redraw = true;
+
+        displayNote();
     }
 
     @UiHandler("editNoteButton")
@@ -138,32 +154,16 @@ public class SampleNotesTabUI extends Screen {
         showNoteLookup();
     }
 
-    private void displayNotes() {
-        int count1, count2;
-        Integer id1, id2;
-
+    private void displayNote() {
         if ( !isVisible)
             return;
 
-        /*
-         * compare external notes
-         */
-        count1 = 0;
-        count2 = 0;
-        id1 = null;
-        id2 = null;
-        if (displayedManager != null && displayedManager.sampleNote.get() != null){
-            count1 = 1;
-            id1 = displayedManager.sampleNote.get().getId();
-        }
-
-        if (manager != null && manager.sampleNote.get() != null) {
-            count2 = 1;
-            id2 = manager.sampleNote.get().getId();
-        }
-
-        if ( (count1 != count2) || DataBaseUtil.isDifferent(id1, id2)) {
-            displayedManager = manager;
+        if (redraw) {
+            redraw = false;
+            if (manager != null)
+                displayedSampleNote = manager.sampleNote.get();
+            else
+                displayedSampleNote = null;
             setState(state);
             fireDataChange();
         }
@@ -189,9 +189,9 @@ public class SampleNotesTabUI extends Screen {
             editNoteLookup = new EditNoteLookupUI() {
                 public void ok() {
                     NoteViewDO note;
-                    if (DataBaseUtil.isEmpty(editNoteLookup.getText())){
+                    if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                         manager.sampleNote.removeEditing();
-                    }else{
+                    } else {
                         note = manager.sampleNote.getEditing();
                         note.setSubject(null);
                         note.setText(editNoteLookup.getText());

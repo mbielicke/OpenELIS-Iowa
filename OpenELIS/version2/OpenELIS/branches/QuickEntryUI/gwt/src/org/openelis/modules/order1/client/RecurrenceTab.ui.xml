@@ -18,7 +18,6 @@
 	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
 
 	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-	<ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources"
 		field="res" />
 
@@ -102,7 +101,7 @@
 						<g:layer top="0px" bottom="0px">
 							<t:Table ui:field="table" horizontalScroll="ALWAYS"
 								verticalScroll="ALWAYS" header="true"
-								styleName="{uiRes.table.ScreenTableWithSides}">
+								styleName="{res.table.ScreenTableWithSides}">
 								<t:Column width="45" label="{msg.order_orderRecurOn}">
 									<t:LabelCell>
 										<w:Label field="Date" />

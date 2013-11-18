@@ -59,5 +59,5 @@ public interface WorksheetBuilderServiceInt extends XsrfProtectedService {
                                                  ArrayList<WorksheetAnalysisViewDO> toAnalyses,
                                                  Integer fromWorksheetId) throws Exception;
     
-    WorksheetManager1 sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction) throws Exception;
+    WorksheetManager1 sortItems(WorksheetManager1 wm, int col, int dir) throws Exception;
 }

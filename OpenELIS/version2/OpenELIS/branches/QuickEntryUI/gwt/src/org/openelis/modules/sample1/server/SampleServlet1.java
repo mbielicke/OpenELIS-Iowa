@@ -18,107 +18,250 @@ import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.servlet.annotation.WebServlet;
 
+import org.openelis.bean.SampleBean;
 import org.openelis.bean.SampleManager1Bean;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.TestAnalyteViewDO;
-import org.openelis.gwt.server.RemoteServlet;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
 import org.openelis.modules.sample1.client.SampleServiceInt1;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.server.RemoteServlet;
 
+/*
+ * This class provides service for SampleManager1
+ */
 @WebServlet("/openelis/sample1")
 public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
 
-    private static final long serialVersionUID = 1L;
+    private static final long  serialVersionUID = 1L;
     
     @EJB
+    private SampleBean sample;
+
+    @EJB
     private SampleManager1Bean sampleManager1;
-    
+
     public SampleManager1 getInstance(String domain) throws Exception {
-        return sampleManager1.getInstance(domain);
+        try {
+            return sampleManager1.getInstance(domain);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleManager1 fetchById(Integer sampleId, SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchById(sampleId, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
-                                                SampleManager1.Load ...elements) throws Exception {
-        return sampleManager1.fetchByIds(sampleIds, elements);
+                                                SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchByIds(sampleIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
+
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception {
-        return sampleManager1.fetchByQuery(fields, first, max, elements);
-    }
-    
-    public SampleManager1 fetchForUpdate(Integer sampleId, Load... elements) throws Exception {
-        return sampleManager1.fetchForUpdate(sampleId, elements);
-    }
-    
-    public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
-        return sampleManager1.fetchForUpdate(sampleIds, elements);
-    }
-    
-    public SampleManager1 unlock(Integer sampleId, Load... elements) throws Exception {
-        return sampleManager1.unlock(sampleId, elements);
-    }
-    
-    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
-        return sampleManager1.unlock(sampleIds, elements);
+        try {
+            return sampleManager1.fetchByQuery(fields, first, max, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
-        return sampleManager1.fetchByAnalyses(analysisIds, elements);
+        try {
+            return sampleManager1.fetchByAnalyses(analysisIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
     
-    public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
-        return sampleManager1.update(sm, ignoreWarnings);
+    public SampleManager1 fetchByAccession(Integer accessionNum, SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchByAccession(accessionNum, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<IdAccessionVO> query(Query query) throws Exception {
+        try {
+            return sample.query(query.getFields(),
+                               query.getPage() * query.getRowsPerPage(),
+                               query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 
-    public SampleManager1 setAccessionNumber(SampleManager1 sm, Integer accession) throws Exception {
-        return sampleManager1.setAccessionNumber(sm, accession);
+    public SampleManager1 fetchForUpdate(Integer sampleId, Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchForUpdate(sampleId, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
-    public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception {
-        return sampleManager1.setOrderId(sm, orderId);
+
+    public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchForUpdate(sampleIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
-    public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
-        return sampleManager1.addTest(sm, test);
+
+    public SampleManager1 unlock(Integer sampleId, Load... elements) throws Exception {
+        try {
+            return sampleManager1.unlock(sampleId, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+
     }
-    
-    public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
-        return sampleManager1.addTests(sm, tests);
+
+    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds, Load... elements) throws Exception {
+        try {
+            return sampleManager1.unlock(sampleIds, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
+
+    public SampleManager1 update(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
+        try {
+            return sampleManager1.update(sm, ignoreWarnings);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public void validateAccessionNumber(SampleManager1 sm) throws Exception {
+        try {
+            sampleManager1.validateAccessionNumber(sm);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
+        try {
+            return sampleManager1.mergeQuickEntry(sm);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception {
+        try {
+            return sampleManager1.importOrder(sm, orderId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleManager1 duplicate(Integer sampleId) throws Exception {
+        try {
+            return sampleManager1.duplicate(sampleId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
+        try {
+            return sampleManager1.addAnalysis(sm, test);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public SampleTestReturnVO addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
+        try {
+            return sampleManager1.addAnalyses(sm, tests);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public SampleManager1 removeAnalysis(SampleManager1 sm, Integer analysisId) throws Exception {
-        return sampleManager1.removeAnalysis(sm, analysisId);
+        try {
+            return sampleManager1.removeAnalysis(sm, analysisId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
+
     public SampleManager1 addRowAnalytes(SampleManager1 sm, AnalysisViewDO analysis,
                                          ArrayList<TestAnalyteViewDO> analytes,
                                          ArrayList<Integer> indexes) throws Exception {
-        return sampleManager1.addRowAnalytes(sm, analysis, analytes, indexes);
+        try {
+            return sampleManager1.addRowAnalytes(sm, analysis, analytes, indexes);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
-    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId, Integer methodId) throws Exception {
-        return sampleManager1.changeAnalysisMethod(sm, analysisId, methodId);
+
+    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
+                                                   Integer methodId) throws Exception {
+        try {
+            return sampleManager1.changeAnalysisMethod(sm, analysisId, methodId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
-    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer methodId) throws Exception {
-        return sampleManager1.changeAnalysisStatus(sm, analysisId, methodId);
+
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
+                                               Integer methodId) throws Exception {
+        try {
+            return sampleManager1.changeAnalysisStatus(sm, analysisId, methodId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
+
     public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
-        return sampleManager1.changeAnalysisUnit(sm, analysisId, unitId);
+        try {
+            return sampleManager1.changeAnalysisUnit(sm, analysisId, unitId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
-    public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
-        return sampleManager1.addAuxGroups(sm, groupIds);
+
+    public SampleManager1 changeAnalysisPrep(SampleManager1 sm, Integer analysisId,
+                                             Integer preAnalysisId) throws Exception {
+        try {
+            return sampleManager1.changeAnalysisPrep(sm, analysisId, preAnalysisId);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
-    
+
+    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        try {
+            return sampleManager1.addAuxGroups(sm, groupIds);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
-        return sampleManager1.removeAuxGroups(sm, groupIds);
+        try {
+            return sampleManager1.removeAuxGroups(sm, groupIds);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }
 }

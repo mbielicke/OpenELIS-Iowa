@@ -13,8 +13,8 @@
   xmlns:t='urn:import:org.openelis.ui.widget.table'
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" height="40px">
       <g:HorizontalPanel>
@@ -24,7 +24,7 @@
       </g:HorizontalPanel>
     </g:layer>
     <g:layer top="45px" height="200px">
-      <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
+      <r:Tree ui:field="tree" header="true" styleName="{res.table.ScreenTableWithSides}">
         <r:Column width="250" label="" />
         <r:Column width="200" label="{msg.gen_section}" />
         <r:Column width="50" label="{msg.gen_select}" />
@@ -58,7 +58,7 @@
     </g:layer>
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel width="100%" height="100%" horizontalAlignment="CENTER">
-        <w:Button ui:field="okButton" text="{msg.gen_ok}" />
+        <w:Button ui:field="okButton" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_ok}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

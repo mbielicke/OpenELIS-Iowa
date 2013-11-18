@@ -90,7 +90,7 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
 
     protected ArrayList<Node>                     checkedNodes;
     
-    private static final String    SAMPLE_ITEM_LEAF = "sampleItem", ANALYSIS_LEAF = "analysis";
+    protected static final String    SAMPLE_ITEM_LEAF = "sampleItem", ANALYSIS_LEAF = "analysis";
 
     public SampleItemPopoutLookupUI() {
         initWidget(uiBinder.createAndBindUi(this));
@@ -285,21 +285,24 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
         window.close();
         ok();
     }
+    
+    private void evaluateEdit() {
+        canEdit = manager != null &&
+                  !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
+    }
 
     private Node getRoot() {
         int i, j;
+        StringBuilder builder;
         AnalysisViewDO ana;
         SampleItemViewDO item;
         Node root, inode, anode;
-        StringBuffer buf;
-        ArrayList<String> labels;
 
         root = new Node();
         if (manager == null)
             return root;
 
-        labels = new ArrayList<String>();
-        buf = new StringBuffer(); 
+        builder = new StringBuilder();
         for (i = 0; i < manager.item.count(); i++ ) {
             item = manager.item.get(i);
 
@@ -307,17 +310,20 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
             inode.setType(SAMPLE_ITEM_LEAF);
             inode.setOpen(true);
             inode.setKey(item.getId());
+            
+            /*
+             * set the sample items's display
+             */
             inode.setCell(0, item.getItemSequence());
             
-            labels.clear();
-            labels.add(item.getTypeOfSample());
+            builder.setLength(0);
+            builder.append(item.getTypeOfSample());
             if (item.getContainer() != null) {
-                labels.add(" [");
-                labels.add(item.getContainer());
-                labels.add("]");
+                builder.append(" [");
+                builder.append(item.getContainer());
+                builder.append("]");
             }
-            buf.setLength(0);
-            inode.setCell(1, concat(labels, buf));
+            inode.setCell(1, builder.toString());
             
             inode.setData(item);
 
@@ -329,26 +335,28 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
                 anode.setType(ANALYSIS_LEAF);
 
                 anode.setKey(ana.getId());
+                
+                /*
+                 * set the analysis' display
+                 */
                 anode.setCell(0, "N");
 
-                labels.clear();
-                
-                labels.add(ana.getTestName());
-                labels.add(", ");
-                labels.add(ana.getMethodName());
+                builder.setLength(0);
+                builder.append(ana.getTestName());
+                builder.append(", ");
+                builder.append(ana.getMethodName());
                 if (ana.getStatusId() != null) {
                     try {
-                        labels.add(" (");
-                        labels.add(DictionaryCache.getById(ana.getStatusId()).getEntry());
-                        labels.add(")");
+                        builder.append(" (");
+                        builder.append(DictionaryCache.getById(ana.getStatusId()).getEntry());
+                        builder.append(")");
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
-                        return root;
-                    } 
+                    }
                 }
-                buf.setLength(0);
-                anode.setCell(1, concat(labels, buf));
+                anode.setCell(1, builder.toString());
+                
                 anode.setData(ana);
                 inode.add(anode);
             }
@@ -377,18 +385,5 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
         }
 
         return model;
-    }
-
-    private void evaluateEdit() {
-        canEdit = manager != null &&
-                  !Constants.dictionary().SAMPLE_RELEASED.equals(manager.getSample().getStatusId());
-    }
-    
-    private String concat(List<String> list, StringBuffer buf) {
-        for (String i : list) {
-            if (i != null)
-                buf.append(i);
-        }
-        return buf.toString();
     }
 }

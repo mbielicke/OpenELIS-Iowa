@@ -85,6 +85,9 @@ UIRF Software License are applicable instead of those above.
                   <col header="{resource:getString($constants,'accNum')}" key="accessionNumber" sort="true" width="50">
                     <label field="Integer" />
                   </col>
+                  <col header="{resource:getString($constants,'priority')}" key="priority" sort="true" width="50">
+                    <label field="Integer" />
+                  </col>
                   <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
                     <dropdown field="String" width="50" />
                   </col>
@@ -137,6 +140,9 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="initiatedTable" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="605">
                 <col header="{resource:getString($constants,'accNum')}" key="accessionNumber" sort="true" width="50">
+                  <label field="Integer" />
+                </col>
+                <col header="{resource:getString($constants,'priority')}" key="priority" sort="true" width="50">
                   <label field="Integer" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
@@ -208,6 +214,9 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="completedTable" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="605">
                 <col header="{resource:getString($constants,'accNum')}" key="accessionNumber" sort="true" width="50">
+                  <label field="Integer" />
+                </col>
+                <col header="{resource:getString($constants,'priority')}" key="priority" sort="true" width="50">
                   <label field="Integer" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">

@@ -27,103 +27,76 @@ package org.openelis.modules.quickEntry.client;
 
 import static org.openelis.modules.main.client.Logger.logger;
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.ui.screen.State.DEFAULT;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.uibinder.client.UiTemplate;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 
+import org.openelis.cache.CacheProvider;
 import org.openelis.cache.CategoryCache;
-import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.cache.UserCacheService;
 import org.openelis.constants.Messages;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
-import org.openelis.domain.DataObject;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
-import org.openelis.domain.InstrumentViewDO;
-import org.openelis.domain.QcAnalyteViewDO;
-import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
-import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestSectionViewDO;
-import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetAnalysisViewDO;
-import org.openelis.domain.WorksheetItemDO;
-import org.openelis.domain.WorksheetViewDO;
-import org.openelis.gwt.widget.DateField;
-import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleManager1;
-import org.openelis.manager.WorksheetManager1;
-import org.openelis.manager.WorksheetManager1.Load;
+import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.meta.WorksheetBuilderMeta;
-import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.instrument.client.InstrumentService;
-import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.panel.client.PanelService;
-import org.openelis.modules.qc.client.QcService;
-import org.openelis.modules.result.client.ResultService;
-import org.openelis.modules.sample.client.SampleService;
 import org.openelis.modules.sample1.client.SampleService1;
+import org.openelis.modules.sample1.client.TestSelectionLookupUI;
+import org.openelis.modules.systemvariable.client.SystemVariableService;
 import org.openelis.modules.test.client.TestService;
-import org.openelis.modules.worksheet1.client.WorksheetLookupScreenUI;
-import org.openelis.modules.worksheet1.client.WorksheetNotesTabUI;
-import org.openelis.modules.worksheet1.client.WorksheetService1;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FormErrorException;
-import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.event.ActionEvent;
-import org.openelis.ui.event.ActionHandler;
 import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.resources.UIResources;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
-import org.openelis.ui.screen.ScreenNavigator;
 import org.openelis.ui.services.CalendarService;
 import org.openelis.ui.widget.AutoComplete;
-import org.openelis.ui.widget.AutoCompleteValue;
 import org.openelis.ui.widget.Button;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Confirm;
 import org.openelis.ui.widget.Dropdown;
 import org.openelis.ui.widget.Item;
-import org.openelis.ui.widget.Menu;
-import org.openelis.ui.widget.MenuItem;
 import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.QueryFieldUtil;
-import org.openelis.ui.widget.TabLayoutPanel;
 import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
@@ -131,11 +104,8 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.ui.widget.table.event.CellEditedEvent;
-import org.openelis.ui.widget.table.event.CellEditedHandler;
-import org.openelis.utils.ReportUtil;
 
-public class QuickEntryScreenUI extends Screen {
+public class QuickEntryScreenUI extends Screen implements CacheProvider {
 
     @UiTemplate("QuickEntry.ui.xml")
     interface QuickEntryUiBinder extends UiBinder<Widget, QuickEntryScreenUI> {
@@ -149,6 +119,8 @@ public class QuickEntryScreenUI extends Screen {
     private HashMap<Integer, SampleManagerRowCount>        managers;
     private ModulePermission                               userPermission;
 
+    @UiField
+    protected AutoComplete                                 systemUserId;
     @UiField
     protected Button                                       commit, removeRowButton;
     @UiField
@@ -166,9 +138,13 @@ public class QuickEntryScreenUI extends Screen {
     @UiField
     protected TextBox<String>                              entry, tubeNumber;
 
+    protected boolean                                      isBusy;
     protected Confirm                                      windowCloseConfirm,
                                                            receivedDateNotTodayConfirm;
-    
+    protected HashMap<String, Object>                      cache;
+    protected QuickEntryScreenUI                           screen;
+    protected TestSelectionLookupUI                        testSelectionLookup;
+
     public QuickEntryScreenUI(WindowInt window) throws Exception {
         setWindow(window);
         
@@ -192,6 +168,9 @@ public class QuickEntryScreenUI extends Screen {
         ArrayList<Item<String>> model;
         Item<String> item;
 
+        screen = this;
+        cache = new HashMap<String, Object>();
+
         addShortcut(commit, 'm', CTRL);
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
@@ -200,6 +179,7 @@ public class QuickEntryScreenUI extends Screen {
                 accessionNumber.setEnabled(false);
                 tubeNumber.setEnabled(false);
                 receivedDate.setEnabled(true);
+                systemUserId.setEnabled(true);
                 testMethodSampleType.setEnabled(true);
                 sectionId.setEnabled(true);
                 currentDateTime.setEnabled(true);
@@ -268,6 +248,32 @@ public class QuickEntryScreenUI extends Screen {
 
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
+            }
+        });
+
+        addScreenHandler(systemUserId, SampleMeta.getReceivedById(), new ScreenHandler<Integer>() {
+            public Widget onTab(boolean forward) {
+                return forward ? entry : entry;
+            }
+        });
+
+        systemUserId.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<SystemUserVO> users;
+                ArrayList<Item<Integer>> model;
+                
+                window.setBusy();
+                try {
+                    model = new ArrayList<Item<Integer>>();
+                    users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    for (SystemUserVO user : users)
+                        model.add(new Item<Integer>(user.getId(), user.getLoginName()));
+                    systemUserId.showAutoMatches(model);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.toString());
+                }
+                window.clearStatus();
             }
         });
 
@@ -370,6 +376,12 @@ public class QuickEntryScreenUI extends Screen {
             }
         });
             
+        addScreenHandler(quickEntryTable, "quickEntryTable", new ScreenHandler<ArrayList<Item<String>>>() {
+            public void onDataChange(DataChangeEvent event) {
+                quickEntryTable.setModel(getTableModel());
+            }
+        });
+
         quickEntryTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 if (quickEntryTable.getSelectedRow() != -1)
@@ -405,6 +417,7 @@ public class QuickEntryScreenUI extends Screen {
                             public void onSelection(SelectionEvent<Integer> event) {
                                 switch (event.getSelectedItem().intValue()) {
                                     case 0:
+                                        abort();
                                         close = true;
                                         window.close();
                                         break;
@@ -415,7 +428,6 @@ public class QuickEntryScreenUI extends Screen {
                             }
                         });
                     }
-
                     windowCloseConfirm.show();
                 }
             }
@@ -448,10 +460,48 @@ public class QuickEntryScreenUI extends Screen {
 
         setState(DEFAULT);
         fireDataChange();
+        
+        systemUserId.setValue(UserCache.getPermission().getSystemUserId(), UserCache.getPermission().getLoginName());
 
         logger.fine("Quick Entry Screen Opened");
     }
     
+    /**
+     * returns from the cache, the object that has the specified key and is of
+     * the specified class
+     */
+    @Override
+    public <T> T get(Object key, Class<?> c) {
+        String cacheKey;
+        Object obj;
+
+        if (cache == null)
+            return null;
+
+        cacheKey = null;
+        if (c == TestManager.class)
+            cacheKey = "tm:" + key;
+
+        obj = cache.get(cacheKey);
+        if (obj != null)
+            return (T)obj;
+
+        /*
+         * if the requested object is not in the cache then obtain it and put it
+         * in the cache
+         */
+        try {
+            if (c == TestManager.class)
+                obj = TestService.get().fetchById((Integer)key);
+
+            cache.put(cacheKey, obj);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return (T)obj;
+    }
+
     /*
      * basic button methods
      */
@@ -461,92 +511,146 @@ public class QuickEntryScreenUI extends Screen {
         commit();
     }
     
+    @SuppressWarnings("unused")
+    @UiHandler("removeRowButton")
+    protected void removeRow(ClickEvent event) {
+        int rowIndex;
+        AnalysisViewDO aVDO;
+        Row row;
+        SampleItemViewDO siVDO;
+        SampleManager1 man;
+        SampleManagerRowCount smRC;
+        
+        rowIndex = quickEntryTable.getSelectedRow();
+        row = quickEntryTable.getRowAt(rowIndex);
+        aVDO = row.getData();
+        smRC = managers.get(row.getCell(0));
+        smRC.sampleManager.analysis.removeAnalysis(aVDO.getId());
+        smRC.count--;
+        if (smRC.count <= 0) {
+            try {
+                SampleService1.get().unlock(smRC.sampleManager.getSample().getId(),
+                                            (SampleManager1.Load)null);
+            } catch (Exception anyE) {
+                Window.alert(anyE.getMessage());
+            }
+            managers.remove(smRC);
+        }
+        quickEntryTable.removeRowAt(rowIndex);
+    }
+    
     private void commit() {
-//        int i;
-//        ArrayList<Integer> removables;
-//        Item item;
-//        Iterator<Item> itr;
-//        SampleManager manager;
-//        ValidationErrorsList errorsList;
-//
-//        finishEditing();
-//        clearErrors();
-//        
-//        window.setBusy(Messages.get().adding());
-//
-//        itr = managers.values().iterator();
-//        errorsList = new ValidationErrorsList();
-//        manager = null;
-//        removables = new ArrayList<Integer>();
-//        while (itr.hasNext()) {
-//            try {
-//                item = itr.next();
-//                manager = item.sampleManager;
-//                manager.getSample().setReceivedById(UserCache.getPermission()
-//                                                             .getSystemUserId());
-//                manager.getSample()
-//                       .setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
-//
-//                if (manager.getSample().getId() == null)
-//                    manager.add();
-//                else
-//                    manager.update();
-//
-//                removables.add(manager.getSample().getAccessionNumber());
-//                item.count = 0;
-//            } catch (ValidationErrorsList e) {
-//                errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
-//                for (i = 0; i < e.size(); i++)
-//                    errorsList.add(new FormErrorException(Messages.get().rowError(
-//                                                          manager.getSample()
-//                                                                 .getAccessionNumber()
-//                                                                 .toString(),
-//                                                          e.getErrorList()
-//                                                           .get(i)
-//                                                           .getLocalizedMessage())));
-//            } catch (Exception e) {
-//                errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
-//                errorsList.add(new FormErrorException(Messages.get().rowError(
-//                                                      manager.getSample()
-//                                                             .getAccessionNumber()
-//                                                             .toString(),
-//                                                      e.getMessage())));
-//            }
-//        }
-//        
-//        for (i = 0; i < removables.size(); i++)
-//            managers.remove(removables.get(i));
-//
-//        if (errorsList.size() > 0) {
-//            showErrors(errorsList);
-//        } else {
-//            setState(Screen.State.DEFAULT);
-//            window.setDone(Messages.get().addingComplete());
-//        }
-//
-//        DataChangeEvent.fire(this);
+        int i;
+        ArrayList<SampleManagerRowCount> removables;
+        SampleManager1 man;
+        ValidationErrorsList errorsList;
+
+        finishEditing();
+        clearErrors();
+        
+        window.setBusy(Messages.get().adding());
+
+        errorsList = new ValidationErrorsList();
+        removables = new ArrayList<SampleManagerRowCount>();
+        for (SampleManagerRowCount smRC : managers.values()) {
+            man = smRC.sampleManager;
+            try {
+                SampleService1.get().update(man, true);
+                removables.add(smRC);
+            } catch (ValidationErrorsList e) {
+                errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
+                for (i = 0; i < e.size(); i++)
+                    errorsList.add(new FormErrorException(Messages.get()
+                                                                  .rowError(man.getSample()
+                                                                               .getAccessionNumber()
+                                                                               .toString(),
+                                                                            e.getErrorList()
+                                                                             .get(i)
+                                                                             .getLocalizedMessage())));
+            } catch (Exception e) {
+                errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
+                errorsList.add(new FormErrorException(Messages.get()
+                                                              .rowError(man.getSample()
+                                                                           .getAccessionNumber()
+                                                                           .toString(),
+                                                                        e.getMessage())));
+            }
+        }
+        
+        for (i = 0; i < removables.size(); i++)
+            managers.remove(removables.get(i));
+
+        if (errorsList.size() > 0) {
+            showErrors(errorsList);
+        } else {
+            setState(DEFAULT);
+            window.setDone(Messages.get().addingComplete());
+        }
+
+        fireDataChange();
+    }
+    
+    private void abort() {
+        int i;
+        ArrayList<SampleManagerRowCount> removables;
+        SampleManager1 man;
+        ValidationErrorsList errorsList;
+
+        finishEditing();
+        clearErrors();
+        
+        window.setBusy(Messages.get().adding());
+
+        errorsList = new ValidationErrorsList();
+        removables = new ArrayList<SampleManagerRowCount>();
+        for (SampleManagerRowCount smRC : managers.values()) {
+            man = smRC.sampleManager;
+            try {
+                SampleService1.get().unlock(man.getSample().getId(), (SampleManager1.Load)null);
+                removables.add(smRC);
+            } catch (Exception e) {
+                errorsList.add(new FormErrorException(Messages.get()
+                                                              .rowError(man.getSample()
+                                                                           .getAccessionNumber()
+                                                                           .toString(),
+                                                                        e.getMessage())));
+            }
+        }
+        
+        for (i = 0; i < removables.size(); i++)
+            managers.remove(removables.get(i));
+
+        if (errorsList.size() > 0) {
+            showErrors(errorsList);
+        } else {
+            setState(DEFAULT);
+            window.setDone(Messages.get().addAborted());
+        }
     }
         
     private void entryChanged() {
         int index;
-        final Datetime recDate;
+        final Date recDate;
         Exception ex;
         Integer accessionNum;
         SampleManager1 sampleMan;
         SampleManagerRowCount smRowCount;
         String val;
+        SystemVariableDO sysVarDO;
 
         val = entry.getValue();
         window.clearStatus();
 
-        // date received
-        recDate = ReportUtil.getDatetime(val);
-        if (recDate != null) {
+        try {
+            recDate = DateTimeFormat.getFormat(Messages.get().dateTimePattern()).parseStrict(val);
             if (todaysDate.after(recDate)) {
-                ex = new Exception(Messages.get().receivedDateNotTodayExceptionBody(
-                                            ReportUtil.toString(recDate, Messages.get().dateTimePattern())));
+                ex = new Exception(Messages.get()
+                                           .receivedDateNotTodayExceptionBody(DateTimeFormat.getFormat(Messages.get()
+                                                                                                               .dateTimePattern())
+                                                                                            .format(recDate)));
                 receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                          Messages.get().receivedDateNotTodayExceptionTitle(),
+                                                          Messages.get()
+                                                                  .receivedDateNotTodayExceptionTitle(),
                                                           ex.getMessage(),
                                                           "No",
                                                           "Yes");
@@ -557,16 +661,19 @@ public class QuickEntryScreenUI extends Screen {
                                 // do nothing
                                 break;
                             case 1:
-                                receivedDate.setValue(recDate);
+                                receivedDate.setValue(new Datetime(Datetime.YEAR, Datetime.MINUTE, recDate));
                                 break;
                         }
                     }
                 });
                 receivedDateNotTodayConfirm.show();
             } else {
-                receivedDate.setValue(recDate);
+                receivedDate.setValue(new Datetime(Datetime.YEAR, Datetime.MINUTE, recDate));
             }
-        } else if (val.matches("[TP][0-9]*\\-[0-9]*")) {    // test & panel
+        } catch (IllegalArgumentException iaE) {
+            // ignore and fall through
+        }
+        if (val.matches("[TP][0-9]*\\-[0-9]*")) {    // test & panel
             try {
                 testMethodSampleType.setValue(val, true);
             } catch (Exception e) {
@@ -576,6 +683,9 @@ public class QuickEntryScreenUI extends Screen {
         } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {    // tube #
             tubeNumber.setValue(val);
         } else if (val.matches("NEW")) {                    // new accession #
+            // TODO: Implement using the "NEW" keyword to get the next accession
+            //       number for use when printing the labels on the fly
+            Window.alert("Not yet implemented!");
 //            if (validateFields()) {
 //                if (accNumUtil == null)
 //                    accNumUtil = new AccessionNumberUtility();
@@ -604,18 +714,31 @@ public class QuickEntryScreenUI extends Screen {
                     accessionNum = Integer.valueOf(val);
                     smRowCount = managers.get(val);
                     if (smRowCount == null) {
-                        sampleMan = SampleService1.get().getInstance(Constants.domain().QUICKENTRY);
-                        SampleService1.get().setAccessionNumber(sampleMan, accessionNum);
+                        sampleMan = SampleService1.get().fetchByAccession(accessionNum, (SampleManager1.Load)null);
+                        if (sampleMan != null) {
+                            if (Constants.dictionary().SAMPLE_RELEASED.equals(sampleMan.getSample().getStatusId()))
+                                throw new InconsistencyException(Messages.get().sample_cantAddAnalysis());
+                            sampleMan = SampleService1.get().fetchForUpdate(sampleMan.getSample().getId(), (SampleManager1.Load)null);
+                        } else {
+                            sysVarDO = SystemVariableService.get().fetchByExactName("last_accession_number");
+                            if (accessionNum.compareTo(Integer.valueOf(sysVarDO.getValue())) > 0)
+                                throw new InconsistencyException(Messages.get()
+                                                                         .sample_accessionNumberNotInUse(accessionNum));
+                            sampleMan = SampleService1.get().getInstance(Constants.domain().QUICKENTRY);
+                            sampleMan.getSample().setAccessionNumber(accessionNum);
+                        }
                         managers.put(sampleMan.getSample().getAccessionNumber(),
                                      new SampleManagerRowCount(sampleMan, 0));
                     } else {
                         sampleMan = smRowCount.sampleManager;
                     }
                     accessionNumber.setValue(accessionNum);
-                    addAnalysisRow();
+                    addAnalysis();
                 } catch (NumberFormatException e) {
                     ex = new Exception(Messages.get().invalidEntryException(val));
                     window.setError(ex.getMessage());
+                } catch (InconsistencyException e) {
+                    window.setError(e.getMessage());
                 } catch (ValidationErrorsList e) {
                     int i;
                     FieldErrorException fe;
@@ -645,7 +768,7 @@ public class QuickEntryScreenUI extends Screen {
         entry.setFocus(true);
     }
 
-    private void addAnalysisRow() {
+    private void addAnalysis() {
         Integer accessionNum;
         SampleItemViewDO siVDO;
         SampleManagerRowCount smRowCount;
@@ -657,7 +780,7 @@ public class QuickEntryScreenUI extends Screen {
         TestSectionViewDO tsVDO;
 
         typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelectedItem().getData();
-        accessionNum = Integer.valueOf(accessionNumber.getValue());
+        accessionNum = accessionNumber.getValue();
         tubeNum = tubeNumber.getValue();
         tsVDO = (TestSectionViewDO)sectionId.getSelectedItem().getData();
 
@@ -665,18 +788,16 @@ public class QuickEntryScreenUI extends Screen {
             smRowCount = managers.get(accessionNum);
             sampleMan = smRowCount.sampleManager;
             sampleMan.getSample().setReceivedDate(receivedDate.getValue());
-            smRowCount.count++;
+            sampleMan.getSample().setReceivedById(systemUserId.getValue().getId());
 
-            siVDO = sampleMan.item.add();
+            siVDO = getSampleItemForType(typeDO, sampleMan);
             siVDO.setContainerReference(tubeNum);
-            siVDO.setTypeOfSampleId(typeDO.getSampleTypeId());
-            siVDO.setTypeOfSample(typeDO.getSampleType());
             
             if (typeDO.getTestId() != null)
                 requestVO = new SampleTestRequestVO(siVDO.getId(),
                                                 typeDO.getTestId(),
                                                 null,
-                                                null,
+                                                tsVDO.getSectionId(),
                                                 null,
                                                 null,
                                                 false,
@@ -685,17 +806,149 @@ public class QuickEntryScreenUI extends Screen {
                 requestVO = new SampleTestRequestVO(siVDO.getId(),
                                                 null,
                                                 null,
-                                                null,
+                                                tsVDO.getSectionId(),
                                                 null,
                                                 typeDO.getPanelId(),
                                                 false,
                                                 null);
 
-            returnVO = SampleService1.get().addTest(sampleMan, requestVO);
+            returnVO = SampleService1.get().addAnalysis(sampleMan, requestVO);
             smRowCount.sampleManager = returnVO.getManager();
+            showErrorsOrTests(returnVO);
+            if (!isBusy)
+                fireDataChange();
         } catch (Exception e) {
             Window.alert("rowAdded: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Shows the errors in the VO or the popup for selecting the prep/reflex
+     * tests for the analyses in the VO because they were added/changed in the
+     * back-end.
+     */
+    private void showErrorsOrTests(final SampleTestReturnVO ret) {
+        ModalWindow modal;
+
+        if (ret == null)
+            return;
+
+        if (ret.getErrors() != null && ret.getErrors().size() > 0) {
+            showErrors(ret.getErrors());
+        } else if (ret.getTests() != null && ret.getTests().size() > 0) {
+            /*
+             * show the pop for selecting prep/reflex tests
+             */
+            if (testSelectionLookup == null) {
+                testSelectionLookup = new TestSelectionLookupUI() {
+                    @Override
+                    public TestManager getTestManager(Integer testId) {
+                        return screen.get(testId, TestManager.class);
+                    }
+
+                    @Override
+                    public void ok() {
+                        ArrayList<SampleTestRequestVO> tests;
+
+                        tests = testSelectionLookup.getSelectedTests();
+                        /*
+                         * keep isBusy to be true if some tests were selected on
+                         * the popup because they need to be added to the
+                         * manager
+                         */
+                        if (tests != null && tests.size() > 0)
+                            addAdditionalAnalyses(ret.getManager(), tests);
+                        else
+                            isBusy = false;
+                    }
+                };
+            }
+
+            /*
+             * delay refresh of the table until we have added all tests
+             */
+            isBusy = true;
+
+            modal = new ModalWindow();
+            modal.setSize("520px", "350px");
+            modal.setName(Messages.get().testSelection_prepTestSelection());
+            modal.setCSS(UIResources.INSTANCE.popupWindow());
+            modal.setContent(testSelectionLookup);
+
+            testSelectionLookup.setData(ret.getManager(), ret.getTests());
+            testSelectionLookup.setWindow(modal);
+        }
+    }
+
+    private void addAdditionalAnalyses(SampleManager1 man, ArrayList<SampleTestRequestVO> tests) {
+        SampleManagerRowCount smRowCount;
+        SampleTestReturnVO returnVO;
+
+        try {
+            returnVO = SampleService1.get().addAnalyses(man, tests);
+            smRowCount = managers.get(returnVO.getManager().getSample().getAccessionNumber());
+            smRowCount.sampleManager = returnVO.getManager();
+            showErrorsOrTests(returnVO);
+            if (!isBusy)
+                fireDataChange();
+        } catch (Exception e) {
+            Window.alert("rowAdded: " + e.getMessage());
+        }
+    }
+    
+    private SampleItemViewDO getSampleItemForType(TestMethodSampleTypeVO typeDO, SampleManager1 man) {
+        int i;
+        SampleItemViewDO itemDO;
+
+        for (i = 0; i < man.item.count(); i++) {
+            itemDO = man.item.get(i);
+            if (typeDO.getSampleTypeId().equals(itemDO.getTypeOfSampleId()))
+                return itemDO;
+        }
+        
+        itemDO = man.item.add();
+        itemDO.setTypeOfSampleId(typeDO.getSampleTypeId());
+        itemDO.setTypeOfSample(typeDO.getSampleType());
+        return itemDO;
+    }
+    
+    private ArrayList<Row> getTableModel() {
+        int i, j, count;
+        AnalysisViewDO aVDO;
+        ArrayList<Row> model;
+        Row row;
+        SampleDO sDO;
+        SampleItemViewDO siVDO;
+        SampleManager1 man;
+        
+        model = new ArrayList<Row>();
+        for (SampleManagerRowCount smRC : managers.values()) {
+            count = 0;
+            man = smRC.sampleManager;
+            sDO = man.getSample();
+            for (i = 0; i < man.item.count(); i++) {
+                siVDO = man.item.get(i);
+                for (j = 0; j < man.analysis.count(siVDO); j ++) {
+                    aVDO = man.analysis.get(siVDO, j);
+                    if (aVDO.getId() < 0) {
+                        row = new Row();
+                        row.setCell(0, sDO.getAccessionNumber());
+                        row.setCell(1, sDO.getReceivedDate());
+                        row.setCell(2, aVDO.getTestName());
+                        row.setCell(3, aVDO.getMethodName());
+                        row.setCell(4, siVDO.getTypeOfSample());
+                        if (Constants.domain().HUMAN.equals(sDO.getDomain()))
+                            row.setCell(4, sDO.getClientReference());
+                        row.setData(aVDO);
+                        model.add(row);
+                        count++;
+                    }
+                }
+            }
+            smRC.count = count;
+        }
+        
+        return model;
     }
 
     private boolean validateFields() {
@@ -741,8 +994,8 @@ public class QuickEntryScreenUI extends Screen {
     }
 
     private class SampleManagerRowCount {
+        private int count;
         private SampleManager1 sampleManager;
-        private int            count;
 
         public SampleManagerRowCount(SampleManager1 man, int count) {
             this.sampleManager = man;

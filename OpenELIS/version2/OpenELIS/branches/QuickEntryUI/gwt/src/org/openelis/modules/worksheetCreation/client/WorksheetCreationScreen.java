@@ -184,7 +184,8 @@ public class WorksheetCreationScreen extends Screen {
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (wasExitCalled) {
-                    wcLookupScreen.getWindow().close();
+                    if (wcLookupScreen.isAttached())
+                        wcLookupScreen.getWindow().close();
                 } else {
                     event.cancel();
                     exit();
@@ -747,7 +748,6 @@ public class WorksheetCreationScreen extends Screen {
                     waDO.setWorksheetAnalysisId((Integer)row.cells.get(3).getValue());
                 }
             }
-            waDO.setIsFromOther("N");
             try {
                 waManager = wiManager.getWorksheetAnalysisAt(i);
                 waManager.addWorksheetAnalysis(waDO);
@@ -756,7 +756,6 @@ public class WorksheetCreationScreen extends Screen {
                 // records from the manager in the ArrayList
                 //
                 if (row.data instanceof ArrayList && ((ArrayList<Object>)row.data).size() >= 3) {
-                    waDO.setIsFromOther("Y");
                     fromFormatId = (Integer) ((ArrayList<Object>)row.data).get(((ArrayList<Object>)row.data).size() - 1);
                     if (!formatId.equals(fromFormatId)) {
                         fromColumnNames = formatColumnNames.get(fromFormatId);
@@ -784,6 +783,8 @@ public class WorksheetCreationScreen extends Screen {
                         newWrManager = waManager.getWorksheetResultAt(waManager.count() - 1);
                         for (j = 0; j < wrManager.count(); j++) {
                             wrVDO = wrManager.getWorksheetResultAt(j);
+                            if (j == 0)
+                                waDO.setFromOtherId(wrVDO.getWorksheetAnalysisId());
                             newWrVDO = new WorksheetResultViewDO();
                             newWrVDO.setTestAnalyteId(wrVDO.getTestAnalyteId());
                             newWrVDO.setTestResultId(wrVDO.getTestResultId());
@@ -813,6 +814,8 @@ public class WorksheetCreationScreen extends Screen {
                         newWqrManager = waManager.getWorksheetQcResultAt(waManager.count() - 1);
                         for (j = 0; j < wqrManager.count(); j++) {
                             wqrVDO = wqrManager.getWorksheetQcResultAt(j);
+                            if (j == 0)
+                                waDO.setFromOtherId(wqrVDO.getWorksheetAnalysisId());
                             newWqrVDO = new WorksheetQcResultViewDO();
                             newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
                             newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
@@ -987,7 +990,7 @@ public class WorksheetCreationScreen extends Screen {
                     }
 
                     qcRow = new TableDataRow(11);
-                    qcRow.cells.get(2).value = qcDO.getQcName();             // description
+                    qcRow.cells.get(2).value = qcDO.getQcName() + " (" + qcDO.getLotNumber() + ")";     // description
                     
                     dataList = new ArrayList<Object>();
                     dataList.add(twiDO);
@@ -1227,7 +1230,9 @@ public class WorksheetCreationScreen extends Screen {
         qcLinkModel.clear();
         qcLinkModel.add(new TableDataRow(null, ""));
         for (i = 0; i < items.size(); i++)
-            qcLinkModel.add(new TableDataRow(items.get(i).key,(String)items.get(i).cells.get(1).value));
+            qcLinkModel.add(new TableDataRow(items.get(i).key,
+                                             items.get(i).cells.get(1).value + " (" +
+                                             items.get(i).cells.get(0).value + ")"));
         ((Dropdown<Integer>)worksheetItemTable.getColumns().get(3).getColumnWidget()).setModel(qcLinkModel);
         
         worksheetItemTable.load(items);
@@ -1459,7 +1464,8 @@ public class WorksheetCreationScreen extends Screen {
                                     qcDO = list.get(0);
 
                                     qcRow = new TableDataRow(11);
-                                    qcRow.cells.get(2).value = qcDO.getQcName();             // description
+                                    qcRow.cells.get(2).value = qcDO.getQcName() + " (" +
+                                                               qcDO.getLotNumber() + ")";   // description
                                     
                                     dataList = new ArrayList<Object>();
                                     dataList.add(twiDO);
@@ -1499,7 +1505,8 @@ public class WorksheetCreationScreen extends Screen {
                                         twiDO.setQcName(qcDO.getQcName());
                                         
                                         qcRow = new TableDataRow(11);
-                                        qcRow.cells.get(2).value = qcDO.getQcName();          // description
+                                        qcRow.cells.get(2).value = qcDO.getQcName() + " (" +
+                                                                   qcDO.getLotNumber() + ")";   // description
                                         
                                         dataList = new ArrayList<Object>();
                                         dataList.add(twiDO);
@@ -1539,6 +1546,8 @@ public class WorksheetCreationScreen extends Screen {
             } else if (name != null) {
                 qcLookupScreen.clearFields();
                 qcLookupScreen.executeQuery(name);
+            } else {
+                qcLookupScreen.clearFields();
             }
         } catch (Exception e) {
             e.printStackTrace();

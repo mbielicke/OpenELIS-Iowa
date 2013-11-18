@@ -14,15 +14,15 @@
   xmlns:t='urn:import:org.openelis.ui.widget.table'
 >
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
-  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
   <g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:layer top="0px" bottom="30px">
       <g:LayoutPanel>
         <g:layer width="83%" left="0px">
-          <r:Tree ui:field="tree" header="true" styleName="{uiRes.table.ScreenTableWithSides}">
-            <r:Column width="55" label="{msg.sequence}" />
-            <r:Column width="350" label="{msg.itemAnalyses}" />
+          <r:Tree ui:field="tree" header="true" styleName="{res.table.ScreenTableWithSides}">
+            <r:Column width="35" label="#" />
+            <r:Column width="340" label="{msg.sample_itemAnalyses}" />
             <r:Leaf key="sampleItem">
               <r:LeafColumn>
                 <t:LabelCell />
@@ -33,7 +33,7 @@
             </r:Leaf>
             <r:Leaf key="analysis">
               <r:LeafColumn>
-                <t:CheckBoxCell />
+                <t:CheckBoxCell align = "left"/>
               </r:LeafColumn>
               <r:LeafColumn>
                 <t:LabelCell />
@@ -45,22 +45,22 @@
           <g:LayoutPanel>
             <g:layer top="0px" bottom="100px">
               <t:Table ui:field="table" verticalScroll="ALWAYS"
-                horizontalScroll="ALWAYS" header="true" styleName="{uiRes.table.ScreenTableWithSides}"
+                horizontalScroll="ALWAYS" header="true" styleName="{res.table.ScreenTableWithSides}"
               >
                  <t:Column width="30" label="">
                   <t:CheckBoxCell>
                     <w:Check />
                   </t:CheckBoxCell>
                 </t:Column>
-                <t:Column width="35" label="{msg.item}">
+                <t:Column width="35" label="{msg.gen_item}">
                   <t:LabelCell />
                 </t:Column>
               </t:Table>
             </g:layer>
-            <g:layer bottom="80px" height="20px">
+            <g:layer bottom="75px" height="25px">
               <g:HTMLPanel>
                 <g:HorizontalPanel>
-                  <w:Button ui:field="moveButton" text="{msg.move}" />
+                  <w:Button ui:field="moveButton" text="{msg.gen_move}" />
                 </g:HorizontalPanel>
               </g:HTMLPanel>
             </g:layer>
@@ -70,7 +70,7 @@
     </g:layer>
     <g:layer bottom="0px" height="25px">
       <g:HorizontalPanel width="100%" height="100%" horizontalAlignment="CENTER">
-        <w:Button ui:field="okButton" text="{msg.gen_ok}" />
+        <w:Button ui:field="okButton" leftIcon="{res.icon.CommitButtonImage}" text="{msg.gen_ok}" />
       </g:HorizontalPanel>
     </g:layer>
   </g:LayoutPanel>

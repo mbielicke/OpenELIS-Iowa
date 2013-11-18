@@ -180,16 +180,16 @@ public class WorksheetBuilderService implements WorksheetBuilderServiceInt,
     }
 
     @Override
-    public void sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction, AsyncCallback<WorksheetManager1> callback) {
-        service.sortItems(wm, keys, direction, callback);
+    public void sortItems(WorksheetManager1 wm, int col, int dir, AsyncCallback<WorksheetManager1> callback) {
+        service.sortItems(wm, col, dir, callback);
     }
 
     @Override
-    public WorksheetManager1 sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction) throws Exception {
+    public WorksheetManager1 sortItems(WorksheetManager1 wm, int col, int dir) throws Exception {
         Callback<WorksheetManager1> callback;
         
         callback = new Callback<WorksheetManager1>();
-        service.sortItems(wm, keys, direction, callback);
+        service.sortItems(wm, col, dir, callback);
         return callback.getResult();
     }
 }
