@@ -70,6 +70,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -96,6 +97,8 @@ public class TestTabUI extends Screen {
 
     protected Screen               parentScreen;
 
+    protected EventBus             parentBus;
+
     protected boolean              isVisible, redraw;
 
     protected OrderManager1        manager;
@@ -104,7 +107,7 @@ public class TestTabUI extends Screen {
 
     public TestTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(parentScreen.getEventBus());
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -161,6 +164,7 @@ public class TestTabUI extends Screen {
 
         tree.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
+                String uid;
                 OrderTestViewDO ot;
                 OrderTestAnalyteViewDO ota;
                 Object val;
@@ -169,11 +173,12 @@ public class TestTabUI extends Screen {
                 val = tree.getValueAt(event.getRow(), event.getCol());
                 node = tree.getNodeAt(tree.getSelectedNode());
                 if (event.getCol() == 0) {
+                    uid = node.getData();
                     if (TEST_LEAF.equals(node.getType())) {
-                        ot = (OrderTestViewDO)node.getData();
+                        ot = (OrderTestViewDO)manager.getObject(uid);
                         ot.setItemSequence((Integer)val);
                     } else if (ANALYTE_LEAF.equals(node.getType())) {
-                        ota = (OrderTestAnalyteViewDO)node.getData();
+                        ota = (OrderTestAnalyteViewDO)manager.getObject(uid);
                         ota.setTestAnalyteIsReportable((String)val);
                     }
                 }
@@ -228,7 +233,7 @@ public class TestTabUI extends Screen {
                 };
                 Scheduler.get().scheduleDeferred(cmd);
 
-                bus.fireEvent(new AddTestEvent(type, test.getTestId(), index));
+                parentBus.fireEvent(new AddTestEvent(type, test.getTestId(), index));
             }
 
             public void onStateChange(StateChangeEvent event) {
@@ -274,8 +279,9 @@ public class TestTabUI extends Screen {
 
     @UiHandler("removeTestButton")
     protected void removeTest(ClickEvent event) {
+        String uid;
+        Integer selected[];
         Node selRow;
-        Integer[] selected;
         HashSet<Integer> testIds;
 
         selected = tree.getSelectedNodes();
@@ -289,9 +295,10 @@ public class TestTabUI extends Screen {
                 selRow = tree.getNodeAt(selected[i]);
                 if (ANALYTE_LEAF.equals(selRow.getType()))
                     selRow = selRow.getParent();
-                testIds.add( ((OrderTestViewDO)selRow.getData()).getId());
+                uid = selRow.getData();
+                testIds.add( ((OrderTestViewDO)manager.getObject(uid)).getId());
             }
-            bus.fireEvent(new RemoveTestEvent(new ArrayList<Integer>(testIds)));
+            parentBus.fireEvent(new RemoveTestEvent(new ArrayList<Integer>(testIds)));
         }
     }
 
@@ -307,6 +314,7 @@ public class TestTabUI extends Screen {
 
     protected void check(String reportable) {
         int index;
+        String uid;
         Node node, child;
         OrderTestAnalyteViewDO ota;
 
@@ -329,7 +337,8 @@ public class TestTabUI extends Screen {
         tree.open(node);
         for (int i = 0; i < node.getChildCount(); i++ ) {
             child = node.getChildAt(i);
-            ota = child.getData();
+            uid = child.getData();
+            ota = (OrderTestAnalyteViewDO)manager.getObject(uid);
             ota.setTestAnalyteIsReportable(reportable);
             tree.setValueAt(index + i + 1, 0, ota.getTestAnalyteIsReportable());
         }
@@ -347,34 +356,38 @@ public class TestTabUI extends Screen {
     }
 
     public void onDataChange() {
-        int count1, count2;
-        OrderTestViewDO test;
-        Node n;
-
-        count1 = tree.getRoot() == null ? 0 : tree.getRoot().getChildCount();
-        count2 = manager == null ? 0 : manager.test.count();
+        // int count1, count2;
+        // OrderTestViewDO test;
+        // Node n;
 
         /*
-         * find out if there's any difference between the item being displayed
-         * and the item in the manager
+         * it is difficult to determine which nodes are open and which are
+         * closed, which makes it difficult to compare the analytes
          */
-        if (count1 == count2) {
-            for (int i = 0; i < count1; i++ ) {
-                n = tree.getRoot().getChildAt(i);
-                test = manager.test.get(i);
-
-                if (DataBaseUtil.isDifferent(test.getItemSequence(), n.getCell(0)) ||
-                    DataBaseUtil.isDifferent(test.getTestName(), n.getCell(1)) ||
-                    DataBaseUtil.isDifferent(test.getMethodName(), n.getCell(2)) ||
-                    DataBaseUtil.isDifferent(test.getDescription(), n.getCell(3))) {
-                    redraw = true;
-                    break;
-                }
-            }
-        } else {
-            redraw = true;
-        }
-
+        // count1 = tree.getRoot() == null ? 0 : tree.getRoot().getChildCount();
+        // count2 = manager == null ? 0 : manager.test.count();
+        //
+        // /*
+        // * find out if there's any difference between the item being displayed
+        // * and the item in the manager
+        // */
+        // if (count1 == count2) {
+        // for (int i = 0; i < count1; i++ ) {
+        // n = tree.getRoot().getChildAt(i);
+        // test = manager.test.get(i);
+        //
+        // if (DataBaseUtil.isDifferent(test.getItemSequence(), n.getCell(0)) ||
+        // DataBaseUtil.isDifferent(test.getTestName(), n.getCell(1)) ||
+        // DataBaseUtil.isDifferent(test.getMethodName(), n.getCell(2)) ||
+        // DataBaseUtil.isDifferent(test.getDescription(), n.getCell(3))) {
+        // redraw = true;
+        // break;
+        // }
+        // }
+        // } else {
+        // redraw = true;
+        // }
+        redraw = true;
         displayTests();
     }
 
@@ -400,7 +413,7 @@ public class TestTabUI extends Screen {
             tnode.setCell(1, ot.getTestName());
             tnode.setCell(2, ot.getMethodName());
             tnode.setCell(3, ot.getDescription());
-            tnode.setData(ot);
+            tnode.setData(manager.getUid(ot));
             root.add(tnode);
 
             for (j = 0; j < manager.analyte.count(ot); j++ ) {
@@ -410,7 +423,7 @@ public class TestTabUI extends Screen {
                 anode.setType(ANALYTE_LEAF);
                 anode.setCell(0, ota.getTestAnalyteIsReportable());
                 anode.setCell(1, ota.getAnalyteName());
-                anode.setData(ota);
+                anode.setData(manager.getUid(ota));
                 tnode.add(anode);
             }
         }

@@ -73,6 +73,7 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -101,13 +102,15 @@ public class InternalOrderItemTabUI extends Screen {
 
     protected Screen                            parentScreen;
 
+    protected EventBus                          parentBus;
+
     protected boolean                           isVisible, canEdit, redraw;
 
     protected OrderManager1                     manager;
 
     public InternalOrderItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(parentScreen.getEventBus());
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
