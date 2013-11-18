@@ -42,6 +42,7 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleItemDO;
@@ -142,6 +143,20 @@ public class AnalysisBean {
         if (list.isEmpty())
             throw new NotFoundException();
 
+        return DataBaseUtil.toArrayList(list);
+    }
+    
+    public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
+        List<AnalysisViewVO> list;
+        Query query;
+        
+        query = manager.createNamedQuery("AnalysisView.FetchByPatientId");
+        query.setParameter("patientId", patientId);
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
         return DataBaseUtil.toArrayList(list);
     }
 
@@ -297,11 +312,11 @@ public class AnalysisBean {
         if (data.getStartedDate() != null && data.getCompletedDate() != null &&
             data.getStartedDate().compareTo(data.getCompletedDate()) == 1)
             e.add(new FormErrorException(Messages.get().analysis_startedDateInvalidException(accession,
-                                         DataBaseUtil.toString(sequence), test, method)));
+                                         sequence, test, method)));
         if (data.getCompletedDate() != null && data.getReleasedDate() != null &&
             data.getCompletedDate().compareTo(data.getReleasedDate()) == 1)
             e.add(new FormErrorException(Messages.get().analysis_completedDateInvalidException(accession,
-                                         DataBaseUtil.toString(sequence), test, method)));
+                                         sequence, test, method)));
         if (e.size() > 0)
             throw e;
     }

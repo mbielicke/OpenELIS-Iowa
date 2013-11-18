@@ -27,7 +27,6 @@ package org.openelis.bean;
 
 import static org.openelis.manager.OrderManager1Accessor.addAnalyte;
 import static org.openelis.manager.OrderManager1Accessor.getTests;
-import static org.openelis.manager.OrderManager1Accessor.setAnalytes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,7 +90,7 @@ public class OrderTestHelperBean {
                 } catch (NotFoundException ex) {
                     e.add(new FormErrorWarning(Messages.get()
                                                        .test_inactiveTestException(t.getName(),
-                                                                              t.getMethodName())));
+                                                                                   t.getMethodName())));
                     continue;
                 }
             }
@@ -163,34 +162,31 @@ public class OrderTestHelperBean {
         ArrayList<OrderTestAnalyteViewDO> otas;
         ArrayList<TestAnalyteViewDO> tas;
 
-        if (testIds != null && testIds.size() > 0) {
-            /*
-             * fetch test analytes for all of the tests and create mapping
-             * between tests and their test analytes
-             */
-            taMap = new HashMap<Integer, ArrayList<TestAnalyteViewDO>>();
-            for (TestAnalyteViewDO ta : testAnalyte.fetchByTestIds(testIds)) {
-                if ("Y".equals(ta.getIsColumn()))
-                    continue;
-                tas = taMap.get(ta.getTestId());
-                if (tas == null) {
-                    tas = new ArrayList<TestAnalyteViewDO>();
-                    taMap.put(ta.getTestId(), tas);
-                }
-                tas.add(ta);
+        /*
+         * fetch test analytes for all of the tests and create mapping between
+         * tests and their test analytes
+         */
+        taMap = new HashMap<Integer, ArrayList<TestAnalyteViewDO>>();
+        for (TestAnalyteViewDO ta : testAnalyte.fetchByTestIds(testIds)) {
+            if ("Y".equals(ta.getIsColumn()))
+                continue;
+            tas = taMap.get(ta.getTestId());
+            if (tas == null) {
+                tas = new ArrayList<TestAnalyteViewDO>();
+                taMap.put(ta.getTestId(), tas);
             }
+            tas.add(ta);
+        }
 
-            for (OrderManager1 om : oms) {
-                /*
-                 * merge each order test's analytes with the analytes added to
-                 * its test
-                 */
-                setAnalytes(om, new ArrayList<OrderTestAnalyteViewDO>());
-                for (OrderTestViewDO ot : getTests(om)) {
-                    otas = otaMap.get(ot.getId());
-                    tas = taMap.get(ot.getTestId());
-                    mergeAnalytes(om, ot.getId(), otas, tas);
-                }
+        for (OrderManager1 om : oms) {
+            /*
+             * merge each order test's analytes with the analytes added to its
+             * test
+             */
+            for (OrderTestViewDO ot : getTests(om)) {
+                otas = otaMap.get(ot.getId());
+                tas = taMap.get(ot.getTestId());
+                mergeAnalytes(om, ot.getId(), otas, tas);
             }
         }
     }

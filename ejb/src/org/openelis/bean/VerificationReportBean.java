@@ -60,22 +60,6 @@ public class VerificationReportBean {
         try {
             p = new ArrayList<Prompt>();
 
-//            p.add(new Prompt("BEGIN_ENTERED", Prompt.Type.DATETIME)
-//                    .setPrompt("Begin Entered:")
-//                    .setWidth(120)
-//                    .setDatetimeStartCode(Prompt.Datetime.YEAR)
-//                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-//                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
-//                    .setRequired(true));
-//
-//            p.add(new Prompt("END_ENTERED", Prompt.Type.DATETIME)
-//                    .setPrompt("End Entered:")
-//                    .setWidth(120)
-//                    .setDatetimeStartCode(Prompt.Datetime.YEAR)
-//                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-//                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
-//                    .setRequired(true));
-
             p.add(new Prompt("USER_LIST", Prompt.Type.ARRAY)
                     .setPrompt("User ID:")
                     .setWidth(200)

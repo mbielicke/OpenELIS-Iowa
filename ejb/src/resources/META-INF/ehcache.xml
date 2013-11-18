@@ -63,17 +63,15 @@ Predefined caches.  Add your cache configuration settings here.
                                          is 120 seconds.
         
 -->
+<!--
+	section cache must be at least twice the number of records in the database
+    plus one, otherwise errors will start occurring
+-->
+<cache name="section" maxElementsInMemory="1000" timeToLiveSeconds="360000" />
 <cache name="dictionary" maxElementsInMemory="3000" timeToLiveSeconds="36000" />
 <cache name="category" maxElementsInMemory="500" timeToLiveSeconds="36000" />
 <cache name="inventory" maxElementsInMemory="500" timeToLiveSeconds="36000" />
-<cache name="section" maxElementsInMemory="100" timeToLiveSeconds="360000" />
-<cache name="user" maxElementsInMemory="200" timeToLiveSeconds="36000" />
-<cache name="userperm" maxElementsInMemory="200" timeToLiveSeconds="36000" />
-<cache name="session" maxElementsInMemory="200" timeToLiveSeconds="36000" />
-<cache name="loggedIn" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
-<cache name="initiated" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
-<cache name="completed" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
-<cache name="released" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
-<cache name="toBeVerified" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
-<cache name="other" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
+<cache name="user" maxElementsInMemory="500" timeToLiveSeconds="36000" />
+<cache name="userperm" maxElementsInMemory="500" timeToLiveSeconds="36000" />
+<cache name="session" maxElementsInMemory="500" timeToLiveSeconds="36000" />
 </ehcache>

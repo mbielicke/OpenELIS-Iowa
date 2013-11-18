@@ -18,23 +18,27 @@ import javax.persistence.Table;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 
-@NamedQueries( {
-    @NamedQuery( name = "PWS.FetchById",
-                query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
-                        "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
-                        "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
-                      + " from PWS p where p.id = :id"),
-    @NamedQuery( name = "PWS.FetchByTinwsysIsNumber",
-                query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
-            	        "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
-             	        "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
-                      + " from PWS p where p.tinwsysIsNumber = :tinwsysIsNumber"),               
-    @NamedQuery( name = "PWS.FetchByNumber0",
-                query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
-                        " p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
-                        " p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
-                      + " from PWS p where p.number0 = :number0")})                 
-
+@NamedQueries({
+               @NamedQuery(name = "PWS.FetchById",
+                           query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name,"
+                                   + "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd,"
+                                   + "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                                   + " from PWS p where p.id = :id"),
+               @NamedQuery(name = "PWS.FetchByTinwsysIsNumber",
+                           query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name,"
+                                   + "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd,"
+                                   + "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                                   + " from PWS p where p.tinwsysIsNumber = :tinwsysIsNumber"),
+               @NamedQuery(name = "PWS.FetchByNumber0",
+                           query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name,"
+                                   + " p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd,"
+                                   + " p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                                   + " from PWS p where p.number0 = :number0"),
+               @NamedQuery(name = "PWS.FetchAll",
+                           query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name,"
+                                   + " p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd,"
+                                   + " p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                                   + " from PWS p")})
 @Entity
 @Table(name = "pws")
 public class PWS {

@@ -59,15 +59,16 @@ import org.openelis.ui.common.ValidationErrorsList;
 public class WorksheetAnalysisBean {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
-    
+    private EntityManager       manager;
+
     @EJB
     private UserCacheBean       userCache;
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisViewDO> fetchByWorksheetId(Integer id) throws Exception {
         int i;
-        List list, returnList;
+        List<WorksheetAnalysisViewDO> returnList;
+        List<WorksheetAnalysisViewVO> list;
         Query query;
         WorksheetAnalysisViewDO waVDO;
         WorksheetAnalysisViewVO waVVO;
@@ -82,8 +83,7 @@ public class WorksheetAnalysisBean {
         returnList = new ArrayList<WorksheetAnalysisViewDO>();
         for (i = 0; i < list.size(); i++) {
             waVVO = (WorksheetAnalysisViewVO) list.get(i);
-            waVDO = new WorksheetAnalysisViewDO();
-            copyViewToDO(waVVO, waVDO);
+            waVDO = copyViewToDO(waVVO);
             returnList.add(waVDO);
         }
         
@@ -93,7 +93,8 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisViewDO> fetchByWorksheetIds(ArrayList<Integer> ids) throws Exception {
         int i;
-        List list, returnList;
+        List<WorksheetAnalysisViewDO> returnList;
+        List<WorksheetAnalysisViewVO> list;
         Query query;
         WorksheetAnalysisViewDO waVDO;
         WorksheetAnalysisViewVO waVVO;
@@ -108,8 +109,7 @@ public class WorksheetAnalysisBean {
         returnList = new ArrayList<WorksheetAnalysisViewDO>();
         for (i = 0; i < list.size(); i++) {
             waVVO = (WorksheetAnalysisViewVO) list.get(i);
-            waVDO = new WorksheetAnalysisViewDO();
-            copyViewToDO(waVVO, waVDO);
+            waVDO = copyViewToDO(waVVO);
             returnList.add(waVDO);
         }
         
@@ -119,7 +119,7 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception {
         Query query;
-        List list;
+        List<WorksheetAnalysisDO> list;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemId");
         query.setParameter("id", id);
@@ -134,7 +134,7 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemIds(ArrayList<Integer> ids) throws Exception {
         Query query;
-        List list;
+        List<WorksheetAnalysisDO> list;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetItemIds");
         query.setParameter("ids", ids);
@@ -166,7 +166,7 @@ public class WorksheetAnalysisBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetAnalysisDO> fetchByQcLotId(Integer id) throws Exception {
         Query query;
-        List list;
+        List<WorksheetAnalysisDO> list;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByQcLotId");
         query.setParameter("id", id);
@@ -178,6 +178,7 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
 
+    @SuppressWarnings("unchecked")
     public ArrayList<ToDoWorksheetVO> fetchByWorking() throws Exception {
         Query query;
         List<ToDoWorksheetVO> list;
@@ -195,6 +196,7 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(list);
     }
     
+    @SuppressWarnings("unchecked")
     public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName, Integer qcLocation) throws Exception {
         Query query;
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByDateForQcChart");
@@ -206,6 +208,7 @@ public class WorksheetAnalysisBean {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    @SuppressWarnings("unchecked")
     public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName, Integer qcLocation) throws Exception {
         Integer id;
         Query query;
@@ -247,7 +250,7 @@ public class WorksheetAnalysisBean {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
-        entity.setIsFromOther(data.getIsFromOther());
+        entity.setFromOtherId(data.getFromOtherId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -264,13 +267,14 @@ public class WorksheetAnalysisBean {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(WorksheetAnalysis.class, data.getId());
+        entity.setWorksheetItemId(data.getWorksheetItemId());
         entity.setAccessionNumber(data.getAccessionNumber());
         entity.setAnalysisId(data.getAnalysisId());
         entity.setQcLotId(data.getQcLotId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
-        entity.setIsFromOther(data.getIsFromOther());
+        entity.setFromOtherId(data.getFromOtherId());
 
         return data;
     }
@@ -279,7 +283,7 @@ public class WorksheetAnalysisBean {
         WorksheetAnalysis entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-
+        
         entity = manager.find(WorksheetAnalysis.class, data.getId());
         if (entity != null)
             manager.remove(entity);
@@ -303,28 +307,31 @@ public class WorksheetAnalysisBean {
             throw list;
     }
     
-    private void copyViewToDO(WorksheetAnalysisViewVO waVVO, WorksheetAnalysisViewDO waVDO) {
-        waVDO.setId(waVVO.getId());
-        waVDO.setWorksheetItemId(waVVO.getWorksheetItemId());
-        waVDO.setAccessionNumber(waVVO.getAccessionNumber());
-        waVDO.setAnalysisId(waVVO.getAnalysisId());
-        waVDO.setQcLotId(waVVO.getQcLotId());
-        waVDO.setWorksheetAnalysisId(waVVO.getWorksheetAnalysisId());
-        waVDO.setQcSystemUserId(waVVO.getQcSystemUserId());
-        waVDO.setQcStartedDate(DataBaseUtil.toYM(waVVO.getQcStartedDate()));
-        waVDO.setIsFromOther(waVVO.getIsFromOther());
-        waVDO.setWorksheetId(waVVO.getWorksheetId());
-        waVDO.setDescription(waVVO.getDescription());
-        waVDO.setTestId(waVVO.getTestId());
-        waVDO.setTestName(waVVO.getTestName());
-        waVDO.setMethodName(waVVO.getMethodName());
-        waVDO.setUnitOfMeasureId(waVVO.getUnitOfMeasureId());
-        waVDO.setUnitOfMeasure(waVVO.getUnitOfMeasure());
-        waVDO.setStatusId(waVVO.getStatusId());
-        waVDO.setCollectionDate(DataBaseUtil.toYD(waVVO.getCollectionDate()));
-        waVDO.setReceivedDate(DataBaseUtil.toYM(waVVO.getReceivedDate()));
+    private WorksheetAnalysisViewDO copyViewToDO(WorksheetAnalysisViewVO waVVO) {
+        Date qcStartedDate, collectionDate, receivedDate;
+        WorksheetAnalysisViewDO waVDO;
 
-        if (waVDO.getAnalysisId() != null) {
+        collectionDate = null;
+        qcStartedDate = null;
+        receivedDate = null;
+        if (waVVO.getCollectionDate() != null)
+            collectionDate = DataBaseUtil.toYD(waVVO.getCollectionDate()).getDate();
+        if (waVVO.getQcStartedDate() != null)
+            qcStartedDate = DataBaseUtil.toYM(waVVO.getQcStartedDate()).getDate();
+        if (waVVO.getReceivedDate() != null)
+            receivedDate = DataBaseUtil.toYM(waVVO.getReceivedDate()).getDate();
+
+        waVDO = new WorksheetAnalysisViewDO(waVVO.getId(), waVVO.getWorksheetItemId(),
+                                            waVVO.getWorksheetId(), waVVO.getAccessionNumber(),
+                                            waVVO.getAnalysisId(), waVVO.getQcLotId(),
+                                            waVVO.getWorksheetAnalysisId(), waVVO.getQcSystemUserId(),
+                                            qcStartedDate, waVVO.getFromOtherId(),
+                                            waVVO.getDescription(), waVVO.getTestId(),
+                                            waVVO.getTestName(), waVVO.getMethodName(),
+                                            waVVO.getUnitOfMeasureId(), waVVO.getUnitOfMeasure(),
+                                            waVVO.getStatusId(), collectionDate,
+                                            receivedDate, (Integer)null, (Date)null);
+        if (waVVO.getAnalysisId() != null) {
             //
             // Compute and set the number of days until the analysis is 
             // due to be completed based on when the sample was received,
@@ -345,5 +352,7 @@ public class WorksheetAnalysisBean {
                                                            waVVO.getCollectionTime(),
                                                            waVVO.getTimeHolding()));
         }
+        
+        return waVDO;
     }
 }

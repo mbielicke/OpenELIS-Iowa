@@ -77,6 +77,12 @@ import org.openelis.utils.Auditable;
                         "receivedById, collectionDate, collectionTime, statusId, packageId," +
                         "clientReference, releasedDate)"
                       + " from Sample where accessionNumber = :accession"),                     
+    @NamedQuery( name = "Sample.FetchByAccessionNumbers",
+                query = "select new org.openelis.domain.SampleDO(id, nextItemSequence, domain," +
+                        "accessionNumber, revision, orderId, enteredDate, receivedDate," +
+                        "receivedById, collectionDate, collectionTime, statusId, packageId," +
+                        "clientReference, releasedDate)"
+                      + " from Sample where accessionNumber in (:accessions)"),                     
     @NamedQuery( name = "Sample.FetchSDWISByReleased",
                 query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
                         "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +
@@ -582,52 +588,54 @@ public class Sample implements Auditable, Cloneable {
 
     // sample environmental
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleEnvironmental> sampleEnvironmental;
 
     // sample private well
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SamplePrivateWell>   samplePrivateWell;
 
     // sample sdwis
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleSDWIS>         sampleSDWIS;
     
     // sample neonatal
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleNeonatal>      sampleNeonatal;
     
     // sample organizations
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleOrganization>  sampleOrganization;
 
     // sample projects
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleProject>       sampleProject;
 
     // projects
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "sample_project", joinColumns = {@JoinColumn(name = "sample_id")}, inverseJoinColumns = {@JoinColumn(name = "project_id")})
+    @JoinTable(name = "sample_project",
+               joinColumns = {@JoinColumn(name = "sample_id", insertable = false, updatable = false)},
+               inverseJoinColumns = {@JoinColumn(name = "project_id", insertable = false, updatable = false)})
     private Collection<Project>             project;
 
     // sample items
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleItem>          sampleItem;
 
     // sample qa events
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_id")
+    @JoinColumn(name = "sample_id", insertable = false, updatable = false)
     private Collection<SampleQaevent>       sampleQAEvent;
 
     // aux data records
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reference_id")
+    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private Collection<AuxData>             auxData;
 
     @Transient

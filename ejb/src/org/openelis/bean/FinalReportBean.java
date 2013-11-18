@@ -138,13 +138,15 @@ public class FinalReportBean {
                                                                    .setWidth(130)
                                                                    .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                                                                   .setRequired(true));
+                                                                   .setRequired(true)
+                                                                   .setDefaultValue(null));
 
             p.add(new Prompt("END_PRINTED", Prompt.Type.DATETIME).setPrompt("End Printed:")
                                                                  .setWidth(130)
                                                                  .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                                  .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                                                                 .setRequired(true));
+                                                                 .setRequired(true)
+                                                                 .setDefaultValue(null));
 
             prn = printer.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View PDF"));

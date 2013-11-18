@@ -56,7 +56,7 @@ public class WorksheetResultBean {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetResultViewDO> fetchByWorksheetAnalysisId(Integer id) throws Exception {
         Query query;
-        List list;
+        List<WorksheetResultViewDO> list;
 
         query = manager.createNamedQuery("WorksheetResult.FetchByWorksheetAnalysisId");
         query.setParameter("id", id);

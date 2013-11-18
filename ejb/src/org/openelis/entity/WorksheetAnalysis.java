@@ -23,16 +23,16 @@ import org.openelis.ui.common.Datetime;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemIds",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId in (:ids) order by wa.worksheetItemId"),
     @NamedQuery( name = "WorksheetAnalysis.FetchById",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId) "+
                         "from WorksheetAnalysis wa where wa.id = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByQcLotId",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther)"
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.fromOtherId)"
                       + " from WorksheetAnalysis wa where wa.qcLotId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetStatusId",
                 query = "select distinct new org.openelis.domain.ToDoWorksheetVO(w.id, w.createdDate, w.systemUserId, w.statusId, t.name, m.name, s.name)"
@@ -100,8 +100,8 @@ public class WorksheetAnalysis {
     @Column(name = "qc_started_date")
     private Date              qcStartedDate;
 
-    @Column(name = "is_from_other")
-    private String            isFromOther;
+    @Column(name = "from_other_id")
+    private Integer           fromOtherId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_item_id", insertable = false, updatable = false)
@@ -182,12 +182,12 @@ public class WorksheetAnalysis {
             this.qcStartedDate = DataBaseUtil.toDate(qcStartedDate);
     }
 
-    public String getIsFromOther() {
-        return isFromOther;
+    public Integer getFromOtherId() {
+        return fromOtherId;
     }
 
-    public void setIsFromOther(String isFromOther) {
-        this.isFromOther = isFromOther;
+    public void setFromOtherId(Integer fromOtherId) {
+        this.fromOtherId = fromOtherId;
     }
 
     public WorksheetItem getWorksheetItem() {

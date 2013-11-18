@@ -58,11 +58,11 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "AuxFieldGroup.FetchByName",
                 query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
                         "afg.isActive,afg.activeBegin,afg.activeEnd)"
-                      + " from AuxFieldGroup afg where afg.name = :name order by afg.name"),
+                      + " from AuxFieldGroup afg where afg.name = :name"),
     @NamedQuery( name = "AuxFieldGroup.FetchActiveByName",
                 query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
                         "afg.isActive,afg.activeBegin,afg.activeEnd)"
-                      + " from AuxFieldGroup afg where afg.name = :name and afg.isActive='Y' order by afg.name"),
+                      + " from AuxFieldGroup afg where afg.name = :name and afg.isActive='Y' order by afg.name"),                  
     @NamedQuery( name = "AuxFieldGroup.FetchById",                
                 query = "select distinct new org.openelis.domain.AuxFieldGroupDO(afg.id,afg.name,afg.description," +
                         "afg.isActive,afg.activeBegin,afg.activeEnd)"

@@ -331,52 +331,96 @@ public class OrderManager1Bean {
      * manager
      */
     public OrderManager1 duplicate(Integer id) throws Exception {
+        Integer oldId;
         Datetime now;
-        OrderManager1 oldm, newm;
-        OrderViewDO newData;
-        ArrayList<Integer> testIds;
+        OrderManager1 om;
+        ArrayList<Integer> ids;
         ArrayList<OrderManager1> oms;
-        HashMap<Integer, Integer> testIdMap;
-        HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> otaMap;
+        HashMap<Integer, Integer> tids;
 
         now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
-
-        oldm = fetchById(id,
+        /*
+         * fetchByIds is called here instead of fetchById because in this case,
+         * the order test analytes need to be merged with the original test
+         * analytes, and we indicate this by passing true for the argument
+         * isUpdate, just like in fetchForUpdate
+         */
+        ids = new ArrayList<Integer>(1);
+        ids.add(id);
+        oms = fetchByIds(ids,
+                         true,
                          OrderManager1.Load.SAMPLE_DATA,
                          OrderManager1.Load.ORGANIZATION,
                          OrderManager1.Load.ITEMS);
-        newm = new OrderManager1();
 
-        newData = new OrderViewDO();
-        newData.setDescription(oldm.getOrder().getDescription());
-        newData.setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
-        newData.setOrderedDate(now);
-        newData.setNeededInDays(oldm.getOrder().getNeededInDays());
-        newData.setRequestedBy(User.getName(ctx));
-        newData.setCostCenterId(oldm.getOrder().getCostCenterId());
-        newData.setType(oldm.getOrder().getType());
-        newData.setOrganization(oldm.getOrder().getOrganization());
-        newData.setOrganizationId(oldm.getOrder().getOrganizationId());
-        newData.setOrganizationAttention(oldm.getOrder().getOrganizationAttention());
-        newData.setExternalOrderNumber(oldm.getOrder().getExternalOrderNumber());
-        newData.setShipFromId(oldm.getOrder().getShipFromId());
-        newData.setNumberOfForms(oldm.getOrder().getNumberOfForms());
-        setOrder(newm, newData);
+        om = oms.get(0);
+        getOrder(om).setId(null);
+        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
+        getOrder(om).setOrderedDate(now);
+        getOrder(om).setRequestedBy(User.getName(ctx));
 
-        duplicateOrganizations(oldm, newm);
-        duplicateItems(oldm, newm);
-        duplicateNotes(oldm, newm);
-        testIdMap = new HashMap<Integer, Integer>();
-        testIds = duplicateTests(oldm, newm, testIdMap);
-        otaMap = new HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>>();
-        duplicateAnalytes(oldm, newm, testIdMap, otaMap);
-        oms = new ArrayList<OrderManager1>();
-        oms.add(newm);
-        orderTestHelper.mergeAnalytes(testIds, otaMap, oms);
-        duplicateContainers(oldm, newm);
-        duplicateAuxData(oldm, newm);
+        if (getOrganizations(om) != null) {
+            for (OrderOrganizationViewDO data : getOrganizations(om)) {
+                data.setId(null);
+                data.setOrderId(null);
+            }
+        }
 
-        return newm;
+        if (getItems(om) != null) {
+            for (OrderItemViewDO data : getItems(om)) {
+                data.setId(null);
+                data.setOrderId(null);
+            }
+        }
+
+        setFills(om, null);
+        setReceipts(om, null);
+
+        if (getShippingNote(om) != null) {
+            getShippingNote(om).setId(null);
+            getShippingNote(om).setReferenceId(null);
+            getShippingNote(om).setTimestamp(null);
+        }
+
+        if (getCustomerNote(om) != null) {
+            getCustomerNote(om).setId(null);
+            getCustomerNote(om).setReferenceId(null);
+            getCustomerNote(om).setTimestamp(null);
+        }
+
+        setInternalNotes(om, null);
+        setSampleNote(om, null);
+
+        if (getContainers(om) != null) {
+            for (OrderContainerDO data : getContainers(om)) {
+                data.setId(null);
+                data.setOrderId(null);
+            }
+        }
+
+        if (getAuxilliary(om) != null) {
+            for (AuxDataViewDO data : getAuxilliary(om)) {
+                data.setId(null);
+                data.setReferenceId(null);
+            }
+        }
+
+        tids = new HashMap<Integer, Integer>();
+        if (getTests(om) != null) {
+            for (OrderTestViewDO data : getTests(om)) {
+                oldId = data.getId();
+                data.setId(om.getNextUID());
+                tids.put(oldId, data.getId());
+            }
+        }
+
+        if (getAnalytes(om) != null) {
+            for (OrderTestAnalyteViewDO data : getAnalytes(om)) {
+                data.setId(null);
+                data.setOrderTestId(tids.get(data.getOrderTestId()));
+            }
+        }
+        return om;
     }
 
     /**
@@ -661,7 +705,9 @@ public class OrderManager1Bean {
     /**
      * Adds aux groups with ids to the order based on the list of group
      */
-    public OrderManager1 addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+    public OrderTestReturnVO addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds) throws Exception {
+        OrderTestReturnVO ret;
+        ValidationErrorsList errors;
         ArrayList<AuxDataViewDO> auxiliary;
 
         auxiliary = getAuxilliary(om);
@@ -670,9 +716,14 @@ public class OrderManager1Bean {
             setAuxilliary(om, auxiliary);
         }
 
-        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds));
+        ret = new OrderTestReturnVO();
+        ret.setManager(om);
+        errors = new ValidationErrorsList();
+        ret.setErrors(errors);
 
-        return om;
+        auxDataHelper.addAuxGroups(auxiliary, groupIds, errors);
+
+        return ret;
     }
 
     /**
@@ -943,7 +994,7 @@ public class OrderManager1Bean {
             if (ids2.size() > 0) {
                 for (OrderTestAnalyteViewDO data : orderTestAnalyte.fetchByOrderTestIds(ids2)) {
                     om = map2.get(data.getOrderTestId());
-                    addAnalyte(om, data);
+
                     if (otaMap != null) {
                         /*
                          * create mapping between order tests and their order
@@ -955,11 +1006,18 @@ public class OrderManager1Bean {
                             otaMap.put(data.getOrderTestId(), otas);
                         }
                         otas.add(data);
+                    } else {
+                        /*
+                         * the order test analytes don't need to be merged with
+                         * the original test's analytes, so they can just be
+                         * added to the order directly
+                         */
+                        addAnalyte(om, data);
                     }
                 }
             }
-
-            orderTestHelper.mergeAnalytes(testIds, otaMap, oms);
+            if (testIds != null && testIds.size() > 0)
+                orderTestHelper.mergeAnalytes(testIds, otaMap, oms);
         }
 
         if (el.contains(OrderManager1.Load.RECURRENCE)) {
@@ -1141,196 +1199,6 @@ public class OrderManager1Bean {
                                                        .order_noSampleTypeForContainerWarning(ordNum,
                                                                                               cont.getItemSequence()
                                                                                                   .toString())));
-            }
-        }
-    }
-
-    /**
-     * duplicates the organizations from the old order manager and puts them in
-     * the new order manager
-     */
-    private void duplicateOrganizations(OrderManager1 oldm, OrderManager1 newm) {
-        OrderOrganizationViewDO oldData, newData;
-
-        if (getOrganizations(oldm) != null) {
-            for (int i = 0; i < getOrganizations(oldm).size(); i++ ) {
-                oldData = getOrganizations(oldm).get(i);
-                newData = new OrderOrganizationViewDO();
-                newData.setOrganizationId(oldData.getOrganizationId());
-                newData.setOrganizationAttention(oldData.getOrganizationAttention());
-                newData.setTypeId(oldData.getTypeId());
-                newData.setOrganizationName(oldData.getOrganizationName());
-                newData.setOrganizationAddressMultipleUnit(oldData.getOrganizationAddressMultipleUnit());
-                newData.setOrganizationAddressStreetAddress(oldData.getOrganizationAddressStreetAddress());
-                newData.setOrganizationAddressCity(oldData.getOrganizationAddressCity());
-                newData.setOrganizationAddressState(oldData.getOrganizationAddressState());
-                newData.setOrganizationAddressZipCode(oldData.getOrganizationAddressZipCode());
-                newData.setOrganizationAddressWorkPhone(oldData.getOrganizationAddressWorkPhone());
-                newData.setOrganizationAddressFaxPhone(oldData.getOrganizationAddressFaxPhone());
-                newData.setOrganizationAddressCountry(oldData.getOrganizationAddressCountry());
-                addOrganization(newm, newData);
-            }
-        }
-    }
-
-    /**
-     * duplicates the items from the old order manager and puts them in the new
-     * order manager
-     */
-    private void duplicateItems(OrderManager1 oldm, OrderManager1 newm) {
-        OrderItemViewDO oldData, newData;
-
-        if (getItems(oldm) != null) {
-            for (int i = 0; i < getItems(oldm).size(); i++ ) {
-                oldData = getItems(oldm).get(i);
-                newData = new OrderItemViewDO();
-                newData.setInventoryItemId(oldData.getInventoryItemId());
-                newData.setQuantity(oldData.getQuantity());
-                newData.setCatalogNumber(oldData.getCatalogNumber());
-                newData.setUnitCost(oldData.getUnitCost());
-                newData.setInventoryItemName(oldData.getInventoryItemName());
-                newData.setStoreId(oldData.getStoreId());
-                addItem(newm, newData);
-            }
-        }
-    }
-
-    /**
-     * duplicates the shipping and customer notes from the old order manager and
-     * puts them in the new order manager
-     */
-    private void duplicateNotes(OrderManager1 oldm, OrderManager1 newm) throws Exception {
-        NoteViewDO oldData, newData;
-
-        oldData = getShippingNote(oldm);
-        if (oldData != null) {
-            newData = duplicateNote(oldData);
-            setShippingNote(newm, newData);
-        }
-
-        oldData = getCustomerNote(oldm);
-        if (oldData != null) {
-            newData = duplicateNote(oldData);
-            setCustomerNote(newm, newData);
-        }
-    }
-
-    /**
-     * sets the fields on a new Note DO
-     */
-    private NoteViewDO duplicateNote(NoteViewDO oldData) {
-        NoteViewDO newData;
-
-        newData = new NoteViewDO();
-        newData.setIsExternal(oldData.getIsExternal());
-        newData.setSystemUserId(oldData.getSystemUserId());
-        newData.setSubject(oldData.getSubject());
-        newData.setText(oldData.getText());
-        newData.setSystemUser(oldData.getSystemUser());
-
-        return newData;
-    }
-
-    /**
-     * duplicates the tests from the old order manager and puts them in the new
-     * order manager
-     */
-    private ArrayList<Integer> duplicateTests(OrderManager1 oldm, OrderManager1 newm,
-                                              HashMap<Integer, Integer> testIdMap) throws Exception {
-        OrderTestViewDO oldData, newData;
-        ArrayList<Integer> testIds;
-
-        testIds = null;
-        if (getTests(oldm) != null) {
-            testIds = new ArrayList<Integer>();
-            for (int i = 0; i < getTests(oldm).size(); i++ ) {
-                oldData = getTests(oldm).get(i);
-                newData = new OrderTestViewDO();
-                newData.setId(newm.getNextUID());
-                testIdMap.put(oldData.getId(), newData.getId());
-                newData.setItemSequence(oldData.getItemSequence());
-                newData.setSortOrder(oldData.getSortOrder());
-                newData.setTestId(oldData.getTestId());
-                newData.setTestName(oldData.getTestName());
-                newData.setMethodName(oldData.getMethodName());
-                newData.setDescription(oldData.getDescription());
-                newData.setIsActive(oldData.getIsActive());
-                testIds.add(newData.getTestId());
-                org.openelis.manager.OrderManager1Accessor.addTest(newm, newData);
-            }
-        }
-        return testIds;
-    }
-
-    /**
-     * duplicates the analytes from the old order manager and puts them in the
-     * new order manager
-     */
-    private void duplicateAnalytes(OrderManager1 oldm, OrderManager1 newm,
-                                   HashMap<Integer, Integer> testIdMap,
-                                   HashMap<Integer, ArrayList<OrderTestAnalyteViewDO>> otaMap) {
-        OrderTestAnalyteViewDO oldData, newData;
-
-        if (getAnalytes(oldm) != null) {
-            for (int i = 0; i < getAnalytes(oldm).size(); i++ ) {
-                oldData = getAnalytes(oldm).get(i);
-                newData = new OrderTestAnalyteViewDO();
-                newData.setOrderTestId(testIdMap.get(oldData.getOrderTestId()));
-                newData.setAnalyteId(oldData.getAnalyteId());
-                newData.setAnalyteName(oldData.getAnalyteName());
-                newData.setTestAnalyteSortOrder(oldData.getTestAnalyteSortOrder());
-                newData.setTestAnalyteTypeId(oldData.getTestAnalyteTypeId());
-                newData.setTestAnalyteIsReportable(oldData.getTestAnalyteIsReportable());
-                newData.setTestAnalyteIsPresent(oldData.getTestAnalyteIsPresent());
-                addAnalyte(newm, newData);
-                if (otaMap.get(newData.getOrderTestId()) == null)
-                    otaMap.put(newData.getOrderTestId(), new ArrayList<OrderTestAnalyteViewDO>());
-                otaMap.get(newData.getOrderTestId()).add(newData);
-            }
-        }
-    }
-
-    /**
-     * duplicates the containers from the old order manager and puts them in the
-     * new order manager
-     */
-    private void duplicateContainers(OrderManager1 oldm, OrderManager1 newm) {
-        OrderContainerDO oldData, newData;
-
-        if (getContainers(oldm) != null) {
-            for (int i = 0; i < getContainers(oldm).size(); i++ ) {
-                oldData = getContainers(oldm).get(i);
-                newData = new OrderContainerDO();
-                newData.setContainerId(oldData.getContainerId());
-                newData.setItemSequence(oldData.getItemSequence());
-                newData.setTypeOfSampleId(oldData.getTypeOfSampleId());
-                addContainer(newm, newData);
-            }
-        }
-    }
-
-    /**
-     * duplicates the aux data from the old order manager and puts them in the
-     * new order manager
-     */
-    private void duplicateAuxData(OrderManager1 oldm, OrderManager1 newm) {
-        AuxDataViewDO oldData, newData;
-
-        if (getAuxilliary(oldm) != null) {
-            for (int i = 0; i < getAuxilliary(oldm).size(); i++ ) {
-                oldData = getAuxilliary(oldm).get(i);
-                newData = new AuxDataViewDO();
-                newData.setSortOrder(oldData.getSortOrder());
-                newData.setAuxFieldId(oldData.getAuxFieldId());
-                newData.setIsReportable(oldData.getIsReportable());
-                newData.setTypeId(oldData.getTypeId());
-                newData.setValue(oldData.getValue());
-                newData.setDictionary(oldData.getDictionary());
-                newData.setGroupId(oldData.getGroupId());
-                newData.setAnalyteName(oldData.getAnalyteName());
-                newData.setAnalyteId(oldData.getAnalyteId());
-                newData.setAnalyteExternalId(oldData.getAnalyteExternalId());
-                addAuxilliary(newm, newData);
             }
         }
     }

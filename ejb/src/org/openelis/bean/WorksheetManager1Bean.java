@@ -29,9 +29,12 @@ import static org.openelis.manager.WorksheetManager1Accessor.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.Resource;
@@ -50,6 +53,7 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetDO;
@@ -83,13 +87,10 @@ public class WorksheetManager1Bean {
     private SessionContext               ctx;
     
     @EJB
-    AnalysisHelperBean                   aHelper;
+    private AnalysisHelperBean           aHelper;
     
     @EJB
-    CategoryBean                         category;
-    
-    @EJB
-    DictionaryBean                       dictionary;
+    private DictionaryCacheBean          dictionary;
     
     @EJB
     private LockBean                     lock;
@@ -98,22 +99,22 @@ public class WorksheetManager1Bean {
     private NoteBean                     note;
     
     @EJB
-    QcAnalyteBean                        qcAnalyte;
+    private QcAnalyteBean                qcAnalyte;
     
     @EJB
-    QcLotBean                            qcLot;
+    private QcLotBean                    qcLot;
     
     @EJB
-    ResultBean                           result;
+    private ResultBean                   result;
     
     @EJB
     private SampleManager1Bean           sampleMan;
     
     @EJB
-    TestAnalyteBean                      testAnalyte;
+    private TestAnalyteBean              testAnalyte;
     
     @EJB
-    TestWorksheetAnalyteBean             twAnalyte;
+    private TestWorksheetAnalyteBean     twAnalyte;
     
     @EJB
     private UserCacheBean                userCache;
@@ -364,10 +365,10 @@ public class WorksheetManager1Bean {
      * record if it has an id.
      */
     public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
-        int i, dep, ldep;
+        int i, j, k, dep, ldep;
         boolean locked, nodep;
         AnalysisViewDO aVDO;
-        ArrayList<Integer> analyteIndexes, excludedIds;
+        ArrayList<Integer> analyteIndexes, excludedIds, sampleIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
         ArrayList<TestAnalyteViewDO> analytes;
@@ -380,9 +381,9 @@ public class WorksheetManager1Bean {
         HashMap<Integer, SampleManager1> sMansByAnalysisId;
         HashMap<Integer, String> testMethodNames;
         HashMap<Integer, WorksheetAnalysisViewDO> updatedAnalyses;
-        HashSet<Integer> analysisIds;
-        HashSet<Integer> initAnalysisIds;
+        HashSet<Integer> analysisIds, initAnalysisIds, updateAnalysisIds;
         ResultViewDO rVDO;
+        SampleItemDO siDO;
         SampleManager1 sManager;
         StringBuffer description;
         TestAnalyteViewDO taVDO;
@@ -390,7 +391,7 @@ public class WorksheetManager1Bean {
         WorksheetItemDO itemDO;
 
         validate(wm);
-        
+
         locked = false;
         if (getWorksheet(wm).getId() != null && getWorksheet(wm).getId() > 0) {
             lock.validateLock(Constants.table().WORKSHEET, getWorksheet(wm).getId());
@@ -411,23 +412,29 @@ public class WorksheetManager1Bean {
          */
         if (getRemoved(wm) != null) {
             for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetResultViewDO)
+                    wResult.delete((WorksheetResultViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetQcResultViewDO)
+                    wqResult.delete((WorksheetQcResultViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof WorksheetAnalysisViewDO)
+                    analysis.delete((WorksheetAnalysisViewDO)data);
+            }
+            for (DataObject data : getRemoved(wm)) {
                 if (data instanceof WorksheetItemDO)
                     item.delete((WorksheetItemDO)data);
-                else if (data instanceof WorksheetAnalysisViewDO)
-                    analysis.delete((WorksheetAnalysisViewDO)data);
-                else if (data instanceof WorksheetResultViewDO)
-                    wResult.delete((WorksheetResultViewDO)data);
-                else if (data instanceof WorksheetQcResultViewDO)
-                    wqResult.delete((WorksheetQcResultViewDO)data);
-                else if (data instanceof NoteViewDO)
+            }
+            for (DataObject data : getRemoved(wm)) {
+                if (data instanceof NoteViewDO)
                     note.delete((NoteViewDO)data);
-                else
-                    throw new Exception("ERROR: DataObject passed for removal is of unknown type");
             }
         }
 
         // add/update worksheet
-        if (getWorksheet(wm).getId() == null) {
+        if (getWorksheet(wm).getId() == null || getWorksheet(wm).getId() < 0) {
             //
             // If the description is blank, set it to the list of tests/methods
             //
@@ -478,6 +485,108 @@ public class WorksheetManager1Bean {
             imap.put(tmpid, data.getId());
         }
 
+        analysisIds = new HashSet<Integer>();
+        initAnalysisIds = new HashSet<Integer>();
+        updateAnalysisIds = new HashSet<Integer>();
+        updatedAnalyses = new HashMap<Integer, WorksheetAnalysisViewDO>();
+        for (WorksheetAnalysisViewDO data : getAnalyses(wm)) {
+            if (data.getAnalysisId() != null) {
+                if (data.getId() < 0 && data.getFromOtherId() == null) {
+                    initAnalysisIds.add(data.getAnalysisId());
+                    updateAnalysisIds.add(data.getAnalysisId());
+                } else if (data.isChanged() && !updatedAnalyses.containsKey(data.getAnalysisId())) {
+                    updatedAnalyses.put(data.getAnalysisId(), data);
+                    updateAnalysisIds.add(data.getAnalysisId());
+                }
+                analysisIds.add(data.getAnalysisId());
+            }
+        }
+
+        newResults = new HashMap<Integer, ArrayList<ResultViewDO>>();
+        updatedResults = new HashMap<Integer, ResultViewDO>();
+        for (ResultViewDO res : wm.getModifiedResults()) {
+            if (res.isChanged()) {
+                if (res.getId() == null) {
+                    results = newResults.get(res.getAnalysisId());
+                    if (results == null) {
+                        results = new ArrayList<ResultViewDO>();
+                        newResults.put(res.getAnalysisId(), results);
+                    }
+                    res.setId(wm.getNextUID());
+                    results.add(res);
+                } else {
+                    updatedResults.put(res.getId(), res);
+                }
+                updateAnalysisIds.add(res.getAnalysisId());
+            }
+        }
+
+        if (!updateAnalysisIds.isEmpty()) {
+            sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(updateAnalysisIds), SampleManager1.Load.SINGLERESULT);
+            for (SampleManager1 sMan : sMans) {
+                for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
+                    if (initAnalysisIds.contains(ana.getId()))
+                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
+                    if (updatedAnalyses.containsKey(ana.getId())) {
+                        waVDO = updatedAnalyses.get(ana.getId());
+                        if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
+                                                     ana.getUnitOfMeasureId()))
+                            aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
+                        if (DataBaseUtil.isDifferent(waVDO.getStatusId(),
+                                                     ana.getStatusId()))
+                            aHelper.changeAnalysisStatus(sMan, ana.getId(), waVDO.getStatusId());
+                    }
+                    results = newResults.get(ana.getId());
+                    if (results != null && results.size() > 0) {
+                        analytes = new ArrayList<TestAnalyteViewDO>();
+                        analyteIndexes = new ArrayList<Integer>();
+                        for (ResultViewDO res : results) {
+                            taVDO = new TestAnalyteViewDO();
+                            taVDO.setId(res.getTestAnalyteId());
+                            taVDO.setRowGroup(res.getRowGroup());
+                            taVDO.setAnalyteId(res.getAnalyteId());
+                            taVDO.setIsReportable(res.getIsReportable());
+                            taVDO.setAnalyteName(res.getAnalyte());
+                            analytes.add(taVDO);
+                            analyteIndexes.add(res.getSortOrder());
+                        }
+                        aHelper.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
+                    }
+                }
+                for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
+                    if (updatedResults.containsKey(res.getId())) {
+                        rVDO = updatedResults.get(res.getId());
+                        if (DataBaseUtil.isDifferent(rVDO.getIsReportable(), res.getIsReportable()))
+                            res.setIsReportable(rVDO.getIsReportable());
+                    }
+                }
+            }
+            
+            try {
+                sampleMan.update(sMans, true);
+            } catch (Exception anyE) {
+                sampleIds = new ArrayList<Integer>();
+                for (SampleManager1 sMan : sMans)
+                    sampleIds.add(sMan.getSample().getId());
+                sampleMan.unlock(sampleIds, SampleManager1.Load.SINGLERESULT);
+            }
+        }
+
+        sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
+        if (!analysisIds.isEmpty()) {
+            sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(analysisIds), SampleManager1.Load.SINGLERESULT);
+            for (i = 0; i < sMans.size(); i++) {
+                sManager = sMans.get(i);
+                for (j = 0; j < sManager.item.count(); j++) {
+                    siDO = sManager.item.get(j);
+                    for (k = 0; k < sManager.analysis.count(siDO); k++) {
+                        aVDO = sManager.analysis.get(siDO, k);
+                        sMansByAnalysisId.put(aVDO.getId(), sManager);
+                    }
+                }
+            }
+        }
+
         /*
          * some worksheet analyses can be dependent on other worksheet analyses
          * for qc link. This code tries to resolve those dependencies by
@@ -486,9 +595,9 @@ public class WorksheetManager1Bean {
          * by ensuring every iteration resolves some dependency
          */
         dep = ldep = 0;
-        analysisIds = new HashSet<Integer>();
-        initAnalysisIds = new HashSet<Integer>();
-        updatedAnalyses = new HashMap<Integer, WorksheetAnalysisViewDO>();
+        excludedMap = new HashMap<Integer, ArrayList<Integer>>();
+        results = new ArrayList<ResultViewDO>();
+        wResults = new ArrayList<WorksheetResultViewDO>();
         do {
             ldep = dep;
             dep = 0;
@@ -505,6 +614,31 @@ public class WorksheetManager1Bean {
                 }
 
                 if (nodep) {
+                    if (data.getAnalysisId() != null) {
+                        sManager = sMansByAnalysisId.get(data.getAnalysisId());
+                        if (sManager != null) {
+                            aVDO = (AnalysisViewDO)sManager.getObject(sManager.getAnalysisUid(data.getAnalysisId()));
+                            results.clear();
+                            wResults.clear();
+                            for (i = 0; i < sManager.result.count(aVDO); i++)
+                                results.add(sManager.result.get(aVDO, i, 0));
+                            for (i = 0; i < wm.result.count(data); i++)
+                                wResults.add(wm.result.get(data, i));
+
+                            excludedIds = excludedMap.get(aVDO.getTestId());
+                            if (excludedIds == null) {
+                                excludedIds = new ArrayList<Integer>();
+                                try {
+                                    for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(aVDO.getTestId()))
+                                        excludedIds.add(twaVDO.getTestAnalyteId());
+                                } catch (Exception anyE) {
+                                    throw new Exception("Error loading excluded analytes: " + anyE.getMessage());
+                                }
+                                excludedMap.put(aVDO.getTestId(), excludedIds);
+                            }
+                            synchronizeResults(wm, data, results, wResults, excludedIds);
+                        }
+                    }
                     if (data.getId() < 0) {
                         tmpid = data.getId();
                         data.setWorksheetItemId(imap.get(data.getWorksheetItemId()));
@@ -523,15 +657,7 @@ public class WorksheetManager1Bean {
                         analysis.add(data);
                         amap.put(tmpid, data.getId());
                         amap.put(data.getId(), data.getId());
-                        if (data.getAnalysisId() != null && "N".equals(data.getIsFromOther())) {
-                            initAnalysisIds.add(data.getAnalysisId());
-                            analysisIds.add(data.getAnalysisId());
-                        }
                     } else if (!amap.containsKey(data.getId())) {
-                        if (data.isChanged() && !updatedAnalyses.containsKey(data.getAnalysisId())) {
-                            updatedAnalyses.put(data.getAnalysisId(), data);
-                            analysisIds.add(data.getAnalysisId());
-                        }
                         tmpid = data.getId();
                         analysis.update(data);
                         amap.put(tmpid, data.getId());
@@ -544,100 +670,7 @@ public class WorksheetManager1Bean {
 
         if (dep > 0 && ldep == dep)
             throw new InconsistencyException(Messages.get().worksheetAnalysisLinkError());
-        
-        newResults = new HashMap<Integer, ArrayList<ResultViewDO>>();
-        updatedResults = new HashMap<Integer, ResultViewDO>();
-        for (ResultViewDO res : wm.getModifiedResults()) {
-            if (res.isChanged()) {
-                if (res.getId() == null) {
-                    results = newResults.get(res.getAnalysisId());
-                    if (results == null) {
-                        results = new ArrayList<ResultViewDO>();
-                        newResults.put(res.getAnalysisId(), results);
-                    }
-                    res.setId(wm.getNextUID());
-                    results.add(res);
-                } else {
-                    updatedResults.put(res.getId(), res);
-                }
-                analysisIds.add(res.getAnalysisId());
-            }
-        }
-        
-        sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
-        if (!analysisIds.isEmpty() || !initAnalysisIds.isEmpty() || !updatedAnalyses.isEmpty()) {
-            analysisIds.addAll(initAnalysisIds);
-            analysisIds.addAll(updatedAnalyses.keySet());
-            sMans = sampleMan.fetchForUpdateByAnalyses(new ArrayList<Integer>(analysisIds), SampleManager1.Load.SINGLERESULT);
-            for (SampleManager1 sMan : sMans) {
-                for (AnalysisViewDO ana : SampleManager1Accessor.getAnalyses(sMan)) {
-                    if (initAnalysisIds.contains(ana.getId()))
-                        aHelper.changeAnalysisStatus(sMan, ana.getId(), Constants.dictionary().ANALYSIS_INITIATED);
-                    if (updatedAnalyses.containsKey(ana.getId())) {
-                        waVDO = updatedAnalyses.get(ana.getId());
-                        if (DataBaseUtil.isDifferent(waVDO.getUnitOfMeasureId(),
-                                                     ana.getUnitOfMeasureId()))
-                            aHelper.changeAnalysisUnit(sMan, ana.getId(), waVDO.getUnitOfMeasureId());
-                    }
-                    results = newResults.get(ana.getId());
-                    if (results != null && results.size() > 0) {
-                        analytes = new ArrayList<TestAnalyteViewDO>();
-                        analyteIndexes = new ArrayList<Integer>();
-                        for (ResultViewDO res : results) {
-                            taVDO = new TestAnalyteViewDO();
-                            taVDO.setId(res.getTestAnalyteId());
-                            taVDO.setRowGroup(res.getRowGroup());
-                            taVDO.setAnalyteId(res.getAnalyteId());
-                            taVDO.setIsReportable(res.getIsReportable());
-                            taVDO.setAnalyteName(res.getAnalyte());
-                            analytes.add(taVDO);
-                            analyteIndexes.add(res.getSortOrder());
-                        }
-                        aHelper.addRowAnalytes(sMan, ana, analytes, analyteIndexes);
-                    }
-                    if (!sMansByAnalysisId.containsKey(ana.getId()))
-                        sMansByAnalysisId.put(ana.getId(), sMan);
-                }
-                for (ResultViewDO res : SampleManager1Accessor.getResults(sMan)) {
-                    if (updatedResults.containsKey(res.getId())) {
-                        rVDO = updatedResults.get(res.getId());
-                        if (DataBaseUtil.isDifferent(rVDO.getIsReportable(), res.getIsReportable()))
-                            res.setIsReportable(rVDO.getIsReportable());
-                    }
-                }
-            }
-            sampleMan.update(sMans, true);
-        }
 
-        excludedMap = new HashMap<Integer, ArrayList<Integer>>();
-        for (WorksheetAnalysisViewDO data : getAnalyses(wm)) {
-            if (data.getAnalysisId() != null) {
-                sManager = sMansByAnalysisId.get(data.getAnalysisId());
-                if (sManager != null) {
-                    aVDO = (AnalysisViewDO)sManager.getObject(sManager.getAnalysisUid(data.getAnalysisId()));
-                    results = new ArrayList<ResultViewDO>();
-                    wResults = new ArrayList<WorksheetResultViewDO>();
-                    for (i = 0; i < sManager.result.count(aVDO); i++)
-                        results.add(sManager.result.get(aVDO, i, 0));
-                    for (i = 0; i < wm.result.count(data); i++)
-                        wResults.add(wm.result.get(data, i));
-
-                    excludedIds = excludedMap.get(aVDO.getTestId());
-                    if (excludedIds == null) {
-                        excludedIds = new ArrayList<Integer>();
-                        try {
-                            for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(aVDO.getTestId()))
-                                excludedIds.add(twaVDO.getTestAnalyteId());
-                        } catch (Exception anyE) {
-                            throw new Exception("Error loading excluded analytes: " + anyE.getMessage());
-                        }
-                        excludedMap.put(aVDO.getTestId(), excludedIds);
-                    }
-                    synchronizeResults(wm, data, results, wResults, excludedIds);
-                }
-            }
-        }
-        
         // add/update results
         if (getResults(wm) != null) {
             for (WorksheetResultViewDO data : getResults(wm)) {
@@ -949,7 +982,6 @@ public class WorksheetManager1Bean {
                 waVDO = new WorksheetAnalysisViewDO();
                 waVDO.setId(wm.getNextUID());
                 waVDO.setWorksheetItemId(wiDO.getId());
-                waVDO.setIsFromOther("N");
                 if (Constants.dictionary().POS_DUPLICATE.equals(twiDO.getTypeId())) {
                     waVDO1 = wm.analysis.get(newItems.get(i - 1), 0);
                     waVDO.setAccessionNumber("D" + waVDO1.getAccessionNumber());
@@ -1008,7 +1040,6 @@ public class WorksheetManager1Bean {
             waVDO.setId(wm.getNextUID());
             waVDO.setWorksheetItemId(wiDO.getId());
             waVDO.setAccessionNumber("X." + wiDO.getId());
-            waVDO.setIsFromOther("N");
 
             twiDO = qcTemplate[i];
             if (twiDO == null || !Constants.dictionary().POS_FIXED_ALWAYS.equals(twiDO.getTypeId())) {
@@ -1041,7 +1072,6 @@ public class WorksheetManager1Bean {
                 waVDO.setId(wm.getNextUID());
                 waVDO.setWorksheetItemId(wiDO.getId());
                 waVDO.setAccessionNumber("X." + wiDO.getId());
-                waVDO.setIsFromOther("N");
 
                 try {
                     loadQcForAnalysis(wm, twiDO, i, waVDO, prefs, wqcVO, qcMap);
@@ -1204,53 +1234,61 @@ public class WorksheetManager1Bean {
             fromWaVDO = fromAnalyses.get(a);
             toWaVDO = toAnalyses.get(a);
             if (fromWaVDO.getAnalysisId() != null) {
-                fromWrVDOs = wResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
-                for (WorksheetResultViewDO fromWrVDO : fromWrVDOs) {
-                    toWrVDO = wm.result.add(toWaVDO);
-                    toWrVDO.setTestAnalyteId(fromWrVDO.getTestAnalyteId());
-                    toWrVDO.setTestResultId(fromWrVDO.getTestResultId());
-                    toWrVDO.setResultRow(fromWrVDO.getResultRow());
-                    toWrVDO.setAnalyteId(fromWrVDO.getAnalyteId());
-                    toWrVDO.setTypeId(fromWrVDO.getTypeId());
-                    if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
-                        for (i = 0; i < 30; i++) {
-                            fromName = fromColumnMap.get(i + 9);
-                            if (fromName != null) {
-                                toIndex = toColumnMap.get(fromName);
-                                if (toIndex != null)
-                                    toWrVDO.setValueAt(toIndex.intValue() - 9, fromWrVDO.getValueAt(i));
+                try {
+                    fromWrVDOs = wResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
+                    for (WorksheetResultViewDO fromWrVDO : fromWrVDOs) {
+                        toWrVDO = wm.result.add(toWaVDO);
+                        toWrVDO.setTestAnalyteId(fromWrVDO.getTestAnalyteId());
+                        toWrVDO.setTestResultId(fromWrVDO.getTestResultId());
+                        toWrVDO.setResultRow(fromWrVDO.getResultRow());
+                        toWrVDO.setAnalyteId(fromWrVDO.getAnalyteId());
+                        toWrVDO.setTypeId(fromWrVDO.getTypeId());
+                        if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
+                            for (i = 0; i < 30; i++) {
+                                fromName = fromColumnMap.get(i + 9);
+                                if (fromName != null) {
+                                    toIndex = toColumnMap.get(fromName);
+                                    if (toIndex != null)
+                                        toWrVDO.setValueAt(toIndex.intValue() - 9, fromWrVDO.getValueAt(i));
+                                }
                             }
+                        } else {
+                            for (i = 0; i < 30; i++)
+                                toWrVDO.setValueAt(i, fromWrVDO.getValueAt(i));
                         }
-                    } else {
-                        for (i = 0; i < 30; i++)
-                            toWrVDO.setValueAt(i, fromWrVDO.getValueAt(i));
+                        toWrVDO.setAnalyteName(fromWrVDO.getAnalyteName());
+                        toWrVDO.setAnalyteExternalId(fromWrVDO.getAnalyteExternalId());
+                        toWrVDO.setResultGroup(fromWrVDO.getResultGroup());
                     }
-                    toWrVDO.setAnalyteName(fromWrVDO.getAnalyteName());
-                    toWrVDO.setAnalyteExternalId(fromWrVDO.getAnalyteExternalId());
-                    toWrVDO.setResultGroup(fromWrVDO.getResultGroup());
+                } catch (NotFoundException nfE) {
+                    log.log(Level.INFO, nfE.getMessage());
                 }
             } else if (fromWaVDO.getQcLotId() != null) {
-                fromWqrVDOs = wqResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
-                for (WorksheetQcResultViewDO fromWqrVDO : fromWqrVDOs) {
-                    toWqrVDO = wm.qcResult.add(toWaVDO);
-                    toWqrVDO.setSortOrder(fromWqrVDO.getSortOrder());
-                    toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
-                    toWqrVDO.setTypeId(fromWqrVDO.getTypeId());
-                    if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
-                        for (i = 0; i < 30; i++) {
-                            fromName = fromColumnMap.get(i + 9);
-                            if (fromName != null) {
-                                toIndex = toColumnMap.get(fromName);
-                                if (toIndex != null)
-                                    toWqrVDO.setValueAt(toIndex.intValue() - 9, fromWqrVDO.getValueAt(i));
+                try {
+                    fromWqrVDOs = wqResult.fetchByWorksheetAnalysisId(fromWaVDO.getId());
+                    for (WorksheetQcResultViewDO fromWqrVDO : fromWqrVDOs) {
+                        toWqrVDO = wm.qcResult.add(toWaVDO);
+                        toWqrVDO.setSortOrder(fromWqrVDO.getSortOrder());
+                        toWqrVDO.setQcAnalyteId(fromWqrVDO.getQcAnalyteId());
+                        toWqrVDO.setTypeId(fromWqrVDO.getTypeId());
+                        if (!toWorksheet.getFormatId().equals(fromWorksheet.getFormatId())) {
+                            for (i = 0; i < 30; i++) {
+                                fromName = fromColumnMap.get(i + 9);
+                                if (fromName != null) {
+                                    toIndex = toColumnMap.get(fromName);
+                                    if (toIndex != null)
+                                        toWqrVDO.setValueAt(toIndex.intValue() - 9, fromWqrVDO.getValueAt(i));
+                                }
                             }
+                        } else {
+                            for (i = 0; i < 30; i++)
+                                toWqrVDO.setValueAt(i, fromWqrVDO.getValueAt(i));
                         }
-                    } else {
-                        for (i = 0; i < 30; i++)
-                            toWqrVDO.setValueAt(i, fromWqrVDO.getValueAt(i));
+                        toWqrVDO.setAnalyteId(fromWqrVDO.getAnalyteId());
+                        toWqrVDO.setAnalyteName(fromWqrVDO.getAnalyteName());
                     }
-                    toWqrVDO.setAnalyteId(fromWqrVDO.getAnalyteId());
-                    toWqrVDO.setAnalyteName(fromWqrVDO.getAnalyteName());
+                } catch (NotFoundException nfE) {
+                    log.log(Level.INFO, nfE.getMessage());
                 }
             }
         }
@@ -1258,10 +1296,11 @@ public class WorksheetManager1Bean {
         return wm;
     }
     
-    public WorksheetManager1 sortItems(WorksheetManager1 wm, ArrayList<Object> keys, int direction) {
+    public WorksheetManager1 sortItems(WorksheetManager1 wm, int col, int dir) {
         int i;
         
-        DataBaseUtil.sort(keys, WorksheetManager1Accessor.getItems(wm), direction);
+        Collections.sort(WorksheetManager1Accessor.getItems(wm),
+                         new WorksheetComparator(wm, col, dir));
         
         for (i = 0; i < wm.item.count(); i++)
             wm.item.get(i).setPosition(i + 1);
@@ -1351,7 +1390,9 @@ public class WorksheetManager1Bean {
             wrList = wrMap.get(rVDO.getTestAnalyteId());
             if (wrList != null) {
                 wrVDO = wrList.get(0);
-                wrVDO.setResultRow(rowIndex++);
+                if (wrVDO.getResultRow() != rowIndex)
+                    wrVDO.setResultRow(rowIndex);
+                rowIndex++;
                 wrList.remove(0);
                 if (wrList.size() == 0)
                     wrMap.remove(wrList);
@@ -1363,6 +1404,97 @@ public class WorksheetManager1Bean {
                 wrVDO.setTypeId(rVDO.getTypeId());
                 wrVDO.setAnalyteName(rVDO.getAnalyte());
             }
+        }
+    }
+    
+    class WorksheetComparator<T extends WorksheetItemDO> implements Comparator<T> {
+        int col, dir;
+        WorksheetManager1 wm;
+        
+        public WorksheetComparator(WorksheetManager1 wm, int col, int dir) {
+            this.wm = wm;
+            this.col = col;
+            this.dir = dir;
+        }
+        
+        public int compare(WorksheetItemDO wiDO1, WorksheetItemDO wiDO2) {
+            Comparable c1, c2;
+            WorksheetAnalysisViewDO waVDO1, waVDO2;
+            
+            c1 = null;
+            c2 = null;
+            waVDO1 = wm.analysis.get(wiDO1, 0);
+            waVDO2 = wm.analysis.get(wiDO2, 0);
+            switch (col) {
+                case 0:         // position
+                case 3:         // qc link
+                    return 0;
+                    
+                case 1:
+                    c1 = waVDO1.getAccessionNumber();
+                    c2 = waVDO2.getAccessionNumber();
+                    break;
+                    
+                case 2:
+                    c1 = waVDO1.getDescription();
+                    c2 = waVDO2.getDescription();
+                    break;
+                    
+                case 4:
+                    c1 = waVDO1.getTestName();
+                    c2 = waVDO2.getTestName();
+                    break;
+                    
+                case 5:
+                    c1 = waVDO1.getMethodName();
+                    c2 = waVDO2.getMethodName();
+                    break;
+                    
+                case 6:
+                    c1 = waVDO1.getUnitOfMeasure();
+                    c2 = waVDO2.getUnitOfMeasure();
+                    break;
+                    
+                case 7:
+                    try {
+                        c1 = dictionary.getById(waVDO1.getStatusId()).getEntry();
+                    } catch (Exception ignE) {}
+                    try {
+                        c2 = dictionary.getById(waVDO2.getStatusId()).getEntry();
+                    } catch (Exception ignE) {}
+                    break;
+                    
+                case 8:
+                    c1 = waVDO1.getCollectionDate();
+                    c2 = waVDO2.getCollectionDate();
+                    break;
+                    
+                case 9:
+                    c1 = waVDO1.getReceivedDate();
+                    c2 = waVDO2.getReceivedDate();
+                    break;
+                    
+                case 10:
+                    c1 = waVDO1.getDueDays();
+                    c2 = waVDO2.getDueDays();
+                    break;
+                    
+                case 11:
+                    c1 = waVDO1.getExpireDate();
+                    c2 = waVDO2.getExpireDate();
+                    break;
+            }
+            
+            if (c1 == null && c2 == null) {
+                return 0;
+            } else if (c1 != null && c2 != null) {
+                return dir * c1.compareTo(c2);
+            } else {
+                if (c1 == null && c2 != null)
+                    return 1;
+                else 
+                    return -1;
+            }           
         }
     }
 }

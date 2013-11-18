@@ -29,6 +29,8 @@ package org.openelis.entity;
  * Scriptlet Entity POJO for database
  */
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -42,17 +44,18 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.Constants;
 import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.Datetime;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 //TODO fix the named queries and create a DO for the table, convert to the new format.
 @NamedQueries( {
-    @NamedQuery( name = "Scriptlet.Scriptlet", 
+    @NamedQuery( name = "Scriptlet.fetchByName", 
                 query = "select distinct new org.openelis.domain.IdNameVO(script.id, script.name) from Scriptlet script  "
                                                                   + "order by script.name "),
-    @NamedQuery( name = "Scriptlet.ScriptletFindByName", query = "select distinct new org.openelis.domain.IdNameVO(script.id, script.name) from Scriptlet script  "
-                                                                            + "where script.name like :name order by script.name ")})
+    @NamedQuery( name = "Scriptlet.fetchById", query = "select distinct new org.openelis.domain.ScriptletDO(script.id, script.name, script.bean, script.isActive, script.activeBegin, script.activeEnd) from Scriptlet script  "
+                                                                            + "where script.id = :id")})
 @Entity
 @Table(name = "scriptlet")
 @EntityListeners({AuditUtil.class})
@@ -61,13 +64,22 @@ public class Scriptlet implements Auditable, Cloneable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer   id;
+    private Integer                          id;
 
     @Column(name = "name")
-    private String    name;
+    private String                           name;
 
-    @Column(name = "code_source")
-    private String    codeSource;
+    @Column(name = "bean")
+    private String                           bean;
+    
+    @Column(name = "is_active")
+    private String                           isActive;
+
+    @Column(name = "active_begin")
+    private Date                             activeBegin;
+
+    @Column(name = "active_end")
+    private Date                             activeEnd;
 
     @Transient
     private Scriptlet original;
@@ -90,13 +102,40 @@ public class Scriptlet implements Auditable, Cloneable {
             this.name = name;
     }
 
-    public String getCodeSource() {
-        return codeSource;
+    public String getBean() {
+        return bean;
     }
 
-    public void setCodeSource(String codeSource) {
-        if (DataBaseUtil.isDifferent(codeSource, this.codeSource))
-            this.codeSource = codeSource;
+    public void setBean(String bean) {
+        if (DataBaseUtil.isDifferent(bean, this.bean))
+            this.bean = bean;
+    }
+    
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        if (DataBaseUtil.isDifferent(isActive, this.isActive))
+            this.isActive = isActive;
+    }
+
+    public Datetime getActiveBegin() {
+        return DataBaseUtil.toYD(activeBegin);
+    }
+
+    public void setActiveBegin(Datetime active_begin) {
+        if (DataBaseUtil.isDifferentYD(active_begin, this.activeBegin))
+            this.activeBegin = active_begin.getDate();
+    }
+
+    public Datetime getActiveEnd() {
+        return DataBaseUtil.toYD(activeEnd);
+    }
+
+    public void setActiveEnd(Datetime active_end) {
+        if (DataBaseUtil.isDifferentYD(active_end, this.activeEnd))
+            this.activeEnd = active_end.getDate();
     }
 
     public void setClone() {
@@ -116,7 +155,10 @@ public class Scriptlet implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
-                 .setField("code_source", codeSource, original.codeSource);
+                 .setField("bean", bean, original.bean)
+                 .setField("is_active", isActive, original.isActive)
+                 .setField("active_begin", activeBegin, original.activeBegin)
+                 .setField("active_end", activeEnd, original.activeEnd);
 
         return audit;
     }

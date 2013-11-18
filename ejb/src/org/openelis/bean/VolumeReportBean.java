@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.annotation.Resource;
@@ -47,9 +48,9 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.Prompt;
@@ -86,18 +87,18 @@ public class VolumeReportBean {
                                                           .setWidth(150)
                                                           .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                           .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                                                          .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
-                                                                                                Datetime.MINUTE)
-                                                                                   .toString())
-                                                          .setRequired(true));        
+                                                          .setDefaultValue(ReportUtil.toString(new Date(),
+                                                                                               Messages.get()
+                                                                                                       .dateTimePattern()))
+                                                          .setRequired(true));
 
             p.add(new Prompt("TO", Prompt.Type.DATETIME).setPrompt("Ending Entered Date:")
                                                         .setWidth(150)
                                                         .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                         .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                                                        .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
-                                                                                              Datetime.MINUTE)
-                                                                                 .toString())
+                                                        .setDefaultValue(ReportUtil.toString(new Date(),
+                                                                                             Messages.get()
+                                                                                                     .dateTimePattern()))
                                                         .setRequired(true));
 
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")

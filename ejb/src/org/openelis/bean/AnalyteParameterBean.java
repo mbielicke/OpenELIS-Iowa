@@ -241,9 +241,9 @@ public class AnalyteParameterBean {
     public AnalyteParameterDO add(AnalyteParameterDO data) throws Exception {
         AnalyteParameter entity;
 
-        if (DataBaseUtil.isEmpty(data.getActiveBegin()) ||
-            DataBaseUtil.isEmpty(data.getActiveEnd()) ||
-            DataBaseUtil.isEmpty(data.getP1()))
+        if (data.getActiveBegin() == null ||
+            data.getActiveEnd() == null ||
+            (data.getP1() == null && data.getP2() == null && data.getP3() == null))
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -306,23 +306,19 @@ public class AnalyteParameterBean {
         errors = new ValidationErrorsList();
         validateED = true;
 
-        if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
-            errors.add(new FieldErrorException(Messages.get().beginDateRequiredForAnalyteException(""),
-                                               data.getAnalyteName()));
+        if (data.getActiveBegin() == null) {
+            errors.add(new FieldErrorException(Messages.get().beginDateRequiredForAnalyteException(data.getAnalyteName()), ""));
             validateED = false;
         }
-        if (DataBaseUtil.isEmpty(data.getActiveEnd())) {
-            errors.add(new FieldErrorException(Messages.get().endDateRequiredForAnalyteException(""),
-                                               data.getAnalyteName()));
+        if (data.getActiveEnd() == null) {
+            errors.add(new FieldErrorException(Messages.get().endDateRequiredForAnalyteException(data.getAnalyteName()), ""));
             validateED = false;
         }
-        if (DataBaseUtil.isEmpty(data.getP1()))
-            errors.add(new FieldErrorException(Messages.get().p1RequiredForAnalyteException(""),
-                                               data.getAnalyteName()));
+        if (data.getP1() == null && data.getP2() == null && data.getP3() == null)
+            errors.add(new FieldErrorException(Messages.get().atleastOnePRequiredForAnalyteException(data.getAnalyteName()), ""));
 
-        if (validateED && !endDateValid(data))
-            errors.add(new FieldErrorException(Messages.get().endDateInvalidWithParamException(""),
-                                               data.getAnalyteName()));
+        if (validateED && (data.getActiveBegin().compareTo(data.getActiveEnd()) >= 0))
+            errors.add(new FieldErrorException(Messages.get().endDateInvalidWithParamException(data.getAnalyteName()), ""));
 
         if (errors.size() > 0)
             throw errors;
@@ -504,12 +500,5 @@ public class AnalyteParameterBean {
     private ArrayList<AnalyteParameterViewDO> fetchByProviderId(Integer referenceId) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    private boolean endDateValid(AnalyteParameterViewDO data) {
-        //
-        // end date must be after begin date
-        //
-        return (data.getActiveBegin().compareTo(data.getActiveEnd()) == -1);
     }
 }
