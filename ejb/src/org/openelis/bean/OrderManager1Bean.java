@@ -131,9 +131,6 @@ public class OrderManager1Bean {
     @EJB
     private OrganizationBean      organization;
 
-    @EJB
-    private SampleScannerBean     sampleScanner;
-
     public OrderManager1 getInstance(String type) throws Exception {
         OrderManager1 om;
         OrderViewDO o;
@@ -286,8 +283,6 @@ public class OrderManager1Bean {
         ArrayList<Integer> ids;
         ArrayList<OrderManager1> oms;
 
-        // TODO remove this
-        sampleScanner.scan();
         ids = new ArrayList<Integer>(1);
         ids.add(orderId);
         oms = fetchForUpdate(ids, elements);
