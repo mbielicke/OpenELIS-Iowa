@@ -87,7 +87,7 @@ public class Category implements Auditable, Cloneable {
     private String                 isSystem;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
     private Collection<Dictionary> dictionary;
 
     @Transient

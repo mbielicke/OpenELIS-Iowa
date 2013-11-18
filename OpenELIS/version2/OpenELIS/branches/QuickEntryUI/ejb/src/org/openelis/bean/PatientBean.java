@@ -1,5 +1,9 @@
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -10,9 +14,15 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.PatientDO;
+import org.openelis.domain.PatientRelationVO;
 import org.openelis.entity.Patient;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.NotFoundException;
+import org.openelis.meta.PatientMeta;
+import org.openelis.ui.common.DatabaseException;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -25,6 +35,8 @@ public class PatientBean {
     @EJB
     private AddressBean   address;
    
+    private static final PatientMeta meta = new PatientMeta();
+
     public PatientDO fetchById(Integer id) throws Exception {
         Query query;
         PatientDO data;
@@ -41,7 +53,84 @@ public class PatientBean {
         }
         return data;
     }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<PatientDO> fetchByIds(Collection<Integer> ids) {
+        Query query;
+        
+        if (ids.size() == 0)
+            return new ArrayList<PatientDO>();
+        
+        query = manager.createNamedQuery("Patient.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<PatientRelationVO> fetchByRelatedPatientId(Integer patientId) throws Exception {
+        List<PatientRelationVO> list;
+        Query query;
+        
+        query = manager.createNamedQuery("Patient.FetchByRelatedPatientId");
+        query.setParameter("patientId", patientId);
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
     
+    @SuppressWarnings({"unchecked", "static-access"})
+    public ArrayList<PatientDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
+        ArrayList<PatientDO> list;
+        Query query;
+        QueryBuilderV2 builder;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.PatientDO(" +
+                          PatientMeta.getId() + ", " +
+                          PatientMeta.getLastName() + ", " +
+                          PatientMeta.getFirstName() + ", " +
+                          PatientMeta.getMiddleName() + ", " +
+                          PatientMeta.getAddressId() + ", " +
+                          PatientMeta.getBirthDate() + ", " +
+                          PatientMeta.getBirthTime() + ", " +
+                          PatientMeta.getGenderId() + ", " +
+                          PatientMeta.getRaceId() + ", " +
+                          PatientMeta.getEthnicityId() + ", " +
+                          PatientMeta.getNationalId() + ", " +
+                          PatientMeta.getAddressMultipleUnit() + ", " +
+                          PatientMeta.getAddressStreetAddress() + ", " +
+                          PatientMeta.getAddressCity() + ", " +
+                          PatientMeta.getAddressState() + ", " +
+                          PatientMeta.getAddressZipCode() + ", " +
+                          PatientMeta.getAddressWorkPhone() + ", " +
+                          PatientMeta.getAddressHomePhone() + ", " +
+                          PatientMeta.getAddressCellPhone() + ", " +
+                          PatientMeta.getAddressFaxPhone() + ", " +
+                          PatientMeta.getAddressEmail() + ", " +
+                          PatientMeta.getAddressCountry() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(PatientMeta.getLastName() + ", " + PatientMeta.getFirstName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        list = (ArrayList<PatientDO>)query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.subList(list, first, max);
+        if (list == null)
+            throw new LastPageException();
+
+        return list;
+    }
+
     public PatientDO add(PatientDO data) throws Exception {
         Patient entity;
         
@@ -58,6 +147,7 @@ public class PatientBean {
         entity.setGenderId(data.getGenderId());
         entity.setRaceId(data.getRaceId());
         entity.setEthnicityId(data.getEthnicityId());
+        entity.setNationalId(data.getNationalId());
         
         manager.persist(entity);
         data.setId(entity.getId());
@@ -81,6 +171,7 @@ public class PatientBean {
         entity.setGenderId(data.getGenderId());
         entity.setRaceId(data.getRaceId());
         entity.setEthnicityId(data.getEthnicityId());
+        entity.setNationalId(data.getNationalId());
         
         if (data.getAddress().isChanged())
             address.update(data.getAddress());

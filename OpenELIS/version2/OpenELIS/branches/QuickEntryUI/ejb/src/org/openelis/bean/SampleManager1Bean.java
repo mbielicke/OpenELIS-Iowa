@@ -44,6 +44,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AnalysisWorksheetVO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DataObject;
@@ -51,12 +52,12 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.PatientDO;
+import org.openelis.domain.QaEventDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleNeonatalDO;
-import org.openelis.domain.SampleNeonatalViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -69,11 +70,13 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.SampleManager1Accessor;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
+import org.openelis.ui.common.FormErrorWarning;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SectionPermission;
@@ -167,6 +170,12 @@ public class SampleManager1Bean {
     @EJB
     private AuxDataBean                  auxData;
 
+    @EJB
+    private QaEventBean                  qaEvent;
+
+    @EJB
+    private WorksheetBean                worksheet;
+
     private static final Logger          log = Logger.getLogger("openelis");
 
     /**
@@ -176,18 +185,15 @@ public class SampleManager1Bean {
     public SampleManager1 getInstance(String domain) throws Exception {
         SampleManager1 sm;
         SampleDO s;
-        Datetime now;
 
         // sample
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         sm = new SampleManager1();
 
         s = new SampleDO();
-        s.setNextItemSequence(0);
-        s.setRevision(0);
-        s.setEnteredDate(now);
-        s.setReceivedById(userCache.getId());
-        s.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
+        /*
+         * set default values in fields like revision, entered date etc.
+         */
+        setDefaults(s, Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
 
         setSample(sm, s);
 
@@ -217,9 +223,9 @@ public class SampleManager1Bean {
 
             s.setDomain(domain);
         } else if (Constants.domain().NEONATAL.equals(domain)) {
-            SampleNeonatalViewDO snn;
+            SampleNeonatalDO snn;
 
-            snn = new SampleNeonatalViewDO();
+            snn = new SampleNeonatalDO();
             snn.setIsRepeat("N");
             snn.setIsNicu("N");
             snn.setIsTransfused("N");
@@ -304,7 +310,7 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
 
-        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }
@@ -376,7 +382,7 @@ public class SampleManager1Bean {
         map1 = new HashMap<Integer, SampleManager1>();
         for (AnalysisViewDO data : analysis.fetchBySampleItemIds(ids2)) {
             sm = map2.get(data.getSampleItemId());
-            addAnalysis(sm, data);
+            SampleManager1Accessor.addAnalysis(sm, data);
             ids1.add(data.getId());
             map1.put(data.getId(), sm);
         }
@@ -418,6 +424,13 @@ public class SampleManager1Bean {
             for (ResultViewDO data : result.fetchByAnalysisIds(ids1)) {
                 sm = map1.get(data.getAnalysisId());
                 addResult(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.WORKSHEET)) {
+            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids1)) {
+                sm = map1.get(data.getAnalysisId());
+                addWorksheet(sm, data);
             }
         }
 
@@ -502,7 +515,7 @@ public class SampleManager1Bean {
             setSamplePrivateWell(sm, data);
         }
 
-        for (SampleNeonatalViewDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
+        for (SampleNeonatalDO data : sampleNeonatal.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getSampleId());
             setSampleNeonatal(sm, data);
         }
@@ -555,7 +568,7 @@ public class SampleManager1Bean {
         map1 = new HashMap<Integer, SampleManager1>();
         for (AnalysisViewDO data : analysis.fetchBySampleItemIds(ids2)) {
             sm = map2.get(data.getSampleItemId());
-            addAnalysis(sm, data);
+            SampleManager1Accessor.addAnalysis(sm, data);
             ids1.add(data.getId());
             map1.put(data.getId(), sm);
         }
@@ -599,6 +612,13 @@ public class SampleManager1Bean {
             for (ResultViewDO data : result.fetchByAnalysisIds(analysisIds)) {
                 sm = map1.get(data.getAnalysisId());
                 addResult(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.WORKSHEET)) {
+            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids1)) {
+                sm = map1.get(data.getAnalysisId());
+                addWorksheet(sm, data);
             }
         }
 
@@ -738,6 +758,12 @@ public class SampleManager1Bean {
                 addResult(sm, data);
         }
 
+        if (el.contains(SampleManager1.Load.WORKSHEET)) {
+            setWorksheets(sm, null);
+            for (AnalysisWorksheetVO data : worksheet.fetchByAnalysisIds(ids))
+                addWorksheet(sm, data);
+        }
+
         return sm;
     }
 
@@ -798,32 +824,6 @@ public class SampleManager1Bean {
 
         lock.lock(Constants.table().SAMPLE, new ArrayList<Integer>(ids));
         return fetchByAnalyses(analysisIds, elements);
-    }
-
-    /**
-     * Unlocks and returns a sample manager with specified sample id and
-     * requested load elements
-     */
-    @RolesAllowed({"sample-add", "sample-update"})
-    public SampleManager1 unlock(Integer sampleId, SampleManager1.Load... elements) throws Exception {
-        ArrayList<Integer> ids;
-        ArrayList<SampleManager1> sms;
-
-        ids = new ArrayList<Integer>(1);
-        ids.add(sampleId);
-        sms = unlock(ids, elements);
-        return sms.size() == 0 ? null : sms.get(0);
-    }
-
-    /**
-     * Unlocks and returns list of sample managers with specified sample ids and
-     * requested load elements
-     */
-    @RolesAllowed({"sample-add", "sample-update"})
-    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds,
-                                            SampleManager1.Load... elements) throws Exception {
-        lock.unlock(Constants.table().SAMPLE, sampleIds);
-        return fetchByIds(sampleIds, elements);
     }
 
     /**
@@ -997,17 +997,21 @@ public class SampleManager1Bean {
                 /*
                  * add/update patient and next of kin
                  */
-                if (getSampleNeonatal(sm).getPatient().getId() == null)
-                    pat = patient.add(getSampleNeonatal(sm).getPatient());
-                else
-                    pat = patient.update(getSampleNeonatal(sm).getPatient());
-                getSampleNeonatal(sm).getPatient().setId(pat.getId());
+                if (getSampleNeonatal(sm).getPatient() != null) {
+                    if (getSampleNeonatal(sm).getPatient().getId() == null)
+                        pat = patient.add(getSampleNeonatal(sm).getPatient());
+                    else
+                        pat = patient.update(getSampleNeonatal(sm).getPatient());
+                    getSampleNeonatal(sm).getPatient().setId(pat.getId());
+                }
 
-                if (getSampleNeonatal(sm).getNextOfKin().getId() == null)
-                    pat = patient.add(getSampleNeonatal(sm).getNextOfKin());
-                else
-                    pat = patient.update(getSampleNeonatal(sm).getNextOfKin());
-                getSampleNeonatal(sm).getNextOfKin().setId(pat.getId());
+                if (getSampleNeonatal(sm).getNextOfKin() != null) {
+                    if (getSampleNeonatal(sm).getNextOfKin().getId() == null)
+                        pat = patient.add(getSampleNeonatal(sm).getNextOfKin());
+                    else
+                        pat = patient.update(getSampleNeonatal(sm).getNextOfKin());
+                    getSampleNeonatal(sm).getNextOfKin().setId(pat.getId());
+                }
 
                 if (getSampleNeonatal(sm).getId() == null) {
                     getSampleNeonatal(sm).setSampleId(getSample(sm).getId());
@@ -1268,47 +1272,104 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Sets the specified accession number in the manager's sample. If there is
-     * an existing Quick Entry sample associated with this accession number, the
-     * returned manager contains its data (quick-entered sample is locked).
+     * Unlocks and returns a sample manager with specified sample id and
+     * requested load elements
      */
-    public SampleManager1 setAccessionNumber(SampleManager1 sm, Integer accession) throws Exception {
-        String domain;
+    @RolesAllowed({"sample-add", "sample-update"})
+    public SampleManager1 unlock(Integer sampleId, SampleManager1.Load... elements) throws Exception {
+        ArrayList<Integer> ids;
+        ArrayList<SampleManager1> sms;
+
+        ids = new ArrayList<Integer>(1);
+        ids.add(sampleId);
+        sms = unlock(ids, elements);
+        return sms.size() == 0 ? null : sms.get(0);
+    }
+
+    /**
+     * Unlocks and returns list of sample managers with specified sample ids and
+     * requested load elements
+     */
+    @RolesAllowed({"sample-add", "sample-update"})
+    public ArrayList<SampleManager1> unlock(ArrayList<Integer> sampleIds,
+                                            SampleManager1.Load... elements) throws Exception {
+        lock.unlock(Constants.table().SAMPLE, sampleIds);
+        return fetchByIds(sampleIds, elements);
+    }
+
+    /**
+     * Check to see if 1) the accession number bas been issues by the login
+     * barcode process and 2) accession number has not been assigned to another
+     * sample.
+     */
+    @RolesAllowed({"sample-add", "sample-update"})
+    public void validateAccessionNumber(SampleManager1 sm) throws Exception {
+        Integer accession;
+        SampleDO data;
+        SystemVariableDO sys;
+
+        /*
+         * accession number must be > 0, previously issued, and not duplicate
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null || accession <= 0)
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accession)));
+
+        try {
+            sys = systemVariable.fetchByName("last_accession_number");
+            if (accession.compareTo(Integer.valueOf(sys.getValue())) > 0)
+                throw new InconsistencyException(Messages.get()
+                                                         .sample_accessionNumberNotInUse(accession));
+        } catch (Exception any) {
+            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
+            throw any;
+        }
+
+        try {
+            data = sample.fetchByAccessionNumber(accession);
+            if ( !data.getId().equals(getSample(sm).getId()))
+                throw new InconsistencyException(Messages.get()
+                                                         .sample_accessionNumberDuplicate(accession));
+        } catch (NotFoundException nf) {
+        }
+    }
+
+    /**
+     * Returns a manager loaded with the data of the quick-entered sample that
+     * has the same accession number as the passed manager. Also, locks the
+     * returned sample. Throws a NotFoundException if such a sample couldn't be
+     * found; InconsistancyException if domain is not quick-entry or if the
+     * sample was loaded from order.
+     */
+    public SampleManager1 mergeQuickEntry(SampleManager1 sm) throws Exception {
         SampleDO data, qdata;
         SampleManager1 qsm;
 
         data = getSample(sm);
-        try {
-            qdata = sample.fetchByAccessionNumber(accession);
+        qdata = sample.fetchByAccessionNumber(data.getAccessionNumber());
 
-            if (Constants.domain().QUICKENTRY.equals(qdata.getDomain()) && data.getId() == null) {
-                /*
-                 * there's a special condition that is not allowed; 1. the user
-                 * loads a sample from an order 2. the accession number is
-                 * changed to quick-entered sample
-                 */
-                if (data.getOrderId() != null)
-                    throw new FormErrorException(Messages.get().cantLoadQEIfOrderNumPresent());
+        if ( !Constants.domain().QUICKENTRY.equals(qdata.getDomain()))
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_notQuickEntryException(data.getAccessionNumber()));
 
-                qsm = fetchForUpdate(qdata.getId());
-                domain = data.getDomain();
-                duplicateManager(sm, qsm);
-                getSample(sm).setDomain(domain);
-            } else if (qdata.getId().equals(data.getId())) {
-                data.setAccessionNumber(accession);
-            } else {
-                /*
-                 * the accession number belongs to some other sample
-                 */
-                throw new FormErrorException(Messages.get()
-                                                     .sample_accessionNumberDuplicate(accession));
-            }
-        } catch (NotFoundException ex) {
-            validateAccessionNumber(accession);
-            data.setAccessionNumber(accession);
-        }
+        /*
+         * there's a special condition that is not allowed; 1. the user loads a
+         * sample from an order 2. the accession number is changed to
+         * quick-entered sample
+         */
+        if (data.getOrderId() != null)
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_cantLoadQEOrderPresentException(data.getAccessionNumber()));
 
-        return sm;
+        qsm = fetchForUpdate(qdata.getId());
+        getSample(qsm).setDomain(data.getDomain());
+        setSampleEnvironmental(qsm, getSampleEnvironmental(sm));
+        setSamplePrivateWell(qsm, getSamplePrivateWell(sm));
+        setSampleSDWIS(qsm, getSampleSDWIS(sm));
+        setSampleNeonatal(qsm, getSampleNeonatal(sm));
+
+        return qsm;
     }
 
     /**
@@ -1316,7 +1377,7 @@ public class SampleManager1Bean {
      * domain, into the SampleManager. This method returns both the loaded
      * SampleManager and the list of warnings due to invalid data in the order.
      */
-    public SampleTestReturnVO setOrderId(SampleManager1 sm, Integer orderId) throws Exception {
+    public SampleTestReturnVO importOrder(SampleManager1 sm, Integer orderId) throws Exception {
         SampleDO data;
         ValidationErrorsList e;
 
@@ -1325,13 +1386,282 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get().enterAccNumBeforeOrderLoad());
 
         e = new ValidationErrorsList();
-        // TODO uncomment the code
+
+        if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
+            Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
+            Constants.domain().SDWIS.equals(data.getDomain()))
+            return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
+        else
+            return null;
+    }
+
+    /**
+     * Returns a manager filled with the data of the sample with the specified
+     * id. The ids in the returned manager are set to either null or negative
+     * numbers. Duplication is not allowed if any analysis is past logged-in
+     * status or if there are reflexed analyses. Cancelled analyses, storages
+     * and internal notes are not duplicated.
+     */
+    public SampleManager1 duplicate(Integer sampleId) throws Exception {
+        int i;
+        Integer tmpId, accession, seq;
+        Datetime now;
+        SampleManager1 sm;
+        AnalysisViewDO ana;
+        ResultViewDO res;
+        HashMap<Integer, Integer> imap, amap;
+        ArrayList<AnalysisViewDO> analyses;
+        ArrayList<ResultViewDO> results;
+
+        sm = fetchById(sampleId,
+                       SampleManager1.Load.ORGANIZATION,
+                       SampleManager1.Load.PROJECT,
+                       SampleManager1.Load.QA,
+                       SampleManager1.Load.AUXDATA,
+                       SampleManager1.Load.NOTE,
+                       SampleManager1.Load.RESULT);
+
+        accession = getSample(sm).getAccessionNumber();
+
         /*
-         * if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()) ||
-         * Constants.domain().PRIVATEWELL.equals(data.getDomain()) ||
-         * Constants.domain().SDWIS.equals(data.getDomain()))
+         * can't duplicate a completed or released sample
          */
-        return sampleManagerOrderHelper.importSendoutOrder(sm, orderId, e);
+        if (Constants.dictionary().SAMPLE_COMPLETED.equals(getSample(sm).getStatusId()) ||
+            Constants.dictionary().SAMPLE_RELEASED.equals(getSample(sm).getStatusId()))
+            throw new InconsistencyException(Messages.get()
+                                                     .sample_cantDuplicateCompRelException(accession));
+
+        getSample(sm).setId(null);
+        getSample(sm).setAccessionNumber(null);
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+        /*
+         * set default values in fields like revision, entered date etc.
+         */
+        setDefaults(getSample(sm), now);
+
+        /*
+         * sample level data
+         */
+        if (getSampleEnvironmental(sm) != null) {
+            getSampleEnvironmental(sm).setId(null);
+            getSampleEnvironmental(sm).setSampleId(null);
+            if (getSampleEnvironmental(sm).getLocationAddress() != null)
+                getSampleEnvironmental(sm).getLocationAddress().setId(null);
+        } else if (getSamplePrivateWell(sm) != null) {
+            getSamplePrivateWell(sm).setId(null);
+            getSamplePrivateWell(sm).setSampleId(null);
+            if (getSamplePrivateWell(sm).getLocationAddress() != null)
+                getSamplePrivateWell(sm).getLocationAddress().setId(null);
+            if (getSamplePrivateWell(sm).getReportToAddress() != null)
+                getSamplePrivateWell(sm).getReportToAddress().setId(null);
+        } else if (getSampleSDWIS(sm) != null) {
+            getSampleSDWIS(sm).setId(null);
+            getSampleSDWIS(sm).setSampleId(null);
+        } else if (getSampleNeonatal(sm) != null) {
+            getSampleNeonatal(sm).setId(null);
+            getSampleNeonatal(sm).setSampleId(null);
+        }
+
+        if (getOrganizations(sm) != null) {
+            for (SampleOrganizationViewDO data : getOrganizations(sm)) {
+                data.setId(sm.getNextUID());
+                data.setSampleId(null);
+            }
+        }
+
+        if (getProjects(sm) != null) {
+            for (SampleProjectViewDO data : getProjects(sm)) {
+                data.setId(sm.getNextUID());
+                data.setSampleId(null);
+            }
+        }
+
+        if (getSampleQAs(sm) != null) {
+            for (SampleQaEventViewDO data : getSampleQAs(sm)) {
+                data.setId(sm.getNextUID());
+                data.setSampleId(null);
+            }
+        }
+
+        if (getAuxilliary(sm) != null) {
+            for (AuxDataViewDO data : getAuxilliary(sm)) {
+                data.setId(sm.getNextUID());
+                data.setReferenceId(null);
+            }
+        }
+
+        /*
+         * duplicate only external note
+         */
+        if (getSampleExternalNote(sm) != null) {
+            getSampleExternalNote(sm).setId(sm.getNextUID());
+            getSampleExternalNote(sm).setReferenceId(null);
+            getSampleExternalNote(sm).setTimestamp(null);
+        }
+
+        setSampleInternalNotes(sm, null);
+
+        /*
+         * level 2: everything is based on item ids
+         */
+        imap = new HashMap<Integer, Integer>();
+        seq = 0;
+        for (SampleItemViewDO data : getItems(sm)) {
+            tmpId = data.getId();
+            data.setId(sm.getNextUID());
+            data.setItemSequence(seq++ );
+            imap.put(tmpId, data.getId());
+        }
+        getSample(sm).setNextItemSequence(seq);
+
+        /*
+         * level 3: everything is based on analysis ids
+         */
+        amap = new HashMap<Integer, Integer>();
+        analyses = getAnalyses(sm);
+        if (analyses != null) {
+            i = 0;
+            while (i < analyses.size()) {
+                ana = analyses.get(i);
+                if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()) ||
+                    Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(ana.getStatusId())) {
+                    if (ana.getParentAnalysisId() != null) {
+                        /*
+                         * don't allow duplication if any analysis has reflexed
+                         * analyses
+                         */
+                        throw new InconsistencyException(Messages.get()
+                                                                 .sample_cantDuplicateReflexAnaException(accession,
+                                                                                                         ana.getTestName(),
+                                                                                                         ana.getMethodName()));
+                    } else {
+                        tmpId = ana.getId();
+                        ana.setId(sm.getNextUID());
+                        ana.setSampleItemId(imap.get(ana.getSampleItemId()));
+                        ana.setRevision(0);
+                        if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
+                            Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()))
+                            ana.setAvailableDate(now);
+                        amap.put(tmpId, ana.getId());
+                        i++ ;
+                    }
+                } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId())) {
+                    /*
+                     * don't duplicate cancelled analyses
+                     */
+                    analyses.remove(i);
+                } else {
+                    /*
+                     * don't allow duplication if any analysis is past logged-in
+                     * status
+                     */
+                    throw new InconsistencyException(Messages.get()
+                                                             .sample_cantDuplicateAnaPastLoggedInException(accession));
+                }
+            }
+
+            /*
+             * resolve prep-analyses
+             */
+            for (AnalysisViewDO data : analyses)
+                data.setPreAnalysisId(amap.get(data.getPreAnalysisId()));
+        }
+
+        if (getResults(sm) != null) {
+            /*
+             * remove the results whose analysis is no longer in the manager
+             * (cancelled analyses are removed); link the remaining results to
+             * their analysis using the negative ids
+             */
+            i = 0;
+            results = getResults(sm);
+            while (i < results.size()) {
+                res = results.get(i);
+                tmpId = amap.get(res.getAnalysisId());
+                if (tmpId != null) {
+                    res.setId(sm.getNextUID());
+                    res.setAnalysisId(tmpId);
+                    i++ ;
+                } else {
+                    results.remove(i);
+                }
+            }
+        }
+
+        /*
+         * duplicate only external notes
+         */
+        if (getAnalysisExternalNotes(sm) != null) {
+            for (NoteViewDO data : getAnalysisExternalNotes(sm)) {
+                data.setId(sm.getNextUID());
+                data.setReferenceId(amap.get(data.getReferenceId()));
+                data.setTimestamp(null);
+            }
+        }
+
+        setAnalysisInternalNotes(sm, null);
+
+        if (getAnalysisQAs(sm) != null) {
+            for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
+                data.setId(sm.getNextUID());
+                data.setAnalysisId(amap.get(data.getAnalysisId()));
+            }
+        }
+
+        return sm;
+    }
+
+    /**
+     * Adds aux groups with the passed ids to the sample
+     */
+    public SampleTestReturnVO addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        SampleTestReturnVO ret;
+        ValidationErrorsList errors;
+        ArrayList<AuxDataViewDO> auxiliary;
+
+        auxiliary = getAuxilliary(sm);
+        if (auxiliary == null) {
+            auxiliary = new ArrayList<AuxDataViewDO>();
+            setAuxilliary(sm, auxiliary);
+        }
+
+        ret = new SampleTestReturnVO();
+        ret.setManager(sm);
+        errors = new ValidationErrorsList();
+        ret.setErrors(errors);
+
+        auxDataHelper.addAuxGroups(auxiliary, groupIds, errors);
+
+        /*
+         * set negative ids in the newly added aux data
+         */
+        for (AuxDataViewDO aux : auxiliary) {
+            if (aux.getId() == null)
+                aux.setId(sm.getNextUID());
+        }
+
+        return ret;
+    }
+
+    /**
+     * Removes aux data from the sample based on the list of group ids
+     */
+    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
+        ArrayList<AuxDataViewDO> removed;
+
+        removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), new HashSet<Integer>(groupIds));
+
+        if (removed != null && removed.size() > 0) {
+            if (getRemoved(sm) == null)
+                setRemoved(sm, new ArrayList<DataObject>());
+            for (AuxDataViewDO data : removed) {
+                if (data.getId() > 0)
+                    getRemoved(sm).add(data);
+            }
+        }
+        return sm;
     }
 
     /**
@@ -1339,13 +1669,13 @@ public class SampleManager1Bean {
      * method returns both the loaded SampleManager and the list of
      * errors/warnings encountered while adding the analyses.
      */
-    public SampleTestReturnVO addTest(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
+    public SampleTestReturnVO addAnalysis(SampleManager1 sm, SampleTestRequestVO test) throws Exception {
         ArrayList<SampleTestRequestVO> tests;
 
         tests = new ArrayList<SampleTestRequestVO>();
         tests.add(test);
 
-        return addTests(sm, tests);
+        return addAnalyses(sm, tests);
     }
 
     /**
@@ -1353,7 +1683,7 @@ public class SampleManager1Bean {
      * method returns both the loaded SampleManager and the list of
      * errors/warnings encountered while adding the analyses.
      */
-    public SampleTestReturnVO addTests(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
+    public SampleTestReturnVO addAnalyses(SampleManager1 sm, ArrayList<SampleTestRequestVO> tests) throws Exception {
         SampleTestReturnVO ret;
         HashMap<Integer, AnalysisViewDO> anaByTest, anaById;
         ValidationErrorsList e;
@@ -1462,15 +1792,8 @@ public class SampleManager1Bean {
                     prep.setPanelId(test.getPanelId());
                     anaById.put(prep.getId(), prep);
                 }
-                ana = anaById.get(test.getAnalysisId());
-                ana.setPreAnalysisId(prep.getId());
-                ana.setPreAnalysisTest(prep.getTestName());
-                ana.setPreAnalysisMethod(prep.getMethodName());
-                if ( !Constants.dictionary().ANALYSIS_COMPLETED.equals(prep.getStatusId()) &&
-                    !Constants.dictionary().ANALYSIS_RELEASED.equals(prep.getStatusId())) {
-                    ana.setStatusId(Constants.dictionary().ANALYSIS_INPREP);
-                    ana.setAvailableDate(null);
-                }
+
+                analysisHelper.setPrepAnalysis(anaById.get(test.getAnalysisId()), prep);
             }
         }
 
@@ -1482,6 +1805,46 @@ public class SampleManager1Bean {
             addAuxGroups(sm, groupIds);
 
         return ret;
+    }
+
+    /**
+     * This method changes the specified analysis's method to the specified
+     * method. The old results are removed and their values are merged with the
+     * results added from the new method. Returns a list of prep tests that
+     * could be added to satisfy the prep requirement for the new test.
+     */
+    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
+                                                   Integer methodId) throws Exception {
+        return analysisHelper.changeAnalysisMethod(sm, analysisId, methodId);
+    }
+
+    /**
+     * This method changes the specified analysis's status to the specified
+     * status. It also updates any links between other analyses and this one, if
+     * need be, because of the change in status.
+     */
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId) throws Exception {
+        return analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
+    }
+
+    /**
+     * This method changes the specified analysis's unit to the specified unit.
+     * The defaults defined for this unit in this analysis' test are loaded in
+     * those results of the analysis that don't have a value. The type is set to
+     * null in all results of the analysis to force validation.
+     */
+    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
+        return analysisHelper.changeAnalysisUnit(sm, analysisId, unitId);
+    }
+
+    /**
+     * This method sets preAnalysisId as the prep analysis id of the specified
+     * analysis. If preAnalysisId is null then the analysis is taken out of
+     * in-prep status.
+     */
+    public SampleManager1 changeAnalysisPrep(SampleManager1 sm, Integer analysisId,
+                                             Integer preAnalysisId) throws Exception {
+        return analysisHelper.changeAnalysisPrep(sm, analysisId, preAnalysisId);
     }
 
     /**
@@ -1506,103 +1869,14 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Adds aux groups with the passed ids to the sample
+     * Sets default values in the fields essential for a new sample
      */
-    public SampleManager1 addAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
-        ArrayList<AuxDataViewDO> auxiliary;
-
-        auxiliary = getAuxilliary(sm);
-        if (auxiliary == null) {
-            auxiliary = new ArrayList<AuxDataViewDO>();
-            setAuxilliary(sm, auxiliary);
-        }
-
-        auxDataHelper.addAuxGroups(auxiliary, new HashSet<Integer>(groupIds));
-
-        /*
-         * set negative ids in the newly added aux data
-         */
-        for (AuxDataViewDO aux : auxiliary) {
-            if (aux.getId() == null)
-                aux.setId(sm.getNextUID());
-        }
-
-        return sm;
-    }
-
-    /**
-     * Removes aux data from the sample based on the list of group ids
-     */
-    public SampleManager1 removeAuxGroups(SampleManager1 sm, ArrayList<Integer> groupIds) throws Exception {
-        ArrayList<AuxDataViewDO> removed;
-
-        removed = auxDataHelper.removeAuxGroups(getAuxilliary(sm), new HashSet<Integer>(groupIds));
-
-        if (removed != null && removed.size() > 0) {
-            if (getRemoved(sm) == null)
-                setRemoved(sm, new ArrayList<DataObject>());
-            for (AuxDataViewDO data : removed) {
-                if (data.getId() > 0)
-                    getRemoved(sm).add(data);
-            }
-        }
-        return sm;
-    }
-
-    /**
-     * This method changes the specified analysis's method to the specified
-     * method. The old results are removed and their values are merged with the
-     * results added from the new method. Returns a list of prep tests that
-     * could be added to satisfy the prep requirement for the new test.
-     */
-    public SampleTestReturnVO changeAnalysisMethod(SampleManager1 sm, Integer analysisId,
-                                                   Integer methodId) throws Exception {
-        return analysisHelper.changeAnalysisMethod(sm, analysisId, methodId);
-    }
-
-    /**
-     * This method changes the specified analysis's unit to the specified unit.
-     * The defaults defined for this unit in this analysis' test are loaded in
-     * those results of the analysis that don't have a value. The type is set to
-     * null in all results of the analysis to force validation.
-     */
-    public SampleManager1 changeAnalysisUnit(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
-        return analysisHelper.changeAnalysisUnit(sm, analysisId, unitId);
-    }
-
-    /**
-     * This method changes the specified analysis's status to the specified
-     * status. It also updates any links between other analyses and this one, if
-     * need be, because of the change in status.
-     */
-    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer unitId) throws Exception {
-        return analysisHelper.changeAnalysisStatus(sm, analysisId, unitId);
-    }
-
-    /**
-     * Validates the accession number. Throws exception if accession is not
-     * valid
-     */
-    @RolesAllowed({"sample-add", "sample-update"})
-    public void validateAccessionNumber(Integer accession) throws Exception {
-        SystemVariableDO sys;
-
-        /*
-         * accession number must be > 0, previously issued, and not duplicate
-         */
-        if (accession == null || accession <= 0)
-            throw new FormErrorException(Messages.get()
-                                                 .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accession)));
-
-        try {
-            sys = systemVariable.fetchByName("last_accession_number");
-            if (accession.compareTo(Integer.valueOf(sys.getValue())) > 0)
-                throw new FormErrorException(Messages.get()
-                                                     .sample_accessionNumberNotInUse(accession));
-        } catch (Exception any) {
-            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
-            throw any;
-        }
+    protected void setDefaults(SampleDO data, Datetime now) {
+        data.setNextItemSequence(0);
+        data.setRevision(0);
+        data.setEnteredDate(now);
+        data.setReceivedById(userCache.getId());
+        data.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
     }
 
     /**
@@ -1616,13 +1890,16 @@ public class SampleManager1Bean {
         SystemVariableDO sys;
         ValidationErrorsList e;
         Integer accession, maxAccession;
+        QaEventDO qa;
         HashMap<Integer, SampleItemViewDO> imap;
         HashMap<Integer, AnalysisViewDO> amap;
+        HashMap<Integer, QaEventDO> qamap;
         SystemUserPermission permission;
 
         e = new ValidationErrorsList();
         imap = new HashMap<Integer, SampleItemViewDO>();
         amap = new HashMap<Integer, AnalysisViewDO>();
+        qamap = new HashMap<Integer, QaEventDO>();
 
         // user permission for adding/updating analysis
         permission = userCache.getPermission();
@@ -1638,6 +1915,12 @@ public class SampleManager1Bean {
             throw new FormErrorException(Messages.get()
                                                  .systemVariable_missingInvalidSystemVariable("last_accession_number"));
         }
+
+        /*
+         * this map is used to validate analysis qa events
+         */
+        for (QaEventDO data : qaEvent.fetchAll())
+            qamap.put(data.getId(), data);
 
         for (SampleManager1 sm : sms) {
             /*
@@ -1669,9 +1952,48 @@ public class SampleManager1Bean {
                     if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
                         cnt++ ;
             }
-            if (cnt != 1 && !ignoreWarning)
-                e.add(new FormErrorException(Messages.get()
-                                                     .sample_moreThanOneReportToException(accession)));
+
+            if ( !ignoreWarning) {
+                if (cnt == 0)
+                    e.add(new FormErrorWarning(Messages.get()
+                                                       .sample_reportToMissingWarning(accession)));
+                else if (cnt != 1)
+                    e.add(new FormErrorException(Messages.get()
+                                                         .sample_moreThanOneReportToException(accession)));
+            }
+
+            /*
+             * aux data must be valid for the aux field
+             */
+
+            if (getAuxilliary(sm) != null) {
+                for (AuxDataViewDO data : getAuxilliary(sm)) {
+                    if (data.isChanged())
+                        try {
+                            auxData.validate(data,
+                                             ams.get(data.getGroupId()).getFormatter(),
+                                             accession,
+                                             ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
+
+            /*
+             * type is required for each qa event
+             */
+
+            if (getSampleQAs(sm) != null) {
+                for (SampleQaEventViewDO data : getSampleQAs(sm)) {
+                    if (data.isChanged())
+                        try {
+                            sampleQA.validate(data, accession, ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
 
             /*
              * at least one sample item and items must have sample type
@@ -1718,6 +2040,38 @@ public class SampleManager1Bean {
             }
 
             /*
+             * test specific analysis qa events must be valid for the analysis'
+             * test; also, type is required for each qa event
+             */
+
+            if (getAnalysisQAs(sm) != null) {
+                for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
+                    qa = qamap.get(data.getQaEventId());
+                    ana = amap.get(data.getAnalysisId());
+                    if (data.isChanged())
+                        try {
+                            analysisQA.validate(data,
+                                                accession,
+                                                imap.get(ana.getSampleItemId()).getItemSequence(),
+                                                ana,
+                                                ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+
+                    if (qa.getTestId() != null && !qa.getTestId().equals(ana.getTestId())) {
+                        e.add(new FormErrorException(Messages.get()
+                                                             .analysisQAEvent_invalidQAException(accession,
+                                                                                                 imap.get(ana.getSampleItemId())
+                                                                                                     .getItemSequence(),
+                                                                                                 ana.getTestName(),
+                                                                                                 ana.getMethodName(),
+                                                                                                 qa.getName())));
+                    }
+                }
+            }
+
+            /*
              * results must be valid for the group
              */
 
@@ -1737,24 +2091,6 @@ public class SampleManager1Bean {
                 }
             }
 
-            /*
-             * aux data must be valid for the aux field
-             */
-
-            if (getAuxilliary(sm) != null) {
-                for (AuxDataViewDO data : getAuxilliary(sm)) {
-                    if (data.isChanged())
-                        try {
-                            auxData.validate(data,
-                                             ams.get(data.getGroupId()).getFormatter(),
-                                             accession,
-                                             ignoreWarning);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
-            
             try {
                 validateForDelete(sm);
             } catch (Exception err) {
@@ -1834,35 +2170,13 @@ public class SampleManager1Bean {
                  * analyses have negative ids, so they shouldn't be in this list
                  * either
                  */
-                ana = (AnalysisViewDO) data;
+                ana = (AnalysisViewDO)data;
                 throw new FormErrorException(Messages.get()
-                                                 .analysis_cantRemoveInUpdateException(accession,
-                                                                                       ana.getTestName(),
-                                                                                       ana.getMethodName()));
+                                                     .analysis_cantRemoveInUpdateException(accession,
+                                                                                           ana.getTestName(),
+                                                                                           ana.getMethodName()));
             }
         }
-    }
-
-    /**
-     * copies all parts of fromsm to tosm e.g sample except the data for the
-     * domain
-     */
-    protected void duplicateManager(SampleManager1 tosm, SampleManager1 fromsm) {
-        setSample(tosm, getSample(fromsm));
-        setOrganizations(tosm, getOrganizations(fromsm));
-        setProjects(tosm, getProjects(fromsm));
-        setSampleQAs(tosm, getSampleQAs(fromsm));
-        setAuxilliary(tosm, getAuxilliary(fromsm));
-        setSampleExternalNote(tosm, getSampleExternalNote(fromsm));
-        setSampleInternalNotes(tosm, getSampleInternalNotes(fromsm));
-        setItems(tosm, getItems(fromsm));
-        setStorages(tosm, getStorages(fromsm));
-        setAnalyses(tosm, getAnalyses(fromsm));
-        setAnalysisQAs(tosm, getAnalysisQAs(fromsm));
-        setAnalysisExternalNotes(tosm, getAnalysisExternalNotes(fromsm));
-        setAnalysisInternalNotes(tosm, getAnalysisInternalNotes(fromsm));
-        setUsers(tosm, getUsers(fromsm));
-        setResults(tosm, getResults(fromsm));
     }
 
     /**

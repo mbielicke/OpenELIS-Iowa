@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -49,18 +49,17 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class PWSBean {
-    
+
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
-    
-    private static final PWSMeta             meta = new PWSMeta();
+    private EntityManager        manager;
+
+    private static final PWSMeta meta = new PWSMeta();
 
     public PWSDO fetchById(Integer id) throws Exception {
         Query query;
         PWSDO data;
-        
+
         query = manager.createNamedQuery("PWS.FetchById");
         query.setParameter("id", id);
         try {
@@ -70,13 +69,13 @@ public class PWSBean {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        return data; 
+        return data;
     }
-    
+
     public PWSDO fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         Query query;
         PWSDO data;
-        
+
         query = manager.createNamedQuery("PWS.FetchByTinwsysIsNumber");
         query.setParameter("tinwsysIsNumber", tinwsysIsNumber);
         try {
@@ -86,13 +85,13 @@ public class PWSBean {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        return data; 
+        return data;
     }
-    
+
     public PWSDO fetchByNumber0(String number0) throws Exception {
         Query query;
         PWSDO data;
-        
+
         query = manager.createNamedQuery("PWS.FetchByNumber0");
         query.setParameter("number0", number0);
         try {
@@ -102,9 +101,19 @@ public class PWSBean {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        return data; 
+        return data;
     }
-    
+
+    public ArrayList<PWSDO> fetchAll() throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("PWS.FetchAll");
+        list = query.getResultList();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
@@ -113,9 +122,8 @@ public class PWSBean {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
-                          PWSMeta.getTinwsysIsNumber() + ", " +
-                          PWSMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          PWSMeta.getTinwsysIsNumber() + ", " + PWSMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(PWSMeta.getName());
 
@@ -132,12 +140,12 @@ public class PWSBean {
 
         return (ArrayList<IdNameVO>)list;
     }
-        
+
     public PWSDO add(PWSDO data) throws Exception {
         PWS entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = new PWS();
         entity.setTinwsysIsNumber(data.getTinwsysIsNumber());
         entity.setNumber0(data.getNumber0());
@@ -155,19 +163,19 @@ public class PWSBean {
         entity.setEndMonth(data.getEndMonth());
         entity.setEffBeginDt(data.getEffBeginDt());
         entity.setEffEndDt(data.getEffEndDt());
-        
+
         manager.persist(entity);
         data.setId(entity.getId());
-        
+
         return data;
     }
 
     public PWSDO update(PWSDO data) throws Exception {
         PWS entity;
-        
-        if (!data.isChanged())
+
+        if ( !data.isChanged())
             return data;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(PWS.class, data.getId());
         entity.setTinwsysIsNumber(data.getTinwsysIsNumber());
@@ -186,7 +194,7 @@ public class PWSBean {
         entity.setEndMonth(data.getEndMonth());
         entity.setEffBeginDt(data.getEffBeginDt());
         entity.setEffEndDt(data.getEffEndDt());
-        
+
         return data;
     }
 

@@ -120,6 +120,14 @@ public class QaEventBean {
         query = manager.createNamedQuery("QaEvent.FetchByCommon");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<QaEventDO> fetchAll() throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("QaEvent.FetchAll");
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     @SuppressWarnings("unchecked")
     public ArrayList<QaEventDO> fetchBySampleId(Integer sampleId) {

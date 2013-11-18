@@ -25,7 +25,6 @@
  */
 package org.openelis.bean;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -48,8 +47,8 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.meta.SampleMeta;
-import org.openelis.meta.SampleWebMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.Datetime;
@@ -60,7 +59,6 @@ import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 import org.openelis.ui.common.data.QueryData;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.gwt.widget.QueryFieldUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -168,47 +166,6 @@ public class SampleBean {
         return (ArrayList<IdAccessionVO>)list;
     }
 
-    public ArrayList<IdAccessionVO> dataExchangeQuery(ArrayList<QueryData> fields) throws Exception {
-        boolean orgPresent;
-        Query query;
-        List results;
-        QueryBuilderV2 builder;
-
-        builder = new QueryBuilderV2();
-        builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
-                          "," + SampleMeta.getAccessionNumber() + ") ");
-        builder.constructWhere(fields);
-
-        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
-                         Constants.dictionary().ANALYSIS_RELEASED);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
-
-        orgPresent = false;
-        for (QueryData f : fields) {
-            if (SampleMeta.getOrgId().equals(f.getKey())) {
-                orgPresent = true;
-                continue;
-            }
-        }
-
-        if (orgPresent)
-            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +
-                             Constants.dictionary().ORG_REPORT_TO);
-
-        builder.setOrderBy(SampleMeta.getAccessionNumber());
-        query = manager.createQuery(builder.getEJBQL());
-
-        builder.setQueryParams(query, fields);
-
-        results = query.getResultList();
-
-        if (results.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(results);
-    }
-
     public SampleDO fetchById(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("Sample.FetchById");
         query.setParameter("id", sampleId);
@@ -242,6 +199,15 @@ public class SampleBean {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
+    }
+
+    public ArrayList<SampleDO> fetchByAccessionNumbers(ArrayList<Integer> accessionNumbers) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Sample.FetchByAccessionNumbers");
+        query.setParameter("accessions", accessionNumbers);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<SampleDO> fetchSDWISByReleased(Date startDate, Date endDate) throws Exception {
@@ -456,111 +422,6 @@ public class SampleBean {
         query = manager.createNamedQuery("Sample.FetchForTurnaroundWarningReport");
 
         return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
-    public ArrayList<IdAccessionVO> fetchSamplesByLastRunDate(ArrayList<QueryData> fields,
-                                                              Date lastRunDate) throws Exception {
-        boolean orgPresent;
-        String lrdStr, crdStr, queryStr;
-        ArrayList<String> dateClause;
-        SimpleDateFormat dateFormat;
-        List results;
-        Query query;
-        QueryData field;
-        QueryBuilderV2 builder;
-        Calendar cal;
-        Date currentRunDate;
-
-        builder = new QueryBuilderV2();
-        builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
-                          "," + SampleMeta.getAccessionNumber() + ") ");
-
-        builder.constructWhere(fields);
-        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + Constants.dictionary().SAMPLE_ERROR);
-
-        orgPresent = false;
-        for (QueryData f : fields) {
-            if (SampleMeta.getOrgId().equals(f.getKey())) {
-                orgPresent = true;
-                continue;
-            }
-        }
-
-        if (orgPresent)
-            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +
-                             Constants.dictionary().ORG_REPORT_TO);
-
-        dateClause = new ArrayList<String>();
-
-        /*
-         * create the clause for restricting the list of accession numbers to
-         * the samples that were released between the last run date and the
-         * current time minus one minute or that have at least one analysis that
-         * was released during that time
-         */
-        dateClause.add("(");
-        dateClause.add(SampleMeta.getReleasedDate());
-        dateClause.add("between");
-        dateClause.add(":dt00");
-        dateClause.add("and");
-        dateClause.add(":dt01");
-        dateClause.add(")");
-        dateClause.add("or");
-        dateClause.add("(");
-        dateClause.add(SampleMeta.getAnalysisReleasedDate());
-        dateClause.add("between");
-        dateClause.add(":dt100");
-        dateClause.add("and");
-        dateClause.add(":dt101");
-        dateClause.add(")");
-
-        builder.addWhere(DataBaseUtil.concatWithSeparator(dateClause, " "));
-
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-
-        lrdStr = dateFormat.format(lastRunDate);
-
-        cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, -1);
-        currentRunDate = cal.getTime();
-
-        crdStr = dateFormat.format(currentRunDate);
-
-        queryStr = DataBaseUtil.concatWithSeparator(lrdStr, "..", crdStr);
-
-        /*
-         * set the values of the parameters created in the clause above
-         */
-        field = new QueryData();
-        field.setKey("dt");
-        field.setQuery(queryStr);
-        field.setType(QueryData.Type.DATE);
-        fields.add(field);
-
-        field = new QueryData();
-        field.setKey("dt1");
-        field.setQuery(queryStr);
-        field.setType(QueryData.Type.DATE);
-
-        /*
-         * these fields were not added to the list passed to constructWhere()
-         * because they aren't part of the where clause but only added to
-         * specify the values of the parameters
-         */
-        fields.add(field);
-
-        builder.setOrderBy(SampleMeta.getAccessionNumber());
-        query = manager.createQuery(builder.getEJBQL());
-
-        builder.setQueryParams(query, fields);
-
-        results = query.getResultList();
-
-        if (results.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(results);
     }
 
     public SampleDO add(SampleDO data) throws Exception {

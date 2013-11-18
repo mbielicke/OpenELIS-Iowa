@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,11 +50,11 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
+import org.openelis.constants.Messages;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.OptionListItem;
 import org.openelis.ui.common.Prompt;
@@ -99,20 +100,22 @@ public class ToDoAnalyteReportBean {
             p = new ArrayList<Prompt>();
 
             p.add(new Prompt("FROM_ENTERED", Prompt.Type.DATETIME).setPrompt("Starting Entered Date:")
-                                                          .setWidth(150)
-                                                          .setDatetimeStartCode(Prompt.Datetime.YEAR)
-                                                          .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                                                          .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
-                                                                                                Datetime.MINUTE).toString())
-                                                          .setRequired(true));
+                                                                  .setWidth(150)
+                                                                  .setDatetimeStartCode(Prompt.Datetime.YEAR)
+                                                                  .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+                                                                  .setDefaultValue(ReportUtil.toString(new Date(),
+                                                                                                       Messages.get()
+                                                                                                               .dateTimePattern()))
+                                                                  .setRequired(true));
 
             p.add(new Prompt("TO_ENTERED", Prompt.Type.DATETIME).setPrompt("Ending Entered Date:")
-                                                        .setWidth(150)
-                                                        .setDatetimeStartCode(Prompt.Datetime.YEAR)
-                                                        .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                                                        .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
-                                                                                              Datetime.MINUTE).toString())
-                                                        .setRequired(true));
+                                                                .setWidth(150)
+                                                                .setDatetimeStartCode(Prompt.Datetime.YEAR)
+                                                                .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+                                                                .setDefaultValue(ReportUtil.toString(new Date(),
+                                                                                                     Messages.get()
+                                                                                                             .dateTimePattern()))
+                                                                .setRequired(true));
 
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
                                                           .setWidth(250)

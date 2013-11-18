@@ -252,7 +252,7 @@ public class WorksheetCompletionBean {
 
                 cellNameIndex = i + "." + a;
                 if (waDO.getAnalysisId() != null) {
-                    isEditable = "N".equals(waDO.getIsFromOther());
+                    isEditable = waDO.getFromOtherId() == null;
                     bundle = waManager.getBundleAt(a);
                     sManager = bundle.getSampleManager();
                     sDomain = sManager.getDomainManager();
@@ -692,7 +692,7 @@ public class WorksheetCompletionBean {
                 waDO = waManager.getWorksheetAnalysisAt(a);
                 if (waDO.getAnalysisId() != null) {
                     anaModified = false;
-                    editLocked = "Y".equals(waDO.getIsFromOther());
+                    editLocked = waDO.getFromOtherId() != null;
 
                     bundle = waManager.getBundleAt(a);
                     newBundle = lockManagerIfNeeded(manager, waDO, bundle);
@@ -1239,7 +1239,7 @@ public class WorksheetCompletionBean {
 
                     if (cellName != null && !cellName.isDeleted()) {
                         cell = getCellForName(sheet, cellName.getNameName());
-                        if (cell.getCellType() != Cell.CELL_TYPE_FORMULA && getCellValue(cell) != null) {
+                        if (cell.getCellType() != Cell.CELL_TYPE_FORMULA && getCellValue(cell) == null) {
                             if (Constants.dictionary().TEST_RES_TYPE_DICTIONARY.equals(rVDO.getTypeId())) {
                                 dDO = dictionaryCacheLocal.getById(Integer.valueOf(rVDO.getValue()));
                                 cell.setCellValue(dDO.getEntry());

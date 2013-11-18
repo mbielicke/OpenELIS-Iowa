@@ -133,27 +133,27 @@ public class Order implements Auditable, Cloneable {
     private Organization                  organization;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private Collection<OrderOrganization> orderOrganization;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private Collection<OrderItem>         orderItem;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private Collection<OrderContainer>    orderContainer;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private Collection<OrderTest>         orderTest;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reference_id")
+    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private Collection<AuxData>           auxData;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", insertable = false, updatable = false)
     private Collection<OrderRecurrence>   orderRecurrence;
 
     @Transient

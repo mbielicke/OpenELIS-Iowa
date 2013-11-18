@@ -160,7 +160,7 @@ public class WorksheetAnalysisManagerProxy {
             // We are only initiating records that were not added from another
             // worksheet
             //
-            if ("N".equals(analysis.getIsFromOther())) {
+            if (analysis.getFromOtherId() == null) {
                 analysis.setQcStartedDate(Datetime.getInstance(Datetime.YEAR,
                                                                Datetime.MINUTE));
                 qcLotVDO = EJBFactory.getQcLot().fetchById(analysis.getQcLotId());
@@ -203,7 +203,7 @@ public class WorksheetAnalysisManagerProxy {
                         // We are only initiating records that were not added
                         // from another worksheet
                         //
-                        if ("N".equals(analysis.getIsFromOther())) {
+                        if (analysis.getFromOtherId() == null) {
                             arManager = aManager.getAnalysisResultAt(k);
                             // if the result records haven't been added via a
                             // full login, we need to add them now
@@ -271,7 +271,7 @@ public class WorksheetAnalysisManagerProxy {
                     // We are only updating records that were not added from
                     // another worksheet
                     //
-                    if ("Y".equals(analysis.getIsFromOther()))
+                    if (analysis.getFromOtherId() != null)
                         continue;
 
                     doBreak = false;
@@ -385,7 +385,7 @@ public class WorksheetAnalysisManagerProxy {
             // We are only validating records that were not added from another
             // worksheet
             //
-            if ("Y".equals(waDO.getIsFromOther()))
+            if (waDO.getFromOtherId() != null)
                 continue;
 
             try {

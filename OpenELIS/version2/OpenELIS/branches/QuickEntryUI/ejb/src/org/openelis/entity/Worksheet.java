@@ -38,7 +38,10 @@ import org.openelis.utils.Auditable;
                       + " from Worksheet w left join w.instrument i where w.id in (:ids)"),
     @NamedQuery( name = "Worksheet.FetchByAnalysisId",
                 query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name,w.description) "
-                      + " from Worksheet w join w.worksheetItem wi join wi.worksheetAnalysis wa left join w.instrument i where wa.analysisId = :id")})
+                      + " from Worksheet w join w.worksheetItem wi join wi.worksheetAnalysis wa left join w.instrument i where wa.analysisId = :id"),
+    @NamedQuery( name = "Worksheet.FetchByAnalysisIds",
+                query = "select distinct new org.openelis.domain.AnalysisWorksheetVO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name,w.description, wa.analysisId) "
+                      + " from Worksheet w join w.worksheetItem wi join wi.worksheetAnalysis wa left join w.instrument i where wa.analysisId in (:ids)")})
 
 @Entity
 @Table(name = "worksheet")
@@ -75,7 +78,7 @@ public class Worksheet implements Auditable, Cloneable {
     private String                    description;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "worksheet_id")
+    @JoinColumn(name = "worksheet_id", insertable = false, updatable = false)
     private Collection<WorksheetItem> worksheetItem;
 
     @ManyToOne(fetch = FetchType.LAZY)

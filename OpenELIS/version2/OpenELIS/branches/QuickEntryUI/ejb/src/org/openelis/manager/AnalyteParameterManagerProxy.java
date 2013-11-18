@@ -334,8 +334,8 @@ public class AnalyteParameterManagerProxy {
     }  
         
     private boolean canAddParameter(AnalyteParameterViewDO data) {
-        return (!DataBaseUtil.isEmpty(data.getActiveBegin()) && !DataBaseUtil.isEmpty(data.getActiveEnd()) &&
-                        !DataBaseUtil.isEmpty(data.getP1()));
+        return (data.getActiveBegin()!= null  && data.getActiveEnd() != null &&
+                        (data.getP1() != null || data.getP2() != null || data.getP3() != null));
     }
     
     private void updatePreviousActive(AnalyteParameterViewDO data, AnalyteParameterBean pl,
