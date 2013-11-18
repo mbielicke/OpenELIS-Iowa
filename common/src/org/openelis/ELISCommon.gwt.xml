@@ -28,6 +28,7 @@ UIRF Software License are applicable instead of those above.
   <inherits name="com.teklabs.gwt.i18n.GwtI18nServer"/>
   <source path="constants"/>
   <source path="domain"/>
+  <source path="scriptlet"/>
   <source path="exception"/>
   <source path="manager"/>
   <source path="meta"/>
