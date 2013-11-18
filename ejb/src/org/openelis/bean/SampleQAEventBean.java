@@ -181,7 +181,7 @@ public class SampleQAEventBean  {
             manager.remove(entity);
     }
     
-    public void validate(SampleQaEventViewDO data, Integer accession, boolean ignoreWarning) throws Exception {
+    public void validate(SampleQaEventViewDO data, Integer accession) throws Exception {
         ValidationErrorsList e;
         
         e = new ValidationErrorsList();
