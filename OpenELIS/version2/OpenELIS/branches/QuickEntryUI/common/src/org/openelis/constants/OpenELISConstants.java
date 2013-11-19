@@ -745,13 +745,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_cantChangePrepException(Integer arg0,  String arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Cannot change the status from {4} to {5}".
+   * Translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}".
    * 
-   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Cannot change the status from {4} to {5}"
+   * @return translated "Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}"
    */
-  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Cannot change the status from {4} to {5}")
+  @DefaultMessage("Accession # ''{0,number}'': Cannot change the status of {1}, {2} from {3} to {4}")
   @Key("analysis.cantChangeStatusException")
-  String analysis_cantChangeStatusException(Integer arg0,  Integer arg1,  String arg2,  String arg3,  String arg4,  String arg5);
+  String analysis_cantChangeStatusException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "Cannot copy blank section".
@@ -5488,6 +5488,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_noteEditor();
 
   /**
+   * Translated "Considering {0} cases.".
+   * 
+   * @return translated "Considering {0} cases."
+   */
+  @DefaultMessage("Considering {0} cases.")
+  @Key("gen.numberCases")
+  String gen_numberCases(String arg0);
+
+  /**
    * Translated "OK".
    * 
    * @return translated "OK"
@@ -9662,6 +9671,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Order # \"{0}\": # Forms is required")
   @Key("order.numFormsRequiredException")
   String order_numFormsRequiredException(String arg0);
+
+  /**
+   * Translated "Order".
+   * 
+   * @return translated "Order"
+   */
+  @DefaultMessage("Order")
+  @Key("order.order")
+  String order_order();
 
   /**
    * Translated "History - Container".
