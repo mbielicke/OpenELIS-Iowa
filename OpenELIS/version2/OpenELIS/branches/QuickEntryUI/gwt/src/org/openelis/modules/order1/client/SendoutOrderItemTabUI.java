@@ -73,6 +73,7 @@ import org.openelis.ui.widget.table.event.RowDeletedHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -101,13 +102,15 @@ public class SendoutOrderItemTabUI extends Screen {
 
     protected Screen                           parentScreen;
 
+    protected EventBus                         parentBus;
+
     protected boolean                          isVisible, canEdit, redraw;
 
     protected OrderManager1                    manager;
 
     public SendoutOrderItemTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(parentScreen.getEventBus());
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 
@@ -305,8 +308,8 @@ public class SendoutOrderItemTabUI extends Screen {
         count2 = manager == null ? 0 : manager.item.count();
 
         /*
-         * find out if there's any difference between the item being
-         * displayed and the item in the manager
+         * find out if there's any difference between the item being displayed
+         * and the item in the manager
          */
         if (count1 == count2) {
             for (int i = 0; i < count1; i++ ) {

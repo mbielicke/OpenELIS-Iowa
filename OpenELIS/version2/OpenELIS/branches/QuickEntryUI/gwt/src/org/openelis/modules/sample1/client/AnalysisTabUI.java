@@ -29,6 +29,7 @@ import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 import org.openelis.cache.CacheProvider;
@@ -117,7 +118,7 @@ public class AnalysisTabUI extends Screen {
     protected AutoComplete             method, user;
 
     @UiField
-    protected Dropdown<Integer>        section, unitOfMeasure, analysisStatus, panel, samplePrep,
+    protected Dropdown<Integer>        section, unitOfMeasure, status, panel, samplePrep,
                     worksheetStatus, userAction;
 
     @UiField
@@ -152,7 +153,11 @@ public class AnalysisTabUI extends Screen {
     protected boolean                  canEdit, isVisible, redraw;
 
     protected ArrayList<Item<Integer>> allUnitsModel, allSectionsModel;
-    
+
+    protected ArrayList<Integer>       allStatuses;
+
+    protected HashSet<Integer>         allowedStatuses;
+
     public AnalysisTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
         this.parentBus = parentScreen.getEventBus();
@@ -202,7 +207,7 @@ public class AnalysisTabUI extends Screen {
                              }
 
                              public Widget onTab(boolean forward) {
-                                 return forward ? analysisStatus : test;
+                                 return forward ? status : test;
                              }
                          });
 
@@ -237,44 +242,43 @@ public class AnalysisTabUI extends Screen {
             }
         });
 
-        addScreenHandler(analysisStatus,
-                         SampleMeta.getAnalysisStatusId(),
-                         new ScreenHandler<Integer>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 analysisStatus.setValue(getStatusId());
-                             }
+        addScreenHandler(status, SampleMeta.getAnalysisStatusId(), new ScreenHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                status.setValue(getStatusId());
+            }
 
-                             public void onValueChange(ValueChangeEvent<Integer> event) {
-                                 setStatusId(event.getValue());
-                             }
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                setStatusId(event.getValue());
+            }
 
-                             public void onStateChange(StateChangeEvent event) {
-                                 int i;
-                                 ArrayList<Item<Integer>> model;
-                                 Item<Integer> r;
+            public void onStateChange(StateChangeEvent event) {
+                DictionaryDO dict;
 
-                                 analysisStatus.setEnabled(isState(QUERY) ||
-                                                           (isState(ADD, UPDATE) && canEdit));
-                                 analysisStatus.setQueryMode(isState(QUERY));
+                /*
+                 * disable the dropdown if the status is not allowed to be
+                 * changed in Add or Update states
+                 */
+                status.setEnabled(isState(QUERY) ||
+                                  (isState(ADD, UPDATE) && canEdit && allowedStatuses.size() > 0));
+                status.setQueryMode(isState(QUERY));
 
-                                 model = analysisStatus.getModel();
-                                 for (i = 0; i < model.size(); i++ ) {
-                                     r = model.get(i);
-                                     if ( !Constants.dictionary().ANALYSIS_INITIATED.equals(r.getKey()) &&
-                                         !Constants.dictionary().ANALYSIS_ON_HOLD.equals(r.getKey()) &&
-                                         !Constants.dictionary().ANALYSIS_REQUEUE.equals(r.getKey()) &&
-                                         !Constants.dictionary().ANALYSIS_LOGGED_IN.equals(r.getKey()) &&
-                                         !isState(QUERY))
-                                         r.setEnabled(false);
-                                     else
-                                         r.setEnabled(true);
-                                 }
-                             }
+                if ( !status.isEnabled())
+                    return;
+                /*
+                 * if the state is not Query then only enable those statuses
+                 * that this analysis can go to from its current status
+                 */
+                for (Item<Integer> row : status.getModel()) {
+                    dict = row.getData();
+                    row.setEnabled(isState(QUERY) || "Y".equals(dict.getIsActive()) &&
+                                   allowedStatuses.contains(dict.getId()));
+                }
+            }
 
-                             public Widget onTab(boolean forward) {
-                                 return forward ? section : method;
-                             }
-                         });
+            public Widget onTab(boolean forward) {
+                return forward ? section : method;
+            }
+        });
 
         addScreenHandler(isPreliminary,
                          SampleMeta.getAnalysisIsPreliminary(),
@@ -352,7 +356,7 @@ public class AnalysisTabUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? isPreliminary : analysisStatus;
+                return forward ? isPreliminary : status;
             }
         });
 
@@ -420,7 +424,12 @@ public class AnalysisTabUI extends Screen {
                          SampleMeta.getAnalysisSamplePrep(),
                          new ScreenHandler<Integer>() {
                              public void onDataChange(DataChangeEvent event) {
-                                 samplePrep.setModel(getPrepModel());
+                                 /*
+                                  * set the model created from all analyses in
+                                  * the manager except the displayed one in the
+                                  * dropdown for choosing the prep analysis
+                                  */
+                                 samplePrep.setModel(getAnalysisModel());
                                  samplePrep.setValue(getPreAnalysisId());
                              }
 
@@ -556,7 +565,7 @@ public class AnalysisTabUI extends Screen {
                 return forward ? userTable : revision;
             }
         });
-        
+
         worksheetTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(com.google.gwt.event.logical.shared.SelectionEvent<Integer> event) {
                 selectWorksheetButton.setEnabled(true);
@@ -812,16 +821,23 @@ public class AnalysisTabUI extends Screen {
                  */
                 if (screen != event.getSource()) {
                     redraw = true;
+                    analysis = (AnalysisViewDO)manager.getObject(event.getUid());
+                    sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
                     displayAnalysis(event.getUid());
                 }
             }
         });
 
         model = new ArrayList<Item<Integer>>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
-            model.add(new Item<Integer>(d.getId(), d.getEntry()));
+        allStatuses = new ArrayList<Integer>();
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status")) {
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setData(d);
+            model.add(row);
+            allStatuses.add(d.getId());
+        }
 
-        analysisStatus.setModel(model);
+        status.setModel(model);
 
         allSectionsModel = new ArrayList<Item<Integer>>();
         for (SectionDO s : SectionCache.getList())
@@ -829,8 +845,9 @@ public class AnalysisTabUI extends Screen {
 
         allUnitsModel = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
-            if ("Y".equals(d.getIsActive()))
-                allUnitsModel.add(new Item<Integer>(d.getId(), d.getEntry()));
+            row = new Item<Integer>(d.getId(), d.getEntry());
+            row.setEnabled("Y".equals(d.getIsActive()));
+            allUnitsModel.add(row);
         }
 
         try {
@@ -853,8 +870,8 @@ public class AnalysisTabUI extends Screen {
         model = new ArrayList<Item<Integer>>();
         for (DictionaryDO d : CategoryCache.getBySystemName("user_action")) {
             row = new Item<Integer>(d.getId(), d.getEntry());
-            if (Constants.dictionary().AN_USER_AC_RELEASED.equals(d.getId()))
-                row.setEnabled(false);
+            row.setEnabled( !Constants.dictionary().AN_USER_AC_RELEASED.equals(d.getId()) &&
+                           "Y".equals(d.getIsActive()));
             model.add(row);
         }
 
@@ -881,23 +898,22 @@ public class AnalysisTabUI extends Screen {
 
         return super.validate();
     }
-    
-    
+
     @UiHandler("selectWorksheetButton")
-    protected void selectWorksheet(ClickEvent event) { 
+    protected void selectWorksheet(ClickEvent event) {
         ScreenWindow modal;
         Row row;
         WorksheetCompletionScreen worksheetScreen;
-        AnalysisWorksheetVO ws;        
-        
+        AnalysisWorksheetVO ws;
+
         try {
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
             modal.setName(Messages.get().worksheetCompletion());
-            
+
             row = worksheetTable.getRowAt(worksheetTable.getSelectedRow());
             ws = (AnalysisWorksheetVO)row.getData();
-            worksheetScreen = new WorksheetCompletionScreen(ws.getId() ,modal);
-            
+            worksheetScreen = new WorksheetCompletionScreen(ws.getId(), modal);
+
             modal.setContent(worksheetScreen);
         } catch (Exception e) {
             Window.alert("openCompletionScreen: " + e.getMessage());
@@ -954,9 +970,22 @@ public class AnalysisTabUI extends Screen {
         SectionViewDO sect;
 
         canEdit = false;
+        if (allowedStatuses == null)
+            allowedStatuses = new HashSet<Integer>();
+        else
+            allowedStatuses.clear();
         if (manager != null && analysis != null) {
             sectId = getSectionId();
             statId = getStatusId();
+
+            /*
+             * find out which statuses can the analysis go to from its current
+             * status
+             */
+            for (Integer st : allStatuses) {
+                if (manager.analysis.canChangeStatus(statId, st))
+                    allowedStatuses.add(st);
+            }
 
             if (sectId == null) {
                 canEdit = true;
@@ -1024,10 +1053,18 @@ public class AnalysisTabUI extends Screen {
     }
 
     private void setStatusId(Integer statusId) {
-        parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
-                                                              statusId,
-                                                              AnalysisChangeEvent.Action.STATUS_CHANGED),
-                                      this);
+        if (statusId != null) {
+            parentBus.fireEventFromSource(new AnalysisChangeEvent(displayedUid,
+                                                                  statusId,
+                                                                  AnalysisChangeEvent.Action.STATUS_CHANGED),
+                                          this);
+        } else {
+            /*
+             * if the user blanks the field, selecting nothing, the previous
+             * status is put back in the dropdown
+             */
+            status.setValue(analysis.getStatusId());
+        }
     }
 
     private Integer getSectionId() {
@@ -1175,25 +1212,26 @@ public class AnalysisTabUI extends Screen {
         TestSectionManager tsm;
         TestSectionViewDO ts;
 
-        model = new ArrayList<Item<Integer>>();
+        model = null;
+        if ( !isState(ADD, UPDATE) || analysis == null)
+            return model;
 
-        if (analysis != null && isState(ADD, UPDATE)) {
-            try {
-                /*
-                 * create the model from the sections associated with the
-                 * analysis' test
-                 */
-                tsm = getTestManager(analysis.getTestId()).getTestSections();
-                if (tsm != null) {
-                    for (int i = 0; i < tsm.count(); i++ ) {
-                        ts = tsm.getSectionAt(i);
-                        model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
-                    }
+        try {
+            /*
+             * create the model from the sections associated with the analysis'
+             * test
+             */
+            tsm = getTestManager(analysis.getTestId()).getTestSections();
+            if (tsm != null) {
+                model = new ArrayList<Item<Integer>>();
+                for (int i = 0; i < tsm.count(); i++ ) {
+                    ts = tsm.getSectionAt(i);
+                    model.add(new Item<Integer>(ts.getSectionId(), ts.getSection()));
                 }
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
             }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
 
         return model;
@@ -1209,29 +1247,29 @@ public class AnalysisTabUI extends Screen {
         TestTypeOfSampleDO type;
         TestTypeOfSampleManager ttsm;
 
-        model = new ArrayList<Item<Integer>>();
+        model = null;
+        if ( !isState(ADD, UPDATE) || analysis == null || sampleItem == null ||
+            sampleItem.getTypeOfSampleId() == null)
+            return model;
 
-        if (analysis != null && isState(ADD, UPDATE) && sampleItem != null &&
-            sampleItem.getTypeOfSampleId() != null) {
-            try {
-                /*
-                 * create the model from the units associated with the sample
-                 * item's sample type
-                 */
-                ttsm = getTestManager(analysis.getTestId()).getSampleTypes();
-                for (int i = 0; i < ttsm.count(); i++ ) {
-                    type = ttsm.getTypeAt(i);
-                    if (type.getUnitOfMeasureId() != null &&
-                        DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(),
-                                            type.getTypeOfSampleId())) {
-                        d = DictionaryCache.getById(type.getUnitOfMeasureId());
-                        model.add(new Item<Integer>(d.getId(), d.getEntry()));
-                    }
+        try {
+            /*
+             * create the model from the units associated with the sample item's
+             * sample type
+             */
+            ttsm = getTestManager(analysis.getTestId()).getSampleTypes();
+            model = new ArrayList<Item<Integer>>();
+            for (int i = 0; i < ttsm.count(); i++ ) {
+                type = ttsm.getTypeAt(i);
+                if (type.getUnitOfMeasureId() != null &&
+                    DataBaseUtil.isSame(sampleItem.getTypeOfSampleId(), type.getTypeOfSampleId())) {
+                    d = DictionaryCache.getById(type.getUnitOfMeasureId());
+                    model.add(new Item<Integer>(d.getId(), d.getEntry()));
                 }
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
             }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return model;
     }
@@ -1240,7 +1278,7 @@ public class AnalysisTabUI extends Screen {
      * Returns the model created from all analyses in the sample, except the one
      * shown currently in the tab and any cancelled ones.
      */
-    private ArrayList<Item<Integer>> getPrepModel() {
+    private ArrayList<Item<Integer>> getAnalysisModel() {
         int i;
         int j;
         StringBuffer buf;
@@ -1249,33 +1287,36 @@ public class AnalysisTabUI extends Screen {
         Item<Integer> row;
         ArrayList<Item<Integer>> model;
 
+        model = null;
+        if (manager == null || analysis == null)
+            return model;
+
+        buf = new StringBuffer();
         model = new ArrayList<Item<Integer>>();
-        if (manager != null && analysis != null) {
-            buf = new StringBuffer();
-            for (i = 0; i < manager.item.count(); i++ ) {
-                item = manager.item.get(i);
-                for (j = 0; j < manager.analysis.count(item); j++ ) {
-                    ana = manager.analysis.get(item, j);
-                    if ( !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) &&
-                        !ana.getId().equals(analysis.getId())) {
-                        row = new Item<Integer>(3);
-                        row.setKey(ana.getId());
+        for (i = 0; i < manager.item.count(); i++ ) {
+            item = manager.item.get(i);
+            for (j = 0; j < manager.analysis.count(item); j++ ) {
+                ana = manager.analysis.get(item, j);
+                if ( !Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()) &&
+                    !ana.getId().equals(analysis.getId())) {
+                    row = new Item<Integer>(3);
+                    row.setKey(ana.getId());
 
-                        buf.setLength(0);
-                        buf.append(ana.getTestName());
-                        buf.append(", ");
-                        buf.append(ana.getMethodName());
-                        row.setCell(0, buf.toString());
-                        row.setCell(1, item.getTypeOfSample());
-                        row.setCell(2, item.getItemSequence());
+                    buf.setLength(0);
+                    buf.append(ana.getTestName());
+                    buf.append(", ");
+                    buf.append(ana.getMethodName());
+                    row.setCell(0, buf.toString());
+                    row.setCell(1, item.getTypeOfSample());
+                    row.setCell(2, item.getItemSequence());
 
-                        row.setData(ana);
+                    row.setData(ana);
 
-                        model.add(row);
-                    }
+                    model.add(row);
                 }
             }
         }
+
         return model;
     }
 

@@ -44,6 +44,7 @@ import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.VisibleEvent;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiTemplate;
@@ -61,13 +62,15 @@ public class VendorOrderFillTabUI extends Screen {
 
     protected Screen                          parentScreen;
 
+    protected EventBus                        parentBus;
+
     protected boolean                         isVisible, redraw;
 
     protected OrderManager1                   manager;
 
     public VendorOrderFillTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
-        setEventBus(parentScreen.getEventBus());
+        this.parentBus = parentScreen.getEventBus();
         initWidget(uiBinder.createAndBindUi(this));
         initialize();
 

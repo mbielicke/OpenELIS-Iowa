@@ -567,7 +567,7 @@ public class AnalyteParameterScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(Messages.get().querying());
 
-                query.setRowsPerPage(18);
+                query.setRowsPerPage(20);
                 AnalyteParameterService.get()
                                        .query(query,
                                               new AsyncCallback<ArrayList<ReferenceIdTableIdNameVO>>() {
