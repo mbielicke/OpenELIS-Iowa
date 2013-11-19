@@ -56,6 +56,7 @@ import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
@@ -76,6 +77,7 @@ import org.openelis.ui.common.FieldErrorException;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -104,6 +106,8 @@ import org.openelis.ui.widget.table.Row;
 import org.openelis.ui.widget.table.Table;
 import org.openelis.ui.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.ui.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.utilcommon.ResultFormatter;
+import org.openelis.utilcommon.ResultHelper;
 
 public class QuickEntryScreenUI extends Screen implements CacheProvider {
 
@@ -120,7 +124,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
     private ModulePermission                               userPermission;
 
     @UiField
-    protected AutoComplete                                 systemUserId;
+    protected AutoComplete                                 receivedBy;
     @UiField
     protected Button                                       commit, removeRowButton;
     @UiField
@@ -175,19 +179,6 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 commit.setEnabled(false);
-                entry.setEnabled(true);
-                accessionNumber.setEnabled(false);
-                tubeNumber.setEnabled(false);
-                receivedDate.setEnabled(true);
-                systemUserId.setEnabled(true);
-                testMethodSampleType.setEnabled(true);
-                sectionId.setEnabled(true);
-                currentDateTime.setEnabled(true);
-                printLabels.setEnabled(true);
-                printer.setEnabled(true);
-                quickEntryTable.setEnabled(true);
-                quickEntryTable.setAllowMultipleSelection(true);
-                removeRowButton.setEnabled(false);
             }
         });
 
@@ -199,19 +190,31 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             public void onValueChange(ValueChangeEvent<String> event) {
                 entryChanged();
             }
+            
+            public void onStateChange(StateChangeEvent event) {
+                entry.setEnabled(true);
+            }            
 
             public Widget onTab(boolean forward) {
-                return forward ? entry : entry;
+                return forward ? receivedDate : receivedDate;
             }
         });
 
         addScreenHandler(accessionNumber, SampleMeta.getAccessionNumber(), new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                accessionNumber.setEnabled(false);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
         });
             
         addScreenHandler(tubeNumber, "tubeNumber", new ScreenHandler<String>() {
+            public void onStateChange(StateChangeEvent event) {
+                tubeNumber.setEnabled(false);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
@@ -246,18 +249,26 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                 }
             }
 
+            public void onStateChange(StateChangeEvent event) {
+                receivedDate.setEnabled(true);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
         });
 
-        addScreenHandler(systemUserId, SampleMeta.getReceivedById(), new ScreenHandler<Integer>() {
+        addScreenHandler(receivedBy, SampleMeta.getReceivedById(), new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                receivedBy.setEnabled(true);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
         });
 
-        systemUserId.addGetMatchesHandler(new GetMatchesHandler() {
+        receivedBy.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<SystemUserVO> users;
                 ArrayList<Item<Integer>> model;
@@ -268,7 +279,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                     users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (SystemUserVO user : users)
                         model.add(new Item<Integer>(user.getId(), user.getLoginName()));
-                    systemUserId.showAutoMatches(model);
+                    receivedBy.showAutoMatches(model);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.toString());
@@ -342,12 +353,20 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                 }
             }
 
+            public void onStateChange(StateChangeEvent event) {
+                testMethodSampleType.setEnabled(true);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
         });
 
         addScreenHandler(sectionId, SampleMeta.getAnalysisSectionId(), new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                sectionId.setEnabled(true);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
@@ -359,18 +378,30 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                     updateRecievedDate();
             }
 
+            public void onStateChange(StateChangeEvent event) {
+                currentDateTime.setEnabled(true);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
         });
 
         addScreenHandler(printLabels, "printLabels", new ScreenHandler<String>() {
+            public void onStateChange(StateChangeEvent event) {
+                printLabels.setEnabled(true);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
         });
 
         addScreenHandler(printer, "printer", new ScreenHandler<Integer>() {
+            public void onStateChange(StateChangeEvent event) {
+                printer.setEnabled(false);
+            }            
+
             public Widget onTab(boolean forward) {
                 return forward ? entry : entry;
             }
@@ -380,6 +411,11 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             public void onDataChange(DataChangeEvent event) {
                 quickEntryTable.setModel(getTableModel());
             }
+
+            public void onStateChange(StateChangeEvent event) {
+                quickEntryTable.setEnabled(true);
+                quickEntryTable.setAllowMultipleSelection(false);
+            }            
         });
 
         quickEntryTable.addSelectionHandler(new SelectionHandler<Integer>() {
@@ -400,6 +436,12 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             }
         });
         
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                removeRowButton.setEnabled(false);
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (close) {
@@ -447,11 +489,12 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         for (TestMethodSampleTypeVO typeDO : testPanelList) {
             if (typeDO.getPanelId() == null) {
                 item = new Item<String>("T" + typeDO.getTestId() + "-" + typeDO.getSampleTypeId(),
-                                        typeDO.getTest(), typeDO.getMethod(), typeDO.getSampleType());
+                                        typeDO.getTest() + ", " + typeDO.getMethod() +
+                                        ", " + typeDO.getSampleType());
                 item.setData(typeDO);
             } else {
                 item = new Item<String>("P" + typeDO.getPanelId() + "-" + typeDO.getSampleTypeId(),
-                                        typeDO.getPanel(), null, typeDO.getSampleType());
+                                        typeDO.getPanel() + ", " + typeDO.getSampleType());
                 item.setData(typeDO);
             }
             model.add(item);
@@ -461,7 +504,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         setState(DEFAULT);
         fireDataChange();
         
-        systemUserId.setValue(UserCache.getPermission().getSystemUserId(), UserCache.getPermission().getLoginName());
+        receivedBy.setValue(UserCache.getPermission().getSystemUserId(), UserCache.getPermission().getLoginName());
 
         logger.fine("Quick Entry Screen Opened");
     }
@@ -525,23 +568,28 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         row = quickEntryTable.getRowAt(rowIndex);
         aVDO = row.getData();
         smRC = managers.get(row.getCell(0));
-        smRC.sampleManager.analysis.removeAnalysis(aVDO.getId());
+        man = smRC.sampleManager;
+        man.analysis.removeAnalysis(aVDO.getId());
         smRC.count--;
         if (smRC.count <= 0) {
-            try {
-                SampleService1.get().unlock(smRC.sampleManager.getSample().getId(),
-                                            (SampleManager1.Load)null);
-            } catch (Exception anyE) {
-                Window.alert(anyE.getMessage());
+            if (man.getSample().getId() != null) {
+                try {
+                    SampleService1.get().unlock(man.getSample().getId(),
+                                                (SampleManager1.Load[])null);
+                } catch (Exception anyE) {
+                    Window.alert(anyE.getMessage());
+                }
             }
-            managers.remove(smRC);
+            managers.remove(man.getSample().getAccessionNumber());
         }
         quickEntryTable.removeRowAt(rowIndex);
+        if (quickEntryTable.getRowCount() == 0)
+            commit.setEnabled(false);
     }
     
     private void commit() {
         int i;
-        ArrayList<SampleManagerRowCount> removables;
+        ArrayList<Integer> removables;
         SampleManager1 man;
         ValidationErrorsList errorsList;
 
@@ -551,12 +599,12 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         window.setBusy(Messages.get().adding());
 
         errorsList = new ValidationErrorsList();
-        removables = new ArrayList<SampleManagerRowCount>();
+        removables = new ArrayList<Integer>();
         for (SampleManagerRowCount smRC : managers.values()) {
             man = smRC.sampleManager;
             try {
                 SampleService1.get().update(man, true);
-                removables.add(smRC);
+                removables.add(man.getSample().getAccessionNumber());
             } catch (ValidationErrorsList e) {
                 errorsList.add(new FormErrorException(Messages.get().quickCommitError()));
                 for (i = 0; i < e.size(); i++)
@@ -592,7 +640,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
     
     private void abort() {
         int i;
-        ArrayList<SampleManagerRowCount> removables;
+        ArrayList<Integer> removables;
         SampleManager1 man;
         ValidationErrorsList errorsList;
 
@@ -602,18 +650,22 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         window.setBusy(Messages.get().adding());
 
         errorsList = new ValidationErrorsList();
-        removables = new ArrayList<SampleManagerRowCount>();
+        removables = new ArrayList<Integer>();
         for (SampleManagerRowCount smRC : managers.values()) {
             man = smRC.sampleManager;
-            try {
-                SampleService1.get().unlock(man.getSample().getId(), (SampleManager1.Load)null);
-                removables.add(smRC);
-            } catch (Exception e) {
-                errorsList.add(new FormErrorException(Messages.get()
-                                                              .rowError(man.getSample()
-                                                                           .getAccessionNumber()
-                                                                           .toString(),
-                                                                        e.getMessage())));
+            if (man.getSample().getId() != null) {
+                try {
+                    SampleService1.get().unlock(man.getSample().getId(), (SampleManager1.Load[])null);
+                    removables.add(man.getSample().getAccessionNumber());
+                } catch (Exception e) {
+                    errorsList.add(new FormErrorException(Messages.get()
+                                                                  .rowError(man.getSample()
+                                                                               .getAccessionNumber()
+                                                                               .toString(),
+                                                                            e.getMessage())));
+                }
+            } else {
+                removables.add(man.getSample().getAccessionNumber());
             }
         }
         
@@ -714,12 +766,12 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                     accessionNum = Integer.valueOf(val);
                     smRowCount = managers.get(val);
                     if (smRowCount == null) {
-                        sampleMan = SampleService1.get().fetchByAccession(accessionNum, (SampleManager1.Load)null);
-                        if (sampleMan != null) {
+                        try {
+                            sampleMan = SampleService1.get().fetchByAccession(accessionNum, (SampleManager1.Load[])null);
                             if (Constants.dictionary().SAMPLE_RELEASED.equals(sampleMan.getSample().getStatusId()))
                                 throw new InconsistencyException(Messages.get().sample_cantAddAnalysis());
-                            sampleMan = SampleService1.get().fetchForUpdate(sampleMan.getSample().getId(), (SampleManager1.Load)null);
-                        } else {
+                            sampleMan = SampleService1.get().fetchForUpdate(sampleMan.getSample().getId(), (SampleManager1.Load[])null);
+                        } catch (NotFoundException nfE) {
                             sysVarDO = SystemVariableService.get().fetchByExactName("last_accession_number");
                             if (accessionNum.compareTo(Integer.valueOf(sysVarDO.getValue())) > 0)
                                 throw new InconsistencyException(Messages.get()
@@ -778,6 +830,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         String tubeNum;
         TestMethodSampleTypeVO typeDO;
         TestSectionViewDO tsVDO;
+        ValidationErrorsList errors;
 
         typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelectedItem().getData();
         accessionNum = accessionNumber.getValue();
@@ -788,7 +841,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             smRowCount = managers.get(accessionNum);
             sampleMan = smRowCount.sampleManager;
             sampleMan.getSample().setReceivedDate(receivedDate.getValue());
-            sampleMan.getSample().setReceivedById(systemUserId.getValue().getId());
+            sampleMan.getSample().setReceivedById(receivedBy.getValue().getId());
 
             siVDO = getSampleItemForType(typeDO, sampleMan);
             siVDO.setContainerReference(tubeNum);
@@ -814,6 +867,17 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
 
             returnVO = SampleService1.get().addAnalysis(sampleMan, requestVO);
             smRowCount.sampleManager = returnVO.getManager();
+            
+            errors = new ValidationErrorsList();
+            validateResults(smRowCount.sampleManager, errors);
+            if (errors.size() > 0) {
+                if (returnVO.getErrors() != null) {
+                    for (Exception e : errors.getErrorList())
+                        returnVO.getErrors().add(e);
+                } else {
+                    returnVO.setErrors(errors);
+                }
+            }
             showErrorsOrTests(returnVO);
             if (!isBusy)
                 fireDataChange();
@@ -850,6 +914,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                     public void ok() {
                         ArrayList<SampleTestRequestVO> tests;
 
+                        isBusy = false;
                         tests = testSelectionLookup.getSelectedTests();
                         /*
                          * keep isBusy to be true if some tests were selected on
@@ -858,8 +923,6 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                          */
                         if (tests != null && tests.size() > 0)
                             addAdditionalAnalyses(ret.getManager(), tests);
-                        else
-                            isBusy = false;
                     }
                 };
             }
@@ -883,11 +946,23 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
     private void addAdditionalAnalyses(SampleManager1 man, ArrayList<SampleTestRequestVO> tests) {
         SampleManagerRowCount smRowCount;
         SampleTestReturnVO returnVO;
+        ValidationErrorsList errors;
 
         try {
             returnVO = SampleService1.get().addAnalyses(man, tests);
             smRowCount = managers.get(returnVO.getManager().getSample().getAccessionNumber());
             smRowCount.sampleManager = returnVO.getManager();
+
+            errors = new ValidationErrorsList();
+            validateResults(smRowCount.sampleManager, errors);
+            if (errors.size() > 0) {
+                if (returnVO.getErrors() != null) {
+                    for (Exception e : errors.getErrorList())
+                        returnVO.getErrors().add(e);
+                } else {
+                    returnVO.setErrors(errors);
+                }
+            }
             showErrorsOrTests(returnVO);
             if (!isBusy)
                 fireDataChange();
@@ -931,14 +1006,14 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                 for (j = 0; j < man.analysis.count(siVDO); j ++) {
                     aVDO = man.analysis.get(siVDO, j);
                     if (aVDO.getId() < 0) {
-                        row = new Row();
+                        row = new Row(6);
                         row.setCell(0, sDO.getAccessionNumber());
                         row.setCell(1, sDO.getReceivedDate());
                         row.setCell(2, aVDO.getTestName());
                         row.setCell(3, aVDO.getMethodName());
                         row.setCell(4, siVDO.getTypeOfSample());
                         if (Constants.domain().HUMAN.equals(sDO.getDomain()))
-                            row.setCell(4, sDO.getClientReference());
+                            row.setCell(5, sDO.getClientReference());
                         row.setData(aVDO);
                         model.add(row);
                         count++;
@@ -948,6 +1023,8 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             smRC.count = count;
         }
         
+        commit.setEnabled(model.size() > 0);
+
         return model;
     }
 
@@ -955,6 +1032,12 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         // received date needs filled out
         if (receivedDate.getValue() == null) {
             window.setError(Messages.get().receivedDateNoValueException());
+            return false;
+        }
+
+        // received by needs filled out
+        if (receivedBy.getValue() == null) {
+            window.setError(Messages.get().receivedByNoValueException());
             return false;
         }
 
@@ -971,6 +1054,45 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         }
 
         return true;
+    }
+    
+    private void validateResults(SampleManager1 man, ValidationErrorsList errors) {
+        int i, j, k, l;
+        AnalysisViewDO aVDO;
+        ResultFormatter rf;
+        ResultViewDO rVDO;
+        SampleItemViewDO siVDO;
+        TestManager tMan;
+
+        for (i = 0; i < man.item.count(); i++) {
+            siVDO = man.item.get(i);
+            for (j = 0; j < man.analysis.count(siVDO); j++) {
+                aVDO = man.analysis.get(siVDO, j);
+                tMan = screen.get(aVDO.getTestId(), TestManager.class);
+                try {
+                    rf = tMan.getFormatter();
+                    for (k = 0; k < man.result.count(aVDO); k++) {
+                        for (l = 0; l < man.result.count(aVDO, k); l++) {
+                            rVDO = man.result.get(aVDO, k, l);
+                            if (rVDO.getValue() != null && rVDO.getTypeId() == null) {
+                                try {
+                                    ResultHelper.formatValue(rVDO,
+                                                             rVDO.getValue(),
+                                                             aVDO.getUnitOfMeasureId(),
+                                                             rf);
+                                } catch (Exception anyE1) {
+                                    errors.add(anyE1);
+                                    logger.log(Level.SEVERE, anyE1.getMessage(), anyE1);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception anyE) {
+                    errors.add(anyE);
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                }
+            }
+        }
     }
 
     private void updateRecievedDate() {

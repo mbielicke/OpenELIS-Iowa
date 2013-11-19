@@ -39,7 +39,7 @@
         </g:HorizontalPanel>
       </g:AbsolutePanel>
     </g:layer>
-    <g:layer top="30px" height="105px">
+    <g:layer top="30px" height="125px">
       <g:HTMLPanel>
         <table class="{res.style.Form}">
           <tr>
@@ -58,11 +58,12 @@
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.tubeNum}:"/>
             </td>
-            <td>
+            <td colspan="3">
               <w:TextBox ui:field="tubeNumber" width="75px" case="UPPER" field="String"/>
             </td>
           </tr>
           <tr>
+            <td colspan="2"></td>
             <td class="{res.style.Prompt}">
               <ui:text from="{msg.received}:"/>
             </td>
@@ -70,10 +71,10 @@
               <c:Calendar ui:field="receivedDate" width="134px" begin="0" end="4"/>
             </td>
             <td class="{res.style.Prompt}">
-              <ui:text from="{msg.gen_username}:"/>
+              <ui:text from="{msg.gen_receivedBy}:"/>
             </td>
-            <td>
-              <w:AutoComplete ui:field="systemUserId" width="165px" dropHeight="201px" case="LOWER">
+            <td colspan="3">
+              <w:AutoComplete ui:field="receivedBy" width="165px" dropHeight="201px" case="LOWER">
                 <w:popup>
                   <t:Table>
                     <t:Column>
@@ -126,7 +127,7 @@
         </table>
       </g:HTMLPanel>
     </g:layer>
-    <g:layer top="135px" bottom="25px" left="5px" width="99%">
+    <g:layer top="155px" bottom="25px" left="5px" width="99%">
       <t:Table ui:field="quickEntryTable" header="true" styleName="{res.table.ScreenTableWithSides}">
         <t:Column width="90" label="{msg.accessionNum}">
           <t:LabelCell/>
