@@ -131,6 +131,15 @@ public abstract class AuxDataTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
+                /*
+                 * this makes sure that any previous data in the table gets
+                 * cleared even if the tab is not visible while the main screen
+                 * is in Query state; if the tab becomes visible in Query
+                 * state, the table is loaded with a single row for querying
+                 */
+                if (isState(QUERY))
+                    table.setModel(null);
+
                 table.setEnabled(true);
             }
         });
@@ -435,8 +444,8 @@ public abstract class AuxDataTabUI extends Screen {
                     rv = row.getCell(2);
                     /*
                      * for type dictionary, the value is stored as the dictId
-                     * and the entry is the display, for other types
-                     * the value is the display
+                     * and the entry is the display, for other types the value
+                     * is the display
                      */
                     if (rv.getDictId() != null)
                         val = rv.getDictId();
@@ -521,7 +530,7 @@ public abstract class AuxDataTabUI extends Screen {
 
                     ids = auxGroupLookup.getGroupIds();
                     if (ids != null && ids.size() > 0)
-                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);                    
+                        parentBus.fireEventFromSource(new AddAuxGroupEvent(ids), this);
                 }
 
                 @Override
