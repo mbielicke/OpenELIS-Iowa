@@ -226,13 +226,17 @@ public class OpenELIS extends Screen {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
+                        QuickEntryScreenUI screen;
+                        
                         try {
 //                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
                             org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.quickEntry());
                             window.setSize("830px", "577px");
 //                            window.setContent(new QuickEntryScreen(window));
-                            window.setContent(new QuickEntryScreenUI(window));
+                            screen = new QuickEntryScreenUI(window);
+                            window.setContent(screen);
+                            screen.initialize();
                             browser.addWindow(window, "quickEntry");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
