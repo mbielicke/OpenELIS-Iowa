@@ -327,10 +327,97 @@ public class OrderManager1Bean {
     }
 
     /**
-     * duplicates the order with the given order ID and returns the new order
-     * manager
+     * duplicates the order and returns a new order manager
      */
-    public OrderManager1 duplicate(Integer id) throws Exception {
+    public OrderManager1 duplicate(OrderManager1 om) throws Exception {
+        Integer oldId;
+        OrderManager1 order;
+        Datetime now;
+        HashMap<Integer, Integer> tids;
+
+        order = new OrderManager1();
+
+        setOrder(order, getOrder(om));
+        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
+        getOrder(om).setOrderedDate(now);
+        getOrder(om).setRequestedBy(User.getName(ctx));
+
+        setOrganizations(order, getOrganizations(om));
+        if (getOrganizations(order) != null) {
+            for (OrderOrganizationViewDO data : getOrganizations(order)) {
+                data.setId(null);
+                data.setOrderId(null);
+            }
+        }
+
+        setItems(order, getItems(om));
+        if (getItems(order) != null) {
+            for (OrderItemViewDO data : getItems(order)) {
+                data.setId(null);
+                data.setOrderId(null);
+            }
+        }
+
+        setFills(order, null);
+        setReceipts(order, null);
+
+        setShippingNote(order, getShippingNote(om));
+        if (getShippingNote(order) != null) {
+            getShippingNote(order).setId(null);
+            getShippingNote(order).setReferenceId(null);
+            getShippingNote(order).setTimestamp(null);
+        }
+
+        setCustomerNote(order, getCustomerNote(om));
+        if (getCustomerNote(order) != null) {
+            getCustomerNote(order).setId(null);
+            getCustomerNote(order).setReferenceId(null);
+            getCustomerNote(order).setTimestamp(null);
+        }
+
+        setInternalNotes(order, null);
+        setSampleNote(order, null);
+
+        setContainers(order, getContainers(om));
+        if (getContainers(order) != null) {
+            for (OrderContainerDO data : getContainers(order)) {
+                data.setId(null);
+                data.setOrderId(null);
+            }
+        }
+
+        setAuxilliary(order, getAuxilliary(om));
+        if (getAuxilliary(order) != null) {
+            for (AuxDataViewDO data : getAuxilliary(order)) {
+                data.setId(null);
+                data.setReferenceId(null);
+            }
+        }
+
+        setTests(order, getTests(om));
+        tids = new HashMap<Integer, Integer>();
+        if (getTests(order) != null) {
+            for (OrderTestViewDO data : getTests(order)) {
+                oldId = data.getId();
+                data.setId(om.getNextUID());
+                tids.put(oldId, data.getId());
+            }
+        }
+
+        setAnalytes(order, getAnalytes(om));
+        if (getAnalytes(order) != null) {
+            for (OrderTestAnalyteViewDO data : getAnalytes(order)) {
+                data.setId(om.getNextUID());
+                data.setOrderTestId(tids.get(data.getOrderTestId()));
+            }
+        }
+        setRecurrence(om, null);
+
+        return order;
+    }
+
+    public OrderManager1 duplicate(Integer id, boolean sampleNotes) throws Exception {
         Integer oldId;
         Datetime now;
         OrderManager1 om;
@@ -338,7 +425,6 @@ public class OrderManager1Bean {
         ArrayList<OrderManager1> oms;
         HashMap<Integer, Integer> tids;
 
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         /*
          * fetchByIds is called here instead of fetchById because in this case,
          * the order test analytes need to be merged with the original test
@@ -356,6 +442,7 @@ public class OrderManager1Bean {
         om = oms.get(0);
         getOrder(om).setId(null);
         getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         getOrder(om).setOrderedDate(now);
         getOrder(om).setRequestedBy(User.getName(ctx));
 
@@ -389,7 +476,14 @@ public class OrderManager1Bean {
         }
 
         setInternalNotes(om, null);
-        setSampleNote(om, null);
+
+        if ( !sampleNotes)
+            setSampleNote(om, null);
+        if (getSampleNote(om) != null) {
+            getSampleNote(om).setId(null);
+            getSampleNote(om).setReferenceId(null);
+            getSampleNote(om).setTimestamp(null);
+        }
 
         if (getContainers(om) != null) {
             for (OrderContainerDO data : getContainers(om)) {
@@ -416,11 +510,21 @@ public class OrderManager1Bean {
 
         if (getAnalytes(om) != null) {
             for (OrderTestAnalyteViewDO data : getAnalytes(om)) {
-                data.setId(null);
+                data.setId(om.getNextUID());
                 data.setOrderTestId(tids.get(data.getOrderTestId()));
             }
         }
+        setRecurrence(om, null);
+
         return om;
+    }
+
+    /**
+     * duplicates the order with the given order ID and returns the new order
+     * manager
+     */
+    public OrderManager1 duplicate(Integer id) throws Exception {
+        return duplicate(id, false);
     }
 
     /**
@@ -514,7 +618,7 @@ public class OrderManager1Bean {
                         continue;
                     }
                     getAnalytes(om).remove(i);
-                    if (ota.getId() != null) {
+                    if (ota.getId() > 0) {
                         if (getRemoved(om) == null)
                             setRemoved(om, new ArrayList<DataObject>());
                         getRemoved(om).add(ota);
@@ -598,7 +702,7 @@ public class OrderManager1Bean {
 
             if (getAnalytes(om) != null) {
                 for (OrderTestAnalyteViewDO data : getAnalytes(om)) {
-                    if (data.getId() == null) {
+                    if (data.getId() < 0) {
                         data.setOrderTestId(tmap.get(data.getOrderTestId()));
                         orderTestAnalyte.add(data);
                     } else {
@@ -851,7 +955,7 @@ public class OrderManager1Bean {
                     i++ ;
                     continue;
                 }
-                if (ota.getId() != null)
+                if (ota.getId() > 0)
                     getRemoved(om).add(ota);
                 getAnalytes(om).remove(i);
             }

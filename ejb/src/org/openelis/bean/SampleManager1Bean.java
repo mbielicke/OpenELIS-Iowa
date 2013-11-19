@@ -193,7 +193,7 @@ public class SampleManager1Bean {
         /*
          * set default values in fields like revision, entered date etc.
          */
-        setDefaults(s, Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        setDefaults(s);
 
         setSample(sm, s);
 
@@ -850,13 +850,17 @@ public class SampleManager1Bean {
     public ArrayList<SampleManager1> update(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
         int dep, ldep;
         boolean nodep;
-        Integer tmpid, id, so;
+        Integer tmpid, id, so, maxAccession;
+        NoteViewDO ext;
+        PatientDO pat;
+        SystemVariableDO sys;
+        SystemUserPermission permission;
+        ValidationErrorsList e;
         HashSet<Integer> ids, ids1;
         ArrayList<Integer> locks;
         HashMap<Integer, TestManager> tms;
         HashMap<Integer, AuxFieldGroupManager> ams;
-        NoteViewDO ext;
-        PatientDO pat;
+        HashMap<Integer, QaEventDO> qas;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
 
         /*
@@ -889,7 +893,57 @@ public class SampleManager1Bean {
                 ams.put(am.getGroup().getId(), am);
         }
 
-        validate(sms, tms, ams, ignoreWarnings);
+        // validate(sms, tms, ams);
+
+        // user permission for adding/updating analysis
+        permission = userCache.getPermission();
+
+        /*
+         * see what was the last accession number we have given out
+         */
+        try {
+            sys = systemVariable.fetchByName("last_accession_number");
+            maxAccession = Integer.valueOf(sys.getValue());
+        } catch (Exception any) {
+            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", any);
+            throw new FormErrorException(Messages.get()
+                                                 .systemVariable_missingInvalidSystemVariable("last_accession_number"));
+        }
+
+        /*
+         * this map is used to validate analysis qa events
+         */
+        qas = new HashMap<Integer, QaEventDO>();
+        for (QaEventDO data : qaEvent.fetchAll())
+            qas.put(data.getId(), data);
+
+        e = new ValidationErrorsList();
+        /*
+         * validate each sample and re-evalute its status
+         */
+        for (SampleManager1 sm : sms) {
+            try {
+                validate(sm, permission, maxAccession, tms, ams, qas);
+                /*
+                 * the status will be the lowest of the statuses of the analyses
+                 */
+                changeSampleStatus(sm, null);
+            } catch (ValidationErrorsList err) {
+                if (err.hasErrors() || !ignoreWarnings)
+                    DataBaseUtil.mergeException(e, err);
+                else
+                    /*
+                     * force Error status because the data is to be committed
+                     * with warnings
+                     */
+                    changeSampleStatus(sm, Constants.dictionary().SAMPLE_ERROR);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
+        }
+
+        if (e.size() > 0)
+            throw e;
 
         ids1 = null;
         tms = null;
@@ -1272,6 +1326,88 @@ public class SampleManager1Bean {
     }
 
     /**
+     * Changes the sample's status to the passed value if the or the lowest
+     * status of the analyses
+     */
+    public void changeSampleStatus(SampleManager1 sm, Integer statusId) {
+        boolean isError, isLoggedIn, isCompleted, isReleased;
+        Integer currStatusId, nextStatusId;
+        SampleDO data;
+
+        data = getSample(sm);
+
+        currStatusId = data.getStatusId();
+        nextStatusId = currStatusId;
+
+        if (Constants.dictionary().SAMPLE_ERROR.equals(statusId)) {
+            nextStatusId = statusId;
+        } else if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(currStatusId)) {
+            if (Constants.dictionary().SAMPLE_LOGGED_IN.equals(statusId))
+                /*
+                 * the sample was verified
+                 */
+                nextStatusId = statusId;
+        } else if (Constants.dictionary().SAMPLE_COMPLETED.equals(statusId) &&
+                   Constants.dictionary().SAMPLE_RELEASED.equals(currStatusId)) {
+            /*
+             * the sample was unreleased
+             */
+            nextStatusId = statusId;
+        } else {
+            if (getAnalyses(sm) != null) {
+                isError = false;
+                isLoggedIn = false;
+                isCompleted = false;
+                isReleased = false;
+
+                for (AnalysisViewDO ana : getAnalyses(sm)) {
+                    if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_INPREP.equals(ana.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_INITIATED.equals(ana.getStatusId()) ||
+                        Constants.dictionary().ANALYSIS_REQUEUE.equals(ana.getStatusId()))
+                        isLoggedIn = true;
+                    else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ON_HOLD.equals(ana.getStatusId()))
+                        isCompleted = true;
+                    else if (Constants.dictionary().ANALYSIS_RELEASED.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+                        isReleased = true;
+                    else if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(ana.getStatusId()) ||
+                             Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(ana.getStatusId()))
+                        isError = true;
+                }
+
+                /*
+                 * change the sample status to lowest
+                 */
+                if (isError)
+                    nextStatusId = Constants.dictionary().SAMPLE_ERROR;
+                else if (isLoggedIn)
+                    nextStatusId = Constants.dictionary().SAMPLE_LOGGED_IN;
+                else if (isCompleted)
+                    nextStatusId = Constants.dictionary().SAMPLE_COMPLETED;
+                else if (isReleased)
+                    nextStatusId = Constants.dictionary().SAMPLE_RELEASED;
+            }
+        }
+
+        if ( !currStatusId.equals(nextStatusId)) {
+            if (Constants.dictionary().SAMPLE_RELEASED.equals(nextStatusId)) {
+                /*
+                 * the sample was released
+                 */
+                if (data.getReleasedDate() == null)
+                    data.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            } else if (data.getReleasedDate() != null) {
+                data.setReleasedDate(null);
+            }
+            data.setStatusId(nextStatusId);
+        }
+    }
+
+    /**
      * Unlocks and returns a sample manager with specified sample id and
      * requested load elements
      */
@@ -1304,6 +1440,7 @@ public class SampleManager1Bean {
      */
     @RolesAllowed({"sample-add", "sample-update"})
     public void validateAccessionNumber(SampleManager1 sm) throws Exception {
+        boolean isPositive;
         Integer accession;
         SampleDO data;
         SystemVariableDO sys;
@@ -1312,9 +1449,20 @@ public class SampleManager1Bean {
          * accession number must be > 0, previously issued, and not duplicate
          */
         accession = getSample(sm).getAccessionNumber();
-        if (accession == null || accession <= 0)
+        isPositive = true;
+        if (accession == null) {
+            /*
+             * for display
+             */
+            accession = 0;
+            isPositive = false;
+        } else if (accession <= 0) {
+            isPositive = false;
+        }
+
+        if ( !isPositive)
             throw new InconsistencyException(Messages.get()
-                                                     .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(accession)));
+                                                     .sample_accessionNumberNotValidException(accession));
 
         try {
             sys = systemVariable.fetchByName("last_accession_number");
@@ -1433,11 +1581,10 @@ public class SampleManager1Bean {
 
         getSample(sm).setId(null);
         getSample(sm).setAccessionNumber(null);
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         /*
          * set default values in fields like revision, entered date etc.
          */
-        setDefaults(getSample(sm), now);
+        setDefaults(getSample(sm));
 
         /*
          * sample level data
@@ -1521,6 +1668,7 @@ public class SampleManager1Bean {
         analyses = getAnalyses(sm);
         if (analyses != null) {
             i = 0;
+            now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
             while (i < analyses.size()) {
                 ana = analyses.get(i);
                 if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(ana.getStatusId()) ||
@@ -1793,7 +1941,7 @@ public class SampleManager1Bean {
                     anaById.put(prep.getId(), prep);
                 }
 
-                analysisHelper.setPrepAnalysis(anaById.get(test.getAnalysisId()), prep);
+                analysisHelper.setPrepAnalysis(sm, anaById.get(test.getAnalysisId()), prep);
             }
         }
 
@@ -1823,7 +1971,8 @@ public class SampleManager1Bean {
      * status. It also updates any links between other analyses and this one, if
      * need be, because of the change in status.
      */
-    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId, Integer statusId) throws Exception {
+    public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
+                                               Integer statusId) throws Exception {
         return analysisHelper.changeAnalysisStatus(sm, analysisId, statusId);
     }
 
@@ -1871,10 +2020,10 @@ public class SampleManager1Bean {
     /**
      * Sets default values in the fields essential for a new sample
      */
-    protected void setDefaults(SampleDO data, Datetime now) {
+    private void setDefaults(SampleDO data) {
         data.setNextItemSequence(0);
         data.setRevision(0);
-        data.setEnteredDate(now);
+        data.setEnteredDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
         data.setReceivedById(userCache.getId());
         data.setStatusId(Constants.dictionary().SAMPLE_NOT_VERIFIED);
     }
@@ -1883,219 +2032,223 @@ public class SampleManager1Bean {
      * Validates the sample manager for add or update. The routine throws a list
      * of exceptions/warnings listing all the problems for each sample.
      */
-    protected void validate(ArrayList<SampleManager1> sms, HashMap<Integer, TestManager> tms,
-                            HashMap<Integer, AuxFieldGroupManager> ams, boolean ignoreWarning) throws Exception {
+    private void validate(SampleManager1 sm, SystemUserPermission permission, Integer maxAccession,
+                          HashMap<Integer, TestManager> tms,
+                          HashMap<Integer, AuxFieldGroupManager> ams,
+                          HashMap<Integer, QaEventDO> qas) throws Exception {
         int cnt;
         AnalysisViewDO ana;
-        SystemVariableDO sys;
         ValidationErrorsList e;
-        Integer accession, maxAccession;
+        Integer accession;
         QaEventDO qa;
         HashMap<Integer, SampleItemViewDO> imap;
         HashMap<Integer, AnalysisViewDO> amap;
-        HashMap<Integer, QaEventDO> qamap;
-        SystemUserPermission permission;
 
         e = new ValidationErrorsList();
-        imap = new HashMap<Integer, SampleItemViewDO>();
-        amap = new HashMap<Integer, AnalysisViewDO>();
-        qamap = new HashMap<Integer, QaEventDO>();
-
-        // user permission for adding/updating analysis
-        permission = userCache.getPermission();
 
         /*
-         * see what was the last accession number we have given out
+         * sample level
          */
-        try {
-            sys = systemVariable.fetchByName("last_accession_number");
-            maxAccession = Integer.valueOf(sys.getValue());
-        } catch (Exception any) {
-            log.log(Level.SEVERE, "Missing/invalid system variable 'last_accession_number'", e);
-            throw new FormErrorException(Messages.get()
-                                                 .systemVariable_missingInvalidSystemVariable("last_accession_number"));
+        accession = null;
+        if (getSample(sm) != null) {
+            accession = getSample(sm).getAccessionNumber();
+            if (getSample(sm).isChanged())
+                try {
+                    sample.validate(getSample(sm), maxAccession);
+                } catch (Exception err) {
+                    DataBaseUtil.mergeException(e, err);
+                }
         }
 
         /*
-         * this map is used to validate analysis qa events
+         * additional domain sample validation for sdwis, private well, ...
+         * samples should go here after checking to see if the VO/DO has
+         * changed.
          */
-        for (QaEventDO data : qaEvent.fetchAll())
-            qamap.put(data.getId(), data);
 
-        for (SampleManager1 sm : sms) {
-            /*
-             * sample level
-             */
-            accession = null;
-            if (getSample(sm) != null) {
-                accession = getSample(sm).getAccessionNumber();
-                if (getSample(sm).isChanged())
+        /*
+         * samples have to have one report to.
+         */
+        cnt = 0;
+        if (getOrganizations(sm) != null) {
+            for (SampleOrganizationViewDO data : getOrganizations(sm))
+                if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
+                    cnt++ ;
+        }
+
+        if (cnt == 0)
+            e.add(new FormErrorWarning(Messages.get().sample_reportToMissingWarning(accession)));
+        else if (cnt != 1)
+            e.add(new FormErrorException(Messages.get()
+                                                 .sample_moreThanOneReportToException(accession)));
+
+        /*
+         * aux data must be valid for the aux field
+         */
+
+        if (getAuxilliary(sm) != null) {
+            for (AuxDataViewDO data : getAuxilliary(sm)) {
+                if (data.isChanged())
                     try {
-                        sample.validate(getSample(sm), maxAccession, ignoreWarning);
+                        auxData.validate(data, ams.get(data.getGroupId()).getFormatter(), accession);
                     } catch (Exception err) {
                         DataBaseUtil.mergeException(e, err);
                     }
             }
+        }
 
-            /*
-             * additional domain sample validation for sdwis, private well, ...
-             * samples should go here after checking to see if the VO/DO has
-             * changed.
-             */
+        /*
+         * type is required for each qa event
+         */
 
-            /*
-             * samples have to have one report to.
-             */
-            cnt = 0;
-            if (getOrganizations(sm) != null) {
-                for (SampleOrganizationViewDO data : getOrganizations(sm))
-                    if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
-                        cnt++ ;
-            }
-
-            if ( !ignoreWarning) {
-                if (cnt == 0)
-                    e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_reportToMissingWarning(accession)));
-                else if (cnt != 1)
-                    e.add(new FormErrorException(Messages.get()
-                                                         .sample_moreThanOneReportToException(accession)));
-            }
-
-            /*
-             * aux data must be valid for the aux field
-             */
-
-            if (getAuxilliary(sm) != null) {
-                for (AuxDataViewDO data : getAuxilliary(sm)) {
-                    if (data.isChanged())
-                        try {
-                            auxData.validate(data,
-                                             ams.get(data.getGroupId()).getFormatter(),
-                                             accession,
-                                             ignoreWarning);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
-
-            /*
-             * type is required for each qa event
-             */
-
-            if (getSampleQAs(sm) != null) {
-                for (SampleQaEventViewDO data : getSampleQAs(sm)) {
-                    if (data.isChanged())
-                        try {
-                            sampleQA.validate(data, accession, ignoreWarning);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
-
-            /*
-             * at least one sample item and items must have sample type
-             */
-            imap.clear();
-            if (getItems(sm) == null || getItems(sm).size() < 1) {
-                e.add(new FormErrorException(Messages.get()
-                                                     .sample_minOneSampleItemException(accession)));
-            } else {
-                for (SampleItemViewDO data : getItems(sm)) {
-                    imap.put(data.getId(), data);
-                    if (data.isChanged())
-                        try {
-                            item.validate(data, accession);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
-
-            /*
-             * each analysis must be valid for sample item type
-             */
-
-            amap.clear();
-            if (getAnalyses(sm) != null) {
-                for (AnalysisViewDO data : getAnalyses(sm)) {
-                    amap.put(data.getId(), data);
-                    if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged())
-                        try {
-                            analysis.validate(data,
-                                              tms.get(data.getTestId()),
-                                              accession,
-                                              imap.get(data.getSampleItemId()),
-                                              ignoreWarning);
-                            if (data.isChanged())
-                                validatePermission(getSample(sm).getAccessionNumber(),
-                                                   data,
-                                                   permission);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-                }
-            }
-
-            /*
-             * test specific analysis qa events must be valid for the analysis'
-             * test; also, type is required for each qa event
-             */
-
-            if (getAnalysisQAs(sm) != null) {
-                for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
-                    qa = qamap.get(data.getQaEventId());
-                    ana = amap.get(data.getAnalysisId());
-                    if (data.isChanged())
-                        try {
-                            analysisQA.validate(data,
-                                                accession,
-                                                imap.get(ana.getSampleItemId()).getItemSequence(),
-                                                ana,
-                                                ignoreWarning);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
-                        }
-
-                    if (qa.getTestId() != null && !qa.getTestId().equals(ana.getTestId())) {
-                        e.add(new FormErrorException(Messages.get()
-                                                             .analysisQAEvent_invalidQAException(accession,
-                                                                                                 imap.get(ana.getSampleItemId())
-                                                                                                     .getItemSequence(),
-                                                                                                 ana.getTestName(),
-                                                                                                 ana.getMethodName(),
-                                                                                                 qa.getName())));
+        if (getSampleQAs(sm) != null) {
+            for (SampleQaEventViewDO data : getSampleQAs(sm)) {
+                if (data.isChanged())
+                    try {
+                        sampleQA.validate(data, accession);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
                     }
-                }
             }
+        }
 
-            /*
-             * results must be valid for the group
-             */
+        /*
+         * at least one sample item and items must have sample type
+         */
+        imap = new HashMap<Integer, SampleItemViewDO>();
+        if (getItems(sm) == null || getItems(sm).size() < 1) {
+            e.add(new FormErrorException(Messages.get().sample_minOneSampleItemException(accession)));
+        } else {
+            for (SampleItemViewDO data : getItems(sm)) {
+                imap.put(data.getId(), data);
+                if (data.isChanged())
+                    try {
+                        item.validate(data, accession);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
+                    }
+            }
+        }
 
-            if (getResults(sm) != null) {
-                for (ResultViewDO data : getResults(sm)) {
-                    ana = amap.get(data.getAnalysisId());
-                    if (data.isChanged() || ana.isChanged())
-                        try {
-                            result.validate(data,
-                                            tms.get(ana.getTestId()).getFormatter(),
-                                            accession,
-                                            amap.get(data.getAnalysisId()),
-                                            ignoreWarning);
-                        } catch (Exception err) {
-                            DataBaseUtil.mergeException(e, err);
+        /*
+         * each analysis must be valid for sample item type
+         */
+
+        amap = new HashMap<Integer, AnalysisViewDO>();
+        if (getAnalyses(sm) != null) {
+            for (AnalysisViewDO data : getAnalyses(sm)) {
+                amap.put(data.getId(), data);
+                if (data.isChanged() || imap.get(data.getSampleItemId()).isChanged())
+                    try {
+                        analysis.validate(data,
+                                          tms.get(data.getTestId()),
+                                          accession,
+                                          imap.get(data.getSampleItemId()));
+                        if (data.isChanged())
+                            validatePermission(getSample(sm).getAccessionNumber(), data, permission);
+                        /*
+                         * if validation succeeded for an analysis previously in
+                         * error, change the status to mark it as not in error
+                         */
+                        if (Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(data.getStatusId()))
+                            analysisHelper.changeAnalysisStatus(sm,
+                                                                data.getId(),
+                                                                Constants.dictionary().ANALYSIS_LOGGED_IN);
+                        else if (Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(data.getStatusId()))
+                            analysisHelper.changeAnalysisStatus(sm,
+                                                                data.getId(),
+                                                                Constants.dictionary().ANALYSIS_INPREP);
+                        else if (Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(data.getStatusId()))
+                            analysisHelper.changeAnalysisStatus(sm,
+                                                                data.getId(),
+                                                                Constants.dictionary().ANALYSIS_INITIATED);
+                        else if (Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(data.getStatusId()))
+                            analysisHelper.changeAnalysisStatus(sm,
+                                                                data.getId(),
+                                                                Constants.dictionary().ANALYSIS_COMPLETED);
+                    } catch (ValidationErrorsList err) {
+                        if (err.hasWarnings()) {
+                            /*
+                             * set the analysis in error because its data is
+                             * inconsistent e.g. its unit of measure is not
+                             * valid for the sample item's sample type 
+                             */
+                            if (Constants.dictionary().ANALYSIS_LOGGED_IN.equals(data.getStatusId()))
+                                analysisHelper.changeAnalysisStatus(sm,
+                                                                    data.getId(),
+                                                                    Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN);
+                            else if (Constants.dictionary().ANALYSIS_INPREP.equals(data.getStatusId()))
+                                analysisHelper.changeAnalysisStatus(sm,
+                                                                    data.getId(),
+                                                                    Constants.dictionary().ANALYSIS_ERROR_INPREP);
+                            else if (Constants.dictionary().ANALYSIS_INITIATED.equals(data.getStatusId()))
+                                analysisHelper.changeAnalysisStatus(sm,
+                                                                    data.getId(),
+                                                                    Constants.dictionary().ANALYSIS_ERROR_INITIATED);
+                            else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(data.getStatusId()))
+                                analysisHelper.changeAnalysisStatus(sm,
+                                                                    data.getId(),
+                                                                    Constants.dictionary().ANALYSIS_ERROR_COMPLETED);
                         }
+                        DataBaseUtil.mergeException(e, err);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
+                    }
+            }
+        }
+
+        /*
+         * test specific analysis qa events must be valid for the analysis'
+         * test; also, type is required for each qa event
+         */
+
+        if (getAnalysisQAs(sm) != null) {
+            for (AnalysisQaEventViewDO data : getAnalysisQAs(sm)) {
+                qa = qas.get(data.getQaEventId());
+                ana = amap.get(data.getAnalysisId());
+                if (data.isChanged())
+                    try {
+                        analysisQA.validate(data, accession, imap.get(ana.getSampleItemId())
+                                                                 .getItemSequence(), ana);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
+                    }
+
+                if (qa.getTestId() != null && !qa.getTestId().equals(ana.getTestId())) {
+                    e.add(new FormErrorException(Messages.get()
+                                                         .analysisQAEvent_invalidQAException(accession,
+                                                                                             imap.get(ana.getSampleItemId())
+                                                                                                 .getItemSequence(),
+                                                                                             ana.getTestName(),
+                                                                                             ana.getMethodName(),
+                                                                                             qa.getName())));
                 }
             }
+        }
 
-            try {
-                validateForDelete(sm);
-            } catch (Exception err) {
-                DataBaseUtil.mergeException(e, err);
+        /*
+         * results must be valid for the group
+         */
+
+        if (getResults(sm) != null) {
+            for (ResultViewDO data : getResults(sm)) {
+                ana = amap.get(data.getAnalysisId());
+                if (data.isChanged() || ana.isChanged())
+                    try {
+                        result.validate(data,
+                                        tms.get(ana.getTestId()).getFormatter(),
+                                        accession,
+                                        amap.get(data.getAnalysisId()));
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
+                    }
             }
+        }
+
+        try {
+            validateForDelete(sm);
+        } catch (Exception err) {
+            DataBaseUtil.mergeException(e, err);
         }
 
         if (e.size() > 0)
@@ -2105,8 +2258,8 @@ public class SampleManager1Bean {
     /**
      * Validate that the user has permission to add/update this analysis DO
      */
-    protected void validatePermission(Integer accession, AnalysisViewDO data,
-                                      SystemUserPermission perm) throws Exception {
+    private void validatePermission(Integer accession, AnalysisViewDO data,
+                                    SystemUserPermission perm) throws Exception {
         SectionPermission sp;
 
         sp = perm.getSection(data.getSectionName());
@@ -2141,7 +2294,7 @@ public class SampleManager1Bean {
      * Validate that removing any record won't cause any discrepancies in the
      * data e.g. links to nonexistent records
      */
-    protected void validateForDelete(SampleManager1 sm) throws Exception {
+    private void validateForDelete(SampleManager1 sm) throws Exception {
         Integer accession;
         SampleItemViewDO item;
         AnalysisViewDO ana;
@@ -2149,7 +2302,13 @@ public class SampleManager1Bean {
         if (getRemoved(sm) == null)
             return;
 
-        accession = DataBaseUtil.toInteger(getSample(sm).getAccessionNumber());
+        /*
+         * for display
+         */
+        accession = getSample(sm).getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+
         for (DataObject data : getRemoved(sm)) {
             if (data instanceof SampleItemViewDO) {
                 item = (SampleItemViewDO)data;
@@ -2183,10 +2342,10 @@ public class SampleManager1Bean {
      * creates an analysis and results using the requested test. It also finds
      * and sets the prep or returns list of prep tests.
      */
-    protected AnalysisViewDO addAnalysisAndPrep(SampleTestReturnVO ret,
-                                                HashMap<Integer, AnalysisViewDO> analyses,
-                                                TestManager tm, SampleTestRequestVO test,
-                                                ArrayList<Integer> analyteIds) throws Exception {
+    private AnalysisViewDO addAnalysisAndPrep(SampleTestReturnVO ret,
+                                              HashMap<Integer, AnalysisViewDO> analyses,
+                                              TestManager tm, SampleTestRequestVO test,
+                                              ArrayList<Integer> analyteIds) throws Exception {
         AnalysisViewDO ana;
         ArrayList<Integer> prepIds;
 
@@ -2195,7 +2354,7 @@ public class SampleManager1Bean {
                                          tm,
                                          test.getSectionId(),
                                          ret.getErrors());
-        prepIds = analysisHelper.setPrepForAnalysis(ana, analyses, tm);
+        prepIds = analysisHelper.setPrepForAnalysis(ret.getManager(), ana, analyses, tm);
         if (prepIds != null)
             for (Integer id : prepIds)
                 ret.addTest(test.getSampleItemId(), id, ana.getId(), null, null, null, false, null);

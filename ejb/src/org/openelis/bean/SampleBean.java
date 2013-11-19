@@ -478,7 +478,8 @@ public class SampleBean {
         return data;
     }
 
-    public void validate(SampleDO data, Integer maxAccession, boolean ignoreWarning) throws Exception {
+    public void validate(SampleDO data, Integer maxAccession) throws Exception {
+        Integer accession;
         String d;
         Calendar cal;
         ValidationErrorsList e;
@@ -489,12 +490,20 @@ public class SampleBean {
         // want to check the duplicate again since it will not guarantee
         // that by the time we insert it will still be unique, and will
         // slow us down.
+        
+        /*
+         * for display
+         */
+        accession = data.getAccessionNumber();
+        if (accession == null)
+            accession = 0;
+        
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_accessionNumberNotValidException(DataBaseUtil.toInteger(data.getAccessionNumber()))));
+                                                 .sample_accessionNumberNotValidException(accession)));
         else if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_accessionNumberNotInUse(data.getAccessionNumber())));
+                                                 .sample_accessionNumberNotInUse(accession)));
 
         // domain
         d = data.getDomain();
@@ -511,15 +520,15 @@ public class SampleBean {
         minEnt = null;
         if (ent == null)
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_enteredDateRequiredException(data.getAccessionNumber())));
+                                                 .sample_enteredDateRequiredException(accession)));
         else
             minEnt = ent.add( -180);
         if (rec == null)
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_receivedDateRequiredException(data.getAccessionNumber())));
-        else if (rec.before(minEnt) && !ignoreWarning)
+                                                 .sample_receivedDateRequiredException(accession)));
+        else if (rec.before(minEnt))
             e.add(new FormErrorWarning(Messages.get()
-                                               .sample_receivedTooOldWarning(data.getAccessionNumber())));
+                                               .sample_receivedTooOldWarning(accession)));
         col = data.getCollectionDate();
         if (data.getCollectionTime() != null) {
             cal = Calendar.getInstance();
@@ -531,10 +540,10 @@ public class SampleBean {
         if (col != null) {
             if (col.after(rec))
                 e.add(new FormErrorException(Messages.get()
-                                                     .sample_collectedDateInvalidError(data.getAccessionNumber())));
-            if (col.before(minEnt) && !ignoreWarning)
+                                                     .sample_collectedDateInvalidError(accession)));
+            if (col.before(minEnt))
                 e.add(new FormErrorException(Messages.get()
-                                                     .sample_collectedTooOldWarning(data.getAccessionNumber())));
+                                                     .sample_collectedTooOldWarning(accession)));
         }
 
         if (e.size() > 0)
