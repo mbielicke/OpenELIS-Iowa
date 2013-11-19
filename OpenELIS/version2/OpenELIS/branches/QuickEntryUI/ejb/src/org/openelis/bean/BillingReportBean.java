@@ -102,6 +102,9 @@ public class BillingReportBean {
 
     @EJB
     private AnalysisReportFlagsBean analysisReportFlags;
+    
+    @EJB
+    private DictionaryCacheBean     dictionary;
 
     private static final String     RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
                                     EOL = "\r\n";
@@ -387,7 +390,7 @@ public class BillingReportBean {
                     anaCharge = 0.0;
                     for (ResultDO data : analytes) {
                         if (data.getAnalyteId().equals(SECTION_ANALYTE_ID)) {
-                            section = data.getValue();
+                            section = dictionary.getById(Integer.parseInt(data.getValue())).getEntry();
                         } else {
                             if ("Y".equals(data.getIsReportable()) && data.getValue() != null) {
                                 billAnalytes++;

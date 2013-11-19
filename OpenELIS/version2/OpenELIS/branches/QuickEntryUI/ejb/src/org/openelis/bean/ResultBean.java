@@ -635,7 +635,7 @@ public class ResultBean {
     }
 
     public void validate(ResultViewDO data, ResultFormatter rf, Integer accession,
-                         AnalysisViewDO analysis, boolean ignoreWarning) throws Exception {
+                         AnalysisViewDO analysis) throws Exception {
         String test, method, value;
         ValidationErrorsList e;
 
