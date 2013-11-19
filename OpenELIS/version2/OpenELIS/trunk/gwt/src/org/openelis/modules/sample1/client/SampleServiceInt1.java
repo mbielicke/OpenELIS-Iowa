@@ -60,6 +60,8 @@ public interface SampleServiceInt1 extends RemoteService {
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception;
     
+    public SampleManager1 fetchByAccession(Integer accessionNum, SampleManager1.Load... elements) throws Exception;
+
     public ArrayList<IdAccessionVO> query(Query query) throws Exception;
 
     public SampleManager1 fetchForUpdate(Integer sampleId, Load... elements) throws Exception;

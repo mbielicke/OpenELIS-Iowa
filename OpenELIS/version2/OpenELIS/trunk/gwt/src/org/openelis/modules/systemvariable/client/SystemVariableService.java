@@ -58,6 +58,11 @@ public class SystemVariableService implements SystemVariableServiceInt,
     }
 
     @Override
+    public void fetchByExactName(String name, AsyncCallback<SystemVariableDO> callback) {
+        service.fetchByExactName(name, callback);
+    }
+
+    @Override
     public void fetchForUpdate(Integer id, AsyncCallback<SystemVariableDO> callback) {
         service.fetchForUpdate(id, callback);
     }
@@ -87,6 +92,15 @@ public class SystemVariableService implements SystemVariableServiceInt,
         
         callback = new Callback<ArrayList<SystemVariableDO>>();
         service.fetchByName(name, callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public SystemVariableDO fetchByExactName(String name) throws Exception {
+        Callback<SystemVariableDO> callback;
+        
+        callback = new Callback<SystemVariableDO>();
+        service.fetchByExactName(name, callback);
         return callback.getResult();
     }
 

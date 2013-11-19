@@ -16,6 +16,8 @@ public interface SystemVariableServiceInt extends XsrfProtectedService {
 
     ArrayList<SystemVariableDO> fetchByName(String name) throws Exception;
 
+    SystemVariableDO fetchByExactName(String name) throws Exception;
+
     ArrayList<IdNameVO> query(Query query) throws Exception;
 
     SystemVariableDO add(SystemVariableDO data) throws Exception;

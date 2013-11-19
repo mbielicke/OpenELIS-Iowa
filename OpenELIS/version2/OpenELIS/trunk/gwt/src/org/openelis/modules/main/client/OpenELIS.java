@@ -67,6 +67,7 @@ import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
+import org.openelis.modules.quickEntry.client.QuickEntryScreenUI;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
@@ -227,11 +228,15 @@ public class OpenELIS extends Screen {
             public void execute() {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
+                        QuickEntryScreenUI screen;
+
                         try {
-                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window(false);
+                            org.openelis.ui.widget.Window window = new org.openelis.ui.widget.Window();
                             window.setName(msg.quickEntry());
-                            window.setSize("20px", "20px");
-                            window.setContent(new QuickEntryScreen(window));
+                            window.setSize("830px", "577px");
+                            screen = new QuickEntryScreenUI(window);
+                            window.setContent(screen);
+                            screen.initialize();
                             browser.addWindow(window, "quickEntry");
                         } catch (Throwable e) {
                             remote().log(Level.SEVERE, e.getMessage(), e);
