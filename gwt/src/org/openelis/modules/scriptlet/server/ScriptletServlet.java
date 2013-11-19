@@ -35,6 +35,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ScriptletDO;
 import org.openelis.scriptlet.ScriptletBeanInt;
 import org.openelis.scriptlet.ScriptletObject;
+import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
 import org.openelis.utils.EJBFactory;
 import org.openelis.modules.scriptlet.client.ScriptletServiceInt;
@@ -70,6 +71,59 @@ public class ScriptletServlet extends RemoteServlet implements ScriptletServiceI
         
         try {
             return script.run(so);
+        }catch(Exception e) {
+            throw serializeForGWT(e);
+        }
+    }
+
+    @Override
+    public ScriptletDO fetchById(Integer id) throws Exception {
+        try {
+            return scriptlet.fetchById(id);
+        }catch(Exception e){
+            throw serializeForGWT(e);
+        }
+    }
+
+    @Override
+    public ScriptletDO fetchForUpdate(Integer id) throws Exception {
+        try {
+            return scriptlet.fetchForUpdate(id);
+        }catch(Exception e) {
+            throw serializeForGWT(e);
+        }
+    }
+    
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        try {
+            return scriptlet.query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    @Override
+    public ScriptletDO add(ScriptletDO data) throws Exception {
+        try {
+            return scriptlet.add(data);
+        }catch(Exception e) {
+            throw serializeForGWT(e);
+        }
+    }
+
+    @Override
+    public ScriptletDO update(ScriptletDO data) throws Exception {
+        try {
+            return scriptlet.update(data);
+        }catch(Exception e) {
+            throw serializeForGWT(e);
+        }
+    }
+
+    @Override
+    public ScriptletDO abortUpdate(Integer id) throws Exception {
+        try {
+            return scriptlet.abortUpdate(id);
         }catch(Exception e) {
             throw serializeForGWT(e);
         }

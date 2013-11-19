@@ -142,7 +142,7 @@
 								</td>
 								<td>
 									<w:TextBox ui:field="numberOfForms" width="35px"
-										field="Integer" />
+										field="Integer" required="true" />
 								</td>
 							</tr>
 							<tr>

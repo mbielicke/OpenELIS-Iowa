@@ -645,7 +645,7 @@ public class VendorOrderScreenUI extends Screen {
                 field.setType(QueryData.Type.STRING);
                 query.setFields(field);
 
-                query.setRowsPerPage(22);
+                query.setRowsPerPage(25);
                 try {
                     OrderService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                         public void onSuccess(ArrayList<IdNameVO> result) {

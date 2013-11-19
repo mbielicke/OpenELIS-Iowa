@@ -1,38 +1,13 @@
-/**
- * Exhibit A - UIRF Open-source Based Public Software License.
- * 
- * The contents of this file are subject to the UIRF Open-source Based Public
- * Software License(the "License"); you may not use this file except in
- * compliance with the License. You may obtain a copy of the License at
- * openelis.uhl.uiowa.edu
- * 
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
- * the specific language governing rights and limitations under the License.
- * 
- * The Original Code is OpenELIS code.
- * 
- * The Initial Developer of the Original Code is The University of Iowa.
- * Portions created by The University of Iowa are Copyright 2006-2008. All
- * Rights Reserved.
- * 
- * Contributor(s): ______________________________________.
- * 
- * Alternatively, the contents of this file marked "Separately-Licensed" may be
- * used under the terms of a UIRF Software license ("UIRF Software License"), in
- * which case the provisions of a UIRF Software License are applicable instead
- * of those above.
- */
-package org.openelis.modules.method.client;
+package org.openelis.modules.scriptlet.client;
 
 import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
+import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 import static org.openelis.ui.screen.State.ADD;
 import static org.openelis.ui.screen.State.DEFAULT;
 import static org.openelis.ui.screen.State.DELETE;
 import static org.openelis.ui.screen.State.DISPLAY;
 import static org.openelis.ui.screen.State.QUERY;
 import static org.openelis.ui.screen.State.UPDATE;
-import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
 
 import java.util.ArrayList;
 
@@ -40,8 +15,8 @@ import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.MethodDO;
-import org.openelis.meta.MethodMeta;
+import org.openelis.domain.ScriptletDO;
+import org.openelis.meta.ScriptletMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.ModulePermission;
@@ -53,11 +28,12 @@ import org.openelis.ui.event.BeforeCloseEvent;
 import org.openelis.ui.event.BeforeCloseHandler;
 import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
-import org.openelis.ui.widget.AtoZButtons;
 import org.openelis.ui.widget.Button;
+import org.openelis.ui.widget.ButtonGroup;
 import org.openelis.ui.widget.CheckBox;
 import org.openelis.ui.widget.Item;
 import org.openelis.ui.widget.Menu;
@@ -66,7 +42,6 @@ import org.openelis.ui.widget.TextBox;
 import org.openelis.ui.widget.WindowInt;
 import org.openelis.ui.widget.calendar.Calendar;
 import org.openelis.ui.widget.table.Table;
-import org.openelis.ui.screen.AsyncCallbackUI;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -80,69 +55,76 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Widget;
 
-public class MethodScreenUI extends Screen {
-    @UiTemplate("Method.ui.xml")
-    interface MethodUiBinder extends UiBinder<Widget, MethodScreenUI> {
+public class ScriptletScreen extends Screen {
+
+    @UiTemplate("Scriptlet.ui.xml")
+    interface ScriptletUiBinder extends UiBinder<Widget, ScriptletScreen> {
     };
 
-    public static final MethodUiBinder uiBinder = GWT.create(MethodUiBinder.class);
+    public static final ScriptletUiBinder uiBinder = GWT.create(ScriptletUiBinder.class);
 
-    private MethodDO                   data;
-    private ModulePermission           userPermission;
-
-    @UiField
-    protected Calendar                 activeBegin, activeEnd;
-    @UiField
-    protected TextBox<String>          name, description, reportingDescription;
-    @UiField
-    protected CheckBox                 isActive;
-    @UiField
-    protected Button                   query, previous, next, add, update, commit, abort, atozNext,
-                                       atozPrev, optionsButton;
+    private ScriptletDO                   data;
+    private ModulePermission              userPermission;
 
     @UiField
-    protected Menu                     optionsMenu;
-    @UiField
-    protected MenuItem                 history;
-    @UiField
-    protected AtoZButtons              atozButtons;
+    protected TextBox<String>             name, bean;
 
     @UiField
-    protected Table                    atozTable;
+    protected CheckBox                    isActive;
 
-    private ScreenNavigator<IdNameVO>  nav;
+    @UiField
+    protected Calendar                    activeBegin, activeEnd;
+
+    @UiField
+    protected Button                      query, add, update, commit, abort, next, previous,
+                                          optionsButton, atozNext, atozPrev;
+
+    @UiField
+    protected ButtonGroup                 atozButtons;
+
+    @UiField
+    protected Menu                        optionsMenu;
+
+    @UiField
+    protected MenuItem                    history;
+
+    @UiField
+    protected Table                       atozTable;
+
+    private ScreenNavigator<IdNameVO>     nav;
     
-    private AsyncCallbackUI<MethodDO>  fetchForUpdateCall,addCall,updateCall, abortCall, fetchCall;
+    private AsyncCallbackUI<ScriptletDO>  fetchCall, abortCall, updateCall, fetchForUpdateCall, addCall;
     
-    private AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
+    private AsyncCallbackUI<ArrayList<IdNameVO>>     queryCall;
 
-    public MethodScreenUI(WindowInt window) throws Exception {
+    public ScriptletScreen(WindowInt window) throws Exception {
         setWindow(window);
-        
-        initWidget(uiBinder.createAndBindUi(this));
-        
-        userPermission = UserCache.getPermission().getModule("method");
-        if (userPermission == null)
-            throw new PermissionException(Messages.get().screenPermException("Method Screen"));
 
-        data = new MethodDO();
+        initWidget(uiBinder.createAndBindUi(this));
+
+        userPermission = UserCache.getPermission().getModule("scriptlet");
+        if (userPermission == null)
+            throw new PermissionException(Messages.get().screenPermException("Scriptlet Screen"));
+
+        data = new ScriptletDO();
 
         initialize();
         setState(DEFAULT);
         fireDataChange();
     }
 
-    private void initialize() {
+    protected void initialize() {
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                query.setEnabled(isState(QUERY,DEFAULT, DISPLAY) && userPermission.hasSelectPermission());
+                query.setEnabled(isState(QUERY, DEFAULT, DISPLAY) &&
+                                 userPermission.hasSelectPermission());
                 if (isState(QUERY)) {
                     query.lock();
                     query.setPressed(true);
                 }
             }
         });
-        
+
         addShortcut(query, 'q', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
@@ -150,56 +132,56 @@ public class MethodScreenUI extends Screen {
                 previous.setEnabled(isState(DISPLAY));
             }
         });
-        
-        addShortcut(previous,'p',CTRL);
+
+        addShortcut(previous, 'p', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 next.setEnabled(isState(DISPLAY));
             }
         });
-        
-        addShortcut(next,'n',CTRL);
+
+        addShortcut(next, 'n', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                add.setEnabled(isState(ADD,DEFAULT, DISPLAY) && userPermission.hasAddPermission());
-                if (isState(ADD)) { 
+                add.setEnabled(isState(ADD, DEFAULT, DISPLAY) && userPermission.hasAddPermission());
+                if (isState(ADD)) {
                     add.lock();
                     add.setPressed(true);
                 }
             }
         });
-        
-        addShortcut(add,'a',CTRL);
+
+        addShortcut(add, 'a', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                update.setEnabled(isState(UPDATE,DISPLAY) && userPermission.hasUpdatePermission());
+                update.setEnabled(isState(UPDATE, DISPLAY) && userPermission.hasUpdatePermission());
                 if (isState(UPDATE)) {
                     update.lock();
                     update.setPressed(true);
                 }
             }
         });
-        
-        addShortcut(update,'u',CTRL);
+
+        addShortcut(update, 'u', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 commit.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
             }
         });
-        
-        addShortcut(commit,'m',CTRL);
+
+        addShortcut(commit, 'm', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
                 abort.setEnabled(isState(QUERY, ADD, UPDATE, DELETE));
             }
         });
-        
-        addShortcut(abort,'o',CTRL);
+
+        addShortcut(abort, 'o', CTRL);
 
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
@@ -217,7 +199,7 @@ public class MethodScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(name, MethodMeta.getName(), new ScreenHandler<String>() {
+        addScreenHandler(name, ScriptletMeta.getName(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 name.setValue(data.getName());
             }
@@ -232,51 +214,31 @@ public class MethodScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? description : activeEnd;
+                return forward ? bean : activeEnd;
             }
         });
 
-        addScreenHandler(description, MethodMeta.getDescription(), new ScreenHandler<String>() {
+        addScreenHandler(bean, ScriptletMeta.getBean(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                description.setValue(data.getDescription());
+                bean.setValue(data.getBean());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setDescription(event.getValue());
+                data.setBean(event.getValue());
+                bean.clearEndUserExceptions();
             }
 
             public void onStateChange(StateChangeEvent event) {
-                description.setEnabled(isState(QUERY, ADD, UPDATE));
-                description.setQueryMode(isState(QUERY));
+                bean.setEnabled(isState(QUERY, ADD, UPDATE));
+                bean.setQueryMode(isState(QUERY));
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? reportingDescription : name;
+                return forward ? isActive : name;
             }
         });
 
-        addScreenHandler(reportingDescription,
-                         MethodMeta.getReportingDescription(),
-                         new ScreenHandler<String>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 reportingDescription.setValue(data.getReportingDescription());
-                             }
-
-                             public void onValueChange(ValueChangeEvent<String> event) {
-                                 data.setReportingDescription(event.getValue());
-                             }
-
-                             public void onStateChange(StateChangeEvent event) {
-                                 reportingDescription.setEnabled(isState(QUERY, ADD, UPDATE));
-                                 reportingDescription.setQueryMode(isState(QUERY));
-                             }
-
-                             public Widget onTab(boolean forward) {
-                                 return forward ? isActive : description;
-                             }
-                         });
-
-        addScreenHandler(isActive, MethodMeta.getIsActive(), new ScreenHandler<String>() {
+        addScreenHandler(isActive, ScriptletMeta.getIsActive(), new ScreenHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 isActive.setValue(data.getIsActive());
             }
@@ -291,11 +253,11 @@ public class MethodScreenUI extends Screen {
             }
 
             public Widget onTab(boolean forward) {
-                return forward ? activeBegin : reportingDescription;
+                return forward ? activeBegin : bean;
             }
         });
 
-        addScreenHandler(activeBegin, MethodMeta.getActiveBegin(), new ScreenHandler<Datetime>() {
+        addScreenHandler(activeBegin, ScriptletMeta.getIsActive(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeBegin.setValue(data.getActiveBegin());
             }
@@ -314,7 +276,7 @@ public class MethodScreenUI extends Screen {
             }
         });
 
-        addScreenHandler(activeEnd, MethodMeta.getActiveEnd(), new ScreenHandler<Datetime>() {
+        addScreenHandler(activeEnd, ScriptletMeta.getIsActive(), new ScreenHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 activeEnd.setValue(data.getActiveEnd());
             }
@@ -326,7 +288,7 @@ public class MethodScreenUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 activeEnd.setEnabled(isState(QUERY, ADD, UPDATE));
                 activeEnd.setQueryMode(isState(QUERY));
-            }     
+            }
 
             public Widget onTab(boolean forward) {
                 return forward ? name : activeBegin;
@@ -351,26 +313,26 @@ public class MethodScreenUI extends Screen {
                         public void failure(Throwable error) {
                             setQueryResult(null);
                             Window.alert("Error: Method call query failed; " + error.getMessage());
-                            window.setError("Query Failed");//Messages.get().queryFailed());
+                            window.setError("Query Failed");// Messages.get().queryFailed());
                         }
                     
                         public void notFound() {
                             window.setDone(Messages.get().noRecordsFound());
                             setState(DEFAULT);
                         }
-                     
+                    
                         public void lastPage() {
                             window.setError(Messages.get().noMoreRecordInDir());
-                        }
+                        }                            
+                     
                     };
                 }
                 
-                MethodService.get().query(query,queryCall);
+                ScriptletService.get().query(query,queryCall); 
             }
 
             public boolean fetch(IdNameVO entry) {
-                fetchById( (entry == null) ? null : entry.getId());
-                return true;
+                return fetchById( (entry == null) ? null : entry.getId());
             }
 
             public ArrayList<Item<Integer>> getModel() {
@@ -402,7 +364,7 @@ public class MethodScreenUI extends Screen {
                 QueryData field;
 
                 field = new QueryData();
-                field.setKey(MethodMeta.getName());
+                field.setKey(ScriptletMeta.getName());
                 field.setQuery( ((Button)event.getSource()).getAction());
                 field.setType(QueryData.Type.STRING);
 
@@ -421,10 +383,10 @@ public class MethodScreenUI extends Screen {
             }
         });
     }
-
+    
     @UiHandler("query")
     protected void query(ClickEvent event) {
-        data = new MethodDO();
+        data = new ScriptletDO();
         setState(QUERY);
         fireDataChange();
 
@@ -444,7 +406,7 @@ public class MethodScreenUI extends Screen {
 
     @UiHandler("add")
     protected void add(ClickEvent event) {
-        data = new MethodDO();
+        data = new ScriptletDO();
         data.setIsActive("Y");
         setState(ADD);
         fireDataChange();
@@ -458,16 +420,16 @@ public class MethodScreenUI extends Screen {
         window.setBusy(Messages.get().lockForUpdate());
 
         if(fetchForUpdateCall == null) {
-            fetchForUpdateCall = new AsyncCallbackUI<MethodDO>() {
-                public void success(MethodDO result) {
+            fetchForUpdateCall = new AsyncCallbackUI<ScriptletDO>() {
+                public void success(ScriptletDO result) {
                     data = result;
                     setState(UPDATE);
                     fireDataChange();
                     name.setFocus(true);
                 }
-        
-                public void failure(Throwable e) {
-                    Window.alert(e.getMessage());
+            
+                public void failure(Throwable caught) {
+                    Window.alert(caught.getMessage());
                 }
             
                 public void finish() {
@@ -476,7 +438,7 @@ public class MethodScreenUI extends Screen {
             };
         }
         
-        MethodService.get().fetchForUpdate(data.getId(),fetchForUpdateCall); 
+        ScriptletService.get().fetchForUpdate(data.getId(),fetchForUpdateCall); 
     }
 
     @UiHandler("commit")
@@ -503,46 +465,48 @@ public class MethodScreenUI extends Screen {
             case ADD:
                 window.setBusy(Messages.get().adding());
                 if(addCall == null) {
-                    addCall = new AsyncCallbackUI<MethodDO>() {
-                        public void success(MethodDO result) {
+                    addCall = new AsyncCallbackUI<ScriptletDO> () {
+                        public void success(ScriptletDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange();
                             window.setDone(Messages.get().addingComplete());
                         }
+                    
+                        public void failure(Throwable e) {
+                            Window.alert("commitAdd(): " + e.getMessage());
+                            window.clearStatus();
+                        }
+                    
                         public void validationErrors(ValidationErrorsList e) {
                             showErrors(e);
                         }
-                        public void failure(Throwable caught) {
-                            Window.alert("commitAdd(): " + caught.getMessage());
-                            window.clearStatus();
-                        }
                     };
                 }
-                MethodService.get().add(data, addCall);
+                ScriptletService.get().add(data,addCall); 
                 break;
             case UPDATE:
                 window.setBusy(Messages.get().updating());
                 if(updateCall == null) {
-                    updateCall = new AsyncCallbackUI<MethodDO>() {
-                        public void success(MethodDO result) {
+                    updateCall = new AsyncCallbackUI<ScriptletDO>() {
+                        public void success(ScriptletDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange();
                             window.setDone(Messages.get().updatingComplete());
                         }
-                
-                        public void validationErrors(ValidationErrorsList e) {
-                            showErrors(e);
-                        }
                     
                         public void failure(Throwable e) {
                             Window.alert("commitUpdate(): " + e.getMessage());
                             window.clearStatus();
+                        }                    
+                    
+                        public void validationErrors(ValidationErrorsList e) {
+                            showErrors(e);
                         }
                     };
                 }
-                MethodService.get().update(data, updateCall);
+                ScriptletService.get().update(data,updateCall); 
             default :
                 window.clearStatus();
         }
@@ -565,13 +529,12 @@ public class MethodScreenUI extends Screen {
                 break;
             case UPDATE:
                 if(abortCall == null) {
-                    abortCall =  new AsyncCallbackUI<MethodDO>() {
-                        public void success(MethodDO result) {
+                    abortCall = new AsyncCallbackUI<ScriptletDO>() {
+                        public void success(ScriptletDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange();
                         }
-                    
                         public void failure(Throwable e) {
                             Window.alert(e.getMessage());
                             fetchById(null);
@@ -582,7 +545,7 @@ public class MethodScreenUI extends Screen {
                         }
                     };
                 }
-                MethodService.get().abortUpdate(data.getId(),abortCall);
+                ScriptletService.get().abortUpdate(data.getId(),abortCall);
                 break;
             default:
                 window.clearStatus();
@@ -593,28 +556,27 @@ public class MethodScreenUI extends Screen {
         IdNameVO hist;
 
         hist = new IdNameVO(data.getId(), data.getName());
-        HistoryScreen.showHistory(Messages.get().methodHistory(), Constants.table().METHOD, hist);
+        HistoryScreen.showHistory(Messages.get().methodHistory(), Constants.table().SCRIPTLET, hist);
     }
-
-    protected void fetchById(Integer id) {
+    
+    protected boolean fetchById(Integer id) {
         if (id == null) {
-            data = new MethodDO();
+            data = new ScriptletDO();
             setState(DEFAULT);
         } else {
             window.setBusy(Messages.get().fetching());
+            
             if(fetchCall == null) {
-                fetchCall = new AsyncCallbackUI<MethodDO>() {
-                    public void success(MethodDO result) {
+                fetchCall = new AsyncCallbackUI<ScriptletDO>() {
+                    public void success(ScriptletDO result) {
                         data = result;
                         setState(DISPLAY);
                     }
-            
                     public void notFound() {
                         fetchById(null);
                         window.setDone(Messages.get().noRecordsFound());
                         nav.clearSelection();
                     }
-                
                     public void failure(Throwable e) {
                         fetchById(null);
                         e.printStackTrace();
@@ -628,9 +590,10 @@ public class MethodScreenUI extends Screen {
                     }
                 };
             }
-            MethodService.get().fetchById(id, fetchCall);
+            
+            ScriptletService.get().fetchById(id,fetchCall);
         }
-
+        return true;
     }
 
 }

@@ -1006,7 +1006,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 field.setType(QueryData.Type.STRING);
                 query.setFields(field);
 
-                query.setRowsPerPage(23);
+                query.setRowsPerPage(25);
                 try {
                     OrderService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
                         public void onSuccess(ArrayList<IdNameVO> result) {
