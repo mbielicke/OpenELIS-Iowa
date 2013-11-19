@@ -5668,6 +5668,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String gen_queryingComplete();
 
   /**
+   * Translated "Received By".
+   * 
+   * @return translated "Received By"
+   */
+  @DefaultMessage("Received By")
+  @Key("gen.receivedBy")
+  String gen_receivedBy();
+
+  /**
    * Translated "Received Date".
    * 
    * @return translated "Received Date"
@@ -11930,6 +11939,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Received")
   @Key("received")
   String received();
+
+  /**
+   * Translated "Received By must have a value".
+   * 
+   * @return translated "Received By must have a value"
+   */
+  @DefaultMessage("Received By must have a value")
+  @Key("receivedByNoValueException")
+  String receivedByNoValueException();
 
   /**
    * Translated "Received Date".
