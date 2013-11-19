@@ -144,6 +144,20 @@ public class SampleService1 implements SampleServiceInt1, SampleServiceInt1Async
     }
 
     @Override
+    public SampleManager1 fetchByAccession(Integer accessionNum, Load... elements) throws Exception {
+        Callback<SampleManager1> callback;
+
+        callback = new Callback<SampleManager1>();
+        service.fetchByAccession(accessionNum, elements, callback);
+        return callback.getResult();
+    }
+    
+    @Override
+    public void fetchByAccession(Integer accessionNum, Load[] elements, AsyncCallback<SampleManager1> callback) {
+        service.fetchByAccession(accessionNum, elements, callback);
+    }
+
+    @Override
     public ArrayList<IdAccessionVO> query(Query query) throws Exception {
         Callback<ArrayList<IdAccessionVO>> callback;
 

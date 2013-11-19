@@ -2,10 +2,10 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.services.TokenService;
@@ -104,6 +104,11 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
     @Override
     public void fetchReflexiveTestByTestId(Integer testId, AsyncCallback<TestReflexManager> callback) {
         service.fetchReflexiveTestByTestId(testId, callback);
+    }
+
+    @Override
+    public void fetchTestSectionsByTestId(Integer testId, AsyncCallback<ArrayList<TestSectionViewDO>> callback) {
+        service.fetchTestSectionsByTestId(testId, callback);
     }
 
     @Override
@@ -245,6 +250,15 @@ public class TestService implements TestServiceInt, TestServiceIntAsync {
         
         callback = new Callback<ArrayList<TestMethodVO>>();
         service.fetchList(callback);
+        return callback.getResult();
+    }
+
+    @Override
+    public ArrayList<TestSectionViewDO> fetchTestSectionsByTestId(Integer testId) throws Exception {
+        Callback<ArrayList<TestSectionViewDO>> callback;
+        
+        callback = new Callback<ArrayList<TestSectionViewDO>>();
+        service.fetchTestSectionsByTestId(testId, callback);
         return callback.getResult();
     }
 

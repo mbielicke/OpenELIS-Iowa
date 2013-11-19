@@ -32,11 +32,12 @@ import javax.servlet.annotation.WebServlet;
 
 import org.openelis.bean.TestBean;
 import org.openelis.bean.TestManagerBean;
+import org.openelis.bean.TestSectionBean;
 import org.openelis.bean.TestTypeOfSampleBean;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.common.data.QueryData;
@@ -60,6 +61,9 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
     
     @EJB
     TestBean             test;
+    
+    @EJB
+    TestSectionBean      testSection;
     
     @EJB
     TestTypeOfSampleBean testType;
@@ -147,6 +151,14 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
     public ArrayList<TestMethodVO> fetchList() throws Exception {
         try {        
             return test.fetchList();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
+    public ArrayList<TestSectionViewDO> fetchTestSectionsByTestId(Integer id) throws Exception {
+        try {
+            return testSection.fetchByTestId(id);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }

@@ -207,11 +207,11 @@ public class QuickEntryScreen extends Screen {
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 if (todaysDate.after(event.getValue())) {
-                    Exception ex = new Exception(Messages.get().recievedDateNotTodayExceptionBody(
+                    Exception ex = new Exception(Messages.get().receivedDateNotTodayExceptionBody(
                                                                    event.getValue()
                                                                         .toString()));
                     receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                              Messages.get().recievedDateNotTodayExceptionTitle(),
+                                                              Messages.get().receivedDateNotTodayExceptionTitle(),
                                                               ex.getMessage(),
                                                               "No",
                                                               "Yes");
@@ -504,10 +504,10 @@ public class QuickEntryScreen extends Screen {
         recDate.validate();
         if (recDate.exceptions == null) {
             if (todaysDate.after(recDate.getValue())) {
-                ex = new Exception(Messages.get().recievedDateNotTodayExceptionBody(
+                ex = new Exception(Messages.get().receivedDateNotTodayExceptionBody(
                                             recDate.getValue().toString()));
                 receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                          Messages.get().recievedDateNotTodayExceptionTitle(),
+                                                          Messages.get().receivedDateNotTodayExceptionTitle(),
                                                           ex.getMessage(),
                                                           "No",
                                                           "Yes");

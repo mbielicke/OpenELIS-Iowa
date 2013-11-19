@@ -153,8 +153,6 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField(provided = true)
     protected WorksheetNotesTabUI                       notesTab;
     
-    
-    
     protected ArrayList<Integer>                        formatIds;
     protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
     protected HashMap<Integer, ResultViewDO>            modifiedResults;

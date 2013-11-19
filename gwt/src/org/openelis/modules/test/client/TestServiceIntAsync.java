@@ -2,10 +2,10 @@ package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.ui.common.data.Query;
 import org.openelis.manager.TestAnalyteManager;
@@ -46,6 +46,8 @@ public interface TestServiceIntAsync {
     void fetchPrepTestsByTestId(Integer testId, AsyncCallback<TestPrepManager> callback);
 
     void fetchReflexiveTestByTestId(Integer testId, AsyncCallback<TestReflexManager> callback);
+
+    void fetchTestSectionsByTestId(Integer testId, AsyncCallback<ArrayList<TestSectionViewDO>> callback);
 
     void fetchSampleTypeByTestId(Integer testId, AsyncCallback<TestTypeOfSampleManager> callback);
 

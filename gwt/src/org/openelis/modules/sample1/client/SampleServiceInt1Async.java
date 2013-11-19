@@ -58,6 +58,8 @@ public interface SampleServiceInt1Async {
     public void fetchByAnalyses(ArrayList<Integer> analysisIds, SampleManager1.Load elements[],
                                 AsyncCallback<ArrayList<SampleManager1>> callback);
     
+    public void fetchByAccession(Integer accessionNum, SampleManager1.Load elements[], AsyncCallback<SampleManager1> callback);
+
     public void query(Query query, AsyncCallback<ArrayList<IdAccessionVO>> callback);
     
     public void fetchForUpdate(Integer sampleId, SampleManager1.Load elements[],

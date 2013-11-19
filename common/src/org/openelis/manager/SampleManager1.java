@@ -1121,7 +1121,7 @@ public class SampleManager1 implements Serializable {
         public void removeAnalysis(Integer analysisId) {
             AnalysisViewDO data, ana;
 
-            assert analysisId > 0 : "an existing analysis cannot be removed";
+            assert analysisId < 0 : "an existing analysis cannot be removed";
 
             data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
             for (int i = 0; i < analyses.size(); i++ ) {

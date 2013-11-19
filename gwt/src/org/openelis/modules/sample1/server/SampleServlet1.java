@@ -80,6 +80,14 @@ public class SampleServlet1 extends RemoteServlet implements SampleServiceInt1 {
         }
     }
     
+    public SampleManager1 fetchByAccession(Integer accessionNum, SampleManager1.Load... elements) throws Exception {
+        try {
+            return sampleManager1.fetchByAccession(accessionNum, elements);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+    
     public ArrayList<SampleManager1> fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                                                   SampleManager1.Load... elements) throws Exception {
         try {
