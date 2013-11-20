@@ -778,6 +778,8 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                                                                          .sample_accessionNumberNotInUse(accessionNum));
                             sampleMan = SampleService1.get().getInstance(Constants.domain().QUICKENTRY);
                             sampleMan.getSample().setAccessionNumber(accessionNum);
+                            sampleMan.getSample().setReceivedDate(receivedDate.getValue());
+                            sampleMan.getSample().setReceivedById(receivedBy.getValue().getId());
                         }
                         managers.put(sampleMan.getSample().getAccessionNumber(),
                                      new SampleManagerRowCount(sampleMan, 0));
@@ -840,8 +842,6 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         try {
             smRowCount = managers.get(accessionNum);
             sampleMan = smRowCount.sampleManager;
-            sampleMan.getSample().setReceivedDate(receivedDate.getValue());
-            sampleMan.getSample().setReceivedById(receivedBy.getValue().getId());
 
             siVDO = getSampleItemForType(typeDO, sampleMan);
             siVDO.setContainerReference(tubeNum);
