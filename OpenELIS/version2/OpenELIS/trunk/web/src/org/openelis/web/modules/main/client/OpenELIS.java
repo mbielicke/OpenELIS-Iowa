@@ -290,8 +290,8 @@ public class OpenELIS extends ResizeComposite {
      * content.
      */
     private void setScreen(Widget screen, String name, String key) {
-        // screen.getDefinition().setName(name);
-        window.setContent(screen);// setContent(screen);
+        window.setName(name);
+        window.setContent(screen);
     }
 
     /**
