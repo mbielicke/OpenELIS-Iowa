@@ -131,6 +131,7 @@ public abstract class AuxDataTabUI extends Screen {
             }
 
             public void onStateChange(StateChangeEvent event) {
+                table.setEnabled(true);
                 /*
                  * this makes sure that any previous data in the table gets
                  * cleared even if the tab is not visible while the main screen
@@ -139,8 +140,6 @@ public abstract class AuxDataTabUI extends Screen {
                  */
                 if (isState(QUERY))
                     table.setModel(null);
-
-                table.setEnabled(true);
             }
         });
 
