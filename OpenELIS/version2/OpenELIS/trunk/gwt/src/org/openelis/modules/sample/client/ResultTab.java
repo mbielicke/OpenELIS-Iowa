@@ -902,7 +902,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
         if (resultTableCols == null)
             resultTableCols = (ArrayList<TableColumn>)testResultsTable.getColumns().clone();
-        testResultsTable.getColumns().clear();
+        testResultsTable.setColumns(new ArrayList<TableColumn>());
         testResultsTable.clear();
 
         for (int i = 0; i < numOfCols; i++ ) {
