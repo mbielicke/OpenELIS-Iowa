@@ -361,6 +361,7 @@ public class MethodScreenUI extends Screen {
                         }
                      
                         public void lastPage() {
+                            setQueryResult(null);
                             window.setError(Messages.get().noMoreRecordInDir());
                         }
                     };
