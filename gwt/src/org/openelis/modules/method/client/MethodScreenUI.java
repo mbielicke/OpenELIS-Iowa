@@ -356,6 +356,7 @@ public class MethodScreenUI extends Screen {
                     
                         public void notFound() {
                             window.setDone(Messages.get().noRecordsFound());
+                            setQueryResult(null);
                             setState(DEFAULT);
                         }
                      
