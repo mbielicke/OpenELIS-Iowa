@@ -104,7 +104,7 @@ public class RecurrenceTabUI extends Screen {
 
     protected OrderManager1              manager;
 
-    protected OrderRecurrenceDO          displayedRecurrence;
+    protected OrderRecurrenceDO          recurrence;
 
     public RecurrenceTabUI(Screen parentScreen) {
         this.parentScreen = parentScreen;
@@ -113,7 +113,7 @@ public class RecurrenceTabUI extends Screen {
         initialize();
 
         manager = null;
-        displayedRecurrence = null;
+        recurrence = null;
     }
 
     private void initialize() {
@@ -154,8 +154,8 @@ public class RecurrenceTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  beginDate.setEnabled(isState(QUERY) ||
-                                                      ( !canEdit && getRecurrence() != null && isState(ADD,
-                                                                                                       UPDATE)));
+                                                      ( !canEdit && recurrence != null && isState(ADD,
+                                                                                                  UPDATE)));
                                  beginDate.setQueryMode(isState(QUERY));
                              }
 
@@ -178,8 +178,8 @@ public class RecurrenceTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  endDate.setEnabled(isState(QUERY) ||
-                                                    ( !canEdit && getRecurrence() != null && isState(ADD,
-                                                                                                     UPDATE)));
+                                                    ( !canEdit && recurrence != null && isState(ADD,
+                                                                                                UPDATE)));
                                  endDate.setQueryMode(isState(QUERY));
                              }
 
@@ -201,8 +201,8 @@ public class RecurrenceTabUI extends Screen {
 
                              public void onStateChange(StateChangeEvent event) {
                                  frequency.setEnabled(isState(QUERY) ||
-                                                      ( !canEdit && getRecurrence() != null && isState(ADD,
-                                                                                                       UPDATE)));
+                                                      ( !canEdit && recurrence != null && isState(ADD,
+                                                                                                  UPDATE)));
                                  frequency.setQueryMode(isState(QUERY));
                              }
 
@@ -222,7 +222,7 @@ public class RecurrenceTabUI extends Screen {
 
             public void onStateChange(StateChangeEvent event) {
                 unit.setEnabled(isState(QUERY) ||
-                                ( !canEdit && getRecurrence() != null && isState(ADD, UPDATE)));
+                                ( !canEdit && recurrence != null && isState(ADD, UPDATE)));
                 unit.setQueryMode(isState(QUERY));
             }
 
@@ -266,8 +266,8 @@ public class RecurrenceTabUI extends Screen {
 
         addScreenHandler(showDatesButton, "showDatesButton", new ScreenHandler<Object>() {
             public void onStateChange(StateChangeEvent event) {
-                showDatesButton.setEnabled(getRecurrence() != null &&
-                                           "Y".equals(getRecurrence().getIsActive()));
+                showDatesButton.setEnabled(recurrence != null &&
+                                           "Y".equals(recurrence.getIsActive()));
             }
         });
 
@@ -293,16 +293,14 @@ public class RecurrenceTabUI extends Screen {
         boolean showDates;
         Integer freq, unit;
         Datetime bdt, edt;
-        OrderRecurrenceDO data;
 
         showDates = true;
-        data = getRecurrence();
-        if (data != null) {
+        if (recurrence != null) {
 
-            freq = data.getFrequency();
-            unit = data.getUnitId();
-            bdt = data.getActiveBegin();
-            edt = data.getActiveEnd();
+            freq = recurrence.getFrequency();
+            unit = recurrence.getUnitId();
+            bdt = recurrence.getActiveBegin();
+            edt = recurrence.getActiveEnd();
 
             if (bdt == null || edt == null || freq == null || freq < 1 || unit == null) {
                 if (isState(ADD, UPDATE))
@@ -335,51 +333,35 @@ public class RecurrenceTabUI extends Screen {
     }
 
     public void onDataChange() {
-        String act1, act2;
-        Datetime ab1, ab2, ae1, ae2;
-        OrderRecurrenceDO data1;
-        Integer id1, id2, freq1, freq2, unit1, unit2, poid1, poid2;
+        String act1;
+        Datetime ab1, ae1;
+        Integer freq1, unit1, poid1;
 
-        id1 = null;
         act1 = null;
         ab1 = null;
         ae1 = null;
         freq1 = null;
         unit1 = null;
-        data1 = getRecurrence();
-        poid1 = getParentOrderId();
-        if (data1 != null) {
-            id1 = data1.getId();
-            act1 = data1.getIsActive();
-            ab1 = data1.getActiveBegin();
-            ae1 = data1.getActiveEnd();
-            freq1 = data1.getFrequency();
-            unit1 = data1.getUnitId();
-        }
 
-        id2 = null;
-        act2 = null;
-        ab2 = null;
-        ae2 = null;
-        freq2 = null;
-        unit2 = null;
-        poid2 = parentOrderNum.getValue();
-        if (displayedRecurrence != null) {
-            id2 = displayedRecurrence.getId();
-            act2 = displayedRecurrence.getIsActive();
-            ab2 = displayedRecurrence.getActiveBegin();
-            ae2 = displayedRecurrence.getActiveEnd();
-            freq2 = displayedRecurrence.getFrequency();
-            unit2 = displayedRecurrence.getUnitId();
+        poid1 = getParentOrderId();
+        recurrence = getRecurrence();
+        if (recurrence != null) {
+            act1 = recurrence.getIsActive();
+            ab1 = recurrence.getActiveBegin();
+            ae1 = recurrence.getActiveEnd();
+            freq1 = recurrence.getFrequency();
+            unit1 = recurrence.getUnitId();
         }
         /*
          * find out if there's any difference between the recurrence data being
          * displayed and the recurrence data in the manager
          */
-        if (DataBaseUtil.isDifferent(id1, id2) || DataBaseUtil.isDifferent(act1, act2) ||
-            DataBaseUtil.isDifferent(ab1, ab2) || DataBaseUtil.isDifferent(ae1, ae2) ||
-            DataBaseUtil.isDifferent(freq1, freq2) || DataBaseUtil.isDifferent(unit1, unit2) ||
-            DataBaseUtil.isDifferent(poid1, poid2))
+        if (DataBaseUtil.isDifferent(act1, active.getValue()) ||
+            DataBaseUtil.isDifferent(ab1, beginDate.getValue()) ||
+            DataBaseUtil.isDifferent(ae1, endDate.getValue()) ||
+            DataBaseUtil.isDifferent(freq1, frequency.getValue()) ||
+            DataBaseUtil.isDifferent(unit1, unit.getValue()) ||
+            DataBaseUtil.isDifferent(poid1, parentOrderNum.getValue()))
             redraw = true;
         displayRecurrence();
     }
@@ -390,10 +372,6 @@ public class RecurrenceTabUI extends Screen {
 
         if (redraw) {
             redraw = false;
-            if (manager != null)
-                displayedRecurrence = manager.getRecurrence();
-            else
-                displayedRecurrence = null;
             evaluateEdit();
             setState(state);
             fireDataChange();
@@ -403,16 +381,13 @@ public class RecurrenceTabUI extends Screen {
     private ArrayList<Row> getTableModel(boolean showDates) {
         Integer unit;
         Datetime now;
-        OrderRecurrenceDO data;
         ArrayList<Row> model;
 
         model = new ArrayList<Row>();
         if ( !showDates)
             return model;
 
-        data = getRecurrence();
-
-        unit = data.getUnitId();
+        unit = recurrence.getUnitId();
 
         now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         if (Constants.dictionary().ORDER_RECURRENCE_UNIT_DAYS.equals(unit))
@@ -428,12 +403,10 @@ public class RecurrenceTabUI extends Screen {
     private void getModelByDay(Datetime now, ArrayList<Row> model) {
         Integer freq;
         Datetime bdt, edt, next;
-        OrderRecurrenceDO data;
 
-        data = getRecurrence();
-        freq = data.getFrequency();
-        bdt = data.getActiveBegin();
-        edt = data.getActiveEnd();
+        freq = recurrence.getFrequency();
+        bdt = recurrence.getActiveBegin();
+        edt = recurrence.getActiveEnd();
 
         if (now.before(bdt)) {
             next = bdt;
@@ -457,12 +430,10 @@ public class RecurrenceTabUI extends Screen {
         Integer freq;
         Date nd;
         Datetime bdt, edt, ndt;
-        OrderRecurrenceDO data;
 
-        data = getRecurrence();
-        freq = data.getFrequency();
-        bdt = data.getActiveBegin();
-        edt = data.getActiveEnd();
+        freq = recurrence.getFrequency();
+        bdt = recurrence.getActiveBegin();
+        edt = recurrence.getActiveEnd();
 
         bday = bdt.getDate().getDate();
         bmon = bdt.getDate().getMonth();
@@ -500,12 +471,10 @@ public class RecurrenceTabUI extends Screen {
         Integer freq;
         Date nd;
         Datetime bdt, edt, ndt;
-        OrderRecurrenceDO data;
 
-        data = getRecurrence();
-        freq = data.getFrequency();
-        bdt = data.getActiveBegin();
-        edt = data.getActiveEnd();
+        freq = recurrence.getFrequency();
+        bdt = recurrence.getActiveBegin();
+        edt = recurrence.getActiveEnd();
 
         bday = bdt.getDate().getDate();
         bmon = bdt.getDate().getMonth();
@@ -540,17 +509,15 @@ public class RecurrenceTabUI extends Screen {
     private boolean validateFrequency() {
         int bday, bmon, byr, nday, nmon, nyr, eyr;
         Integer freq, unit;
-        OrderRecurrenceDO data;
         Datetime ndt, bdt, edt, now;
         Date nd;
         String orderId;
 
-        data = getRecurrence();
-        orderId = DataBaseUtil.toString(data.getOrderId());
-        freq = data.getFrequency();
-        unit = data.getUnitId();
-        bdt = data.getActiveBegin();
-        edt = data.getActiveEnd();
+        orderId = DataBaseUtil.toString(recurrence.getOrderId());
+        freq = recurrence.getFrequency();
+        unit = recurrence.getUnitId();
+        bdt = recurrence.getActiveBegin();
+        edt = recurrence.getActiveEnd();
         now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
 
         bday = bdt.getDate().getDate();
@@ -654,13 +621,10 @@ public class RecurrenceTabUI extends Screen {
     }
 
     private String getIsActive() {
-        OrderRecurrenceDO data;
-
-        data = getRecurrence();
-        if (data == null)
+        if (recurrence == null)
             return null;
 
-        return data.getIsActive();
+        return recurrence.getIsActive();
     }
 
     private void setIsActive(String isActive) {
@@ -669,71 +633,59 @@ public class RecurrenceTabUI extends Screen {
          * manager doesn't have an OrderRecurrenceDO then one is created and all
          * the other fields are enabled
          */
-        if ("Y".equals(isActive) && getRecurrence() == null) {
-            manager.addRecurrence();
+        if ("Y".equals(isActive) && recurrence == null) {
+            recurrence = manager.addRecurrence();
             beginDate.setEnabled(true);
             endDate.setEnabled(true);
             frequency.setEnabled(true);
             unit.setEnabled(true);
         }
-        getRecurrence().setIsActive(isActive);
+        recurrence.setIsActive(isActive);
         showDatesButton.setEnabled("Y".equals(isActive));
     }
 
     private Datetime getActiveBegin() {
-        OrderRecurrenceDO data;
-
-        data = getRecurrence();
-        if (data == null)
+        if (recurrence == null)
             return null;
 
-        return data.getActiveBegin();
+        return recurrence.getActiveBegin();
     }
 
     private void setActiveBegin(Datetime activeBegin) {
-        getRecurrence().setActiveBegin(activeBegin);
+        recurrence.setActiveBegin(activeBegin);
     }
 
     private Datetime getActiveEnd() {
-        OrderRecurrenceDO data;
-
-        data = getRecurrence();
-        if (data == null)
+        if (recurrence == null)
             return null;
 
-        return data.getActiveEnd();
+        return recurrence.getActiveEnd();
     }
 
     private void setActiveEnd(Datetime activeEnd) {
-        getRecurrence().setActiveEnd(activeEnd);
+        recurrence.setActiveEnd(activeEnd);
     }
 
     private Integer getFrequency() {
-        OrderRecurrenceDO data;
-
-        data = getRecurrence();
-        if (data == null)
+        if (recurrence == null)
             return null;
 
-        return data.getFrequency();
+        return recurrence.getFrequency();
     }
 
     private void setFrequency(Integer frequency) {
-        getRecurrence().setFrequency(frequency);
+        recurrence.setFrequency(frequency);
     }
 
     private Integer getUnitId() {
-        OrderRecurrenceDO data;
-
-        data = getRecurrence();
-        if (data == null)
+        if (recurrence == null)
             return null;
 
-        return data.getUnitId();
+        return recurrence.getUnitId();
     }
 
     private void setUnitId(Integer unitId) {
-        getRecurrence().setUnitId(unitId);
+        recurrence.setUnitId(unitId);
     }
 
     private Integer getParentOrderId() {
