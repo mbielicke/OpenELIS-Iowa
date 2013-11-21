@@ -1339,14 +1339,14 @@ public class SampleManager1Bean {
         currStatusId = data.getStatusId();
         nextStatusId = currStatusId;
 
-        if (Constants.dictionary().SAMPLE_ERROR.equals(statusId)) {
-            nextStatusId = statusId;
-        } else if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(currStatusId)) {
+        if (Constants.dictionary().SAMPLE_NOT_VERIFIED.equals(currStatusId)) {
             if (Constants.dictionary().SAMPLE_LOGGED_IN.equals(statusId))
                 /*
                  * the sample was verified
                  */
                 nextStatusId = statusId;
+        } else if (Constants.dictionary().SAMPLE_ERROR.equals(statusId)) {
+            nextStatusId = statusId;
         } else if (Constants.dictionary().SAMPLE_COMPLETED.equals(statusId) &&
                    Constants.dictionary().SAMPLE_RELEASED.equals(currStatusId)) {
             /*
