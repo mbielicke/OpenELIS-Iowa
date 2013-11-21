@@ -1681,6 +1681,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String aux_data();
 
   /**
+   * Translated "Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition".
+   * 
+   * @return translated "Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition")
+  @Key("aux.defaultValueInvalidException")
+  String aux_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2);
+
+  /**
    * Translated "No matching active auxiliary group found for ''{0}''".
    * 
    * @return translated "No matching active auxiliary group found for ''{0}''"
@@ -12488,6 +12497,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Current Result")
   @Key("result.current")
   String result_current();
+
+  /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition")
+  @Key("result.defaultValueInvalidException")
+  String result_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
 
   /**
    * Translated "An analysis needs to be selected to view current result history".

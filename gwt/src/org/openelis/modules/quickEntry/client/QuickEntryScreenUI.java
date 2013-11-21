@@ -54,6 +54,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.ResultViewDO;
@@ -64,9 +65,11 @@ import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.auxiliary.client.AuxiliaryService;
 import org.openelis.modules.panel.client.PanelService;
 import org.openelis.modules.sample1.client.SampleService1;
 import org.openelis.modules.sample1.client.TestSelectionLookupUI;
@@ -300,56 +303,60 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
 
                 defaultSectionId = null;
                 model = new ArrayList<Item<Integer>>();
-                typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelectedItem().getData();
-                if (typeDO.getTestId() != null) {
-                    try {
-                        sections = testSectionHash.get(typeDO.getTestId());
-                        if (sections == null) {
-                            sections = TestService.get().fetchTestSectionsByTestId(typeDO.getTestId());
-                            testSectionHash.put(typeDO.getTestId(), sections);
-                        }
-                        for (TestSectionViewDO tsVDO : sections) {
-                            if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(tsVDO.getFlagId()))
-                                defaultSectionId = tsVDO.getSectionId();
-                            item = (new Item<Integer>(tsVDO.getSectionId(),
-                                                     tsVDO.getSection()));
-                            item.setData(tsVDO);
-                            model.add(item);
-                        }
-                        sectionId.setModel(model);
-                        sectionId.setValue(defaultSectionId);
-                    } catch (Exception anyE) {
-                        Window.alert(Messages.get().testSectionLoadError());
-                        anyE.printStackTrace();
-                    }
-                } else {
-                    panelSections = new HashMap<Integer, TestSectionViewDO>();
-                    try {
-                        testIds = PanelService.get().fetchTestIdsByPanelId(typeDO.getPanelId());
-                        for (IdVO testVO : testIds) {
+                if (testMethodSampleType.getSelectedItem() != null) {
+                    typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelectedItem().getData();
+                    if (typeDO.getTestId() != null) {
+                        try {
                             sections = testSectionHash.get(typeDO.getTestId());
                             if (sections == null) {
-                                sections = TestService.get().fetchTestSectionsByTestId(testVO.getId());
+                                sections = TestService.get().fetchTestSectionsByTestId(typeDO.getTestId());
                                 testSectionHash.put(typeDO.getTestId(), sections);
                             }
                             for (TestSectionViewDO tsVDO : sections) {
-                                if (!panelSections.containsKey(tsVDO.getSectionId())) {
-                                    panelSections.put(tsVDO.getSectionId(), tsVDO);
-                                    if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(tsVDO.getFlagId()))
-                                        defaultSectionId = tsVDO.getSectionId();
-                                    item = (new Item<Integer>(tsVDO.getSectionId(),
-                                                    tsVDO.getSection()));
-                                    item.setData(tsVDO);
-                                    model.add(item);
+                                if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(tsVDO.getFlagId()))
+                                    defaultSectionId = tsVDO.getSectionId();
+                                item = (new Item<Integer>(tsVDO.getSectionId(),
+                                                         tsVDO.getSection()));
+                                item.setData(tsVDO);
+                                model.add(item);
+                            }
+                            sectionId.setModel(model);
+                            sectionId.setValue(defaultSectionId);
+                        } catch (Exception anyE) {
+                            Window.alert(Messages.get().testSectionLoadError());
+                            anyE.printStackTrace();
+                        }
+                    } else {
+                        panelSections = new HashMap<Integer, TestSectionViewDO>();
+                        try {
+                            testIds = PanelService.get().fetchTestIdsByPanelId(typeDO.getPanelId());
+                            for (IdVO testVO : testIds) {
+                                sections = testSectionHash.get(typeDO.getTestId());
+                                if (sections == null) {
+                                    sections = TestService.get().fetchTestSectionsByTestId(testVO.getId());
+                                    testSectionHash.put(typeDO.getTestId(), sections);
+                                }
+                                for (TestSectionViewDO tsVDO : sections) {
+                                    if (!panelSections.containsKey(tsVDO.getSectionId())) {
+                                        panelSections.put(tsVDO.getSectionId(), tsVDO);
+                                        if (Constants.dictionary().TEST_SECTION_DEFAULT.equals(tsVDO.getFlagId()))
+                                            defaultSectionId = tsVDO.getSectionId();
+                                        item = (new Item<Integer>(tsVDO.getSectionId(),
+                                                        tsVDO.getSection()));
+                                        item.setData(tsVDO);
+                                        model.add(item);
+                                    }
                                 }
                             }
+                            sectionId.setModel(model);
+                            sectionId.setValue(defaultSectionId);
+                        } catch (Exception anyE) {
+                            Window.alert(Messages.get().panelSectionLoadError());
+                            anyE.printStackTrace();
                         }
-                        sectionId.setModel(model);
-                        sectionId.setValue(defaultSectionId);
-                    } catch (Exception anyE) {
-                        Window.alert(Messages.get().panelSectionLoadError());
-                        anyE.printStackTrace();
                     }
+                } else {
+                    sectionId.setModel(model);
                 }
             }
 
@@ -524,6 +531,8 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         cacheKey = null;
         if (c == TestManager.class)
             cacheKey = "tm:" + key;
+        else if (c == AuxFieldGroupManager.class)
+            cacheKey = "am:" + key;
 
         obj = cache.get(cacheKey);
         if (obj != null)
@@ -536,6 +545,8 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         try {
             if (c == TestManager.class)
                 obj = TestService.get().fetchById((Integer)key);
+            else if (c == AuxFieldGroupManager.class)
+                obj = AuxiliaryService.get().fetchById((Integer)key);
 
             cache.put(cacheKey, obj);
         } catch (Exception e) {
@@ -869,7 +880,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             smRowCount.sampleManager = returnVO.getManager();
             
             errors = new ValidationErrorsList();
-            validateResults(smRowCount.sampleManager, errors);
+            validateAuxDataAndResults(smRowCount.sampleManager, errors);
             if (errors.size() > 0) {
                 if (returnVO.getErrors() != null) {
                     for (Exception e : errors.getErrorList())
@@ -954,7 +965,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             smRowCount.sampleManager = returnVO.getManager();
 
             errors = new ValidationErrorsList();
-            validateResults(smRowCount.sampleManager, errors);
+            validateAuxDataAndResults(smRowCount.sampleManager, errors);
             if (errors.size() > 0) {
                 if (returnVO.getErrors() != null) {
                     for (Exception e : errors.getErrorList())
@@ -1056,13 +1067,37 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         return true;
     }
     
-    private void validateResults(SampleManager1 man, ValidationErrorsList errors) {
+    private void validateAuxDataAndResults(SampleManager1 man, ValidationErrorsList errors) {
         int i, j, k, l;
         AnalysisViewDO aVDO;
+        AuxDataViewDO adVDO;
+        AuxFieldGroupManager afgMan;
+        Integer groupId;
         ResultFormatter rf;
         ResultViewDO rVDO;
         SampleItemViewDO siVDO;
         TestManager tMan;
+
+        groupId = null;
+        rf = null;
+        for (i = 0; i < man.auxData.count(); i++) {
+            adVDO = man.auxData.get(i);
+            if (adVDO.getValue() != null && adVDO.getTypeId() == null) {
+                try {
+                    if (!adVDO.getGroupId().equals(groupId)) {
+                        afgMan = get(adVDO.getGroupId(), AuxFieldGroupManager.class);
+                        rf = afgMan.getFormatter();
+                        groupId = adVDO.getGroupId();
+                    }
+                    ResultHelper.formatValue(adVDO, adVDO.getValue(), rf);
+                } catch (Exception anyE) {
+                    errors.add(new Exception(Messages.get().aux_defaultValueInvalidException(man.getSample().getAccessionNumber(),
+                                                                                             adVDO.getAnalyteName(),
+                                                                                             adVDO.getValue())));
+                    logger.log(Level.SEVERE, anyE.getMessage(), anyE);
+                }
+            }
+        }
 
         for (i = 0; i < man.item.count(); i++) {
             siVDO = man.item.get(i);
@@ -1081,7 +1116,11 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                                                              aVDO.getUnitOfMeasureId(),
                                                              rf);
                                 } catch (Exception anyE1) {
-                                    errors.add(anyE1);
+                                    errors.add(new Exception(Messages.get().result_defaultValueInvalidException(man.getSample().getAccessionNumber(),
+                                                                                                                aVDO.getTestName(),
+                                                                                                                aVDO.getMethodName(),
+                                                                                                                rVDO.getAnalyte(),
+                                                                                                                rVDO.getValue())));
                                     logger.log(Level.SEVERE, anyE1.getMessage(), anyE1);
                                 }
                             }

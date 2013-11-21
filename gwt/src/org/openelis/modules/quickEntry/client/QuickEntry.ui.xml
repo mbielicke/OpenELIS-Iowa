@@ -91,7 +91,7 @@
               <ui:text from="{msg.testMethodSampleType}:"/>
             </td>
             <td colspan="5">
-              <w:Dropdown ui:field="testMethodSampleType" width="437px" case="UPPER" field="String"/>
+              <w:Dropdown ui:field="testMethodSampleType" width="437px" field="String"/>
             </td>
           </tr>
           <tr>
