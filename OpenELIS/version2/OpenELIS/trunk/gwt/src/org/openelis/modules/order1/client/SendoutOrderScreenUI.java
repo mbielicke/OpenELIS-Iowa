@@ -391,7 +391,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
          */
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(State.DISPLAY));
+                duplicate.setEnabled(isState(State.DISPLAY) &&
+                                     userPermission.hasAddPermission());
             }
         });
         duplicate.addCommand(new Command() {
