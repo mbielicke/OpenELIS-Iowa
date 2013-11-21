@@ -272,7 +272,7 @@ public class InternalOrderScreenUI extends Screen {
          */
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(State.DISPLAY));
+                duplicate.setEnabled(isState(State.DISPLAY) && userPermission.hasAddPermission());
             }
         });
         duplicate.addCommand(new Command() {
@@ -570,6 +570,11 @@ public class InternalOrderScreenUI extends Screen {
         model = new ArrayList<Item<Integer>>();
         list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
+            /*
+             * we're not showing recurring orders on this screen
+             */
+            if (Constants.dictionary().ORDER_STATUS_RECURRING.equals(d.getId()))
+                continue;
             row = new Item<Integer>(d.getId(), d.getEntry());
             row.setEnabled("Y".equals(d.getIsActive()));
             model.add(row);
@@ -709,20 +714,12 @@ public class InternalOrderScreenUI extends Screen {
                 window.clearStatus();
             }
         } else if (isState(ADD)) {
-            if ( !Window.confirm(Messages.get().order_abortWarning())) {
-                window.setDone(Messages.get().gen_enterInformationPressCommit());
-                return;
-            }
             manager = null;
             setData();
             setState(DEFAULT);
             fireDataChange();
             window.setDone(Messages.get().gen_addAborted());
         } else if (isState(UPDATE)) {
-            if ( !Window.confirm(Messages.get().order_abortWarning())) {
-                window.clearStatus();
-                return;
-            }
             try {
                 manager = OrderService1.get().unlock(manager.getOrder().getId(),
                                                      OrderManager1.Load.ITEMS);

@@ -153,16 +153,15 @@ public class InternalNotesTabUI extends Screen {
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
                 public void ok() {
-                    NoteViewDO note;
                     if (DataBaseUtil.isEmpty(editNoteLookup.getText())) {
                         manager.internalNote.removeEditing();
                     } else {
-                        note = manager.internalNote.getEditing();
-                        note.setSubject(editNoteLookup.getSubject());
-                        note.setText(editNoteLookup.getText());
-                        note.setSystemUser(UserCache.getPermission().getLoginName());
-                        note.setSystemUserId(UserCache.getPermission().getSystemUserId());
-                        note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+                        displayedInternalNote = manager.internalNote.getEditing();
+                        displayedInternalNote.setSubject(editNoteLookup.getSubject());
+                        displayedInternalNote.setText(editNoteLookup.getText());
+                        displayedInternalNote.setSystemUser(UserCache.getPermission().getLoginName());
+                        displayedInternalNote.setSystemUserId(UserCache.getPermission().getSystemUserId());
+                        displayedInternalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
                     }
                     drawNotes();
                 }
