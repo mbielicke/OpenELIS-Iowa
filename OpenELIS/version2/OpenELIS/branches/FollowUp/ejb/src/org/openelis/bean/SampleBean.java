@@ -478,7 +478,7 @@ public class SampleBean {
         return data;
     }
 
-    public void validate(SampleDO data, Integer maxAccession, boolean ignoreWarning) throws Exception {
+    public void validate(SampleDO data, Integer maxAccession) throws Exception {
         Integer accession;
         String d;
         Calendar cal;
@@ -526,7 +526,7 @@ public class SampleBean {
         if (rec == null)
             e.add(new FormErrorException(Messages.get()
                                                  .sample_receivedDateRequiredException(accession)));
-        else if (rec.before(minEnt) && !ignoreWarning)
+        else if (rec.before(minEnt))
             e.add(new FormErrorWarning(Messages.get()
                                                .sample_receivedTooOldWarning(accession)));
         col = data.getCollectionDate();
@@ -541,7 +541,7 @@ public class SampleBean {
             if (col.after(rec))
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedDateInvalidError(accession)));
-            if (col.before(minEnt) && !ignoreWarning)
+            if (col.before(minEnt))
                 e.add(new FormErrorException(Messages.get()
                                                      .sample_collectedTooOldWarning(accession)));
         }

@@ -130,8 +130,7 @@ public class AnalysisBean {
         return data;
     }
 
-    public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date startDate,
-                                                                      Date endDate) throws Exception {
+    public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date startDate, Date endDate) throws Exception {
         List<MCLViolationReportVO> list;
         Query query;
 
@@ -145,18 +144,18 @@ public class AnalysisBean {
 
         return DataBaseUtil.toArrayList(list);
     }
-    
+
     public ArrayList<AnalysisViewVO> fetchByPatientId(Integer patientId) throws Exception {
         List<AnalysisViewVO> list;
         Query query;
-        
+
         query = manager.createNamedQuery("AnalysisView.FetchByPatientId");
         query.setParameter("patientId", patientId);
-        
+
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(list);
     }
 
@@ -265,8 +264,7 @@ public class AnalysisBean {
             manager.remove(entity);
     }
 
-    public void validate(AnalysisDO data, TestManager tm, Integer accession,
-                         SampleItemDO item, boolean ignoreWarning) throws Exception {
+    public void validate(AnalysisDO data, TestManager tm, Integer accession, SampleItemDO item) throws Exception {
         Integer sequence;
         String test, method;
         ValidationErrorsList e;
@@ -287,36 +285,52 @@ public class AnalysisBean {
              * don't allow missing unit if the test definition does not have any
              * empty unit
              */
-            if (data.getUnitOfMeasureId() == null && tm.getSampleTypes().hasEmptyUnit())
-                e.add(new FormErrorException(Messages.get().analysis_unitRequiredException(DataBaseUtil.toString(accession), DataBaseUtil.toString(sequence),
-                                             test, method)));
+            if (data.getUnitOfMeasureId() == null && !tm.getSampleTypes().hasEmptyUnit())
+                e.add(new FormErrorException(Messages.get()
+                                                     .analysis_unitRequiredException(DataBaseUtil.toString(accession),
+                                                                                     DataBaseUtil.toString(sequence),
+                                                                                     test,
+                                                                                     method)));
             /*
              * validate unit & sample type
              */
-            if (data.getUnitOfMeasureId() != null && item != null && !ignoreWarning && 
-                !tm.getSampleTypes().hasUnit(data.getUnitOfMeasureId(),
-                                             item.getTypeOfSampleId()))
-                e.add(new FormErrorWarning(Messages.get().analysis_unitInvalidWarning(DataBaseUtil.toString(accession), DataBaseUtil.toString(sequence),
-                                           test, method)));
+            if (data.getUnitOfMeasureId() != null && item != null &&
+                !tm.getSampleTypes().hasUnit(data.getUnitOfMeasureId(), item.getTypeOfSampleId()))
+                e.add(new FormErrorWarning(Messages.get()
+                                                   .analysis_unitInvalidWarning(DataBaseUtil.toString(accession),
+                                                                                DataBaseUtil.toString(sequence),
+                                                                                test,
+                                                                                method)));
         } else {
             test = null;
             method = null;
         }
         if (data.getTestId() == null)
-            e.add(new FormErrorException(Messages.get().analysis_testIdMissingException(DataBaseUtil.toString(accession), DataBaseUtil.toString(sequence))));
+            e.add(new FormErrorException(Messages.get()
+                                                 .analysis_testIdMissingException(DataBaseUtil.toString(accession),
+                                                                                  DataBaseUtil.toString(sequence))));
 
         if (data.getSectionId() == null)
-            e.add(new FormErrorException(Messages.get().analysis_sectionIdMissingException(accession, 
-                                         sequence, test, method)));
+            e.add(new FormErrorException(Messages.get()
+                                                 .analysis_sectionIdMissingException(accession,
+                                                                                     sequence,
+                                                                                     test,
+                                                                                     method)));
 
         if (data.getStartedDate() != null && data.getCompletedDate() != null &&
             data.getStartedDate().compareTo(data.getCompletedDate()) == 1)
-            e.add(new FormErrorException(Messages.get().analysis_startedDateInvalidException(accession,
-                                         sequence, test, method)));
+            e.add(new FormErrorException(Messages.get()
+                                                 .analysis_startedDateInvalidException(accession,
+                                                                                       sequence,
+                                                                                       test,
+                                                                                       method)));
         if (data.getCompletedDate() != null && data.getReleasedDate() != null &&
             data.getCompletedDate().compareTo(data.getReleasedDate()) == 1)
-            e.add(new FormErrorException(Messages.get().analysis_completedDateInvalidException(accession,
-                                         sequence, test, method)));
+            e.add(new FormErrorException(Messages.get()
+                                                 .analysis_completedDateInvalidException(accession,
+                                                                                         sequence,
+                                                                                         test,
+                                                                                         method)));
         if (e.size() > 0)
             throw e;
     }

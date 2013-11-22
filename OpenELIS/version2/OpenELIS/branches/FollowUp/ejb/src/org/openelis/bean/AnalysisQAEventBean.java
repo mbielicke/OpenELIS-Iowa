@@ -216,7 +216,7 @@ public class AnalysisQAEventBean {
     }
 
     public void validate(AnalysisQaEventViewDO data, Integer accession, Integer itemSequence,
-                         AnalysisViewDO analysis, boolean ignoreWarning)  throws Exception {
+                         AnalysisViewDO analysis)  throws Exception {
         ValidationErrorsList e;
 
         e = new ValidationErrorsList();
