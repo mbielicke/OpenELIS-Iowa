@@ -142,6 +142,10 @@ public class OrderManager1 implements Serializable {
     public String getUid(OrderTestDO data) {
         return getOrderTestUid(data.getId());
     }
+    
+    public String getUid(OrderTestAnalyteDO data) {
+        return getOrderTestAnalyteUid(data.getId());
+    }
 
     /**
      * Returns the data object using its Uid.
@@ -153,6 +157,9 @@ public class OrderManager1 implements Serializable {
             if (tests != null)
                 for (OrderTestDO data : tests)
                     uidMap.put(getOrderTestUid(data.getId()), data);
+            if (analytes != null)
+                for (OrderTestAnalyteDO data : analytes)
+                    uidMap.put(getOrderTestAnalyteUid(data.getId()), data);
         }
         return uidMap.get(uid);
     }
@@ -162,6 +169,13 @@ public class OrderManager1 implements Serializable {
      */
     public String getOrderTestUid(Integer id) {
         return "T:" + id;
+    }
+    
+    /**
+     * Returns the unique identifiers for each data object.
+     */
+    public String getOrderTestAnalyteUid(Integer id) {
+        return "A:" + id;
     }
 
     /**
