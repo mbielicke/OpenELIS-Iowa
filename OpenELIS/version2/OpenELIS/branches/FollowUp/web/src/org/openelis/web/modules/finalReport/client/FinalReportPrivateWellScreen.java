@@ -26,7 +26,6 @@
 package org.openelis.web.modules.finalReport.client;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 
 import org.openelis.web.cache.CategoryCache;
@@ -495,7 +494,6 @@ public class FinalReportPrivateWellScreen extends Screen {
 
     protected void getSamples() {
         Query query;
-        ArrayList<FinalReportWebVO> list;
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
@@ -525,10 +523,10 @@ public class FinalReportPrivateWellScreen extends Screen {
                 if (result.size() > 0) {
                     loadDeck(result);
                     setResults(result);
+                    window.clearStatus();
                 } else {
                     window.setError(Messages.get().noSamplesFoundChangeSearch());
                 }
-                window.clearStatus();
             }
             
             @Override
@@ -585,8 +583,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         String value;
         QueryData field;
         TableDataRow row;
-        ReportStatus st;
-        String url, val;
+        String val;
 
         query = new Query();
         field = new QueryData();
