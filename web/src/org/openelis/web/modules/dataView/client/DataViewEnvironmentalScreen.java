@@ -71,6 +71,7 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
@@ -1130,7 +1131,6 @@ public class DataViewEnvironmentalScreen extends Screen {
     protected void getSamples() {
         Query query;
         QueryData field;
-        DataViewVO temp;
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
@@ -1160,18 +1160,25 @@ public class DataViewEnvironmentalScreen extends Screen {
         
         window.setBusy(Messages.get().querying());
 
-        try {
-            temp = DataViewReportService.get().fetchAnalyteAndAuxFieldForWebEnvironmental(data);
-            data.setAnalytes(temp.getTestAnalytes());
-            data.setAuxFields(temp.getAuxFields());
-            loadDeck();
-        } catch (NotFoundException e) {
-            window.setError(Messages.get().noSamplesFoundChangeSearch());
-            return;
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
+        DataViewReportService.get().fetchAnalyteAndAuxFieldForWebEnvironmental(data, new AsyncCallback<DataViewVO>() {
+            @Override
+            public void onSuccess(DataViewVO temp) {
+                data.setAnalytes(temp.getTestAnalytes());
+                data.setAuxFields(temp.getAuxFields());
+                loadDeck();
+                window.clearStatus();
+            }
+            
+            @Override
+            public void onFailure(Throwable caught) {
+                if (caught instanceof NotFoundException) {
+                    window.setError(Messages.get().noSamplesFoundChangeSearch());
+                } else {
+                    window.clearStatus();
+                    Window.alert(caught.getMessage());
+                }
+            }
+        });
     }
 
     /**
@@ -1210,8 +1217,6 @@ public class DataViewEnvironmentalScreen extends Screen {
 
     protected void runReport() {
         int numTA, numAux;
-        String url;
-        ReportStatus st;
         ArrayList<TestAnalyteDataViewVO> taList;
         ArrayList<AuxFieldDataViewVO> afList;
 
@@ -1238,18 +1243,24 @@ public class DataViewEnvironmentalScreen extends Screen {
                 return;
             }
         }
-        try {
-            window.setBusy(Messages.get().genReportMessage());
-            st = DataViewReportService.get().runReportForWebEnvironmental(data);
-            if (st.getStatus() == ReportStatus.Status.SAVED) {
-                url = "/openelisweb/openelisweb/report?file=" + st.getMessage();
-                Window.open(URL.encode(url), "FinalReport", null);
+
+        window.setBusy(Messages.get().genReportMessage());
+        DataViewReportService.get().runReportForWebEnvironmental(data, new AsyncCallback<ReportStatus>() {
+            @Override
+            public void onSuccess(ReportStatus st) {
+                if (st.getStatus() == ReportStatus.Status.SAVED) {
+                    String url = "/openelisweb/openelisweb/report?file=" + st.getMessage();
+                    Window.open(URL.encode(url), "FinalReport", null);
+                }
+                window.clearStatus();
             }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        
-        window.clearStatus();
+            
+            @Override
+            public void onFailure(Throwable caught) {
+                window.clearStatus();
+                Window.alert(caught.getMessage());
+            }
+        });
     }
 
     private ArrayList<TableDataRow> getAnalyteTableModel() {
