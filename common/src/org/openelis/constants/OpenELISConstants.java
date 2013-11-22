@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/tschmidt/juno/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/mbielick/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -1679,6 +1679,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Aux Data")
   @Key("aux.data")
   String aux_data();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition".
+   * 
+   * @return translated "Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Aux data ''{1}'' with DEFAULT value ''{2}'' invalid; please update the aux group definition")
+  @Key("aux.defaultValueInvalidException")
+  String aux_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2);
 
   /**
    * Translated "No matching active auxiliary group found for ''{0}''".
@@ -5675,6 +5684,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Querying....Complete")
   @Key("gen.queryingComplete")
   String gen_queryingComplete();
+
+  /**
+   * Translated "Received By".
+   * 
+   * @return translated "Received By"
+   */
+  @DefaultMessage("Received By")
+  @Key("gen.receivedBy")
+  String gen_receivedBy();
 
   /**
    * Translated "Received Date".
@@ -11950,6 +11968,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String received();
 
   /**
+   * Translated "Received By must have a value".
+   * 
+   * @return translated "Received By must have a value"
+   */
+  @DefaultMessage("Received By must have a value")
+  @Key("receivedByNoValueException")
+  String receivedByNoValueException();
+
+  /**
    * Translated "Received Date".
    * 
    * @return translated "Received Date"
@@ -11968,6 +11995,24 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String receivedDateNoValueException();
 
   /**
+   * Translated "Received date is NOT today.  Is ''{0}'' the correct date to use?".
+   * 
+   * @return translated "Received date is NOT today.  Is ''{0}'' the correct date to use?"
+   */
+  @DefaultMessage("Received date is NOT today.  Is ''{0}'' the correct date to use?")
+  @Key("receivedDateNotTodayExceptionBody")
+  String receivedDateNotTodayExceptionBody(String arg0);
+
+  /**
+   * Translated "Received date is not today".
+   * 
+   * @return translated "Received date is not today"
+   */
+  @DefaultMessage("Received date is not today")
+  @Key("receivedDateNotTodayExceptionTitle")
+  String receivedDateNotTodayExceptionTitle();
+
+  /**
    * Translated "Received date required".
    * 
    * @return translated "Received date required"
@@ -11984,24 +12029,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Received date shouldn''t be more than 180 days before entered date")
   @Key("receivedTooOldWarning")
   String receivedTooOldWarning();
-
-  /**
-   * Translated "Received date is NOT today.  Is ''{0}'' the correct date to use?".
-   * 
-   * @return translated "Received date is NOT today.  Is ''{0}'' the correct date to use?"
-   */
-  @DefaultMessage("Received date is NOT today.  Is ''{0}'' the correct date to use?")
-  @Key("recievedDateNotTodayExceptionBody")
-  String recievedDateNotTodayExceptionBody(String arg0);
-
-  /**
-   * Translated "Received date is not today".
-   * 
-   * @return translated "Received date is not today"
-   */
-  @DefaultMessage("Received date is not today")
-  @Key("recievedDateNotTodayExceptionTitle")
-  String recievedDateNotTodayExceptionTitle();
 
   /**
    * Translated "This record must have at least one active analyte   ".
@@ -12472,6 +12499,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String result_current();
 
   /**
+   * Translated "Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition".
+   * 
+   * @return translated "Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': {1}, {2} - {3} with DEFAULT value ''{4}'' invalid; please update the test definition")
+  @Key("result.defaultValueInvalidException")
+  String result_defaultValueInvalidException(Integer arg0,  String arg1,  String arg2,  String arg3,  String arg4);
+
+  /**
    * Translated "An analysis needs to be selected to view current result history".
    * 
    * @return translated "An analysis needs to be selected to view current result history"
@@ -12758,6 +12794,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Analysis")
   @Key("sample.analysis")
   String sample_analysis();
+
+  /**
+   * Translated "Sample is released. You cannot add an analysis.".
+   * 
+   * @return translated "Sample is released. You cannot add an analysis."
+   */
+  @DefaultMessage("Sample is released. You cannot add an analysis.")
+  @Key("sample.cantAddAnalysis")
+  String sample_cantAddAnalysis();
 
   /**
    * Translated "Accession # '{0}': Not allowed to add organization of this type to record".
