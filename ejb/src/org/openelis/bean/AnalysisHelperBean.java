@@ -415,8 +415,8 @@ public class AnalysisHelperBean {
     /**
      * This method sets the specified status in the analysis. It also updates
      * any links between other analyses and this one, if need be, because of the
-     * change in status. Does not check the analysis' current status to make
-     * sure that it can be changed to the specified one.
+     * change in status. Does not include the current status in the validation
+     * for making sure that it can be changed to the specified one.
      */
     public SampleManager1 changeAnalysisStatus(SampleManager1 sm, Integer analysisId,
                                                Integer statusId) throws Exception {
@@ -461,9 +461,7 @@ public class AnalysisHelperBean {
                 ana.setAvailableDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             else if (ana.getStartedDate() != null)
                 ana.setStartedDate(null);
-            ana.setStatusId(statusId);
         } else if (Constants.dictionary().ANALYSIS_INPREP.equals(statusId)) {
-            ana.setStatusId(statusId);
             ana.setAvailableDate(null);
         } else if (Constants.dictionary().ANALYSIS_INITIATED.equals(statusId)) {
             if (ana.getSectionName() == null ||
@@ -476,19 +474,10 @@ public class AnalysisHelperBean {
 
             if (ana.getStartedDate() == null)
                 ana.setStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-
-            ana.setStatusId(statusId);
         } else if (Constants.dictionary().ANALYSIS_COMPLETED.equals(statusId)) {
-
+            // TODO check to make sure that the analysis can be completed
         } else if (Constants.dictionary().ANALYSIS_RELEASED.equals(statusId)) {
-
-        } else if (Constants.dictionary().ANALYSIS_ON_HOLD.equals(statusId) ||
-                   Constants.dictionary().ANALYSIS_REQUEUE.equals(statusId) ||
-                   Constants.dictionary().ANALYSIS_ERROR_LOGGED_IN.equals(statusId) ||
-                   Constants.dictionary().ANALYSIS_ERROR_INPREP.equals(statusId) ||
-                   Constants.dictionary().ANALYSIS_ERROR_INITIATED.equals(statusId) ||
-                   Constants.dictionary().ANALYSIS_ERROR_COMPLETED.equals(statusId)) {
-            ana.setStatusId(statusId);
+            // TODO check to make sure that the analysis can be released
         } else if (Constants.dictionary().ANALYSIS_CANCELLED.equals(statusId)) {
             if (ana.getId() < 0)
                 throw new InconsistencyException(Messages.get()
@@ -538,8 +527,9 @@ public class AnalysisHelperBean {
             ana.setPreAnalysisMethod(null);
             ana.setParentAnalysisId(null);
             ana.setParentResultId(null);
-            ana.setStatusId(statusId);
         }
+
+        ana.setStatusId(statusId);
 
         return sm;
     }

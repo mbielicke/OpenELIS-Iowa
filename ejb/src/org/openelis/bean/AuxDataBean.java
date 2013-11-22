@@ -271,8 +271,7 @@ public class AuxDataBean {
             manager.remove(entity);
     }
 
-    public void validate(AuxDataViewDO data, ResultFormatter rf, Integer accession,
-                         boolean ignoreWarning) throws Exception {
+    public void validate(AuxDataViewDO data, ResultFormatter rf, Integer accession) throws Exception {
         String value;
         ValidationErrorsList e;
 

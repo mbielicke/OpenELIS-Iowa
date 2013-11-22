@@ -138,6 +138,7 @@ public class OrderTestHelperBean {
             ta = list.get(0);
 
             ota = new OrderTestAnalyteViewDO();
+            ota.setId(om.getNextUID());
             ota.setAnalyteId(ta.getAnalyteId());
             ota.setAnalyteName(ta.getAnalyteName());
             ota.setOrderTestId(orderTestId);
@@ -239,6 +240,7 @@ public class OrderTestHelperBean {
             }
 
             ota = new OrderTestAnalyteViewDO();
+            ota.setId(om.getNextUID());
             ota.setOrderTestId(otid);
             ota.setAnalyteId(ta.getAnalyteId());
             ota.setAnalyteName(ta.getAnalyteName());

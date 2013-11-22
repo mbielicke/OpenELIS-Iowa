@@ -25,6 +25,7 @@
  */
 package org.openelis.bean;
 
+import static org.openelis.manager.OrderManager1Accessor.*;
 import static org.openelis.manager.SampleManager1Accessor.*;
 
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderOrganizationViewDO;
+import org.openelis.domain.OrderTestAnalyteViewDO;
+import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.ProjectDO;
@@ -58,12 +61,7 @@ import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.NoteManager;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderOrganizationManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.OrderManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
@@ -113,6 +111,9 @@ public class SampleManagerOrderHelperBean {
     @EJB
     private AuxDataHelperBean         auxDataHelper;
 
+    @EJB
+    private OrderManager1Bean         orderManager1;
+
     private static final Logger       log = Logger.getLogger("openelis");
 
     private static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
@@ -144,9 +145,7 @@ public class SampleManagerOrderHelperBean {
                                                  ValidationErrorsList e) throws Exception {
         Integer accession, domainGrpId;
         SampleDO data;
-        OrderManager om;
-        AuxDataViewDO aux;
-        AuxDataManager am;
+        OrderManager1 om;
         SampleTestReturnVO ret;
         ArrayList<Integer> grpIds;
         HashMap<Integer, AuxDataViewDO> auxGrp;
@@ -161,7 +160,9 @@ public class SampleManagerOrderHelperBean {
             accession = 0;
 
         try {
-            om = OrderManager.fetchById(orderId);
+            om = orderManager1.fetchById(orderId,
+                                         OrderManager1.Load.SAMPLE_DATA,
+                                         OrderManager1.Load.ORGANIZATION);
             if ( !Constants.order().SEND_OUT.equals(om.getOrder().getType()))
                 throw new FormErrorException(Messages.get()
                                                      .sample_orderIdInvalidException(accession,
@@ -172,50 +173,46 @@ public class SampleManagerOrderHelperBean {
         }
 
         data.setOrderId(orderId);
-        /*
-         * make a hash of aux groups
-         */
-        domainGrpId = getDomainAuxGroupId(data);
-        am = om.getAuxData();
-        grpIds = new ArrayList<Integer>();
-        auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
-        for (int i = 0; i < am.count(); i++ ) {
-            aux = am.getAuxDataAt(i);
-            auxGrp = auxGrps.get(aux.getGroupId());
-            if (auxGrp == null) {
-                auxGrp = new HashMap<Integer, AuxDataViewDO>();
-                auxGrps.put(aux.getGroupId(), auxGrp);
-                grpIds.add(aux.getGroupId());
-            }
-            auxGrp.put(aux.getAnalyteId(), aux);
-        }
-
-        /*
-         * fieldAux are consumed by sample, sample domain, project
-         */
-        auxGrp = auxGrps.get(domainGrpId);
-        if (auxGrp != null) {
-            copyGeneralFields(sm, accession, auxGrp, e);
-            if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
-                copyEnvironmentalFields(getSampleEnvironmental(sm),
-                                        accession,
-                                        auxGrp,
-                                        e);
-            else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-                copyPrivateWellFields(getSamplePrivateWell(sm),
-                                      accession,
-                                      auxGrp,
-                                      e);
-            else if (Constants.domain().SDWIS.equals(data.getDomain()))
-                copySDWISFields(getSampleSDWIS(sm), accession, auxGrp, e);
-            auxGrps.remove(domainGrpId);
-        }
 
         copyOrganizations(sm, om, e);
         copySampleItems(sm, om, e);
         ret = copyTests(sm, om, e);
         copyNotes(sm, om);
-        copyAuxData(sm, grpIds, auxGrps, e);
+
+        if (getAuxilliary(om) != null) {
+            domainGrpId = getDomainAuxGroupId(data);
+            /*
+             * make a hash of aux groups
+             */
+            grpIds = new ArrayList<Integer>();
+            auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
+            for (AuxDataViewDO aux : getAuxilliary(om)) {
+                auxGrp = auxGrps.get(aux.getGroupId());
+                if (auxGrp == null) {
+                    auxGrp = new HashMap<Integer, AuxDataViewDO>();
+                    auxGrps.put(aux.getGroupId(), auxGrp);
+                    grpIds.add(aux.getGroupId());
+                }
+                auxGrp.put(aux.getAnalyteId(), aux);
+            }
+
+            /*
+             * fieldAux are consumed by sample, sample domain, project
+             */
+            auxGrp = auxGrps.get(domainGrpId);
+            if (auxGrp != null) {
+                copyGeneralFields(sm, accession, auxGrp, e);
+                if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
+                    copyEnvironmentalFields(getSampleEnvironmental(sm), accession, auxGrp, e);
+                else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
+                    copyPrivateWellFields(getSamplePrivateWell(sm), accession, auxGrp, e);
+                else if (Constants.domain().SDWIS.equals(data.getDomain()))
+                    copySDWISFields(getSampleSDWIS(sm), accession, auxGrp, e);
+                auxGrps.remove(domainGrpId);
+            }
+
+            copyAuxData(sm, grpIds, auxGrps, e);
+        }
 
         return ret;
     }
@@ -224,8 +221,8 @@ public class SampleManagerOrderHelperBean {
      * Sets values of fields independent of domain from the corresponding aux
      * data in the list. Adds warnings or throws exception for invalid data.
      */
-    private void copyGeneralFields(SampleManager1 sm, Integer accession, HashMap<Integer, AuxDataViewDO> grp,
-                                   ValidationErrorsList e) throws Exception {
+    private void copyGeneralFields(SampleManager1 sm, Integer accession,
+                                   HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
         String extId;
         SampleDO sample;
         SampleProjectViewDO sproj;
@@ -507,16 +504,16 @@ public class SampleManagerOrderHelperBean {
      * next item sequence in the sample to be greater than the sequence of the
      * last item.
      */
-    private void copySampleItems(SampleManager1 sm, OrderManager om, ValidationErrorsList e) throws Exception {
+    private void copySampleItems(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
         int i;
         OrderContainerDO oc;
-        OrderContainerManager ocm;
         DictionaryDO dict;
         SampleItemViewDO item;
         ArrayList<SampleItemViewDO> items;
+        ArrayList<OrderContainerDO> ocs;
 
-        ocm = om.getContainers();
-        if (ocm.count() == 0)
+        ocs = getContainers(om);
+        if (ocs == null)
             return;
 
         /*
@@ -525,7 +522,7 @@ public class SampleManagerOrderHelperBean {
          * created and filled
          */
         items = getItems(sm);
-        for (i = 0; i < ocm.count(); i++ ) {
+        for (i = 0; i < ocs.size(); i++ ) {
             if (items != null && i < items.size()) {
                 item = items.get(i);
             } else {
@@ -539,7 +536,7 @@ public class SampleManagerOrderHelperBean {
             if ( !DataBaseUtil.isSame(item.getItemSequence(), i))
                 item.setItemSequence(i);
 
-            oc = ocm.getContainerAt(i);
+            oc = ocs.get(i);
             if (oc.getContainerId() != null &&
                 !DataBaseUtil.isSame(item.getContainerId(), oc.getContainerId())) {
                 try {
@@ -565,6 +562,7 @@ public class SampleManagerOrderHelperBean {
                     throw ex;
                 }
             }
+
             if (oc.getTypeOfSampleId() != null &&
                 !DataBaseUtil.isSame(item.getTypeOfSampleId(), oc.getTypeOfSampleId())) {
                 try {
@@ -596,7 +594,7 @@ public class SampleManagerOrderHelperBean {
          * resequence the rest of the sample items
          */
         if (items != null) {
-            for (i = ocm.count(); i < items.size(); i++ )
+            for (i = ocs.size(); i < items.size(); i++ )
                 items.get(i).setItemSequence(i);
         }
 
@@ -614,21 +612,20 @@ public class SampleManagerOrderHelperBean {
      * Adds analyses to the sample from the tests specifed in the order. Adds
      * any unresolved prep tests to the returned VO.
      */
-    private SampleTestReturnVO copyTests(SampleManager1 sm, OrderManager om, ValidationErrorsList e) throws Exception {
-        int i, j, min;
-        OrderTestManager otm;
+    private SampleTestReturnVO copyTests(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
+        int min;
         SampleItemViewDO item;
         SampleTestReturnVO ret;
-        ArrayList<Integer> analyteIds;
+        ArrayList<Integer> anaIds;
         ArrayList<SampleTestRequestVO> tests;
+        HashMap<Integer, ArrayList<Integer>> anamap;
         HashMap<Integer, SampleItemViewDO> items;
 
         ret = new SampleTestReturnVO();
         ret.setManager(sm);
         ret.setErrors(e);
 
-        otm = om.getTests();
-        if (otm.count() == 0)
+        if (getTests(om) == null)
             return ret;
 
         /*
@@ -637,6 +634,7 @@ public class SampleManagerOrderHelperBean {
          */
         if (getItems(sm) == null || getItems(sm).size() == 0) {
             item = new SampleItemViewDO();
+            item.setId(sm.getNextUID());
             item.setItemSequence(0);
             addItem(sm, item);
             getSample(sm).setNextItemSequence(1);
@@ -649,26 +647,43 @@ public class SampleManagerOrderHelperBean {
             min = Math.min(min, si.getItemSequence());
         }
 
+        /*
+         * find out the analytes that need to be marked reportable for each test
+         */
+        anamap = null;
+        if (getAnalytes(om) != null) {
+            anamap = new HashMap<Integer, ArrayList<Integer>>();
+            for (OrderTestAnalyteViewDO ota : getAnalytes(om)) {
+                anaIds = anamap.get(ota.getOrderTestId());
+                if (anaIds == null) {
+                    anaIds = new ArrayList<Integer>();
+                    anamap.put(ota.getOrderTestId(), anaIds);
+                }
+                anaIds.add(ota.getAnalyteId());
+            }
+        }
+
         tests = new ArrayList<SampleTestRequestVO>();
-        for (i = 0; i < otm.count(); i++ ) {
-            item = items.get(otm.getTestAt(i).getItemSequence());
+        for (OrderTestViewDO ot : getTests(om)) {
+            item = items.get(ot.getItemSequence());
             if (item == null)
                 item = items.get(min);
 
-            analyteIds = null;
-            if (otm.getAnalytesAt(i).count() > 0) {
-                analyteIds = new ArrayList<Integer>();
-                for (j = 0; j < otm.getAnalytesAt(i).count(); j++ )
-                    analyteIds.add(otm.getAnalytesAt(i).getAnalyteAt(j).getAnalyteId());
-            }
+            anaIds = null;
+            if (anamap != null)
+                anaIds = anamap.get(ot.getId());
+            /*
+             * add the test and mark the analytes specified by the ids,
+             * reportable
+             */
             tests.add(new SampleTestRequestVO(item.getId(),
-                                              otm.getTestAt(i).getTestId(),
+                                              ot.getTestId(),
                                               null,
                                               null,
                                               null,
                                               null,
                                               false,
-                                              analyteIds));
+                                              anaIds));
         }
 
         ret = sampleManager1.addAnalyses(sm, tests);
@@ -688,15 +703,13 @@ public class SampleManagerOrderHelperBean {
      * Adds organizations like report-to and bill-to, to sample based on the
      * organizations specified in the order
      */
-    private void copyOrganizations(SampleManager1 sm, OrderManager om, ValidationErrorsList e) throws Exception {
+    private void copyOrganizations(SampleManager1 sm, OrderManager1 om, ValidationErrorsList e) throws Exception {
         String attention;
         OrganizationDO repOrg, billOrg, secOrg;
-        OrderOrganizationManager orgm;
-        OrderOrganizationViewDO otmpOrg, orepOrg, obillOrg;
+        OrderOrganizationViewDO orepOrg, obillOrg;
         ArrayList<OrderOrganizationViewDO> osecOrgs;
         SamplePrivateWellViewDO well;
 
-        orgm = om.getOrganizations();
         orepOrg = null;
         obillOrg = null;
         osecOrgs = new ArrayList<OrderOrganizationViewDO>();
@@ -704,8 +717,7 @@ public class SampleManagerOrderHelperBean {
         /*
          * find out if organizations of various types are specified in the order
          */
-        for (int i = 0; i < orgm.count(); i++ ) {
-            otmpOrg = orgm.getOrganizationAt(i);
+        for (OrderOrganizationViewDO otmpOrg : getOrganizations(om)) {
             if (Constants.dictionary().ORG_REPORT_TO.equals(otmpOrg.getTypeId()))
                 orepOrg = otmpOrg;
             else if (Constants.dictionary().ORG_BILL_TO.equals(otmpOrg.getTypeId()))
@@ -777,23 +789,22 @@ public class SampleManagerOrderHelperBean {
      * Adds an internal note to the sample from the "sample" note defined in the
      * order.
      */
-    private void copyNotes(SampleManager1 sm, OrderManager om) throws Exception {
+    private void copyNotes(SampleManager1 sm, OrderManager1 om) throws Exception {
         NoteViewDO note;
-        NoteManager nm;
         SystemUserVO user;
 
-        nm = om.getSampleNotes();
-        if (nm.count() == 0)
+        if (getSampleNote(om) == null)
             return;
 
         note = new NoteViewDO();
+        note.setId(sm.getNextUID());
         note.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
         note.setIsExternal("N");
         user = userCache.getSystemUser();
         note.setSystemUserId(user.getId());
         note.setSystemUser(user.getLoginName());
         note.setSubject(Messages.get().orderNoteSubject());
-        note.setText(nm.getNoteAt(0).getText());
+        note.setText(getSampleNote(om).getText());
         if (getSampleInternalNotes(sm) != null)
             getSampleInternalNotes(sm).add(0, note);
         else
