@@ -105,13 +105,13 @@ UIRF Software License are applicable instead of those above.
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
                 <menuItem key="unreleaseAnalysis" description="" enable="false" icon="unreleaseIcon" label="{resource:getString($constants,'unreleaseAnalysisCaption')}" />
-                <menuItem key="previewFinalReport" enable="true" description="" icon="unreleaseIcon">
+                <menuItem key="previewFinalReport" enable="true" description="" icon="unreleaseIcon" style="topMenuItemTitle">
   					<menuDisplay>
   						<HorizontalPanel>
      					<VerticalPanel width="4px"/>
      					<check key="autoPreview"/>
      					<VerticalPanel width="16px"/>
-     					<label field="String" key="autoPreviewText" style="Prompt" text="{resource:getString($constants,'previewFinalReport')}"/>
+     					<label field="String" key="autoPreviewText" text="{resource:getString($constants,'previewFinalReport')}"/>
      					</HorizontalPanel>
  					</menuDisplay> 
  				</menuItem>
