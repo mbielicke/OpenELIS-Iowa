@@ -60,13 +60,13 @@ import org.openelis.utils.EJBFactory;
 public class ScriptletBean  {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager           manager;
+    protected EntityManager           manager;
 
     @EJB
-    private LockBean               lock;
+    protected LockBean               lock;
     
     @EJB
-    private UserCacheBean           userCache;
+    protected UserCacheBean           userCache;
     
     private static final ScriptletMeta meta = new ScriptletMeta();
     
