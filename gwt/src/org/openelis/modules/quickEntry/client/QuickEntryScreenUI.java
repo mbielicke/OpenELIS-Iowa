@@ -35,6 +35,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
@@ -125,6 +127,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
     private HashMap<Integer, ArrayList<TestSectionViewDO>> testSectionHash;
     private HashMap<Integer, SampleManagerRowCount>        managers;
     private ModulePermission                               userPermission;
+    private ScheduledCommand                               focusEntryCmd;
 
     @UiField
     protected AutoComplete                                 receivedBy;
@@ -508,6 +511,16 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         }
         testMethodSampleType.setModel(model);
 
+        /*
+         * to set the focus back on the entry widget, a command must be scheduled
+         */
+        focusEntryCmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                entry.setFocus(true);
+            }
+        };
+
         setState(DEFAULT);
         fireDataChange();
         
@@ -830,7 +843,10 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             window.setError(ex.getMessage());
         }
         entry.setValue(null);
-        entry.setFocus(true);
+        /*
+         * to set the focus back on the entry widget, a command must be scheduled
+         */
+        Scheduler.get().scheduleDeferred(focusEntryCmd);
     }
 
     private void addAnalysis() {
@@ -934,6 +950,10 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
                          */
                         if (tests != null && tests.size() > 0)
                             addAdditionalAnalyses(ret.getManager(), tests);
+                        /*
+                         * to set the focus back on the entry widget, a command must be scheduled
+                         */
+                        Scheduler.get().scheduleDeferred(focusEntryCmd);
                     }
                 };
             }
