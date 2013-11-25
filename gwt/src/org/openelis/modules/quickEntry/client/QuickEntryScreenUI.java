@@ -671,7 +671,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
         finishEditing();
         clearErrors();
         
-        window.setBusy(Messages.get().adding());
+        window.setBusy(Messages.get().gen_cancelChanges());
 
         errorsList = new ValidationErrorsList();
         removables = new ArrayList<Integer>();
