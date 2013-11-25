@@ -33,7 +33,7 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.ScriptletBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ScriptletDO;
-import org.openelis.scriptlet.ScriptletBeanInt;
+import org.openelis.scriptlet.ScriptletInt;
 import org.openelis.scriptlet.ScriptletObject;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.server.RemoteServlet;
@@ -58,10 +58,10 @@ public class ScriptletServlet extends RemoteServlet implements ScriptletServiceI
 
     @Override
     public ScriptletObject run(ScriptletObject so) throws Exception {
-        ScriptletBeanInt script;
+        ScriptletInt script;
         ScriptletDO      sdo;
         
-        script = (ScriptletBeanInt)getThreadLocalRequest().getSession().getAttribute("scriptlet"+so.getId());
+        script = (ScriptletInt)getThreadLocalRequest().getSession().getAttribute("scriptlet"+so.getId());
         
         if(script == null) {
             sdo = scriptlet.fetchById(so.getId());
