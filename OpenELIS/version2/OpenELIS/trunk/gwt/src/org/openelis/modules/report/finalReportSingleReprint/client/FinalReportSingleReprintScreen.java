@@ -486,6 +486,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         data.setIsPrint("Y");
         data.setIsFax("N");     
         data.setFrom(Messages.get().fromCompany());
+        data.setNote("");
         try {
             prefs = Preferences.userRoot();
             data.setPrinter(prefs.get("default_printer", VIEW_PDF_KEY));
