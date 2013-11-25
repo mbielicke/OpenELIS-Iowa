@@ -338,7 +338,7 @@ public class MethodScreenUI extends Screen {
         //
         nav = new ScreenNavigator<IdNameVO>(atozTable, atozNext, atozPrev) {
             public void executeQuery(final Query query) {
-                window.setBusy(Messages.get().querying());
+                setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(16);
                 
@@ -346,23 +346,24 @@ public class MethodScreenUI extends Screen {
                     queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
                         public void success(ArrayList<IdNameVO> result) {
                             setQueryResult(result);
+                            clearStatus();
                         }
 
                         public void failure(Throwable error) {
                             setQueryResult(null);
                             Window.alert("Error: Method call query failed; " + error.getMessage());
-                            window.setError("Query Failed");//Messages.get().queryFailed());
+                            setError("Query Failed");//Messages.get().queryFailed());
                         }
                     
                         public void notFound() {
-                            window.setDone(Messages.get().noRecordsFound());
+                            setDone(Messages.get().noRecordsFound());
                             setQueryResult(null);
                             setState(DEFAULT);
                         }
                      
                         public void lastPage() {
                             setQueryResult(null);
-                            window.setError(Messages.get().noMoreRecordInDir());
+                            setError(Messages.get().noMoreRecordInDir());
                         }
                     };
                 }
@@ -418,7 +419,7 @@ public class MethodScreenUI extends Screen {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    window.setError(Messages.get().mustCommitOrAbort());
+                    setError(Messages.get().mustCommitOrAbort());
                 }
             }
         });
@@ -431,7 +432,7 @@ public class MethodScreenUI extends Screen {
         fireDataChange();
 
         name.setFocus(true);
-        window.setDone(Messages.get().enterFieldsToQuery());
+        setDone(Messages.get().enterFieldsToQuery());
     }
 
     @UiHandler("next")
@@ -452,12 +453,12 @@ public class MethodScreenUI extends Screen {
         fireDataChange();
 
         name.setFocus(true);
-        window.setDone(Messages.get().enterInformationPressCommit());
+        setDone(Messages.get().enterInformationPressCommit());
     }
 
     @UiHandler("update")
     protected void update(ClickEvent event) {
-        window.setBusy(Messages.get().lockForUpdate());
+        setBusy(Messages.get().lockForUpdate());
 
         if(fetchForUpdateCall == null) {
             fetchForUpdateCall = new AsyncCallbackUI<MethodDO>() {
@@ -473,7 +474,7 @@ public class MethodScreenUI extends Screen {
                 }
             
                 public void finish() {
-                    window.clearStatus();
+                    clearStatus();
                 }
             };
         }
@@ -503,35 +504,35 @@ public class MethodScreenUI extends Screen {
                 nav.setQuery(query);
                 break;
             case ADD:
-                window.setBusy(Messages.get().adding());
+                setBusy(Messages.get().adding());
                 if(addCall == null) {
                     addCall = new AsyncCallbackUI<MethodDO>() {
                         public void success(MethodDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange();
-                            window.setDone(Messages.get().addingComplete());
+                            setDone(Messages.get().addingComplete());
                         }
                         public void validationErrors(ValidationErrorsList e) {
                             showErrors(e);
                         }
                         public void failure(Throwable caught) {
                             Window.alert("commitAdd(): " + caught.getMessage());
-                            window.clearStatus();
+                            clearStatus();
                         }
                     };
                 }
                 MethodService.get().add(data, addCall);
                 break;
             case UPDATE:
-                window.setBusy(Messages.get().updating());
+                setBusy(Messages.get().updating());
                 if(updateCall == null) {
                     updateCall = new AsyncCallbackUI<MethodDO>() {
                         public void success(MethodDO result) {
                             data = result;
                             setState(DISPLAY);
                             fireDataChange();
-                            window.setDone(Messages.get().updatingComplete());
+                            setDone(Messages.get().updatingComplete());
                         }
                 
                         public void validationErrors(ValidationErrorsList e) {
@@ -540,13 +541,13 @@ public class MethodScreenUI extends Screen {
                     
                         public void failure(Throwable e) {
                             Window.alert("commitUpdate(): " + e.getMessage());
-                            window.clearStatus();
+                            clearStatus();
                         }
                     };
                 }
                 MethodService.get().update(data, updateCall);
             default :
-                window.clearStatus();
+                clearStatus();
         }
     }
 
@@ -554,16 +555,16 @@ public class MethodScreenUI extends Screen {
     protected void abort(ClickEvent event) {
         finishEditing();
         clearErrors();
-        window.setBusy(Messages.get().cancelChanges());
+        setBusy(Messages.get().cancelChanges());
 
         switch (state) {
             case QUERY:
                 fetchById(null);
-                window.setDone(Messages.get().queryAborted());
+                setDone(Messages.get().queryAborted());
                 break;
             case ADD:
                 fetchById(null);
-                window.setDone(Messages.get().addAborted());
+                setDone(Messages.get().addAborted());
                 break;
             case UPDATE:
                 if(abortCall == null) {
@@ -580,14 +581,14 @@ public class MethodScreenUI extends Screen {
                         }
                     
                         public void finish() {
-                            window.setDone(Messages.get().updateAborted());
+                            setDone(Messages.get().updateAborted());
                         }
                     };
                 }
                 MethodService.get().abortUpdate(data.getId(),abortCall);
                 break;
             default:
-                window.clearStatus();
+                clearStatus();
         }
     }
 
@@ -603,7 +604,7 @@ public class MethodScreenUI extends Screen {
             data = new MethodDO();
             setState(DEFAULT);
         } else {
-            window.setBusy(Messages.get().fetching());
+            setBusy(Messages.get().fetching());
             if(fetchCall == null) {
                 fetchCall = new AsyncCallbackUI<MethodDO>() {
                     public void success(MethodDO result) {
@@ -613,7 +614,7 @@ public class MethodScreenUI extends Screen {
             
                     public void notFound() {
                         fetchById(null);
-                        window.setDone(Messages.get().noRecordsFound());
+                        setDone(Messages.get().noRecordsFound());
                         nav.clearSelection();
                     }
                 
@@ -626,7 +627,7 @@ public class MethodScreenUI extends Screen {
                 
                     public void finish() {
                         fireDataChange();
-                        window.clearStatus();
+                        clearStatus();
                     }
                 };
             }
