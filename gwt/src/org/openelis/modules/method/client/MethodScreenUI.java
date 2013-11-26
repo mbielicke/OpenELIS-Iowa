@@ -345,8 +345,8 @@ public class MethodScreenUI extends Screen {
                 if(queryCall == null) {
                     queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
                         public void success(ArrayList<IdNameVO> result) {
-                            setQueryResult(result);
                             clearStatus();
+                            setQueryResult(result);
                         }
 
                         public void failure(Throwable error) {
