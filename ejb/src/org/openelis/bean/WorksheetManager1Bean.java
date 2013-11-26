@@ -53,7 +53,6 @@ import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ResultViewDO;
-import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetDO;
@@ -365,9 +364,8 @@ public class WorksheetManager1Bean {
      * record if it has an id.
      */
     public WorksheetManager1 update(WorksheetManager1 wm) throws Exception {
-        int i, j, k, dep, ldep;
+        int i, dep, ldep;
         boolean locked, nodep;
-        AnalysisViewDO aVDO;
         ArrayList<Integer> analyteIndexes, excludedIds, sampleIds;
         ArrayList<ResultViewDO> results;
         ArrayList<SampleManager1> sMans;
@@ -383,7 +381,6 @@ public class WorksheetManager1Bean {
         HashMap<Integer, WorksheetAnalysisViewDO> updatedAnalyses;
         HashSet<Integer> analysisIds, initAnalysisIds, updateAnalysisIds;
         ResultViewDO rVDO;
-        SampleItemDO siDO;
         SampleManager1 sManager;
         StringBuffer description;
         TestAnalyteViewDO taVDO;
@@ -575,15 +572,9 @@ public class WorksheetManager1Bean {
         sMansByAnalysisId = new HashMap<Integer, SampleManager1>();
         if (!analysisIds.isEmpty()) {
             sMans = sampleMan.fetchByAnalyses(new ArrayList<Integer>(analysisIds), SampleManager1.Load.SINGLERESULT);
-            for (i = 0; i < sMans.size(); i++) {
-                sManager = sMans.get(i);
-                for (j = 0; j < sManager.item.count(); j++) {
-                    siDO = sManager.item.get(j);
-                    for (k = 0; k < sManager.analysis.count(siDO); k++) {
-                        aVDO = sManager.analysis.get(siDO, k);
-                        sMansByAnalysisId.put(aVDO.getId(), sManager);
-                    }
-                }
+            for (SampleManager1 sMan : sMans) {
+                for (AnalysisViewDO aVDO : SampleManager1Accessor.getAnalyses(sMan))
+                    sMansByAnalysisId.put(aVDO.getId(), sMan);
             }
         }
 
@@ -617,26 +608,30 @@ public class WorksheetManager1Bean {
                     if (data.getAnalysisId() != null) {
                         sManager = sMansByAnalysisId.get(data.getAnalysisId());
                         if (sManager != null) {
-                            aVDO = (AnalysisViewDO)sManager.getObject(sManager.getAnalysisUid(data.getAnalysisId()));
-                            results.clear();
-                            wResults.clear();
-                            for (i = 0; i < sManager.result.count(aVDO); i++)
-                                results.add(sManager.result.get(aVDO, i, 0));
-                            for (i = 0; i < wm.result.count(data); i++)
-                                wResults.add(wm.result.get(data, i));
-
-                            excludedIds = excludedMap.get(aVDO.getTestId());
-                            if (excludedIds == null) {
-                                excludedIds = new ArrayList<Integer>();
-                                try {
-                                    for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(aVDO.getTestId()))
-                                        excludedIds.add(twaVDO.getTestAnalyteId());
-                                } catch (Exception anyE) {
-                                    throw new Exception("Error loading excluded analytes: " + anyE.getMessage());
+                            for (AnalysisViewDO aVDO : SampleManager1Accessor.getAnalyses(sManager)) {
+                                if (data.getAnalysisId().equals(aVDO.getId())) {
+                                    results.clear();
+                                    wResults.clear();
+                                    for (i = 0; i < sManager.result.count(aVDO); i++)
+                                        results.add(sManager.result.get(aVDO, i, 0));
+                                    for (i = 0; i < wm.result.count(data); i++)
+                                        wResults.add(wm.result.get(data, i));
+        
+                                    excludedIds = excludedMap.get(aVDO.getTestId());
+                                    if (excludedIds == null) {
+                                        excludedIds = new ArrayList<Integer>();
+                                        try {
+                                            for (TestWorksheetAnalyteViewDO twaVDO : twAnalyte.fetchByTestId(aVDO.getTestId()))
+                                                excludedIds.add(twaVDO.getTestAnalyteId());
+                                        } catch (Exception anyE) {
+                                            throw new Exception("Error loading excluded analytes: " + anyE.getMessage());
+                                        }
+                                        excludedMap.put(aVDO.getTestId(), excludedIds);
+                                    }
+                                    synchronizeResults(wm, data, results, wResults, excludedIds);
+                                    break;
                                 }
-                                excludedMap.put(aVDO.getTestId(), excludedIds);
                             }
-                            synchronizeResults(wm, data, results, wResults, excludedIds);
                         }
                     }
                     if (data.getId() < 0) {
