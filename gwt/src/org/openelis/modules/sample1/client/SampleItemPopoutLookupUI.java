@@ -253,7 +253,7 @@ public abstract class SampleItemPopoutLookupUI extends Screen {
             for (Node node : checkedNodes) {
                 ana = node.getData();
 
-                oldItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(ana.getSampleItemId()));
+                oldItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(ana.getSampleItemId()));
                 if (newItem.getId().equals(oldItem.getId())) {
                     /*
                      * an analysis can't be moved to its own item

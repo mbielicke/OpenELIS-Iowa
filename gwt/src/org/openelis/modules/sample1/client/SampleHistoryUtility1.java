@@ -257,7 +257,7 @@ public class SampleHistoryUtility1 {
         ArrayList<IdNameVO> list;
 
         list = new ArrayList<IdNameVO>();
-        ana = (AnalysisViewDO)manager.getObject(manager.getAnalysisUid(analysisId));
+        ana = (AnalysisViewDO)manager.getObject(Constants.uid().getAnalysis(analysisId));
         for (i = 0; i < manager.result.count(ana); i++ ) {
             for (j = 0; j < manager.result.count(ana, i); j++ ) {
                 data = manager.result.get(ana, i, j);
