@@ -856,7 +856,7 @@ public class SampleManager1Bean {
         SystemVariableDO sys;
         SystemUserPermission permission;
         ValidationErrorsList e;
-        HashSet<Integer> ids, ids1;
+        HashSet<Integer> ids, ids1, ids2;
         ArrayList<Integer> locks;
         HashMap<Integer, TestManager> tms;
         HashMap<Integer, AuxFieldGroupManager> ams;
@@ -864,12 +864,15 @@ public class SampleManager1Bean {
         HashMap<Integer, Integer> imap, amap, rmap, seq;
 
         /*
-         * validation needs test and aux group manager. Build lists of analysis
-         * test ids and aux group ids to fetch test and aux group managers.
+         * validation needs test, aux group manager and pws DO. Build lists of analysis
+         * test ids, aux group ids to fetch test and aux group managers.
          */
         ids = new HashSet<Integer>();
         ids1 = new HashSet<Integer>();
+        ids2 = new HashSet<Integer>();
         for (SampleManager1 sm : sms) {
+            if (getSampleSDWIS(sm) != null)
+                    ids2.add(getSampleSDWIS(sm).getPwsId());            
             for (AnalysisViewDO an : getAnalyses(sm))
                 ids.add(an.getTestId());
             if (getAuxilliary(sm) != null) {
@@ -892,8 +895,6 @@ public class SampleManager1Bean {
             for (AuxFieldGroupManager am : auxFieldGroupManager.fetchByIds(new ArrayList<Integer>(ids1)))
                 ams.put(am.getGroup().getId(), am);
         }
-
-        // validate(sms, tms, ams);
 
         // user permission for adding/updating analysis
         permission = userCache.getPermission();
@@ -1326,7 +1327,7 @@ public class SampleManager1Bean {
     }
 
     /**
-     * Changes the sample's status to the passed value if the or the lowest
+     * Changes the sample's status to the passed value or the lowest
      * status of the analyses
      */
     public void changeSampleStatus(SampleManager1 sm, Integer statusId) {
@@ -2065,6 +2066,13 @@ public class SampleManager1Bean {
          * samples should go here after checking to see if the VO/DO has
          * changed.
          */
+        if (getSampleSDWIS(sm) != null && getSampleSDWIS(sm).isChanged()) {
+            try {
+                sampleSDWIS.validate(getSampleSDWIS(sm), accession);
+            } catch (Exception err) {
+                DataBaseUtil.mergeException(e, err);
+            }
+        }
 
         /*
          * samples have to have one report to.

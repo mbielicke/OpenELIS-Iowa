@@ -118,7 +118,7 @@ public class Constants implements Serializable {
 
         public final Integer      PATIENT          = 2, PATIENT_RELATION = 3, PROVIDER = 4,
                         ORGANIZATION = 5, ORGANIZATION_CONTACT = 6, SAMPLE = 8,
-                        SAMPLE_ENVIRONMENTAL = 9, SAMPLE_ANIMAL = 10, SAMPLE_CLINICAL = 11,
+                        SAMPLE_ENVIRONMENTAL = 9, SAMPLE_ANIMAL = 10, SAMPLE_HUMAN = 11,
                         SAMPLE_PROJECT = 12, SAMPLE_ORGANIZATION = 13, SAMPLE_ITEM = 14,
                         ANALYSIS = 15, ANALYSIS_QAEVENT = 16, ANALYSIS_USER = 17, RESULT = 18,
                         QAEVENT = 19, NOTE = 20, STANDARD_NOTE = 21, TEST = 22, TEST_ANALYTE = 23,
