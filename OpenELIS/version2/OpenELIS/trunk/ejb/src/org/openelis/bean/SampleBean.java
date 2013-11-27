@@ -486,17 +486,17 @@ public class SampleBean {
         Datetime minEnt, rec, ent, col;
 
         e = new ValidationErrorsList();
-        // accession number must be > 0, previously issued. we don't
-        // want to check the duplicate again since it will not guarantee
-        // that by the time we insert it will still be unique, and will
-        // slow us down.
-        
         /*
          * for display
          */
         accession = data.getAccessionNumber();
         if (accession == null)
             accession = 0;
+        
+        // accession number must be > 0, previously issued. we don't
+        // want to check the duplicate again since it will not guarantee
+        // that by the time we insert it will still be unique, and will
+        // slow us down.
         
         if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
             e.add(new FormErrorException(Messages.get()
@@ -513,7 +513,7 @@ public class SampleBean {
              !Constants.domain().PRIVATEWELL.equals(d) && !Constants.domain().PT.equals(d) &&
              !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
             e.add(new FormErrorException(Messages.get()
-                                                 .sample_noDomainException(DataBaseUtil.toString(data.getAccessionNumber()))));
+                                                 .sample_noDomainException(accession)));
         // dates
         ent = data.getEnteredDate();
         rec = data.getReceivedDate();

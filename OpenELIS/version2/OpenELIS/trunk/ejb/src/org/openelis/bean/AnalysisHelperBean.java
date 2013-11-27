@@ -596,14 +596,16 @@ public class AnalysisHelperBean {
         AnalysisViewDO ana, prep;
 
         ana = null;
+        prep = null;
         /*
-         * find the analysis whose prep analysis is to be changed
-         */
+         * find the analysis whose prep analysis is to be changed and also the
+         * analysis that is to be set as the prep
+         */       
         for (AnalysisViewDO a : getAnalyses(sm)) {
-            if (a.getId().equals(analysisId)) {
+            if (a.getId().equals(analysisId))
                 ana = a;
-                break;
-            }
+            else if (a.getId().equals(preAnalysisId))
+                prep = a;
         }
 
         /*
@@ -633,7 +635,6 @@ public class AnalysisHelperBean {
              */
             unlinkFromPrep(sm, ana);
         } else {
-            prep = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(preAnalysisId));
             if (Constants.dictionary().ANALYSIS_CANCELLED.equals(prep.getStatusId())) {
                 throw new InconsistencyException(Messages.get()
                                                          .analysis_cantSetAsPrepException(accession,
@@ -1015,7 +1016,7 @@ public class AnalysisHelperBean {
 
     /**
      * Creates a new result, links it to the analysis and sets its value as the
-     * defaults defined for its test analyte
+     * default defined for its test analyte
      */
     private ResultViewDO createResult(SampleManager1 sm, AnalysisViewDO ana, TestAnalyteViewDO ta,
                                       String reportable, ResultFormatter rf) {
