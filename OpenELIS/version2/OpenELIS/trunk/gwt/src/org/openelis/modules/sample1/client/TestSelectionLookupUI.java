@@ -274,7 +274,7 @@ public abstract class TestSelectionLookupUI extends Screen {
         isPrep = false;
         for (SampleTestRequestVO test : tests) {
             if ( !test.getAnalysisId().equals(anaId)) {
-                ana = (AnalysisViewDO)manager.getObject(manager.getAnalysisUid(test.getAnalysisId()));
+                ana = (AnalysisViewDO)manager.getObject(Constants.uid().getAnalysis(test.getAnalysisId()));
                 /*
                  * the node for the analysis
                  */

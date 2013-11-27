@@ -203,7 +203,7 @@ public class StorageTabUI extends Screen {
                 data.setCheckin(date);
                 data.setSystemUserId(UserCache.getPermission().getSystemUserId());
                 data.setUserName(UserCache.getPermission().getLoginName());
-                event.getRow().setData(manager.getStorageUid(data.getId()));
+                event.getRow().setData(Constants.uid().getStorage(data.getId()));
 
                 /*
                  * if there were storages present before, then set the checkout
@@ -239,7 +239,7 @@ public class StorageTabUI extends Screen {
                 ArrayList<Item<Integer>> model;
                 ArrayList<StorageLocationViewDO> list;
 
-                parentScreen.getWindow().setBusy();
+                parentScreen.setBusy();
 
                 try {
                     list = StorageService.get()
@@ -262,7 +262,7 @@ public class StorageTabUI extends Screen {
                     logger.log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                parentScreen.getWindow().clearStatus();
+                parentScreen.clearStatus();
             }
         });
 
@@ -380,7 +380,7 @@ public class StorageTabUI extends Screen {
                      * enable or disable the widgets in the tab
                      */
                     analysis = (AnalysisViewDO)manager.getObject(event.getUid());
-                    sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
+                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(analysis.getSampleItemId()));
                     setState(state);
                 }
             }
@@ -513,7 +513,7 @@ public class StorageTabUI extends Screen {
         row.setCell(2, data.getCheckin());
         row.setCell(3, data.getCheckout());
 
-        row.setData(manager.getStorageUid(data.getId()));
+        row.setData(Constants.uid().getStorage(data.getId()));
         return row;
     }
 

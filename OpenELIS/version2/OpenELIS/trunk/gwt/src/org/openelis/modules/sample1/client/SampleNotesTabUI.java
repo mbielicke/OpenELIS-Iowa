@@ -25,10 +25,7 @@
  */
 package org.openelis.modules.sample1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
 import static org.openelis.ui.screen.State.*;
-
-import java.util.logging.Level;
 
 import org.openelis.cache.UserCache;
 import org.openelis.constants.Messages;
@@ -49,6 +46,8 @@ import org.openelis.ui.widget.ModalWindow;
 import org.openelis.ui.widget.NotesPanel;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.VisibleEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -210,7 +209,6 @@ public class SampleNotesTabUI extends Screen {
             }
             setState(state);
             fireDataChange();
-            logger.log(Level.SEVERE, "redrawn");
         }
     }
 
@@ -250,10 +248,11 @@ public class SampleNotesTabUI extends Screen {
         }
     }
 
-    private void showNoteLookup(boolean isExternal) {
+    private void showNoteLookup(final boolean isExternal) {
         String subject, text;
         NoteViewDO note;
         ModalWindow modal;
+        ScheduledCommand cmd;
 
         if (editNoteLookup == null) {
             editNoteLookup = new EditNoteLookupUI() {
@@ -323,7 +322,13 @@ public class SampleNotesTabUI extends Screen {
         editNoteLookup.setWindow(modal);
         editNoteLookup.setSubject(subject);
         editNoteLookup.setText(text);
-        editNoteLookup.setHasSubject( !isExternal);
+        cmd = new ScheduledCommand() {
+            @Override
+            public void execute() {
+                editNoteLookup.setHasSubject( !isExternal);
+            }
+        };
+        Scheduler.get().scheduleDeferred(cmd);
     }
 
     private void setNoteFields(NoteViewDO note, String subject, String text) {

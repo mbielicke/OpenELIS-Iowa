@@ -452,7 +452,7 @@ public class ResultTabUI extends Screen {
 
                 isVisible = event.isVisible();
                 if (analysis != null)
-                    uid = manager.getUid(analysis);
+                    uid = Constants.uid().get(analysis);
                 else
                     uid = null;
 
@@ -571,13 +571,19 @@ public class ResultTabUI extends Screen {
         if ( !isVisible)
             return;
 
-        /*
-         * Reset the table's view, so that if its model is changed, it shows its
-         * headers and columns correctly, so that, problems like widths of the
-         * columns not being correct or the headers not showing don't happen.
-         */
-        table.onResize();
-        
+        if (analysis != null) {
+            table.setVisible(true);
+            /*
+             * Reset the table's view, so that if its model is changed, it shows
+             * its headers and columns correctly. Otherwise, problems like
+             * widths of the columns not being correct or the headers not
+             * showing may happen.
+             */
+            table.onResize();
+        } else {
+            table.setVisible(false);
+        }
+
         if (redraw) {
             /*
              * don't redraw unless the data has changed
@@ -651,8 +657,7 @@ public class ResultTabUI extends Screen {
             }
 
             if (prevHeader && nextHeader) {
-                parentScreen.getWindow().setError(Messages.get()
-                                                          .result_atleastOneResultInRowGroup());
+                parentScreen.setError(Messages.get().result_atleastOneResultInRowGroup());
             } else {
                 /*
                  * remove the row if the row group has more than one row
@@ -875,15 +880,9 @@ public class ResultTabUI extends Screen {
          */
         if (reqNumCols > currNumCols) {
             for (int i = currNumCols; i < reqNumCols; i++ ) {
-                /*
-                 * set the letter from the alphabet, corresponding to the
-                 * column's index, as its header
-                 */
-                if (i > 2)
-                    col = table.addColumn(null, Messages.get().gen_alphabet().substring(i, i + 1));
-                else 
-                    col = table.getColumnAt(i);
-                col.setCellRenderer(new ResultCell());
+                col = table.addColumn(null, Messages.get().gen_alphabet().substring(i, i + 1));
+                if (i > 1)
+                    col.setCellRenderer(new ResultCell());
             }
         } else {
             for (int i = currNumCols; i > reqNumCols; i-- )

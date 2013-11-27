@@ -512,14 +512,14 @@ public class QAEventTabUI extends Screen {
         if (r < 0)
             return;
         data = manager.qaEvent.get(r);
-        parentScreen.getWindow().clearStatus();
+        parentScreen.clearStatus();
         /*
          * allow removal of only internal qa events if sample is released or any
          * analysis is released
          */
         if (sampleOrAnyAnaReleased &&
             !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
-            parentScreen.getWindow().setError(Messages.get().sample_cantRemoveQAEvent());
+            parentScreen.setError(Messages.get().sample_cantRemoveQAEvent());
         } else {
             sampleQATable.removeRowAt(r);
             notifyQAChanged(null);
@@ -541,13 +541,13 @@ public class QAEventTabUI extends Screen {
             return;
 
         data = manager.qaEvent.get(analysis, r);
-        parentScreen.getWindow().clearStatus();
+        parentScreen.clearStatus();
         /*
          * allow removal of only internal qa events if the analysis is released
          */
         if (Constants.dictionary().ANALYSIS_RELEASED.equals(getStatusId()) &&
             !Constants.dictionary().QAEVENT_INTERNAL.equals(data.getTypeId())) {
-            parentScreen.getWindow().setError(Messages.get().analysis_cantRemoveQAEvent());
+            parentScreen.setError(Messages.get().analysis_cantRemoveQAEvent());
         } else {
             analysisQATable.removeRowAt(r);
             notifyQAChanged(analysis.getId());
@@ -671,7 +671,7 @@ public class QAEventTabUI extends Screen {
                     }
 
                     if (showError)
-                        parentScreen.getWindow().setError(error);
+                        parentScreen.setError(error);
                 }
 
                 @Override
@@ -716,7 +716,7 @@ public class QAEventTabUI extends Screen {
         if (analysisId == null)
             uid = null;
         else
-            uid = manager.getAnalysisUid(analysisId);
+            uid = Constants.uid().getAnalysis(analysisId);
         parentBus.fireEvent(new QAEventChangeEvent(uid));
     }
 }

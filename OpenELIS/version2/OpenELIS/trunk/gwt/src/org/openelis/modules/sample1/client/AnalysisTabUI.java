@@ -634,8 +634,7 @@ public class AnalysisTabUI extends Screen {
                     case 1:
                         if (Constants.dictionary().AN_USER_AC_RELEASED.equals(data.getActionId())) {
                             userTable.setValueAt(r, c, data.getActionId());
-                            parentScreen.getWindow()
-                                        .setError(Messages.get().analysisUser_actionException());
+                            parentScreen.setError(Messages.get().analysisUser_actionException());
                         } else {
                             data.setActionId((Integer)val);
                         }
@@ -697,7 +696,7 @@ public class AnalysisTabUI extends Screen {
 
                 isVisible = event.isVisible();
                 if (analysis != null)
-                    uid = manager.getUid(analysis);
+                    uid = Constants.uid().get(analysis);
                 else
                     uid = null;
 
@@ -727,12 +726,12 @@ public class AnalysisTabUI extends Screen {
 
                 if (uid != null) {
                     analysis = (AnalysisViewDO)manager.getObject(uid);
-                    sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
+                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(analysis.getSampleItemId()));
                 } else {
                     analysis = null;
                     sampleItem = null;
                 }
-                
+
                 if (isState(QUERY)) {
                     /*
                      * In query state the tab needs to be put in query mode, so
@@ -822,7 +821,7 @@ public class AnalysisTabUI extends Screen {
                 if (screen != event.getSource()) {
                     redraw = true;
                     analysis = (AnalysisViewDO)manager.getObject(event.getUid());
-                    sampleItem = (SampleItemViewDO)manager.getObject(manager.getSampleItemUid(analysis.getSampleItemId()));
+                    sampleItem = (SampleItemViewDO)manager.getObject(Constants.uid().getSampleItem(analysis.getSampleItemId()));
                     displayAnalysis(event.getUid());
                 }
             }
@@ -889,16 +888,6 @@ public class AnalysisTabUI extends Screen {
         bus.fireEventFromSource(new StateChangeEvent(state), this);
     }
 
-    public Validation validate() {
-        /*
-         * validate only if there's data loaded in the tab
-         */
-        if (displayedUid == null)
-            return new Validation();
-
-        return super.validate();
-    }
-
     @UiHandler("selectWorksheetButton")
     protected void selectWorksheet(ClickEvent event) {
         ScreenWindow modal;
@@ -945,7 +934,7 @@ public class AnalysisTabUI extends Screen {
             if ( !Constants.dictionary().AN_USER_AC_RELEASED.equals(action))
                 userTable.removeRowAt(r);
             else
-                parentScreen.getWindow().setError(Messages.get().analysisUser_actionException());
+                parentScreen.setError(Messages.get().analysisUser_actionException());
         }
     }
 

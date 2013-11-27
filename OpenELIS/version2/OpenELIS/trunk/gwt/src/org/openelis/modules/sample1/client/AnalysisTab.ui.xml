@@ -170,7 +170,7 @@
             </g:layer>
             <g:layer bottom="0px" height="25px">
               <g:HTMLPanel>
-                <w:Button ui:field="selectWorksheetButton" text="{msg.gen_select}" />
+                <w:Button ui:field="selectWorksheetButton" text="{msg.gen_select}" leftIcon="{res.icon.selectIcon}"/>
               </g:HTMLPanel>
             </g:layer>
           </g:LayoutPanel>

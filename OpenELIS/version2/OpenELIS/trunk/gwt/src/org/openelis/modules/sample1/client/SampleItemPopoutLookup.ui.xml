@@ -60,7 +60,7 @@
             <g:layer bottom="75px" height="25px">
               <g:HTMLPanel>
                 <g:HorizontalPanel>
-                  <w:Button ui:field="moveButton" text="{msg.gen_move}" />
+                  <w:Button ui:field="moveButton" text="{msg.gen_move}" leftIcon="{res.icon.refreshButtonImage}"/>
                 </g:HorizontalPanel>
               </g:HTMLPanel>
             </g:layer>

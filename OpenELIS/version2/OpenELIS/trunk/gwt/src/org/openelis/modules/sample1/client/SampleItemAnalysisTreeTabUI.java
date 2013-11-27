@@ -40,7 +40,6 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.TestManager;
@@ -209,7 +208,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
                             logger.log(Level.SEVERE, e.getMessage(), e);
                         }
                     }
-                    node.setData(manager.getUid(item));
+                    node.setData(Constants.uid().get(item));
                     setItemDisplay(node, item);
                 }
             }
@@ -619,11 +618,9 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
             inode = new Node(1);
             inode.setType(SAMPLE_ITEM_LEAF);
             inode.setOpen(true);
-            inode.setData(manager.getUid(item));
+            inode.setData(Constants.uid().get(item));
 
             setItemDisplay(inode, item);
-
-            inode.setData(manager.getUid(item));
 
             root.add(inode);
 
@@ -635,7 +632,7 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
                 setAnalysisDisplay(anode, ana);
 
-                anode.setData(manager.getUid(ana));
+                anode.setData(Constants.uid().get(ana));
 
                 if (validate)
                     validateSampleType(anode, item.getTypeOfSampleId());
@@ -787,50 +784,34 @@ public class SampleItemAnalysisTreeTabUI extends Screen {
 
     /**
      * Goes through the children of the node showing the item and adds a warning
-     * to a child if the sample type in the sample item isn't valid for the
-     * analysis that it's showing.
+     * to a child if the unit assigned to its analysis isn't valid for the
+     * sample item's sample type.
      */
     private void validateSampleType(Node node, Integer typeId) {
-        boolean found;
         String uid;
         AnalysisViewDO ana;
         TestManager tm;
-        ArrayList<TestTypeOfSampleDO> types;
 
         uid = node.getData();
         ana = (AnalysisViewDO)manager.getObject(uid);
 
-        if (Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
+        if (typeId == null || Constants.dictionary().ANALYSIS_CANCELLED.equals(ana.getStatusId()))
             return;
 
-        found = false;
-        if (typeId != null) {
-            try {
-                tm = getTestManager(ana.getTestId());
-                types = tm.getSampleTypes().getTypesBySampleType(typeId);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-                return;
-            }
-
-            /*
-             * show an warning in a node, if the test that it is showing,
-             * doesn't have this sample type
-             */
-            for (TestTypeOfSampleDO t : types) {
-                if (DataBaseUtil.isSame(typeId, t.getTypeOfSampleId())) {
-                    found = true;
-                    break;
-                }
-            }
+        try {
+            tm = getTestManager(ana.getTestId());
+            if (ana.getUnitOfMeasureId() != null &&
+                !tm.getSampleTypes().hasUnit(ana.getUnitOfMeasureId(), typeId))
+                tree.addException(node,
+                                  0,
+                                  new FormErrorWarning(Messages.get()
+                                                               .analysis_unitInvalidForSampleType()));
+            else
+                tree.clearExceptions(node, 0);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
-
-        if ( !found)
-            tree.addException(node, 0, new FormErrorWarning(Messages.get()
-                                                                    .analysis_sampleTypeInvalid()));
-        else
-            tree.clearExceptions(node, 0);
     }
 
     /**

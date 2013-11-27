@@ -83,7 +83,7 @@ public abstract class TestReflexUtility1 {
         for (ResultViewDO r : results) {
             if ( !r.getAnalysisId().equals(anaId)) {
                 anaId = r.getAnalysisId();
-                ana = (AnalysisViewDO)sm.getObject(sm.getAnalysisUid(anaId));
+                ana = (AnalysisViewDO)sm.getObject(Constants.uid().getAnalysis(anaId));
                 tm = getTestManager(ana.getTestId());
                 trm = tm.getReflexTests();
             }

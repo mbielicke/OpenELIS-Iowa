@@ -253,7 +253,7 @@ public class SampleItemTabUI extends Screen {
 
                 isVisible = event.isVisible();
                 if (sampleItem != null)
-                    uid = manager.getUid(sampleItem);
+                    uid = Constants.uid().get(sampleItem);
                 else
                     uid = null;
                 displaySampleItem(uid);
@@ -271,7 +271,7 @@ public class SampleItemTabUI extends Screen {
                         break;
                     case ANALYSIS:
                         a = (AnalysisDO)manager.getObject(event.getUid());
-                        uid = manager.getSampleItemUid(a.getSampleItemId());
+                        uid = Constants.uid().getSampleItem(a.getSampleItemId());
                         break;
                     default:
                         uid = null;
