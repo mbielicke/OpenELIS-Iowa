@@ -748,99 +748,99 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
             }
         } catch (IllegalArgumentException iaE) {
             // ignore and fall through
-        }
-        if (val.matches("[TP][0-9]*\\-[0-9]*")) {    // test & panel
-            try {
-                testMethodSampleType.setValue(val, true);
-            } catch (Exception e) {
+            if (val.matches("[TP][0-9]*\\-[0-9]*")) {    // test & panel
+                try {
+                    testMethodSampleType.setValue(val, true);
+                } catch (Exception e) {
+                    ex = new Exception(Messages.get().invalidEntryException(val));
+                    window.setError(ex.getMessage());
+                }
+            } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {    // tube #
+                tubeNumber.setValue(val);
+            } else if (val.matches("NEW")) {                    // new accession #
+                // TODO: Implement using the "NEW" keyword to get the next accession
+                //       number for use when printing the labels on the fly
+                Window.alert("Not yet implemented!");
+//                if (validateFields()) {
+//                    if (accNumUtil == null)
+//                        accNumUtil = new AccessionNumberUtility();
+//    
+//                    try {
+//                        accessionNum = accNumUtil.getNewAccessionNumber();
+//                        accessionNumber.setFieldValue(accessionNum);
+//                        addAnalysisRow();
+//                    } catch (ValidationErrorsList e) {
+//                        showErrors(e);
+//                    } catch (Exception e) {
+//                        Window.alert(e.getMessage());
+//                    }
+//                }
+            } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) { // accession #
+                if (validateFields()) {
+                    //
+                    // Trim the Sample Item ID from the end of the bar coded
+                    // accession number
+                    //
+                    index = val.indexOf("-");
+                    if (index != -1)
+                        val = val.substring(0, index);
+    
+                    try {
+                        accessionNum = Integer.valueOf(val);
+                        smRowCount = managers.get(val);
+                        if (smRowCount == null) {
+                            try {
+                                sampleMan = SampleService1.get().fetchByAccession(accessionNum, (SampleManager1.Load[])null);
+                                if (Constants.dictionary().SAMPLE_RELEASED.equals(sampleMan.getSample().getStatusId()))
+                                    throw new InconsistencyException(Messages.get().sample_cantAddAnalysis());
+                                sampleMan = SampleService1.get().fetchForUpdate(sampleMan.getSample().getId(), (SampleManager1.Load[])null);
+                            } catch (NotFoundException nfE) {
+                                sysVarDO = SystemVariableService.get().fetchByExactName("last_accession_number");
+                                if (accessionNum.compareTo(Integer.valueOf(sysVarDO.getValue())) > 0)
+                                    throw new InconsistencyException(Messages.get()
+                                                                             .sample_accessionNumberNotInUse(accessionNum));
+                                sampleMan = SampleService1.get().getInstance(Constants.domain().QUICKENTRY);
+                                sampleMan.getSample().setAccessionNumber(accessionNum);
+                                sampleMan.getSample().setReceivedDate(receivedDate.getValue());
+                                sampleMan.getSample().setReceivedById(receivedBy.getValue().getId());
+                            }
+                            managers.put(sampleMan.getSample().getAccessionNumber(),
+                                         new SampleManagerRowCount(sampleMan, 0));
+                        } else {
+                            sampleMan = smRowCount.sampleManager;
+                        }
+                        accessionNumber.setValue(accessionNum);
+                        addAnalysis();
+                    } catch (NumberFormatException e) {
+                        ex = new Exception(Messages.get().invalidEntryException(val));
+                        window.setError(ex.getMessage());
+                    } catch (InconsistencyException e) {
+                        window.setError(e.getMessage());
+                    } catch (ValidationErrorsList e) {
+                        int i;
+                        FieldErrorException fe;
+                        ValidationErrorsList newE;
+                        
+                        newE = new ValidationErrorsList();
+    
+                        // convert all the field errors to form errors
+                        for (i = 0; i < e.size(); i++ ) {
+                            if (e.getErrorList().get(i) instanceof FieldErrorException) {
+                                fe = (FieldErrorException)e.getErrorList().get(i);
+                                newE.add(new FormErrorException(fe.getMessage()));
+                            } else {
+                                newE.add(e.getErrorList().get(i));
+                            }
+                        }
+                        showErrors(newE);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                }
+            } else {
                 ex = new Exception(Messages.get().invalidEntryException(val));
                 window.setError(ex.getMessage());
             }
-        } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {    // tube #
-            tubeNumber.setValue(val);
-        } else if (val.matches("NEW")) {                    // new accession #
-            // TODO: Implement using the "NEW" keyword to get the next accession
-            //       number for use when printing the labels on the fly
-            Window.alert("Not yet implemented!");
-//            if (validateFields()) {
-//                if (accNumUtil == null)
-//                    accNumUtil = new AccessionNumberUtility();
-//
-//                try {
-//                    accessionNum = accNumUtil.getNewAccessionNumber();
-//                    accessionNumber.setFieldValue(accessionNum);
-//                    addAnalysisRow();
-//                } catch (ValidationErrorsList e) {
-//                    showErrors(e);
-//                } catch (Exception e) {
-//                    Window.alert(e.getMessage());
-//                }
-//            }
-        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) { // accession #
-            if (validateFields()) {
-                //
-                // Trim the Sample Item ID from the end of the bar coded
-                // accession number
-                //
-                index = val.indexOf("-");
-                if (index != -1)
-                    val = val.substring(0, index);
-
-                try {
-                    accessionNum = Integer.valueOf(val);
-                    smRowCount = managers.get(val);
-                    if (smRowCount == null) {
-                        try {
-                            sampleMan = SampleService1.get().fetchByAccession(accessionNum, (SampleManager1.Load[])null);
-                            if (Constants.dictionary().SAMPLE_RELEASED.equals(sampleMan.getSample().getStatusId()))
-                                throw new InconsistencyException(Messages.get().sample_cantAddAnalysis());
-                            sampleMan = SampleService1.get().fetchForUpdate(sampleMan.getSample().getId(), (SampleManager1.Load[])null);
-                        } catch (NotFoundException nfE) {
-                            sysVarDO = SystemVariableService.get().fetchByExactName("last_accession_number");
-                            if (accessionNum.compareTo(Integer.valueOf(sysVarDO.getValue())) > 0)
-                                throw new InconsistencyException(Messages.get()
-                                                                         .sample_accessionNumberNotInUse(accessionNum));
-                            sampleMan = SampleService1.get().getInstance(Constants.domain().QUICKENTRY);
-                            sampleMan.getSample().setAccessionNumber(accessionNum);
-                            sampleMan.getSample().setReceivedDate(receivedDate.getValue());
-                            sampleMan.getSample().setReceivedById(receivedBy.getValue().getId());
-                        }
-                        managers.put(sampleMan.getSample().getAccessionNumber(),
-                                     new SampleManagerRowCount(sampleMan, 0));
-                    } else {
-                        sampleMan = smRowCount.sampleManager;
-                    }
-                    accessionNumber.setValue(accessionNum);
-                    addAnalysis();
-                } catch (NumberFormatException e) {
-                    ex = new Exception(Messages.get().invalidEntryException(val));
-                    window.setError(ex.getMessage());
-                } catch (InconsistencyException e) {
-                    window.setError(e.getMessage());
-                } catch (ValidationErrorsList e) {
-                    int i;
-                    FieldErrorException fe;
-                    ValidationErrorsList newE;
-                    
-                    newE = new ValidationErrorsList();
-
-                    // convert all the field errors to form errors
-                    for (i = 0; i < e.size(); i++ ) {
-                        if (e.getErrorList().get(i) instanceof FieldErrorException) {
-                            fe = (FieldErrorException)e.getErrorList().get(i);
-                            newE.add(new FormErrorException(fe.getMessage()));
-                        } else {
-                            newE.add(e.getErrorList().get(i));
-                        }
-                    }
-                    showErrors(newE);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-        } else {
-            ex = new Exception(Messages.get().invalidEntryException(val));
-            window.setError(ex.getMessage());
         }
         entry.setValue(null);
         /*
