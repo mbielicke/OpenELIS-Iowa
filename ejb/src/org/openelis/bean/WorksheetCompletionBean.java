@@ -169,12 +169,15 @@ public class WorksheetCompletionBean {
         SampleManager sManager;
         SampleOrganizationViewDO soVDO;
         SamplePrivateWellViewDO spwVDO;
+        SimpleDateFormat dateTimeFormat;
         SystemUserVO userVO;
         WorksheetAnalysisDO waDO, waLinkDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO wiDO;
         WorksheetQcResultManager wqrManager;
         WorksheetResultManager wrManager;
+
+        dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
                                                  manager.getWorksheet().getSystemUserId());
@@ -555,7 +558,7 @@ public class WorksheetCompletionBean {
                     cell = oRow.createCell(6);
                     cell.setCellStyle(styles.get("datetime_edit"));
                     if (waDO.getQcStartedDate() != null)
-                        cell.setCellValue(waDO.getQcStartedDate().toString());
+                        cell.setCellValue(dateTimeFormat.format(waDO.getQcStartedDate().getDate()));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_started." + cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$" +
