@@ -1058,7 +1058,6 @@ public class WorksheetItemTabUI extends Screen {
             win.setSize("729px", "360px");
             qcLookupScreen.setWindow(win);
             win.setContent(qcLookupScreen);
-            qcLookupScreen.clearFields();
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());
