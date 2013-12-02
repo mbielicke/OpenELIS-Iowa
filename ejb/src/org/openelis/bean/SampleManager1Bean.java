@@ -42,6 +42,7 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AnalysisQaEventViewDO;
+import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalysisWorksheetVO;
@@ -133,6 +134,9 @@ public class SampleManager1Bean {
 
     @EJB
     private AnalysisQAEventBean          analysisQA;
+
+    @EJB
+    private AnalysisReportFlagsBean      analysisReportFlags;
 
     @EJB
     private AnalysisUserBean             user;
@@ -862,6 +866,7 @@ public class SampleManager1Bean {
         HashMap<Integer, AuxFieldGroupManager> ams;
         HashMap<Integer, QaEventDO> qas;
         HashMap<Integer, Integer> imap, amap, rmap, seq;
+        AnalysisReportFlagsDO defaultARF;
 
         /*
          * validation needs test, aux group manager and pws DO. Build lists of analysis
@@ -966,6 +971,12 @@ public class SampleManager1Bean {
         }
         ids = null;
 
+        /*
+         * Creating the default AnalysisReportFlags record to be added for each
+         * analysis that is added to the database
+         */
+        defaultARF = new AnalysisReportFlagsDO(null, "N", "N", null, 0, null);
+        
         /*
          * the front code uses negative ids (temporary ids) to link sample items
          * and analysis, analysis and results. The negative ids are mapped to
@@ -1207,6 +1218,10 @@ public class SampleManager1Bean {
                             tmpid = data.getId();
                             data.setSampleItemId(imap.get(data.getSampleItemId()));
                             analysis.add(data);
+
+                            defaultARF.setAnalysisId(data.getId());
+                            analysisReportFlags.add(defaultARF);
+                            
                             amap.put(tmpid, data.getId());
                             amap.put(data.getId(), data.getId());
                         } else if ( !amap.containsKey(data.getId())) {
