@@ -134,15 +134,20 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"type")' />:
                 </text>
                 <dropdown field="Integer" key="{meta:getReferenceTableId()}" width="85" required = "true" tab = "{meta:getReferenceName()}, termMappingTable" />
-                <widget>
-                	<HorizontalPanel width = "20"/>
-                </widget>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"localTerm")' />:
                 </text>
                 <autoComplete field="String" key="{meta:getReferenceName()}" tab = "termMappingTable,{meta:getReferenceTableId()}" required = "true" width="400" popWidth="auto">
                   <col width="400" />
                 </autoComplete>
+                <appButton key="testAnalyteLookupButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="LookupButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'testAnalyteHeading')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
               </row>
             </TablePanel>
             <VerticalPanel height = "5"/>

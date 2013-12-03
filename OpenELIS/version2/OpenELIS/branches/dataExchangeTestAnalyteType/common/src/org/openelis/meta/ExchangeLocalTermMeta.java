@@ -55,7 +55,10 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
                                   TEST_METHOD_NAME = "_test.method.name",
                                   ORGANIZATION_NAME = "_organization.name",
                                   DICTIONARY_ENTRY = "_dictionary.entry",
-                                  DICTIONARY_CATEGORY_NAME = "_dictionary.category.name";
+                                  DICTIONARY_CATEGORY_NAME = "_dictionary.category.name",
+                                  TEST_ANALYTE_TEST_NAME = "_testAnalyte.test.name",
+                                  TEST_ANALYTE_ANALYTE_NAME = "_testAnalyte.analyte.name",
+                                  TEST_ANALYTE_TEST_METHOD_NAME = "_testAnalyte.analyte.name";
     
     private static HashSet<String> names;
     
@@ -69,7 +72,8 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
                                                   EXT_TERM_VERSION, REFERENCE_NAME ,
                                                   ANALYTE_NAME, METHOD_NAME, TEST_NAME,
                                                   TEST_METHOD_NAME, ORGANIZATION_NAME,
-                                                  DICTIONARY_ENTRY, DICTIONARY_CATEGORY_NAME));
+                                                  DICTIONARY_ENTRY, DICTIONARY_CATEGORY_NAME,
+                                                  TEST_ANALYTE_ANALYTE_NAME));
     }    
 
     public static String getId() {
@@ -147,6 +151,10 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
     public static String getDictionaryCategoryName() {
         return DICTIONARY_CATEGORY_NAME;
     }
+    
+    public static String getTestAnalyteAnalyteName() {
+        return TEST_ANALYTE_ANALYTE_NAME;
+    }
 
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
@@ -174,6 +182,9 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
         
         if (where.indexOf("method.") > -1)
             from += ", IN (_exchangeLocalTerm.method) _method ";
+        
+        if (where.indexOf("testAnalyte.") > -1)
+            from += ", IN (_exchangeLocalTerm.testAnalyte) _testAnalyte ";
         
         return from;
     }

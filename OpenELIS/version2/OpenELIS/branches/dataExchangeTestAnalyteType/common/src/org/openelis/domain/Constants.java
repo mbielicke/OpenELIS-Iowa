@@ -189,7 +189,9 @@ public class Constants implements Serializable {
                         AN_USER_AC_RELEASED, AUX_ALPHA_LOWER, AUX_ALPHA_MIXED, AUX_ALPHA_UPPER,
                         AUX_DATE, AUX_DATE_TIME, AUX_DEFAULT, AUX_DICTIONARY, AUX_NUMERIC,
                         AUX_TIME, CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED, INSTRUMENT_LOG_COMPLETED,
-                        INSTRUMENT_LOG_PENDING, LOG_LEVEL_ERROR, LOG_LEVEL_INFO,
+                        INSTRUMENT_LOG_PENDING, LOCAL_TYPE_ANALYTE, LOCAL_TYPE_DICTIONARY,
+                        LOCAL_TYPE_METHOD, LOCAL_TYPE_ORGANIZATION, LOCAL_TYPE_TEST,
+                        LOCAL_TYPE_TEST_ANALYTE, LOG_LEVEL_ERROR, LOG_LEVEL_INFO,
                         LOG_TYPE_DATA_TRANSMISSION, MICROGRAMS_PER_LITER, NANOGRAMS_PER_LITER,
                         NANOGRAMS_PER_MILLILITER, ORDER_RECURRENCE_UNIT_DAYS,
                         ORDER_RECURRENCE_UNIT_MONTHS, ORDER_RECURRENCE_UNIT_YEARS,
@@ -281,7 +283,7 @@ public class Constants implements Serializable {
         public String get(ResultDO data) {
             return getResult(data.getId());
         }
-        
+
         public String get(AuxFieldGroupDO data) {
             return getAuxFieldGroup(data.getId());
         }
@@ -332,7 +334,7 @@ public class Constants implements Serializable {
         public String getResult(Integer id) {
             return Constants.table().RESULT + ":" + id;
         }
-        
+
         public String getAuxFieldGroup(Integer id) {
             return Constants.table().AUX_FIELD_GROUP + ":" + id;
         }
@@ -340,7 +342,7 @@ public class Constants implements Serializable {
         public String getOrderTest(Integer id) {
             return Constants.table().ORDER_TEST + ":" + id;
         }
-        
+
         public String getOrderTestAnalyte(Integer id) {
             return Constants.table().ORDER_TEST_ANALYTE + ":" + id;
         }
