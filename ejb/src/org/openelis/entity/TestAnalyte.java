@@ -50,6 +50,10 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
+               @NamedQuery(name = "TestAnalyte.FetchById",
+                           query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,"
+                                   + "ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)"
+                                   + " from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.id = :id "),
                @NamedQuery(name = "TestAnalyte.FetchByAnalyteId",
                            query = "select distinct new org.openelis.domain.TestAnalyteViewDO(ta.id,ta.testId,ta.sortOrder,"
                                    + "ta.rowGroup,ta.isColumn,ta.analyteId,ta.typeId,ta.isReportable,ta.resultGroup,ta.scriptletId,a.name,s.name)"

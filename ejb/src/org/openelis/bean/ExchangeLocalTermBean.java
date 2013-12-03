@@ -46,8 +46,11 @@ import org.openelis.domain.ExchangeLocalTermDO;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.entity.ExchangeLocalTerm;
+import org.openelis.manager.TestAnalyteManager;
+import org.openelis.manager.TestManager;
 import org.openelis.meta.ExchangeLocalTermMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
@@ -75,10 +78,13 @@ public class ExchangeLocalTermBean {
     private MethodBean                         method;
 
     @EJB
-    private OrganizationBean                  organization;
+    private OrganizationBean                   organization;
 
     @EJB
-    private TestBean                          test;
+    private TestBean                           test;
+
+    @EJB
+    private TestAnalyteBean                    testAnalyte;
 
     private static final ExchangeLocalTermMeta meta = new ExchangeLocalTermMeta();
 
@@ -90,7 +96,7 @@ public class ExchangeLocalTermBean {
         query.setParameter("id", id);
         try {
             data = (ExchangeLocalTermViewDO)query.getSingleResult();
-            setReferenceName(data);
+            setReferenceNameDescription(data);
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -109,7 +115,7 @@ public class ExchangeLocalTermBean {
         query.setParameter("referenceId", referenceId);
         try {
             data = (ExchangeLocalTermViewDO)query.getSingleResult();
-            setReferenceName(data);
+            setReferenceNameDescription(data);
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -118,8 +124,7 @@ public class ExchangeLocalTermBean {
         return data;
     }
 
-    public ArrayList<ExchangeLocalTermViewDO> query(ArrayList<QueryData> fields,
-                                                    int first, int max) throws Exception {
+    public ArrayList<ExchangeLocalTermViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         QueryBuilderV2 builder;
         Integer refTableId;
         QueryData refName;
@@ -158,9 +163,7 @@ public class ExchangeLocalTermBean {
             setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getMethodName());
             results = methodQuery(fields, builder, first, max);
         } else if (Constants.table().ORGANIZATION.equals(refTableId)) {
-            setReferenceQuery(refName,
-                              fields,
-                              ExchangeLocalTermMeta.getOrganizationName());
+            setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getOrganizationName());
             results = organizationQuery(fields, builder, first, max);
         } else if (Constants.table().TEST.equals(refTableId)) {
             setReferenceQuery(refName, fields, ExchangeLocalTermMeta.getTestName());
@@ -169,9 +172,7 @@ public class ExchangeLocalTermBean {
 
         if (results.isEmpty())
             throw new NotFoundException();
-        results = (ArrayList<ExchangeLocalTermViewDO>)DataBaseUtil.subList(results,
-                                                                           first,
-                                                                           max);
+        results = (ArrayList<ExchangeLocalTermViewDO>)DataBaseUtil.subList(results, first, max);
         if (results == null)
             throw new LastPageException();
 
@@ -242,13 +243,16 @@ public class ExchangeLocalTermBean {
             throw list;
     }
 
-    private void setReferenceName(ExchangeLocalTermViewDO data) throws Exception {
+    private void setReferenceNameDescription(ExchangeLocalTermViewDO data) throws Exception {
         AnalyteViewDO ana;
         DictionaryViewDO dict;
-        TestViewDO tst;
-        MethodDO mtd;
+        TestViewDO t;
+        MethodDO m;
+        TestAnalyteViewDO ta;
         OrganizationViewDO org;
         AddressDO addr;
+        StringBuilder sb;
+        ArrayList<ArrayList<TestAnalyteViewDO>> tas;
         ArrayList<String> list;
 
         if (Constants.table().ANALYTE.equals(data.getReferenceTableId())) {
@@ -256,33 +260,49 @@ public class ExchangeLocalTermBean {
             data.setReferenceName(ana.getName());
         } else if (Constants.table().DICTIONARY.equals(data.getReferenceTableId())) {
             dict = dictionary.fetchById(data.getReferenceId());
-            data.setReferenceName(DataBaseUtil.concatWithSeparator(dict.getEntry(),
-                                                                   ", ",
-                                                                   dict.getCategoryName()));
+            data.setReferenceName(dict.getEntry());
+            data.setReferenceDescription(dict.getCategoryName());
         } else if (Constants.table().METHOD.equals(data.getReferenceTableId())) {
-            mtd = method.fetchById(data.getReferenceId());
-            data.setReferenceName(mtd.getName());
+            m = method.fetchById(data.getReferenceId());
+            data.setReferenceName(m.getName());
         } else if (Constants.table().ORGANIZATION.equals(data.getReferenceTableId())) {
             org = organization.fetchById(data.getReferenceId());
             addr = org.getAddress();
-
+            data.setReferenceName(org.getName());
             list = new ArrayList<String>();
-            list.add(org.getName());
             list.add(addr.getStreetAddress());
             list.add(addr.getCity());
             list.add(addr.getState());
-
-            data.setReferenceName(DataBaseUtil.concatWithSeparator(list, ", "));
+            data.setReferenceDescription(DataBaseUtil.concatWithSeparator(list, ", "));
         } else if (Constants.table().TEST.equals(data.getReferenceTableId())) {
-            tst = test.fetchById(data.getReferenceId());
-            data.setReferenceName(DataBaseUtil.concatWithSeparator(tst.getName(),
-                                                                   ", ",
-                                                                   tst.getMethodName()));
+            t = test.fetchById(data.getReferenceId());
+            data.setReferenceName(t.getName());
+            data.setReferenceDescription(t.getMethodName());
+        } else if (Constants.table().TEST_ANALYTE.equals(data.getReferenceTableId())) {
+            ta = testAnalyte.fetchById(data.getReferenceTableId());
+            t = test.fetchById(ta.getTestId());
+            tas = testAnalyte.fetchByTestId(t.getId());
+            /*
+             * find the row and column for this test analyte 
+             */
+            for (int i = 0; i < tas.size(); i++) {
+                for (int j = 0; j < tas.get(i).size(); j++) {
+                    if (tas.get(i).get(j).getId().equals(ta.getId())) {
+                        list = new ArrayList<String>();
+                        list.add(t.getName());
+                        list.add(t.getMethodName());
+                        list.add(ta.getAnalyteName());
+                        list.add(String.valueOf(i+1));
+                        list.add(String.valueOf(j+1));
+                        data.setReferenceName(DataBaseUtil.concatWithSeparator(list, ", "));
+                        break;
+                    }
+                }
+            }
         }
     }
 
-    private void setReferenceQuery(QueryData refName, ArrayList<QueryData> fields,
-                                   String key) {
+    private void setReferenceQuery(QueryData refName, ArrayList<QueryData> fields, String key) {
         if (refName != null) {
             refName.setKey(key);
         } else {
@@ -294,8 +314,8 @@ public class ExchangeLocalTermBean {
         }
     }
 
-    private List analyteQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
-                              int first, int max) throws Exception {
+    private List analyteQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first,
+                              int max) throws Exception {
         Query query;
 
         builder = new QueryBuilderV2();
@@ -316,8 +336,8 @@ public class ExchangeLocalTermBean {
         return query.getResultList();
     }
 
-    private List dictionaryQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
-                                 int first, int max) throws Exception {
+    private List dictionaryQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first,
+                                 int max) throws Exception {
         Query query;
 
         builder = new QueryBuilderV2();
@@ -340,8 +360,7 @@ public class ExchangeLocalTermBean {
         return query.getResultList();
     }
 
-    private List methodQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
-                             int first, int max) throws Exception {
+    private List methodQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first, int max) throws Exception {
         Query query;
 
         builder = new QueryBuilderV2();
@@ -362,8 +381,8 @@ public class ExchangeLocalTermBean {
         return query.getResultList();
     }
 
-    private List organizationQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
-                                   int first, int max) throws Exception {
+    private List organizationQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first,
+                                   int max) throws Exception {
         Query query;
 
         builder = new QueryBuilderV2();
@@ -373,8 +392,7 @@ public class ExchangeLocalTermBean {
                           ExchangeLocalTermMeta.getId() + ", " +
                           ExchangeLocalTermMeta.getReferenceTableId() + ", " +
                           ExchangeLocalTermMeta.getReferenceId() + ", " +
-                          ExchangeLocalTermMeta.getOrganizationName() + ", " + "''" +
-                          ") ");
+                          ExchangeLocalTermMeta.getOrganizationName() + ", " + "''" + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(ExchangeLocalTermMeta.getOrganizationName());
 
@@ -385,8 +403,7 @@ public class ExchangeLocalTermBean {
         return query.getResultList();
     }
 
-    private List testQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder,
-                           int first, int max) throws Exception {
+    private List testQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first, int max) throws Exception {
         Query query;
 
         builder = new QueryBuilderV2();
@@ -397,6 +414,29 @@ public class ExchangeLocalTermBean {
                           ExchangeLocalTermMeta.getReferenceTableId() + ", " +
                           ExchangeLocalTermMeta.getReferenceId() + ", " +
                           ExchangeLocalTermMeta.getTestName() + ", " +
+                          ExchangeLocalTermMeta.getTestMethodName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(ExchangeLocalTermMeta.getTestName() + ", " +
+                           ExchangeLocalTermMeta.getTestMethodName());
+
+        query = manager.createQuery(builder.getEJBQL());
+        query.setMaxResults(first + max);
+        builder.setQueryParams(query, fields);
+
+        return query.getResultList();
+    }
+    
+    private List testAnalyteQuery(ArrayList<QueryData> fields, QueryBuilderV2 builder, int first, int max) throws Exception {
+        Query query;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+
+        builder.setSelect("distinct new org.openelis.domain.ExchangeLocalTermViewDO(" +
+                          ExchangeLocalTermMeta.getId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceTableId() + ", " +
+                          ExchangeLocalTermMeta.getReferenceId() + ", " +
+                          ExchangeLocalTermMeta.getTestAnalyteAnalyteName() + ", " +
                           ExchangeLocalTermMeta.getTestMethodName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(ExchangeLocalTermMeta.getTestName() + ", " +
