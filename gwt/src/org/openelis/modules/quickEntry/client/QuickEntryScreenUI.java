@@ -787,7 +787,7 @@ public class QuickEntryScreenUI extends Screen implements CacheProvider {
     
                     try {
                         accessionNum = Integer.valueOf(val);
-                        smRowCount = managers.get(val);
+                        smRowCount = managers.get(accessionNum);
                         if (smRowCount == null) {
                             try {
                                 sampleMan = SampleService1.get().fetchByAccession(accessionNum, (SampleManager1.Load[])null);
