@@ -38,8 +38,9 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  dueDays, statusId, testId, unitOfMeasureId, worksheetId;
-    protected String   description, methodName, testName, unitOfMeasure;
+    protected boolean _statusChanged, _unitChanged;
+    protected Integer dueDays, statusId, testId, unitOfMeasureId, worksheetId;
+    protected String description, methodName, testName, unitOfMeasure;
     protected Datetime collectionDate, expireDate, receivedDate;
     
     public WorksheetAnalysisViewDO() {
@@ -115,6 +116,7 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     public void setUnitOfMeasureId(Integer unitOfMeasureId) {
         this.unitOfMeasureId = unitOfMeasureId;
+        _unitChanged = true;
     }
 
     public String getUnitOfMeasure() {
@@ -131,6 +133,7 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
+        _statusChanged = true;
     }
 
     public Datetime getCollectionDate() {
@@ -163,5 +166,13 @@ public class WorksheetAnalysisViewDO extends WorksheetAnalysisDO {
 
     public void setExpireDate(Datetime expireDate) {
         this.expireDate = DataBaseUtil.toYM(expireDate);
+    }
+    
+    public boolean isStatusChanged() {
+        return _statusChanged;
+    }
+
+    public boolean isUnitChanged() {
+        return _unitChanged;
     }
 }
