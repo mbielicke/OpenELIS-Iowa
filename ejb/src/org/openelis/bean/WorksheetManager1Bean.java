@@ -386,7 +386,8 @@ public class WorksheetManager1Bean {
         TestAnalyteViewDO taVDO;
         WorksheetAnalysisViewDO waVDO;
         WorksheetItemDO itemDO;
-
+        ValidationErrorsList errors;
+        
         validate(wm);
 
         locked = false;
@@ -491,7 +492,8 @@ public class WorksheetManager1Bean {
                 if (data.getId() < 0 && data.getFromOtherId() == null) {
                     initAnalysisIds.add(data.getAnalysisId());
                     updateAnalysisIds.add(data.getAnalysisId());
-                } else if (data.isChanged() && !updatedAnalyses.containsKey(data.getAnalysisId())) {
+                } else if ((data.isChanged() || data.isStatusChanged() || data.isUnitChanged()) &&
+                           !updatedAnalyses.containsKey(data.getAnalysisId())) {
                     updatedAnalyses.put(data.getAnalysisId(), data);
                     updateAnalysisIds.add(data.getAnalysisId());
                 }
@@ -562,10 +564,25 @@ public class WorksheetManager1Bean {
             try {
                 sampleMan.update(sMans, true);
             } catch (Exception anyE) {
-                sampleIds = new ArrayList<Integer>();
-                for (SampleManager1 sMan : sMans)
-                    sampleIds.add(sMan.getSample().getId());
-                sampleMan.unlock(sampleIds, SampleManager1.Load.SINGLERESULT);
+                if (anyE instanceof ValidationErrorsList) {
+                    if (((ValidationErrorsList)anyE).hasErrors()) {
+                        try {
+                            unlockSamples(sMans);
+                        } catch (Exception anyE1) {
+                            ((ValidationErrorsList)anyE).add(anyE1);
+                        }
+                        throw anyE;
+                    }
+                } else {
+                    errors = new ValidationErrorsList();
+                    errors.add(anyE);
+                    try {
+                        unlockSamples(sMans);
+                    } catch (Exception anyE1) {
+                        errors.add(anyE1);
+                    }
+                    throw errors;
+                }
             }
         }
 
@@ -1400,6 +1417,15 @@ public class WorksheetManager1Bean {
                 wrVDO.setAnalyteName(rVDO.getAnalyte());
             }
         }
+    }
+    
+    private void unlockSamples(ArrayList<SampleManager1> sMans) throws Exception {
+        ArrayList<Integer> sampleIds;
+        
+        sampleIds = new ArrayList<Integer>();
+        for (SampleManager1 sMan : sMans)
+            sampleIds.add(sMan.getSample().getId());
+        sampleMan.unlock(sampleIds, SampleManager1.Load.SINGLERESULT);
     }
     
     class WorksheetComparator<T extends WorksheetItemDO> implements Comparator<T> {
