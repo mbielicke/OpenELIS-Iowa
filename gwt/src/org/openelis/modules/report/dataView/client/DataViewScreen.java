@@ -989,8 +989,13 @@ public class DataViewScreen extends Screen {
 
                     @Override
                     public void onFailure(Throwable caught) {
-                        window.setError("Failed");
-                        Window.alert(caught.getMessage());
+                        if (caught instanceof NotFoundException) {
+                            window.setDone(Messages.get().noRecordsFound());
+                        } else {
+                            Window.alert(caught.getMessage());
+                            caught.printStackTrace();
+                            window.clearStatus();
+                        }
                     }
                 });
             } else {
