@@ -30,6 +30,7 @@
 
   <ui:with type="org.openelis.constants.OpenELISConstants" field="msg"/>
   <ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res"/>
+  <ui:with type="org.openelis.ui.resources.UIResources" field="uiRes" />
 
   <g:SplitLayoutPanel styleName="{res.style.WhiteContentPanel}">
     <g:west size="250">
@@ -72,15 +73,29 @@
           </w:customHeader>
           <g:LayoutPanel>
             <g:layer top="0px" bottom="0px" left="0px" right="0px">
-              <t:Table ui:field="analyteTable" horizontalScroll="ALWAYS"
-                       verticalScroll="ALWAYS" styleName="{res.table.ScreenTableWithSides}">
-                <t:Column width="20">
-                  <t:CheckBoxCell/>
-                </t:Column>
-                <t:Column width="150" label="{msg.gen_analytes}">
-                  <t:LabelCell/>
-                </t:Column>
-              </t:Table>
+              <g:LayoutPanel>
+                <g:layer top="0px" bottom="26px">
+                  <t:Table ui:field="analyteTable" horizontalScroll="ALWAYS"
+                           verticalScroll="ALWAYS" styleName="{res.table.ScreenTableWithSides}">
+                    <t:Column width="20">
+                      <t:CheckBoxCell/>
+                    </t:Column>
+                    <t:Column width="150" label="{msg.gen_analytes}">
+                      <t:LabelCell/>
+                    </t:Column>
+                  </t:Table>
+                </g:layer>
+                <g:layer bottom="0px" height="26px">
+                  <g:HorizontalPanel horizontalAlignment="CENTER" width="100%">
+                    <g:HorizontalPanel>
+                      <w:Button ui:field="checkAllAnalytes" leftIcon="{uiRes.checkbox.Checked}"
+                                text="{msg.gen_checkAll}" enabled="false" css="{res.atozButton}"/>
+                      <w:Button ui:field="uncheckAllAnalytes" leftIcon="{uiRes.checkbox.Unchecked}"
+                                text="{msg.gen_uncheckAll}" enabled="false" css="{res.atozButton}"/>
+                    </g:HorizontalPanel>
+                  </g:HorizontalPanel>
+                </g:layer>
+              </g:LayoutPanel>
             </g:layer>
           </g:LayoutPanel>
         </w:tab>

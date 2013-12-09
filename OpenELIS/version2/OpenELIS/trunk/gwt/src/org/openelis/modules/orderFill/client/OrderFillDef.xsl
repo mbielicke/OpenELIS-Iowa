@@ -228,7 +228,7 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select='resource:getString($constants,"itemsOrdered")' />
                     </text>
                     <widget>
-                      <tree key="itemsTree" width="auto" maxRows="6" showScroll="ALWAYS">
+                      <tree key="itemsTree" width="570px" maxRows="5" showScroll="ALWAYS">
                         <header>
                           <col width="50" header="{resource:getString($constants,'ordNum')}" />
                           <col width="30" header="{resource:getString($constants,'qty')}" />
