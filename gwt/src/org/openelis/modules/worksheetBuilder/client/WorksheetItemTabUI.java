@@ -193,6 +193,7 @@ public class WorksheetItemTabUI extends Screen {
             public void onStateChange(StateChangeEvent event) {
                 worksheetItemTable.setEnabled(true);
                 worksheetItemTable.setAllowMultipleSelection(true);
+                worksheetItemTable.unselectAll();
             }
         });
 
@@ -1030,7 +1031,7 @@ public class WorksheetItemTabUI extends Screen {
                                 for (QcLotViewDO qcLotVDO : list) {
                                     itemDO = manager.item.add(index++);
                                     data = manager.analysis.add(itemDO);
-                                    data.setAccessionNumber("X." + itemDO.getId());
+                                    data.setAccessionNumber("X." + itemDO.getPosition());
                                     data.setQcLotId(qcLotVDO.getQcId());
                                     data.setDescription(qcLotVDO.getQcName() + " (" +
                                                         qcLotVDO.getLotNumber() + ")");

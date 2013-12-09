@@ -133,7 +133,8 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField
     protected Button                                    query, previous, next, add,
                                                         update, commit, abort, lookupWorksheetButton,
-                                                        atozNext, atozPrev, optionsButton;
+                                                        atozNext, atozPrev, optionsButton,
+                                                        checkAllAnalytes, uncheckAllAnalytes;
     @UiField
     protected Dropdown<Integer>                         formatId, statusId;
     @UiField
@@ -591,6 +592,13 @@ public class WorksheetBuilderScreenUI extends Screen {
             }
         });
 
+        addStateChangeHandler(new StateChangeEvent.Handler() {
+            public void onStateChange(StateChangeEvent event) {
+                checkAllAnalytes.setEnabled(false);
+                uncheckAllAnalytes.setEnabled(false);
+            }
+        });
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<WindowInt>() {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
@@ -1017,6 +1025,13 @@ public class WorksheetBuilderScreenUI extends Screen {
             model = analytesMap.get(uid);
             if (model != null) {
                 analyteTable.setModel(model);
+                if (!isState(ADD, UPDATE) || model.get(0).getData() instanceof QcAnalyteViewDO) {
+                    checkAllAnalytes.setEnabled(false);
+                    uncheckAllAnalytes.setEnabled(false);
+                } else {
+                    checkAllAnalytes.setEnabled(true);
+                    uncheckAllAnalytes.setEnabled(true);
+                }
                 window.clearStatus();
             } else {
                 data = (WorksheetAnalysisViewDO)manager.getObject(uid);
@@ -1039,6 +1054,8 @@ public class WorksheetBuilderScreenUI extends Screen {
                                 }
                                 analyteTable.setModel(model);
                                 analytesMap.put(uid, model);
+                                checkAllAnalytes.setEnabled(true);
+                                uncheckAllAnalytes.setEnabled(true);
                                 window.clearStatus();
                             }
                 
@@ -1114,9 +1131,43 @@ public class WorksheetBuilderScreenUI extends Screen {
                         }
                     });
                 }
+                
+                checkAllAnalytes.setEnabled(false);
+                uncheckAllAnalytes.setEnabled(false);
             }
         } else {
             analyteTable.setModel(null);
+            checkAllAnalytes.setEnabled(false);
+            uncheckAllAnalytes.setEnabled(false);
+        }
+    }
+
+    @UiHandler("checkAllAnalytes")
+    protected void checkAllAnalytes(ClickEvent event) {
+        checkAnalytes("Y");
+    }
+
+    @UiHandler("uncheckAllAnalytes")
+    protected void uncheckAllAnalytes(ClickEvent event) {
+        checkAnalytes("N");
+    }
+
+    protected void checkAnalytes(String reportable) {
+        int i;
+        ResultViewDO data;
+        Row row;
+        
+        for (i = 0; i < analyteTable.getRowCount(); i++) {
+            row = analyteTable.getRowAt(i);
+            data = row.getData();
+            if (!reportable.equals(data.getIsReportable())) {
+                data.setIsReportable(reportable);
+                analyteTable.setValueAt(i, 0, reportable);
+                if (!modifiedResults.containsKey(data.getId()))
+                    modifiedResults.put(data.getId(), data);
+                else
+                    modifiedResults.remove(data.getId());
+            }
         }
     }
 

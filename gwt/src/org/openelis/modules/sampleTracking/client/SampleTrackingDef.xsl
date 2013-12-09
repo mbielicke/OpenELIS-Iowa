@@ -230,7 +230,6 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </HorizontalPanel>
           </AbsolutePanel>
-          <AbsolutePanel style="Divider" width="2"></AbsolutePanel>
           <VerticalPanel padding="0" spacing="0">
             <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
               <TablePanel style="Form">
