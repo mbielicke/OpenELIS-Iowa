@@ -1747,6 +1747,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         try {
             model = new ArrayList<Item<Integer>>();
             row = new Item<Integer>(0, match);
+            row.setData(new IdNameVO(null, match));
             model.add(row);
             if (descQuery == null || ( ! (match.indexOf(descQuery) == 0))) {
                 dataList = OrderService1.get().fetchByDescription(match + "%", 10);
