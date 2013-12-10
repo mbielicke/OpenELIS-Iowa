@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.meta;
 
 import java.util.Arrays;
@@ -33,48 +33,64 @@ import org.openelis.ui.common.MetaMap;
 
 /**
  * Exchange Local Term META Data
- *
+ * 
  */
 public class ExchangeLocalTermMeta implements Meta, MetaMap {
-    private static final String   ID = "_exchangeLocalTerm.id",
-                                  REFERENCE_TABLE_ID = "_exchangeLocalTerm.referenceTableId",
-                                  REFERENCE_ID = "_exchangeLocalTerm.referenceId",
-                                  
-                                  EXT_TERM_ID = "_exchangeExternalTerm.id",
-                                  EXT_TERM_EXCHANGE_LOCAL_TERM_ID = "_exchangeExternalTerm.exchangeLocalTermId",
-                                  EXT_TERM_EXCHANGE_PROFILE_ID = "_exchangeExternalTerm.profileId",
-                                  EXT_TERM_PROFILE_IS_ACTIVE = "_exchangeExternalTerm.isActive",
-                                  EXT_TERM_EXTERNAL_TERM = "_exchangeExternalTerm.externalTerm",
-                                  EXT_TERM_EXTERNAL_DESCRIPTION = "_exchangeExternalTerm.externalDescription",
-                                  EXT_TERM_EXTERNAL_CODING_SYSTEM = "_exchangeExternalTerm.externalCodingSystem",
-                                  EXT_TERM_VERSION = "_exchangeExternalTerm.version",
-                                  REFERENCE_NAME = "referenceName",
-                                  ANALYTE_NAME = "_analyte.name",
-                                  METHOD_NAME = "_method.name",
-                                  TEST_NAME = "_test.name",
-                                  TEST_METHOD_NAME = "_test.method.name",
-                                  ORGANIZATION_NAME = "_organization.name",
-                                  DICTIONARY_ENTRY = "_dictionary.entry",
-                                  DICTIONARY_CATEGORY_NAME = "_dictionary.category.name",
-                                  TEST_ANALYTE_TEST_NAME = "_testAnalyte.test.name",
-                                  TEST_ANALYTE_ANALYTE_NAME = "_testAnalyte.analyte.name",
-                                  TEST_ANALYTE_TEST_METHOD_NAME = "_testAnalyte.analyte.name";
-    
+    private static final String    ID = "_exchangeLocalTerm.id",
+                    REFERENCE_TABLE_ID = "_exchangeLocalTerm.referenceTableId",
+                    REFERENCE_ID = "_exchangeLocalTerm.referenceId",
+                    EXT_TERM_ID = "_exchangeExternalTerm.id",
+                    EXT_TERM_EXCHANGE_LOCAL_TERM_ID = "_exchangeExternalTerm.exchangeLocalTermId",
+                    EXT_TERM_EXCHANGE_PROFILE_ID = "_exchangeExternalTerm.profileId",
+                    EXT_TERM_PROFILE_IS_ACTIVE = "_exchangeExternalTerm.isActive",
+                    EXT_TERM_EXTERNAL_TERM = "_exchangeExternalTerm.externalTerm",
+                    EXT_TERM_EXTERNAL_DESCRIPTION = "_exchangeExternalTerm.externalDescription",
+                    EXT_TERM_EXTERNAL_CODING_SYSTEM = "_exchangeExternalTerm.externalCodingSystem",
+                    EXT_TERM_VERSION = "_exchangeExternalTerm.version",
+                    REFERENCE_NAME = "referenceName", ANALYTE_NAME = "_analyte.name",
+                    METHOD_NAME = "_method.name", TEST_NAME = "_test.name",
+                    TEST_METHOD_NAME = "_test.method.name",
+                    ORGANIZATION_NAME = "_organization.name",
+                    DICTIONARY_ENTRY = "_dictionary.entry",
+                    DICTIONARY_CATEGORY_NAME = "_dictionary.category.name",
+                    TEST_ANA_VIEW_ID = "_testAnalyteView.id",
+                    TEST_ANA_VIEW_TEST_ID = "_testAnalyteView.testId",
+                    TEST_ANA_VIEW_TEST_NAME = "_testAnalyteView.testName",
+                    TEST_ANA_VIEW_METHOD_ID = "_testAnalyteView.methodId",
+                    TEST_ANA_VIEW_METHOD_NAME = "_testAnalyteView.methodName",
+                    TEST_ANA_VIEW_ROW_TEST_ANALYTE_ID = "_testAnalyteView.rowTestAnalyteId",
+                    TEST_ANA_VIEW_ROW_ANALYTE_ID = "_testAnalyteView.rowAnalyteId",
+                    TEST_ANA_VIEW_ROW_ANALYTE_NAME = "_testAnalyteView.rowAnalyteName",
+                    TEST_ANA_VIEW_COL_ANALYTE_ID = "_testAnalyteView.colAnalyteId",
+                    TEST_ANA_VIEW_COL_ANALYTE_NAME = "_testAnalyteView.colAnalyteName";
+
     private static HashSet<String> names;
-    
+
     static {
-        names = new HashSet<String>(Arrays.asList(ID, REFERENCE_TABLE_ID, REFERENCE_ID, 
-                                                  EXT_TERM_ID, EXT_TERM_EXCHANGE_LOCAL_TERM_ID, 
-                                                  EXT_TERM_EXCHANGE_PROFILE_ID, 
-                                                  EXT_TERM_PROFILE_IS_ACTIVE, EXT_TERM_EXTERNAL_TERM,
+        names = new HashSet<String>(Arrays.asList(ID, REFERENCE_TABLE_ID,
+                                                  REFERENCE_ID, EXT_TERM_ID,
+                                                  EXT_TERM_EXCHANGE_LOCAL_TERM_ID,
+                                                  EXT_TERM_EXCHANGE_PROFILE_ID,
+                                                  EXT_TERM_PROFILE_IS_ACTIVE,
+                                                  EXT_TERM_EXTERNAL_TERM,
                                                   EXT_TERM_EXTERNAL_DESCRIPTION,
                                                   EXT_TERM_EXTERNAL_CODING_SYSTEM,
-                                                  EXT_TERM_VERSION, REFERENCE_NAME ,
-                                                  ANALYTE_NAME, METHOD_NAME, TEST_NAME,
-                                                  TEST_METHOD_NAME, ORGANIZATION_NAME,
-                                                  DICTIONARY_ENTRY, DICTIONARY_CATEGORY_NAME,
-                                                  TEST_ANALYTE_ANALYTE_NAME));
-    }    
+                                                  EXT_TERM_VERSION, REFERENCE_NAME,
+                                                  ANALYTE_NAME, METHOD_NAME,
+                                                  TEST_NAME, TEST_METHOD_NAME,
+                                                  ORGANIZATION_NAME, DICTIONARY_ENTRY,
+                                                  DICTIONARY_CATEGORY_NAME,
+                                                  TEST_ANA_VIEW_ID,
+                                                  TEST_ANA_VIEW_TEST_ID,
+                                                  TEST_ANA_VIEW_TEST_NAME,
+                                                  TEST_ANA_VIEW_METHOD_ID,
+                                                  TEST_ANA_VIEW_METHOD_NAME,
+                                                  TEST_ANA_VIEW_ROW_TEST_ANALYTE_ID,
+                                                  TEST_ANA_VIEW_ROW_ANALYTE_ID,
+                                                  TEST_ANA_VIEW_ROW_ANALYTE_NAME,
+                                                  TEST_ANA_VIEW_COL_ANALYTE_ID,
+                                                  TEST_ANA_VIEW_COL_ANALYTE_NAME));
+    }
 
     public static String getId() {
         return ID;
@@ -115,7 +131,7 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
     public static String getExternalTermExternalCodingSystem() {
         return EXT_TERM_EXTERNAL_CODING_SYSTEM;
     }
-    
+
     public static String getExternalTermVersion() {
         return EXT_TERM_VERSION;
     }
@@ -151,9 +167,45 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
     public static String getDictionaryCategoryName() {
         return DICTIONARY_CATEGORY_NAME;
     }
+
+    public static String getTestAnalyteViewId() {
+        return TEST_ANA_VIEW_ID;
+    }
     
-    public static String getTestAnalyteAnalyteName() {
-        return TEST_ANALYTE_ANALYTE_NAME;
+    public static String getTestAnalyteViewTestId() {
+        return TEST_ANA_VIEW_TEST_ID;
+    }
+
+    public static String getTestAnalyteViewTestName() {
+        return TEST_ANA_VIEW_TEST_NAME;
+    }
+
+    public static String getTestAnalyteViewMethodId() {
+        return TEST_ANA_VIEW_METHOD_ID;
+    }
+
+    public static String getTestAnalyteViewMethodName() {
+        return TEST_ANA_VIEW_METHOD_NAME;
+    }
+
+    public static String getTestAnalyteViewRowTestAnalyteId() {
+        return TEST_ANA_VIEW_ROW_TEST_ANALYTE_ID;
+    }
+
+    public static String getTestAnalyteViewRowAnalyteId() {
+        return TEST_ANA_VIEW_ROW_ANALYTE_ID;
+    }
+
+    public static String getTestAnalyteViewRowAnalyteName() {
+        return TEST_ANA_VIEW_ROW_ANALYTE_NAME;
+    }
+
+    public static String getTestAnalyteViewColAnalyteId() {
+        return TEST_ANA_VIEW_COL_ANALYTE_ID;
+    }
+
+    public static String getTestAnalyteViewColAnalyteName() {
+        return TEST_ANA_VIEW_COL_ANALYTE_NAME;
     }
 
     public boolean hasColumn(String columnName) {
@@ -162,30 +214,30 @@ public class ExchangeLocalTermMeta implements Meta, MetaMap {
 
     public String buildFrom(String where) {
         String from;
-        
+
         from = "ExchangeLocalTerm _exchangeLocalTerm ";
-        
+
         if (where.indexOf("exchangeExternalTerm.") > -1)
             from += ",IN (_exchangeLocalTerm.exchangeExternalTerm) _exchangeExternalTerm ";
 
         if (where.indexOf("analyte.") > -1)
             from += ", IN (_exchangeLocalTerm.analyte) _analyte ";
-        
+
         if (where.indexOf("dictionary.") > -1)
             from += ", IN (_exchangeLocalTerm.dictionary) _dictionary ";
-        
+
         if (where.indexOf("organization.") > -1)
             from += ", IN (_exchangeLocalTerm.organization) _organization ";
-        
+
         if (where.indexOf("test.") > -1)
             from += ", IN (_exchangeLocalTerm.test) _test ";
-        
+
         if (where.indexOf("method.") > -1)
             from += ", IN (_exchangeLocalTerm.method) _method ";
-        
-        if (where.indexOf("testAnalyte.") > -1)
-            from += ", IN (_exchangeLocalTerm.testAnalyte) _testAnalyte ";
-        
+
+        if (where.indexOf("testAnalyteView.") > -1)
+            from += ", IN (_exchangeLocalTerm.testAnalyteView) _testAnalyteView ";
+
         return from;
     }
 }

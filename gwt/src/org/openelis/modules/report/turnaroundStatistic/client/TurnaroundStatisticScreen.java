@@ -489,7 +489,7 @@ public class TurnaroundStatisticScreen extends Screen {
             section.setModel(model);
 
             model = new ArrayList<TableDataRow>();
-            tests = TestService.get().fetchByName("%");
+            tests = TestService.get().fetchActiveByName("%");
             model.add(new TableDataRow(null, ""));
             for (TestMethodVO item : tests)
                 model.add(new TableDataRow(item.getTestId(), item.getTestName() + ", " + item.getMethodName()));

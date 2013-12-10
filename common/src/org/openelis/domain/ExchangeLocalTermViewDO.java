@@ -29,25 +29,31 @@ import org.openelis.ui.common.DataBaseUtil;
 
 /**
  * The class extends exchange external term DO and carries the fields reference
- * name and reference description. The additional field is for read/display only
- * and do not get committed to the database. Note: isChanged will reflect any
- * changes to read/display fields.
+ * name and one or more reference description(s). The extra description fields
+ * are used for row and column analyte names if the reference table is
+ * "test_analyte". The additional fields are for read/display only and do not
+ * get committed to the database. Note: isChanged will reflect any changes to
+ * read/display fields.
  */
 
 public class ExchangeLocalTermViewDO extends ExchangeLocalTermDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          referenceName, referenceDescription;
+    protected String          referenceName, referenceDescription1, referenceDescription2,
+                    referenceDescription3;
 
     public ExchangeLocalTermViewDO() {
     }
 
     public ExchangeLocalTermViewDO(Integer id, Integer referenceTableId, Integer referenceId,
-                                   String referenceName, String referenceDescription) {
+                                   String referenceName, String referenceDescription1,
+                                   String referenceDescription2, String referenceDescription3) {
         super(id, referenceTableId, referenceId);
         setReferenceName(referenceName);
-        setReferenceDescription(referenceDescription);
+        setReferenceDescription1(referenceDescription1);
+        setReferenceDescription2(referenceDescription2);
+        setReferenceDescription3(referenceDescription3);
     }
 
     public String getReferenceName() {
@@ -58,11 +64,27 @@ public class ExchangeLocalTermViewDO extends ExchangeLocalTermDO {
         this.referenceName = DataBaseUtil.trim(referenceName);
     }
 
-    public String getReferenceDescription() {
-        return referenceDescription;
+    public String getReferenceDescription1() {
+        return referenceDescription1;
     }
 
-    public void setReferenceDescription(String referenceDescription) {
-        this.referenceDescription = DataBaseUtil.trim(referenceDescription);
+    public void setReferenceDescription1(String referenceDescription1) {
+        this.referenceDescription1 = DataBaseUtil.trim(referenceDescription1);
+    }
+    
+    public String getReferenceDescription2() {
+        return referenceDescription2;
+    }
+
+    public void setReferenceDescription2(String referenceDescription2) {
+        this.referenceDescription2 = DataBaseUtil.trim(referenceDescription2);
+    }
+    
+    public String getReferenceDescription3() {
+        return referenceDescription3;
+    }
+
+    public void setReferenceDescription3(String referenceDescription3) {
+        this.referenceDescription3 = DataBaseUtil.trim(referenceDescription3);
     }
 }
