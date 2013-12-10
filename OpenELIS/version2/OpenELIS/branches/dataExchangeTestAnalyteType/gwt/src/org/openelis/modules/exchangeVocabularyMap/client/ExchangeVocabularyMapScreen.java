@@ -40,6 +40,7 @@ import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.TestAnalyteViewVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -75,6 +76,7 @@ import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.meta.TestAnalyteViewMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.exchangeVocabularyMap.client.ExchangeTestAnalyteLookupScreen.ExchangeTestAnalyteVO;
@@ -101,20 +103,19 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ExchangeVocabularyMapScreen extends Screen {
-    private ExchangeLocalTermManager          manager;
-    private ModulePermission                  userPermission;
+    private ExchangeLocalTermManager    manager;
+    private ModulePermission            userPermission;
 
-    private ExchangeVocabularyMapScreen       screen;
-    private ScreenNavigator                   nav;
+    private ExchangeVocabularyMapScreen screen;
+    private ScreenNavigator             nav;
 
-    private AppButton                         queryButton, previousButton, nextButton, addButton,
-                    updateButton, commitButton, abortButton, testAnalyteLookupButton,
-                    addExternalTermButton, removeExternalTermButton;
-    private MenuItem                          localTermHistory, externalTermHistory;
-    private AutoComplete<Integer>             referenceName;
-    private Dropdown<Integer>                 referenceTableId;
-    private TableWidget                       termMappingTable;
-    protected ExchangeTestAnalyteLookupScreen exchangeTestAnalyteLookupScreen;
+    private AppButton                   queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton, addExternalTermButton,
+                    removeExternalTermButton;
+    private MenuItem                    localTermHistory, externalTermHistory;
+    private AutoComplete<Integer>       referenceName;
+    private Dropdown<Integer>           referenceTableId;
+    private TableWidget                 termMappingTable;
 
     public ExchangeVocabularyMapScreen(WindowInt window) throws Exception {
         super((ScreenDefInt)GWT.create(ExchangeVocabularyMapDef.class));
@@ -297,15 +298,17 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 data.setReferenceTableId(refTableId);
                 data.setReferenceId(null);
                 data.setReferenceName(null);
-                data.setReferenceDescription(null);
+                data.setReferenceDescription1(null);
+                data.setReferenceDescription2(null);
+                data.setReferenceDescription3(null);
 
                 /*
                  * if the reference table is test_analyte then the popup screen
                  * is used for finding the desired record (test analyte); for
                  * all other reference tables, the autocomplete is used
                  */
-                referenceName.enable( !Constants.table().TEST_ANALYTE.equals(refTableId));
-                testAnalyteLookupButton.enable(Constants.table().TEST_ANALYTE.equals(refTableId));
+                referenceName.enable(true);
+                // testAnalyteLookupButton.enable(Constants.table().TEST_ANALYTE.equals(refTableId));
                 DataChangeEvent.fire(screen, referenceName);
             }
 
@@ -320,16 +323,20 @@ public class ExchangeVocabularyMapScreen extends Screen {
         addScreenHandler(referenceName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ExchangeLocalTermViewDO data;
+                ArrayList<String> disp;
 
                 data = manager.getExchangeLocalTerm();
+                disp = new ArrayList<String>();
+                disp.add(data.getReferenceName());
+                disp.add(data.getReferenceDescription1());
+                disp.add(data.getReferenceDescription2());
+                disp.add(data.getReferenceDescription3());
                 referenceName.setSelection(data.getReferenceId(),
-                                           DataBaseUtil.concatWithSeparator(data.getReferenceName(),
-                                                                            ", ",
-                                                                            data.getReferenceDescription()));
+                                           DataBaseUtil.concatWithSeparator(disp, ", "));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                String name, desc;
+                String name, desc1, desc2, desc3;
                 ExchangeLocalTermViewDO data;
                 AnalyteDO ana;
                 IdNameVO dict;
@@ -337,14 +344,15 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 OrganizationDO org;
                 AddressDO addr;
                 TestMethodVO t;
+                TestAnalyteViewVO tav;
                 TableDataRow row;
-                ArrayList<String> list;
 
-                data = manager.getExchangeLocalTerm();
-                data.setReferenceId(event.getValue());
-                name = null;
-                desc = null;
                 row = referenceName.getSelection();
+                data = manager.getExchangeLocalTerm();
+                name = null;
+                desc1 = null;
+                desc2 = null;
+                desc3 = null;
                 /*
                  * set the name and description for the local term from the
                  * record selected in the autocomplete
@@ -356,7 +364,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     } else if (Constants.table().DICTIONARY.equals(data.getReferenceTableId())) {
                         dict = (IdNameVO)row.data;
                         name = dict.getName();
-                        desc = dict.getDescription();
+                        desc1 = dict.getDescription();
                     } else if (Constants.table().METHOD.equals(data.getReferenceTableId())) {
                         m = (MethodDO)row.data;
                         name = m.getName();
@@ -364,24 +372,38 @@ public class ExchangeVocabularyMapScreen extends Screen {
                         org = (OrganizationDO)row.data;
                         name = org.getName();
                         addr = org.getAddress();
-                        list = new ArrayList<String>();
-                        list.add(addr.getStreetAddress());
-                        list.add(addr.getCity());
-                        list.add(addr.getState());
-                        desc = DataBaseUtil.concatWithSeparator(list, ", ");
+                        desc1 = addr.getStreetAddress();
+                        desc2 = addr.getCity();
+                        desc3 = addr.getState();
                     } else if (Constants.table().TEST.equals(data.getReferenceTableId())) {
                         t = (TestMethodVO)row.data;
                         name = t.getTestName();
-                        desc = t.getMethodName();
+                        desc1 = t.getMethodName();
+                    } else if (Constants.table().TEST_ANALYTE.equals(data.getReferenceTableId())) {
+                        tav = (TestAnalyteViewVO)row.data;
+                        name = tav.getTestName();
+                        desc1 = tav.getMethodName();
+                        desc2 = tav.getRowAnalyteName();
+                        /*
+                         * for row analytes, the column analyte name is the same
+                         * as the row analyte name, so it doesn't need to be
+                         * shown twice
+                         */
+                        if ( !tav.getRowAnalyteName().equals(tav.getColAnalyteName()))
+                            desc3 = tav.getColAnalyteName();
                     }
                 }
 
+                data.setReferenceId(event.getValue());
                 data.setReferenceName(name);
-                data.setReferenceDescription(desc);
+                data.setReferenceDescription1(desc1);
+                data.setReferenceDescription2(desc2);
+                data.setReferenceDescription3(desc3);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceName.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                referenceName.enable(EnumSet.of(State.QUERY, State.QUERY, State.UPDATE)
+                                            .contains(event.getState()));
                 referenceName.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -413,57 +435,10 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     referenceName.showAutoMatches(getOrganizationModel(search));
                 else if (Constants.table().TEST.equals(referenceTableId.getValue()))
                     referenceName.showAutoMatches(getTestModel(search));
+                else if (Constants.table().TEST_ANALYTE.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getTestAnalyteModel(search));
 
                 window.clearStatus();
-            }
-        });
-
-        testAnalyteLookupButton = (AppButton)def.getWidget("testAnalyteLookupButton");
-        addScreenHandler(testAnalyteLookupButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                if (exchangeTestAnalyteLookupScreen == null) {
-                    try {
-                        exchangeTestAnalyteLookupScreen = new ExchangeTestAnalyteLookupScreen();
-                        exchangeTestAnalyteLookupScreen.addActionHandler(new ActionHandler<ExchangeTestAnalyteLookupScreen.Action>() {
-                            public void onAction(ActionEvent<ExchangeTestAnalyteLookupScreen.Action> event) {
-                                String name;
-                                ExchangeTestAnalyteVO eta;
-                                ArrayList<String> list;
-
-                                if (event.getAction() == ExchangeTestAnalyteLookupScreen.Action.OK) {
-                                    eta = (ExchangeTestAnalyteVO)event.getData();
-                                    if (eta != null) {
-                                        list = new ArrayList<String>();
-                                        list.add(eta.getTestName());
-                                        list.add(eta.getMethodName());
-                                        list.add(eta.getAnalyteName());
-                                        list.add(String.valueOf(eta.getRow()));
-                                        list.add(String.valueOf(eta.getColumn()));
-                                        manager.getExchangeLocalTerm()
-                                               .setReferenceId(eta.getTestAnalyteId());
-                                        name = DataBaseUtil.concatWithSeparator(list, ", ");
-                                        manager.getExchangeLocalTerm().setReferenceName(name);
-                                        manager.getExchangeLocalTerm()
-                                               .setReferenceDescription(null);
-                                        referenceName.setSelection(eta.getTestAnalyteId(), name);
-                                    }
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Window.alert("error: " + e.getMessage());
-                        return;
-                    }
-                }
-
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(Messages.get().testAnalyteSelection());
-                modal.setContent(exchangeTestAnalyteLookupScreen);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                testAnalyteLookupButton.enable(false);
             }
         });
 
@@ -590,7 +565,56 @@ public class ExchangeVocabularyMapScreen extends Screen {
         //
         nav = new ScreenNavigator<ExchangeLocalTermViewDO>(def) {
             public void executeQuery(final Query query) {
+                String refQuery;
+                Integer refTableId;
+                QueryData refField;
+                ArrayList<QueryData> fields;
+
                 window.setBusy(Messages.get().querying());
+                refTableId = null;
+                refField = null;
+                for (QueryData field : query.getFields()) {
+                    if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.getKey()))
+                        refTableId = Integer.parseInt(field.getQuery());
+                    else if (ExchangeLocalTermMeta.getReferenceName().equals(field.getKey()))
+                        refField = field;
+                }
+
+                if (Constants.table().TEST_ANALYTE.equals(refTableId)) {
+                    /*
+                     * create separate query fields for each level e.g. test,
+                     * row analyte etc. specified in the search string
+                     */
+                    if (refField != null) {
+                        refQuery = refField.getQuery();
+                        query.getFields().remove(refField);
+                    } else {
+                        refQuery = "";
+                    }
+
+                    fields = getTestAnalyteQueryFields(refQuery);
+                    if (fields != null) {
+                        for (QueryData field : fields)
+                            query.setFields(field);
+                    }
+                } else {
+                    if (refField == null) {
+                        refField = new QueryData();
+                        refField.setQuery("*");
+                        refField.setType(QueryData.Type.STRING);
+                        query.setFields(refField);
+                    }
+                    if (Constants.table().ANALYTE.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getAnalyteName());
+                    else if (Constants.table().DICTIONARY.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getDictionaryEntry());
+                    else if (Constants.table().METHOD.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getMethodName());
+                    else if (Constants.table().ORGANIZATION.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getOrganizationName());
+                    else if (Constants.table().TEST.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getTestName());
+                }
 
                 query.setRowsPerPage(20);
                 ExchangeVocabularyMapService.get()
@@ -624,22 +648,34 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public ArrayList<TableDataRow> getModel() {
+                boolean isTestAnalyteType;
                 ArrayList<ExchangeLocalTermViewDO> result;
                 ArrayList<TableDataRow> model;
-                String name;
+                ArrayList<String> disp;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
+                    isTestAnalyteType = Constants.table().TEST_ANALYTE.equals(referenceTableId.getValue());
+                    disp = new ArrayList<String>();
                     model = new ArrayList<TableDataRow>();
                     for (ExchangeLocalTermViewDO entry : result) {
-                        if (entry.getReferenceDescription() == null)
-                            name = entry.getReferenceName();
-                        else
-                            name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(),
-                                                                    ", ",
-                                                                    entry.getReferenceDescription());
-                        model.add(new TableDataRow(entry.getId(), name));
+                        disp.clear();
+                        disp.add(entry.getReferenceName());
+                        disp.add(entry.getReferenceDescription1());
+                        disp.add(entry.getReferenceDescription2());
+                        /*
+                         * if the query returned mappings for test analytes then
+                         * for row analytes, the column analyte name is the same
+                         * as the row analyte name, so it doesn't need to be
+                         * shown twice
+                         */
+                        if ( !isTestAnalyteType ||
+                            !entry.getReferenceDescription2()
+                                  .equals(entry.getReferenceDescription3()))
+                            disp.add(entry.getReferenceDescription3());
+                        model.add(new TableDataRow(entry.getId(),
+                                                   DataBaseUtil.concatWithSeparator(disp, ", ")));
                     }
                 }
                 return model;
@@ -1018,7 +1054,6 @@ public class ExchangeVocabularyMapScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         try {
             list = MethodService.get().fetchByName(search);
-
             for (MethodDO data : list) {
                 row = new TableDataRow(data.getId(), data.getName());
                 row.data = data;
@@ -1037,25 +1072,23 @@ public class ExchangeVocabularyMapScreen extends Screen {
         ArrayList<OrganizationDO> orgs;
         ArrayList<TableDataRow> model;
         AddressDO addr;
-        ArrayList<String> list;
+        ArrayList<String> disp;
 
         model = new ArrayList<TableDataRow>();
-        list = null;
+        disp = new ArrayList<String>();
         try {
             orgs = OrganizationService.get().fetchByIdOrName(search);
             for (OrganizationDO data : orgs) {
                 addr = data.getAddress();
-                if (list == null)
-                    list = new ArrayList<String>();
-                list.clear();
-                list.add(data.getName());
-                list.add(addr.getStreetAddress());
-                list.add(addr.getCity());
-                list.add(addr.getState());
+                disp.clear();
+                disp.add(data.getName());
+                disp.add(addr.getStreetAddress());
+                disp.add(addr.getCity());
+                disp.add(addr.getState());
 
                 row = new TableDataRow(1);
                 row.key = data.getId();
-                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(list, ", "));
+                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(disp, ", "));
 
                 row.data = data;
                 model.add(row);
@@ -1069,19 +1102,33 @@ public class ExchangeVocabularyMapScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getTestModel(String search) {
+        StringBuilder sb;
         TableDataRow row;
         ArrayList<TableDataRow> model;
-        ArrayList<TestMethodVO> list;
+        ArrayList<TestMethodVO> tests;
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = TestService.get().fetchByName(search);
-            for (TestMethodVO data : list) {
+            tests = TestService.get().fetchByName(search);
+            sb = new StringBuilder();
+            for (TestMethodVO data : tests) {
                 row = new TableDataRow(1);
                 row.key = data.getTestId();
-                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(data.getTestName(),
-                                                                           ", ",
-                                                                           data.getMethodName()));
+                sb.setLength(0);
+                sb.append(data.getTestName());
+                sb.append(", ");
+                sb.append(data.getMethodName());
+                /*
+                 * for inactive tests, show the active begin and end dates
+                 */
+                if ("N".equals(data.getIsActive())) {
+                    sb.append(" [");
+                    sb.append(data.getActiveBegin());
+                    sb.append("..");
+                    sb.append(data.getActiveEnd());
+                    sb.append("]");
+                }
+                row.cells.get(0).setValue(sb.toString());
                 row.data = data;
                 model.add(row);
             }
@@ -1091,5 +1138,128 @@ public class ExchangeVocabularyMapScreen extends Screen {
         }
 
         return model;
+    }
+
+    private ArrayList<TableDataRow> getTestAnalyteModel(String search) {
+        StringBuilder sb;
+        TableDataRow row;
+        ArrayList<TableDataRow> model;
+        ArrayList<TestAnalyteViewVO> tavs;
+        ArrayList<QueryData> fields;
+
+        fields = getTestAnalyteQueryFields(search);
+        model = new ArrayList<TableDataRow>();
+        if (fields == null || fields.size() == 0)
+            return model;
+
+        try {
+            tavs = ExchangeVocabularyMapService.get().fetchTestAnalytes(fields);
+            sb = new StringBuilder();
+            for (TestAnalyteViewVO data : tavs) {
+                row = new TableDataRow(1);
+                row.key = data.getId();
+                sb.setLength(0);
+                sb.append(data.getTestName());
+                sb.append(", ");
+                sb.append(data.getMethodName());
+                sb.append(", ");
+                sb.append(data.getRowAnalyteName());
+                /*
+                 * if the test analyte is a row analyte then don't show anything
+                 * as the column analyte
+                 */
+                if ( !data.getRowAnalyteName().equals(data.getColAnalyteName())) {
+                    sb.append(", ");
+                    sb.append(data.getColAnalyteName());
+                }
+
+                /*
+                 * for inactive tests, show the active begin and end dates
+                 */
+                if ("N".equals(data.getTestIsActive())) {
+                    sb.append(" [");
+                    sb.append(data.getTestActiveBegin());
+                    sb.append("..");
+                    sb.append(data.getTestActiveEnd());
+                    sb.append("]");
+                }
+                row.cells.get(0).setValue(sb.toString());
+                row.data = data;
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return model;
+    }
+
+    private ArrayList<QueryData> getTestAnalyteQueryFields(String search) {
+        boolean isLastLevel;
+        String name, key, names[];
+        ArrayList<QueryData> fields;
+        QueryData field;
+
+        names = search.split(",");
+        if (names.length > 4)
+            return null;
+
+        /*
+         * create a query field for each level, e.g. test, row analyte etc.,
+         * that the user is querying for
+         */
+        fields = new ArrayList<QueryData>();
+        isLastLevel = true;
+        for (int i = (names.length - 1); i >= 0; i-- ) {
+            name = DataBaseUtil.trim(names[i]);
+            if (state != State.QUERY) {
+                /*
+                 * in states other than Query, query field for a level is
+                 * created only if some search is specified for it
+                 */
+                if (name == null) {
+                    continue;
+                } else if (isLastLevel) {
+                    /*
+                     * the wild card is added for only the last level being
+                     * queried e.g. if both test and method are present then the
+                     * wildcard will be added for only the method
+                     */
+                    name = name + "*";
+                    isLastLevel = false;
+                }
+            } else if (name == null) {
+                /*
+                 * in Query state, an empty level is replaced by a wild card, so
+                 * that any records at the next level could be matched
+                 */
+                name = "*";
+            }
+
+            key = null;
+            switch (i) {
+                case 0:
+                    key = TestAnalyteViewMeta.getTestName();
+                    break;
+                case 1:
+                    key = TestAnalyteViewMeta.getMethodName();
+                    break;
+                case 2:
+                    key = TestAnalyteViewMeta.getRowAnalyteName();
+                    break;
+                case 3:
+                    key = TestAnalyteViewMeta.getColAnalyteName();
+                    break;
+            }
+
+            field = new QueryData();
+            field.setKey(key);
+            field.setQuery(name);
+            field.setType(QueryData.Type.STRING);
+            fields.add(field);
+        }
+
+        return fields;
     }
 }

@@ -130,7 +130,7 @@ public class ExchangeTestAnalyteLookupScreen extends Screen
 
                 model = new ArrayList<TableDataRow>();
                 try {
-                    list = TestService.get().fetchByName(search);
+                    list = TestService.get().fetchActiveByName(search);
                     for (TestMethodVO data : list) {
                         row = new TableDataRow(1);
                         row.key = data.getTestId();
