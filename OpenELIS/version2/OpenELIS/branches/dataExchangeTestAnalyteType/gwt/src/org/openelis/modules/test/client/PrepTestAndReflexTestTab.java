@@ -196,7 +196,7 @@ public class PrepTestAndReflexTestTab extends Screen
 
                 window.setBusy();
                 try {
-                    list = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = TestService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
@@ -397,7 +397,7 @@ public class PrepTestAndReflexTestTab extends Screen
 
                 window.setBusy();
                 try {
-                    list = TestService.get().fetchByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = TestService.get().fetchActiveByName(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);

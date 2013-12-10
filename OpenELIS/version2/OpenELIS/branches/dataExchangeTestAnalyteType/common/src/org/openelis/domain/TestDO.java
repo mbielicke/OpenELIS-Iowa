@@ -42,7 +42,7 @@ public class TestDO extends DataObject {
                               timeTaMax, labelId, labelQty, testTrailerId, scriptletId, testFormatId,
                               revisionMethodId, reportingMethodId, sortingMethodId, reportingSequence;
     protected String          name, description, reportingDescription, isActive, isReportable;
-    protected Datetime        activeBegin, activeEnd, labelName;
+    protected Datetime        activeBegin, activeEnd;
 
     public TestDO() {
     }
