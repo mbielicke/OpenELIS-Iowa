@@ -979,15 +979,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_samplePrep();
 
   /**
-   * Translated "Sample type invalid for this test".
-   * 
-   * @return translated "Sample type invalid for this test"
-   */
-  @DefaultMessage("Sample type invalid for this test")
-  @Key("analysis.sampleTypeInvalid")
-  String analysis_sampleTypeInvalid();
-
-  /**
    * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing".
    * 
    * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Section Missing"
@@ -1015,31 +1006,40 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String analysis_startedDateInvalidException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - One or more tests are missing".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - One or more tests are missing".
    * 
-   * @return translated "Accession # ''{0}'': Item {1} - One or more tests are missing"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - One or more tests are missing"
    */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - One or more tests are missing")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - One or more tests are missing")
   @Key("analysis.testIdMissingException")
-  String analysis_testIdMissingException(String arg0,  String arg1);
+  String analysis_testIdMissingException(Integer arg0,  Integer arg1);
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type".
+   * Translated "Unit of measure invalid for this sample type".
    * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type"
+   * @return translated "Unit of measure invalid for this sample type"
    */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure invalid for sample type")
+  @DefaultMessage("Unit of measure invalid for this sample type")
+  @Key("analysis.unitInvalidForSampleType")
+  String analysis_unitInvalidForSampleType();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure invalid for sample type".
+   * 
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure invalid for sample type"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure invalid for sample type")
   @Key("analysis.unitInvalidWarning")
-  String analysis_unitInvalidWarning(String arg0,  String arg1,  String arg2,  String arg3);
+  String analysis_unitInvalidWarning(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
-   * Translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required".
+   * Translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure is required".
    * 
-   * @return translated "Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required"
+   * @return translated "Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure is required"
    */
-  @DefaultMessage("Accession # ''{0}'': Item {1} - {2}, {3} - Unit of measure is required")
+  @DefaultMessage("Accession # ''{0,number}'': Item {1,number} - {2}, {3} - Unit of measure is required")
   @Key("analysis.unitRequiredException")
-  String analysis_unitRequiredException(String arg0,  String arg1,  String arg2,  String arg3);
+  String analysis_unitRequiredException(Integer arg0,  Integer arg1,  String arg2,  String arg3);
 
   /**
    * Translated "Analysis has already been completed".
@@ -8467,96 +8467,6 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String neededNumDays();
 
   /**
-   * Translated "Birth Order".
-   * 
-   * @return translated "Birth Order"
-   */
-  @DefaultMessage("Birth Order")
-  @Key("neonatal.birthOrder")
-  String neonatal_birthOrder();
-
-  /**
-   * Translated "Collect Age".
-   * 
-   * @return translated "Collect Age"
-   */
-  @DefaultMessage("Collect Age")
-  @Key("neonatal.collectAge")
-  String neonatal_collectAge();
-
-  /**
-   * Translated "Collect Valid".
-   * 
-   * @return translated "Collect Valid"
-   */
-  @DefaultMessage("Collect Valid")
-  @Key("neonatal.collectValid")
-  String neonatal_collectValid();
-
-  /**
-   * Translated "Feeding".
-   * 
-   * @return translated "Feeding"
-   */
-  @DefaultMessage("Feeding")
-  @Key("neonatal.feeding")
-  String neonatal_feeding();
-
-  /**
-   * Translated "Gest Age".
-   * 
-   * @return translated "Gest Age"
-   */
-  @DefaultMessage("Gest Age")
-  @Key("neonatal.gestAge")
-  String neonatal_gestAge();
-
-  /**
-   * Translated "NICU".
-   * 
-   * @return translated "NICU"
-   */
-  @DefaultMessage("NICU")
-  @Key("neonatal.nicu")
-  String neonatal_nicu();
-
-  /**
-   * Translated "Trans Age".
-   * 
-   * @return translated "Trans Age"
-   */
-  @DefaultMessage("Trans Age")
-  @Key("neonatal.transAge")
-  String neonatal_transAge();
-
-  /**
-   * Translated "Trans Date".
-   * 
-   * @return translated "Trans Date"
-   */
-  @DefaultMessage("Trans Date")
-  @Key("neonatal.transDate")
-  String neonatal_transDate();
-
-  /**
-   * Translated "Transfused".
-   * 
-   * @return translated "Transfused"
-   */
-  @DefaultMessage("Transfused")
-  @Key("neonatal.transfused")
-  String neonatal_transfused();
-
-  /**
-   * Translated "Weight".
-   * 
-   * @return translated "Weight"
-   */
-  @DefaultMessage("Weight")
-  @Key("neonatal.weight")
-  String neonatal_weight();
-
-  /**
    * Translated "Neonatal Screening Sample Login".
    * 
    * @return translated "Neonatal Screening Sample Login"
@@ -12922,6 +12832,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_domainNotValid(Integer arg0);
 
   /**
+   * Translated "The accession number must be entered before loading an order".
+   * 
+   * @return translated "The accession number must be entered before loading an order"
+   */
+  @DefaultMessage("The accession number must be entered before loading an order")
+  @Key("sample.enterAccNumBeforeOrderLoad")
+  String sample_enterAccNumBeforeOrderLoad();
+
+  /**
    * Translated "Accession # ''{0,number}'': Entered date is required".
    * 
    * @return translated "Accession # ''{0,number}'': Entered date is required"
@@ -13021,13 +12940,13 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sample_neonatal();
 
   /**
-   * Translated "Accession # ''{0}'': Missing or undefined domain".
+   * Translated "Accession # ''{0,number}'': Missing or undefined domain".
    * 
-   * @return translated "Accession # ''{0}'': Missing or undefined domain"
+   * @return translated "Accession # ''{0,number}'': Missing or undefined domain"
    */
-  @DefaultMessage("Accession # ''{0}'': Missing or undefined domain")
+  @DefaultMessage("Accession # ''{0,number}'': Missing or undefined domain")
   @Key("sample.noDomainException")
-  String sample_noDomainException(String arg0);
+  String sample_noDomainException(Integer arg0);
 
   /**
    * Translated "A QA event has been added that makes this sample and all its analyses not billable".
@@ -13417,6 +13336,96 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String sampleManagementDescription();
 
   /**
+   * Translated "Birth Order".
+   * 
+   * @return translated "Birth Order"
+   */
+  @DefaultMessage("Birth Order")
+  @Key("sampleNeonatal.birthOrder")
+  String sampleNeonatal_birthOrder();
+
+  /**
+   * Translated "Collect Age".
+   * 
+   * @return translated "Collect Age"
+   */
+  @DefaultMessage("Collect Age")
+  @Key("sampleNeonatal.collectAge")
+  String sampleNeonatal_collectAge();
+
+  /**
+   * Translated "Collect Valid".
+   * 
+   * @return translated "Collect Valid"
+   */
+  @DefaultMessage("Collect Valid")
+  @Key("sampleNeonatal.collectValid")
+  String sampleNeonatal_collectValid();
+
+  /**
+   * Translated "Feeding".
+   * 
+   * @return translated "Feeding"
+   */
+  @DefaultMessage("Feeding")
+  @Key("sampleNeonatal.feeding")
+  String sampleNeonatal_feeding();
+
+  /**
+   * Translated "Gest Age".
+   * 
+   * @return translated "Gest Age"
+   */
+  @DefaultMessage("Gest Age")
+  @Key("sampleNeonatal.gestAge")
+  String sampleNeonatal_gestAge();
+
+  /**
+   * Translated "NICU".
+   * 
+   * @return translated "NICU"
+   */
+  @DefaultMessage("NICU")
+  @Key("sampleNeonatal.nicu")
+  String sampleNeonatal_nicu();
+
+  /**
+   * Translated "Trans Age".
+   * 
+   * @return translated "Trans Age"
+   */
+  @DefaultMessage("Trans Age")
+  @Key("sampleNeonatal.transAge")
+  String sampleNeonatal_transAge();
+
+  /**
+   * Translated "Trans Date".
+   * 
+   * @return translated "Trans Date"
+   */
+  @DefaultMessage("Trans Date")
+  @Key("sampleNeonatal.transDate")
+  String sampleNeonatal_transDate();
+
+  /**
+   * Translated "Transfused".
+   * 
+   * @return translated "Transfused"
+   */
+  @DefaultMessage("Transfused")
+  @Key("sampleNeonatal.transfused")
+  String sampleNeonatal_transfused();
+
+  /**
+   * Translated "Weight".
+   * 
+   * @return translated "Weight"
+   */
+  @DefaultMessage("Weight")
+  @Key("sampleNeonatal.weight")
+  String sampleNeonatal_weight();
+
+  /**
    * Translated "A QA event has been added that makes this sample and all its analyses not billable".
    * 
    * @return translated "A QA event has been added that makes this sample and all its analyses not billable"
@@ -13532,6 +13541,42 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Sample Revision")
   @Key("sampleRevision")
   String sampleRevision();
+
+  /**
+   * Translated "Accession # ''{0,number}'': PWS ID is required".
+   * 
+   * @return translated "Accession # ''{0,number}'': PWS ID is required"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': PWS ID is required")
+  @Key("sampleSDWIS.pwsIdRequiredException")
+  String sampleSDWIS_pwsIdRequiredException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': SDWIS Sample Category is required".
+   * 
+   * @return translated "Accession # ''{0,number}'': SDWIS Sample Category is required"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': SDWIS Sample Category is required")
+  @Key("sampleSDWIS.sampleCatRequiredException")
+  String sampleSDWIS_sampleCatRequiredException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': SDWIS Sample Pt Id is required".
+   * 
+   * @return translated "Accession # ''{0,number}'': SDWIS Sample Pt Id is required"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': SDWIS Sample Pt Id is required")
+  @Key("sampleSDWIS.samplePtIdRequiredException")
+  String sampleSDWIS_samplePtIdRequiredException(Integer arg0);
+
+  /**
+   * Translated "Accession # ''{0,number}'': SDWIS Sample Type is required".
+   * 
+   * @return translated "Accession # ''{0,number}'': SDWIS Sample Type is required"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': SDWIS Sample Type is required")
+  @Key("sampleSDWIS.sampleTypeRequiredException")
+  String sampleSDWIS_sampleTypeRequiredException(Integer arg0);
 
   /**
    * Translated "Sample Selection Criteria".
@@ -16583,6 +16628,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Worksheet")
   @Key("worksheet")
   String worksheet();
+
+  /**
+   * Translated "Changing the layout of a worksheet after it has been committed may cause problems with Excel export and instrument interfacing. If the layout is changed after exporting to Excel, the Excel file may not properly load back into OpenELIS. If the instrument interface has started loading data, it will be lost if those rows are removed.".
+   * 
+   * @return translated "Changing the layout of a worksheet after it has been committed may cause problems with Excel export and instrument interfacing. If the layout is changed after exporting to Excel, the Excel file may not properly load back into OpenELIS. If the instrument interface has started loading data, it will be lost if those rows are removed."
+   */
+  @DefaultMessage("Changing the layout of a worksheet after it has been committed may cause problems with Excel export and instrument interfacing. If the layout is changed after exporting to Excel, the Excel file may not properly load back into OpenELIS. If the instrument interface has started loading data, it will be lost if those rows are removed.")
+  @Key("worksheet.builderUpdateWarning")
+  String worksheet_builderUpdateWarning();
 
   /**
    * Translated "You must choose a format for this worksheet before adding analyses from another worksheet.".
