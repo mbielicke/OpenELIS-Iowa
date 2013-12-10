@@ -154,6 +154,7 @@ public class WorksheetBuilderScreenUI extends Screen {
     @UiField(provided = true)
     protected WorksheetNotesTabUI                       notesTab;
     
+    protected boolean                                   updateWarningShown;
     protected ArrayList<Integer>                        formatIds;
     protected Confirm                                   worksheetSaveConfirm, worksheetExitConfirm;
     protected HashMap<Integer, ResultViewDO>            modifiedResults;
@@ -177,6 +178,7 @@ public class WorksheetBuilderScreenUI extends Screen {
         analytesMap = new HashMap<String, ArrayList<Row>>();
         modifiedResults = new HashMap<Integer, ResultViewDO>();
         addedAnalytes = new HashMap<Integer, TestAnalyteViewDO>();
+        updateWarningShown = false;
     }
 
     /**
@@ -561,8 +563,12 @@ public class WorksheetBuilderScreenUI extends Screen {
                 //  only the reportable field can be edited
                 //
                 if (!isState(ADD, UPDATE) || event.getCol() != 0 ||
-                    analyteTable.getRowAt(event.getRow()).getData() instanceof QcAnalyteViewDO)
+                    analyteTable.getRowAt(event.getRow()).getData() instanceof QcAnalyteViewDO) {
                     event.cancel();
+                } else if (isState(UPDATE) && !updateWarningShown) {
+                    Window.alert(Messages.get().worksheet_builderUpdateWarning());
+                    updateWarningShown = true;
+                }
             }
         });
         
@@ -753,6 +759,8 @@ public class WorksheetBuilderScreenUI extends Screen {
                 commitUpdate();
                 break;
         }
+        
+        updateWarningShown = false;
     }
     
     private void commitQuery() {
@@ -825,6 +833,8 @@ public class WorksheetBuilderScreenUI extends Screen {
             default:
                 window.clearStatus();
         }
+
+        updateWarningShown = false;
     }
 
     private void abortAdd() {

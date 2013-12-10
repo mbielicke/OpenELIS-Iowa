@@ -308,16 +308,26 @@ public class WorksheetItemTabUI extends Screen {
             sortAsc = new MenuItem(UIResources.INSTANCE.menuCss().Ascending(), org.openelis.ui.messages.Messages.get().header_ascending(), "");
             sortAsc.addCommand(new Command() {
                 public void execute() {
-                    if (worksheetItemTable.getRowCount() > 1)
+                    if (worksheetItemTable.getRowCount() > 1) {
+                        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+                            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+                            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+                        }
                         sortItems(col, Table.SORT_ASCENDING);
+                    }
                 }
             });
             column.addMenuItem(sortAsc);
             sortDesc = new MenuItem(UIResources.INSTANCE.menuCss().Descending(), org.openelis.ui.messages.Messages.get().header_descending(), "");
             sortDesc.addCommand(new Command() {
                 public void execute() {
-                    if (worksheetItemTable.getRowCount() > 1)
+                    if (worksheetItemTable.getRowCount() > 1) {
+                        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+                            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+                            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+                        }
                         sortItems(col, Table.SORT_DESCENDING);
+                    }
                 }
             });
             column.addMenuItem(sortDesc);
@@ -779,6 +789,11 @@ public class WorksheetItemTabUI extends Screen {
     private void openLookupWindow() {
         org.openelis.ui.widget.Window win;
         
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
+
         if (wbLookupScreen == null) {
             try {
                 wbLookupScreen = new WorksheetBuilderLookupScreenUI(bus);
@@ -812,6 +827,11 @@ public class WorksheetItemTabUI extends Screen {
         StringBuffer removedMessage;
         WorksheetQcChoiceVO wqcVO;
         
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
+
         try {
             wqcVO = WorksheetBuilderService.get().loadTemplate(manager, testId);
             
@@ -880,6 +900,11 @@ public class WorksheetItemTabUI extends Screen {
             return;
         }
         
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
+
         try {
             if (wLookupScreen == null) {
                 wLookupScreen = new WorksheetLookupScreenUI();
@@ -994,6 +1019,11 @@ public class WorksheetItemTabUI extends Screen {
     private void openQCLookup() {
         ModalWindow win;
         
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
+
         try {
             if (qcLookupScreen == null) {
                 qcLookupScreen = new QcLookupScreen();
@@ -1075,6 +1105,11 @@ public class WorksheetItemTabUI extends Screen {
         StringBuffer buffer;
         WorksheetItemDO wiDO;
         WorksheetAnalysisViewDO data, tempData;
+
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
 
         buffer = new StringBuffer();
         worksheetItemTable.finishEditing();
@@ -1246,6 +1281,11 @@ public class WorksheetItemTabUI extends Screen {
         WorksheetAnalysisViewDO waVDO, newWAVDO;
         WorksheetItemDO wiDO, newWIDO;
 
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
+
         worksheetItemTable.finishEditing();
         index = worksheetItemTable.getSelectedRow();
         manager.item.duplicate(index);
@@ -1257,6 +1297,11 @@ public class WorksheetItemTabUI extends Screen {
     @UiHandler("moveDownButton")
     protected void moveRowDown(ClickEvent event) {
         int index;
+
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
 
         worksheetItemTable.finishEditing();
         index = worksheetItemTable.getSelectedRow();
@@ -1277,6 +1322,11 @@ public class WorksheetItemTabUI extends Screen {
     @UiHandler("moveUpButton")
     protected void moveRowUp(ClickEvent event) {
         int index;
+
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+        }
 
         worksheetItemTable.finishEditing();
         index = worksheetItemTable.getSelectedRow();
