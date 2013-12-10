@@ -1014,7 +1014,7 @@ public class WorksheetManager1Bean {
                     newAnalyses.add(waVDO);
                     newItems.add(wiDO);
                 } else {
-                    waVDO.setAccessionNumber("X." + wiDO.getId());
+                    waVDO.setAccessionNumber("X." + wiDO.getPosition());
                     try {
                         loadQcForAnalysis(wm, twiDO, i, waVDO, prefs, wqcVO, qcMap);
                         newAnalyses.add(waVDO);
@@ -1051,7 +1051,7 @@ public class WorksheetManager1Bean {
             waVDO = new WorksheetAnalysisViewDO();
             waVDO.setId(wm.getNextUID());
             waVDO.setWorksheetItemId(wiDO.getId());
-            waVDO.setAccessionNumber("X." + wiDO.getId());
+            waVDO.setAccessionNumber("X." + wiDO.getPosition());
 
             twiDO = qcTemplate[i];
             if (twiDO == null || !Constants.dictionary().POS_FIXED_ALWAYS.equals(twiDO.getTypeId())) {
@@ -1083,7 +1083,7 @@ public class WorksheetManager1Bean {
                 waVDO = new WorksheetAnalysisViewDO();
                 waVDO.setId(wm.getNextUID());
                 waVDO.setWorksheetItemId(wiDO.getId());
-                waVDO.setAccessionNumber("X." + wiDO.getId());
+                waVDO.setAccessionNumber("X." + wiDO.getPosition());
 
                 try {
                     loadQcForAnalysis(wm, twiDO, i, waVDO, prefs, wqcVO, qcMap);
