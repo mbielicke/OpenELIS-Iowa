@@ -42,8 +42,6 @@ import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.TestAnalyteViewVO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -60,7 +58,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox.Case;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -79,7 +76,6 @@ import org.openelis.meta.ExchangeLocalTermMeta;
 import org.openelis.meta.TestAnalyteViewMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryService;
-import org.openelis.modules.exchangeVocabularyMap.client.ExchangeTestAnalyteLookupScreen.ExchangeTestAnalyteVO;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.modules.organization.client.OrganizationService;
@@ -308,7 +304,6 @@ public class ExchangeVocabularyMapScreen extends Screen {
                  * all other reference tables, the autocomplete is used
                  */
                 referenceName.enable(true);
-                // testAnalyteLookupButton.enable(Constants.table().TEST_ANALYTE.equals(refTableId));
                 DataChangeEvent.fire(screen, referenceName);
             }
 
@@ -570,28 +565,35 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 QueryData refField;
                 ArrayList<QueryData> fields;
 
-                window.setBusy(Messages.get().querying());
                 refTableId = null;
                 refField = null;
                 for (QueryData field : query.getFields()) {
                     if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.getKey()))
                         refTableId = Integer.parseInt(field.getQuery());
                     else if (ExchangeLocalTermMeta.getReferenceName().equals(field.getKey()))
+                        /*
+                         * this field contains the search string for the records
+                         * in the selected reference table
+                         */
                         refField = field;
                 }
 
                 if (Constants.table().TEST_ANALYTE.equals(refTableId)) {
-                    /*
-                     * create separate query fields for each level e.g. test,
-                     * row analyte etc. specified in the search string
-                     */
                     if (refField != null) {
                         refQuery = refField.getQuery();
+                        /*
+                         * remove this field because one or more fields
+                         * corresponding to the name of the column queried for
+                         * will be added below
+                         */
                         query.getFields().remove(refField);
                     } else {
                         refQuery = "";
                     }
-
+                    /*
+                     * create separate query fields for each column queried for
+                     * in the search string, e.g. test name, row analyte name
+                     */
                     fields = getTestAnalyteQueryFields(refQuery);
                     if (fields != null) {
                         for (QueryData field : fields)
@@ -604,6 +606,12 @@ public class ExchangeVocabularyMapScreen extends Screen {
                         refField.setType(QueryData.Type.STRING);
                         query.setFields(refField);
                     }
+                    /*
+                     * depending upon the reference table selected replace the
+                     * generic key in the query field with the name of the
+                     * column in the reference table being queried for, e.g.
+                     * test name
+                     */
                     if (Constants.table().ANALYTE.equals(refTableId))
                         refField.setKey(ExchangeLocalTermMeta.getAnalyteName());
                     else if (Constants.table().DICTIONARY.equals(refTableId))
@@ -615,6 +623,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     else if (Constants.table().TEST.equals(refTableId))
                         refField.setKey(ExchangeLocalTermMeta.getTestName());
                 }
+
+                window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(20);
                 ExchangeVocabularyMapService.get()
@@ -1239,17 +1249,17 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
             key = null;
             switch (i) {
-                case 0:
-                    key = TestAnalyteViewMeta.getTestName();
-                    break;
-                case 1:
-                    key = TestAnalyteViewMeta.getMethodName();
+                case 3:
+                    key = TestAnalyteViewMeta.getColAnalyteName();
                     break;
                 case 2:
                     key = TestAnalyteViewMeta.getRowAnalyteName();
                     break;
-                case 3:
-                    key = TestAnalyteViewMeta.getColAnalyteName();
+                case 1:
+                    key = TestAnalyteViewMeta.getMethodName();
+                    break;
+                case 0:
+                    key = TestAnalyteViewMeta.getTestName();
                     break;
             }
 

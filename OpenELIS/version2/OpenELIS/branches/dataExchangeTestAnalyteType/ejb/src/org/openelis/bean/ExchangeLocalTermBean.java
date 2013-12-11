@@ -293,11 +293,19 @@ public class ExchangeLocalTermBean {
         } else if (Constants.table().TEST.equals(data.getReferenceTableId())) {
             t = test.fetchById(data.getReferenceId());
             data.setReferenceName(t.getName());
-            data.setReferenceDescription1(t.getMethodName());
+            sb = new StringBuffer();
+            sb.append(t.getMethodName());            
             if ("N".equals(t.getIsActive())) {
-                data.setReferenceDescription2(t.getActiveBegin().toString());
-                data.setReferenceDescription3(t.getActiveEnd().toString());
+                /*
+                 * for inactive tests, show the active begin and end dates
+                 */
+                sb.append(" [");
+                sb.append(t.getActiveBegin());
+                sb.append("..");
+                sb.append(t.getActiveEnd());
+                sb.append("]");
             }
+            data.setReferenceDescription1(sb.toString());
         } else if (Constants.table().TEST_ANALYTE.equals(data.getReferenceTableId())) {
             query = manager.createNamedQuery("TestAnalyteView.FetchById");
             query.setParameter("id", data.getReferenceId());
