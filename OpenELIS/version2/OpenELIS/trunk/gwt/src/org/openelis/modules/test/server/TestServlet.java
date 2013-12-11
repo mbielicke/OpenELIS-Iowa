@@ -90,6 +90,14 @@ public class TestServlet extends RemoteServlet implements TestServiceInt {
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
+    }
+
+    public ArrayList<TestMethodVO> fetchActiveByName(String name) throws Exception {
+        try {        
+            return test.fetchActiveByName(name + "%", 1000);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
     }    
     
     public ArrayList<TestMethodVO> fetchByNameSampleType(String name, Integer typeId) throws Exception {

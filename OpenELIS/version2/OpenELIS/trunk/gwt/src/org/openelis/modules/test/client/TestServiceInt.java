@@ -25,8 +25,10 @@ public interface TestServiceInt extends XsrfProtectedService {
     TestManager fetchById(Integer testId) throws Exception;
     
     ArrayList<TestManager> fetchByIds(ArrayList<Integer> ids) throws Exception;
-
+    
     ArrayList<TestMethodVO> fetchByName(String name) throws Exception;
+
+    ArrayList<TestMethodVO> fetchActiveByName(String name) throws Exception;
     
     ArrayList<TestMethodVO> fetchByNameSampleType(String name, Integer typeId) throws Exception;
 

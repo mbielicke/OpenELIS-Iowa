@@ -29,8 +29,10 @@ public interface TestServiceIntAsync {
     void fetchById(Integer testId, AsyncCallback<TestManager> callback);
     
     void fetchByIds(ArrayList<Integer> ids, AsyncCallback<ArrayList<TestManager>> callback);
-
+    
     void fetchByName(String name, AsyncCallback<ArrayList<TestMethodVO>> callback);
+
+    void fetchActiveByName(String name, AsyncCallback<ArrayList<TestMethodVO>> callback);
 
     void fetchByNameSampleType(String name, Integer typeId,
                                AsyncCallback<ArrayList<TestMethodVO>> callback);
@@ -72,5 +74,4 @@ public interface TestServiceIntAsync {
     void query(Query query, AsyncCallback<ArrayList<TestMethodVO>> callback);
 
     void update(TestManager man, AsyncCallback<TestManager> callback);
-
 }

@@ -88,11 +88,21 @@ public class TestBean {
         query.setParameter("ids", ids);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-
+    
     public ArrayList<TestMethodVO> fetchByName(String name, int max) throws Exception{
         Query query;
         
         query = manager.createNamedQuery("Test.FetchWithMethodByName");
+        query.setParameter("name", name);
+        query.setMaxResults(max);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<TestMethodVO> fetchActiveByName(String name, int max) throws Exception{
+        Query query;
+        
+        query = manager.createNamedQuery("Test.FetchActiveWithMethodByName");
         query.setParameter("name", name);
         query.setMaxResults(max);
 

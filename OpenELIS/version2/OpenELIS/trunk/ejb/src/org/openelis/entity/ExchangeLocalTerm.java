@@ -55,11 +55,11 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "ExchangeLocalTerm.FetchById",
                 query = "select new org.openelis.domain.ExchangeLocalTermViewDO(e.id, e.referenceTableId," +
-             	    	 "e.referenceId, '', '')"
+             	    	 "e.referenceId, '', '', '', '')"
                        + " from ExchangeLocalTerm e where e.id = :id"),
      @NamedQuery( name = "ExchangeLocalTerm.FetchByReferenceTableIdReferenceId",
                  query = "select new org.openelis.domain.ExchangeLocalTermViewDO(e.id, e.referenceTableId," +
-                         "e.referenceId, '', '')"
+                         "e.referenceId, '', '', '', '')"
                        + " from ExchangeLocalTerm e where e.referenceTableId = :referenceTableId and e.referenceId = :referenceId")})
                    
 @Entity
@@ -97,6 +97,10 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id", insertable = false, updatable = false)
     private Test                             test;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reference_id", insertable = false, updatable = false)
+    private TestAnalyteView                  testAnalyteView;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "exchange_local_term_id", insertable = false, updatable = false)
@@ -170,6 +174,14 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
 
     public void setTest(Test test) {
         this.test = test;
+    }
+
+    public TestAnalyteView getTestAnalyteView() {
+        return testAnalyteView;
+    }
+
+    public void setTestAnalyteView(TestAnalyteView testAnalyteView) {
+        this.testAnalyteView = testAnalyteView;
     }
 
     public Collection<ExchangeExternalTerm> getExchangeExternalTerm() {
