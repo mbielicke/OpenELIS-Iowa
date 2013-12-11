@@ -40,18 +40,8 @@ import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.TestAnalyteViewVO;
 import org.openelis.domain.TestMethodVO;
-import org.openelis.ui.common.DataBaseUtil;
-import org.openelis.ui.common.LastPageException;
-import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
-import org.openelis.ui.common.PermissionException;
-import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.ui.common.data.Query;
-import org.openelis.ui.common.data.QueryData;
-import org.openelis.ui.event.BeforeCloseEvent;
-import org.openelis.ui.event.BeforeCloseHandler;
-import org.openelis.ui.widget.WindowInt;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -68,7 +58,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox.Case;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -84,18 +73,28 @@ import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.meta.TestAnalyteViewMeta;
 import org.openelis.modules.analyte.client.AnalyteService;
 import org.openelis.modules.dictionary.client.DictionaryService;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.method.client.MethodService;
 import org.openelis.modules.organization.client.OrganizationService;
 import org.openelis.modules.test.client.TestService;
+import org.openelis.ui.common.DataBaseUtil;
+import org.openelis.ui.common.LastPageException;
+import org.openelis.ui.common.ModulePermission;
+import org.openelis.ui.common.NotFoundException;
+import org.openelis.ui.common.PermissionException;
+import org.openelis.ui.common.ValidationErrorsList;
+import org.openelis.ui.common.data.Query;
+import org.openelis.ui.common.data.QueryData;
+import org.openelis.ui.event.BeforeCloseEvent;
+import org.openelis.ui.event.BeforeCloseHandler;
+import org.openelis.ui.widget.WindowInt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -106,9 +105,9 @@ public class ExchangeVocabularyMapScreen extends Screen {
     private ExchangeVocabularyMapScreen screen;
     private ScreenNavigator             nav;
 
-    private AppButton                   queryButton, previousButton, nextButton,
-                    addButton, updateButton, commitButton, abortButton,
-                    addExternalTermButton, removeExternalTermButton;
+    private AppButton                   queryButton, previousButton, nextButton, addButton,
+                    updateButton, commitButton, abortButton, addExternalTermButton,
+                    removeExternalTermButton;
     private MenuItem                    localTermHistory, externalTermHistory;
     private AutoComplete<Integer>       referenceName;
     private Dropdown<Integer>           referenceTableId;
@@ -118,19 +117,18 @@ public class ExchangeVocabularyMapScreen extends Screen {
         super((ScreenDefInt)GWT.create(ExchangeVocabularyMapDef.class));
 
         setWindow(window);
-        
+
         userPermission = UserCache.getPermission().getModule("exchangevocabularymap");
         if (userPermission == null)
-            throw new PermissionException(Messages.get().screenPermException(
-                                          "Exchange Vocabulary Map Screen"));
+            throw new PermissionException(Messages.get()
+                                                  .screenPermException("Exchange Vocabulary Map Screen"));
 
         manager = ExchangeLocalTermManager.getInstance();
 
         try {
             CategoryCache.getBySystemNames("exchange_local_type", "exchange_profile");
         } catch (Exception e) {
-            Window.alert("ExchangeVocabularyMapScreen: missing dictionary entry; " +
-                         e.getMessage());
+            Window.alert("ExchangeVocabularyMapScreen: missing dictionary entry; " + e.getMessage());
             window.close();
         }
 
@@ -170,8 +168,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                previousButton.enable(EnumSet.of(State.DISPLAY)
-                                             .contains(event.getState()));
+                previousButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -246,8 +243,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                localTermHistory.enable(EnumSet.of(State.DISPLAY)
-                                               .contains(event.getState()));
+                localTermHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -258,16 +254,14 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                externalTermHistory.enable(EnumSet.of(State.DISPLAY)
-                                                  .contains(event.getState()));
+                externalTermHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
         referenceTableId = (Dropdown)def.getWidget(ExchangeLocalTermMeta.getReferenceTableId());
         addScreenHandler(referenceTableId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                referenceTableId.setSelection(manager.getExchangeLocalTerm()
-                                                     .getReferenceTableId());
+                referenceTableId.setSelection(manager.getExchangeLocalTerm().getReferenceTableId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -283,9 +277,12 @@ public class ExchangeVocabularyMapScreen extends Screen {
                  * the text's case needs to vary based on the data being queried
                  * for
                  */
-                if (Constants.table().ANALYTE.equals(refTableId) || Constants.table().DICTIONARY.equals(refTableId))
+                if (Constants.table().ANALYTE.equals(refTableId) ||
+                    Constants.table().DICTIONARY.equals(refTableId) ||
+                    Constants.table().TEST_ANALYTE.equals(refTableId))
                     referenceName.setCase(Case.MIXED);
-                else if (Constants.table().METHOD.equals(refTableId) || Constants.table().TEST.equals(refTableId))
+                else if (Constants.table().METHOD.equals(refTableId) ||
+                         Constants.table().TEST.equals(refTableId))
                     referenceName.setCase(Case.LOWER);
                 else if (Constants.table().ORGANIZATION.equals(refTableId))
                     referenceName.setCase(Case.UPPER);
@@ -296,7 +293,17 @@ public class ExchangeVocabularyMapScreen extends Screen {
                 data = manager.getExchangeLocalTerm();
                 data.setReferenceTableId(refTableId);
                 data.setReferenceId(null);
-                data.setReferenceName("");
+                data.setReferenceName(null);
+                data.setReferenceDescription1(null);
+                data.setReferenceDescription2(null);
+                data.setReferenceDescription3(null);
+
+                /*
+                 * if the reference table is test_analyte then the popup screen
+                 * is used for finding the desired record (test analyte); for
+                 * all other reference tables, the autocomplete is used
+                 */
+                referenceName.enable(true);
                 DataChangeEvent.fire(screen, referenceName);
             }
 
@@ -311,21 +318,86 @@ public class ExchangeVocabularyMapScreen extends Screen {
         addScreenHandler(referenceName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 ExchangeLocalTermViewDO data;
+                ArrayList<String> disp;
 
                 data = manager.getExchangeLocalTerm();
-                referenceName.setSelection(data.getReferenceId(), data.getReferenceName());
+                disp = new ArrayList<String>();
+                disp.add(data.getReferenceName());
+                disp.add(data.getReferenceDescription1());
+                disp.add(data.getReferenceDescription2());
+                disp.add(data.getReferenceDescription3());
+                referenceName.setSelection(data.getReferenceId(),
+                                           DataBaseUtil.concatWithSeparator(disp, ", "));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                String name, desc1, desc2, desc3;
                 ExchangeLocalTermViewDO data;
+                AnalyteDO ana;
+                IdNameVO dict;
+                MethodDO m;
+                OrganizationDO org;
+                AddressDO addr;
+                TestMethodVO t;
+                TestAnalyteViewVO tav;
+                TableDataRow row;
 
+                row = referenceName.getSelection();
                 data = manager.getExchangeLocalTerm();
+                name = null;
+                desc1 = null;
+                desc2 = null;
+                desc3 = null;
+                /*
+                 * set the name and description for the local term from the
+                 * record selected in the autocomplete
+                 */
+                if (row != null) {
+                    if (Constants.table().ANALYTE.equals(data.getReferenceTableId())) {
+                        ana = (AnalyteDO)row.data;
+                        name = ana.getName();
+                    } else if (Constants.table().DICTIONARY.equals(data.getReferenceTableId())) {
+                        dict = (IdNameVO)row.data;
+                        name = dict.getName();
+                        desc1 = dict.getDescription();
+                    } else if (Constants.table().METHOD.equals(data.getReferenceTableId())) {
+                        m = (MethodDO)row.data;
+                        name = m.getName();
+                    } else if (Constants.table().ORGANIZATION.equals(data.getReferenceTableId())) {
+                        org = (OrganizationDO)row.data;
+                        name = org.getName();
+                        addr = org.getAddress();
+                        desc1 = addr.getStreetAddress();
+                        desc2 = addr.getCity();
+                        desc3 = addr.getState();
+                    } else if (Constants.table().TEST.equals(data.getReferenceTableId())) {
+                        t = (TestMethodVO)row.data;
+                        name = t.getTestName();
+                        desc1 = t.getMethodName();
+                    } else if (Constants.table().TEST_ANALYTE.equals(data.getReferenceTableId())) {
+                        tav = (TestAnalyteViewVO)row.data;
+                        name = tav.getTestName();
+                        desc1 = tav.getMethodName();
+                        desc2 = tav.getRowAnalyteName();
+                        /*
+                         * for row analytes, the column analyte name is the same
+                         * as the row analyte name, so it doesn't need to be
+                         * shown twice
+                         */
+                        if ( !tav.getRowAnalyteName().equals(tav.getColAnalyteName()))
+                            desc3 = tav.getColAnalyteName();
+                    }
+                }
+
                 data.setReferenceId(event.getValue());
-                data.setReferenceName(referenceName.getTextBoxDisplay());
+                data.setReferenceName(name);
+                data.setReferenceDescription1(desc1);
+                data.setReferenceDescription2(desc2);
+                data.setReferenceDescription3(desc3);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                referenceName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                referenceName.enable(EnumSet.of(State.QUERY, State.QUERY, State.UPDATE)
                                             .contains(event.getState()));
                 referenceName.setQueryMode(event.getState() == State.QUERY);
             }
@@ -358,24 +430,25 @@ public class ExchangeVocabularyMapScreen extends Screen {
                     referenceName.showAutoMatches(getOrganizationModel(search));
                 else if (Constants.table().TEST.equals(referenceTableId.getValue()))
                     referenceName.showAutoMatches(getTestModel(search));
+                else if (Constants.table().TEST_ANALYTE.equals(referenceTableId.getValue()))
+                    referenceName.showAutoMatches(getTestAnalyteModel(search));
 
                 window.clearStatus();
             }
         });
 
         termMappingTable = (TableWidget)def.getWidget("termMappingTable");
-        addScreenHandler(termMappingTable,
-                         new ScreenEventHandler<ArrayList<TableDataRow>>() {
-                             public void onDataChange(DataChangeEvent event) {
-                                 if (state != State.QUERY)
-                                     termMappingTable.load(getTableModel());
-                             }
+        addScreenHandler(termMappingTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (state != State.QUERY)
+                    termMappingTable.load(getTableModel());
+            }
 
-                             public void onStateChange(StateChangeEvent<State> event) {
-                                 termMappingTable.enable(true);
-                                 termMappingTable.setQueryMode(event.getState() == State.QUERY);
-                             }
-                         });
+            public void onStateChange(StateChangeEvent<State> event) {
+                termMappingTable.enable(true);
+                termMappingTable.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
 
         termMappingTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
@@ -487,28 +560,97 @@ public class ExchangeVocabularyMapScreen extends Screen {
         //
         nav = new ScreenNavigator<ExchangeLocalTermViewDO>(def) {
             public void executeQuery(final Query query) {
+                String refQuery;
+                Integer refTableId;
+                QueryData refField;
+                ArrayList<QueryData> fields;
+
+                refTableId = null;
+                refField = null;
+                for (QueryData field : query.getFields()) {
+                    if (ExchangeLocalTermMeta.getReferenceTableId().equals(field.getKey()))
+                        refTableId = Integer.parseInt(field.getQuery());
+                    else if (ExchangeLocalTermMeta.getReferenceName().equals(field.getKey()))
+                        /*
+                         * this field contains the search string for the records
+                         * in the selected reference table
+                         */
+                        refField = field;
+                }
+
+                if (Constants.table().TEST_ANALYTE.equals(refTableId)) {
+                    if (refField != null) {
+                        refQuery = refField.getQuery();
+                        /*
+                         * remove this field because one or more fields
+                         * corresponding to the name of the column queried for
+                         * will be added below
+                         */
+                        query.getFields().remove(refField);
+                    } else {
+                        refQuery = "";
+                    }
+                    /*
+                     * create separate query fields for each column queried for
+                     * in the search string, e.g. test name, row analyte name
+                     */
+                    fields = getTestAnalyteQueryFields(refQuery);
+                    if (fields != null) {
+                        for (QueryData field : fields)
+                            query.setFields(field);
+                    }
+                } else {
+                    if (refField == null) {
+                        refField = new QueryData();
+                        refField.setQuery("*");
+                        refField.setType(QueryData.Type.STRING);
+                        query.setFields(refField);
+                    }
+                    /*
+                     * depending upon the reference table selected replace the
+                     * generic key in the query field with the name of the
+                     * column in the reference table being queried for, e.g.
+                     * test name
+                     */
+                    if (Constants.table().ANALYTE.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getAnalyteName());
+                    else if (Constants.table().DICTIONARY.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getDictionaryEntry());
+                    else if (Constants.table().METHOD.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getMethodName());
+                    else if (Constants.table().ORGANIZATION.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getOrganizationName());
+                    else if (Constants.table().TEST.equals(refTableId))
+                        refField.setKey(ExchangeLocalTermMeta.getTestName());
+                }
+
                 window.setBusy(Messages.get().querying());
 
                 query.setRowsPerPage(20);
-                ExchangeVocabularyMapService.get().query(query, new AsyncCallback<ArrayList<ExchangeLocalTermViewDO>>() {
-                    public void onSuccess(ArrayList<ExchangeLocalTermViewDO> result) {
-                        setQueryResult(result);
-                    }
+                ExchangeVocabularyMapService.get()
+                                            .query(query,
+                                                   new AsyncCallback<ArrayList<ExchangeLocalTermViewDO>>() {
+                                                       public void onSuccess(ArrayList<ExchangeLocalTermViewDO> result) {
+                                                           setQueryResult(result);
+                                                       }
 
-                                     public void onFailure(Throwable error) {
-                                         setQueryResult(null);
-                                         if (error instanceof NotFoundException) {
-                                             window.setDone(Messages.get().noRecordsFound());
-                                             setState(State.DEFAULT);
-                                         } else if (error instanceof LastPageException) {
-                                             window.setError(Messages.get().noMoreRecordInDir());
-                                         } else {
-                                             Window.alert("Error: Exchange Vocabulary Map call query failed; " +
-                                                          error.getMessage());
-                                             window.setError(Messages.get().queryFailed());
-                                         }
-                                     }
-                                 });
+                                                       public void onFailure(Throwable error) {
+                                                           setQueryResult(null);
+                                                           if (error instanceof NotFoundException) {
+                                                               window.setDone(Messages.get()
+                                                                                      .noRecordsFound());
+                                                               setState(State.DEFAULT);
+                                                           } else if (error instanceof LastPageException) {
+                                                               window.setError(Messages.get()
+                                                                                       .noMoreRecordInDir());
+                                                           } else {
+                                                               Window.alert("Error: Exchange Vocabulary Map call query failed; " +
+                                                                            error.getMessage());
+                                                               window.setError(Messages.get()
+                                                                                       .queryFailed());
+                                                           }
+                                                       }
+                                                   });
             }
 
             public boolean fetch(ExchangeLocalTermViewDO entry) {
@@ -516,22 +658,34 @@ public class ExchangeVocabularyMapScreen extends Screen {
             }
 
             public ArrayList<TableDataRow> getModel() {
+                boolean isTestAnalyteType;
                 ArrayList<ExchangeLocalTermViewDO> result;
                 ArrayList<TableDataRow> model;
-                String name;
+                ArrayList<String> disp;
 
                 model = null;
                 result = nav.getQueryResult();
                 if (result != null) {
+                    isTestAnalyteType = Constants.table().TEST_ANALYTE.equals(referenceTableId.getValue());
+                    disp = new ArrayList<String>();
                     model = new ArrayList<TableDataRow>();
                     for (ExchangeLocalTermViewDO entry : result) {
-                        if (entry.getReferenceDescription() == null)
-                            name = entry.getReferenceName();
-                        else
-                            name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(),
-                                                                    ", ",
-                                                                    entry.getReferenceDescription());
-                        model.add(new TableDataRow(entry.getId(), name));
+                        disp.clear();
+                        disp.add(entry.getReferenceName());
+                        disp.add(entry.getReferenceDescription1());
+                        disp.add(entry.getReferenceDescription2());
+                        /*
+                         * if the query returned mappings for test analytes then
+                         * for row analytes, the column analyte name is the same
+                         * as the row analyte name, so it doesn't need to be
+                         * shown twice
+                         */
+                        if ( !isTestAnalyteType ||
+                            !entry.getReferenceDescription2()
+                                  .equals(entry.getReferenceDescription3()))
+                            disp.add(entry.getReferenceDescription3());
+                        model.add(new TableDataRow(entry.getId(),
+                                                   DataBaseUtil.concatWithSeparator(disp, ", ")));
                     }
                 }
                 return model;
@@ -557,24 +711,28 @@ public class ExchangeVocabularyMapScreen extends Screen {
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("exchange_local_type");
         for (DictionaryDO d : list) {
-            if ("local_type_analyte".equals(d.getSystemName())) {
+            if (Constants.dictionary().LOCAL_TYPE_ANALYTE.equals(d.getId())) {
                 row = new TableDataRow(Constants.table().ANALYTE, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("local_type_dictionary".equals(d.getSystemName())) {
+            } else if (Constants.dictionary().LOCAL_TYPE_DICTIONARY.equals(d.getId())) {
                 row = new TableDataRow(Constants.table().DICTIONARY, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("local_type_method".equals(d.getSystemName())) {
+            } else if (Constants.dictionary().LOCAL_TYPE_METHOD.equals(d.getId())) {
                 row = new TableDataRow(Constants.table().METHOD, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("local_type_organization".equals(d.getSystemName())) {
+            } else if (Constants.dictionary().LOCAL_TYPE_ORGANIZATION.equals(d.getId())) {
                 row = new TableDataRow(Constants.table().ORGANIZATION, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("local_type_test".equals(d.getSystemName())) {
+            } else if (Constants.dictionary().LOCAL_TYPE_TEST.equals(d.getId())) {
                 row = new TableDataRow(Constants.table().TEST, d.getEntry());
+                row.enabled = ("Y".equals(d.getIsActive()));
+                model.add(row);
+            } else if (Constants.dictionary().LOCAL_TYPE_TEST_ANALYTE.equals(d.getId())) {
+                row = new TableDataRow(Constants.table().TEST_ANALYTE, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
             }
@@ -611,7 +769,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
             //
             // we don't allow more than one type to be selected
             //
-            referenceTableId.addException(new Exception(Messages.get().onlyOneTypeSelectionForQueryException()));
+            referenceTableId.addException(new Exception(Messages.get()
+                                                                .onlyOneTypeSelectionForQueryException()));
         }
         return super.validate();
     }
@@ -741,8 +900,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
     protected void localTermHistory() {
         IdNameVO hist;
 
-        hist = new IdNameVO(manager.getExchangeLocalTerm().getId(),
-                            manager.getExchangeLocalTerm().getReferenceName());
+        hist = new IdNameVO(manager.getExchangeLocalTerm().getId(), manager.getExchangeLocalTerm()
+                                                                           .getReferenceName());
         HistoryScreen.showHistory(Messages.get().localTermHistory(),
                                   Constants.table().EXCHANGE_LOCAL_TERM,
                                   hist);
@@ -833,6 +992,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getAnalyteModel(String search) {
+        TableDataRow row;
         ArrayList<AnalyteDO> list;
         ArrayList<TableDataRow> model;
 
@@ -840,8 +1000,11 @@ public class ExchangeVocabularyMapScreen extends Screen {
         try {
             list = AnalyteService.get().fetchByName(search);
             model = new ArrayList<TableDataRow>();
-            for (AnalyteDO data : list)
-                model.add(new TableDataRow(data.getId(), data.getName()));
+            for (AnalyteDO data : list) {
+                row = new TableDataRow(data.getId(), data.getName());
+                row.data = data;
+                model.add(row);
+            }
         } catch (Throwable e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -877,10 +1040,10 @@ public class ExchangeVocabularyMapScreen extends Screen {
             for (IdNameVO data : list) {
                 row = new TableDataRow(1);
                 row.key = data.getId();
-                row.cells.get(0)
-                         .setValue(DataBaseUtil.concatWithSeparator(data.getName(),
-                                                                    ", ",
-                                                                    data.getDescription()));
+                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(data.getName(),
+                                                                           ", ",
+                                                                           data.getDescription()));
+                row.data = data;
                 model.add(row);
             }
         } catch (NotFoundException ignE) {
@@ -894,15 +1057,18 @@ public class ExchangeVocabularyMapScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getMethodModel(String search) {
+        TableDataRow row;
         ArrayList<MethodDO> list;
         ArrayList<TableDataRow> model;
 
         model = new ArrayList<TableDataRow>();
         try {
             list = MethodService.get().fetchByName(search);
-
-            for (MethodDO data : list)
-                model.add(new TableDataRow(data.getId(), data.getName()));
+            for (MethodDO data : list) {
+                row = new TableDataRow(data.getId(), data.getName());
+                row.data = data;
+                model.add(row);
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -916,26 +1082,25 @@ public class ExchangeVocabularyMapScreen extends Screen {
         ArrayList<OrganizationDO> orgs;
         ArrayList<TableDataRow> model;
         AddressDO addr;
-        ArrayList<String> list;
+        ArrayList<String> disp;
 
         model = new ArrayList<TableDataRow>();
-        list = null;
+        disp = new ArrayList<String>();
         try {
             orgs = OrganizationService.get().fetchByIdOrName(search);
-            for (OrganizationDO org : orgs) {
-                addr = org.getAddress();
-                if (list == null)
-                    list = new ArrayList<String>();
-                list.clear();
-                list.add(org.getName());
-                list.add(addr.getStreetAddress());
-                list.add(addr.getCity());
-                list.add(addr.getState());
+            for (OrganizationDO data : orgs) {
+                addr = data.getAddress();
+                disp.clear();
+                disp.add(data.getName());
+                disp.add(addr.getStreetAddress());
+                disp.add(addr.getCity());
+                disp.add(addr.getState());
 
                 row = new TableDataRow(1);
-                row.key = org.getId();
-                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(list, ", "));
+                row.key = data.getId();
+                row.cells.get(0).setValue(DataBaseUtil.concatWithSeparator(disp, ", "));
 
+                row.data = data;
                 model.add(row);
             }
         } catch (Throwable e) {
@@ -947,20 +1112,34 @@ public class ExchangeVocabularyMapScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getTestModel(String search) {
+        StringBuilder sb;
         TableDataRow row;
         ArrayList<TableDataRow> model;
-        ArrayList<TestMethodVO> list;
+        ArrayList<TestMethodVO> tests;
 
         model = new ArrayList<TableDataRow>();
         try {
-            list  = TestService.get().fetchByName(search);
-            for (TestMethodVO data: list) {
+            tests = TestService.get().fetchByName(search);
+            sb = new StringBuilder();
+            for (TestMethodVO data : tests) {
                 row = new TableDataRow(1);
                 row.key = data.getTestId();
-                row.cells.get(0)
-                         .setValue(DataBaseUtil.concatWithSeparator(data.getTestName(),
-                                                                    ", ",
-                                                                    data.getMethodName()));
+                sb.setLength(0);
+                sb.append(data.getTestName());
+                sb.append(", ");
+                sb.append(data.getMethodName());
+                /*
+                 * for inactive tests, show the active begin and end dates
+                 */
+                if ("N".equals(data.getIsActive())) {
+                    sb.append(" [");
+                    sb.append(data.getActiveBegin());
+                    sb.append("..");
+                    sb.append(data.getActiveEnd());
+                    sb.append("]");
+                }
+                row.cells.get(0).setValue(sb.toString());
+                row.data = data;
                 model.add(row);
             }
         } catch (Exception e) {
@@ -969,5 +1148,128 @@ public class ExchangeVocabularyMapScreen extends Screen {
         }
 
         return model;
+    }
+
+    private ArrayList<TableDataRow> getTestAnalyteModel(String search) {
+        StringBuilder sb;
+        TableDataRow row;
+        ArrayList<TableDataRow> model;
+        ArrayList<TestAnalyteViewVO> tavs;
+        ArrayList<QueryData> fields;
+
+        fields = getTestAnalyteQueryFields(search);
+        model = new ArrayList<TableDataRow>();
+        if (fields == null || fields.size() == 0)
+            return model;
+
+        try {
+            tavs = ExchangeVocabularyMapService.get().fetchTestAnalytes(fields);
+            sb = new StringBuilder();
+            for (TestAnalyteViewVO data : tavs) {
+                row = new TableDataRow(1);
+                row.key = data.getId();
+                sb.setLength(0);
+                sb.append(data.getTestName());
+                sb.append(", ");
+                sb.append(data.getMethodName());
+                sb.append(", ");
+                sb.append(data.getRowAnalyteName());
+                /*
+                 * if the test analyte is a row analyte then don't show anything
+                 * as the column analyte
+                 */
+                if ( !data.getRowAnalyteName().equals(data.getColAnalyteName())) {
+                    sb.append(", ");
+                    sb.append(data.getColAnalyteName());
+                }
+
+                /*
+                 * for inactive tests, show the active begin and end dates
+                 */
+                if ("N".equals(data.getTestIsActive())) {
+                    sb.append(" [");
+                    sb.append(data.getTestActiveBegin());
+                    sb.append("..");
+                    sb.append(data.getTestActiveEnd());
+                    sb.append("]");
+                }
+                row.cells.get(0).setValue(sb.toString());
+                row.data = data;
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+
+        return model;
+    }
+
+    private ArrayList<QueryData> getTestAnalyteQueryFields(String search) {
+        boolean isLastLevel;
+        String name, key, names[];
+        ArrayList<QueryData> fields;
+        QueryData field;
+
+        names = search.split(",");
+        if (names.length > 4)
+            return null;
+
+        /*
+         * create a query field for each level, e.g. test, row analyte etc.,
+         * that the user is querying for
+         */
+        fields = new ArrayList<QueryData>();
+        isLastLevel = true;
+        for (int i = (names.length - 1); i >= 0; i-- ) {
+            name = DataBaseUtil.trim(names[i]);
+            if (state != State.QUERY) {
+                /*
+                 * in states other than Query, query field for a level is
+                 * created only if some search is specified for it
+                 */
+                if (name == null) {
+                    continue;
+                } else if (isLastLevel) {
+                    /*
+                     * the wild card is added for only the last level being
+                     * queried e.g. if both test and method are present then the
+                     * wildcard will be added for only the method
+                     */
+                    name = name + "*";
+                    isLastLevel = false;
+                }
+            } else if (name == null) {
+                /*
+                 * in Query state, an empty level is replaced by a wild card, so
+                 * that any records at the next level could be matched
+                 */
+                name = "*";
+            }
+
+            key = null;
+            switch (i) {
+                case 3:
+                    key = TestAnalyteViewMeta.getColAnalyteName();
+                    break;
+                case 2:
+                    key = TestAnalyteViewMeta.getRowAnalyteName();
+                    break;
+                case 1:
+                    key = TestAnalyteViewMeta.getMethodName();
+                    break;
+                case 0:
+                    key = TestAnalyteViewMeta.getTestName();
+                    break;
+            }
+
+            field = new QueryData();
+            field.setKey(key);
+            field.setQuery(name);
+            field.setType(QueryData.Type.STRING);
+            fields.add(field);
+        }
+
+        return fields;
     }
 }

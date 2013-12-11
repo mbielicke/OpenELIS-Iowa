@@ -875,7 +875,7 @@ public class AnalyteParameterScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         try {
-            list = TestService.get().fetchByName(search);
+            list = TestService.get().fetchActiveByName(search);
             for (TestMethodVO data : list)
                 model.add(new TableDataRow(data.getTestId(),
                                            data.getTestName(),

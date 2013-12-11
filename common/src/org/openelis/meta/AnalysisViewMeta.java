@@ -26,7 +26,7 @@
 package org.openelis.meta;
 
 /**
- * Worksheet Creation META Data
+ * Analysis View META Data
  */
 
 import java.util.Arrays;

@@ -140,8 +140,8 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"localTerm")' />:
                 </text>
-                <autoComplete field="String" key="{meta:getReferenceName()}" tab = "termMappingTable,{meta:getReferenceTableId()}" required = "true" width="400" popWidth="auto">
-                  <col width="400" />
+                <autoComplete field="String" key="{meta:getReferenceName()}" tab = "termMappingTable,{meta:getReferenceTableId()}" required = "true" width="465" popWidth="auto">
+                  <col width="550" />
                 </autoComplete>
               </row>
             </TablePanel>

@@ -169,7 +169,7 @@ public class PanelBean {
         // if the list isnt full find tests
         testList = new ArrayList<TestMethodVO>();
         if (panelList.size() < maxResults) {
-            query = manager.createNamedQuery("Test.FetchWithMethodByName");
+            query = manager.createNamedQuery("Test.FetchActiveWithMethodByName");
             query.setParameter("name", name);
             query.setMaxResults(maxResults);
             testList = query.getResultList();
