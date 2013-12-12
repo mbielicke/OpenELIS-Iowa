@@ -352,12 +352,24 @@
 
         </xsl:copy>
     </xsl:template>
+    
+    <xsl:template match="test_result">
+        <xsl:copy>
+            <xsl:apply-templates select="@*|node()" />
+    
+            <xsl:apply-templates select="//dictionary[@id = current()/@flags_id]">
+                <xsl:with-param name="tagname">flags</xsl:with-param>
+            </xsl:apply-templates>
+        </xsl:copy>
+    </xsl:template>
 
     <!-- ************ level 4: result ********* -->
 
     <xsl:template match="result">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()" />
+            
+            <xsl:apply-templates select="//test_result[@id = current()/@test_result_id]" />
 
             <xsl:apply-templates select="//analyte[@id = current()/@analyte_id]" />
 
@@ -366,7 +378,6 @@
             </xsl:apply-templates>
 
             <xsl:apply-templates select="//result_dictionary[@id = current()/@id]" />
-
         </xsl:copy>
     </xsl:template>
 
