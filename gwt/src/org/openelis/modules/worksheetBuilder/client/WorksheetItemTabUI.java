@@ -253,8 +253,13 @@ public class WorksheetItemTabUI extends Screen {
                                                                                                 .getData());
                     if (data.getQcLotId() != null ||
                         Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) ||
-                        Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId()))
+                        Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
                         event.cancel();
+                    } else if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+                        Window.alert(Messages.get().worksheet_builderUpdateWarning());
+                        ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+                        event.cancel();
+                    }
                 }
             }
         });
@@ -312,8 +317,9 @@ public class WorksheetItemTabUI extends Screen {
                         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
                             Window.alert(Messages.get().worksheet_builderUpdateWarning());
                             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+                        } else {
+                            sortItems(col, Table.SORT_ASCENDING);
                         }
-                        sortItems(col, Table.SORT_ASCENDING);
                     }
                 }
             });
@@ -325,8 +331,9 @@ public class WorksheetItemTabUI extends Screen {
                         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
                             Window.alert(Messages.get().worksheet_builderUpdateWarning());
                             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+                        } else {
+                            sortItems(col, Table.SORT_DESCENDING);
                         }
-                        sortItems(col, Table.SORT_DESCENDING);
                     }
                 }
             });
@@ -792,6 +799,7 @@ public class WorksheetItemTabUI extends Screen {
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
         }
 
         if (wbLookupScreen == null) {
@@ -830,6 +838,7 @@ public class WorksheetItemTabUI extends Screen {
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
         }
 
         try {
@@ -895,16 +904,17 @@ public class WorksheetItemTabUI extends Screen {
     private void openWorksheetAnalysisLookup() {
         ModalWindow modal;
         
+        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
+        }
+
         if (manager.getWorksheet().getFormatId() == null) {
             Window.alert(Messages.get().worksheet_chooseFormatBeforeAddFromOther());
             return;
         }
         
-        if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
-            Window.alert(Messages.get().worksheet_builderUpdateWarning());
-            ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
-        }
-
         try {
             if (wLookupScreen == null) {
                 wLookupScreen = new WorksheetLookupScreenUI();
@@ -1022,6 +1032,7 @@ public class WorksheetItemTabUI extends Screen {
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
         }
 
         try {
@@ -1109,6 +1120,7 @@ public class WorksheetItemTabUI extends Screen {
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
         }
 
         buffer = new StringBuffer();
@@ -1284,6 +1296,7 @@ public class WorksheetItemTabUI extends Screen {
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
         }
 
         worksheetItemTable.finishEditing();
@@ -1301,6 +1314,7 @@ public class WorksheetItemTabUI extends Screen {
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
         }
 
         worksheetItemTable.finishEditing();
@@ -1326,6 +1340,7 @@ public class WorksheetItemTabUI extends Screen {
         if (isState(UPDATE) && !((WorksheetBuilderScreenUI)parentScreen).updateWarningShown) {
             Window.alert(Messages.get().worksheet_builderUpdateWarning());
             ((WorksheetBuilderScreenUI)parentScreen).updateWarningShown = true;
+            return;
         }
 
         worksheetItemTable.finishEditing();

@@ -568,6 +568,7 @@ public class WorksheetBuilderScreenUI extends Screen {
                 } else if (isState(UPDATE) && !updateWarningShown) {
                     Window.alert(Messages.get().worksheet_builderUpdateWarning());
                     updateWarningShown = true;
+                    event.cancel();
                 }
             }
         });
@@ -1166,6 +1167,12 @@ public class WorksheetBuilderScreenUI extends Screen {
         int i;
         ResultViewDO data;
         Row row;
+        
+        if (isState(UPDATE) && !updateWarningShown) {
+            Window.alert(Messages.get().worksheet_builderUpdateWarning());
+            updateWarningShown = true;
+            return;
+        }
         
         for (i = 0; i < analyteTable.getRowCount(); i++) {
             row = analyteTable.getRowAt(i);
