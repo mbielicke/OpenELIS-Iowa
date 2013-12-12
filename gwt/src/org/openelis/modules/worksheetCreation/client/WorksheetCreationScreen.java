@@ -648,12 +648,14 @@ public class WorksheetCreationScreen extends Screen {
     protected void save() {
         int                      i, j, k;
         ArrayList<IdNameVO>      columnNameVOs;
+        ArrayList<String>        testMethodNames;
         HashMap<String,Integer>  toColumnNames;
         HashMap<Integer,String>  fromColumnNames;
         HashMap<Integer,HashMap<Integer,String>> formatColumnNames;
         IdNameVO                 columnNameVO;
         Integer                  fromFormatId, toIndex;
-        String                   fromName;
+        String                   fromName, testMethodName;
+        StringBuffer             description;
         TableDataRow             row;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager = null;
@@ -713,6 +715,8 @@ public class WorksheetCreationScreen extends Screen {
             // in this situation
         }
         
+        description = new StringBuffer();
+        testMethodNames = new ArrayList<String>();
         for (i = 0; i < worksheetItemTable.numRows(); i++) {
             row = worksheetItemTable.getRow(i);
             
@@ -723,6 +727,19 @@ public class WorksheetCreationScreen extends Screen {
             waDO = new WorksheetAnalysisDO();
             waDO.setId((Integer)row.key);
             waDO.setAccessionNumber((String)row.cells.get(1).value);
+            
+            if (row.cells.get(4).getValue() != null && row.cells.get(5).getValue() != null) {
+                testMethodName = ((String)row.cells.get(4).getValue()).trim() +
+                                 ", " + ((String)row.cells.get(5).getValue()).trim();
+                if (!testMethodNames.contains(testMethodName)) {
+                    testMethodNames.add(testMethodName);
+                    if (description.length() + 2 + testMethodName.length() <= 60) {
+                        if (description.length() > 0)
+                            description.append("; ");
+                        description.append(testMethodName);
+                    }
+                }
+            }
             
             //
             // Set either the qc id or the analysis id depending on what type
@@ -844,6 +861,7 @@ public class WorksheetCreationScreen extends Screen {
                 window.clearStatus();
             }
         }
+        wVDO.setDescription(description.toString());
         
         final WorksheetCreationScreen wcs = this;
         WorksheetService.get().add(manager, new AsyncCallback<WorksheetManager>() {
