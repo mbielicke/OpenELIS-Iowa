@@ -71,6 +71,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.manager.ExchangeCriteriaManager;
@@ -128,8 +129,11 @@ public class DataExchangeXMLMapperBean {
 
     @EJB
     private PanelBean                panel;
+    
+    @EJB
+    private TestResultBean           testResult;
 
-    private HashSet<Integer>         users, dicts, tests, methods, analytes, projects,
+    private HashSet<Integer>         users, dicts, tests, testResults, methods, analytes, projects,
                     organizations, qas, trailers, sections, panels;
     private static SimpleDateFormat  dateFormat, timeFormat;
 
@@ -400,6 +404,11 @@ public class DataExchangeXMLMapperBean {
             for (TestTrailerDO t : testTrailer.fetchByIds(trailers))
                 root.appendChild(createTrailer(doc, t));
         }
+        
+        if (testResults != null) {
+            for (TestResultViewDO tr : testResult.fetchByIds(testResults))
+                root.appendChild(createTestResult(doc, tr));
+        }
 
         if (users != null) {
             for (Integer id : users)
@@ -427,7 +436,7 @@ public class DataExchangeXMLMapperBean {
             for (AnalyteViewDO ana : analyte.fetchByIds(analytes))
                 root.appendChild(createAnalyte(doc, ana));
         }
-
+        
         if (dicts != null) {
             for (Integer id : dicts)
                 root.appendChild(createDictionary(doc, dictionaryCache.getById(id)));
@@ -898,6 +907,25 @@ public class DataExchangeXMLMapperBean {
 
         return elm;
     }
+    
+    public Element createTestResult(Document doc, TestResultViewDO testResult) {
+        Element elm;
+
+        elm = doc.createElement("test_result");
+        setAttribute(elm, "id", testResult.getId());
+        setAttribute(elm, "test_id", testResult.getTestId());
+        setAttribute(elm, "result_group", testResult.getResultGroup());
+        setAttribute(elm, "sort_order", testResult.getSortOrder());
+        setAttribute(elm, "flags_id", testResult.getFlagsId());
+        setAttribute(elm, "type_id", testResult.getTypeId());
+        setText(doc, elm, "value", testResult.getValue());
+        setAttribute(elm, "roundingMethodId", testResult.getRoundingMethodId());
+        setAttribute(elm, "unitOfMeasureId", testResult.getUnitOfMeasureId());
+
+        addDictionary(testResult.getFlagsId());
+
+        return elm;
+    }
 
     public Element createAnalysisUser(Document doc, AnalysisUserViewDO analysisUser) {
         Element elm;
@@ -1061,12 +1089,13 @@ public class DataExchangeXMLMapperBean {
         if (showValue && result.getValue() != null)
             setText(doc, elm, "value", result.getValue());
 
+        addTestResult(result.getTestResultId());
         addAnalyte(result.getAnalyteId());
         addDictionary(result.getTypeId());
 
         return elm;
     }
-
+    
     public Element createExternalTerm(Document doc, ExchangeExternalTermViewDO externalTerm) throws Exception {
         Element elm;
 
@@ -1194,7 +1223,7 @@ public class DataExchangeXMLMapperBean {
             tests.add(id);
         }
     }
-
+    
     private void addMethod(Integer id) {
         if (id != null) {
             if (methods == null)
@@ -1210,7 +1239,7 @@ public class DataExchangeXMLMapperBean {
             trailers.add(id);
         }
     }
-
+    
     private void addSection(Integer id) {
         if (id != null) {
             if (sections == null)
@@ -1233,6 +1262,14 @@ public class DataExchangeXMLMapperBean {
             if (analytes == null)
                 analytes = new HashSet<Integer>();
             analytes.add(id);
+        }
+    }
+    
+    private void addTestResult(Integer id) {
+        if (id != null) {
+            if (testResults == null)
+                testResults = new HashSet<Integer>();
+            testResults.add(id);
         }
     }
 
