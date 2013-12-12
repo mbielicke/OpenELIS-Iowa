@@ -16630,11 +16630,11 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet();
 
   /**
-   * Translated "Changing the layout of a worksheet after it has been committed may cause problems with Excel export and instrument interfacing. If the layout is changed after exporting to Excel, the Excel file may not properly load back into OpenELIS. If the instrument interface has started loading data, it will be lost if those rows are removed.".
+   * Translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.".
    * 
-   * @return translated "Changing the layout of a worksheet after it has been committed may cause problems with Excel export and instrument interfacing. If the layout is changed after exporting to Excel, the Excel file may not properly load back into OpenELIS. If the instrument interface has started loading data, it will be lost if those rows are removed."
+   * @return translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed."
    */
-  @DefaultMessage("Changing the layout of a worksheet after it has been committed may cause problems with Excel export and instrument interfacing. If the layout is changed after exporting to Excel, the Excel file may not properly load back into OpenELIS. If the instrument interface has started loading data, it will be lost if those rows are removed.")
+  @DefaultMessage("Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.")
   @Key("worksheet.builderUpdateWarning")
   String worksheet_builderUpdateWarning();
 
