@@ -129,12 +129,12 @@ public class DataExchangeXMLMapperBean {
 
     @EJB
     private PanelBean                panel;
-    
+
     @EJB
     private TestResultBean           testResult;
 
-    private HashSet<Integer>         users, dicts, tests, testResults, methods, analytes, projects,
-                    organizations, qas, trailers, sections, panels;
+    private HashSet<Integer>         users, dicts, tests, testAnalytes, testResults, methods,
+                    analytes, projects, organizations, qas, trailers, sections, panels;
     private static SimpleDateFormat  dateFormat, timeFormat;
 
     @PostConstruct
@@ -472,6 +472,16 @@ public class DataExchangeXMLMapperBean {
                                          methods,
                                          profiles,
                                          "method_translations",
+                                         doc);
+                if (elm != null)
+                    root.appendChild(elm);
+            }
+            
+            if (testAnalytes.size() > 0) {
+                elm = createTranslations(Constants.table().TEST_ANALYTE,
+                                         testAnalytes,
+                                         profiles,
+                                         "test_analyte_translations",
                                          doc);
                 if (elm != null)
                     root.appendChild(elm);
@@ -907,7 +917,7 @@ public class DataExchangeXMLMapperBean {
 
         return elm;
     }
-    
+
     public Element createTestResult(Document doc, TestResultViewDO testResult) {
         Element elm;
 
@@ -1089,13 +1099,14 @@ public class DataExchangeXMLMapperBean {
         if (showValue && result.getValue() != null)
             setText(doc, elm, "value", result.getValue());
 
+        addTestAnalyte(result.getTestAnalyteId());
         addTestResult(result.getTestResultId());
         addAnalyte(result.getAnalyteId());
         addDictionary(result.getTypeId());
 
         return elm;
     }
-    
+
     public Element createExternalTerm(Document doc, ExchangeExternalTermViewDO externalTerm) throws Exception {
         Element elm;
 
@@ -1223,7 +1234,7 @@ public class DataExchangeXMLMapperBean {
             tests.add(id);
         }
     }
-    
+
     private void addMethod(Integer id) {
         if (id != null) {
             if (methods == null)
@@ -1239,7 +1250,23 @@ public class DataExchangeXMLMapperBean {
             trailers.add(id);
         }
     }
+
+    private void addTestAnalyte(Integer id) {
+        if (id != null) {
+            if (testAnalytes == null)
+                testAnalytes = new HashSet<Integer>();
+            testAnalytes.add(id);
+        }
+    }
     
+    private void addTestResult(Integer id) {
+        if (id != null) {
+            if (testResults == null)
+                testResults = new HashSet<Integer>();
+            testResults.add(id);
+        }
+    }
+
     private void addSection(Integer id) {
         if (id != null) {
             if (sections == null)
@@ -1262,14 +1289,6 @@ public class DataExchangeXMLMapperBean {
             if (analytes == null)
                 analytes = new HashSet<Integer>();
             analytes.add(id);
-        }
-    }
-    
-    private void addTestResult(Integer id) {
-        if (id != null) {
-            if (testResults == null)
-                testResults = new HashSet<Integer>();
-            testResults.add(id);
         }
     }
 
