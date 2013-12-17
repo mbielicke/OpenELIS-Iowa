@@ -120,6 +120,8 @@ UIRF Software License are applicable instead of those above.
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
                     <menuItem key="parse" description="" enable="true" icon="historyIcon" label="Parse" />
+                    <menuItem key="violationScan" description="" enable="true" icon="historyIcon" label="violationScan" />
+                    <menuItem key="additionalScan" description="" enable="true" icon="historyIcon" label="additionalScan" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -327,6 +329,25 @@ UIRF Software License are applicable instead of those above.
                     </col>
                     <col key="{meta:getMonitorPeriodName()}" width="90" header="{resource:getString($constants,'period')}">
                       <textbox field="String" />
+                    </col>
+                  </table>
+                </VerticalPanel>
+              </tab>
+<!-- TAB 4 -->
+              <tab key="violationTab" text="{resource:getString($constants,'pwsViolation')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <table key="violationTable" width="707" maxRows="11" showScroll="ALWAYS">
+                    <col key="{meta:getVioFacilityId()}" width="200" header="{resource:getString($constants,'facilityId')}">
+                      <textbox field="String" />
+                    </col>
+                    <col key="{meta:getVioSeriesName()}" width="200" header="{resource:getString($constants,'series')}">
+                      <textbox field="String" />
+                    </col>
+                    <col key="{meta:getVioViolationDate()}" width="200" header="{resource:getString($constants,'pwsViolationDate')}">
+                      <textbox pattern="{resource:getString($constants,'datePattern')}" field="Date" />
+                    </col>
+                    <col key="{meta:getVioSampleId()}" width="98" header="{resource:getString($constants,'pwsViolationSampleId')}">
+                      <textbox field="Integer" />
                     </col>
                   </table>
                 </VerticalPanel>

@@ -101,12 +101,13 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
     private MonitorTab             monitorTab;
     private FacilityTab            facilityTab;
     private AddressTab             addressTab;
+    private ViolationTab           violationTab;
     private String                 pwsNumber0;
-    private MenuItem               parse;
+    private MenuItem               parse, violationScan, additionalScan;
     private StatusBarPopupScreenUI statusScreen;
 
     private enum Tabs {
-        FACILITY, ADDRESS, MONITOR
+        FACILITY, ADDRESS, MONITOR, VIOLATION
     };
 
     public PWSScreen(WindowInt window) throws Exception {
@@ -210,6 +211,29 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
 
             public void onStateChange(StateChangeEvent<State> event) {
                 parse.enable(true);
+            }
+        });
+
+        // TODO remove these menu items for scanning. They are for testing only
+        violationScan = (MenuItem)def.getWidget("violationScan");
+        addScreenHandler(violationScan, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                violationScan();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                violationScan.enable(true);
+            }
+        });
+
+        additionalScan = (MenuItem)def.getWidget("additionalScan");
+        addScreenHandler(additionalScan, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                additionalScan();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                additionalScan.enable(true);
             }
         });
 
@@ -509,6 +533,19 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         });
 
+        violationTab = new ViolationTab(def, window);
+        addScreenHandler(violationTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                violationTab.setManager(manager);
+                if (tab == Tabs.VIOLATION)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                violationTab.setState(event.getState());
+            }
+        });
+
         //
         // left hand navigation panel
         //
@@ -610,6 +647,7 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
         facilityTab.draw();
         addressTab.draw();
         monitorTab.draw();
+        violationTab.draw();
 
         setFocus(number0);
         window.setDone(Messages.get().enterFieldsToQuery());
@@ -670,6 +708,9 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
                     case MONITOR:
                         manager = PWSManager.fetchWithMonitors(tinwsysIsNumber);
                         break;
+                    case VIOLATION:
+                        manager = PWSManager.fetchWithViolations(tinwsysIsNumber);
+                        break;
                 }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
@@ -706,6 +747,9 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
                 break;
             case MONITOR:
                 monitorTab.draw();
+                break;
+            case VIOLATION:
+                violationTab.draw();
                 break;
         }
     }
@@ -774,6 +818,30 @@ public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Act
             }
         };
         timer.schedule(1000);
+    }
+
+    private void violationScan() {
+        PWSService.get().sdwisViolationScan(new AsyncCallback<Void>() {
+            public void onSuccess(Void result) {
+            }
+
+            public void onFailure(Throwable e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        });
+    }
+
+    private void additionalScan() {
+        PWSService.get().sdwisAdditionalScan(new AsyncCallback<Void>() {
+            public void onSuccess(Void result) {
+            }
+
+            public void onFailure(Throwable e) {
+                Window.alert(e.getMessage());
+                logger.log(Level.SEVERE, e.getMessage(), e);
+            }
+        });
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

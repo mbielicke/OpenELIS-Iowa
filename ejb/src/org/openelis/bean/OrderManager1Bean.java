@@ -327,96 +327,17 @@ public class OrderManager1Bean {
     }
 
     /**
-     * duplicates the order and returns a new order manager
+     * duplicates the order with the given order ID and returns the new order
+     * manager
      */
-    public OrderManager1 duplicate(OrderManager1 om) throws Exception {
-        Integer oldId;
-        OrderManager1 order;
-        Datetime now;
-        HashMap<Integer, Integer> tids;
-
-        order = new OrderManager1();
-
-        setOrder(order, getOrder(om));
-        getOrder(om).setStatusId(Constants.dictionary().ORDER_STATUS_PENDING);
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
-        getOrder(om).setOrderedDate(now);
-        getOrder(om).setRequestedBy(User.getName(ctx));
-
-        setOrganizations(order, getOrganizations(om));
-        if (getOrganizations(order) != null) {
-            for (OrderOrganizationViewDO data : getOrganizations(order)) {
-                data.setId(null);
-                data.setOrderId(null);
-            }
-        }
-
-        setItems(order, getItems(om));
-        if (getItems(order) != null) {
-            for (OrderItemViewDO data : getItems(order)) {
-                data.setId(null);
-                data.setOrderId(null);
-            }
-        }
-
-        setFills(order, null);
-        setReceipts(order, null);
-
-        setShippingNote(order, getShippingNote(om));
-        if (getShippingNote(order) != null) {
-            getShippingNote(order).setId(null);
-            getShippingNote(order).setReferenceId(null);
-            getShippingNote(order).setTimestamp(null);
-        }
-
-        setCustomerNote(order, getCustomerNote(om));
-        if (getCustomerNote(order) != null) {
-            getCustomerNote(order).setId(null);
-            getCustomerNote(order).setReferenceId(null);
-            getCustomerNote(order).setTimestamp(null);
-        }
-
-        setInternalNotes(order, null);
-        setSampleNote(order, null);
-
-        setContainers(order, getContainers(om));
-        if (getContainers(order) != null) {
-            for (OrderContainerDO data : getContainers(order)) {
-                data.setId(null);
-                data.setOrderId(null);
-            }
-        }
-
-        setAuxilliary(order, getAuxilliary(om));
-        if (getAuxilliary(order) != null) {
-            for (AuxDataViewDO data : getAuxilliary(order)) {
-                data.setId(null);
-                data.setReferenceId(null);
-            }
-        }
-
-        setTests(order, getTests(om));
-        tids = new HashMap<Integer, Integer>();
-        if (getTests(order) != null) {
-            for (OrderTestViewDO data : getTests(order)) {
-                oldId = data.getId();
-                data.setId(om.getNextUID());
-                tids.put(oldId, data.getId());
-            }
-        }
-
-        setAnalytes(order, getAnalytes(om));
-        if (getAnalytes(order) != null) {
-            for (OrderTestAnalyteViewDO data : getAnalytes(order)) {
-                data.setId(om.getNextUID());
-                data.setOrderTestId(tids.get(data.getOrderTestId()));
-            }
-        }
-        setRecurrence(om, null);
-
-        return order;
+    public OrderManager1 duplicate(Integer id) throws Exception {
+        return duplicate(id, false);
     }
 
+    /**
+     * duplicates the order with the given order ID, with or without sample
+     * notes, and returns the new order manager
+     */
     public OrderManager1 duplicate(Integer id, boolean sampleNotes) throws Exception {
         Integer oldId;
         Datetime now;
@@ -517,14 +438,6 @@ public class OrderManager1Bean {
         setRecurrence(om, null);
 
         return om;
-    }
-
-    /**
-     * duplicates the order with the given order ID and returns the new order
-     * manager
-     */
-    public OrderManager1 duplicate(Integer id) throws Exception {
-        return duplicate(id, false);
     }
 
     /**

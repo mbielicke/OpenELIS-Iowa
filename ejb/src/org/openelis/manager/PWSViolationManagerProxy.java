@@ -25,30 +25,23 @@
 */
 package org.openelis.manager;
 
-import org.openelis.modules.pws.client.PWSService;
+import java.util.ArrayList;
 
-public class PWSManagerProxy {
-    
-    public PWSManagerProxy() {
-    }
-    
-    public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchByTinwsysIsNumber(tinwsysIsNumber);
-    }
-    
-    public PWSManager fetchWithFacilitites(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithFacilities(tinwsysIsNumber);
-    }
+import org.openelis.domain.PWSMonitorDO;
+import org.openelis.domain.PWSViolationDO;
+import org.openelis.utils.EJBFactory;
 
-    public PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithAddresses(tinwsysIsNumber);
-    }
+public class PWSViolationManagerProxy {
 
-    public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithMonitors(tinwsysIsNumber);
-    }
-    
-    public PWSManager fetchWithViolations(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithViolations(tinwsysIsNumber);
-    }
+    public PWSViolationManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        PWSViolationManager man;
+        ArrayList<PWSViolationDO> list;
+        
+        list = EJBFactory.getPWSViolation().fetchByTinwsysIsNumber(tinwsysIsNumber);
+        man = PWSViolationManager.getInstance();
+        man.setTinwsysIsNumber(tinwsysIsNumber);
+        man.setViolations(list);
+        
+        return man;
+    }   
 }

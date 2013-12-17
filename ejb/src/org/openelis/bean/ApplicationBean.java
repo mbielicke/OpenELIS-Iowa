@@ -73,7 +73,8 @@ public class ApplicationBean {
                         "aux_alpha_lower", "aux_alpha_mixed", "aux_alpha_upper", "aux_date",
                         "aux_date_time", "aux_default", "aux_dictionary", "aux_numeric",
                         "aux_time", "chart_type_dynamic", "chart_type_fixed",
-                        "instrument_log_completed", "instrument_log_pending", "local_type_analyte",
+                        "cost_center_unknown", "instrument_log_completed",
+                        "instrument_log_pending", "laboratory_location_u", "local_type_analyte",
                         "local_type_dictionary", "local_type_method", "local_type_organization",
                         "local_type_test", "local_type_test_analyte", "log_level_error",
                         "log_level_info", "log_type_data_transmission", "micrograms_per_liter",
@@ -93,9 +94,11 @@ public class ApplicationBean {
                         "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
                         "round_sig_fig_noe", "sample_completed", "sample_error",
                         "sample_logged_in", "sample_not_verified", "sample_released",
-                        "sdwis_category_bacterial", "section_mcl_violation_email",
-                        "shipping_status_processed", "shipping_status_shipped", "test_analyte_req",
-                        "test_analyte_suplmtl", "test_analyte_read_only",
+                        "sdwis_category_bacterial", "sdwis_category_chemical",
+                        "sdwis_category_lead", "sdwis_category_radchem",
+                        "section_mcl_violation_email", "shipping_status_processed",
+                        "shipping_status_shipped", "smpl_type_rt", "smpl_type_rp", "smpl_type_sp",
+                        "test_analyte_req", "test_analyte_suplmtl", "test_analyte_read_only",
                         "test_res_type_alpha_lower", "test_res_type_alpha_mixed",
                         "test_res_type_alpha_upper", "test_res_type_date",
                         "test_res_type_date_time", "test_res_type_default",
@@ -157,8 +160,10 @@ public class ApplicationBean {
         Constants.dictionary().AUX_TIME = dictId(map, "aux_time");
         Constants.dictionary().CHART_TYPE_DYNAMIC = dictId(map, "chart_type_dynamic");
         Constants.dictionary().CHART_TYPE_FIXED = dictId(map, "chart_type_fixed");
+        Constants.dictionary().COST_CENTER_UNKNOWN = dictId(map, "cost_center_unknown");
         Constants.dictionary().INSTRUMENT_LOG_COMPLETED = dictId(map, "instrument_log_completed");
         Constants.dictionary().INSTRUMENT_LOG_PENDING = dictId(map, "instrument_log_pending");
+        Constants.dictionary().LABORATORY_LOCATION_U = dictId(map, "laboratory_location_u");
         Constants.dictionary().LOCAL_TYPE_ANALYTE = dictId(map, "local_type_analyte"); 
         Constants.dictionary().LOCAL_TYPE_DICTIONARY = dictId(map, "local_type_dictionary");
         Constants.dictionary().LOCAL_TYPE_METHOD = dictId(map, "local_type_method"); 
@@ -223,10 +228,16 @@ public class ApplicationBean {
         Constants.dictionary().SAMPLE_NOT_VERIFIED = dictId(map, "sample_not_verified");
         Constants.dictionary().SAMPLE_RELEASED = dictId(map, "sample_released");
         Constants.dictionary().SDWIS_CATEGORY_BACTERIAL = dictId(map, "sdwis_category_bacterial");
+        Constants.dictionary().SDWIS_CATEGORY_CHEMICAL = dictId(map, "sdwis_category_chemical");
+        Constants.dictionary().SDWIS_CATEGORY_LEAD = dictId(map, "sdwis_category_lead");
+        Constants.dictionary().SDWIS_CATEGORY_RADCHEM = dictId(map, "sdwis_category_radchem");
         Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL = dictId(map,
                                                                     "section_mcl_violation_email");
         Constants.dictionary().SHIPPING_STATUS_PROCESSED = dictId(map, "shipping_status_processed");
         Constants.dictionary().SHIPPING_STATUS_SHIPPED = dictId(map, "shipping_status_shipped");
+        Constants.dictionary().SMPL_TYPE_RT = dictId(map, "smpl_type_rt");
+        Constants.dictionary().SMPL_TYPE_RP = dictId(map, "smpl_type_rp");
+        Constants.dictionary().SMPL_TYPE_SP = dictId(map, "smpl_type_sp");
         Constants.dictionary().TEST_ANALYTE_REQ = dictId(map, "test_analyte_req");
         Constants.dictionary().TEST_ANALYTE_SUPLMTL = dictId(map, "test_analyte_suplmtl");
         Constants.dictionary().TEST_ANALYTE_READ_ONLY = dictId(map, "test_analyte_read_only");

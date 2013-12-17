@@ -135,19 +135,6 @@ public class OrderManager1 implements Serializable {
     }
 
     /**
-     * Returns a unique id representing the data object's type and key. This id
-     * can be used to directly find the object this manager rather than serially
-     * traversing the lists.
-     */
-    public String getUid(OrderTestDO data) {
-        return getOrderTestUid(data.getId());
-    }
-    
-    public String getUid(OrderTestAnalyteDO data) {
-        return getOrderTestAnalyteUid(data.getId());
-    }
-
-    /**
      * Returns the data object using its Uid.
      */
     public DataObject getObject(String uid) {
@@ -156,26 +143,12 @@ public class OrderManager1 implements Serializable {
 
             if (tests != null)
                 for (OrderTestDO data : tests)
-                    uidMap.put(getOrderTestUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
             if (analytes != null)
                 for (OrderTestAnalyteDO data : analytes)
-                    uidMap.put(getOrderTestAnalyteUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
         }
         return uidMap.get(uid);
-    }
-
-    /**
-     * Returns the unique identifiers for each data object.
-     */
-    public String getOrderTestUid(Integer id) {
-        return "T:" + id;
-    }
-    
-    /**
-     * Returns the unique identifiers for each data object.
-     */
-    public String getOrderTestAnalyteUid(Integer id) {
-        return "A:" + id;
     }
 
     /**

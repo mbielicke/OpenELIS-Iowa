@@ -139,6 +139,17 @@ public class TestResultBean {
         return grid;
     }
 
+    public ArrayList<TestResultViewDO> fetchTestResultsByTestIdsAndFlagPattern(ArrayList<Integer> tids,
+                                                                               String pattern) {
+        Query query;
+
+        query = manager.createNamedQuery("TestResult.FetchTestResultsByTestIdsAndFlagPattern");
+        query.setParameter("testIds", tids);
+        query.setParameter("pattern", pattern);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public TestResultDO add(TestResultDO data) throws Exception {
         TestResult entity;
 
