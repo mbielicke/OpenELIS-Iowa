@@ -543,7 +543,7 @@ public class WorksheetItemTabUI extends Screen {
 
         bus.addHandler(RowsAddedEvent.getType(), new RowsAddedEvent.Handler() {
             public void onRowsAdded(RowsAddedEvent event) {
-                int index;
+                int index, extra;
                 ArrayList<WorksheetAnalysisViewDO> newData;
                 ArrayList<Row> list;
                 Integer selectedRows[];
@@ -568,6 +568,16 @@ public class WorksheetItemTabUI extends Screen {
                 
                 list = (ArrayList<Row>)event.getRows();
                 if (list != null && list.size() > 0) {
+                    if (manager.getTotalCapacity() != null &&
+                        worksheetItemTable.getRowCount() + list.size() > manager.getTotalCapacity()) {
+                        extra = worksheetItemTable.getRowCount() + list.size() - manager.getTotalCapacity();
+                        Window.alert(Messages.get().worksheet_capacityExceeded(extra));
+                        while (extra > 0) {
+                            list.remove(list.size() - 1);
+                            extra--;
+                        }
+                    }
+                               
                     newData = new ArrayList<WorksheetAnalysisViewDO>();
                     for (Row row : list) {
                         itemDO = manager.item.add(index++);
@@ -934,7 +944,7 @@ public class WorksheetItemTabUI extends Screen {
                                         waSelectionScreen = new WorksheetAnalysisSelectionScreenUI();
                                         waSelectionScreen.addActionHandler(new ActionHandler<WorksheetAnalysisSelectionScreenUI.Action>() {
                                             public void onAction(ActionEvent<WorksheetAnalysisSelectionScreenUI.Action> event) {
-                                                int index;
+                                                int index, extra;
                                                 ArrayList<WorksheetAnalysisViewDO> list, newData;
                                                 Integer fromWorksheetId, selectedRows[];
                                                 WorksheetItemDO itemDO;
@@ -943,6 +953,16 @@ public class WorksheetItemTabUI extends Screen {
                                                 if (event.getAction() == WorksheetAnalysisSelectionScreenUI.Action.SELECT) {
                                                     list = (ArrayList<WorksheetAnalysisViewDO>)event.getData();
                                                     if (list != null && list.size() > 0) {
+                                                        if (manager.getTotalCapacity() != null &&
+                                                            worksheetItemTable.getRowCount() + list.size() > manager.getTotalCapacity()) {
+                                                            extra = worksheetItemTable.getRowCount() + list.size() - manager.getTotalCapacity();
+                                                            Window.alert(Messages.get().worksheet_capacityExceeded(extra));
+                                                            while (extra > 0) {
+                                                                list.remove(list.size() - 1);
+                                                                extra--;
+                                                            }
+                                                        }
+
                                                         newData = new ArrayList<WorksheetAnalysisViewDO>();
                                                         selectedRows = worksheetItemTable.getSelectedRows();
                                                         if (selectedRows.length > 0) {
@@ -1042,7 +1062,7 @@ public class WorksheetItemTabUI extends Screen {
                 qcLookupScreen.addActionHandler(new org.openelis.gwt.event.ActionHandler<QcLookupScreen.Action>() {
                     @SuppressWarnings("unchecked")
                     public void onAction(org.openelis.gwt.event.ActionEvent<QcLookupScreen.Action> event) {
-                        int index;
+                        int index, extra;
                         ArrayList<QcLotViewDO> list;
                         ArrayList<WorksheetAnalysisViewDO> newData;
                         Integer selectedRows[];
@@ -1052,6 +1072,16 @@ public class WorksheetItemTabUI extends Screen {
                         if (event.getAction() == QcLookupScreen.Action.OK) {
                             list = (ArrayList<QcLotViewDO>)event.getData();
                             if (list != null && list.size() > 0) {
+                                if (manager.getTotalCapacity() != null &&
+                                    worksheetItemTable.getRowCount() + list.size() > manager.getTotalCapacity()) {
+                                    extra = worksheetItemTable.getRowCount() + list.size() - manager.getTotalCapacity();
+                                    Window.alert(Messages.get().worksheet_capacityExceeded(extra));
+                                    while (extra > 0) {
+                                        list.remove(list.size() - 1);
+                                        extra--;
+                                    }
+                                }
+                                           
                                 newData = new ArrayList<WorksheetAnalysisViewDO>();
                                 selectedRows = worksheetItemTable.getSelectedRows();
                                 if (selectedRows.length > 0) {
@@ -1299,6 +1329,12 @@ public class WorksheetItemTabUI extends Screen {
             return;
         }
 
+        if (manager.getTotalCapacity() != null &&
+            worksheetItemTable.getRowCount() + 1 > manager.getTotalCapacity()) {
+            Window.alert(Messages.get().worksheet_atCapacity());
+            return;
+        }
+                               
         worksheetItemTable.finishEditing();
         index = worksheetItemTable.getSelectedRow();
         manager.item.duplicate(index);

@@ -16630,6 +16630,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String worksheet();
 
   /**
+   * Translated "Worksheet is at capacity; cannot add more rows".
+   * 
+   * @return translated "Worksheet is at capacity; cannot add more rows"
+   */
+  @DefaultMessage("Worksheet is at capacity; cannot add more rows")
+  @Key("worksheet.atCapacity")
+  String worksheet_atCapacity();
+
+  /**
    * Translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.".
    * 
    * @return translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed."
@@ -16637,6 +16646,15 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.")
   @Key("worksheet.builderUpdateWarning")
   String worksheet_builderUpdateWarning();
+
+  /**
+   * Translated "The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added.".
+   * 
+   * @return translated "The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added."
+   */
+  @DefaultMessage("The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added.")
+  @Key("worksheet.capacityExceeded")
+  String worksheet_capacityExceeded(Integer arg0);
 
   /**
    * Translated "You must choose a format for this worksheet before adding analyses from another worksheet.".

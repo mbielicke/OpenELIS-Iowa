@@ -228,14 +228,14 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select='resource:getString($constants,"itemsOrdered")' />
                     </text>
                     <widget>
-                      <tree key="itemsTree" width="570px" maxRows="5" showScroll="ALWAYS">
+                      <tree key="itemsTree" width="auto" maxRows="6" showScroll="ALWAYS">
                         <header>
-                          <col width="50" header="{resource:getString($constants,'ordNum')}" />
-                          <col width="30" header="{resource:getString($constants,'qty')}" />
-                          <col width="170" header="{resource:getString($constants,'item')}" />
-                          <col width="160" header="{resource:getString($constants,'location')}" />
-                          <col width="60" header="{resource:getString($constants,'lotNum')}" />
-                          <col width="70" header="{resource:getString($constants,'expDate')}" />
+                          <col width="50" header="{resource:getString($constants,'ordNum')}" fixedWidth="true"/>
+                          <col width="30" header="{resource:getString($constants,'qty')}" fixedWidth="true"/>
+                          <col width="170" header="{resource:getString($constants,'item')}" fixedWidth="true"/>
+                          <col width="160" header="{resource:getString($constants,'location')}" fixedWidth="true"/>
+                          <col width="60" header="{resource:getString($constants,'lotNum')}" fixedWidth="true"/>
+                          <col width="70" header="{resource:getString($constants,'expDate')}" fixedWidth="true"/>
                         </header>
                         <leaf key="top">
                           <col>
