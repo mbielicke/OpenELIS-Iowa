@@ -188,8 +188,8 @@ public class Constants implements Serializable {
                         ANALYSIS_RELEASED, ANALYSIS_REQUEUE, AN_USER_AC_COMPLETED,
                         AN_USER_AC_RELEASED, AUX_ALPHA_LOWER, AUX_ALPHA_MIXED, AUX_ALPHA_UPPER,
                         AUX_DATE, AUX_DATE_TIME, AUX_DEFAULT, AUX_DICTIONARY, AUX_NUMERIC,
-                        AUX_TIME, CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED, INSTRUMENT_LOG_COMPLETED,
-                        INSTRUMENT_LOG_PENDING, LOCAL_TYPE_ANALYTE, LOCAL_TYPE_DICTIONARY,
+                        AUX_TIME, CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED, COST_CENTER_UNKNOWN, INSTRUMENT_LOG_COMPLETED,
+                        INSTRUMENT_LOG_PENDING, LABORATORY_LOCATION_U, LOCAL_TYPE_ANALYTE, LOCAL_TYPE_DICTIONARY,
                         LOCAL_TYPE_METHOD, LOCAL_TYPE_ORGANIZATION, LOCAL_TYPE_TEST,
                         LOCAL_TYPE_TEST_ANALYTE, LOG_LEVEL_ERROR, LOG_LEVEL_INFO,
                         LOG_TYPE_DATA_TRANSMISSION, MICROGRAMS_PER_LITER, NANOGRAMS_PER_LITER,
@@ -207,15 +207,18 @@ public class Constants implements Serializable {
                         ROUND_INT, ROUND_INT_SIG_FIG, ROUND_INT_SIG_FIG_NOE, ROUND_SIG_FIG,
                         ROUND_SIG_FIG_NOE, SAMPLE_COMPLETED, SAMPLE_ERROR, SAMPLE_LOGGED_IN,
                         SAMPLE_NOT_VERIFIED, SAMPLE_RELEASED, SDWIS_CATEGORY_BACTERIAL,
+                        SDWIS_CATEGORY_CHEMICAL, SDWIS_CATEGORY_LEAD, SDWIS_CATEGORY_RADCHEM,
                         SECTION_MCL_VIOLATION_EMAIL, SHIPPING_STATUS_PROCESSED,
-                        SHIPPING_STATUS_SHIPPED, TEST_ANALYTE_REQ, TEST_ANALYTE_SUPLMTL,
-                        TEST_ANALYTE_READ_ONLY, TEST_RES_TYPE_ALPHA_LOWER,
-                        TEST_RES_TYPE_ALPHA_MIXED, TEST_RES_TYPE_ALPHA_UPPER, TEST_RES_TYPE_DATE,
-                        TEST_RES_TYPE_DATE_TIME, TEST_RES_TYPE_DEFAULT, TEST_RES_TYPE_DICTIONARY,
-                        TEST_RES_TYPE_NUMERIC, TEST_RES_TYPE_TIME, TEST_RES_TYPE_TITER,
-                        TEST_SECTION_DEFAULT, TEST_SECTION_MATCH, TURNAROUND_DAILY,
-                        TURNAROUND_MONTHLY, TURNAROUND_WEEKLY, WF_TOTAL, WORKSHEET_COMPLETE,
-                        WORKSHEET_FAILED, WORKSHEET_VOID, WORKSHEET_WORKING;
+                        SHIPPING_STATUS_SHIPPED, SMPL_TYPE_RT, SMPL_TYPE_RP, SMPL_TYPE_SP,
+                        TEST_ANALYTE_REQ, TEST_ANALYTE_SUPLMTL, TEST_ANALYTE_READ_ONLY,
+                        TEST_RES_TYPE_ALPHA_LOWER, TEST_RES_TYPE_ALPHA_MIXED,
+                        TEST_RES_TYPE_ALPHA_UPPER, TEST_RES_TYPE_DATE, TEST_RES_TYPE_DATE_TIME,
+                        TEST_RES_TYPE_DEFAULT, TEST_RES_TYPE_DICTIONARY, TEST_RES_TYPE_NUMERIC,
+                        TEST_RES_TYPE_TIME, TEST_RES_TYPE_TITER, TEST_RESULT_NEGATIVE,
+                        TEST_RESULT_POS_REPORTABLE, TEST_RESULT_POSITIVE,
+                        TEST_RESULT_NEG_REPORTABLE, TEST_SECTION_DEFAULT, TEST_SECTION_MATCH,
+                        TURNAROUND_DAILY, TURNAROUND_MONTHLY, TURNAROUND_WEEKLY, WF_TOTAL,
+                        WORKSHEET_COMPLETE, WORKSHEET_FAILED, WORKSHEET_VOID, WORKSHEET_WORKING;
     }
 
     /**
@@ -283,7 +286,7 @@ public class Constants implements Serializable {
         public String get(ResultDO data) {
             return getResult(data.getId());
         }
-
+        
         public String get(AuxFieldGroupDO data) {
             return getAuxFieldGroup(data.getId());
         }
@@ -334,7 +337,7 @@ public class Constants implements Serializable {
         public String getResult(Integer id) {
             return Constants.table().RESULT + ":" + id;
         }
-
+        
         public String getAuxFieldGroup(Integer id) {
             return Constants.table().AUX_FIELD_GROUP + ":" + id;
         }
@@ -342,7 +345,7 @@ public class Constants implements Serializable {
         public String getOrderTest(Integer id) {
             return Constants.table().ORDER_TEST + ":" + id;
         }
-
+        
         public String getOrderTestAnalyte(Integer id) {
             return Constants.table().ORDER_TEST_ANALYTE + ":" + id;
         }

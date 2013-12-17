@@ -27,28 +27,12 @@ package org.openelis.manager;
 
 import org.openelis.modules.pws.client.PWSService;
 
-public class PWSManagerProxy {
+public class PWSViolationManagerProxy {
     
-    public PWSManagerProxy() {
-    }
-    
-    public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchByTinwsysIsNumber(tinwsysIsNumber);
+    public PWSViolationManagerProxy() {
     }
     
-    public PWSManager fetchWithFacilitites(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithFacilities(tinwsysIsNumber);
-    }
-
-    public PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithAddresses(tinwsysIsNumber);
-    }
-
-    public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithMonitors(tinwsysIsNumber);
-    }
-    
-    public PWSManager fetchWithViolations(Integer tinwsysIsNumber) throws Exception {
-        return PWSService.get().fetchWithViolations(tinwsysIsNumber);
+    public PWSViolationManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        return PWSService.get().fetchViolationByTinwsysIsNumber(tinwsysIsNumber);
     }
 }

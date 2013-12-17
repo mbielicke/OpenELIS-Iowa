@@ -78,6 +78,7 @@ import org.openelis.bean.PWSAddressBean;
 import org.openelis.bean.PWSBean;
 import org.openelis.bean.PWSFacilityBean;
 import org.openelis.bean.PWSMonitorBean;
+import org.openelis.bean.PWSViolationBean;
 import org.openelis.bean.PanelBean;
 import org.openelis.bean.PanelItemBean;
 import org.openelis.bean.PreferencesBean;
@@ -336,6 +337,10 @@ public class EJBFactory {
 
     public static PWSMonitorBean getPWSMonitor() {
         return lookup("PWSMonitorBean");
+    }
+    
+    public static PWSViolationBean getPWSViolation() {
+        return lookup("PWSViolationBean");
     }
 
     public static QaEventBean getQaevent() {

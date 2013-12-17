@@ -9,6 +9,7 @@ import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
+import org.openelis.manager.PWSViolationManager;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.data.Query;
 import org.openelis.ui.services.TokenService;
@@ -59,6 +60,12 @@ public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
     }
 
     @Override
+    public void fetchViolationByTinwsysIsNumber(Integer tinwsysIsNumber,
+                                                AsyncCallback<PWSViolationManager> callback) {
+        service.fetchViolationByTinwsysIsNumber(tinwsysIsNumber, callback);
+    }
+
+    @Override
     public void fetchPwsByNumber0(String pwsNumber0, AsyncCallback<PWSDO> callback) {
         service.fetchPwsByNumber0(pwsNumber0, callback);
     }
@@ -79,6 +86,11 @@ public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
     }
 
     @Override
+    public void fetchWithViolations(Integer tinwsysIsNumber, AsyncCallback<PWSManager> callback) {
+        service.fetchWithViolations(tinwsysIsNumber, callback);
+    }
+
+    @Override
     public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.query(query, callback);
     }
@@ -86,6 +98,16 @@ public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
     @Override
     public void importFiles(AsyncCallback<Void> callback) {
         service.importFiles(callback);
+    }
+
+    @Override
+    public void sdwisViolationScan(AsyncCallback<Void> callback) {
+        service.sdwisViolationScan(callback);
+    }
+
+    @Override
+    public void sdwisAdditionalScan(AsyncCallback<Void> callback) {
+        service.sdwisAdditionalScan(callback);
     }
 
     @Override
@@ -130,6 +152,15 @@ public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
     }
 
     @Override
+    public PWSManager fetchWithViolations(Integer tinwsysIsNumber) throws Exception {
+        Callback<PWSManager> callback;
+
+        callback = new Callback<PWSManager>();
+        service.fetchWithViolations(tinwsysIsNumber, callback);
+        return callback.getResult();
+    }
+
+    @Override
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         Callback<ArrayList<IdNameVO>> callback;
 
@@ -166,6 +197,15 @@ public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
     }
 
     @Override
+    public PWSViolationManager fetchViolationByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        Callback<PWSViolationManager> callback;
+
+        callback = new Callback<PWSViolationManager>();
+        service.fetchViolationByTinwsysIsNumber(tinwsysIsNumber, callback);
+        return callback.getResult();
+    }
+
+    @Override
     public PWSDO fetchPwsByNumber0(String pwsNumber0) throws Exception {
         Callback<PWSDO> callback;
 
@@ -190,5 +230,23 @@ public class PWSService implements PWSServiceInt, PWSServiceIntAsync {
         callback = new Callback<ReportStatus>();
         service.getStatus(callback);
         return callback.getResult();
+    }
+
+    @Override
+    public void sdwisViolationScan() throws Exception {
+        Callback<Void> callback;
+
+        callback = new Callback<Void>();
+        service.sdwisViolationScan(callback);
+        callback.getResult();
+    }
+
+    @Override
+    public void sdwisAdditionalScan() throws Exception {
+        Callback<Void> callback;
+
+        callback = new Callback<Void>();
+        service.sdwisAdditionalScan(callback);
+        callback.getResult();
     }
 }

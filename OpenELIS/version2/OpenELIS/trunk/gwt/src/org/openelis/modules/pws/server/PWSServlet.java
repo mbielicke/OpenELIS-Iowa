@@ -33,6 +33,8 @@ import javax.servlet.annotation.WebServlet;
 import org.openelis.bean.PWSBean;
 import org.openelis.bean.PWSFileImportBean;
 import org.openelis.bean.PWSManagerBean;
+import org.openelis.bean.SDWISAdditionalScannerBean;
+import org.openelis.bean.SDWISViolationScannerBean;
 import org.openelis.bean.SessionCacheBean;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PWSDO;
@@ -44,24 +46,31 @@ import org.openelis.manager.PWSAddressManager;
 import org.openelis.manager.PWSFacilityManager;
 import org.openelis.manager.PWSManager;
 import org.openelis.manager.PWSMonitorManager;
+import org.openelis.manager.PWSViolationManager;
 import org.openelis.modules.pws.client.PWSServiceInt;
 
 @WebServlet("/openelis/pws")
 public class PWSServlet extends RemoteServlet implements PWSServiceInt {
 
-    private static final long serialVersionUID = 1L;
+    private static final long          serialVersionUID = 1L;
 
     @EJB
-    private SessionCacheBean  session;
+    private SessionCacheBean           session;
 
     @EJB
-    PWSManagerBean            pwsManager;
+    PWSManagerBean                     pwsManager;
 
     @EJB
-    PWSBean                   pws;
+    PWSBean                            pws;
 
     @EJB
-    PWSFileImportBean         pwsFileImport;
+    PWSFileImportBean                  pwsFileImport;
+
+    @EJB
+    private SDWISViolationScannerBean  sdwisViolationScanner;
+
+    @EJB
+    private SDWISAdditionalScannerBean sdwisAdditionalScanner;
 
     public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
@@ -90,6 +99,14 @@ public class PWSServlet extends RemoteServlet implements PWSServiceInt {
     public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
         try {
             return pwsManager.fetchWithMonitors(tinwsysIsNumber);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
+    public PWSManager fetchWithViolations(Integer tinwsysIsNumber) throws Exception {
+        try {
+            return pwsManager.fetchWithViolations(tinwsysIsNumber);
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         }
@@ -132,6 +149,14 @@ public class PWSServlet extends RemoteServlet implements PWSServiceInt {
         }
     }
 
+    public PWSViolationManager fetchViolationByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        try {
+            return pwsManager.fetchViolationByTinwsysIsNumber(tinwsysIsNumber);
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        }
+    }
+
     public PWSDO fetchPwsByNumber0(String pwsNumber0) throws Exception {
         try {
             return pws.fetchByNumber0(pwsNumber0);
@@ -143,6 +168,26 @@ public class PWSServlet extends RemoteServlet implements PWSServiceInt {
     public void importFiles() throws Exception {
         try {
             pwsFileImport.importFiles();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        } catch (Throwable th) {
+            throw serializeForGWT(th);
+        }
+    }
+
+    public void sdwisViolationScan() throws Exception {
+        try {
+            sdwisViolationScanner.scan();
+        } catch (Exception anyE) {
+            throw serializeForGWT(anyE);
+        } catch (Throwable th) {
+            throw serializeForGWT(th);
+        }
+    }
+
+    public void sdwisAdditionalScan() throws Exception {
+        try {
+            sdwisAdditionalScanner.scan();
         } catch (Exception anyE) {
             throw serializeForGWT(anyE);
         } catch (Throwable th) {
