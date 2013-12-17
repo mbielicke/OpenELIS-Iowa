@@ -892,10 +892,12 @@ public class WorksheetManager1Bean {
             // default template
             //
             twDO.setTotalCapacity(500);
+            wm.setTotalCapacity(500);
             wm.getWorksheet().setFormatId(Constants.dictionary().WF_TOTAL);
             wm.getWorksheet().setSubsetCapacity(500);
             return wqcVO;
         } else {
+            wm.setTotalCapacity(twDO.getTotalCapacity());
             wm.getWorksheet().setFormatId(twDO.getFormatId());
             wm.getWorksheet().setSubsetCapacity(twDO.getSubsetCapacity());
         }
@@ -1115,6 +1117,7 @@ public class WorksheetManager1Bean {
                     removed.add(waVDO);
                     wm.analysis.remove(wiDO, i);
                 }
+                j++;
             }
             wqcVO.setRemovedAnalyses(removed);
         }

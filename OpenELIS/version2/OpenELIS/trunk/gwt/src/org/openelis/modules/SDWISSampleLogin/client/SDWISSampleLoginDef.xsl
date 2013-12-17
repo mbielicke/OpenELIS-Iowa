@@ -204,8 +204,8 @@ UIRF Software License are applicable instead of those above.
                 <row>
                   <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="sampleItemTabPanel,{meta:getBillTo()}">
                     <header>
-                      <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
-                      <col width="130" header="{resource:getString($constants,'typeStatus')}" />
+                      <col width="280" header="{resource:getString($constants,'itemAnalyses')}" fixedWidth="true"/>
+                      <col width="130" header="{resource:getString($constants,'typeStatus')}" fixedWidth="true"/>
                     </header>
                     <leaf key="sampleItem">
                       <col>
