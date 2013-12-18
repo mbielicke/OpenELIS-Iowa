@@ -130,7 +130,7 @@ public class PanelItemBean  {
 
         list = new ValidationErrorsList();
         if ("T".equals(data.getType())) {
-            tests = test.fetchByName(data.getName(), 10000);
+            tests = test.fetchActiveByName(data.getName(), 10000);
             match = false;
 
             if (tests.size() == 0) {

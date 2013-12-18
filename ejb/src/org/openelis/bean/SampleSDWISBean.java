@@ -44,6 +44,7 @@ import org.openelis.meta.SampleMeta;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.DatabaseException;
 import org.openelis.ui.common.FieldErrorException;
+import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.ValidationErrorsList;
 
@@ -141,6 +142,9 @@ public class SampleSDWISBean {
             manager.remove(entity);
     }
 
+    /**
+     * Used by the old code
+     */
     public void validate(SampleSDWISDO data) throws Exception {
         Integer id;
         ValidationErrorsList list;
@@ -170,5 +174,29 @@ public class SampleSDWISBean {
         
         if (list.size() > 0)
             throw list;
+    }
+    
+    /**
+     * Used by the new code
+     */
+    public void validate(SampleSDWISDO data, Integer accession) throws Exception {
+        ValidationErrorsList e;
+        
+        e = new ValidationErrorsList();
+        
+        if (data.getPwsId() == null)
+            e.add(new FormErrorException(Messages.get().sampleSDWIS_pwsIdRequiredException(accession)));        
+        
+        if (data.getSampleTypeId() == null)
+            e.add(new FormErrorException(Messages.get().sampleSDWIS_sampleTypeRequiredException(accession)));
+        
+        if (data.getSamplePointId() == null)
+            e.add(new FormErrorException(Messages.get().sampleSDWIS_samplePtIdRequiredException(accession)));
+        
+        if (data.getSampleCategoryId() == null)
+            e.add(new FormErrorException(Messages.get().sampleSDWIS_sampleCatRequiredException(accession)));
+        
+        if (e.size() > 0)
+            throw e;
     }
 }

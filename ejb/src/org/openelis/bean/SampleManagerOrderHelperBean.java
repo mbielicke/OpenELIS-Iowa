@@ -25,8 +25,23 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.OrderManager1Accessor.*;
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.OrderManager1Accessor.addOrganization;
+import static org.openelis.manager.OrderManager1Accessor.getAnalytes;
+import static org.openelis.manager.OrderManager1Accessor.getAuxilliary;
+import static org.openelis.manager.OrderManager1Accessor.getContainers;
+import static org.openelis.manager.OrderManager1Accessor.getOrder;
+import static org.openelis.manager.OrderManager1Accessor.getOrganizations;
+import static org.openelis.manager.OrderManager1Accessor.getSampleNote;
+import static org.openelis.manager.OrderManager1Accessor.getTests;
+import static org.openelis.manager.OrderManager1Accessor.setOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.addItem;
+import static org.openelis.manager.SampleManager1Accessor.addOrganization;
+import static org.openelis.manager.SampleManager1Accessor.addSampleInternalNote;
+import static org.openelis.manager.SampleManager1Accessor.getItems;
+import static org.openelis.manager.SampleManager1Accessor.getOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.getSampleInternalNotes;
+import static org.openelis.manager.SampleManager1Accessor.getSamplePrivateWell;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +54,6 @@ import javax.ejb.Stateless;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.constants.Messages;
 import org.openelis.domain.AddressDO;
-import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.Constants;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
@@ -48,29 +61,24 @@ import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.PWSDO;
-import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleDO;
-import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SampleTestRequestVO;
 import org.openelis.domain.SampleTestReturnVO;
-import org.openelis.domain.SystemVariableDO;
 import org.openelis.manager.OrderManager1;
 import org.openelis.manager.SampleManager1;
 import org.openelis.ui.common.DataBaseUtil;
 import org.openelis.ui.common.Datetime;
 import org.openelis.ui.common.FormErrorException;
 import org.openelis.ui.common.FormErrorWarning;
+import org.openelis.ui.common.InconsistencyException;
 import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.SystemUserVO;
 import org.openelis.ui.common.ValidationErrorsList;
-import org.openelis.utils.ReportUtil;
 
 /**
  * This class is used for loading the data from a Send-out or electronic order
@@ -83,21 +91,6 @@ public class SampleManagerOrderHelperBean {
 
     @EJB
     private DictionaryCacheBean       dictionaryCache;
-
-    @EJB
-    private CategoryCacheBean         categoryCache;
-
-    @EJB
-    private ProjectBean               project;
-
-    @EJB
-    private PWSBean                   pws;
-
-    @EJB
-    private SystemVariableBean        systemVariable;
-
-    @EJB
-    private AuxFieldGroupBean         auxFieldGroup;
 
     @EJB
     private OrganizationParameterBean organizationParameter;
@@ -114,26 +107,9 @@ public class SampleManagerOrderHelperBean {
     @EJB
     private OrderManager1Bean         orderManager1;
 
-    private static final Logger       log = Logger.getLogger("openelis");
+    private static final Logger       log             = Logger.getLogger("openelis");
 
-    private static final String       SAMPLE_ENV_AUX_DATA = "sample_env_aux_data",
-                    SAMPLE_WELL_AUX_DATA = "sample_well_aux_data",
-                    SAMPLE_SDWIS_AUX_DATA = "sample_sdwis_aux_data",
-                    SMPL_COLLECTED_DATE = "smpl_collected_date",
-                    SMPL_COLLECTED_TIME = "smpl_collected_time",
-                    SMPL_CLIENT_REF = "smpl_client_ref", IS_HAZARDOUS = "is_hazardous",
-                    COLLECTOR = "collector", LOCATION = "location",
-                    LOC_MULT_UNIT = "loc_mult_unit", LOC_STREET_ADDRESS = "loc_street_address",
-                    LOC_CITY = "loc_city", LOC_STATE = "loc_state", LOC_ZIP_CODE = "loc_zip_code",
-                    LOC_COUNTRY = "loc_country", PRIORITY = "priority",
-                    COLLECTOR_PHONE = "collector_phone", DESCRIPTION = "description",
-                    PROJECT_NAME = "project_name", OWNER = "owner", WELL_NUMBER = "well_number",
-                    PWS_ID = "pws_id", STATE_LAB_NUM = "state_lab_num",
-                    FACILITY_ID = "facility_id", SAMPLE_TYPE = "sample_type",
-                    SAMPLE_CAT = "sample_cat", SAMPLE_PT_ID = "sample_pt_id", YES = "yes",
-                    STATE = "state", COUNTRY = "country", SDWIS_SAMPLE_TYPE = "sdwis_sample_type",
-                    SDWIS_SAMPLE_CATEGORY = "sdwis_sample_category",
-                    ORG_HOLD_SAMPLE = "org_hold_sample";
+    public static final String        ORG_HOLD_SAMPLE = "org_hold_sample";
 
     /**
      * Loads and merges the data in the SampleManager with the corresponding
@@ -143,13 +119,10 @@ public class SampleManagerOrderHelperBean {
      */
     public SampleTestReturnVO importSendoutOrder(SampleManager1 sm, Integer orderId,
                                                  ValidationErrorsList e) throws Exception {
-        Integer accession, domainGrpId;
+        Integer accession;
         SampleDO data;
         OrderManager1 om;
         SampleTestReturnVO ret;
-        ArrayList<Integer> grpIds;
-        HashMap<Integer, AuxDataViewDO> auxGrp;
-        HashMap<Integer, HashMap<Integer, AuxDataViewDO>> auxGrps;
 
         data = getSample(sm);
         /*
@@ -179,323 +152,122 @@ public class SampleManagerOrderHelperBean {
         ret = copyTests(sm, om, e);
         copyNotes(sm, om);
 
-        if (getAuxilliary(om) != null) {
-            domainGrpId = getDomainAuxGroupId(data);
-            /*
-             * make a hash of aux groups
-             */
-            grpIds = new ArrayList<Integer>();
-            auxGrps = new HashMap<Integer, HashMap<Integer, AuxDataViewDO>>();
-            for (AuxDataViewDO aux : getAuxilliary(om)) {
-                auxGrp = auxGrps.get(aux.getGroupId());
-                if (auxGrp == null) {
-                    auxGrp = new HashMap<Integer, AuxDataViewDO>();
-                    auxGrps.put(aux.getGroupId(), auxGrp);
-                    grpIds.add(aux.getGroupId());
-                }
-                auxGrp.put(aux.getAnalyteId(), aux);
-            }
-
-            /*
-             * fieldAux are consumed by sample, sample domain, project
-             */
-            auxGrp = auxGrps.get(domainGrpId);
-            if (auxGrp != null) {
-                copyGeneralFields(sm, accession, auxGrp, e);
-                if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
-                    copyEnvironmentalFields(getSampleEnvironmental(sm), accession, auxGrp, e);
-                else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-                    copyPrivateWellFields(getSamplePrivateWell(sm), accession, auxGrp, e);
-                else if (Constants.domain().SDWIS.equals(data.getDomain()))
-                    copySDWISFields(getSampleSDWIS(sm), accession, auxGrp, e);
-                auxGrps.remove(domainGrpId);
-            }
-
-            copyAuxData(sm, grpIds, auxGrps, e);
-        }
+        if (getAuxilliary(om) != null)
+            auxDataHelper.copyToSample(sm, getAuxilliary(om), e);
 
         return ret;
     }
 
     /**
-     * Sets values of fields independent of domain from the corresponding aux
-     * data in the list. Adds warnings or throws exception for invalid data.
+     * Creates an order in the database from the data in the order manager
+     * merged with the data in the sample manager; the merged data includes
+     * organizations and aux data specified by the list of analytes. Any empty
+     * required fields are also set with default values.
      */
-    private void copyGeneralFields(SampleManager1 sm, Integer accession,
-                                   HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
-        String extId;
-        SampleDO sample;
-        SampleProjectViewDO sproj;
-        ProjectDO proj;
-        ArrayList<ProjectDO> projects;
+    public void createOrderFromSample(OrderManager1 om, SampleManager1 sm,
+                                      ArrayList<String> analytes) throws Exception {
+        Integer accession;
+        SampleOrganizationViewDO sRepOrg, sBillOrg;
+        ArrayList<SampleOrganizationViewDO> sSecOrgs;
+        OrderViewDO data;
+        OrganizationDO org;
 
-        sample = getSample(sm);
-        /*
-         * for display
-         */
-        accession = getSample(sm).getAccessionNumber();
-        if (accession == null)
-            accession = 0;
-        for (AuxDataViewDO data : grp.values()) {
-            extId = data.getAnalyteExternalId();
-            if (SMPL_COLLECTED_DATE.equals(extId)) {
-                sample.setCollectionDate(ReportUtil.getDate(data.getValue()));
-            } else if (SMPL_COLLECTED_TIME.equals(extId)) {
-                sample.setCollectionTime(ReportUtil.getTime(data.getValue()));
-            } else if (SMPL_CLIENT_REF.equals(extId)) {
-                sample.setClientReference(data.getValue());
-            } else if (PROJECT_NAME.equals(extId) && data.getValue() != null) {
-                try {
-                    projects = project.fetchActiveByName(data.getValue(), 1);
-                    if (projects.size() > 0) {
-                        proj = projects.get(0);
-                        sproj = new SampleProjectViewDO();
-                        sproj.setId(sm.getNextUID());
-                        sproj.setIsPermanent("Y");
-                        sproj.setProjectId(proj.getId());
-                        sproj.setProjectName(proj.getName());
-                        sproj.setProjectDescription(proj.getDescription());
-                        addProject(sm, sproj);
-                    } else {
-                        e.add(new FormErrorWarning(Messages.get()
-                                                           .sample_orderImportException(accession,
-                                                                                        "project",
-                                                                                        data.getValue())));
-                    }
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Missing/invalid project '" + data.getValue() + "'", ex);
-                    throw ex;
-                }
-            }
-        }
-    }
-
-    /**
-     * Sets values of environmental fields from the corresponding aux data in
-     * the list. Adds warnings or throws exception for invalid data.
-     */
-    private void copyEnvironmentalFields(SampleEnvironmentalDO env, Integer accession,
-                                         HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
-        Integer p;
-        String extId;
-
-        for (AuxDataViewDO data : grp.values()) {
-            extId = data.getAnalyteExternalId();
-            if (IS_HAZARDOUS.equals(extId)) {
-                try {
-                    if (data.getValue() != null &&
-                        YES.equals(dictionaryCache.getById(new Integer(data.getValue()))
-                                                  .getSystemName()))
-                        env.setIsHazardous("Y");
-                    else
-                        env.setIsHazardous("N");
-                } catch (NotFoundException ex) {
-                    e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_orderImportException(accession,
-                                                                                    "flag hazardous",
-                                                                                    data.getValue())));
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Missing/invalid flag hazardous '" + data.getValue() +
-                                          "'", ex);
-                    throw ex;
-                }
-            } else if (COLLECTOR.equals(extId)) {
-                env.setCollector(data.getValue());
-            } else if (LOCATION.equals(extId)) {
-                env.setLocation(data.getValue());
-            } else if (PRIORITY.equals(extId)) {
-                try {
-                    p = null;
-                    if (data.getValue() != null)
-                        p = new Integer(data.getValue());
-                    env.setPriority(p);
-                } catch (Exception ex) {
-                    e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_orderImportException(accession,
-                                                                                    "priority",
-                                                                                    data.getValue())));
-                }
-            } else if (COLLECTOR_PHONE.equals(extId)) {
-                env.setCollectorPhone(data.getValue());
-            } else if (DESCRIPTION.equals(extId)) {
-                env.setDescription(data.getValue());
-            } else {
-                copyAddressFields(data, accession, e, extId, env.getLocationAddress());
-            }
-        }
-    }
-
-    /**
-     * Sets values of private well fields from the corresponding aux data in the
-     * list. Adds warnings or throws exception for invalid data.
-     */
-    private void copyPrivateWellFields(SamplePrivateWellViewDO well, Integer accession,
-                                       HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
-        Integer w;
-        String extId;
-
-        for (AuxDataViewDO data : grp.values()) {
-            extId = data.getAnalyteExternalId();
-            if (LOCATION.equals(extId)) {
-                well.setLocation(data.getValue());
-            } else if (OWNER.equals(extId)) {
-                well.setOwner(data.getValue());
-            } else if (COLLECTOR.equals(extId)) {
-                well.setCollector(data.getValue());
-            } else if (WELL_NUMBER.equals(extId)) {
-                try {
-                    w = null;
-                    if (data.getValue() != null)
-                        w = new Integer(data.getValue());
-                    well.setWellNumber(w);
-                } catch (Exception ex) {
-                    e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_orderImportException(accession,
-                                                                                    "well number",
-                                                                                    data.getValue())));
-                }
-            } else {
-                copyAddressFields(data, accession, e, extId, well.getLocationAddress());
-            }
-        }
-    }
-
-    /**
-     * Sets values of SDWIS fields from the corresponding aux data in the list.
-     * Adds warnings or throws exception for invalid data.
-     */
-    private void copySDWISFields(SampleSDWISViewDO sdwis, Integer accession,
-                                 HashMap<Integer, AuxDataViewDO> grp, ValidationErrorsList e) throws Exception {
-        Integer dictId;
-        String extId;
-        PWSDO pwsDO;
-
-        for (AuxDataViewDO data : grp.values()) {
-            extId = data.getAnalyteExternalId();
-            if (PWS_ID.equals(extId) && data.getValue() != null) {
-                try {
-                    pwsDO = pws.fetchByNumber0(data.getValue());
-                    sdwis.setPwsId(pwsDO.getId());
-                    sdwis.setPwsName(pwsDO.getName());
-                    sdwis.setPwsNumber0(pwsDO.getNumber0());
-                } catch (NotFoundException ex) {
-                    e.add(new FormErrorWarning(Messages.get()
-                                                       .sample_orderImportException(accession,
-                                                                                    "pws id",
-                                                                                    data.getValue())));
-                } catch (Exception ex) {
-                    log.log(Level.SEVERE, "Missing/invalid pws id '" + data.getValue() + "'", ex);
-                    throw ex;
-                }
-            } else if (STATE_LAB_NUM.equals(extId) && data.getValue() != null) {
-                sdwis.setStateLabId(new Integer(data.getValue()));
-            } else if (FACILITY_ID.equals(extId)) {
-                sdwis.setFacilityId(data.getValue());
-            } else if (SAMPLE_TYPE.equals(extId)) {
-                dictId = null;
-                if (data.getValue() != null) {
-                    try {
-                        dictId = new Integer(data.getValue());
-                    } catch (Exception ex) {
-                        log.log(Level.SEVERE, "Missing/invalid dictionary id '" + data.getValue() +
-                                              "'", ex);
-                        throw ex;
-                    }
-                    if ( !isInCategory(SDWIS_SAMPLE_TYPE, dictId))
-                        e.add(new FormErrorWarning(Messages.get()
-                                                           .sample_orderImportException(accession,
-                                                                                        "sample type",
-                                                                                        data.getValue())));
-                }
-                sdwis.setSampleTypeId(dictId);
-            } else if (SAMPLE_CAT.equals(extId)) {
-                dictId = null;
-                if (data.getValue() != null) {
-                    try {
-                        dictId = new Integer(data.getValue());
-                    } catch (Exception ex) {
-                        log.log(Level.SEVERE, "Missing/invalid dictionary id '" + data.getValue() +
-                                              "'", ex);
-                        throw ex;
-                    }
-                    if ( !isInCategory(SDWIS_SAMPLE_CATEGORY, dictId))
-                        e.add(new FormErrorWarning(Messages.get()
-                                                           .sample_orderImportException(accession,
-                                                                                        "sample category",
-                                                                                        data.getValue())));
-                }
-                sdwis.setSampleCategoryId(dictId);
-            } else if (SAMPLE_PT_ID.equals(extId)) {
-                sdwis.setSamplePointId(data.getValue());
-            } else if (LOCATION.equals(extId)) {
-                sdwis.setLocation(data.getValue());
-            } else if (COLLECTOR.equals(extId)) {
-                sdwis.setCollector(data.getValue());
-            }
-        }
-    }
-
-    /**
-     * Sets values of address fields from the aux data. Adds warnings for
-     * invalid data.
-     */
-    private void copyAddressFields(AuxDataViewDO data, Integer accession, ValidationErrorsList e,
-                                   String extId, AddressDO addr) throws Exception {
-        if (LOC_MULT_UNIT.equals(extId)) {
-            addr.setMultipleUnit(data.getValue());
-        } else if (LOC_STREET_ADDRESS.equals(extId)) {
-            addr.setStreetAddress(data.getValue());
-        } else if (LOC_CITY.equals(extId)) {
-            addr.setCity(data.getValue());
-        } else if (LOC_STATE.equals(extId) && data.getValue() != null) {
-            if (isInCategory(STATE, data.getValue()))
-                addr.setState(data.getValue());
-            else
-                e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_orderImportException(accession,
-                                                                                STATE,
-                                                                                data.getValue())));
-        } else if (LOC_ZIP_CODE.equals(extId)) {
-            addr.setZipCode(data.getValue());
-        } else if (LOC_COUNTRY.equals(extId) && data.getValue() != null) {
-            if (isInCategory(COUNTRY, data.getValue()))
-                addr.setCountry(data.getValue());
-            else
-                e.add(new FormErrorWarning(Messages.get()
-                                                   .sample_orderImportException(accession,
-                                                                                COUNTRY,
-                                                                                data.getValue())));
-        }
-    }
-
-    /**
-     * Add to the sample, the aux groups specified in the order
-     */
-    private void copyAuxData(SampleManager1 sm, ArrayList<Integer> grpIds,
-                             HashMap<Integer, HashMap<Integer, AuxDataViewDO>> grps,
-                             ValidationErrorsList e) throws Exception {
-        ArrayList<AuxDataViewDO> auxiliary;
+        data = getOrder(om);
 
         /*
-         * aux groups present in the order but not in the sample are added to
-         * the sample
+         * set default values
          */
-        if (grps.size() > 0) {
-            auxiliary = getAuxilliary(sm);
-            if (auxiliary == null) {
-                auxiliary = new ArrayList<AuxDataViewDO>();
-                setAuxilliary(sm, auxiliary);
-            }
-            auxDataHelper.addAuxGroups(auxiliary, grpIds, grps, e);
+        if (data.getShipFromId() == null)
+            data.setShipFromId(Constants.dictionary().LABORATORY_LOCATION_IC);
+        data.setStatusId(Constants.dictionary().ORDER_STATUS_ON_HOLD);
+        data.setOrderedDate(Datetime.getInstance());
+        if (data.getRequestedBy() == null)
+            data.setRequestedBy("system");
+        if (data.getCostCenterId() == null)
+            data.setCostCenterId(Constants.dictionary().COST_CENTER_UNKNOWN);
+        if (data.getNeededInDays() == null)
+            data.setNeededInDays(0);
 
-            /*
-             * set negative ids in the newly added aux data
-             */
-            for (AuxDataViewDO aux : auxiliary) {
-                if (aux.getId() == null)
-                    aux.setId(sm.getNextUID());
+        sRepOrg = null;
+        sBillOrg = null;
+        sSecOrgs = null;
+        setOrganizations(om, null);
+
+        /*
+         * find out if organizations of various types are specified in the
+         * sample
+         */
+        for (SampleOrganizationViewDO sorg : getOrganizations(sm)) {
+            if (Constants.dictionary().ORG_REPORT_TO.equals(sorg.getTypeId())) {
+                sRepOrg = sorg;
+            } else if (Constants.dictionary().ORG_BILL_TO.equals(sorg.getTypeId())) {
+                sBillOrg = sorg;
+            } else if (Constants.dictionary().ORG_SECOND_REPORT_TO.equals(sorg.getTypeId())) {
+                if (sSecOrgs == null)
+                    sSecOrgs = new ArrayList<SampleOrganizationViewDO>();
+                sSecOrgs.add(sorg);
             }
         }
+
+        /*
+         * check if the sample has any organizations to set as the ship to
+         */
+        if (sRepOrg == null) {
+            accession = getSample(sm).getAccessionNumber();
+            log.log(Level.SEVERE, Messages.get().sample_reportToMissingWarning(accession));
+            if (sBillOrg == null) {
+                if (sSecOrgs == null) {
+                    if (data.getOrganization() == null) {
+                        log.log(Level.SEVERE, Messages.get()
+                                                      .sdwisScan_noSampleOrgsException(accession));
+                        throw new InconsistencyException(Messages.get()
+                                                                 .sdwisScan_noSampleOrgsException(accession));
+                    }
+                } else {
+                    sRepOrg = sSecOrgs.get(0);
+                }
+            } else {
+                sRepOrg = sBillOrg;
+            }
+        } else {
+            addOrganization(om, createOrderOrganization(sRepOrg));
+        }
+
+        /*
+         * set the ship to
+         */
+        org = data.getOrganization();
+        org.setId(sRepOrg.getOrganizationId());
+        data.setOrganizationAttention(sRepOrg.getOrganizationAttention());
+
+        if (sBillOrg != null && !sRepOrg.getOrganizationId().equals(sBillOrg.getOrganizationId()))
+            addOrganization(om, createOrderOrganization(sBillOrg));
+
+        if (sSecOrgs != null) {
+            for (SampleOrganizationViewDO sorg : sSecOrgs)
+                addOrganization(om, createOrderOrganization(sorg));
+        }
+
+        /*
+         * we assume the order template has an aux group added to it
+         */
+        auxDataHelper.copyFromSample(sm, getAuxilliary(om), analytes);
+        orderManager1.update(om, true);
+    }
+
+    /**
+     * create a new order organization object from the data in a sample
+     * organization object
+     */
+    private OrderOrganizationViewDO createOrderOrganization(SampleOrganizationViewDO sorg) {
+        OrderOrganizationViewDO oorg;
+
+        oorg = new OrderOrganizationViewDO();
+        oorg.setOrganizationId(sorg.getOrganizationId());
+        oorg.setOrganizationAttention(sorg.getOrganizationAttention());
+        oorg.setTypeId(sorg.getTypeId());
+
+        return oorg;
     }
 
     /**
@@ -809,76 +581,6 @@ public class SampleManagerOrderHelperBean {
             getSampleInternalNotes(sm).add(0, note);
         else
             addSampleInternalNote(sm, note);
-    }
-
-    /**
-     * Returns the id of an aux field group. This id is specific to a group of
-     * aux prompts that mimic sample specific fields.
-     */
-    private Integer getDomainAuxGroupId(SampleDO data) throws Exception {
-        String name;
-        SystemVariableDO sys;
-        AuxFieldGroupDO aux;
-
-        name = null;
-        if (Constants.domain().ENVIRONMENTAL.equals(data.getDomain()))
-            name = SAMPLE_ENV_AUX_DATA;
-        else if (Constants.domain().PRIVATEWELL.equals(data.getDomain()))
-            name = SAMPLE_WELL_AUX_DATA;
-        else if (Constants.domain().SDWIS.equals(data.getDomain()))
-            name = SAMPLE_SDWIS_AUX_DATA;
-
-        /*
-         * we don't want to use a hard-coded reference to aux group. So we use a
-         * system variable that that points to the aux group.
-         */
-        try {
-            sys = systemVariable.fetchByName(name);
-        } catch (NotFoundException ex) {
-            return null;
-        } catch (Exception ex) {
-            log.log(Level.SEVERE, "Missing/invalid system variable '" + name + "'", ex);
-            throw ex;
-        }
-
-        try {
-            aux = auxFieldGroup.fetchActiveByName(sys.getValue());
-            return aux.getId();
-        } catch (Exception ex) {
-            log.log(Level.SEVERE, "Missing/invalid aux field group '" + sys.getValue() + "'", ex);
-            throw ex;
-        }
-    }
-
-    /**
-     * Returns true if a dictionary with the specified entry can be found in the
-     * category specified by the system name, and false otherwise
-     */
-    private boolean isInCategory(String systemName, String entry) throws Exception {
-        ArrayList<DictionaryDO> entries;
-
-        entries = categoryCache.getBySystemName(systemName).getDictionaryList();
-        for (DictionaryDO data : entries) {
-            if (DataBaseUtil.isSame(entry, data.getEntry()))
-                return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if a dictionary with the specified id can be found in the
-     * category specified by the system name, and false otherwise
-     */
-    private boolean isInCategory(String systemName, Integer id) throws Exception {
-        ArrayList<DictionaryDO> entries;
-
-        entries = categoryCache.getBySystemName(systemName).getDictionaryList();
-        for (DictionaryDO data : entries) {
-            if (DataBaseUtil.isSame(id, data.getId()))
-                return true;
-        }
-
-        return false;
     }
 
     /**
