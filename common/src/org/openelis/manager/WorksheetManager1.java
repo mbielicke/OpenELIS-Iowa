@@ -235,6 +235,7 @@ public class WorksheetManager1 implements Serializable {
             for (++index; index < items.size(); index++) {
                 temp = items.get(index);
                 temp.setPosition(temp.getPosition() + 1);
+                analysis.updateDescriptions(temp);
             }
 
             return data;
@@ -257,6 +258,7 @@ public class WorksheetManager1 implements Serializable {
             for (; i < items.size(); i++) {
                 data = items.get(i);
                 data.setPosition(data.getPosition() - 1);
+                analysis.updateDescriptions(data);
             }
             
             while (analysis.count(data) > 0)
@@ -281,6 +283,7 @@ public class WorksheetManager1 implements Serializable {
                 for (; i < items.size(); i++) {
                     data = items.get(i);
                     data.setPosition(data.getPosition() - 1);
+                    analysis.updateDescriptions(data);
                 }
             }
         }
@@ -314,7 +317,9 @@ public class WorksheetManager1 implements Serializable {
             
             tempPosition = wiDO2.getPosition();
             wiDO2.setPosition(wiDO1.getPosition());
+            analysis.updateDescriptions(wiDO2);
             wiDO1.setPosition(tempPosition);
+            analysis.updateDescriptions(wiDO1);
         }
         
         /**
@@ -322,7 +327,6 @@ public class WorksheetManager1 implements Serializable {
          * index into the next position, moving down any items after it 
          */
         public void duplicate(int index) {
-            WorksheetAnalysisViewDO waVDO, newWAVDO;
             WorksheetItemDO wiDO, newWIDO;
 
             wiDO = get(index);
@@ -330,6 +334,7 @@ public class WorksheetManager1 implements Serializable {
             newWIDO.setPosition(wiDO.getPosition() + 1);
             
             analysis.duplicate(wiDO, newWIDO);
+            analysis.updateDescriptions(newWIDO);
         }
     }
 
@@ -416,7 +421,7 @@ public class WorksheetManager1 implements Serializable {
             return 0;
         }
         
-        public void duplicate(WorksheetItemDO fromDO, WorksheetItemDO toDO) {
+        private void duplicate(WorksheetItemDO fromDO, WorksheetItemDO toDO) {
             int i;
             WorksheetAnalysisViewDO waVDO, newWAVDO;
 
@@ -451,6 +456,21 @@ public class WorksheetManager1 implements Serializable {
             toDO.setReceivedDate(fromDO.getReceivedDate());
             toDO.setDueDays(fromDO.getDueDays());
             toDO.setExpireDate(fromDO.getExpireDate());
+        }
+        
+        private void updateDescriptions(WorksheetItemDO wiDO) {
+            int i;
+            
+            for (WorksheetAnalysisViewDO data : localMap.get(wiDO.getId())) {
+                /*
+                 * Update the descriptions on QCs originating from this worksheet
+                 * to match the position of the parent worksheet item.
+                 */
+                if (data.getAnalysisId() != null || data.getFromOtherId() != null)
+                    continue;
+                i = data.getAccessionNumber().indexOf('.');
+                data.setAccessionNumber(data.getAccessionNumber().substring(0, i + 1) + wiDO.getPosition());
+            }
         }
         
         /*
@@ -563,7 +583,7 @@ public class WorksheetManager1 implements Serializable {
             return 0;
         }
 
-        public void duplicate(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
+        private void duplicate(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
             int i;
             WorksheetResultViewDO wrVDO, newWRVDO;
 
@@ -725,7 +745,7 @@ public class WorksheetManager1 implements Serializable {
             return 0;
         }
 
-        public void duplicate(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
+        private void duplicate(WorksheetAnalysisViewDO fromDO, WorksheetAnalysisViewDO toDO) {
             int i;
             WorksheetQcResultViewDO wqrVDO, newWQRVDO;
 
