@@ -44,6 +44,7 @@ public class Constants implements Serializable {
     protected Dictionary      dictionary       = new Dictionary();
     protected Order           order            = new Order();
     protected SystemProperty  systemProperty   = new SystemProperty();
+    protected UID             uid              = new UID();
 
     /**
      * This method is used to set a serialized instance of this class for the
@@ -102,14 +103,21 @@ public class Constants implements Serializable {
     }
 
     /**
+     * Uid reference
+     */
+    public static UID uid() {
+        return constants.uid;
+    }
+
+    /**
      * The class is used for table reference id. Table reference ids are used
      * for common tables such as notes to link to other tables-records.
      */
     public static class Table implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        public final Integer      PERSON           = 1, PATIENT = 2, PATIENT_RELATION = 3,
-                        PROVIDER = 4, ORGANIZATION = 5, ORGANIZATION_CONTACT = 6, SAMPLE = 8,
+        public final Integer      PATIENT          = 2, PATIENT_RELATION = 3, PROVIDER = 4,
+                        ORGANIZATION = 5, ORGANIZATION_CONTACT = 6, SAMPLE = 8,
                         SAMPLE_ENVIRONMENTAL = 9, SAMPLE_ANIMAL = 10, SAMPLE_HUMAN = 11,
                         SAMPLE_PROJECT = 12, SAMPLE_ORGANIZATION = 13, SAMPLE_ITEM = 14,
                         ANALYSIS = 15, ANALYSIS_QAEVENT = 16, ANALYSIS_USER = 17, RESULT = 18,
@@ -224,5 +232,117 @@ public class Constants implements Serializable {
         private static final long serialVersionUID = 1L;
 
         public String             LOCALE, SECURITY_APPLICATION;
+    }
+
+    /**
+     * Class that translates table specific ids to system wide UIDs
+     */
+    public static class UID implements Serializable {
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Returns a unique id representing the data object's type and key. This
+         * id can be used to directly find the object this manager rather than
+         * serially traversing the lists.
+         */
+
+        public String get(SampleQaEventDO data) {
+            return getSampleQAEvent(data.getId());
+        }
+
+        public String get(AnalysisQaEventDO data) {
+            return getAnalysisQAEvent(data.getId());
+        }
+
+        public String get(NoteDO data) {
+            return getNote(data.getId());
+        }
+
+        public String get(SampleItemDO data) {
+            return getSampleItem(data.getId());
+        }
+
+        public String get(AnalysisDO data) {
+            return getAnalysis(data.getId());
+        }
+
+        public String get(TestDO data) {
+            return getTest(data.getId());
+        }
+
+        public String get(StorageDO data) {
+            return getStorage(data.getId());
+        }
+
+        public String get(AnalysisUserDO data) {
+            return getAnalysisUser(data.getId());
+        }
+
+        public String get(ResultDO data) {
+            return getResult(data.getId());
+        }
+        
+        public String get(AuxFieldGroupDO data) {
+            return getAuxFieldGroup(data.getId());
+        }
+
+        public String get(OrderTestDO data) {
+            return getOrderTest(data.getId());
+        }
+
+        public String get(OrderTestAnalyteDO data) {
+            return getOrderTestAnalyte(data.getId());
+        }
+
+        /**
+         * Returns the UID for a given key.
+         */
+        public String getSampleQAEvent(Integer id) {
+            return Constants.table().SAMPLE_QAEVENT + ":" + id;
+        }
+
+        public String getAnalysisQAEvent(Integer id) {
+            return Constants.table().ANALYSIS_QAEVENT + ":" + id;
+        }
+
+        public String getNote(Integer id) {
+            return Constants.table().NOTE + ":" + id;
+        }
+
+        public String getSampleItem(Integer id) {
+            return Constants.table().SAMPLE_ITEM + ":" + id;
+        }
+
+        public String getStorage(Integer id) {
+            return Constants.table().STORAGE + ":" + id;
+        }
+
+        public String getAnalysis(Integer id) {
+            return Constants.table().ANALYSIS + ":" + id;
+        }
+
+        public String getTest(Integer id) {
+            return Constants.table().TEST + ":" + id;
+        }
+
+        public String getAnalysisUser(Integer id) {
+            return Constants.table().ANALYSIS_USER + ":" + id;
+        }
+
+        public String getResult(Integer id) {
+            return Constants.table().RESULT + ":" + id;
+        }
+        
+        public String getAuxFieldGroup(Integer id) {
+            return Constants.table().AUX_FIELD_GROUP + ":" + id;
+        }
+
+        public String getOrderTest(Integer id) {
+            return Constants.table().ORDER_TEST + ":" + id;
+        }
+        
+        public String getOrderTestAnalyte(Integer id) {
+            return Constants.table().ORDER_TEST_ANALYTE + ":" + id;
+        }
     }
 }

@@ -60,7 +60,6 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.domain.TestDO;
 import org.openelis.ui.common.Datetime;
 
 /**
@@ -167,48 +166,6 @@ public class SampleManager1 implements Serializable {
     }
 
     /**
-     * Returns a unique id representing the data object's type and key. This id
-     * can be used to directly find the object this manager rather than serially
-     * traversing the lists.
-     */
-
-    public String getUid(SampleQaEventDO data) {
-        return getSampleQAEventUid(data.getId());
-    }
-
-    public String getUid(AnalysisQaEventDO data) {
-        return getAnalysisQAEventUid(data.getId());
-    }
-
-    public String getUid(NoteDO data) {
-        return getNoteUid(data.getId());
-    }
-
-    public String getUid(SampleItemDO data) {
-        return getSampleItemUid(data.getId());
-    }
-
-    public String getUid(AnalysisDO data) {
-        return getAnalysisUid(data.getId());
-    }
-
-    public String getUid(TestDO data) {
-        return getTestUid(data.getId());
-    }
-
-    public String getUid(StorageDO data) {
-        return getStorageUid(data.getId());
-    }
-
-    public String getUid(AnalysisUserDO data) {
-        return getAnalysisUserUid(data.getId());
-    }
-
-    public String getUid(ResultDO data) {
-        return getResultUid(data.getId());
-    }
-
-    /**
      * Returns the data object using its Uid.
      */
     public DataObject getObject(String uid) {
@@ -217,82 +174,42 @@ public class SampleManager1 implements Serializable {
 
             if (sampleQAs != null)
                 for (SampleQaEventDO data : sampleQAs)
-                    uidMap.put(getSampleQAEventUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (analysisQAs != null)
                 for (AnalysisQaEventDO data : analysisQAs)
-                    uidMap.put(getAnalysisQAEventUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (sampleIntNotes != null)
                 for (NoteDO data : sampleIntNotes)
-                    uidMap.put(getNoteUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (analysisIntNotes != null)
                 for (NoteDO data : analysisIntNotes)
-                    uidMap.put(getNoteUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (items != null)
                 for (SampleItemDO data : items)
-                    uidMap.put(getSampleItemUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (storages != null)
                 for (StorageDO data : storages)
-                    uidMap.put(getStorageUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (analyses != null)
                 for (AnalysisDO data : analyses)
-                    uidMap.put(getAnalysisUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (users != null)
                 for (AnalysisUserDO data : users)
-                    uidMap.put(getAnalysisUserUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
             if (results != null)
                 for (ResultDO data : results)
-                    uidMap.put(getResultUid(data.getId()), data);
+                    uidMap.put(Constants.uid().get(data), data);
 
         }
         return uidMap.get(uid);
-    }
-
-    /**
-     * Returns the unique identifiers for each data object.
-     */
-
-    public String getSampleQAEventUid(Integer id) {
-        return "Q:" + id;
-    }
-
-    public String getAnalysisQAEventUid(Integer id) {
-        return "E:" + id;
-    }
-
-    public String getNoteUid(Integer id) {
-        return "N:" + id;
-    }
-
-    public String getSampleItemUid(Integer id) {
-        return "I:" + id;
-    }
-
-    public String getStorageUid(Integer id) {
-        return "S:" + id;
-    }
-
-    public String getAnalysisUid(Integer id) {
-        return "A:" + id;
-    }
-
-    public String getTestUid(Integer id) {
-        return "T:" + id;
-    }
-
-    public String getAnalysisUserUid(Integer id) {
-        return "U:" + id;
-    }
-
-    public String getResultUid(Integer id) {
-        return "R:" + id;
     }
 
     /**
@@ -499,7 +416,7 @@ public class SampleManager1 implements Serializable {
             if (sampleQAs == null)
                 sampleQAs = new ArrayList<SampleQaEventViewDO>();
             sampleQAs.add(data);
-            uidMapAdd(getSampleQAEventUid(data.getId()), data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -524,7 +441,7 @@ public class SampleManager1 implements Serializable {
                 analysisQAs = new ArrayList<AnalysisQaEventViewDO>();
             analysisQAs.add(data);
             localmapAdd(data);
-            uidMapAdd(getAnalysisQAEventUid(data.getId()), data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -538,13 +455,13 @@ public class SampleManager1 implements Serializable {
             data = sampleQAs.get(i);
             sampleQAs.remove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getSampleQAEventUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(SampleQaEventViewDO data) {
             sampleQAs.remove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getSampleQAEventUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -558,7 +475,7 @@ public class SampleManager1 implements Serializable {
             analysisQAs.remove(data);
             localmapRemove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getAnalysisQAEventUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(AnalysisDO analysis, AnalysisQaEventViewDO data) {
@@ -566,7 +483,7 @@ public class SampleManager1 implements Serializable {
             analysisQAs.remove(data);
             localmapRemove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getAnalysisQAEventUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -784,7 +701,7 @@ public class SampleManager1 implements Serializable {
                 data.setIsExternal("N");
                 sampleIntNotes.add(0, data);
 
-                uidMapAdd(getNoteUid(data.getId()), data);
+                uidMapAdd(Constants.uid().get(data), data);
             }
 
             return sampleIntNotes.get(0);
@@ -821,7 +738,7 @@ public class SampleManager1 implements Serializable {
          * Returns the item with the specified id
          */
         public SampleItemViewDO getById(Integer id) {
-            return (SampleItemViewDO)getObject(getSampleItemUid(id));
+            return (SampleItemViewDO)getObject(Constants.uid().getSampleItem(id));
         }
 
         /**
@@ -849,7 +766,7 @@ public class SampleManager1 implements Serializable {
             if (items == null)
                 items = new ArrayList<SampleItemViewDO>();
             items.add(data);
-            uidMapAdd(getSampleItemUid(data.getId()), data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -865,7 +782,7 @@ public class SampleManager1 implements Serializable {
 
             items.remove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getSampleItemUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(SampleItemViewDO data) {
@@ -873,7 +790,7 @@ public class SampleManager1 implements Serializable {
 
             items.remove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getSampleItemUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -935,7 +852,7 @@ public class SampleManager1 implements Serializable {
                 if (storage.getId().equals(data.getId())) {
                     storages.remove(data);
                     dataObjectRemove(data.getId(), data);
-                    uidMapRemove(getStorageUid(data.getId()));
+                    uidMapRemove(Constants.uid().get(data));
                     break;
                 }
             }
@@ -978,7 +895,7 @@ public class SampleManager1 implements Serializable {
                 storages = new ArrayList<StorageViewDO>();
             storages.add(data);
 
-            uidMapAdd(getStorageUid(data.getId()), data);
+            uidMapAdd(Constants.uid().get(data), data);
             return data;
         }
 
@@ -994,7 +911,7 @@ public class SampleManager1 implements Serializable {
                     if (n == i) {
                         storages.remove(data);
                         dataObjectRemove(data.getId(), data);
-                        uidMapRemove(getStorageUid(data.getId()));
+                        uidMapRemove(Constants.uid().get(data));
                         break;
                     }
                 }
@@ -1105,7 +1022,7 @@ public class SampleManager1 implements Serializable {
         public void moveAnalysis(Integer analysisId, Integer sampleItemId) {
             AnalysisViewDO data;
 
-            data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
+            data = (AnalysisViewDO)getObject(Constants.uid().getAnalysis(analysisId));
             if ( !sampleItemId.equals(data.getSampleItemId()) &&
                 !Constants.dictionary().ANALYSIS_RELEASED.equals(data.getStatusId()) &&
                 !Constants.dictionary().ANALYSIS_CANCELLED.equals(data.getStatusId())) {
@@ -1123,7 +1040,7 @@ public class SampleManager1 implements Serializable {
 
             assert analysisId < 0 : "an existing analysis cannot be removed";
 
-            data = (AnalysisViewDO)getObject(getAnalysisUid(analysisId));
+            data = (AnalysisViewDO)getObject(Constants.uid().getAnalysis(analysisId));
             for (int i = 0; i < analyses.size(); i++ ) {
                 ana = analyses.get(i);
                 if (analysisId.equals(ana.getPreAnalysisId())) {
@@ -1245,7 +1162,7 @@ public class SampleManager1 implements Serializable {
                 data.setReferenceId(analysis.getId());
                 analysisExtNotes.add(data);
                 localmap.put(analysis.getId(), data);
-                uidMapAdd(getNoteUid(data.getId()), data);
+                uidMapAdd(Constants.uid().get(data), data);
             }
 
             return localmap.get(analysis.getId());
@@ -1263,7 +1180,7 @@ public class SampleManager1 implements Serializable {
             if (data != null) {
                 analysisExtNotes.remove(data);
                 dataObjectRemove(data.getId(), data);
-                uidMapRemove(getNoteUid(data.getId()));
+                uidMapRemove(Constants.uid().get(data));
             }
         }
 
@@ -1324,7 +1241,7 @@ public class SampleManager1 implements Serializable {
                 analysisIntNotes.add(data);
                 l.add(0, data);
 
-                uidMapAdd(getNoteUid(data.getId()), data);
+                uidMapAdd(Constants.uid().get(data), data);
             }
 
             return l.get(0);
@@ -1344,7 +1261,7 @@ public class SampleManager1 implements Serializable {
                 data = l.remove(0);
                 analysisIntNotes.remove(data);
                 dataObjectRemove(data.getId(), data);
-                uidMapRemove(getNoteUid(data.getId()));
+                uidMapRemove(Constants.uid().get(data));
             }
         }
 
@@ -1411,7 +1328,7 @@ public class SampleManager1 implements Serializable {
                 users = new ArrayList<AnalysisUserViewDO>();
             users.add(data);
             localmapAdd(data);
-            uidMapAdd(getAnalysisUserUid(data.getId()), data);
+            uidMapAdd(Constants.uid().get(data), data);
 
             return data;
         }
@@ -1427,14 +1344,14 @@ public class SampleManager1 implements Serializable {
             users.remove(data);
             localmapRemove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getAnalysisUserUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         public void remove(AnalysisDO analysis, AnalysisUserViewDO data) {
             users.remove(data);
             localmapRemove(data);
             dataObjectRemove(data.getId(), data);
-            uidMapRemove(getAnalysisUserUid(data.getId()));
+            uidMapRemove(Constants.uid().get(data));
         }
 
         /**
@@ -1533,7 +1450,7 @@ public class SampleManager1 implements Serializable {
             for (ResultViewDO data : rl) {
                 results.remove(data);
                 dataObjectRemove(data.getId(), data);
-                uidMapRemove(getResultUid(data.getId()));
+                uidMapRemove(Constants.uid().get(data));
             }
 
             rls.remove(r);
