@@ -178,7 +178,7 @@ public class SampleManagerOrderHelperBean {
          * set default values
          */
         if (data.getShipFromId() == null)
-            data.setShipFromId(Constants.dictionary().LABORATORY_LOCATION_U);
+            data.setShipFromId(Constants.dictionary().LABORATORY_LOCATION_IC);
         data.setStatusId(Constants.dictionary().ORDER_STATUS_ON_HOLD);
         data.setOrderedDate(Datetime.getInstance());
         if (data.getRequestedBy() == null)
