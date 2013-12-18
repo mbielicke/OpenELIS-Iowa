@@ -1103,7 +1103,7 @@ public class WorksheetItemTabUI extends Screen {
                                     itemDO = manager.item.add(index++);
                                     data = manager.analysis.add(itemDO);
                                     data.setAccessionNumber("X." + itemDO.getPosition());
-                                    data.setQcLotId(qcLotVDO.getQcId());
+                                    data.setQcLotId(qcLotVDO.getId());
                                     data.setDescription(qcLotVDO.getQcName() + " (" +
                                                         qcLotVDO.getLotNumber() + ")");
                                     newData.add(data);
