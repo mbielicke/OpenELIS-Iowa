@@ -64,6 +64,7 @@ public class WorksheetManager1 implements Serializable {
     protected ArrayList<DataObject>               removed;
     protected ArrayList<ResultViewDO>             modifiedResults;
     protected int                                 nextUID  = -1;
+    protected Integer                             totalCapacity;
 
     transient public final WorksheetItem          item     = new WorksheetItem();
     transient public final WorksheetAnalysis      analysis = new WorksheetAnalysis();
@@ -173,6 +174,14 @@ public class WorksheetManager1 implements Serializable {
         return "N:" + id;
     }
     
+    public Integer getTotalCapacity() {
+        return totalCapacity;
+    }
+
+    public void setTotalCapacity(Integer capacity) {
+        this.totalCapacity = capacity;
+    }
+
     public ArrayList<ResultViewDO> getModifiedResults() {
         return modifiedResults;
     }
