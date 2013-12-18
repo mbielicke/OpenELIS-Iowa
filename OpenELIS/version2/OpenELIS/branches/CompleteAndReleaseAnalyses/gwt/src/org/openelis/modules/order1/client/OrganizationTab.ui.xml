@@ -1,0 +1,105 @@
+<!-- Exhibit A - UIRF Open-source Based Public Software License. The contents 
+	of this file are subject to the UIRF Open-source Based Public Software License(the 
+	"License"); you may not use this file except in compliance with the License. 
+	You may obtain a copy of the License at openelis.uhl.uiowa.edu Software distributed 
+	under the License is distributed on an "AS IS" basis, WITHOUT WARRANTY OF 
+	ANY KIND, either express or implied. See the License for the specific language 
+	governing rights and limitations under the License. The Original Code is 
+	OpenELIS code. The Initial Developer of the Original Code is The University 
+	of Iowa. Portions created by The University of Iowa are Copyright 2006-2008. 
+	All Rights Reserved. Contributor(s): ______________________________________. 
+	Alternatively, the contents of this file marked "Separately-Licensed" may 
+	be used under the terms of a UIRF Software license ("UIRF Software License"), 
+	in which case the provisions of a UIRF Software License are applicable instead 
+	of those above. -->
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+	xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:w='urn:import:org.openelis.ui.widget'
+	xmlns:r='urn:import:org.openelis.ui.widget.tree' xmlns:t='urn:import:org.openelis.ui.widget.table'
+	xmlns:c="urn:import:org.openelis.ui.widget.calendar" xmlns:meta="xalan://org.openelis.meta.OrderMeta">
+
+	<ui:with type="org.openelis.constants.OpenELISConstants" field="msg" />
+	<ui:with type="org.openelis.modules.main.client.resources.OpenELISResources" field="res" />
+
+	<g:LayoutPanel styleName="{res.style.WhiteContentPanel}">
+		<g:layer top="0px" bottom="25px">
+			<t:Table ui:field="table" horizontalScroll="ALWAYS"
+				verticalScroll="ALWAYS" width="697px" header="true"
+				styleName="{res.table.ScreenTableWithSides}">
+				<t:Column width="125" label="{msg.gen_type}" required="true">
+					<t:DropdownCell>
+						<w:Dropdown width="125" field="Integer"
+							ui:field="type" />
+					</t:DropdownCell>
+				</t:Column>
+				<t:Column width="180" label="{msg.order_attention}">
+					<t:TextBoxCell>
+						<w:TextBox maxLength="30" case="UPPER"
+							field="String" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="220" label="{msg.gen_name}" required="true">
+					<t:AutoCompleteCell>
+						<w:AutoComplete ui:field="organizationName" case="UPPER"
+							 width="130" dropWidth="450px">
+							<w:popup>
+								<t:Table visibleRows="10" header="true">
+									<t:Column width="180" label="{msg.gen_name}">
+										<t:LabelCell />
+									</t:Column>
+									<t:Column width="110" label="{msg.address_street}">
+										<t:LabelCell />
+									</t:Column>
+									<t:Column width="100" label="{msg.address_city}">
+										<t:LabelCell />
+									</t:Column>
+									<t:Column width="20" label="{msg.address_st}">
+										<t:LabelCell />
+									</t:Column>
+								</t:Table>
+							</w:popup>
+						</w:AutoComplete>
+					</t:AutoCompleteCell>
+				</t:Column>
+				<t:Column width="130" label="{msg.address_aptSuite}">
+					<t:TextBoxCell>
+						<w:TextBox case="UPPER" field="String" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="130" label="{msg.address_address}">
+					<t:TextBoxCell>
+						<w:TextBox case="UPPER" field="String" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="110" label="{msg.address_city}">
+					<t:TextBoxCell>
+						<w:TextBox case="UPPER" field="String" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="56" label="{msg.address_state}">
+					<t:DropdownCell>
+						<w:Dropdown ui:field="orgState" case="UPPER" width="40"
+							field="String" />
+					</t:DropdownCell>
+				</t:Column>
+				<t:Column width="70" label="{msg.address_zipcode}">
+					<t:TextBoxCell>
+						<w:TextBox field="String" />
+					</t:TextBoxCell>
+				</t:Column>
+				<t:Column width="126" label="{msg.address_country}">
+					<t:DropdownCell>
+						<w:Dropdown ui:field="orgCountry" width="110" field="String" />
+					</t:DropdownCell>
+				</t:Column>
+			</t:Table>
+		</g:layer>
+		<g:layer bottom="0px" height="25px">
+			<g:HorizontalPanel>
+				<w:Button ui:field="addOrganizationButton" leftIcon="{res.icon.addRowIcon}"
+					text="{msg.gen_addRow}" />
+				<w:Button ui:field="removeOrganizationButton" leftIcon="{res.icon.removeRowIcon}"
+					text="{msg.gen_removeRow}" />
+			</g:HorizontalPanel>
+		</g:layer>
+	</g:LayoutPanel>
+</ui:UiBinder>
