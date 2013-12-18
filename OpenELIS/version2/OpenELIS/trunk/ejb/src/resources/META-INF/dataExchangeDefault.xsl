@@ -17,7 +17,7 @@
     <xsl:template match="message">
         <xsl:copy>
             <xsl:copy-of select="@*" />
-            <xsl:copy-of select="header" />
+            <xsl:apply-templates select="header" />
             <xsl:apply-templates select="sample" />
         </xsl:copy>
     </xsl:template>
@@ -169,6 +169,17 @@
                 select="//organization_translations/translation[@reference_id = current()/@id]" />
         </xsl:copy>
     </xsl:template>
+    
+    <!--  used in the header for destination URL etc.-->
+    <xsl:template match="organization_parameter">
+        <xsl:copy>
+           <xsl:apply-templates select="@*|node()" />
+           <xsl:apply-templates select="//dictionary[@id = current()/@type_id]">
+               <xsl:with-param name="tagname">Type</xsl:with-param>
+           </xsl:apply-templates>
+
+        </xsl:copy>
+    </xsl:template>
 
     <xsl:template match="sample_qaevent">
         <xsl:copy>
@@ -282,6 +293,7 @@
             <xsl:apply-templates select="//dictionary[@id = current()/@status_id]">
                 <xsl:with-param name="tagname">status</xsl:with-param>
             </xsl:apply-templates>
+            <xsl:apply-templates select="//panel[@id = current()/@panel_id]" />            
             <xsl:apply-templates select="//analysis_qaevent[@analysis_id = $id]" />
             <xsl:apply-templates select="//analysis_user[@analysis_id = $id]" />
             <xsl:apply-templates select="//analysis_external_notes/note[@reference_id = $id]" />
