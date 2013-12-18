@@ -231,8 +231,7 @@ public class SDWISViolationScannerBean {
         log.log(Level.INFO, Messages.get().gen_numberCases(DataBaseUtil.toString(aids.size())));
         if (aids.size() == 0) {
             lastRun.setValue(dateTimeFormat.format(endTime));
-            systemVariable.abortUpdate(lastRun.getId());
-            // systemVariable.update(lastRun);
+            systemVariable.update(lastRun);
             return;
         }
         sms = sampleManager.fetchByAnalyses(aids,
@@ -281,8 +280,7 @@ public class SDWISViolationScannerBean {
         }
 
         lastRun.setValue(dateTimeFormat.format(endTime));
-        systemVariable.abortUpdate(lastRun.getId());
-        // systemVariable.update(lastRun);
+        systemVariable.update(lastRun);
     }
 
     /**
