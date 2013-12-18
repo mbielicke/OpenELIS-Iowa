@@ -74,7 +74,7 @@ public class ApplicationBean {
                         "aux_date_time", "aux_default", "aux_dictionary", "aux_numeric",
                         "aux_time", "chart_type_dynamic", "chart_type_fixed",
                         "cost_center_unknown", "instrument_log_completed",
-                        "instrument_log_pending", "laboratory_location_u", "local_type_analyte",
+                        "instrument_log_pending", "laboratory_location_ic", "local_type_analyte",
                         "local_type_dictionary", "local_type_method", "local_type_organization",
                         "local_type_test", "local_type_test_analyte", "log_level_error",
                         "log_level_info", "log_type_data_transmission", "micrograms_per_liter",
@@ -164,11 +164,11 @@ public class ApplicationBean {
         Constants.dictionary().COST_CENTER_UNKNOWN = dictId(map, "cost_center_unknown");
         Constants.dictionary().INSTRUMENT_LOG_COMPLETED = dictId(map, "instrument_log_completed");
         Constants.dictionary().INSTRUMENT_LOG_PENDING = dictId(map, "instrument_log_pending");
-        Constants.dictionary().LABORATORY_LOCATION_U = dictId(map, "laboratory_location_u");
-        Constants.dictionary().LOCAL_TYPE_ANALYTE = dictId(map, "local_type_analyte"); 
+        Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");
+        Constants.dictionary().LOCAL_TYPE_ANALYTE = dictId(map, "local_type_analyte");
         Constants.dictionary().LOCAL_TYPE_DICTIONARY = dictId(map, "local_type_dictionary");
-        Constants.dictionary().LOCAL_TYPE_METHOD = dictId(map, "local_type_method"); 
-        Constants.dictionary().LOCAL_TYPE_ORGANIZATION = dictId(map, "local_type_organization"); 
+        Constants.dictionary().LOCAL_TYPE_METHOD = dictId(map, "local_type_method");
+        Constants.dictionary().LOCAL_TYPE_ORGANIZATION = dictId(map, "local_type_organization");
         Constants.dictionary().LOCAL_TYPE_TEST = dictId(map, "local_type_test");
         Constants.dictionary().LOCAL_TYPE_TEST_ANALYTE = dictId(map, "local_type_test_analyte");
         Constants.dictionary().LOG_LEVEL_ERROR = dictId(map, "log_level_error");
