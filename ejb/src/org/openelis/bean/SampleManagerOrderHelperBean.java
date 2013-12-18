@@ -252,7 +252,7 @@ public class SampleManagerOrderHelperBean {
          * we assume the order template has an aux group added to it
          */
         auxDataHelper.copyFromSample(sm, getAuxilliary(om), analytes);
-        // orderManager.update(om, true);
+        orderManager1.update(om, true);
     }
 
     /**
