@@ -71,7 +71,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void getInstance(String type, AsyncCallback<OrderManager1> callback) throws Exception {
+    public void getInstance(String type, AsyncCallback<OrderManager1> callback) {
         service.getInstance(type, callback);
     }
 
@@ -85,7 +85,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void fetchById(Integer orderId, Load[] elements, AsyncCallback<OrderManager1> callback) throws Exception {
+    public void fetchById(Integer orderId, Load[] elements, AsyncCallback<OrderManager1> callback) {
         service.fetchById(orderId, elements, callback);
     }
 
@@ -100,7 +100,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void fetchByIds(ArrayList<Integer> orderIds, Load[] elements,
-                           AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception {
+                           AsyncCallback<ArrayList<OrderManager1>> callback) {
         service.fetchByIds(orderIds, elements, callback);
     }
 
@@ -116,7 +116,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max, Load[] elements,
-                             AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception {
+                             AsyncCallback<ArrayList<OrderManager1>> callback) {
         service.fetchByQuery(fields, first, max, elements, callback);
     }
 
@@ -130,7 +130,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void fetchWith(OrderManager1 om, Load[] elements, AsyncCallback<OrderManager1> callback) throws Exception {
+    public void fetchWith(OrderManager1 om, Load[] elements, AsyncCallback<OrderManager1> callback) {
         service.fetchWith(om, elements, callback);
     }
 
@@ -144,7 +144,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) throws Exception {
+    public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.query(query, callback);
     }
 
@@ -158,7 +158,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void fetchForUpdate(Integer orderId, AsyncCallback<OrderManager1> callback) throws Exception {
+    public void fetchForUpdate(Integer orderId, AsyncCallback<OrderManager1> callback) {
         service.fetchForUpdate(orderId, callback);
     }
 
@@ -173,7 +173,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void fetchForUpdate(Integer orderId, Load[] elements,
-                               AsyncCallback<OrderManager1> callback) throws Exception {
+                               AsyncCallback<OrderManager1> callback) {
         service.fetchForUpdate(orderId, elements, callback);
     }
 
@@ -188,7 +188,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void fetchForUpdate(ArrayList<Integer> orderIds, Load[] elements,
-                               AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception {
+                               AsyncCallback<ArrayList<OrderManager1>> callback) {
         service.fetchForUpdate(orderIds, elements, callback);
     }
 
@@ -202,7 +202,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void unlock(Integer orderId, Load[] elements, AsyncCallback<OrderManager1> callback) throws Exception {
+    public void unlock(Integer orderId, Load[] elements, AsyncCallback<OrderManager1> callback) {
         service.unlock(orderId, elements, callback);
     }
 
@@ -217,10 +217,10 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void unlock(ArrayList<Integer> orderIds, Load[] elements,
-                       AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception {
+                       AsyncCallback<ArrayList<OrderManager1>> callback) {
         service.unlock(orderIds, elements, callback);
     }
-    
+
     @Override
     public OrderManager1 duplicate(Integer id) throws Exception {
         Callback<OrderManager1> callback;
@@ -231,10 +231,10 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void duplicate(Integer id, AsyncCallback<OrderManager1> callback) throws Exception {
+    public void duplicate(Integer id, AsyncCallback<OrderManager1> callback) {
         service.duplicate(id, callback);
     }
-    
+
     @Override
     public OrderManager1 update(OrderManager1 om, boolean ignoreWarnings) throws Exception {
         Callback<OrderManager1> callback;
@@ -246,7 +246,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void update(OrderManager1 om, boolean ignoreWarnings,
-                       AsyncCallback<OrderManager1> callback) throws Exception {
+                       AsyncCallback<OrderManager1> callback) {
         service.update(om, ignoreWarnings, callback);
     }
 
@@ -261,7 +261,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void fetchByDescription(String search, int max,
-                                   AsyncCallback<ArrayList<IdNameVO>> callback) throws Exception {
+                                   AsyncCallback<ArrayList<IdNameVO>> callback) {
         service.fetchByDescription(search, max, callback);
     }
 
@@ -276,7 +276,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderTestReturnVO> callback) throws Exception {
+                             AsyncCallback<OrderTestReturnVO> callback) {
         service.addAuxGroups(om, groupIds, callback);
     }
 
@@ -291,7 +291,7 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                                AsyncCallback<OrderManager1> callback) throws Exception {
+                                AsyncCallback<OrderManager1> callback) {
         service.removeAuxGroups(om, groupIds, callback);
     }
 
@@ -306,10 +306,10 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
 
     @Override
     public void addTest(OrderManager1 om, Integer id, boolean isTest, Integer index,
-                        AsyncCallback<OrderTestReturnVO> callback) throws Exception {
+                        AsyncCallback<OrderTestReturnVO> callback) {
         service.addTest(om, id, isTest, index, callback);
     }
-    
+
     @Override
     public OrderManager1 removeTests(OrderManager1 om, ArrayList<Integer> ids) throws Exception {
         Callback<OrderManager1> callback;
@@ -320,7 +320,8 @@ public class OrderService1 implements OrderServiceInt1, OrderServiceInt1Async {
     }
 
     @Override
-    public void removeTests(OrderManager1 om, ArrayList<Integer> ids, AsyncCallback<OrderManager1> callback) throws Exception {
+    public void removeTests(OrderManager1 om, ArrayList<Integer> ids,
+                            AsyncCallback<OrderManager1> callback) {
         service.removeTests(om, ids, callback);
     }
 }

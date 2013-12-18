@@ -41,53 +41,54 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public interface OrderServiceInt1Async {
 
-    public void getInstance(String type, AsyncCallback<OrderManager1> callback) throws Exception;
+    public void getInstance(String type, AsyncCallback<OrderManager1> callback);
 
     public void fetchById(Integer orderId, OrderManager1.Load elements[],
-                          AsyncCallback<OrderManager1> callback) throws Exception;
+                          AsyncCallback<OrderManager1> callback);
 
     public void fetchByIds(ArrayList<Integer> orderIds, OrderManager1.Load elements[],
-                           AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception;
+                           AsyncCallback<ArrayList<OrderManager1>> callback);
 
     public void fetchByQuery(ArrayList<QueryData> fields, int first, int max,
                              OrderManager1.Load elements[],
-                             AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception;
+                             AsyncCallback<ArrayList<OrderManager1>> callback);
 
     public void fetchWith(OrderManager1 om, OrderManager1.Load elements[],
-                          AsyncCallback<OrderManager1> callback) throws Exception;
+                          AsyncCallback<OrderManager1> callback);
 
-    public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback) throws Exception;
+    public void query(Query query, AsyncCallback<ArrayList<IdNameVO>> callback);
 
-    public void fetchForUpdate(Integer orderId, AsyncCallback<OrderManager1> callback) throws Exception;
+    public void fetchForUpdate(Integer orderId, AsyncCallback<OrderManager1> callback);
 
     public void fetchForUpdate(Integer orderId, OrderManager1.Load elements[],
-                               AsyncCallback<OrderManager1> callback) throws Exception;
+                               AsyncCallback<OrderManager1> callback);
 
     public void fetchForUpdate(ArrayList<Integer> orderIds, OrderManager1.Load elements[],
-                               AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception;
+                               AsyncCallback<ArrayList<OrderManager1>> callback);
 
     public void unlock(Integer orderId, OrderManager1.Load elements[],
-                       AsyncCallback<OrderManager1> callback) throws Exception;
+                       AsyncCallback<OrderManager1> callback);
 
     public void unlock(ArrayList<Integer> orderIds, OrderManager1.Load elements[],
-                       AsyncCallback<ArrayList<OrderManager1>> callback) throws Exception;
+                       AsyncCallback<ArrayList<OrderManager1>> callback);
 
-    public void duplicate(Integer id, AsyncCallback<OrderManager1> callback) throws Exception;
+    public void duplicate(Integer id, AsyncCallback<OrderManager1> callback);
 
     public void update(OrderManager1 om, boolean ignoreWarnings,
-                       AsyncCallback<OrderManager1> callback) throws Exception;
+                       AsyncCallback<OrderManager1> callback);
 
     public void fetchByDescription(String search, int max,
-                                   AsyncCallback<ArrayList<IdNameVO>> callback) throws Exception;
+                                   AsyncCallback<ArrayList<IdNameVO>> callback);
 
     public void addAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                             AsyncCallback<OrderTestReturnVO> callback) throws Exception;
+                             AsyncCallback<OrderTestReturnVO> callback);
 
     public void removeAuxGroups(OrderManager1 om, ArrayList<Integer> groupIds,
-                                AsyncCallback<OrderManager1> callback) throws Exception;
+                                AsyncCallback<OrderManager1> callback);
 
     public void addTest(OrderManager1 om, Integer id, boolean isTest, Integer index,
-                        AsyncCallback<OrderTestReturnVO> callback) throws Exception;
+                        AsyncCallback<OrderTestReturnVO> callback);
 
-    public void removeTests(OrderManager1 om, ArrayList<Integer> ids, AsyncCallback<OrderManager1> callback) throws Exception;
+    public void removeTests(OrderManager1 om, ArrayList<Integer> ids,
+                            AsyncCallback<OrderManager1> callback);
 }

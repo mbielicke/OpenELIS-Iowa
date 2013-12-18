@@ -25,10 +25,14 @@
  */
 package org.openelis.modules.order1.client;
 
-import static org.openelis.modules.main.client.Logger.*;
-import static org.openelis.ui.screen.Screen.ShortKeys.*;
-import static org.openelis.ui.screen.State.*;
+import static org.openelis.modules.main.client.Logger.logger;
+import static org.openelis.ui.screen.Screen.ShortKeys.CTRL;
 import static org.openelis.ui.screen.Screen.Validation.Status.VALID;
+import static org.openelis.ui.screen.State.ADD;
+import static org.openelis.ui.screen.State.DEFAULT;
+import static org.openelis.ui.screen.State.DISPLAY;
+import static org.openelis.ui.screen.State.QUERY;
+import static org.openelis.ui.screen.State.UPDATE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,9 +73,7 @@ import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingService;
 import org.openelis.modules.test.client.TestService;
 import org.openelis.ui.common.Datetime;
-import org.openelis.ui.common.LastPageException;
 import org.openelis.ui.common.ModulePermission;
-import org.openelis.ui.common.NotFoundException;
 import org.openelis.ui.common.PermissionException;
 import org.openelis.ui.common.ReportStatus;
 import org.openelis.ui.common.ValidationErrorsList;
@@ -84,6 +86,7 @@ import org.openelis.ui.event.DataChangeEvent;
 import org.openelis.ui.event.GetMatchesEvent;
 import org.openelis.ui.event.GetMatchesHandler;
 import org.openelis.ui.event.StateChangeEvent;
+import org.openelis.ui.screen.AsyncCallbackUI;
 import org.openelis.ui.screen.Screen;
 import org.openelis.ui.screen.ScreenHandler;
 import org.openelis.ui.screen.ScreenNavigator;
@@ -123,6 +126,8 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     @UiTemplate("SendoutOrder.ui.xml")
     interface SendoutOrderUiBinder extends UiBinder<Widget, SendoutOrderScreenUI> {
     };
+
+
 
     public static final SendoutOrderUiBinder uiBinder = GWT.create(SendoutOrderUiBinder.class);
 
@@ -214,6 +219,21 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
     protected String                         descQuery;
 
     protected HashMap<String, Object>        cache;
+
+    protected AsyncCallbackUI<ArrayList<IdNameVO>> queryCall;
+
+    protected AsyncCallbackUI<OrderManager1>           addCall, fetchForUpdateCall, 
+                                                         updateCall, fetchByIdCall, unlockCall,
+                                                         duplicateCall;   
+    
+    // @formatter:off
+    protected OrderManager1.Load             elements[] = {
+                                                            OrderManager1.Load.SAMPLE_DATA,
+                                                            OrderManager1.Load.ORGANIZATION,
+                                                            OrderManager1.Load.ITEMS,
+                                                            OrderManager1.Load.RECURRENCE
+                                                    };
+    // @formatter:on
 
     public SendoutOrderScreenUI(WindowInt window) throws Exception {
         setWindow(window);
@@ -391,8 +411,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
          */
         addStateChangeHandler(new StateChangeEvent.Handler() {
             public void onStateChange(StateChangeEvent event) {
-                duplicate.setEnabled(isState(State.DISPLAY) &&
-                                     userPermission.hasAddPermission());
+                duplicate.setEnabled(isState(State.DISPLAY) && userPermission.hasAddPermission());
             }
         });
         duplicate.addCommand(new Command() {
@@ -997,45 +1016,48 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             public void executeQuery(final Query query) {
                 QueryData field;
 
-                window.setBusy(Messages.get().gen_querying());
-                /*
-                 * this screen should only query for send-out orders
-                 */
-                field = new QueryData();
-                field.setKey(OrderMeta.getType());
-                field.setQuery(Constants.order().SEND_OUT);
-                field.setType(QueryData.Type.STRING);
-                query.setFields(field);
+                setBusy(Messages.get().gen_querying());
 
-                query.setRowsPerPage(25);
-                try {
-                    OrderService1.get().query(query, new AsyncCallback<ArrayList<IdNameVO>>() {
-                        public void onSuccess(ArrayList<IdNameVO> result) {
+                if (queryCall == null) {
+                    queryCall = new AsyncCallbackUI<ArrayList<IdNameVO>>() {
+                        public void success(ArrayList<IdNameVO> result) {
+                            clearStatus();
                             setQueryResult(result);
                         }
 
-                        public void onFailure(Throwable error) {
+                        public void notFound() {
                             setQueryResult(null);
-                            if (error instanceof NotFoundException) {
-                                window.setDone(Messages.get().gen_noRecordsFound());
-                                setState(DEFAULT);
-                            } else if (error instanceof LastPageException) {
-                                window.setError(Messages.get().gen_noMoreRecordInDir());
-                            } else {
-                                Window.alert("Error: Send-out Order call query failed; " +
-                                             error.getMessage());
-                                window.setError(Messages.get().gen_queryFailed());
-                            }
+                            setState(DEFAULT);
+                            setDone(Messages.get().gen_noRecordsFound());
                         }
-                    });
-                } catch (Exception e) {
-                    Window.alert("Error: Send-out Order call query failed; " + e.getMessage());
-                    logger.log(Level.SEVERE, e.getMessage(), e);
+
+                        public void lastPage() {
+                            setQueryResult(null);
+                            setError(Messages.get().gen_noMoreRecordInDir());
+                        }
+
+                        public void failure(Throwable error) {
+                            setQueryResult(null);
+                            Window.alert("Error: Send-out Order call query failed; " +
+                                         error.getMessage());
+                            setError(Messages.get().gen_queryFailed());
+                        }
+                    };
                 }
+                /*
+                 * this screen should only query for send-out orders
+                 */
+                field = new QueryData(OrderMeta.getType(),
+                                      QueryData.Type.STRING,
+                                      Constants.order().SEND_OUT);
+                query.setFields(field);
+                query.setRowsPerPage(25);
+                OrderService1.get().query(query, queryCall);
             }
 
             public boolean fetch(IdNameVO entry) {
-                return fetchById( (entry == null) ? null : entry.getId());
+                fetchById( (entry == null) ? null : entry.getId());
+                return true;
             }
 
             public ArrayList<Item<Integer>> getModel() {
@@ -1123,7 +1145,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                         if (ret.getErrors() != null && ret.getErrors().size() > 0)
                             showErrors(ret.getErrors());
                         else
-                            window.clearStatus();
+                            clearStatus();
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         logger.log(Level.SEVERE, e.getMessage(), e);
@@ -1157,7 +1179,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             public void onBeforeClosed(BeforeCloseEvent<WindowInt> event) {
                 if (isState(ADD, UPDATE)) {
                     event.cancel();
-                    window.setError(Messages.get().gen_mustCommitOrAbort());
+                    setError(Messages.get().gen_mustCommitOrAbort());
                 } else {
                     /*
                      * make sure that all detached tabs are closed when the main
@@ -1225,7 +1247,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         setState(QUERY);
         fireDataChange();
         id.setFocus(true);
-        window.setDone(Messages.get().gen_enterFieldsToQuery());
+        setDone(Messages.get().gen_enterFieldsToQuery());
     }
 
     @UiHandler("previous")
@@ -1240,58 +1262,84 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
     @UiHandler("add")
     protected void add(ClickEvent event) {
-        try {
-            manager = OrderService1.get().getInstance(Constants.order().SEND_OUT);
-            cache = new HashMap<String, Object>();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
-            return;
+        setBusy();
+
+        if (addCall == null) {
+            addCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    cache = new HashMap<String, Object>();
+                    setData();
+                    setState(ADD);
+                    fireDataChange();
+                    neededDays.setFocus(true);
+                    setDone(Messages.get().gen_enterInformationPressCommit());
+                }
+
+                public void failure(Throwable error) {
+                    Window.alert(error.getMessage());
+                    logger.log(Level.SEVERE, error.getMessage(), error);
+                    clearStatus();
+                }
+            };
         }
-        setData();
-        setState(ADD);
-        fireDataChange();
-        neededDays.setFocus(true);
-        window.setDone(Messages.get().gen_enterInformationPressCommit());
+
+        OrderService1.get().getInstance(Constants.order().SEND_OUT, addCall);
     }
 
     @UiHandler("update")
     protected void update(ClickEvent event) {
-        window.setBusy(Messages.get().gen_lockForUpdate());
-        try {
-            manager = OrderService1.get().fetchForUpdate(manager.getOrder().getId(),
-                                                         OrderManager1.Load.SAMPLE_DATA,
-                                                         OrderManager1.Load.ORGANIZATION,
-                                                         OrderManager1.Load.ITEMS,
-                                                         OrderManager1.Load.RECURRENCE);
-            if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder()
-                                                                            .getStatusId())) {
-                Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
-                manager = OrderService1.get().unlock(manager.getOrder().getId(),
-                                                     OrderManager1.Load.SAMPLE_DATA,
-                                                     OrderManager1.Load.ORGANIZATION,
-                                                     OrderManager1.Load.ITEMS,
-                                                     OrderManager1.Load.RECURRENCE);
-                setData();
-                setState(DISPLAY);
-                fireDataChange();
-                window.clearStatus();
-                return;
+        setBusy(Messages.get().lockForUpdate());
 
-            }
-            buildCache();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
-            window.clearStatus();
-            return;
+        if (fetchForUpdateCall == null) {
+            fetchForUpdateCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    if (Constants.dictionary().ORDER_STATUS_CANCELLED.equals(manager.getOrder()
+                                                                                    .getStatusId())) {
+                        Window.alert(Messages.get().order_cancelledOrderCantBeUpdated());
+                        try {
+                            manager = OrderService1.get().unlock(manager.getOrder().getId(),
+                                                                 OrderManager1.Load.SAMPLE_DATA,
+                                                                 OrderManager1.Load.ORGANIZATION,
+                                                                 OrderManager1.Load.ITEMS,
+                                                                 OrderManager1.Load.RECURRENCE);
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
+                                                                           : "null", e);
+                        }
+                        setData();
+                        setState(DISPLAY);
+                        fireDataChange();
+                    } else {
+                        try {
+                            buildCache();
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage()
+                                                                           : "null", e);
+                        }
+                        setData();
+                        setState(UPDATE);
+                        fireDataChange();
+                        neededDays.setFocus(true);
+                    }
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage() != null ? e.getMessage() : "null", e);
+                }
+
+                public void finish() {
+                    clearStatus();
+                }
+            };
         }
-        setData();
-        setState(UPDATE);
-        fireDataChange();
-        neededDays.setFocus(true);
-        window.clearStatus();
+
+        OrderService1.get()
+                     .fetchForUpdate(manager.getOrder().getId(), elements, fetchForUpdateCall);
     }
 
     @UiHandler("commit")
@@ -1307,7 +1355,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         validation = validate();
 
         if (validation.getStatus() != VALID) {
-            window.setError(Messages.get().gen_correctErrors());
+            setError(Messages.get().gen_correctErrors());
             return;
         }
 
@@ -1333,38 +1381,48 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         cache = null;
     }
 
-    protected void commitUpdate(boolean ignoreWarning) {
+    protected void commitUpdate(final boolean ignoreWarning) {
         if (isState(ADD))
-            window.setBusy(Messages.get().gen_adding());
+            setBusy(Messages.get().gen_adding());
         else
-            window.setBusy(Messages.get().gen_updating());
+            setBusy(Messages.get().gen_updating());
 
-        try {
-            manager = OrderService1.get().update(manager, ignoreWarning);
-            setData();
-            setState(DISPLAY);
-            fireDataChange();
-            window.clearStatus();
-            cache = null;
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-            if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
-                showWarningsDialog(e);
-        } catch (Exception e) {
-            if (isState(ADD))
-                Window.alert("commitAdd(): " + e.getMessage());
-            else
-                Window.alert("commitUpdate(): " + e.getMessage());
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
+        if (updateCall == null) {
+            updateCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    setData();
+                    setState(DISPLAY);
+                    fireDataChange();
+                    clearStatus();
+                    cache = null;
+                }
+
+                public void validationErrors(ValidationErrorsList e) {
+                    showErrors(e);
+                    if ( !e.hasErrors() && e.hasWarnings() && !ignoreWarning)
+                        showWarningsDialog(e);
+                }
+
+                public void failure(Throwable e) {
+                    if (isState(ADD))
+                        Window.alert("commitAdd(): " + e.getMessage());
+                    else
+                        Window.alert("commitUpdate(): " + e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                    clearStatus();
+                }
+            };
         }
+
+        OrderService1.get().update(manager, ignoreWarning, updateCall);
     }
 
     @UiHandler("abort")
     protected void abort(ClickEvent event) {
         finishEditing();
         clearErrors();
-        window.setBusy(Messages.get().gen_cancelChanges());
+        setBusy(Messages.get().gen_cancelChanges());
 
         if (isState(QUERY)) {
             try {
@@ -1372,63 +1430,83 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                 setData();
                 setState(DEFAULT);
                 fireDataChange();
-                window.setDone(Messages.get().gen_queryAborted());
+                setDone(Messages.get().gen_queryAborted());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 logger.log(Level.SEVERE, e.getMessage(), e);
-                window.clearStatus();
+                clearStatus();
             }
         } else if (isState(ADD)) {
             if ( !Window.confirm(Messages.get().order_abortWarning())) {
-                window.setDone(Messages.get().gen_enterInformationPressCommit());
+                setDone(Messages.get().gen_enterInformationPressCommit());
                 return;
             }
             manager = null;
             setData();
             setState(DEFAULT);
             fireDataChange();
-            window.setDone(Messages.get().gen_addAborted());
+            setDone(Messages.get().gen_addAborted());
         } else if (isState(UPDATE)) {
             if ( !Window.confirm(Messages.get().order_abortWarning())) {
-                window.clearStatus();
+                clearStatus();
                 return;
             }
-            try {
-                manager = OrderService1.get().unlock(manager.getOrder().getId(),
-                                                     OrderManager1.Load.SAMPLE_DATA,
-                                                     OrderManager1.Load.ORGANIZATION,
-                                                     OrderManager1.Load.ITEMS,
-                                                     OrderManager1.Load.RECURRENCE);
-                setData();
-                setState(DISPLAY);
-                fireDataChange();
-                window.setDone(Messages.get().gen_updateAborted());
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-                window.clearStatus();
+
+            if (unlockCall == null) {
+                unlockCall = new AsyncCallbackUI<OrderManager1>() {
+                    public void success(OrderManager1 result) {
+                        manager = result;
+                        setData();
+                        setState(DISPLAY);
+                        fireDataChange();
+                        setDone(Messages.get().gen_updateAborted());
+                    }
+
+                    public void failure(Throwable e) {
+                        Window.alert(e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                        clearStatus();
+                    }
+                };
             }
+
+            OrderService1.get().unlock(manager.getOrder().getId(), elements, unlockCall);
         }
         cache = null;
     }
 
     protected void duplicate() {
-        try {
-            manager = OrderService1.get().duplicate(manager.getOrder().getId());
-            // the screen is in add state, so we need the cache here
-            buildCache();
-            setData();
-            setState(ADD);
-            fireDataChange();
-        } catch (Exception ex) {
-            Window.alert(ex.getMessage());
-            logger.log(Level.SEVERE, ex.getMessage(), ex);
+        if (duplicateCall == null) {
+            duplicateCall = new AsyncCallbackUI<OrderManager1>() {
+                public void success(OrderManager1 result) {
+                    manager = result;
+                    /*
+                     * the screen is in add state, so we need the cache here
+                     */
+                    try {
+                        buildCache();
+                    } catch (Exception ex) {
+                        Window.alert(ex.getMessage());
+                        logger.log(Level.SEVERE, ex.getMessage(), ex);
+                    }
+                    setData();
+                    setState(ADD);
+                    fireDataChange();
+                }
+
+                public void failure(Throwable e) {
+                    Window.alert(e.getMessage());
+                    logger.log(Level.SEVERE, e.getMessage(), e);
+                }
+            };
         }
+
+        OrderService1.get().duplicate(manager.getOrder().getId(), duplicateCall);
     }
 
     protected void shippingInfo() {
         try {
-            window.setBusy(Messages.get().gen_fetching());
+            setBusy(Messages.get().gen_fetching());
 
             ShippingService.get().fetchByOrderId(manager.getOrder().getId(),
                                                  new SyncCallback<ShippingViewDO>() {
@@ -1444,7 +1522,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                                                              logger.log(Level.SEVERE,
                                                                         e.getMessage(),
                                                                         e);
-                                                             window.clearStatus();
+                                                             clearStatus();
                                                          }
                                                      }
 
@@ -1453,18 +1531,18 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
                                                          error.printStackTrace();
                                                          Window.alert("Error: Fetch failed; " +
                                                                       error.getMessage());
-                                                         window.clearStatus();
+                                                         clearStatus();
                                                      }
                                                  });
 
             if (shippingManager != null)
                 showShippingScreen(shippingManager);
             else
-                window.setDone(Messages.get().gen_noRecordsFound());
+                setDone(Messages.get().gen_noRecordsFound());
         } catch (Throwable e) {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
-            window.clearStatus();
+            clearStatus();
             return;
         }
     }
@@ -1486,21 +1564,21 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         field.setType(QueryData.Type.INTEGER);
         query.setFields(field);
 
-        window.setBusy(Messages.get().gen_generatingReport());
+        setBusy(Messages.get().gen_generatingReport());
         RequestFormReportService.get().runReport(query, new AsyncCallback<ReportStatus>() {
             public void onSuccess(ReportStatus status) {
                 String url;
                 if (ReportStatus.Status.SAVED.equals(status.getStatus())) {
                     url = "/openelis/openelis/report?file=" + status.getMessage();
                     Window.open(URL.encode(url), "OrderRequestFormReport", null);
-                    window.setDone(Messages.get().gen_loadCompleteMessage());
+                    setDone(Messages.get().gen_loadCompleteMessage());
                 } else {
-                    window.setDone(status.getMessage());
+                    setDone(status.getMessage());
                 }
             }
 
             public void onFailure(Throwable caught) {
-                window.setError("Failed");
+                setError("Failed");
                 caught.printStackTrace();
                 Window.alert(caught.getMessage());
             }
@@ -1688,7 +1766,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         ArrayList<OrganizationDO> list;
         ArrayList<Item<Integer>> model;
 
-        window.setBusy();
+        setBusy();
         try {
             list = OrganizationService.get()
                                       .fetchByIdOrName(QueryFieldUtil.parseAutocomplete(match));
@@ -1711,7 +1789,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        window.clearStatus();
+        clearStatus();
     }
 
     private void setDescriptionSelection() {
@@ -1743,13 +1821,13 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         ArrayList<String> matchList;
         String name;
 
-        window.setBusy();
+        setBusy();
         try {
             model = new ArrayList<Item<Integer>>();
             row = new Item<Integer>(0, match);
             row.setData(new IdNameVO(null, match));
             model.add(row);
-            if (descQuery == null || ( ! (match.indexOf(descQuery) == 0))) {
+            if (descQuery == null || match.indexOf(descQuery) != 0) {
                 dataList = OrderService1.get().fetchByDescription(match + "%", 10);
                 matchList = new ArrayList<String>();
                 for (int i = 0; i < dataList.size(); i++ ) {
@@ -1771,7 +1849,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             Window.alert(e.getMessage());
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
-        window.clearStatus();
+        clearStatus();
     }
 
     /*
@@ -1940,37 +2018,43 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
         fillTab.setData(manager);
     }
 
-    private boolean fetchById(Integer id) {
+    private void fetchById(Integer id) {
         if (id == null) {
             manager = null;
             setData();
             setState(DEFAULT);
+            fireDataChange();
+            clearStatus();
         } else {
-            window.setBusy(Messages.get().gen_fetching());
-            try {
+            setBusy(Messages.get().gen_fetching());
+            if (fetchByIdCall == null) {
+                fetchByIdCall = new AsyncCallbackUI<OrderManager1>() {
+                    public void success(OrderManager1 result) {
+                        manager = result;
+                        setData();
+                        setState(DISPLAY);
+                    }
 
-                manager = OrderService1.get().fetchById(id,
-                                                        OrderManager1.Load.SAMPLE_DATA,
-                                                        OrderManager1.Load.ORGANIZATION,
-                                                        OrderManager1.Load.ITEMS,
-                                                        OrderManager1.Load.RECURRENCE);
-                setData();
-                setState(DISPLAY);
-            } catch (NotFoundException e) {
-                fetchById(null);
-                window.setDone(Messages.get().gen_noRecordsFound());
-                return false;
-            } catch (Exception e) {
-                fetchById(null);
-                Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
-                logger.log(Level.SEVERE, e.getMessage(), e);
-                return false;
+                    public void notFound() {
+                        fetchById(null);
+                        setDone(Messages.get().gen_noRecordsFound());
+                    }
+
+                    public void failure(Throwable e) {
+                        fetchById(null);
+                        Window.alert(Messages.get().gen_fetchFailed() + e.getMessage());
+                        logger.log(Level.SEVERE, e.getMessage(), e);
+                    }
+
+                    public void finish() {
+                        fireDataChange();
+                        clearStatus();
+                    }
+                };
             }
-        }
-        fireDataChange();
-        window.clearStatus();
 
-        return true;
+            OrderService1.get().fetchById(id, elements, fetchByIdCall);
+        }
     }
 
     private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
@@ -2057,7 +2141,7 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
             if (ret.getErrors() != null && ret.getErrors().size() > 0)
                 showErrors(ret.getErrors());
             else
-                window.clearStatus();
+                clearStatus();
         } catch (Exception ex) {
             Window.alert(ex.getMessage());
             logger.log(Level.SEVERE, ex.getMessage(), ex);
@@ -2086,6 +2170,6 @@ public class SendoutOrderScreenUI extends Screen implements CacheProvider {
 
         modal.setContent(shippingScreen);
         shippingScreen.loadShippingData(manager, org.openelis.gwt.screen.Screen.State.DISPLAY);
-        window.clearStatus();
+        clearStatus();
     }
 }
