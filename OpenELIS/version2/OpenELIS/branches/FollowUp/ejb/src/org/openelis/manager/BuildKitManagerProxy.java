@@ -88,7 +88,7 @@ public class BuildKitManagerProxy {
         ArrayList<Integer> locationIdList;
         Datetime date;
 
-        date = Datetime.getInstance(Datetime.YEAR, Datetime.MONTH);
+        date = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
 
         //
         // we create an internal order in order to use up kit components

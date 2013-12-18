@@ -56,7 +56,7 @@ public class ApplicationBean {
     private static final Logger log = Logger.getLogger("openelis");
 
     @EJB
-    private DictionaryBean     dictionary;
+    private DictionaryBean      dictionary;
 
     public ApplicationBean() {
     }
@@ -66,49 +66,55 @@ public class ApplicationBean {
         ArrayList<DictionaryDO> list;
         HashMap<String, Integer> map;
         String names[] = {"analysis_cancelled", "analysis_completed", "analysis_error_completed",
-                          "analysis_error_initiated", "analysis_error_inprep", "analysis_error_logged_in",
-                          "analysis_initiated", "analysis_inprep", "analysis_logged_in", 
-                          "analysis_on_hold", "analysis_released", "analysis_requeue",
-                          "an_user_ac_completed", "an_user_ac_released", "aux_alpha_lower",
-                          "aux_alpha_mixed", "aux_alpha_upper", "aux_date", "aux_date_time", 
-                          "aux_default", "aux_dictionary", "aux_numeric", "aux_time",
-                          "chart_type_dynamic", "chart_type_fixed", "instrument_log_completed", 
-                          "instrument_log_pending", "log_level_error", "log_level_info",
-                          "log_type_data_transmission", "micrograms_per_liter", 
-                          "nanograms_per_liter", "nanograms_per_milliliter",
-                          "order_recurrence_unit_days", "order_recurrence_unit_months", 
-                          "order_recurrence_unit_years", "order_status_back_ordered", 
-                          "order_status_pending", "order_status_processed", "order_status_recurring",
-                          "order_status_on_hold", "order_status_cancelled", "org_finalrep_fax_number", 
-                          "org_no_finalreport", "org_report_to", "org_bill_to", 
-                          "org_second_report_to", "org_birth_hospital", "pos_duplicate", 
-                          "pos_fixed", "pos_fixed_always", "pos_random", "pos_last_of_subset",
-                          "pos_last_of_run", "pos_last_of_subset_and_run", "pt_sample",
-                          "qaevent_internal", "qaevent_override", "qaevent_warning",
-                          "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
-                          "released_reportto_email", "org_hold_sample", "reflex_auto", 
-                          "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup",
-                          "round_int", "round_int_sig_fig", "round_int_sig_fig_noe",
-                          "round_sig_fig", "round_sig_fig_noe", "sample_completed",
-                          "sample_error", "sample_logged_in", "sample_not_verified",
-                          "sample_released", "sdwis_category_bacterial", "section_mcl_violation_email",
-                          "shipping_status_processed", "shipping_status_shipped",
-                          "test_analyte_req", "test_analyte_suplmtl", "test_analyte_read_only", 
-                          "test_res_type_alpha_lower", "test_res_type_alpha_mixed",
-                          "test_res_type_alpha_upper", "test_res_type_date", "test_res_type_date_time",
-                          "test_res_type_default", "test_res_type_dictionary", "test_res_type_numeric",
-                          "test_res_type_time", "test_res_type_titer", "test_section_default",
-                          "test_section_match", "turnaround_daily", "turnaround_monthly",
-                          "turnaround_weekly", "worksheet_complete", "wf_total",
-                          "worksheet_complete", "worksheet_failed", "worksheet_void",
-                          "worksheet_working"};
-        
+                        "analysis_error_initiated", "analysis_error_inprep",
+                        "analysis_error_logged_in", "analysis_initiated", "analysis_inprep",
+                        "analysis_logged_in", "analysis_on_hold", "analysis_released",
+                        "analysis_requeue", "an_user_ac_completed", "an_user_ac_released",
+                        "aux_alpha_lower", "aux_alpha_mixed", "aux_alpha_upper", "aux_date",
+                        "aux_date_time", "aux_default", "aux_dictionary", "aux_numeric",
+                        "aux_time", "chart_type_dynamic", "chart_type_fixed",
+                        "cost_center_unknown", "instrument_log_completed",
+                        "instrument_log_pending", "laboratory_location_ic", "local_type_analyte",
+                        "local_type_dictionary", "local_type_method", "local_type_organization",
+                        "local_type_test", "local_type_test_analyte", "log_level_error",
+                        "log_level_info", "log_type_data_transmission", "micrograms_per_liter",
+                        "nanograms_per_liter", "nanograms_per_milliliter",
+                        "order_recurrence_unit_days", "order_recurrence_unit_months",
+                        "order_recurrence_unit_years", "order_status_back_ordered",
+                        "order_status_pending", "order_status_processed", "order_status_recurring",
+                        "order_status_on_hold", "order_status_cancelled",
+                        "org_finalrep_fax_number", "org_no_finalreport", "org_report_to",
+                        "org_bill_to", "org_second_report_to", "org_birth_hospital",
+                        "pos_duplicate", "pos_fixed", "pos_fixed_always", "pos_random",
+                        "pos_last_of_subset", "pos_last_of_run", "pos_last_of_subset_and_run",
+                        "pt_sample", "qaevent_internal", "qaevent_override", "qaevent_warning",
+                        "qc_blank", "qc_duplicate", "qc_spike", "receivable_reportto_email",
+                        "released_reportto_email", "org_hold_sample", "org_prod_epartner_url",
+                        "org_test_epartner_url", "org_epartner_aggr", "reflex_auto",
+                        "reflex_prompt", "reflex_auto_ndup", "reflex_prompt_ndup", "round_int",
+                        "round_int_sig_fig", "round_int_sig_fig_noe", "round_sig_fig",
+                        "round_sig_fig_noe", "sample_completed", "sample_error",
+                        "sample_logged_in", "sample_not_verified", "sample_released",
+                        "sdwis_category_bacterial", "sdwis_category_chemical",
+                        "sdwis_category_lead", "sdwis_category_radchem",
+                        "section_mcl_violation_email", "shipping_status_processed",
+                        "shipping_status_shipped", "smpl_type_rt", "smpl_type_rp", "smpl_type_sp",
+                        "test_analyte_req", "test_analyte_suplmtl", "test_analyte_read_only",
+                        "test_res_type_alpha_lower", "test_res_type_alpha_mixed",
+                        "test_res_type_alpha_upper", "test_res_type_date",
+                        "test_res_type_date_time", "test_res_type_default",
+                        "test_res_type_dictionary", "test_res_type_numeric", "test_res_type_time",
+                        "test_res_type_titer", "test_section_default", "test_section_match",
+                        "turnaround_daily", "turnaround_monthly", "turnaround_weekly",
+                        "worksheet_complete", "wf_total", "worksheet_complete", "worksheet_failed",
+                        "worksheet_void", "worksheet_working"};
+
         /*
          * One time system wide initializations
          */
         Constants.setConstants(new Constants());
         com.teklabs.gwt.i18n.server.LocaleProxy.initialize();
-        
+
         /*
          * system properties
          */
@@ -155,17 +161,29 @@ public class ApplicationBean {
         Constants.dictionary().AUX_TIME = dictId(map, "aux_time");
         Constants.dictionary().CHART_TYPE_DYNAMIC = dictId(map, "chart_type_dynamic");
         Constants.dictionary().CHART_TYPE_FIXED = dictId(map, "chart_type_fixed");
+        Constants.dictionary().COST_CENTER_UNKNOWN = dictId(map, "cost_center_unknown");
         Constants.dictionary().INSTRUMENT_LOG_COMPLETED = dictId(map, "instrument_log_completed");
         Constants.dictionary().INSTRUMENT_LOG_PENDING = dictId(map, "instrument_log_pending");
+        Constants.dictionary().LABORATORY_LOCATION_IC = dictId(map, "laboratory_location_ic");
+        Constants.dictionary().LOCAL_TYPE_ANALYTE = dictId(map, "local_type_analyte");
+        Constants.dictionary().LOCAL_TYPE_DICTIONARY = dictId(map, "local_type_dictionary");
+        Constants.dictionary().LOCAL_TYPE_METHOD = dictId(map, "local_type_method");
+        Constants.dictionary().LOCAL_TYPE_ORGANIZATION = dictId(map, "local_type_organization");
+        Constants.dictionary().LOCAL_TYPE_TEST = dictId(map, "local_type_test");
+        Constants.dictionary().LOCAL_TYPE_TEST_ANALYTE = dictId(map, "local_type_test_analyte");
         Constants.dictionary().LOG_LEVEL_ERROR = dictId(map, "log_level_error");
         Constants.dictionary().LOG_LEVEL_INFO = dictId(map, "log_level_info");
-        Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION = dictId(map, "log_type_data_transmission");
+        Constants.dictionary().LOG_TYPE_DATA_TRANSMISSION = dictId(map,
+                                                                   "log_type_data_transmission");
         Constants.dictionary().MICROGRAMS_PER_LITER = dictId(map, "micrograms_per_liter");
         Constants.dictionary().NANOGRAMS_PER_LITER = dictId(map, "nanograms_per_liter");
         Constants.dictionary().NANOGRAMS_PER_MILLILITER = dictId(map, "nanograms_per_milliliter");
-        Constants.dictionary().ORDER_RECURRENCE_UNIT_DAYS = dictId(map, "order_recurrence_unit_days");
-        Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS = dictId(map, "order_recurrence_unit_months");
-        Constants.dictionary().ORDER_RECURRENCE_UNIT_YEARS = dictId(map, "order_recurrence_unit_years");
+        Constants.dictionary().ORDER_RECURRENCE_UNIT_DAYS = dictId(map,
+                                                                   "order_recurrence_unit_days");
+        Constants.dictionary().ORDER_RECURRENCE_UNIT_MONTHS = dictId(map,
+                                                                     "order_recurrence_unit_months");
+        Constants.dictionary().ORDER_RECURRENCE_UNIT_YEARS = dictId(map,
+                                                                    "order_recurrence_unit_years");
         Constants.dictionary().ORDER_STATUS_BACK_ORDERED = dictId(map, "order_status_back_ordered");
         Constants.dictionary().ORDER_STATUS_PENDING = dictId(map, "order_status_pending");
         Constants.dictionary().ORDER_STATUS_PROCESSED = dictId(map, "order_status_processed");
@@ -184,7 +202,8 @@ public class ApplicationBean {
         Constants.dictionary().POS_RANDOM = dictId(map, "pos_random");
         Constants.dictionary().POS_LAST_OF_SUBSET = dictId(map, "pos_last_of_subset");
         Constants.dictionary().POS_LAST_OF_RUN = dictId(map, "pos_last_of_run");
-        Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN = dictId(map, "pos_last_of_subset_and_run");
+        Constants.dictionary().POS_LAST_OF_SUBSET_AND_RUN = dictId(map,
+                                                                   "pos_last_of_subset_and_run");
         Constants.dictionary().PT_SAMPLE = dictId(map, "pt_sample");
         Constants.dictionary().QAEVENT_INTERNAL = dictId(map, "qaevent_internal");
         Constants.dictionary().QAEVENT_OVERRIDE = dictId(map, "qaevent_override");
@@ -195,6 +214,9 @@ public class ApplicationBean {
         Constants.dictionary().RECEIVABLE_REPORTTO_EMAIL = dictId(map, "receivable_reportto_email");
         Constants.dictionary().RELEASED_REPORTTO_EMAIL = dictId(map, "released_reportto_email");
         Constants.dictionary().ORG_HOLD_SAMPLE = dictId(map, "org_hold_sample");
+        Constants.dictionary().ORG_PROD_EPARTNER_URL = dictId(map, "org_prod_epartner_url");
+        Constants.dictionary().ORG_TEST_EPARTNER_URL = dictId(map, "org_test_epartner_url");
+        Constants.dictionary().ORG_EPARTNER_AGGR = dictId(map, "org_epartner_aggr");
         Constants.dictionary().REFLEX_AUTO = dictId(map, "reflex_auto");
         Constants.dictionary().REFLEX_PROMPT = dictId(map, "reflex_prompt");
         Constants.dictionary().REFLEX_AUTO_NDUP = dictId(map, "reflex_auto_ndup");
@@ -210,9 +232,16 @@ public class ApplicationBean {
         Constants.dictionary().SAMPLE_NOT_VERIFIED = dictId(map, "sample_not_verified");
         Constants.dictionary().SAMPLE_RELEASED = dictId(map, "sample_released");
         Constants.dictionary().SDWIS_CATEGORY_BACTERIAL = dictId(map, "sdwis_category_bacterial");
-        Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL = dictId(map, "section_mcl_violation_email");
+        Constants.dictionary().SDWIS_CATEGORY_CHEMICAL = dictId(map, "sdwis_category_chemical");
+        Constants.dictionary().SDWIS_CATEGORY_LEAD = dictId(map, "sdwis_category_lead");
+        Constants.dictionary().SDWIS_CATEGORY_RADCHEM = dictId(map, "sdwis_category_radchem");
+        Constants.dictionary().SECTION_MCL_VIOLATION_EMAIL = dictId(map,
+                                                                    "section_mcl_violation_email");
         Constants.dictionary().SHIPPING_STATUS_PROCESSED = dictId(map, "shipping_status_processed");
         Constants.dictionary().SHIPPING_STATUS_SHIPPED = dictId(map, "shipping_status_shipped");
+        Constants.dictionary().SMPL_TYPE_RT = dictId(map, "smpl_type_rt");
+        Constants.dictionary().SMPL_TYPE_RP = dictId(map, "smpl_type_rp");
+        Constants.dictionary().SMPL_TYPE_SP = dictId(map, "smpl_type_sp");
         Constants.dictionary().TEST_ANALYTE_REQ = dictId(map, "test_analyte_req");
         Constants.dictionary().TEST_ANALYTE_SUPLMTL = dictId(map, "test_analyte_suplmtl");
         Constants.dictionary().TEST_ANALYTE_READ_ONLY = dictId(map, "test_analyte_read_only");
@@ -256,7 +285,7 @@ public class ApplicationBean {
 
         id = map.get(systemName);
         if (id == null) {
-            log.severe("Could not find id for system_name: "+systemName);
+            log.severe("Could not find id for system_name: " + systemName);
             errors = true;
         }
 

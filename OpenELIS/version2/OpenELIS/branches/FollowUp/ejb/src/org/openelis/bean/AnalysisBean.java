@@ -287,8 +287,8 @@ public class AnalysisBean {
              */
             if (data.getUnitOfMeasureId() == null && !tm.getSampleTypes().hasEmptyUnit())
                 e.add(new FormErrorException(Messages.get()
-                                                     .analysis_unitRequiredException(DataBaseUtil.toString(accession),
-                                                                                     DataBaseUtil.toString(sequence),
+                                                     .analysis_unitRequiredException(accession,
+                                                                                     sequence,
                                                                                      test,
                                                                                      method)));
             /*
@@ -297,8 +297,8 @@ public class AnalysisBean {
             if (data.getUnitOfMeasureId() != null && item != null &&
                 !tm.getSampleTypes().hasUnit(data.getUnitOfMeasureId(), item.getTypeOfSampleId()))
                 e.add(new FormErrorWarning(Messages.get()
-                                                   .analysis_unitInvalidWarning(DataBaseUtil.toString(accession),
-                                                                                DataBaseUtil.toString(sequence),
+                                                   .analysis_unitInvalidWarning(accession,
+                                                                                sequence,
                                                                                 test,
                                                                                 method)));
         } else {
@@ -307,8 +307,8 @@ public class AnalysisBean {
         }
         if (data.getTestId() == null)
             e.add(new FormErrorException(Messages.get()
-                                                 .analysis_testIdMissingException(DataBaseUtil.toString(accession),
-                                                                                  DataBaseUtil.toString(sequence))));
+                                                 .analysis_testIdMissingException(accession,
+                                                                                  sequence)));
 
         if (data.getSectionId() == null)
             e.add(new FormErrorException(Messages.get()

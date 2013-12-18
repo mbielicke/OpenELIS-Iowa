@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -78,6 +79,15 @@ public class TestResultBean {
             types.put(Constants.dictionary().TEST_RES_TYPE_ALPHA_MIXED, Type.ALPHA_MIXED);
         }
     }
+    
+    public ArrayList<TestResultViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("TestResult.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public ArrayList<ArrayList<TestResultViewDO>> fetchByTestId(Integer testId) throws Exception {
         ArrayList<ArrayList<TestResultViewDO>> grid;
@@ -127,6 +137,17 @@ public class TestResultBean {
             rg++ ;
         }
         return grid;
+    }
+
+    public ArrayList<TestResultViewDO> fetchTestResultsByTestIdsAndFlagPattern(ArrayList<Integer> tids,
+                                                                               String pattern) {
+        Query query;
+
+        query = manager.createNamedQuery("TestResult.FetchTestResultsByTestIdsAndFlagPattern");
+        query.setParameter("testIds", tids);
+        query.setParameter("pattern", pattern);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public TestResultDO add(TestResultDO data) throws Exception {

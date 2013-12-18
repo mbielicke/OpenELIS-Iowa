@@ -28,8 +28,8 @@
         <xs:sequence>
             <xs:element name="name" minOccurs="0" type="xs:string" />
             <xs:element name="environment" minOccurs="0" type="xs:string" />
-            <xs:element name="profiles" minOccurs="0" type="profiles">
-            </xs:element>
+            <xs:element name="profiles" minOccurs="0" type="profiles" />
+            <xs:element name="organization_parameter" minOccurs="0" maxOccurs="unbounded" type="organizationParameter"/>
         </xs:sequence>
         <xs:attribute name="include_all_analyses" type="xs:string" use="required" />
     </xs:complexType>
@@ -260,6 +260,16 @@
         <xs:attribute name="is_active" type="xs:string" />
         <xs:attribute name="address_id" type="xs:integer" use="required" />
     </xs:complexType>
+    
+    <xs:complexType name="organizationParameter">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string" />
+            <xs:element name="Type" type="dictionary" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+        <xs:attribute name="organization_id" type="xs:integer" use="required" />
+        <xs:attribute name="type_id" type="xs:integer" use="required" />
+    </xs:complexType>
 
     <xs:complexType name="analysis">
         <xs:sequence>
@@ -267,6 +277,7 @@
             <xs:element name="section" type="section" />
             <xs:element name="unit_of_measure" minOccurs="0" type="dictionary" />
             <xs:element name="status" type="dictionary" />
+            <xs:element name="panel" minOccurs="0" type="panel" />
             <xs:element name="analysis_qaevent" minOccurs="0" maxOccurs="unbounded" type="analysisQaevent" />
             <xs:element name="analysis_user" type="analysis_user" minOccurs="0"
                 maxOccurs="unbounded" />
@@ -365,6 +376,21 @@
         </xs:sequence>
         <xs:attribute name="id" type="xs:integer" use="required" />
     </xs:complexType>
+    
+    <xs:complexType name="testResult">
+        <xs:sequence>
+            <xs:element name="value" minOccurs="0"  type="xs:string" />
+            <xs:element name="flags" minOccurs="0" type="dictionary" />
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:integer" use="required" />
+        <xs:attribute name="test_id" type="xs:integer" use="required" />
+        <xs:attribute name="result_group" type="xs:integer" use="required" />
+        <xs:attribute name="sort_order" type="xs:integer" use="required" />
+        <xs:attribute name="flags_id" type="xs:integer" />
+        <xs:attribute name="type_id" type="xs:integer" use="required" />
+        <xs:attribute name="roundingMethodId" type="xs:integer" />
+        <xs:attribute name="unitOfMeasureId" type="xs:integer" />
+    </xs:complexType>
 
     <xs:complexType name="analysisQaevent">
         <xs:sequence>
@@ -389,18 +415,19 @@
     <xs:complexType name="result">
         <xs:sequence>
             <xs:element name="value" minOccurs="0" type="xs:string" />
-            <xs:element name="analyte" type="analyte" minOccurs="1" />
+            <xs:element name="test_result" minOccurs="0" type="testResult" />
+            <xs:element name="analyte" minOccurs="1" type="analyte"/>
             <xs:element name="Type" minOccurs="0" type="dictionary" />
             <xs:element name="dictionary" minOccurs="0" type="dictionary" />
         </xs:sequence>
         <xs:attribute name="id" use="required" type="xs:integer" />
-        <xs:attribute name="analysis_id" use="required" type="xs:integer" />
-        <xs:attribute name="test_analyte_id" use="required" type="xs:integer" />
+        <xs:attribute name="analysis_id" type="xs:integer" use="required" />
+        <xs:attribute name="test_analyte_id" type="xs:integer" use="required" />
         <xs:attribute name="test_result_id" type="xs:integer" />
         <xs:attribute name="is_column" type="xs:string" use="required" />
-        <xs:attribute name="sort_order" type="xs:integer" />
+        <xs:attribute name="sort_order" type="xs:integer" use="required" />
         <xs:attribute name="is_reportable" type="xs:string" use="required" />
-        <xs:attribute name="analyte_id" type="xs:integer" />
+        <xs:attribute name="analyte_id" type="xs:integer" use="required" />
         <xs:attribute name="type_id" type="xs:integer" />
     </xs:complexType>
 
