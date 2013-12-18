@@ -2,7 +2,7 @@ package org.openelis.constants;
 
 /**
  * Interface to represent the messages contained in resource bundle:
- * 	/home/tschmidt/juno/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
+ * 	/home/nfalat/workspace/OpenELIS-Common/src/org/openelis/constants/OpenELISConstants.properties'.
  */
 public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   
@@ -11383,6 +11383,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   String pwsName();
 
   /**
+   * Translated "Violation".
+   * 
+   * @return translated "Violation"
+   */
+  @DefaultMessage("Violation")
+  @Key("pwsViolation")
+  String pwsViolation();
+
+  /**
+   * Translated "Violation Date".
+   * 
+   * @return translated "Violation Date"
+   */
+  @DefaultMessage("Violation Date")
+  @Key("pwsViolationDate")
+  String pwsViolationDate();
+
+  /**
+   * Translated "Sample ID".
+   * 
+   * @return translated "Sample ID"
+   */
+  @DefaultMessage("Sample ID")
+  @Key("pwsViolationSampleId")
+  String pwsViolationSampleId();
+
+  /**
    * Translated "Are you sure you want to change this?".
    * 
    * @return translated "Are you sure you want to change this?"
@@ -13784,6 +13811,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Fully login safe drinking water sample and analysis related information.")
   @Key("sdwisSampleLoginDescription")
   String sdwisSampleLoginDescription();
+
+  /**
+   * Translated "No abnormal test results were found".
+   * 
+   * @return translated "No abnormal test results were found"
+   */
+  @DefaultMessage("No abnormal test results were found")
+  @Key("sdwisScan.noAbnormalResultsFoundException")
+  String sdwisScan_noAbnormalResultsFoundException();
+
+  /**
+   * Translated "Accession # ''{0,number}'': Could not create order from sample because it has no organizations".
+   * 
+   * @return translated "Accession # ''{0,number}'': Could not create order from sample because it has no organizations"
+   */
+  @DefaultMessage("Accession # ''{0,number}'': Could not create order from sample because it has no organizations")
+  @Key("sdwisScan.noSampleOrgsException")
+  String sdwisScan_noSampleOrgsException(Integer arg0);
+
+  /**
+   * Translated "No valid monitor was found for violation: {0}".
+   * 
+   * @return translated "No valid monitor was found for violation: {0}"
+   */
+  @DefaultMessage("No valid monitor was found for violation: {0}")
+  @Key("sdwisScan.noValidMonitorWarning")
+  String sdwisScan_noValidMonitorWarning(String arg0);
 
   /**
    * Translated "SDWIS Unload".
@@ -16628,6 +16682,33 @@ public interface OpenELISConstants extends com.google.gwt.i18n.client.Messages {
   @DefaultMessage("Worksheet")
   @Key("worksheet")
   String worksheet();
+
+  /**
+   * Translated "Worksheet is at capacity; cannot add more rows".
+   * 
+   * @return translated "Worksheet is at capacity; cannot add more rows"
+   */
+  @DefaultMessage("Worksheet is at capacity; cannot add more rows")
+  @Key("worksheet.atCapacity")
+  String worksheet_atCapacity();
+
+  /**
+   * Translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.".
+   * 
+   * @return translated "Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed."
+   */
+  @DefaultMessage("Changing the worksheet layout has significant consequences for instrument interfacing and importing of existing Excel files. The command that you have just performed has not been executed; you may reperform the command if you still wish to proceed.")
+  @Key("worksheet.builderUpdateWarning")
+  String worksheet_builderUpdateWarning();
+
+  /**
+   * Translated "The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added.".
+   * 
+   * @return translated "The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added."
+   */
+  @DefaultMessage("The capacity of this worksheet has been exceeded; the last ''{0,number}'' items in your selection have not been added.")
+  @Key("worksheet.capacityExceeded")
+  String worksheet_capacityExceeded(Integer arg0);
 
   /**
    * Translated "You must choose a format for this worksheet before adding analyses from another worksheet.".

@@ -38,6 +38,7 @@ public class PWSManager implements Serializable {
     protected PWSAddressManager                addresses;
     protected PWSFacilityManager               facilities;
     protected PWSMonitorManager                monitors;
+    protected PWSViolationManager violations;
 
     protected transient static PWSManagerProxy proxy;
 
@@ -50,6 +51,7 @@ public class PWSManager implements Serializable {
         addresses = null;
         facilities = null;
         monitors = null;
+        violations = null;
     }
 
     /**
@@ -88,6 +90,10 @@ public class PWSManager implements Serializable {
 
     public static PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchWithMonitors(tinwsysIsNumber);
+    }
+    
+    public static PWSManager fetchWithViolations(Integer tinwsysIsNumber) throws Exception {
+        return proxy().fetchWithViolations(tinwsysIsNumber);
     }
 
     //
@@ -142,6 +148,23 @@ public class PWSManager implements Serializable {
                 monitors = PWSMonitorManager.getInstance();
         }
         return monitors;
+    }
+    
+    public PWSViolationManager getViolations() throws Exception {
+        if (violations == null) {
+            if (pws.getTinwsysIsNumber() != null) {
+                try {
+                    violations = PWSViolationManager.fetchByTinwsysIsNumber(pws.getTinwsysIsNumber());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (violations == null)
+                violations = PWSViolationManager.getInstance();
+        }
+        return violations;
     }
     
     private static PWSManagerProxy proxy() {
